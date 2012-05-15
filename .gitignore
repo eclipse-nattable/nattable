@@ -1,6 +1,11 @@
 .DS_Store
-.metadata
+
+.metadata/
 bin/
+dependencies/
 target/
 
-target-platform/dependencies/
+nattable/net.sourceforge.nattable.examples/NatTableExamples.jar
+nattable/net.sourceforge.nattable.examples/natTable.properties
+nattable/net.sourceforge.nattable.examples/src/examples.index
+
