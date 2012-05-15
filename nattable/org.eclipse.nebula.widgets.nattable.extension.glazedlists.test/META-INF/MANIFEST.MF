@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NatTable GlazedLists Extensions Test (Incubation)
+Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists.test
+Bundle-Version: 0.9.0.qualifier
+Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.junit4
+Import-Package: org.eclipse.nebula.widgets.nattable.filterrow.command,
+ org.eclipse.nebula.widgets.nattable.filterrow.event,
+ org.eclipse.nebula.widgets.nattable.group,
+ org.eclipse.nebula.widgets.nattable.hideshow,
+ org.eclipse.nebula.widgets.nattable.hideshow.command,
+ org.eclipse.nebula.widgets.nattable.hideshow.event,
+ org.eclipse.nebula.widgets.nattable.reorder,
+ org.eclipse.nebula.widgets.nattable.selection,
+ org.eclipse.nebula.widgets.nattable.selection.command,
+ org.eclipse.nebula.widgets.nattable.test.fixture,
+ org.eclipse.nebula.widgets.nattable.test.fixture.data,
+ org.eclipse.nebula.widgets.nattable.test.fixture.layer,
+ org.eclipse.nebula.widgets.nattable.test.integration,
+ org.eclipse.nebula.widgets.nattable.viewport,
+ org.eclipse.jface.viewers,
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow

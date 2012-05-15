@@ -1,0 +1,41 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Original authors and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Original authors and others - initial API and implementation
+ ******************************************************************************/
+package org.eclipse.nebula.widgets.nattable.viewport.command;
+
+import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+
+public class ViewportSelectRowCommandHandler extends AbstractLayerCommandHandler<ViewportSelectRowCommand> {
+
+	private final ViewportLayer viewportLayer;
+
+	public ViewportSelectRowCommandHandler(ViewportLayer viewportLayer) {
+		this.viewportLayer = viewportLayer;
+	}
+	
+	public Class<ViewportSelectRowCommand> getCommandClass() {
+		return ViewportSelectRowCommand.class;
+	}
+
+	@Override
+	protected boolean doCommand(ViewportSelectRowCommand command) {
+		IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
+		int scrollableColumnPosition = viewportLayer.getOriginColumnPosition();
+		int scrollableRowPosition = viewportLayer.localToUnderlyingRowPosition(command.getRowPosition());
+		
+		scrollableLayer.doCommand(new SelectRowsCommand(scrollableLayer, scrollableColumnPosition, scrollableRowPosition, command.isWithShiftMask(), command.isWithControlMask()));
+		
+		return true;
+	}
+
+}

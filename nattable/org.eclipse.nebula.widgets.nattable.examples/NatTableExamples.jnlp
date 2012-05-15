@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JNLP File for NatTable -->
+
+<jnlp spec="0.2 1.0"
+      codebase="http://nattable.org/webstart"
+      href="NatTableExamples.jnlp">
+   <information> 
+      <title>NatTable Examples</title> 
+      <vendor>Open Source Software</vendor>
+      <homepage href="http://nattable.org"/>
+      <description>Examples demonstrating the NatTable feature set</description>
+      <description kind="short">NatTable Examples</description>
+      <icon href="http://nattable.org/drupal/files/garland_logo.png"/>
+      <offline-allowed/> 
+   </information> 
+   <security>
+      <all-permissions/>
+   </security>
+   <resources>
+      <j2se version="1.5+" href="http://java.sun.com/products/autodl/j2se"/>
+      <j2se version="1.5+"/>
+      <jar href="NatTableExamples.jar" main="true" download="eager"/>
+      <extension name="SWT" href="SWT.jnlp"/>
+   </resources>
+   <application-desc main-class="org.eclipse.nebula.widgets.nattable.examples.NatTableExamples"/>
+</jnlp> 

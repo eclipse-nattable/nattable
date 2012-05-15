@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project basedir="." default="build" name="org.eclipse.nebula.widgets.nattable.extension.builder">
+	<!-- Resuse task defs from the parent -->
+	<import file="../common.xml"/>
+	
+	<!-- Specify a name for the jar file -->
+	<property name="jar.file.prefix" value="org.eclipse.nebula.widgets.nattable.extension.builder" />
+	
+	<property name="do.not.instrument" value="true" />
+	
+	<!-- Place any additional files on the classpath, if needed -->
+	<path id="build.dependencies">
+		<!-- Core binaries -->
+		<dirset dir="../org.eclipse.nebula.widgets.nattable.core">
+		   <include name="${build.dir}" />
+		</dirset>
+		<!-- glazedlists extensions -->
+		<dirset dir="../org.eclipse.nebula.widgets.nattable.extension.glazedlists">
+		   <include name="${build.dir}" />
+		</dirset>
+
+	</path>
+	
+</project>

@@ -1,0 +1,56 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Original authors and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Original authors and others - initial API and implementation
+ ******************************************************************************/
+package org.eclipse.nebula.widgets.nattable.config;
+
+
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.export.excel.DefaultExportFormatter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.LineBorderDecorator;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
+import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+
+public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfiguration {
+
+	public Color bgColor = GUIHelper.COLOR_WHITE;
+	public Color fgColor = GUIHelper.COLOR_BLACK;
+	public Font font = GUIHelper.DEFAULT_FONT;
+	public HorizontalAlignmentEnum hAlign = HorizontalAlignmentEnum.CENTER;
+	public VerticalAlignmentEnum vAlign = VerticalAlignmentEnum.MIDDLE;
+	public BorderStyle borderStyle = null;
+
+	public ICellPainter cellPainter = new LineBorderDecorator(new TextPainter());
+	
+	public void configureRegistry(IConfigRegistry configRegistry) {
+		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, cellPainter);
+
+		Style cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, borderStyle);
+		
+		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle);
+	
+		configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new DefaultDisplayConverter());
+		
+		configRegistry.registerConfigAttribute(CellConfigAttributes.EXPORT_FORMATTER, new DefaultExportFormatter());
+	}
+}

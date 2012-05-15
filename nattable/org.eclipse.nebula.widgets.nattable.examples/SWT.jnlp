@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JNLP File for NatTable -->
+
+<jnlp spec="0.2 1.0"
+      codebase="http://nattable.org/webstart"
+      href="SWT.jnlp">
+   <information> 
+      <title>SWT</title> 
+      <vendor>Eclipse</vendor>
+   </information> 
+   <security>
+      <all-permissions/>
+   </security>
+   <resources os="Windows">
+      <nativelib href="org.eclipse.swt.win32.win32.x86_3.5.1.v3555a.jar"/>
+      <jar href="org.eclipse.swt_3.5.1.v3555a.jar"/>
+   </resources>
+<!--
+   <resources os="Mac">
+      <nativelib href="org.eclipse.swt.cocoa.macosx.x86_64_3.5.1.v3555a.jar"/>
+      <jar href="org.eclipse.swt_3.5.1.v3555a.jar"/>
+   </resources>
+-->
+   <component-desc/>
+</jnlp> 

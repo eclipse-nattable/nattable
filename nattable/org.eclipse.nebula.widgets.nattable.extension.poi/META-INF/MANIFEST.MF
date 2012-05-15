@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NatTable extension for Apache Poi (Incubation)
+Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.poi
+Bundle-Version: 0.9.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.nebula.widgets.nattable.extension.poi
+Import-Package: org.apache.commons.lang.builder,
+ org.apache.poi.hssf.usermodel,
+ org.apache.poi.ss.usermodel,
+ org.apache.poi.ss.util,
+ org.eclipse.nebula.widgets.nattable.config,
+ org.eclipse.nebula.widgets.nattable.export,
+ org.eclipse.nebula.widgets.nattable.layer,
+ org.eclipse.nebula.widgets.nattable.layer.cell,
+ org.eclipse.nebula.widgets.nattable.style,
+ org.eclipse.swt.graphics,
+ org.eclipse.swt.widgets
