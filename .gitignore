@@ -1,0 +1,6 @@
+.DS_Store
+.metadata
+bin/
+target/
+
+target-platform/dependencies/
