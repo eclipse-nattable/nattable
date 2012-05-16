@@ -37,6 +37,7 @@ public class FreezeColumnCommand extends AbstractColumnCommand implements IFreez
 	
 	protected FreezeColumnCommand(FreezeColumnCommand command) {
 		super(command);
+		this.toggle = command.toggle;
 	}
 	
 	public ILayerCommand cloneCommand() {
