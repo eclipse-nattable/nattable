@@ -123,6 +123,7 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 
 					configRegistry.registerConfigAttribute(CELL_STYLE, savedStyle, NORMAL, getConfigLabel(colIndex));
 					stylesToPersist.put(getConfigLabel(colIndex), savedStyle);
+					columnLabelAccumulator.registerColumnOverrides(colIndex, getConfigLabel(colIndex));
 				}
 			}
 		}
