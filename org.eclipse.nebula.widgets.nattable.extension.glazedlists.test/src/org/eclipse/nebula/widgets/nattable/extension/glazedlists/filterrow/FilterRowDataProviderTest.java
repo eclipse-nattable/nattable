@@ -35,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.odell.glazedlists.FilterList;
@@ -96,6 +97,7 @@ public class FilterRowDataProviderTest {
 	}
 
 	@Test
+	@Ignore
 	public void settingThresholdValuesUpdatedFilter() throws Exception {
 		// Since we are triggering object comparison, we must provide the right type
 		configRegistry.registerConfigAttribute(
