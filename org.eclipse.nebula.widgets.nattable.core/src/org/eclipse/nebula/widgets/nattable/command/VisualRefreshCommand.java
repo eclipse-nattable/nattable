@@ -11,27 +11,24 @@
 package org.eclipse.nebula.widgets.nattable.command;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
 /**
- * Command that triggers a {@link StructuralRefreshEvent}.
+ * Command that triggers a {@link VisualRefreshEvent}.
  * To support refreshing of every layer in a NatTable the
- * {@link StructuralRefreshCommandHandler} should be registered 
+ * {@link VisualRefreshCommandHandler} should be registered 
  * against the DataLayer.
- * 
- * @author fipro
- *
  */
-public class StructuralRefreshCommand implements ILayerCommand {
+public class VisualRefreshCommand implements ILayerCommand {
 
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		// no need for a check as the command simply triggers the firing of a StructuralRefreshEvent
+		// no need for a check as the command simply triggers the firing of a VisualRefreshEvent
 		return true;
 	}
 
 	public ILayerCommand cloneCommand() {
 		// as the command doesn't have a state, the clone is simply a new instance
-		return new StructuralRefreshCommand();
+		return new VisualRefreshCommand();
 	}
 
 }

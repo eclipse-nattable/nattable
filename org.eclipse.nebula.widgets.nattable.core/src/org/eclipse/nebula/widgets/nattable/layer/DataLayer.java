@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommandHandler;
+import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
@@ -96,6 +97,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		registerCommandHandler(new MultiRowResizeCommandHandler(this));
 		registerCommandHandler(new UpdateDataCommandHandler(this));
 		registerCommandHandler(new StructuralRefreshCommandHandler());
+		registerCommandHandler(new VisualRefreshCommandHandler());
 	}
 
 	public IDataProvider getDataProvider() {
