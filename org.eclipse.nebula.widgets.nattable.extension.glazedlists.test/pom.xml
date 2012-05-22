@@ -9,7 +9,7 @@
   Contributors:
       Original authors and others - initial API and implementation
 -->
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -19,8 +19,23 @@
     <relativePath>../org.eclipse.nebula.widgets.nattable.parent</relativePath>
   </parent>
 
-  <artifactId>org.eclipse.nebula.widgets.nattable.extension.glazedlists.tests</artifactId>
+  <artifactId>org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</artifactId>
   
   <packaging>eclipse-test-plugin</packaging>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <configuration>
+          <excludes>
+            <exclude>**/fixture/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

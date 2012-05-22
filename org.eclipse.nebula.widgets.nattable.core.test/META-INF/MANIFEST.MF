@@ -7,9 +7,6 @@ Fragment-Host: org.eclipse.nebula.widgets.nattable.core
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.apache.commons.lang.math,
  org.eclipse.core.commands.common,
- org.hamcrest;version="1.1.0";resolution:=optional,
- org.hamcrest.core;version="1.1.0";resolution:=optional,
- org.junit,
  org.osgi.framework
 Export-Package: org.eclipse.nebula.widgets.nattable.test.fixture,
  org.eclipse.nebula.widgets.nattable.test.fixture.command,
@@ -17,3 +14,4 @@ Export-Package: org.eclipse.nebula.widgets.nattable.test.fixture,
  org.eclipse.nebula.widgets.nattable.test.fixture.group,
  org.eclipse.nebula.widgets.nattable.test.fixture.layer,
  org.eclipse.nebula.widgets.nattable.test.integration
+Require-Bundle: org.junit4

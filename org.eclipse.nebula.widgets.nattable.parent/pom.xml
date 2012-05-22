@@ -9,7 +9,7 @@
   Contributors:
       Original authors and others - initial API and implementation
 -->
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.eclipse.nebula.widgets.nattable</groupId>
@@ -24,12 +24,11 @@
 		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists</module>
 		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</module>
 		<module>../org.eclipse.nebula.widgets.nattable.extension.poi</module>
-		
 		<module>../target-platform</module>
 	</modules>
 
 	<properties>
-		<tycho-version>0.12.0</tycho-version>
+		<tycho-version>0.14.1</tycho-version>
 	</properties>
 
 	<build>

@@ -140,7 +140,6 @@ Import-Package: org.apache.commons.lang,
  org.apache.commons.lang.builder,
  org.apache.commons.logging,
  org.eclipse.core.commands.common,
- org.eclipse.core.runtime,
  org.eclipse.jface.dialogs,
  org.eclipse.jface.fieldassist,
  org.eclipse.jface.layout,
@@ -156,3 +155,4 @@ Import-Package: org.apache.commons.lang,
  org.eclipse.swt.layout,
  org.eclipse.swt.printing,
  org.eclipse.swt.widgets
+Require-Bundle: org.eclipse.core.runtime;bundle-version="0.0.0"
