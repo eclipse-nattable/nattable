@@ -5,7 +5,7 @@ bin/
 dependencies/
 target/
 
-nattable/net.sourceforge.nattable.examples/NatTableExamples.jar
-nattable/net.sourceforge.nattable.examples/natTable.properties
-nattable/net.sourceforge.nattable.examples/src/examples.index
+org.eclipse.nebula.widgets.nattable.examples/NatTableExamples.jar
+org.eclipse.nebula.widgets.nattable.examples/natTable.properties
+org.eclipse.nebula.widgets.nattable.examples/src/examples.index
 
