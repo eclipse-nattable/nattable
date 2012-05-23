@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._102_Configuration;
 
-
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -36,6 +34,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -86,19 +86,83 @@ public class TextPainter_Examples extends AbstractNatExample {
 		createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(true, true, 5, true));
 		createVerticalHeaderNatTable(tableContainer, new PaddingDecorator(new VerticalTextPainter(true, true, 5, true), 5));
 		
+		TextPainter underlineTextPainer = new TextPainter();
+		underlineTextPainer.setUnderline(true);
+		createNatTable2(tableContainer, underlineTextPainer);
+		TextPainter strikethroughTextPainer = new TextPainter();
+		strikethroughTextPainer.setStrikethrough(true);
+		createNatTable2(tableContainer, strikethroughTextPainer);
+		TextPainter underlineStrikethroughTextPainer = new TextPainter();
+		underlineStrikethroughTextPainer.setUnderline(true);
+		underlineStrikethroughTextPainer.setStrikethrough(true);
+		createNatTable2(tableContainer, underlineStrikethroughTextPainer);
+		
+		VerticalTextPainter vunderlineTextPainer = new VerticalTextPainter(true, true, true);
+		vunderlineTextPainer.setUnderline(true);
+		createVerticalHeaderNatTable(tableContainer, vunderlineTextPainer);
+		VerticalTextPainter vstrikethroughTextPainer = new VerticalTextPainter(true, true, true);
+		vstrikethroughTextPainer.setStrikethrough(true);
+		createVerticalHeaderNatTable(tableContainer, vstrikethroughTextPainer);
+		VerticalTextPainter vunderlineStrikethroughTextPainer = new VerticalTextPainter(true, true, true);
+		vunderlineStrikethroughTextPainer.setUnderline(true);
+		vunderlineStrikethroughTextPainer.setStrikethrough(true);
+		createVerticalHeaderNatTable(tableContainer, vunderlineStrikethroughTextPainer);
+		
 		return tableContainer;
 	}
 	
 	
 	private void createNatTable(Composite parent, final ICellPainter painter) {
 		IDataProvider bodyDataProvider = new ExampleTextBodyDataProvider();
-		SelectionLayer selectionLayer = new SelectionLayer(new ColumnReorderLayer(new DataLayer(bodyDataProvider)));
+		DataLayer dataLayer = new DataLayer(bodyDataProvider);
+		dataLayer.setRowHeightByPosition(0, 32);
+		SelectionLayer selectionLayer = new SelectionLayer(new ColumnReorderLayer(dataLayer));
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
 		ILayer columnHeaderLayer = new ColumnHeaderLayer(
 			new DataLayer(new DummyColumnHeaderDataProvider(bodyDataProvider)),
 			viewportLayer, 
 			selectionLayer);
+		
+		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
+		compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+		
+		NatTable natTable = new NatTable(parent, compositeLayer, false);
+		
+		natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
+			{
+				vAlign = VerticalAlignmentEnum.TOP;
+				hAlign = HorizontalAlignmentEnum.LEFT;
+				cellPainter = new LineBorderDecorator(painter);
+			}
+		});
+		
+		natTable.configure();
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+	}
+	
+	private void createNatTable2(Composite parent, final ICellPainter painter) {
+		IDataProvider bodyDataProvider = new ExampleTextBodyDataProvider();
+		DataLayer dataLayer = new DataLayer(bodyDataProvider);
+		dataLayer.setRowHeightByPosition(0, 32);
+		SelectionLayer selectionLayer = new SelectionLayer(new ColumnReorderLayer(dataLayer));
+		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+			new DataLayer(new ExampleHeaderDataProvider()),
+			viewportLayer, 
+			selectionLayer,
+			false);
+		columnHeaderLayer.addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
+			protected void addColumnHeaderStyleConfig() {
+				addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
+					{
+						cellPainter = new BeveledBorderDecorator(painter);
+					}
+				});
+			}
+		});
 		
 		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
 		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
@@ -152,6 +216,16 @@ public class TextPainter_Examples extends AbstractNatExample {
 		public Object getDataValue(int columnIndex, int rowIndex) {
 			return "Lorem\nipsum dolor sit amet, consetetur sadipscing elitr, " +
 					"sed diam nonumy.";
+//			return "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
+//			"sed diam nonumy eirmod tempor invidunt ut labore et dolore\n" + 
+//			"magna aliquyam erat, sed diam voluptua. At vero eos et accusam\n" + 
+//			"et justo duo dolores et ea rebum. Stet clita kasd gubergren,\n" + 
+//			"no sea takimata sanctus est Lorem ipsum dolor sit amet.\n" + 
+//			"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam\n" + 
+//			"nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
+//			"sed diam voluptua.\n\n " + 
+//			"At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd\n" + 
+//			"gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 		}
 
 		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {

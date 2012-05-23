@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
@@ -18,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -133,6 +133,36 @@ public class TextPainter extends AbstractTextPainter {
 						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing),
 						SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
 				);
+				
+				if (underline || strikethrough) {
+					//start x of line = start x of text
+					int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth + spacing);
+					//y = start y of text
+					int y = rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing); 
+					
+					//check and draw underline and strikethrough separately so it is possible to combine both
+					if (underline) {
+						//y = start y of text + font height 
+						// - half of the font descent so the underline is between the baseline and the bottom
+						int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
+						gc.drawLine(
+								x, 
+								underlineY, 
+								x + gc.textExtent(text).x, 
+								underlineY);
+					}
+					
+					if (strikethrough) {
+						//y = start y of text + half of font height + ascent so lower case characters are
+						//also strikethrough
+						int strikeY = y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
+						gc.drawLine(
+								x, 
+								strikeY, 
+								x + gc.textExtent(text).x, 
+								strikeY);
+					}
+				}
 			}
 			else {
 				//draw every line by itself because of the alignment, otherwise the whole text
@@ -148,6 +178,37 @@ public class TextPainter extends AbstractTextPainter {
 							yStartPos + spacing,
 							SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
 					);
+					
+					if (underline || strikethrough) {
+						//start x of line = start x of text
+						int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth + spacing);
+						//y = start y of text
+						int y = yStartPos + spacing; 
+								
+						
+						//check and draw underline and strikethrough separately so it is possible to combine both
+						if (underline) {
+							//y = start y of text + font height 
+							// - half of the font descent so the underline is between the baseline and the bottom
+							int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
+							gc.drawLine(
+									x, 
+									underlineY, 
+									x + gc.textExtent(line).x, 
+									underlineY);
+						}
+						
+						if (strikethrough) {
+							//y = start y of text + half of font height + ascent so lower case characters are
+							//also strikethrough
+							int strikeY = y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
+							gc.drawLine(
+									x, 
+									strikeY, 
+									x + gc.textExtent(line).x, 
+									strikeY);
+						}
+					}
 					
 					//after every line calculate the y start pos new
 					yStartPos += fontHeight;

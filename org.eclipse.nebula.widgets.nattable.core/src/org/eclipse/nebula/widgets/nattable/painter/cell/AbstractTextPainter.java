@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
@@ -21,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -52,6 +52,8 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	protected int spacing = 5;
 	//can only grow but will not calculate the minimal length
 	protected final boolean calculate;
+	protected boolean underline;
+	protected boolean strikethrough;
 
 	private static Map<String,Integer> temporaryMap = new WeakHashMap<String,Integer>();
 	private static Map<org.eclipse.swt.graphics.Font,FontData[]> fontDataCache = new WeakHashMap<org.eclipse.swt.graphics.Font,FontData[]>();
@@ -257,7 +259,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 			
 		}
 		else if (!calculate && !wrapText) {
-			output.append(modifyTextToDisplay(text, gc, availableLength));
+			output.append(modifyTextToDisplay(text, gc, availableLength - (calculatePadding(cell, availableLength) + (2*spacing))));
 		}
 		
 		return output.toString();
@@ -321,48 +323,68 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	 * text as it was given if it fits into the available space
 	 */
 	private String modifyTextToDisplay(String text, GC gc, int availableLength) {
+		//length of the text on GC taking new lines into account
+		//this means the textLength is the value of the longest line
 		int textLength = getLengthFromCache(gc, text);
 		if (textLength > availableLength) {
-			String nextTrialString = text;
-			int numExtraChars = 0;
-			int newStringLength = nextTrialString.length() - numExtraChars;
-			
-			String trialLabelText = nextTrialString + DOT;
-			int newTextExtent = getLengthFromCache(gc, trialLabelText);
-			
-			while (newTextExtent > availableLength + 1 && newStringLength > 0) {
-				int avgWidthPerChar = newTextExtent / trialLabelText.length() ;
-				numExtraChars = 1 + (newTextExtent - availableLength) / avgWidthPerChar;
-				
-				newStringLength = nextTrialString.length() - numExtraChars;
-				if (newStringLength>0){
-					nextTrialString = nextTrialString.substring(0, newStringLength);
-					trialLabelText = nextTrialString + DOT;
-					newTextExtent = getLengthFromCache(gc, trialLabelText);
+			//as looking at the text length without taking new lines into account
+			//we have to look at every line itself
+			StringBuilder result = new StringBuilder();
+			String[] lines = text.split(NEW_LINE_REGEX);
+			for (String line : lines) {
+				if (result.length() > 0) {
+					result.append(LINE_SEPARATOR);
 				}
-			}
-			
-			if (numExtraChars>text.length()) {
-				numExtraChars = text.length();
-			}
-
-			// now we have gone too short, lets add chars one at a time to exceed the width...
-			String testString = text;
-			for (int i=0;i<text.length();i++){
-				testString = text.substring(0, text.length() + i - numExtraChars) + DOT;
-				textLength = getLengthFromCache(gc, testString);
 				
-				if (textLength >= availableLength) {
+				//now modify every line if it is longer than the available space
+				//this way every line will get ... if it doesn't fit
+				int lineLength = getLengthFromCache(gc, line);
+				if (lineLength > availableLength) {
+					String nextTrialString = line;
+					int numExtraChars = 0;
+					int newStringLength = nextTrialString.length();
 					
-					//  now roll back one as this was the first number that exceeded
-					if (text.length() + i - numExtraChars < 1){
-						text = EMPTY;
-					} else {
-						text = text.substring(0, text.length() + i - numExtraChars - 1 ) + DOT;
+					String trialLabelText = nextTrialString + DOT;
+					int newTextExtent = getLengthFromCache(gc, trialLabelText);
+					
+					while (newTextExtent > availableLength + 1 && newStringLength > 0) {
+						int avgWidthPerChar = newTextExtent / line.length();
+						numExtraChars = 1 + (newTextExtent - availableLength) / avgWidthPerChar;
+						
+						newStringLength = nextTrialString.length() - numExtraChars;
+						if (newStringLength>0){
+							nextTrialString = nextTrialString.substring(0, newStringLength);
+							trialLabelText = nextTrialString + DOT;
+							newTextExtent = getLengthFromCache(gc, trialLabelText);
+						}
 					}
-					break;
+					
+					if (numExtraChars > line.length()) {
+						numExtraChars = line.length();
+					}
+					
+					// now we have gone too short, lets add chars one at a time to exceed the width...
+					String testString = line;
+					for (int i = 0; i < line.length(); i++){
+						testString = line.substring(0, line.length() + i - numExtraChars) + DOT;
+						textLength = getLengthFromCache(gc, testString);
+						
+						if (textLength >= availableLength) {
+							
+							//  now roll back one as this was the first number that exceeded
+							if (line.length() + i - numExtraChars < 1){
+								line = EMPTY;
+							} else {
+								line = line.substring(0, line.length() + i - numExtraChars - 1 ) + DOT;
+							}
+							break;
+						}
+					}
 				}
+				result.append(line);
 			}
+			
+			return result.toString();
 		}
 		return text;
 	}
@@ -393,4 +415,22 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	 * @return the padding between the current cell length - availableLength
 	 */
 	protected abstract int calculatePadding(LayerCell cell, int availableLength);
+
+	/**
+	 * Set if the text should be rendered underlined or not.
+	 * @param underline <code>true</code> if the text should be printed underlined,
+	 * 			<code>false</code> if not
+	 */
+	public void setUnderline(boolean underline) {
+		this.underline = underline;
+	}
+
+	/**
+	 * Set if the text should be rendered strikethrough or not.
+	 * @param underline <code>true</code> if the text should be printed strikethrough,
+	 * 			<code>false</code> if not
+	 */
+	public void setStrikethrough(boolean strikethrough) {
+		this.strikethrough = strikethrough;
+	}
 }

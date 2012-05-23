@@ -43,14 +43,14 @@ public class GraphicsUtils {
    *           </p>
    */
   public static void drawVerticalText(String string, int x, int y, GC gc,
-      int style) {
+      int style, boolean underline, boolean strikethrough) {
     // Get the current display
     Display display = Display.getCurrent();
     if (display == null) SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 
     // Determine string's dimensions
 //    FontMetrics fm = gc.getFontMetrics();
-    Point pt = gc.textExtent(string);
+    Point pt = gc.textExtent(string.trim());
 
     // Create an image the same size as the string
     Image stringImage = new Image(display, pt.x, pt.y);
@@ -72,6 +72,32 @@ public class GraphicsUtils {
     
     // Draw the text onto the image
     stringGc.drawText(string, 0, 0);
+	
+    //draw underline and/or strikethrough
+    if (underline || strikethrough) {
+		//check and draw underline and strikethrough separately so it is possible to combine both
+		if (underline) {
+			//y = start y of text + font height 
+			// - half of the font descent so the underline is between the baseline and the bottom
+			int underlineY = pt.y - (stringGc.getFontMetrics().getDescent() / 2);
+			stringGc.drawLine(
+					0, 
+					underlineY, 
+					pt.x, 
+					underlineY);
+		}
+		
+		if (strikethrough) {
+			//y = start y of text + half of font height + ascent so lower case characters are
+			//also strikethrough
+			int strikeY = (pt.y / 2) + (stringGc.getFontMetrics().getLeading() / 2);
+			stringGc.drawLine(
+					0, 
+					strikeY, 
+					pt.x, 
+					strikeY);
+		}
+	}
 
     // Draw the image vertically onto the original GC
     drawVerticalImage(stringImage, x, y, gc, style);

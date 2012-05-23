@@ -10,15 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.cell.AbstractTextPainter;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -133,7 +132,9 @@ public class VerticalTextPainter extends AbstractTextPainter {
 						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing,
 						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing),
 						gc, 
-						SWT.UP);
+						SWT.UP,
+						underline,
+						strikethrough);
 			}
 			else {
 				//draw every line by itself because of the alignment, otherwise the whole text
@@ -148,9 +149,11 @@ public class VerticalTextPainter extends AbstractTextPainter {
 							xStartPos + spacing,
 							rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth + spacing),
 							gc,
-							SWT.UP);
+							SWT.UP,
+							underline,
+							strikethrough);
 					
-					//after every line calculate the y start pos new
+					//after every line calculate the x start pos new
 					xStartPos += fontHeight;
 				}
 			}
