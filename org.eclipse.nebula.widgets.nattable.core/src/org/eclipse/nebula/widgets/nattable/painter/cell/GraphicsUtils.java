@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Display;
  * @see <a href="http://java-gui.info/Apress-The.Definitive.Guide.to.SWT.and.JFace/8886final/LiB0095.html">GC snippets</a>
  */
 public class GraphicsUtils {
+	  
   /**
    * Draws text vertically (rotates plus or minus 90 degrees). Uses the current
    * font, color, and background.
@@ -42,8 +43,35 @@ public class GraphicsUtils {
    *           Note: Only one of the style UP or DOWN may be specified.
    *           </p>
    */
-  public static void drawVerticalText(String string, int x, int y, GC gc,
-      int style, boolean underline, boolean strikethrough) {
+  public static void drawVerticalText(String string, int x, int y, GC gc, int style) {
+	  drawVerticalText(string, x, y, false, false, true, gc, style);
+  }
+	  
+  /**
+   * Draws text vertically (rotates plus or minus 90 degrees). Uses the current
+   * font, color, and background.
+   * <dl>
+   * <dt><b>Styles: </b></dt>
+   * <dd>UP, DOWN</dd>
+   * </dl>
+   *
+   * @param string the text to draw
+   * @param x the x coordinate of the top left corner of the drawing rectangle
+   * @param y the y coordinate of the top left corner of the drawing rectangle
+   * @param underline set to <code>true</code> to render the text underlined
+   * @param strikethrough set to <code>true</code> to render the text strikethrough
+   * @param paintBackground set to <code>false</code> to render the background transparent.
+   * 			Needed for example to render the background with an image or gradient with another painter
+   * 			so the text drawn here should have no background.
+   * @param gc the GC on which to draw the text
+   * @param style the style (SWT.UP or SWT.DOWN)
+   *           <p>
+   *           Note: Only one of the style UP or DOWN may be specified.
+   *           </p>
+   */
+  public static void drawVerticalText(String string, int x, int y, 
+		  boolean underline, boolean strikethrough, boolean paintBackground, 
+		  GC gc, int style) {
     // Get the current display
     Display display = Display.getCurrent();
     if (display == null) SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -100,7 +128,7 @@ public class GraphicsUtils {
 	}
 
     // Draw the image vertically onto the original GC
-    drawVerticalImage(stringImage, x, y, gc, style);
+    drawVerticalImage(stringImage, x, y, paintBackground, gc, style);
 
     // Dispose the new GC
     stringGc.dispose();
@@ -125,8 +153,30 @@ public class GraphicsUtils {
    *           Note: Only one of the style UP or DOWN may be specified.
    *           </p>
    */
-  public static void drawVerticalImage(Image image, int x, int y, GC gc, int
-    style) {
+  public static void drawVerticalImage(Image image, int x, int y, GC gc, int style) {
+	  drawVerticalImage(image, x, y, true, gc, style);
+  }
+
+  /**
+   * Draws an image vertically (rotates plus or minus 90 degrees)
+   * <dl>
+   * <dt><b>Styles: </b></dt>
+   * <dd>UP, DOWN</dd>
+   * </dl>
+   *
+   * @param image the image to draw
+   * @param x the x coordinate of the top left corner of the drawing rectangle
+   * @param y the y coordinate of the top left corner of the drawing rectangle
+   * @param paintBackground set to <code>false</code> to render the background transparent.
+   * 			Needed for example to render the background with an image or gradient with another painter
+   * 			so the text drawn here should have no background.
+   * @param gc the GC on which to draw the image
+   * @param style the style (SWT.UP or SWT.DOWN)
+   *           <p>
+   *           Note: Only one of the style UP or DOWN may be specified.
+   *           </p>
+   */
+  public static void drawVerticalImage(Image image, int x, int y, boolean paintBackground, GC gc, int style) {
     // Get the current display
     Display display = Display.getCurrent();
     if (display == null) SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -134,6 +184,12 @@ public class GraphicsUtils {
     // Use the image's data to create a rotated image's data
     ImageData sd = image.getImageData();
     ImageData dd = new ImageData(sd.height, sd.width, sd.depth, sd.palette);
+    dd.transparentPixel = sd.transparentPixel;
+    
+    //set the defined backgroundcolor to be transparent
+    if (!paintBackground) {
+    	dd.transparentPixel = sd.palette.getPixel(gc.getBackground().getRGB());
+    }
 
     // Determine which way to rotate, depending on up or down
     boolean up = (style & SWT.UP) == SWT.UP;

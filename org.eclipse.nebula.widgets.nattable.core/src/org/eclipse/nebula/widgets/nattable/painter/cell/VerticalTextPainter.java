@@ -131,10 +131,11 @@ public class VerticalTextPainter extends AbstractTextPainter {
 						text, 
 						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing,
 						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing),
-						gc, 
-						SWT.UP,
 						underline,
-						strikethrough);
+						strikethrough,
+						paintBg,
+						gc, 
+						SWT.UP);
 			}
 			else {
 				//draw every line by itself because of the alignment, otherwise the whole text
@@ -148,10 +149,11 @@ public class VerticalTextPainter extends AbstractTextPainter {
 							line,
 							xStartPos + spacing,
 							rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth + spacing),
-							gc,
-							SWT.UP,
 							underline,
-							strikethrough);
+							strikethrough,
+							paintBg,
+							gc,
+							SWT.UP);
 					
 					//after every line calculate the x start pos new
 					xStartPos += fontHeight;
