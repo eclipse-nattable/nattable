@@ -20,6 +20,18 @@ public interface CellStyleAttributes {
     
     public static final ConfigAttribute<Color> FOREGROUND_COLOR = new ConfigAttribute<Color>();
     
+    /**
+     * Attribute for configuring the gradient sweeping background color.
+     * Is used by the GradientBackgroundPainter.
+     */
+    public static final ConfigAttribute<Color> GRADIENT_BACKGROUND_COLOR = new ConfigAttribute<Color>();
+    
+    /**
+     * Attribute for configuring the gradient sweeping foreground color.
+     * Is used by the GradientBackgroundPainter.
+     */
+    public static final ConfigAttribute<Color> GRADIENT_FOREGROUND_COLOR = new ConfigAttribute<Color>();
+    
     public static final ConfigAttribute<HorizontalAlignmentEnum> HORIZONTAL_ALIGNMENT = new ConfigAttribute<HorizontalAlignmentEnum>();
     
     public static final ConfigAttribute<VerticalAlignmentEnum> VERTICAL_ALIGNMENT = new ConfigAttribute<VerticalAlignmentEnum>();
