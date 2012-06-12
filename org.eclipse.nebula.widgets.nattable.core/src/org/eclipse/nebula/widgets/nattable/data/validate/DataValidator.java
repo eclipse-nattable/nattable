@@ -11,13 +11,13 @@
 package org.eclipse.nebula.widgets.nattable.data.validate;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class DataValidator implements IDataValidator {
 
 	public abstract boolean validate(int columnIndex, int rowIndex, Object newValue);
 
-	public boolean validate(LayerCell cell, IConfigRegistry configRegistry, Object newValue) {
+	public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
 		return validate(cell.getColumnIndex(), cell.getRowIndex(), newValue);
 	}
 

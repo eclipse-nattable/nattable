@@ -16,12 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.FileOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
 import org.eclipse.swt.graphics.Color;
@@ -87,7 +86,7 @@ public class ExcelExporter implements ILayerExporter {
 		outputStream.write(asBytes("</tr>\n")); //$NON-NLS-1$
 	}
 
-	public void exportCell(OutputStream outputStream, Object exportDisplayValue, LayerCell cell, IConfigRegistry configRegistry) throws IOException {
+	public void exportCell(OutputStream outputStream, Object exportDisplayValue, ILayerCell cell, IConfigRegistry configRegistry) throws IOException {
 		CellStyleProxy cellStyle = new CellStyleProxy(configRegistry, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 		Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
 		Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);

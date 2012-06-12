@@ -12,13 +12,13 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 public abstract class AbstractCellPainter implements ICellPainter {
 
-	public ICellPainter getCellPainterAt(int x, int y, LayerCell cell, GC gc,
+	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc,
 			Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		return this;
 	}

@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -36,7 +35,7 @@ public interface ICellPainter {
 	 * @param colIndex of the cell to paint
 	 * @param selected is the cell selected ?
 	 */
-	public void paintCell(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry);
+	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry);
 
 	/**
 	 * Get the preferred width of the cell when rendered by this painter. Used for auto-resize.
@@ -45,7 +44,7 @@ public interface ICellPainter {
 	 * @param configRegistry
 	 * @return
 	 */
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry);
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry);
 
 	/**
 	 * Get the preferred height of the cell when rendered by this painter. Used for auto-resize.
@@ -54,8 +53,8 @@ public interface ICellPainter {
 	 * @param configRegistry
 	 * @return
 	 */
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry);
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry);
 	
-	public ICellPainter getCellPainterAt(int x, int y, LayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry);
+	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry);
 	
 }

@@ -10,10 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.CheckBoxStateEnum;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -57,7 +56,7 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
 	}
 
 	@Override
-	protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 		switch (getCheckBoxState(cell)) {
 		case CHECKED:
 			return checkedImg;
@@ -68,6 +67,6 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
 		}
 	}
 	
-	protected abstract CheckBoxStateEnum getCheckBoxState(LayerCell cell);
+	protected abstract CheckBoxStateEnum getCheckBoxState(ILayerCell cell);
 
 }

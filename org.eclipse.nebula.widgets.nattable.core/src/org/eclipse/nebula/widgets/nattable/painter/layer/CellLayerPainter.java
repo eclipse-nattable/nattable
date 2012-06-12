@@ -13,10 +13,9 @@ package org.eclipse.nebula.widgets.nattable.painter.layer;
 import java.util.Collection;
 import java.util.HashSet;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -28,13 +27,13 @@ public class CellLayerPainter implements ILayerPainter {
 			return;
 		}
 		
-		Collection<LayerCell> spannedCells = new HashSet<LayerCell>();
+		Collection<ILayerCell> spannedCells = new HashSet<ILayerCell>();
 		
 		Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
 		
 		for (int columnPosition = positionRectangle.x; columnPosition < positionRectangle.x + positionRectangle.width; columnPosition++) {
 			for (int rowPosition = positionRectangle.y; rowPosition < positionRectangle.y + positionRectangle.height; rowPosition++) {
-				LayerCell cell = natLayer.getCellByPosition(columnPosition, rowPosition);
+				ILayerCell cell = natLayer.getCellByPosition(columnPosition, rowPosition);
 				if (cell != null) {
 					if (cell.isSpannedCell()) {
 						spannedCells.add(cell);
@@ -45,7 +44,7 @@ public class CellLayerPainter implements ILayerPainter {
 			}
 		}
 		
-		for (LayerCell cell : spannedCells) {
+		for (ILayerCell cell : spannedCells) {
 			paintCell(cell, gc, configRegistry);
 		}
 	}
@@ -63,7 +62,7 @@ public class CellLayerPainter implements ILayerPainter {
 		return new Rectangle(columnPositionOffset, rowPositionOffset, numColumns, numRows);
 	}
 
-	protected void paintCell(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	protected void paintCell(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		ICellPainter cellPainter = cell.getLayer().getCellPainter(cell.getColumnPosition(), cell.getRowPosition(), cell, configRegistry);
 		Rectangle adjustedCellBounds = cell.getLayer().getLayerPainter().adjustCellBounds(cell.getColumnPosition(), cell.getRowPosition(), cell.getBounds());
 		if (cellPainter != null) {

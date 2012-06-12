@@ -29,6 +29,8 @@ public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfigura
 
 	public Color bgColor = GUIHelper.COLOR_WHITE;
 	public Color fgColor = GUIHelper.COLOR_BLACK;
+	public Color gradientBgColor = GUIHelper.COLOR_WHITE;
+	public Color gradientFgColor = GUIHelper.getColor(136, 212, 215);
 	public Font font = GUIHelper.DEFAULT_FONT;
 	public HorizontalAlignmentEnum hAlign = HorizontalAlignmentEnum.CENTER;
 	public VerticalAlignmentEnum vAlign = VerticalAlignmentEnum.MIDDLE;
@@ -42,6 +44,8 @@ public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfigura
 		Style cellStyle = new Style();
 		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, gradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, gradientFgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
 		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
 		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);

@@ -10,11 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.GC;
@@ -44,7 +43,7 @@ public class CellPainterMouseEventMatcher extends MouseEventMatcher {
 			int columnPosition = natTable.getColumnPositionByX(event.x);
 			int rowPosition = natTable.getRowPositionByY(event.y);
 			
-			LayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
+			ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
 			IConfigRegistry configRegistry = natTable.getConfigRegistry();
 			ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 			

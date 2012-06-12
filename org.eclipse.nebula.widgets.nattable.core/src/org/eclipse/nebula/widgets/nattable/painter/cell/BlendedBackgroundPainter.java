@@ -12,10 +12,8 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
@@ -56,7 +54,7 @@ public class BlendedBackgroundPainter extends TextPainter {
 	}
 
 	@Override
-	protected Color getBackgroundColour(final LayerCell cell, final IConfigRegistry configRegistry) {
+	protected Color getBackgroundColour(final ILayerCell cell, final IConfigRegistry configRegistry) {
 		return blendBackgroundColour(cell, configRegistry, this.gridBackgroundColour);
 	}
 
@@ -72,7 +70,7 @@ public class BlendedBackgroundPainter extends TextPainter {
 	 *            Colours are not blended with this colour.
 	 * @return A blended background colour.
 	 */
-	public static Color blendBackgroundColour(final LayerCell cell, final IConfigRegistry configRegistry, final RGB baseColor) {
+	public static Color blendBackgroundColour(final ILayerCell cell, final IConfigRegistry configRegistry, final RGB baseColor) {
 
 		// Get all of the background colours registered for the cell in normal mode.
 		final List<Color> colours = CellStyleUtil.getAllBackgroundColors(cell, configRegistry, DisplayMode.NORMAL);

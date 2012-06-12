@@ -14,9 +14,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.junit.Ignore;
-
 
 @Ignore
 public class TestLayerCell extends LayerCell {
@@ -43,13 +43,13 @@ public class TestLayerCell extends LayerCell {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof LayerCell == false) {
+		if (obj instanceof ILayerCell == false) {
 			return false;
 		}
 		if (this == obj) {
 			return true;
 		}
-		LayerCell rhs = (LayerCell) obj;
+		ILayerCell rhs = (ILayerCell) obj;
 		return new EqualsBuilder()
 			.append(getOriginColumnPosition(), rhs.getOriginColumnPosition())
 			.append(getOriginRowPosition(), rhs.getOriginRowPosition())

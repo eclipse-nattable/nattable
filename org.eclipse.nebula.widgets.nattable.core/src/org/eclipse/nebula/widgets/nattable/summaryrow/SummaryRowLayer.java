@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.summaryrow;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -22,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
@@ -190,7 +190,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	}
 
 	@Override
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		if (isSummaryRowPosition(rowPosition)) {
 			return new LayerCell(this, columnPosition, rowPosition);
 		}

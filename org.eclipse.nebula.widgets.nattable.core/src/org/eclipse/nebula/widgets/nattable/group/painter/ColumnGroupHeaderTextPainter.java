@@ -10,10 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.painter;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
@@ -52,12 +51,12 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
 	 * done by the column width. Hence, always return 0
 	 */
 	@Override
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return 0;
 	}
 
 	@Override
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return 25;
 	}
 	
@@ -66,7 +65,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
 		final Image leftImg = GUIHelper.getImage("left"); //$NON-NLS-1$
 
 		@Override
-		protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+		protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 			Object dataValue = cell.getDataValue();
 			if (dataValue != null) {
 				String cellValue = dataValue.toString();

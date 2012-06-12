@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
@@ -32,7 +33,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectRowGroupCommandHandle
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
-
 
 /**
  * Adds the Row grouping functionality to the row headers.<br/>
@@ -188,7 +188,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	 * Column group header cells are rendered properly.
 	 */
 	@Override
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {		
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {		
 		int bodyRowIndex = getRowIndexByPosition(rowPosition);
 		
 		// Row group header cell

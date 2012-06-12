@@ -14,7 +14,7 @@ import static org.eclipse.nebula.widgets.nattable.selection.SelectionUtils.isCon
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -43,7 +43,7 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 		boolean selectCell = true;
 		if (isControlOnly(withShiftMask, withControlMask)) {
 			if (selectionLayer.isCellPositionSelected(columnPosition, rowPosition)) {
-				LayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
+				ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
 				Rectangle cellRect = new Rectangle(cell.getOriginColumnPosition(), cell.getOriginRowPosition(), cell.getColumnSpan(), cell.getRowSpan());
 				selectionLayer.clearSelection(cellRect);
 				selectCell = false;
@@ -62,7 +62,7 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 			selectionLayer.clear(false);
 		}
 		
-		LayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
+		ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
 		
 		selectionLayer.setLastSelectedCell(cell.getOriginColumnPosition(), cell.getOriginRowPosition());
 

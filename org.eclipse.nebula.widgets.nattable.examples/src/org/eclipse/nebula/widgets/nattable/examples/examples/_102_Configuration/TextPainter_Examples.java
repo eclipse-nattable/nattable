@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.painter.cell.GradientBackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.VerticalTextPainter;
@@ -72,7 +73,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 		tableContainer.setLayout(new GridLayout(6, true));
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(tableContainer);
 		
-		createNatTable(tableContainer, new TextPainter(false, true, false));
+		createNatTable(tableContainer, new GradientBackgroundPainter(new TextPainter(false, false, false), true));
 		createNatTable(tableContainer, new TextPainter(true, true, false));
 		createNatTable(tableContainer, new TextPainter(false, true, true));
 		createNatTable(tableContainer, new TextPainter(true, true, true));
@@ -81,7 +82,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 		
 		createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(false, true, false));
 		createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(true, true, false));
-		createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(false, true, true));
+		createVerticalHeaderNatTable(tableContainer, new GradientBackgroundPainter(new VerticalTextPainter(false, false, true)));
 		createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(true, true, true));
 		createVerticalHeaderNatTable(tableContainer, new VerticalTextPainter(true, true, 5, true));
 		createVerticalHeaderNatTable(tableContainer, new PaddingDecorator(new VerticalTextPainter(true, true, 5, true), 5));

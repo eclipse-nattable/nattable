@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.cell.ButtonCellPainter;
 import org.eclipse.nebula.widgets.nattable.test.fixture.CellPainterFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.MouseActionFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
@@ -30,7 +29,7 @@ public class ButtonCellPainterTest {
 	private CellPainterFixture buttonRaisedPainter;
 	private CellPainterFixture buttonPressedPainter;
 	private NatTableFixture natTable;
-	private LayerCell cellFixture;
+	private ILayerCell cellFixture;
 	private GC gcFixture;
 	private MouseEvent mouseClickEvent;
 

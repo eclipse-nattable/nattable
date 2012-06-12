@@ -10,13 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.command.AutoResizeColumnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.AutoResizeRowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 import org.eclipse.swt.graphics.GC;
@@ -52,7 +51,7 @@ public class MaxCellBoundsHelper {
 	private static int getPreferredColumnWidth(ILayer layer, int columnPosition, IConfigRegistry configRegistry, GC gc) {
 		ICellPainter painter;
 		int maxWidth = 0;
-		LayerCell cell;
+		ILayerCell cell;
 		
 		for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
 			cell = layer.getCellByPosition(columnPosition, rowPosition);
@@ -102,7 +101,7 @@ public class MaxCellBoundsHelper {
 	private static int getPreferredRowHeight(ILayer layer, int rowPosition, IConfigRegistry configRegistry, GC gc) {
 		int maxHeight = 0;
 		ICellPainter painter;
-		LayerCell cell;
+		ILayerCell cell;
 		
 		for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
 			cell = layer.getCellByPosition(columnPosition, rowPosition);

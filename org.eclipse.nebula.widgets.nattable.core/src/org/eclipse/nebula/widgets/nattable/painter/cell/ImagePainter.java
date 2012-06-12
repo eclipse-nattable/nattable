@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
@@ -42,7 +41,7 @@ public class ImagePainter extends BackgroundPainter {
 	}
 
 	@Override
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		Image image = getImage(cell, configRegistry);
 		if (image != null) {
 			return image.getBounds().width;
@@ -52,7 +51,7 @@ public class ImagePainter extends BackgroundPainter {
 	}
 
 	@Override
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		Image image = getImage(cell, configRegistry);
 		if (image != null) {
 			return image.getBounds().height;
@@ -62,7 +61,7 @@ public class ImagePainter extends BackgroundPainter {
 	}
 
 	@Override
-	public ICellPainter getCellPainterAt(int x, int y, LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		Rectangle imageBounds = getImage(cell, configRegistry).getBounds();
 		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
 		int x0 = bounds.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width);
@@ -78,7 +77,7 @@ public class ImagePainter extends BackgroundPainter {
 	}
 	
 	@Override
-	public void paintCell(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		if (paintBg) {
 			super.paintCell(cell, gc, bounds, configRegistry);
 		}
@@ -94,7 +93,7 @@ public class ImagePainter extends BackgroundPainter {
 		}
 	}
 	
-	protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 		if (image == null) {
 			image = CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.IMAGE);
 		}

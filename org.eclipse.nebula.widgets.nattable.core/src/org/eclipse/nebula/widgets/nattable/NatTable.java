@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
@@ -36,7 +35,7 @@ import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
@@ -659,7 +658,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	// Cell features
 
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer.getCellByPosition(columnPosition, rowPosition);
 	}
 
@@ -679,7 +678,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		return underlyingLayer.getDataValueByPosition(columnPosition, rowPosition);
 	}
 	
-	public ICellPainter getCellPainter(int columnPosition, int rowPosition, LayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return underlyingLayer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 	}
 

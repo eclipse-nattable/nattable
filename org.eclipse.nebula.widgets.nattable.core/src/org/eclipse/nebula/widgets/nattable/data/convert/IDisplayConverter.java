@@ -11,7 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 /**
  * Converts between two different data representations.
@@ -42,7 +42,7 @@ public interface IDisplayConverter {
 	 * Typically converted to a String for display.
 	 * Use this method for contextual conversion.
 	 */
-	public Object canonicalToDisplayValue(LayerCell cell, IConfigRegistry configRegistry, Object canonicalValue);
+	public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue);
 	
 	/**
 	 * Convert from display value -> value in the backing data structure<br/>
@@ -50,5 +50,5 @@ public interface IDisplayConverter {
 	 * in the setter of the backing bean/row object
 	 * Use this method for contextual conversion.
 	 */
-	public Object displayToCanonicalValue(LayerCell cell, IConfigRegistry configRegistry, Object displayValue);
+	public Object displayToCanonicalValue(ILayerCell cell, IConfigRegistry configRegistry, Object displayValue);
 }

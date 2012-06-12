@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.edit.event;
 
 import org.eclipse.nebula.widgets.nattable.edit.InlineCellEditController;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 
 public class InlineCellEditEventHandler implements ILayerEventHandler<InlineCellEditEvent> {
@@ -29,7 +29,7 @@ public class InlineCellEditEventHandler implements ILayerEventHandler<InlineCell
 
 	public void handleLayerEvent(InlineCellEditEvent event) {
 		if (event.convertToLocal(layer)) {
-			LayerCell cell = layer.getCellByPosition(event.getColumnPosition(), event.getRowPosition());
+			ILayerCell cell = layer.getCellByPosition(event.getColumnPosition(), event.getRowPosition());
 			InlineCellEditController.editCellInline(cell, event.getInitialValue(), event.getParent(), event.getConfigRegistry());
 		}
 	}

@@ -18,7 +18,7 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyResolver;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
@@ -46,7 +46,7 @@ public class NatColumnTableFormat<R> implements AdvancedTableFormat<R> {
 	}
 
 	public Comparator<?> getColumnComparator(final int col) {
-		LayerCell cell = columnHeaderDataLayer.getCellByPosition(col, 0);
+		ILayerCell cell = columnHeaderDataLayer.getCellByPosition(col, 0);
 		if (cell == null) {
 		    return null;
 		}

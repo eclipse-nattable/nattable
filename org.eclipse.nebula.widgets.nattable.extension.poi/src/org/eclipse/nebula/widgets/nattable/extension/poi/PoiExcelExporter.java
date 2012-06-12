@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -28,7 +27,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
 import org.eclipse.swt.graphics.Color;
@@ -87,7 +86,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 	}
 
 	@Override
-	public void exportCell(OutputStream outputStream, Object exportDisplayValue, LayerCell cell, IConfigRegistry configRegistry) throws IOException {
+	public void exportCell(OutputStream outputStream, Object exportDisplayValue, ILayerCell cell, IConfigRegistry configRegistry) throws IOException {
 		int columnPosition = cell.getColumnPosition();
 		int rowPosition = cell.getRowPosition();
 		

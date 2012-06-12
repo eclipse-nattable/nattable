@@ -11,7 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -44,15 +44,15 @@ public class PaddingDecorator extends CellPainterWrapper {
 		this.leftPadding = leftPadding;
 	}
 
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return leftPadding + super.getPreferredWidth(cell, gc, configRegistry) + rightPadding;
 	}
 	
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return topPadding + super.getPreferredHeight(cell, gc, configRegistry) + bottomPadding;
 	}
 
-	public void paintCell(LayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle interiorBounds = getInteriorBounds(adjustedCellBounds);
 		
 		Color originalBg = gc.getBackground();
@@ -75,7 +75,7 @@ public class PaddingDecorator extends CellPainterWrapper {
 		);
 	}
 	
-	protected Color getBackgroundColor(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Color getBackgroundColor(ILayerCell cell, IConfigRegistry configRegistry) {
 		return CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);		
 	}
 	

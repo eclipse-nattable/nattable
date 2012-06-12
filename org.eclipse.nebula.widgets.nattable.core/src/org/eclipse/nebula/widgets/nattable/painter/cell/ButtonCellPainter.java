@@ -15,11 +15,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
@@ -61,7 +60,7 @@ public class ButtonCellPainter extends AbstractCellPainter implements IMouseActi
 		this.buttonPressedPainter = buttonPressedPainter;
 	}
 
-	public void paintCell(final LayerCell cell, final GC gc, final Rectangle bounds, final IConfigRegistry configRegistry) {
+	public void paintCell(final ILayerCell cell, final GC gc, final Rectangle bounds, final IConfigRegistry configRegistry) {
 		if (recentlyClicked && columnPosClicked == cell.getColumnPosition() && rowPosClicked == cell.getRowPosition()){
 			buttonPressedPainter.paintCell(cell, gc, bounds, configRegistry);
 		} else {
@@ -69,11 +68,11 @@ public class ButtonCellPainter extends AbstractCellPainter implements IMouseActi
 		}
 	}
 
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return cell.getBounds().height;
 	}
 
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return cell.getBounds().width;
 	}
 

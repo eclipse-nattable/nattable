@@ -17,14 +17,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -446,7 +445,7 @@ public class CompositeLayer extends AbstractLayer {
 	// Cell features
 
 	@Override
-	public LayerCell getCellByPosition(int compositeColumnPosition, int compositeRowPosition) {
+	public ILayerCell getCellByPosition(int compositeColumnPosition, int compositeRowPosition) {
 		ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(compositeColumnPosition, compositeRowPosition);
 
 		if (childLayerInfo == null) {
@@ -457,7 +456,7 @@ public class CompositeLayer extends AbstractLayer {
 		int childColumnPosition = compositeColumnPosition - childLayerInfo.getColumnPositionOffset();
 		int childRowPosition = compositeRowPosition - childLayerInfo.getRowPositionOffset();
 
-		final LayerCell cell = childLayer.getCellByPosition(childColumnPosition, childRowPosition);
+		final ILayerCell cell = childLayer.getCellByPosition(childColumnPosition, childRowPosition);
 
 		if (cell != null) {
 			cell.updatePosition(
@@ -560,7 +559,7 @@ public class CompositeLayer extends AbstractLayer {
 	}
 
 	@Override
-	public ICellPainter getCellPainter(int compositeColumnPosition, int compositeRowPosition, LayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(int compositeColumnPosition, int compositeRowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(compositeColumnPosition, compositeRowPosition);
 		if (childLayerInfo == null) {
 			return null;

@@ -39,6 +39,8 @@ public class DefaultColumnHeaderStyleConfiguration extends AbstractRegistryConfi
 	public Font font = GUIHelper.getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
 	public Color bgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
 	public Color fgColor = GUIHelper.COLOR_WIDGET_FOREGROUND;
+	public Color gradientBgColor = GUIHelper.COLOR_WHITE;
+	public Color gradientFgColor = GUIHelper.getColor(136, 212, 215);
 	public HorizontalAlignmentEnum hAlign = HorizontalAlignmentEnum.CENTER;
 	public VerticalAlignmentEnum vAlign = VerticalAlignmentEnum.MIDDLE;
 	public BorderStyle borderStyle = null;
@@ -53,6 +55,8 @@ public class DefaultColumnHeaderStyleConfiguration extends AbstractRegistryConfi
 		Style cellStyle = new Style();
 		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, gradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, gradientFgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
 		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);
 		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, borderStyle);

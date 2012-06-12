@@ -10,16 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.config;
 
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public interface IEditableRule {
 	
-	public boolean isEditable(LayerCell cell, IConfigRegistry configRegistry);
+	public boolean isEditable(ILayerCell cell, IConfigRegistry configRegistry);
 	public boolean isEditable(int columnIndex, int rowIndex);
 	
 	public static final IEditableRule ALWAYS_EDITABLE = new IEditableRule() {
 
-		public boolean isEditable(LayerCell cell, IConfigRegistry configRegistry) {
+		public boolean isEditable(ILayerCell cell, IConfigRegistry configRegistry) {
 			return true;
 		}
 
@@ -31,7 +31,7 @@ public interface IEditableRule {
 	
 	public static final IEditableRule NEVER_EDITABLE = new IEditableRule() {
 
-		public boolean isEditable(LayerCell cell, IConfigRegistry configRegistry) {
+		public boolean isEditable(ILayerCell cell, IConfigRegistry configRegistry) {
 			return false;
 		}
 

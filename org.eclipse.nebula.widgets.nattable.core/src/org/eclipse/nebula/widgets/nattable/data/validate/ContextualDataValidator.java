@@ -12,8 +12,7 @@ package org.eclipse.nebula.widgets.nattable.data.validate;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class ContextualDataValidator implements IDataValidator {
 
@@ -22,6 +21,6 @@ public abstract class ContextualDataValidator implements IDataValidator {
 				+ " is a ContextualDataValidator and has therefore to be called with context informations."); //$NON-NLS-1$
 	}
 
-	public abstract boolean validate(LayerCell cell, IConfigRegistry configRegistry, Object newValue);
+	public abstract boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue);
 
 }

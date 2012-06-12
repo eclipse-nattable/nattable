@@ -11,13 +11,13 @@
 package org.eclipse.nebula.widgets.nattable.blink;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class BlinkingCellResolver implements IBlinkingCellResolver {
 
 	public abstract String[] resolve(Object oldValue, Object newValue);
 
-	public String[] resolve(LayerCell cell, IConfigRegistry configRegistry, Object oldValue, Object newValue) {
+	public String[] resolve(ILayerCell cell, IConfigRegistry configRegistry, Object oldValue, Object newValue) {
 		return resolve(oldValue, newValue);
 	}
 

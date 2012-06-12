@@ -10,13 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.test.fixture.InitializeClientAreaCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumnCommand;
@@ -43,7 +40,7 @@ public class ColumnHeaderLayerSelectionTest {
 		// Get column header cell corresponding to the selected body cell
 		ColumnHeaderLayer columnHeaderLayer = (ColumnHeaderLayer)gridLayer.getChildLayerByLayoutCoordinate(1, 0);
 		// The column position is 1 because it takes into account the offset of the row header
-		LayerCell cell = columnHeaderLayer.getCellByPosition(1, 0);
+		ILayerCell cell = columnHeaderLayer.getCellByPosition(1, 0);
 		
 		// Assert the cell is in selected state
 		Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());

@@ -20,9 +20,8 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-
 
 public class CellDisplayValueSearchUtil {
 	
@@ -67,7 +66,7 @@ public class CellDisplayValueSearchUtil {
 			final IDisplayConverter displayConverter = configRegistry.getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, DisplayMode.NORMAL, layer.getConfigLabelsByPosition(columnPosition, rowPosition).getLabels());
 			Object dataValue = null;
 			if (displayConverter != null) {
-				LayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
+				ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
 				if (cell != null) {
 					dataValue = displayConverter.canonicalToDisplayValue(cell, configRegistry, cell.getDataValue());
 				}

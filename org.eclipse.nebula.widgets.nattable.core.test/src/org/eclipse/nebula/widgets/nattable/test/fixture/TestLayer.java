@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -23,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -550,7 +549,7 @@ public class TestLayer implements IUniqueIndexLayer {
 
 	// Cell features
 
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		return cells[columnPosition][rowPosition].cloneCell();
 	}
 
@@ -587,7 +586,7 @@ public class TestLayer implements IUniqueIndexLayer {
 
 	}
 
-	public ICellPainter getCellPainter(int columnPosition, int rowPosition, LayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -10,10 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.swt.graphics.Color;
@@ -39,7 +38,7 @@ public class BackgroundPainter extends CellPainterWrapper {
 	}
 
 	@Override
-	public void paintCell(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		Color backgroundColor = getBackgroundColour(cell, configRegistry);
 		if (backgroundColor != null) {
 			Color originalBackground = gc.getBackground();
@@ -53,7 +52,7 @@ public class BackgroundPainter extends CellPainterWrapper {
 		super.paintCell(cell, gc, bounds, configRegistry);
 	}
 	
-	protected Color getBackgroundColour(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Color getBackgroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
 		return CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 	}
 

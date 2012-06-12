@@ -10,10 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsCommand;
@@ -94,7 +93,7 @@ public class ColumnReorderDragMode implements IDragMode {
 	}
 	
 	private CellEdgeEnum getMoveDirection(int x) {
-	    LayerCell cell = getColumnCell(x);
+	    ILayerCell cell = getColumnCell(x);
 	    if (cell != null) {
 			Rectangle selectedColumnHeaderRect = cell.getBounds();
 			return CellEdgeDetectUtil.getHorizontalCellEdge(selectedColumnHeaderRect, new Point(x, initialEvent.y));
@@ -103,7 +102,7 @@ public class ColumnReorderDragMode implements IDragMode {
 		return null;
 	}
 	
-	private LayerCell getColumnCell(int x) {
+	private ILayerCell getColumnCell(int x) {
 	    int gridColumnPosition = natTable.getColumnPositionByX(x);
 	    int gridRowPosition = natTable.getRowPositionByY(initialEvent.y);
 	    return natTable.getCellByPosition(gridColumnPosition, gridRowPosition);

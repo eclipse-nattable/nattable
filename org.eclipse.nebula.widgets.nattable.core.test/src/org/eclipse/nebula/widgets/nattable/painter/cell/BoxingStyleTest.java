@@ -10,15 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
@@ -70,7 +68,7 @@ public class BoxingStyleTest {
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
 		// Check for background color styling
-		LayerCell cell = natTable.getCellByPosition(2, 2);
+		ILayerCell cell = natTable.getCellByPosition(2, 2);
 		IStyle cellStyle = configRegistry.getConfigAttribute(
 				CellConfigAttributes.CELL_STYLE,
 				cell.getDisplayMode(),
@@ -91,7 +89,7 @@ public class BoxingStyleTest {
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
 		// Check cell foreground color
-		LayerCell cell = natTable.getCellByPosition(2, 2);
+		ILayerCell cell = natTable.getCellByPosition(2, 2);
 		IStyle cellStyle = configRegistry.getConfigAttribute(
 				CellConfigAttributes.CELL_STYLE,
 				cell.getDisplayMode(),
@@ -112,7 +110,7 @@ public class BoxingStyleTest {
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
 		// Check cell horizontal alignment
-		LayerCell cell = natTable.getCellByPosition(2, 2);
+		ILayerCell cell = natTable.getCellByPosition(2, 2);
 		Assert.assertEquals(hAlignment.name(), configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(),
 				cell.getConfigLabels().getLabels()).getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT).name());
 	}
@@ -126,7 +124,7 @@ public class BoxingStyleTest {
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
 
 		// Check cell vertical alignment
-		LayerCell cell = natTable.getCellByPosition(2, 3);
+		ILayerCell cell = natTable.getCellByPosition(2, 3);
 		Assert.assertEquals(vAlignment.name(), configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(),
 				cell.getConfigLabels().getLabels()).getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT).name());
 	}
@@ -147,7 +145,7 @@ public class BoxingStyleTest {
 		Object dataValue = natTableFixture.getDataValueByPosition(columnIndex + ROW_HEADER_COLUMN_COUNT, 2);
 
 		// Verify displayed value
-		LayerCell cell = natTableFixture.getCellByPosition(columnIndex + ROW_HEADER_COLUMN_COUNT, 2);
+		ILayerCell cell = natTableFixture.getCellByPosition(columnIndex + ROW_HEADER_COLUMN_COUNT, 2);
 		TextPainter cellPainter = new TextPainter();
 		Assert.assertEquals("Automatic", cellPainter.convertDataType(cell, configRegistry));
 

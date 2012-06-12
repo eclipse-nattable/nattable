@@ -18,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
@@ -38,7 +37,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ComboBoxPainter;
@@ -80,7 +79,7 @@ public class EditIntegrationTest {
 
 	@Test
 	public void testNotEditableByDefault() {
-		LayerCell cell = natTable.getCellByPosition(4, 4);
+		ILayerCell cell = natTable.getCellByPosition(4, 4);
 		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
 
 		assertFalse(ActiveCellEditor.isValid());
@@ -90,7 +89,7 @@ public class EditIntegrationTest {
 	public void testEditorActivatedDuringInlineCellEdit() {
 		natTable.enableEditingOnAllCells();
 
-		LayerCell cell = natTable.getCellByPosition(4, 4);
+		ILayerCell cell = natTable.getCellByPosition(4, 4);
 		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
 
 		ICellEditor cellEditor = ActiveCellEditor.getCellEditor();
@@ -125,7 +124,7 @@ public class EditIntegrationTest {
 	public void testEditorResize() {
 		natTable.enableEditingOnAllCells();
 
-		LayerCell cell = natTable.getCellByPosition(4, 4);
+		ILayerCell cell = natTable.getCellByPosition(4, 4);
 		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
 		assertEquals(new Rectangle(340, 80, 99, 19), ActiveCellEditor.getControl().getBounds());
 
@@ -151,7 +150,7 @@ public class EditIntegrationTest {
 		natTable.getConfigRegistry().registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, IDataValidator.ALWAYS_VALID,
 																DisplayMode.EDIT, TEST_LABEL_2);
 
-		LayerCell cell = natTable.getCellByPosition(1, 1);
+		ILayerCell cell = natTable.getCellByPosition(1, 1);
 		assertEquals("Col: 1, Row: 1", cell.getDataValue());
 
 		// Column index 0 never valid
@@ -172,7 +171,7 @@ public class EditIntegrationTest {
 		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
 
 		// Edit cell
-		LayerCell cell = natTable.getCellByPosition(1, 1);
+		ILayerCell cell = natTable.getCellByPosition(1, 1);
 		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
 
 		// Press tab - 3 times
@@ -200,7 +199,7 @@ public class EditIntegrationTest {
 		natTable.getConfigRegistry().registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, getStartingWithCValidator(), DisplayMode.EDIT, TEST_LABEL);
 
 		// Start editing 1,1
-		LayerCell cell = natTable.getCellByPosition(1, 1);
+		ILayerCell cell = natTable.getCellByPosition(1, 1);
 		assertEquals("Col: 1, Row: 1", cell.getDataValue());
 		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
 

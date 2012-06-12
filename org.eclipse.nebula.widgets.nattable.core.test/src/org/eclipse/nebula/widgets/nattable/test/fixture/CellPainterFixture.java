@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.AbstractCellPainter;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -23,20 +22,20 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class CellPainterFixture extends AbstractCellPainter {
 
-	private LayerCell cell;
+	private ILayerCell cell;
 	private Rectangle bounds;
 	private IConfigRegistry configRegistry;
 	private boolean painted;
 
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return cell.getBounds().height;
 	}
 
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return cell.getBounds().width;
 	}
 
-	public void paintCell(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		this.painted = true;
 		this.cell = cell;
 		this.bounds = bounds;
@@ -45,7 +44,7 @@ public class CellPainterFixture extends AbstractCellPainter {
 
 	// Getters
 
-	public LayerCell getLastPaintedCell() {
+	public ILayerCell getLastPaintedCell() {
 		return cell;
 	}
 

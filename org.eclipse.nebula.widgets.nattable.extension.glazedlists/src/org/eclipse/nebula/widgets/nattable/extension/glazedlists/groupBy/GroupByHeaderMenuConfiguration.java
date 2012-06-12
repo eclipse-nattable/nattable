@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.UngroupByColumnIndexCommand;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
@@ -70,7 +70,7 @@ public class GroupByHeaderMenuConfiguration extends AbstractUiBindingConfigurati
 												int rowPosition = natEventData.getRowPosition();
 												MouseEvent originalEvent = natEventData.getOriginalEvent();
 												
-												LayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
+												ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
 												Rectangle bounds = cell.getBounds();
 												
 												int groupByColumnIndex = groupByHeaderLayer.getGroupByColumnIndexAtXY(originalEvent.x - bounds.x, originalEvent.y - bounds.y);

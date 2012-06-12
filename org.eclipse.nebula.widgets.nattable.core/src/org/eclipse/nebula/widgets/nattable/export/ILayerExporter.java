@@ -14,10 +14,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.swt.widgets.Shell;
-
 
 public interface ILayerExporter {
 
@@ -49,6 +48,6 @@ public interface ILayerExporter {
 	
 	void exportRowEnd(OutputStream outputStream, int rowPosition) throws IOException;
 	
-	void exportCell(OutputStream outputStream, Object exportDisplayValue, LayerCell cell, IConfigRegistry configRegistry) throws IOException;
+	void exportCell(OutputStream outputStream, Object exportDisplayValue, ILayerCell cell, IConfigRegistry configRegistry) throws IOException;
 	
 }

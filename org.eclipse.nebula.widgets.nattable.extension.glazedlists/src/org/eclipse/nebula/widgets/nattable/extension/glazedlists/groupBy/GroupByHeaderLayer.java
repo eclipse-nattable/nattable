@@ -22,9 +22,9 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
-
 
 public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 
@@ -92,7 +92,7 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 	}
 	
 	@Override
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		return new LayerCell(this, 0, 0, 0, 0, getColumnCount(), 1);
 	}
 	
