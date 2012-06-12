@@ -14,6 +14,11 @@ package org.eclipse.nebula.widgets.nattable.examples.examples;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.InvertedLayer;
+import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -49,7 +54,19 @@ public class _000_Default_NatTable extends AbstractNatExample {
 	}
 	
 	public Control createExampleControl(Composite parent) {
-		return new NatTable(parent);
+		DummyGridLayerStack dummyGridLayerStack = new DummyGridLayerStack(6, 6);
+		
+		DataLayer bodyDataLayer = (DataLayer) dummyGridLayerStack.getBodyDataLayer();
+		bodyDataLayer.setDefaultColumnWidth(100);
+		bodyDataLayer.setDefaultRowHeight(100);
+		
+		DataLayer columnHeaderDataLayer = (DataLayer) dummyGridLayerStack.getColumnHeaderDataLayer();
+		columnHeaderDataLayer.setDefaultRowHeight(200);
+		
+		DataLayer rowHeaderDataLayer = (DataLayer) dummyGridLayerStack.getRowHeaderDataLayer();
+		rowHeaderDataLayer.setDefaultColumnWidth(300);
+		
+		return new NatTable(parent, new InvertedLayer(dummyGridLayerStack));
 	}
 	
 }

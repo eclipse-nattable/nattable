@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class LayerCell {
+public class LayerCell implements ILayerCell {
 	
 	private ILayer layer;
 
