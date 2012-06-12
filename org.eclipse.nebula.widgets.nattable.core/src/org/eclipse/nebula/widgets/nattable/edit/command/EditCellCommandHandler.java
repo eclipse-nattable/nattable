@@ -10,11 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.InlineCellEditController;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.widgets.Composite;
 
 public class EditCellCommandHandler extends AbstractLayerCommandHandler<EditCellCommand> {
@@ -25,7 +24,7 @@ public class EditCellCommandHandler extends AbstractLayerCommandHandler<EditCell
 	
 	@Override
 	public boolean doCommand(EditCellCommand command) {
-		LayerCell cell = command.getCell();
+		ILayerCell cell = command.getCell();
 		Composite parent = command.getParent();
 		IConfigRegistry configRegistry = command.getConfigRegistry();
 		

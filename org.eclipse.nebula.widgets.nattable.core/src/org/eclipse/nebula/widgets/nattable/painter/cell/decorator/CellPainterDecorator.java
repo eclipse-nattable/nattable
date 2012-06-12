@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
@@ -57,7 +57,7 @@ public class CellPainterDecorator implements ICellPainter {
         this.interiorPainterToSpanFullWidth = interiorPainterToSpanFullWidth;
     }
 	
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		switch (cellEdge) {
 		case TOP_LEFT:
 		case TOP_RIGHT:
@@ -79,7 +79,7 @@ public class CellPainterDecorator implements ICellPainter {
 				+ decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry);
 	}
 
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		switch (cellEdge) {
 		case TOP_LEFT:
 		case TOP_RIGHT:
@@ -101,7 +101,7 @@ public class CellPainterDecorator implements ICellPainter {
 				+ decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
 	}
 
-	public void paintCell(LayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle baseCellPainterBounds = this.paintDecorationDependent ? 
 				getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry) : adjustedCellBounds;
 		Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
@@ -121,7 +121,7 @@ public class CellPainterDecorator implements ICellPainter {
 	 * 
 	 * @return The Rectangle which can be used by the base cell painter. 
 	 */
-	public Rectangle getBaseCellPainterBounds(LayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public Rectangle getBaseCellPainterBounds(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		int preferredDecoratorWidth = decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry);
 		int preferredDecoratorHeight = decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
 		
@@ -196,7 +196,7 @@ public class CellPainterDecorator implements ICellPainter {
 	/**
 	 * @return The Rectangle to paint the decoration.
 	 */
-	public Rectangle getDecoratorCellPainterBounds(LayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public Rectangle getDecoratorCellPainterBounds(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		int preferredDecoratorWidth = decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry);
 		int preferredDecoratorHeight = decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
 		
@@ -256,7 +256,7 @@ public class CellPainterDecorator implements ICellPainter {
 		return null;
 	}
 	
-	public ICellPainter getCellPainterAt(int x, int y, LayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
 		if (decoratorCellPainterBounds.contains(x, y)) {
 			return decoratorCellPainter.getCellPainterAt(x, y, cell, gc, decoratorCellPainterBounds, configRegistry);

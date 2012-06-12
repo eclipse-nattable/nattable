@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.swt.graphics.Color;
@@ -82,7 +82,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
 	}
 
 	@Override
-	public void paintCell(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		Color foregroundColor = getForeGroundColour(cell, configRegistry);
 		Color backgroundColor = getBackgroundColour(cell, configRegistry);
 		if (backgroundColor != null && foregroundColor != null) {
@@ -110,7 +110,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
 	 * @param configRegistry The {@link ConfigRegistry} to retrieve the attribute values from.
 	 * @return The {@link Color} to use as foreground color of the gradient sweeping or <code>null</code> if none was configured.
 	 */
-	protected Color getForeGroundColour(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Color getForeGroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
 		Color fgColor = CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR);
 		return fgColor != null ? fgColor : CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
 	}
@@ -125,7 +125,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
 	 * @param configRegistry The {@link ConfigRegistry} to retrieve the attribute values from.
 	 * @return The {@link Color} to use as background color of the gradient sweeping or <code>null</code> if none was configured.
 	 */
-	protected Color getBackgroundColour(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Color getBackgroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
 		Color bgColor = CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR);
 		return bgColor != null ? bgColor : CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 	}

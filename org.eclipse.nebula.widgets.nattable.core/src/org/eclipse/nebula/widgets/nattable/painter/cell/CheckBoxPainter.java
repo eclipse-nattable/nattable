@@ -10,11 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -54,15 +53,15 @@ public class CheckBoxPainter extends ImagePainter {
 	}
 
 	@Override
-	protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 		return isChecked(cell, configRegistry) ? checkedImg : uncheckedImg;
 	}
 
-	protected boolean isChecked(LayerCell cell, IConfigRegistry configRegistry) {
+	protected boolean isChecked(ILayerCell cell, IConfigRegistry configRegistry) {
 		return convertDataType(cell, configRegistry).booleanValue();
 	}
 
-	protected Boolean convertDataType(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Boolean convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
 		if (cell.getDataValue() instanceof Boolean) {
 			return (Boolean) cell.getDataValue();
 		}

@@ -10,12 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
@@ -43,7 +42,7 @@ public class FilterRowPainter extends CellPainterWrapper {
 				0)));
 	}
 	
-	public boolean containsRemoveFilterImage(int x, int y, LayerCell cell, IConfigRegistry configRegistry) {
+	public boolean containsRemoveFilterImage(int x, int y, ILayerCell cell, IConfigRegistry configRegistry) {
 		Image image = filterIconPainter.getImage(cell, configRegistry);
 		if (image == null) {
 			return false;
@@ -62,7 +61,7 @@ public class FilterRowPainter extends CellPainterWrapper {
 	static class FilterIconPainter extends ImagePainter {
 
 		@Override
-		protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+		protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 			// If a filter value is present draw the remove filter icon 
 			if(ObjectUtils.isNotNull(cell.getDataValue())){
 				return GUIHelper.getImage("remove_filter"); //$NON-NLS-1$

@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
@@ -211,7 +212,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 * Column group header cells are rendered properly.
 	 */
 	@Override
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		int bodyColumnIndex = getColumnIndexByPosition(columnPosition);
 
 		// Column group header cell
@@ -233,7 +234,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 			// which should always return 1, we ask for row position 0 instead of 
 			// using getGroupHeaderRowPosition(), if we would use getGroupHeaderRowPosition()
 			// the ColumnGroupGroupHeaderLayer wouldn't work anymore
-			LayerCell cell = columnHeaderLayer.getCellByPosition(columnPosition, 0);
+			ILayerCell cell = columnHeaderLayer.getCellByPosition(columnPosition, 0);
 			if (cell != null) {
 				cell.updateLayer(this);
 				if (calculateHeight && model.size() == 0) {

@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -29,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
@@ -257,7 +257,7 @@ public abstract class AbstractLayer implements ILayer {
 		return getClass().getSimpleName();
 	}
 	
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()
 				|| rowPosition < 0 || rowPosition >= getRowCount()) {
 			return null;
@@ -267,7 +267,7 @@ public abstract class AbstractLayer implements ILayer {
 	}
 	
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
-		LayerCell cell = getCellByPosition(columnPosition, rowPosition);
+		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		
 		ILayer cellLayer = cell.getLayer();
 		int originColumnPosition = cell.getOriginColumnPosition();
@@ -293,7 +293,7 @@ public abstract class AbstractLayer implements ILayer {
 		return DisplayMode.NORMAL;
 	}
 	
-	public ICellPainter getCellPainter(int columnPosition, int rowPosition, LayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return configRegistry.getConfigAttribute(CellConfigAttributes.CELL_PAINTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 	}
 	

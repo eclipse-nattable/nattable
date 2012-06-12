@@ -11,8 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.config;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class ContextualEditableRule implements IEditableRule {
 
@@ -21,6 +20,6 @@ public abstract class ContextualEditableRule implements IEditableRule {
 				+ " is a ContextualEditableRule and has therefore to be called with context informations."); //$NON-NLS-1$
 	}
 
-	public abstract boolean isEditable(LayerCell cell, IConfigRegistry configRegistry);
+	public abstract boolean isEditable(ILayerCell cell, IConfigRegistry configRegistry);
 
 }

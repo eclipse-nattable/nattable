@@ -10,14 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class LayerCell {
+public class LayerCell implements ILayerCell {
 	
 	private ILayer layer;
 

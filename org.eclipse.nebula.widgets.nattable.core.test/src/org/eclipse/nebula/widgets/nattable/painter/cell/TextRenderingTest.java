@@ -13,13 +13,11 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
@@ -107,7 +105,7 @@ public class TextRenderingTest {
 
 	private void verifyFontAttributes() {
 		// Check cell font attributes
-		LayerCell cell = natTable.getCellByPosition(2, 2);
+		ILayerCell cell = natTable.getCellByPosition(2, 2);
 		final FontData expectedFontData = defaultFont.getFontData()[0];
 		IStyle cellStyle = configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 		final FontData actualFontData = cellStyle.getAttributeValue(CellStyleAttributes.FONT).getFontData()[0];

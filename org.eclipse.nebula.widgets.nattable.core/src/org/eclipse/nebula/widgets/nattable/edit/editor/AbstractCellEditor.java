@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
@@ -22,7 +21,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;
 import org.eclipse.nebula.widgets.nattable.edit.config.LoggingErrorHandling;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
@@ -41,7 +40,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	private IStyle cellStyle;
 	private IDataValidator dataValidator;
 	protected EditModeEnum editMode;
-	protected LayerCell layerCell;
+	protected ILayerCell layerCell;
 	
 	protected IEditErrorHandler conversionEditErrorHandler;
 	protected IEditErrorHandler validationEditErrorHandler;
@@ -49,7 +48,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	protected LabelStack labelStack;
 	
 	public final Control activateCell(Composite parent, Object originalCanonicalValue, Character initialEditValue,
-			EditModeEnum editMode, ICellEditHandler editHandler, LayerCell cell, IConfigRegistry configRegistry) {
+			EditModeEnum editMode, ICellEditHandler editHandler, ILayerCell cell, IConfigRegistry configRegistry) {
 
 		this.closed = false;
 		this.parent = parent;

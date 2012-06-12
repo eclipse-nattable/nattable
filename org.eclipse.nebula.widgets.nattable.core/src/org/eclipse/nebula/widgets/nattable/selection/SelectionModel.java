@@ -21,10 +21,9 @@ import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -208,7 +207,7 @@ public class SelectionModel implements ISelectionModel {
 		selectionsLock.readLock().lock();
 
 		try {
-			LayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
+			ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
 			Rectangle cellRectangle =
 					new Rectangle(
 							cell.getOriginColumnPosition(),

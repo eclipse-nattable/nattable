@@ -20,11 +20,10 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class RowSelectionModel<R> implements IRowSelectionModel<R> {
@@ -193,7 +192,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	// Cell features
 
 	public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
-		LayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
+		ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
 		int cellOriginRowPosition = cell.getOriginRowPosition();
 		for (int testRowPosition = cellOriginRowPosition; testRowPosition < cellOriginRowPosition + cell.getRowSpan(); testRowPosition++) {
 			if (isRowPositionSelected(testRowPosition)) {

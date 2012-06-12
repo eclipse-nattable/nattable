@@ -10,19 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.style.IStyle;
-import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.style.StyleProxy;
-import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
@@ -75,7 +67,7 @@ public class StyleInheritanceTest {
 	
 	@Test
 	public void shouldFallBackToSuperTypeAttributesForEvenCell() {
-		LayerCell cell = natTable.getCellByPosition(2, 2);
+		ILayerCell cell = natTable.getCellByPosition(2, 2);
 		
 		// Test cell even attributes
 		final IStyle cellInstanceStyle = configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
@@ -91,7 +83,7 @@ public class StyleInheritanceTest {
 	
 	@Test
 	public void shouldFallBackToSuperTypeAttributesForOddCell() {
-		LayerCell cell = natTable.getCellByPosition(2, 3);
+		ILayerCell cell = natTable.getCellByPosition(2, 3);
 		
 		// Test cell odd attributes
 		final IStyle cellInstanceStyle = configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell.getConfigLabels().getLabels());

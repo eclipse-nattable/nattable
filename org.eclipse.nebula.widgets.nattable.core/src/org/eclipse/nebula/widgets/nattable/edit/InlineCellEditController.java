@@ -14,12 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -39,7 +38,7 @@ public class InlineCellEditController {
 
 	private static Map<ILayer, ILayerListener> layerListenerMap = new HashMap<ILayer, ILayerListener>();
 
-	public static boolean editCellInline(LayerCell cell, Character initialEditValue, final Composite parent, IConfigRegistry configRegistry) {
+	public static boolean editCellInline(ILayerCell cell, Character initialEditValue, final Composite parent, IConfigRegistry configRegistry) {
 		try {
 			ActiveCellEditor.commit();
 

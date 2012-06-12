@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -26,20 +26,20 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
 		super(interiorPainter);
 	}
 
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredWidth(cell, gc, configRegistry) + 4;
 	}
 	
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredHeight(cell, gc, configRegistry) + 4;
 	}
 
 	@Override
-	public Rectangle getWrappedPainterBounds(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public Rectangle getWrappedPainterBounds(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		return new Rectangle(bounds.x + 2, bounds.y + 2, bounds.width - 4, bounds.height - 4);
 	}
 	
-	public void paintCell(LayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle interiorBounds = getWrappedPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
 		super.paintCell(cell, gc, interiorBounds, configRegistry);
 		

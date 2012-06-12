@@ -18,7 +18,7 @@ import static org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum.TOP;
 import static org.eclipse.nebula.widgets.nattable.util.GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -82,7 +82,7 @@ public class CellEdgeDetectUtil {
 	}
 	
 	public static CellEdgeEnum getHorizontalCellEdge(ILayer layer, Point clickPt, int handleWidth) {
-		LayerCell cell = layer.getCellByPosition(
+		ILayerCell cell = layer.getCellByPosition(
 				layer.getColumnPositionByX(clickPt.x),
 				layer.getRowPositionByY(clickPt.y)
 		);
@@ -118,7 +118,7 @@ public class CellEdgeDetectUtil {
 	}
 
 	public static CellEdgeEnum getVerticalCellEdge(ILayer layer, Point clickPt, int handleHeight) {
-		LayerCell cell = layer.getCellByPosition(
+		ILayerCell cell = layer.getCellByPosition(
 				layer.getColumnPositionByX(clickPt.x), 
 				layer.getRowPositionByY(clickPt.y)
 		);

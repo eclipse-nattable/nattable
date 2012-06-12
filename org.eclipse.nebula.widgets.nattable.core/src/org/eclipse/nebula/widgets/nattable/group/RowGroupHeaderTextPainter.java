@@ -10,11 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroup;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
@@ -47,7 +46,7 @@ public class RowGroupHeaderTextPainter<T> extends CellPainterWrapper {
 	}
 	
 	@Override
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return 0;
 	}
 
@@ -60,7 +59,7 @@ public class RowGroupHeaderTextPainter<T> extends CellPainterWrapper {
 		}
 
 		@Override
-		protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+		protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 			final IRowGroup<T> rowGroup = RowGroupUtils.getTopMostParentGroup(RowGroupUtils.getRowGroupForRowIndex(RowGroupHeaderTextPainter.this.rowGroupModel, cell.getRowIndex()));
 			
 			if (rowGroup != null) {

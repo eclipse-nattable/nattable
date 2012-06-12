@@ -12,16 +12,16 @@ package org.eclipse.nebula.widgets.nattable.copy.serializing;
 
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardCommand;
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public class CopyFormattedTextToClipboardSerializer extends CopyDataToClipboardSerializer {
 
-	public CopyFormattedTextToClipboardSerializer(LayerCell[][] copiedCells, CopyDataToClipboardCommand command) {
+	public CopyFormattedTextToClipboardSerializer(ILayerCell[][] copiedCells, CopyDataToClipboardCommand command) {
 		super(copiedCells, command);
 	}
 
 	@Override
-    protected String getTextForCell(LayerCell cell) {
+    protected String getTextForCell(ILayerCell cell) {
 		return CellDisplayConversionUtils.convertDataType(cell, getCommand().getConfigRegistry());
 	}
 }

@@ -13,10 +13,9 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.AbstractCellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
@@ -44,7 +43,7 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 		this.columnHeaderDataProvider = columnHeaderDataProvider;
 	}
 
-	public void paintCell(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		Color originalBackground = gc.getBackground();
 		Color originalForeground = gc.getForeground();
 		Font originalFont = gc.getFont();
@@ -115,11 +114,11 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 		gc.setFont(originalFont);
 	}
 
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return 0;
 	}
 
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return getPreferredHeight();
 	}
 

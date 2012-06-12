@@ -18,7 +18,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.nebula.widgets.nattable.blink.command.BlinkTimerEnableCommandHandler;
 import org.eclipse.nebula.widgets.nattable.blink.event.BlinkEvent;
@@ -32,7 +31,7 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -121,7 +120,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 			return getUnderlyingLayer().getConfigLabelsByPosition(columnPosition, rowPosition);
 		}
 		
-		LayerCell cell = underlyingLayer.getCellByPosition(columnPosition, rowPosition);
+		ILayerCell cell = underlyingLayer.getCellByPosition(columnPosition, rowPosition);
 
 		int columnIndex = getUnderlyingLayer().getColumnIndexByPosition(columnPosition);
 		String columnProperty = columnPropertyResolver.getColumnProperty(columnIndex);
@@ -175,7 +174,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 	 * Use the above to find the config types associated with a blinking cell.
 	 * @param indexCoordinate 
 	 */
-	public LabelStack resolveConfigTypes(LayerCell cell, Object oldValue, Object newValue) {
+	public LabelStack resolveConfigTypes(ILayerCell cell, Object oldValue, Object newValue) {
 		// Acquire default config types for the coordinate. Use these to search for the associated resolver.
 		LabelStack underlyingLabelStack = underlyingLayer.getConfigLabelsByPosition(cell.getColumnIndex(), cell.getRowIndex());
 

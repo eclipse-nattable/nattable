@@ -13,10 +13,9 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -32,14 +31,14 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 	
 	private int rowPositionOffset;
 	
-	private Map<Point, LayerCell> cells;
+	private Map<Point, ILayerCell> cells;
 	
 	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle pixelRectangle, IConfigRegistry configRegistry) {
 		Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
 		columnPositionOffset = positionRectangle.x;
 		rowPositionOffset = positionRectangle.y;
-		cells = new HashMap<Point, LayerCell>();
+		cells = new HashMap<Point, ILayerCell>();
 		
 		super.paintLayer(natLayer, gc, xOffset, yOffset, pixelRectangle, configRegistry);
 		
@@ -55,8 +54,8 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 		// Draw horizontal borders
 		boolean selectedMode = false;
 		for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
-			LayerCell previousCell = null;
-			LayerCell currentCell = null;
+			ILayerCell previousCell = null;
+			ILayerCell currentCell = null;
 			for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
 				currentCell = cells.get(new Point(columnPosition, rowPosition));
 				if (currentCell != null) {
@@ -97,8 +96,8 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 		
 		// Draw vertical borders
 		for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
-			LayerCell previousCell = null;
-			LayerCell currentCell = null;
+			ILayerCell previousCell = null;
+			ILayerCell currentCell = null;
 			for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
 				currentCell = cells.get(new Point(columnPosition, rowPosition));
 				if (currentCell != null) {
@@ -143,7 +142,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 	}
 	
 	@Override
-	protected void paintCell(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	protected void paintCell(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		for (int columnPosition = cell.getOriginColumnPosition(); columnPosition < cell.getOriginColumnPosition() + cell.getColumnSpan(); columnPosition++) {
 			for (int rowPosition = cell.getOriginRowPosition(); rowPosition < cell.getOriginRowPosition() + cell.getRowSpan(); rowPosition++) {
 				cells.put(new Point(columnPosition, rowPosition), cell);
@@ -153,7 +152,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 		super.paintCell(cell, gc, configRegistry);
 	}
 	
-	private boolean isSelected(LayerCell cell) {
+	private boolean isSelected(ILayerCell cell) {
 		return cell.getDisplayMode() == DisplayMode.SELECT;
 	}
 	

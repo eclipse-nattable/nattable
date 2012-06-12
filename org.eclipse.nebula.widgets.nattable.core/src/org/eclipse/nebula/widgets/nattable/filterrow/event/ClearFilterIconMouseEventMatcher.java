@@ -10,12 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.event;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.events.MouseEvent;
 
@@ -29,7 +28,7 @@ public class ClearFilterIconMouseEventMatcher extends FilterRowMouseEventMatcher
 	
 	@Override
 	public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
-		LayerCell cell = natTable.getCellByPosition(natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
+		ILayerCell cell = natTable.getCellByPosition(natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
 		
 		if (cell == null)
 			return false;

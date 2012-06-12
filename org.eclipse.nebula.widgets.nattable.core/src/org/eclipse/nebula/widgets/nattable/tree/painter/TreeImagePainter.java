@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree.painter;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -50,7 +49,7 @@ public class TreeImagePainter extends ImagePainter {
 	}
 
 	@Override
-	protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 		int index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
 		return !this.treeRowModel.hasChildren(index) ? this.leafImage : this.treeRowModel.isCollapsed(index) ? this.plusImage : this.minusImage;
 	}

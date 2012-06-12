@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.grid.layer;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -30,7 +31,7 @@ public class CornerLayer extends DimensionallyDependentLayer {
 	}
 
 	@Override
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		return new LayerCell(this, 0, 0, columnPosition, rowPosition, getHorizontalLayerDependency().getColumnCount(), getVerticalLayerDependency().getRowCount());
 	}
 	

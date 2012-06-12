@@ -11,7 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class DisplayConverter implements IDisplayConverter {
 
@@ -19,11 +19,11 @@ public abstract class DisplayConverter implements IDisplayConverter {
 
 	public abstract Object displayToCanonicalValue(Object displayValue);
 	
-	public Object canonicalToDisplayValue(LayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
+	public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
 		return canonicalToDisplayValue(canonicalValue);
 	}
 
-	public Object displayToCanonicalValue(LayerCell cell, IConfigRegistry configRegistry, Object displayValue) {
+	public Object displayToCanonicalValue(ILayerCell cell, IConfigRegistry configRegistry, Object displayValue) {
 		return displayToCanonicalValue(displayValue);
 	}
 

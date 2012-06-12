@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
@@ -43,7 +43,7 @@ public class PercentageBarDecorator extends CellPainterWrapper {
 	}
 
 	@Override
-	public void paintCell(LayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
 		Pattern originalBackgroundPattern = gc.getBackgroundPattern();
 
 		double factor = Math.min(1.0, ((Double) cell.getDataValue()).doubleValue());

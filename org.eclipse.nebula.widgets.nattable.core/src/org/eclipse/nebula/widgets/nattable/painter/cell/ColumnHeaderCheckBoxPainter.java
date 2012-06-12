@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -18,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -68,7 +67,7 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
 	}
 
 	@Override
-	protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 		int columnPosition = LayerUtil.convertColumnPosition(cell.getLayer(), cell.getColumnPosition(), columnDataLayer);
 		
 		int checkedCellsCount = getCheckedCellsCount(columnPosition, configRegistry);
@@ -88,7 +87,7 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
 		int checkedCellsCount = 0;
 		
 		for (int rowPosition = 0; rowPosition < columnDataLayer.getRowCount(); rowPosition++) {
-			LayerCell columnCell = columnDataLayer.getCellByPosition(columnPosition, rowPosition);
+			ILayerCell columnCell = columnDataLayer.getCellByPosition(columnPosition, rowPosition);
 			if (isChecked(columnCell, configRegistry)) {
 				checkedCellsCount++;
 			}
@@ -96,11 +95,11 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
 		return checkedCellsCount;
 	}
 
-	protected boolean isChecked(LayerCell cell, IConfigRegistry configRegistry) {
+	protected boolean isChecked(ILayerCell cell, IConfigRegistry configRegistry) {
 		return convertDataType(cell, configRegistry).booleanValue();
 	}
 
-	protected Boolean convertDataType(LayerCell cell, IConfigRegistry configRegistry) {
+	protected Boolean convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
 		if (cell.getDataValue() instanceof Boolean) {
 			return (Boolean) cell.getDataValue();
 		}

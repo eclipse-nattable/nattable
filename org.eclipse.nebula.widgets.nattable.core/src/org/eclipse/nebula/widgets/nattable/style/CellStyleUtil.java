@@ -13,16 +13,15 @@ package org.eclipse.nebula.widgets.nattable.style;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class CellStyleUtil {
 
-	public static IStyle getCellStyle(LayerCell cell, IConfigRegistry configRegistry) {
+	public static IStyle getCellStyle(ILayerCell cell, IConfigRegistry configRegistry) {
 		return new CellStyleProxy(configRegistry, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 	}
 
@@ -88,7 +87,7 @@ public class CellStyleUtil {
 		return padding;
 	}
 	
-	public static List<Color> getAllBackgroundColors(LayerCell cell, IConfigRegistry configRegistry, String displayMode) {
+	public static List<Color> getAllBackgroundColors(ILayerCell cell, IConfigRegistry configRegistry, String displayMode) {
 		
 		final List<Color> colors = new ArrayList<Color>();
 		

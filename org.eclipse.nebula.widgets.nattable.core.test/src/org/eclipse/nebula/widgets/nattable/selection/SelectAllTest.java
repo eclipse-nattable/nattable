@@ -10,9 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.junit.After;
@@ -39,7 +37,7 @@ public class SelectAllTest {
 	public void shouldHaveAllCellsSelected() {
 		for (int columnPosition = 0; columnPosition < selectionLayer.getColumnCount(); columnPosition++) {
 			for (int rowPosition = 0; rowPosition < selectionLayer.getRowCount(); rowPosition++) {
-				LayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
+				ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
 				Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
 			}
 		}	

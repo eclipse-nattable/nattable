@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.copy.serializing;
 
-
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardCommand;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.serializing.ISerializer;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -21,10 +20,10 @@ import org.eclipse.swt.widgets.Display;
 
 public class CopyDataToClipboardSerializer implements ISerializer {
 
-	private final LayerCell[][] copiedCells;
+	private final ILayerCell[][] copiedCells;
 	private final CopyDataToClipboardCommand command;
 
-	public CopyDataToClipboardSerializer(LayerCell[][] copiedCells, CopyDataToClipboardCommand command) {
+	public CopyDataToClipboardSerializer(ILayerCell[][] copiedCells, CopyDataToClipboardCommand command) {
 		this.copiedCells = copiedCells;
 		this.command = command;
 	}
@@ -36,9 +35,9 @@ public class CopyDataToClipboardSerializer implements ISerializer {
 		final TextTransfer textTransfer = TextTransfer.getInstance();
 		final StringBuilder textData = new StringBuilder();
 		int currentRow = 0;
-		for (LayerCell[] cells : copiedCells) {
+		for (ILayerCell[] cells : copiedCells) {
 			int currentCell = 0;
-			for (LayerCell cell : cells) {
+			for (ILayerCell cell : cells) {
 				final String delimeter = ++currentCell < cells.length ? cellDelimeter : ""; //$NON-NLS-1$
 				if (cell != null) {
 					textData.append(getTextForCell(cell) + delimeter);
@@ -60,7 +59,7 @@ public class CopyDataToClipboardSerializer implements ISerializer {
 		}
 	}
 	
-	protected String getTextForCell(LayerCell cell) {
+	protected String getTextForCell(ILayerCell cell) {
 		return String.valueOf(cell.getDataValue());
 	}
 	

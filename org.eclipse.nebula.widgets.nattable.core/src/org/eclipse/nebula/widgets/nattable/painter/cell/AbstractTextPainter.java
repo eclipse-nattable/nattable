@@ -16,11 +16,10 @@ import java.util.WeakHashMap;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -112,7 +111,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	/**
 	 * Convert the data value of the cell using the {@link IDisplayConverter} from the {@link IConfigRegistry}
 	 */
-	protected String convertDataType(LayerCell cell, IConfigRegistry configRegistry) {
+	protected String convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
 		return CellDisplayConversionUtils.convertDataType(cell, configRegistry);
 	}
 
@@ -194,7 +193,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	 * @param text the text that should be modified for display
 	 * @return the modified text
 	 */
-	protected String getTextToDisplay(LayerCell cell, GC gc, int availableLength, String text) {
+	protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
 		StringBuilder output = new StringBuilder();
 
 		text = text.trim();
@@ -398,7 +397,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	 * @param cell the current cell that is painted
 	 * @param contentLength the length of the content
 	 */
-	protected abstract void setNewMinLength(LayerCell cell, int contentLength);
+	protected abstract void setNewMinLength(ILayerCell cell, int contentLength);
 	
 	/**
 	 * This method is used to determine the padding from the cell to the available length.
@@ -414,7 +413,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	 * as Rectangle argument
 	 * @return the padding between the current cell length - availableLength
 	 */
-	protected abstract int calculatePadding(LayerCell cell, int availableLength);
+	protected abstract int calculatePadding(ILayerCell cell, int availableLength);
 
 	/**
 	 * Set if the text should be rendered underlined or not.

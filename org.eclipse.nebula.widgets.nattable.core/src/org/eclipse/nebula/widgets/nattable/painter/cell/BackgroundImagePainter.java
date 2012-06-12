@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -43,17 +43,17 @@ public class BackgroundImagePainter extends CellPainterWrapper {
 	}
 
 	@Override
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredWidth(cell, gc, configRegistry) + 4;
 	}
 
 	@Override
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredHeight(cell, gc, configRegistry) + 4;
 	}
 
 	@Override
-	public void paintCell(LayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
 		// Save GC settings
 		Color originalBackground = gc.getBackground();
 		Color originalForeground = gc.getForeground();

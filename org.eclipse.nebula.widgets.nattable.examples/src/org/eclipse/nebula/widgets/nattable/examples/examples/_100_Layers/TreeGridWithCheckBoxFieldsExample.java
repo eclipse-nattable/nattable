@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -58,7 +57,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ColumnHeaderCheckBoxPainter;
@@ -209,7 +208,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 		
 		final ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter = new ColumnHeaderCheckBoxPainter(bodyDataLayer) {
 			@Override
-			protected Boolean convertDataType(LayerCell cell, IConfigRegistry configRegistry) {
+			protected Boolean convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
 				Datum dataValue = (Datum) cell.getDataValue();
 				return dataValue.isOn();
 			}
@@ -218,7 +217,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 		final ICellPainter treeImagePainter = indentedTreeImagePainter.getTreeImagePainter();
 		final ICellPainter checkBoxPainter = new TreeCheckBoxPainter() {
 			@Override
-			protected CheckBoxStateEnum getCheckBoxState(LayerCell cell) {
+			protected CheckBoxStateEnum getCheckBoxState(ILayerCell cell) {
 				Datum dataValue = (Datum) cell.getDataValue();
 				return dataValue.getCheckBoxState();
 			}
@@ -237,7 +236,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 								new CellPainterDecorator(
 										new TextPainter() {
 											@Override
-											protected String convertDataType(LayerCell cell, IConfigRegistry configRegistry) {
+											protected String convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
 												Datum dataValue = (Datum) cell.getDataValue();
 												return dataValue.getName();
 											}

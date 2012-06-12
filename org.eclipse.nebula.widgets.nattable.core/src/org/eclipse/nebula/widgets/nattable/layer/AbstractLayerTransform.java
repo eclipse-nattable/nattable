@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -285,10 +285,10 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     // Cell features
 
 	@Override
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-		LayerCell cell = underlyingLayer.getCellByPosition(underlyingColumnPosition, underlyingRowPosition);
+		ILayerCell cell = underlyingLayer.getCellByPosition(underlyingColumnPosition, underlyingRowPosition);
 		if (cell != null) {
 			cell.updatePosition(
 					this,
@@ -331,7 +331,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 	}
 	
 	@Override
-	public ICellPainter getCellPainter(int columnPosition, int rowPosition, LayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return underlyingLayer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 	}
 

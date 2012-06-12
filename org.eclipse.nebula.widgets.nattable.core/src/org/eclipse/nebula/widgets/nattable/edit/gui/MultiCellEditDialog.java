@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
@@ -21,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
 import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
@@ -57,7 +56,7 @@ public class MultiCellEditDialog extends Dialog {
     private boolean useAdjustBy;
 
 	private IConfigRegistry configRegistry;
-	private LayerCell cell;
+	private ILayerCell cell;
 	
 	public MultiCellEditDialog(Shell parentShell,
 			final ICellEditor cellEditor,
@@ -65,7 +64,7 @@ public class MultiCellEditDialog extends Dialog {
 			final Character initialEditValue,
 			final boolean allowIncrementDecrement,
 			final IConfigRegistry configRegistry,
-			final LayerCell cell) {
+			final ILayerCell cell) {
 
 		super(parentShell);
 		setShellStyle(SWT.RESIZE | SWT.APPLICATION_MODAL| SWT.DIALOG_TRIM);

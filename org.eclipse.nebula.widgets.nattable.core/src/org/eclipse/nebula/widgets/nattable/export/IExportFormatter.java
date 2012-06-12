@@ -11,10 +11,10 @@
 package org.eclipse.nebula.widgets.nattable.export;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public interface IExportFormatter {
 
-	Object formatForExport(LayerCell cell, IConfigRegistry configRegistry);
+	Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry);
 
 }

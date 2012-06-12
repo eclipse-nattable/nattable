@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree.painter;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
@@ -40,7 +39,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	}
 
 	@Override
-	public Rectangle getWrappedPainterBounds(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public Rectangle getWrappedPainterBounds(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		int depth = getDepth(cell);
 		int indent = getIndent(depth);
 		
@@ -48,12 +47,12 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	}
 
 	@Override
-	public void paintCell(LayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		super.paintCell(cell, gc, getWrappedPainterBounds(cell, gc, bounds, configRegistry), configRegistry);
 	}
 	
 	@Override
-    public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         int depth = getDepth(cell);
         int indent = getIndent(depth);
 		return indent + super.getPreferredWidth(cell, gc, configRegistry);
@@ -63,7 +62,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 		return this.treeIndent * depth;
 	}
 	
-	private int getDepth(LayerCell cell){
+	private int getDepth(ILayerCell cell){
         int index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
         return this.treeRowModel.depth(index);
     }

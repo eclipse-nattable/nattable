@@ -14,7 +14,7 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.widgets.Composite;
@@ -42,7 +42,7 @@ public interface ICellEditor {
 			Character initialEditValue,
 			EditModeEnum editMode,
 			ICellEditHandler editHandler,
-			LayerCell cell,
+			ILayerCell cell,
 			IConfigRegistry configRegistry
 	);
 	

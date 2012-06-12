@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.edit;
 
 import java.util.List;
 
-
 import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -21,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.event.InlineCellEditEvent;
 import org.eclipse.nebula.widgets.nattable.edit.gui.MultiCellEditDialog;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.tickupdate.ITickUpdateHandler;
@@ -39,7 +38,7 @@ public class MultiCellEditController {
 
 	public static boolean editSelectedCells(SelectionLayer selectionLayer, Character initialEditValue, Composite parent, IConfigRegistry configRegistry, boolean useAdjustOnMultiEdit) {
 
-		LayerCell lastSelectedCell = EditUtils.getLastSelectedCell(selectionLayer);
+		ILayerCell lastSelectedCell = EditUtils.getLastSelectedCell(selectionLayer);
 		
 		// IF cell is selected
 		if (lastSelectedCell != null) {

@@ -14,10 +14,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
@@ -62,7 +60,7 @@ public class ColumnGroupHeaderLayerTest {
 	 */
 	@Test
 	public void getCellForACellInAColumnGroup() throws Exception {
-		LayerCell cell = columnGroupLayer.getCellByPosition(0, 0);
+		ILayerCell cell = columnGroupLayer.getCellByPosition(0, 0);
 		
 		assertEquals(TEST_GROUP_NAME_1, cell.getDataValue());
 		assertEquals(0, cell.getBounds().x);
@@ -90,7 +88,7 @@ public class ColumnGroupHeaderLayerTest {
 	
 	@Test
 	public void getCellForACellNotInAColumnGroup() throws Exception {
-		LayerCell cell = columnGroupLayer.getCellByPosition(5, 0);
+		ILayerCell cell = columnGroupLayer.getCellByPosition(5, 0);
 		
 		assertEquals(500, cell.getBounds().x);
 		assertEquals(0, cell.getBounds().y);

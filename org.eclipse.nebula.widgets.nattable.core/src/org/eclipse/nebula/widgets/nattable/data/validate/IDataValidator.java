@@ -14,7 +14,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public interface IDataValidator {
 
@@ -46,11 +46,11 @@ public interface IDataValidator {
 	 *
 	 * @return true is newValue is valid. False otherwise.
 	 */
-	public boolean validate(LayerCell cell, IConfigRegistry configRegistry, Object newValue);
+	public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue);
 
 	public static final IDataValidator ALWAYS_VALID = new IDataValidator() {
 
-		public boolean validate(LayerCell cell, IConfigRegistry configRegistry, Object newValue) {
+		public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
 			return true;
 		}
 
@@ -62,7 +62,7 @@ public interface IDataValidator {
 
 	public static final IDataValidator NEVER_VALID = new IDataValidator() {
 
-		public boolean validate(LayerCell cell, IConfigRegistry configRegistry, Object newValue) {
+		public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
 			return false;
 		}
 

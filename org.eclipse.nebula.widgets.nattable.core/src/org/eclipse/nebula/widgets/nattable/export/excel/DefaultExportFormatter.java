@@ -14,11 +14,11 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public class DefaultExportFormatter implements IExportFormatter {
 
-	public Object formatForExport(LayerCell cell, IConfigRegistry configRegistry) {
+	public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
 		Object dataValue = cell.getDataValue();
 		IDisplayConverter displayConverter = configRegistry.getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 		return displayConverter.canonicalToDisplayValue(dataValue);

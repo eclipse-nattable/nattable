@@ -21,14 +21,13 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
-
 public class EditUtils {
 
-	public static LayerCell getLastSelectedCell(SelectionLayer selectionLayer) {
+	public static ILayerCell getLastSelectedCell(SelectionLayer selectionLayer) {
 		PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
 		return selectionLayer.getCellByPosition(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
 	}
@@ -40,7 +39,7 @@ public class EditUtils {
 
 	public static boolean allCellsEditable(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
 		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
-		LayerCell layerCell = null;
+		ILayerCell layerCell = null;
 		for (PositionCoordinate cell : selectedCells) {
 			layerCell = selectionLayer.getCellByPosition(cell.columnPosition, cell.rowPosition);
 			LabelStack labelStack = layerCell.getConfigLabels();
@@ -54,7 +53,7 @@ public class EditUtils {
 	}
 	
 	public static boolean isCellEditable(SelectionLayer selectionLayer, IConfigRegistry configRegistry, PositionCoordinate cell){
-		LayerCell layerCell = selectionLayer.getCellByPosition(cell.columnPosition, cell.rowPosition);
+		ILayerCell layerCell = selectionLayer.getCellByPosition(cell.columnPosition, cell.rowPosition);
 		LabelStack labelStack = layerCell.getConfigLabels();
 //		LabelStack labelStack = selectionLayer.getConfigLabelsByPosition(cell.columnPosition, cell.rowPosition);
 //		int columnIndex = selectionLayer.getColumnIndexByPosition(cell.columnPosition);

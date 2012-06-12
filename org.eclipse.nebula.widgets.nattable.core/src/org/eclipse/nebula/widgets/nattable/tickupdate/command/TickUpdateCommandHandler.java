@@ -18,7 +18,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.tickupdate.ITickUpdateHandler;
@@ -58,7 +58,7 @@ public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUp
 
 
 	private void updateSingleCell(TickUpdateCommand command, PositionCoordinate selectedPosition) {
-		LayerCell cell = selectionLayer.getCellByPosition(selectedPosition.columnPosition, selectedPosition.rowPosition);
+		ILayerCell cell = selectionLayer.getCellByPosition(selectedPosition.columnPosition, selectedPosition.rowPosition);
 		
 		IEditableRule editableRule = command.getConfigRegistry().getConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, 
@@ -74,7 +74,7 @@ public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUp
 		}
 	}
 
-	private Object getNewCellValue(TickUpdateCommand command, LayerCell cell) {
+	private Object getNewCellValue(TickUpdateCommand command, ILayerCell cell) {
 		ITickUpdateHandler tickUpdateHandler = command.getConfigRegistry().getConfigAttribute(
 				TickUpdateConfigAttributes.UPDATE_HANDLER,
 				DisplayMode.EDIT, 

@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.edit;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.widgets.Composite;
@@ -28,7 +28,7 @@ public class ActiveCellEditor {
 	private static int columnIndex = -1;
 	private static int rowIndex = -1;
 	
-	public static void activate(ICellEditor cellEditor, Composite parent, Object originalCanonicalValue, Character initialEditValue, EditModeEnum editMode, ICellEditHandler editHandler, LayerCell cell, IConfigRegistry configRegistry) {
+	public static void activate(ICellEditor cellEditor, Composite parent, Object originalCanonicalValue, Character initialEditValue, EditModeEnum editMode, ICellEditHandler editHandler, ILayerCell cell, IConfigRegistry configRegistry) {
 		close();
 		
 		ActiveCellEditor.cellEditor = cellEditor;

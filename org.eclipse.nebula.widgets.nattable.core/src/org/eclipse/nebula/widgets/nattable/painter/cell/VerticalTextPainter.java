@@ -12,12 +12,11 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -78,19 +77,19 @@ public class VerticalTextPainter extends AbstractTextPainter {
 	}
 
 	@Override
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry){
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry){
 		setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
 		return gc.textExtent(convertDataType(cell, configRegistry)).x;
 	}
 
 	@Override
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
 		return getLengthFromCache(gc, convertDataType(cell, configRegistry)) + (spacing*2) + 1;
 	}
 
 	@Override
-	public void paintCell(LayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
 		if (paintBg) {
 			super.paintCell(cell, gc, rectangle, configRegistry);
 		}
@@ -165,7 +164,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 	}
 
 	@Override
-	protected void setNewMinLength(LayerCell cell, int contentHeight) {
+	protected void setNewMinLength(ILayerCell cell, int contentHeight) {
 		int cellLength = cell.getBounds().height;
 		if (cellLength < contentHeight) {
 
@@ -177,7 +176,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 	}
 
 	@Override
-	protected int calculatePadding(LayerCell cell, int availableLength) {
+	protected int calculatePadding(ILayerCell cell, int availableLength) {
 		return cell.getBounds().height - availableLength;
 	}
 }

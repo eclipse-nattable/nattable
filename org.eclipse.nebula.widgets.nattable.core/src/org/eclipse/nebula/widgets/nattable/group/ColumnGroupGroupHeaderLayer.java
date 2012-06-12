@@ -19,12 +19,12 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-
 
 /**
  * Adds the Column grouping functionality to the column headers.<br/>
@@ -153,7 +153,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 	 * Column group header cells are rendered properly.
 	 */
 	@Override
-	public LayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		int bodyColumnIndex = getColumnIndexByPosition(columnPosition);
 
 		if (rowPosition == 0) {
@@ -165,7 +165,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 						getColumnSpan(columnPosition), 1
 				);
 			} else {
-				LayerCell underlyingCell = columnGroupHeaderLayer.getCellByPosition(columnPosition, rowPosition);
+				ILayerCell underlyingCell = columnGroupHeaderLayer.getCellByPosition(columnPosition, rowPosition);
 				return new LayerCell(
 						this,
 						underlyingCell.getOriginColumnPosition(), underlyingCell.getOriginRowPosition(),
@@ -174,7 +174,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 				);
 			}
 		} else if (rowPosition == 1) {
-			LayerCell underlyingCell = columnGroupHeaderLayer.getCellByPosition(columnPosition, rowPosition - 1);
+			ILayerCell underlyingCell = columnGroupHeaderLayer.getCellByPosition(columnPosition, rowPosition - 1);
 			boolean partOfAGroup = model.isPartOfAGroup(bodyColumnIndex);
 			return new LayerCell(
 					this,
@@ -183,7 +183,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 					underlyingCell.getColumnSpan(), underlyingCell.getRowSpan() + (partOfAGroup ? 0 : 1)
 			);
 		} else if (rowPosition == 2) {
-			LayerCell underlyingCell = columnGroupHeaderLayer.getCellByPosition(columnPosition, rowPosition - 1);
+			ILayerCell underlyingCell = columnGroupHeaderLayer.getCellByPosition(columnPosition, rowPosition - 1);
 			boolean partOfAGroup = model.isPartOfAGroup(bodyColumnIndex) || columnGroupHeaderLayer.isColumnInGroup(bodyColumnIndex);
 			return new LayerCell(
 					this,

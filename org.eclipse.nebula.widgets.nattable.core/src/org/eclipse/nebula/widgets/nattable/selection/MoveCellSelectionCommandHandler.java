@@ -11,7 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
 
 /**
@@ -31,7 +31,7 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 	protected void moveLastSelectedLeft(int stepSize, boolean withShiftMask, boolean withControlMask) {
 		if (selectionLayer.hasColumnSelection()) {
 			lastSelectedCellPosition = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
-			LayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
+			ILayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
 			
 			newSelectedColumnPosition =
 					stepSize >= 0
@@ -57,7 +57,7 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 	protected void moveLastSelectedRight(int stepSize, boolean withShiftMask, boolean withControlMask) {
 		if (selectionLayer.hasColumnSelection()) {
 			lastSelectedCellPosition = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
-			LayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
+			ILayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
 
 			newSelectedColumnPosition =
 					stepSize >= 0 
@@ -83,7 +83,7 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 	protected void moveLastSelectedUp(int stepSize, boolean withShiftMask, boolean withControlMask) {
 		if (selectionLayer.hasRowSelection()) {
 			lastSelectedCellPosition = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
-			LayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
+			ILayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
 			
 			newSelectedColumnPosition = lastSelectedCellPosition.columnPosition;
 			
@@ -106,7 +106,7 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 	protected void moveLastSelectedDown(int stepSize, boolean withShiftMask, boolean withControlMask) {
 		if (selectionLayer.hasRowSelection()) {
 			lastSelectedCellPosition = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
-			LayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
+			ILayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
 			
 			newSelectedColumnPosition = lastSelectedCellPosition.columnPosition;
 			

@@ -10,11 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
-
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.InitializeClientAreaCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.junit.Assert;
@@ -39,7 +37,7 @@ public class CellSelectionTest {
 		// Get body layer cell corresponding to the selected body cell
 		ILayer bodyLayer = gridLayer.getBodyLayer();
 		// The column position is 1 because it takes into account the offset of the row header
-		LayerCell cell = bodyLayer.getCellByPosition(1, 1);
+		ILayerCell cell = bodyLayer.getCellByPosition(1, 1);
 		
 		// Assert the cell is in selected state
 		Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());

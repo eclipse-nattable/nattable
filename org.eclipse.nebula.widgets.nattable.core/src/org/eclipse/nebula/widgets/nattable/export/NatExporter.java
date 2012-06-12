@@ -14,13 +14,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
@@ -160,7 +159,7 @@ public class NatExporter {
 				}
 				
 				for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
-					LayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
+					ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
 					
 					IExportFormatter exportFormatter = configRegistry.getConfigAttribute(CellConfigAttributes.EXPORT_FORMATTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 					Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);

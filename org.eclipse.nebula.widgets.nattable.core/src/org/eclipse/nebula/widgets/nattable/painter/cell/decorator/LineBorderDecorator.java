@@ -11,14 +11,14 @@
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -37,21 +37,21 @@ public class LineBorderDecorator extends CellPainterWrapper {
 		this.defaultBorderStyle = defaultBorderStyle;
 	}
 
-	public int getPreferredWidth(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
 		int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 		
 		return super.getPreferredWidth(cell, gc, configRegistry) + (borderThickness * 2);
 	}
 	
-	public int getPreferredHeight(LayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
 		int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 		
 		return super.getPreferredHeight(cell, gc, configRegistry) + (borderThickness * 2);
 	}
 
-	private BorderStyle getBorderStyle(LayerCell cell, IConfigRegistry configRegistry) {
+	private BorderStyle getBorderStyle(ILayerCell cell, IConfigRegistry configRegistry) {
 		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
 		BorderStyle borderStyle = cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE);
 		if (borderStyle == null) {
@@ -60,7 +60,7 @@ public class LineBorderDecorator extends CellPainterWrapper {
 		return borderStyle;
 	}
 
-	public void paintCell(LayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
+	public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
 		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
 		int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 		

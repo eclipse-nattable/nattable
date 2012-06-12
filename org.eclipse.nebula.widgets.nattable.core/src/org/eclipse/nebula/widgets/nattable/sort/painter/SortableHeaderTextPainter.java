@@ -10,10 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.sort.painter;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
@@ -50,7 +49,7 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
 		}
 
 		@Override
-		protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
+		protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 			Image icon = null;
 
 			if (isSortedAscending(cell)) {
@@ -62,15 +61,15 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
 			return icon;
 		}
 
-		private boolean isSortedAscending(LayerCell cell) {
+		private boolean isSortedAscending(ILayerCell cell) {
 			return cell.getConfigLabels().hasLabel(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
 		}
 
-		private boolean isSortedDescending(LayerCell cell) {
+		private boolean isSortedDescending(ILayerCell cell) {
 			return cell.getConfigLabels().hasLabel(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
 		}
 
-		private int getSortSequence(LayerCell cell) {
+		private int getSortSequence(ILayerCell cell) {
 			int sortSeq = 0;
 
 			for (String configLabel : cell.getConfigLabels().getLabels()) {

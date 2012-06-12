@@ -19,12 +19,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer.ChildLayerInfo;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.CompositeLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
@@ -284,7 +281,7 @@ public class CompositeLayerTest {
 
 	@Test
 	public void getCellByPosition() throws Exception {
-		LayerCell cell = layerFixture.getCellByPosition(3, 2);
+		ILayerCell cell = layerFixture.getCellByPosition(3, 2);
 		assertIsCorner(cell.getLayer());
 		assertEquals("[3, 2]", cell.getDataValue());
 		assertEquals(new Rectangle(15, 10, 5, 5), cell.getBounds()); // pixel values

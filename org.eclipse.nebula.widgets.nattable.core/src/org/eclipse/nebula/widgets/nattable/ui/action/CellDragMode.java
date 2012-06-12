@@ -10,11 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.swt.events.MouseEvent;
@@ -68,7 +67,7 @@ public class CellDragMode implements IDragMode {
 	private void setCellImage(NatTable natTable) {
 		int columnPosition = natTable.getColumnPositionByX(currentEvent.x);
 		int rowPosition = natTable.getRowPositionByY(currentEvent.y);
-		LayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
+		ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
 		
 		Rectangle cellBounds = cell.getBounds();
 		xOffset = currentEvent.x - cellBounds.x;

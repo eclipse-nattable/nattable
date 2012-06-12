@@ -12,10 +12,9 @@ package org.eclipse.nebula.widgets.nattable.test;
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.Rectangle;
 import org.junit.Assert;
-
 
 public class LayerAssert {
 
@@ -149,8 +148,8 @@ public class LayerAssert {
 		
 		for (int columnPosition = 0; columnPosition < expectedColumnCount; columnPosition++) {
 			for (int rowPosition = 0; rowPosition < expectedRowCount; rowPosition++) {
-				LayerCell expectedCellByPosition = expectedLayer.getCellByPosition(columnPosition, rowPosition);
-				LayerCell actualCellByPosition = actualLayer.getCellByPosition(columnPosition, rowPosition);
+				ILayerCell expectedCellByPosition = expectedLayer.getCellByPosition(columnPosition, rowPosition);
+				ILayerCell actualCellByPosition = actualLayer.getCellByPosition(columnPosition, rowPosition);
 				Assert.assertEquals("Cell by position (" + columnPosition + ", " + rowPosition + ")", expectedCellByPosition, actualCellByPosition);
 			}
 		}
