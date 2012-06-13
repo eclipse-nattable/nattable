@@ -8,6 +8,7 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.InvertedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -87,11 +88,11 @@ public class InvertedLayer implements ILayer {
 		return new ILayerPainter() {
 
 			public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configuration) {
-				underlyingLayer.getLayerPainter().paintLayer(natLayer, gc, xOffset, yOffset, invertRectangle(rectangle), configuration);
+				underlyingLayer.getLayerPainter().paintLayer(natLayer, gc, xOffset, yOffset, InvertUtil.invertRectangle(rectangle), configuration);
 			}
 
 			public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
-				return underlyingLayer.getLayerPainter().adjustCellBounds(rowPosition, columnPosition, invertRectangle(cellBounds));
+				return underlyingLayer.getLayerPainter().adjustCellBounds(rowPosition, columnPosition, InvertUtil.invertRectangle(cellBounds));
 			}
 			
 		};
@@ -106,7 +107,7 @@ public class InvertedLayer implements ILayer {
 	public void setClientAreaProvider(final IClientAreaProvider clientAreaProvider) {
 		underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
 			public Rectangle getClientArea() {
-				return invertRectangle(clientAreaProvider.getClientArea());
+				return InvertUtil.invertRectangle(clientAreaProvider.getClientArea());
 			}
 		});
 	}
@@ -242,7 +243,11 @@ public class InvertedLayer implements ILayer {
 	// Cell features
 	
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-		return underlyingLayer.getCellByPosition(columnPosition, rowPosition);
+		ILayerCell underlyingLayerCell = underlyingLayer.getCellByPosition(columnPosition, rowPosition);
+		if (underlyingLayerCell != null)
+			return new InvertedLayerCell(underlyingLayerCell);
+		else
+			return null;
 	}
 	
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
@@ -267,10 +272,6 @@ public class InvertedLayer implements ILayer {
 	
 	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return underlyingLayer.getCellPainter(rowPosition, columnPosition, cell, configRegistry);
-	}
-	
-	private Rectangle invertRectangle(Rectangle rect) {
-		return new Rectangle(rect.y, rect.x, rect.height, rect.width);
 	}
 	
 }
