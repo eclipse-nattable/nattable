@@ -95,10 +95,7 @@ public class ImagePainter extends BackgroundPainter {
 	}
 	
 	protected Image getImage(LayerCell cell, IConfigRegistry configRegistry) {
-		if (image == null) {
-			image = CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.IMAGE);
-		}
-		return image;
+		return image != null ? image : CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.IMAGE);
 	}
 
 }
