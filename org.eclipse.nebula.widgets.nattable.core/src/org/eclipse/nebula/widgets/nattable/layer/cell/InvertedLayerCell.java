@@ -22,11 +22,11 @@ public class InvertedLayerCell implements ILayerCell {
 	}
 
 	public void updateColumnSpan(int columnSpan) {
-		layerCell.updateRowSpan(columnSpan);
+		layerCell.updateColumnSpan(columnSpan);
 	}
 
 	public void updateRowSpan(int rowSpan) {
-		layerCell.updateColumnSpan(rowSpan);
+		layerCell.updateRowSpan(rowSpan);
 	}
 
 	public ILayer getSourceLayer() {
@@ -34,11 +34,11 @@ public class InvertedLayerCell implements ILayerCell {
 	}
 
 	public int getOriginColumnPosition() {
-		return layerCell.getOriginRowPosition();
+		return layerCell.getOriginColumnPosition();
 	}
 
 	public int getOriginRowPosition() {
-		return layerCell.getOriginColumnPosition();
+		return layerCell.getOriginRowPosition();
 	}
 
 	public ILayer getLayer() {
@@ -46,27 +46,27 @@ public class InvertedLayerCell implements ILayerCell {
 	}
 
 	public int getColumnPosition() {
-		return layerCell.getRowPosition();
+		return layerCell.getColumnIndex();
 	}
 
 	public int getRowPosition() {
-		return layerCell.getColumnIndex();
+		return layerCell.getRowPosition();
 	}
 
 	public int getColumnIndex() {
-		return layerCell.getRowIndex();
-	}
-
-	public int getRowIndex() {
 		return layerCell.getColumnIndex();
 	}
 
+	public int getRowIndex() {
+		return layerCell.getRowIndex();
+	}
+
 	public int getColumnSpan() {
-		return layerCell.getRowSpan();
+		return layerCell.getColumnSpan();
 	}
 
 	public int getRowSpan() {
-		return layerCell.getColumnSpan();
+		return layerCell.getRowSpan();
 	}
 
 	public boolean isSpannedCell() {

@@ -243,9 +243,9 @@ public class InvertedLayer implements ILayer {
 	// Cell features
 	
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-		ILayerCell underlyingLayerCell = underlyingLayer.getCellByPosition(columnPosition, rowPosition);
-		if (underlyingLayerCell != null)
-			return new InvertedLayerCell(underlyingLayerCell);
+		ILayerCell cell = underlyingLayer.getCellByPosition(rowPosition, columnPosition);
+		if (cell != null)
+			return new InvertedLayerCell(cell);
 		else
 			return null;
 	}
