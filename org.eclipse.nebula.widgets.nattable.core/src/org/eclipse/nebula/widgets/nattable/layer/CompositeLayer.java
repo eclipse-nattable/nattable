@@ -181,7 +181,7 @@ public class CompositeLayer extends AbstractLayer {
 	}
 
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(localColumnPosition, 0);
+		ChildLayerInfo childLayerInfo = getChildLayerInfoByColumnPosition(localColumnPosition);
 		if (childLayerInfo == null) {
 			return -1;
 		}
@@ -243,7 +243,7 @@ public class CompositeLayer extends AbstractLayer {
 
     public boolean isColumnPositionResizable(int compositeColumnPosition) {
     	//Only looks at the header
-    	ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(compositeColumnPosition, 0);
+    	ChildLayerInfo childLayerInfo = getChildLayerInfoByColumnPosition(compositeColumnPosition);
 		if (childLayerInfo == null) {
 			return false;
 		}
@@ -280,29 +280,20 @@ public class CompositeLayer extends AbstractLayer {
     public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 
-		int layoutX = 0;
-		while (layoutX < layoutXCount) {
-			ChildLayerInfo childLayerInfo = getChildLayerInfoByLayout(layoutX, 0);
-			if (columnPosition < childLayerInfo.getColumnPositionOffset() + childLayerInfo.getLayer().getColumnCount()) {
+		if (childLayerInfos == null) {
+			populateChildLayerInfos();
+		}
+		for (int layoutX = 0; layoutX < childLayerInfos.length; layoutX++) {
+			if (columnPosition >= childLayerInfos[layoutX][0].getColumnPositionOffset() && columnPosition < childLayerInfos[layoutX][0].getColumnPositionOffset() + childLayerInfos[layoutX][0].getLayer().getColumnCount()) {
+				for (int layoutY = 0; layoutY < childLayerInfos[layoutX].length; layoutY++) {
+					underlyingLayers.add(childLayerInfos[layoutX][layoutY].getLayer());
+				}
 				break;
 			}
-
-			layoutX++;
-		}
-
-		if (layoutX >= layoutXCount) {
-			return null;
-		}
-
-		int layoutY = 0;
-		while (layoutY < layoutYCount) {
-			ChildLayerInfo childLayerInfo = getChildLayerInfoByLayout(layoutX, layoutY);
-			underlyingLayers.add(childLayerInfo.getLayer());
-			layoutY++;
 		}
 
 		return underlyingLayers;
-    }
+	}
 
 	// Vertical features
 
@@ -332,7 +323,7 @@ public class CompositeLayer extends AbstractLayer {
 	}
 
 	public int localToUnderlyingRowPosition(int localRowPosition) {
-		ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(0, localRowPosition);
+		ChildLayerInfo childLayerInfo = getChildLayerInfoByRowPosition(localRowPosition);
 		if (childLayerInfo == null) {
 			return -1;
 		}
@@ -393,7 +384,7 @@ public class CompositeLayer extends AbstractLayer {
      * @return false if the row position is out of bounds
      */
     public boolean isRowPositionResizable(int compositeRowPosition) {
-    	ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(0, compositeRowPosition);
+    	ChildLayerInfo childLayerInfo = getChildLayerInfoByRowPosition(compositeRowPosition);
 		if (childLayerInfo == null) {
 			return false;
 		}
@@ -429,14 +420,16 @@ public class CompositeLayer extends AbstractLayer {
     public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 
-		int columnPosition = 0;
-		ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(columnPosition, rowPosition);
-		while (childLayerInfo != null) {
-			ILayer childLayer = childLayerInfo.getLayer();
-			underlyingLayers.add(childLayer);
-
-			columnPosition += childLayer.getColumnCount();
-			childLayerInfo = getChildLayerInfoByPosition(columnPosition, rowPosition);
+		if (childLayerInfos == null) {
+			populateChildLayerInfos();
+		}
+		for (int layoutY = 0; layoutY < childLayerInfos[0].length; layoutY++) {
+			if (rowPosition >= childLayerInfos[0][layoutY].getRowPositionOffset() && rowPosition < childLayerInfos[0][layoutY].getRowPositionOffset() + childLayerInfos[0][layoutY].getLayer().getRowCount()) {
+				for (int layoutX = 0; layoutX < childLayerInfos.length; layoutX++) {
+					underlyingLayers.add(childLayerInfos[layoutX][layoutY].getLayer());
+				}
+				break;
+			}
 		}
 
 		return underlyingLayers;
@@ -693,7 +686,7 @@ public class CompositeLayer extends AbstractLayer {
 			if (childLayerInfo == null) {
 				return null;
 			}
-			if (x >=0 && x < childLayerInfo.getWidthOffset() + childLayerInfo.getLayer().getWidth()) {
+			if (x >= childLayerInfo.getWidthOffset() && x < childLayerInfo.getWidthOffset() + childLayerInfo.getLayer().getWidth()) {
 				break;
 			}
 
@@ -706,7 +699,7 @@ public class CompositeLayer extends AbstractLayer {
 			if (childLayerInfo == null) {
 				return null;
 			}
-			if (y >=0 && y < childLayerInfo.getHeightOffset() + childLayerInfo.getLayer().getHeight()) {
+			if (y >= childLayerInfo.getHeightOffset() && y < childLayerInfo.getHeightOffset() + childLayerInfo.getLayer().getHeight()) {
 				return childLayerInfo;
 			}
 
@@ -723,7 +716,7 @@ public class CompositeLayer extends AbstractLayer {
 			if (childLayerInfo == null) {
 				return null;
 			}
-			if (x >= 0 && x < childLayerInfo.getWidthOffset() + childLayerInfo.getLayer().getWidth()) {
+			if (x >= childLayerInfo.getWidthOffset() && x < childLayerInfo.getWidthOffset() + childLayerInfo.getLayer().getWidth()) {
 				return childLayerInfo;
 			}
 
@@ -736,7 +729,7 @@ public class CompositeLayer extends AbstractLayer {
 		int layoutX = 0;
 		while (layoutX < layoutXCount) {
 			ChildLayerInfo childLayerInfo = getChildLayerInfoByLayout(layoutX, 0);
-			if (compositeColumnPosition < childLayerInfo.getColumnPositionOffset() + childLayerInfo.getLayer().getColumnCount()) {
+			if (compositeColumnPosition >= childLayerInfo.getColumnPositionOffset() && compositeColumnPosition < childLayerInfo.getColumnPositionOffset() + childLayerInfo.getLayer().getColumnCount()) {
 				return childLayerInfo;
 			}
 
@@ -749,7 +742,7 @@ public class CompositeLayer extends AbstractLayer {
 		int layoutY = 0;
 		while (layoutY < layoutYCount) {
 			ChildLayerInfo childLayerInfo = getChildLayerInfoByLayout(0, layoutY);
-			if (compositeRowPosition < childLayerInfo.getRowPositionOffset() + childLayerInfo.getLayer().getRowCount()) {
+			if (compositeRowPosition >= childLayerInfo.getRowPositionOffset() && compositeRowPosition < childLayerInfo.getRowPositionOffset() + childLayerInfo.getLayer().getRowCount()) {
 				return childLayerInfo;
 			}
 
@@ -763,7 +756,7 @@ public class CompositeLayer extends AbstractLayer {
 		int layoutX = 0;
 		while (layoutX < layoutXCount) {
 			ChildLayerInfo childLayerInfo = getChildLayerInfoByLayout(layoutX, 0);
-			if (compositeColumnPosition < childLayerInfo.getColumnPositionOffset() + childLayerInfo.getLayer().getColumnCount()) {
+			if (compositeColumnPosition >= childLayerInfo.getColumnPositionOffset() && compositeColumnPosition < childLayerInfo.getColumnPositionOffset() + childLayerInfo.getLayer().getColumnCount()) {
 				break;
 			}
 
@@ -777,7 +770,7 @@ public class CompositeLayer extends AbstractLayer {
 		int layoutY = 0;
 		while (layoutY < layoutYCount) {
 			ChildLayerInfo childLayerInfo = getChildLayerInfoByLayout(layoutX, layoutY);
-			if (compositeRowPosition < childLayerInfo.getRowPositionOffset() + childLayerInfo.getLayer().getRowCount()) {
+			if (compositeRowPosition >= childLayerInfo.getRowPositionOffset() && compositeRowPosition < childLayerInfo.getRowPositionOffset() + childLayerInfo.getLayer().getRowCount()) {
 				return childLayerInfo;
 			}
 
