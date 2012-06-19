@@ -23,7 +23,11 @@ import org.eclipse.swt.graphics.Point;
 public class RowResizeEventMatcher extends MouseEventMatcher {
 
 	public RowResizeEventMatcher(int stateMask, int button) {
-		super(stateMask, GridRegion.ROW_HEADER, button);
+		this(stateMask, GridRegion.ROW_HEADER, button);
+	}
+
+	public RowResizeEventMatcher(int stateMask, String eventRegion, int button) {
+		super(stateMask, eventRegion, button);
 	}
 
 	@Override
