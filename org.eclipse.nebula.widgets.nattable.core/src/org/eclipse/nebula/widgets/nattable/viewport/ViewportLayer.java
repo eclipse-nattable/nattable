@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -42,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumn
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ScrollEvent;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ViewportEventHandler;
+
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.ScrollBar;
 
@@ -581,6 +581,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public boolean doCommand(ILayerCommand command) {
 		if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
 			ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
+			
+			//remember the difference from client area to body region area
+			//needed because the scrollbar will be removed and therefore the client area will become bigger
+			int widthDiff = clientAreaResizeCommand.getScrollable().getClientArea().width - clientAreaResizeCommand.getCalcArea().width;
+			int heightDiff = clientAreaResizeCommand.getScrollable().getClientArea().height - clientAreaResizeCommand.getCalcArea().height;
+			
 			ScrollBar hBar = clientAreaResizeCommand.getScrollable().getHorizontalBar();
 			ScrollBar vBar = clientAreaResizeCommand.getScrollable().getVerticalBar();
 
@@ -592,8 +598,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			}
 
 			handleGridResize();
-
-			return true;
+			
+			//after handling the scrollbars recalculate the area to use for percentage calculation
+			Rectangle possibleArea = clientAreaResizeCommand.getScrollable().getClientArea();
+			possibleArea.width = possibleArea.width - widthDiff;
+			possibleArea.height = possibleArea.height - heightDiff;
+			clientAreaResizeCommand.setCalcArea(possibleArea);
 		} else if (command instanceof TurnViewportOffCommand) {
 			savedOriginColumn = localToUnderlyingColumnPosition(0);
 			savedOriginRow = localToUnderlyingRowPosition(0);
@@ -614,7 +624,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		if (hBarListener != null) {
 			hBarListener.recalculateScrollBarSize();
 			
-			if (hBarListener.scrollBar.getEnabled() == false) {
+			if (!hBarListener.scrollBar.getEnabled()) {
 				setOriginColumnPosition(0);
 			}
 		}
@@ -624,7 +634,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		if (vBarListener != null) {
 			vBarListener.recalculateScrollBarSize();
 			
-			if (vBarListener.scrollBar.getEnabled() == false) {
+			if (!vBarListener.scrollBar.getEnabled()) {
 				setOriginRowPosition(0);
 			}
 		}

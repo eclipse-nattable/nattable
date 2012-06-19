@@ -15,11 +15,13 @@ import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.command.AutoResizeColumnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.AutoResizeRowCommandHandler;
+import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Top level layer. It is composed of the smaller child layers: RowHeader,
@@ -148,4 +150,23 @@ public class GridLayer extends CompositeLayer {
 				+ " bodyLayer=" + getBodyLayer() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
+	
+	@Override
+	public boolean doCommand(ILayerCommand command) {
+		if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
+			ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
+			Rectangle possibleArea = clientAreaResizeCommand.getScrollable().getClientArea();
+			
+			//remove the column header height and the row header width from the client area to 
+			//ensure that only the body region is used for percentage calculation
+			Rectangle rowLayerArea = getRowHeaderLayer().getClientAreaProvider().getClientArea();
+			Rectangle columnLayerArea = getColumnHeaderLayer().getClientAreaProvider().getClientArea();
+			possibleArea.width = possibleArea.width - rowLayerArea.width;
+			possibleArea.height = possibleArea.height - columnLayerArea.height;
+			
+			clientAreaResizeCommand.setCalcArea(possibleArea);
+		}
+		return super.doCommand(command);
+	}
+
 }

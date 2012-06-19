@@ -24,13 +24,15 @@ public class DummyGridLayerStack extends DefaultGridLayer {
 	}
 	
 	public DummyGridLayerStack(int columnCount, int rowCount) {
+		this(new DummyBodyDataProvider(columnCount, rowCount));
+	}
+	
+	public DummyGridLayerStack(IDataProvider bodyDataProvider) {
 		super(true);
-		IDataProvider bodyDataProvider = new DummyBodyDataProvider(columnCount, rowCount);
 		IDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(bodyDataProvider);
 		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
 		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
 		
 		init(bodyDataProvider, columnHeaderDataProvider, rowHeaderDataProvider, cornerDataProvider);
 	}
-	
 }

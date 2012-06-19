@@ -44,12 +44,13 @@ public class SizeConfigPersistenceTest {
 		Properties properties = new Properties();
 		sizeConfig.saveState("prefix", properties);
 
-		Assert.assertEquals(5, properties.size());
+		Assert.assertEquals(6, properties.size());
 		Assert.assertEquals("100", properties.getProperty("prefix.defaultSize"));
 		Assert.assertEquals("5:50,6:60,", properties.getProperty("prefix.defaultSizes"));
 		Assert.assertEquals("2:88,4:57,5:25,", properties.getProperty("prefix.sizes"));
 		Assert.assertFalse(Boolean.valueOf(properties.getProperty("prefix.resizableByDefault")));
 		Assert.assertEquals("3:true,9:true,", properties.getProperty("prefix.resizableIndexes"));
+		Assert.assertFalse(Boolean.valueOf(properties.getProperty("prefix.percentageSizing")));
 	}
 
 	@Test
@@ -80,6 +81,22 @@ public class SizeConfigPersistenceTest {
 		Assert.assertFalse(sizeConfig.isPositionResizable(6));
 	}
 
+	@Test
+	public void testLoadStatePercentageSizing() {
+		Properties properties = new Properties();
+		properties.setProperty("prefix.defaultSize", "40");
+		properties.setProperty("prefix.defaultSizes", "1:10,2:20,3:30,");
+		properties.setProperty("prefix.sizes", "1:100,4:400,5:500,");
+		properties.setProperty("prefix.resizableByDefault", "true");
+		properties.setProperty("prefix.resizableIndexes", "1:false,6:false,");
+		properties.setProperty("prefix.percentageSizing", "true");
+
+		sizeConfig.loadState("prefix", properties);
+
+		Assert.assertTrue(sizeConfig.isResizableByDefault());
+		Assert.assertTrue(sizeConfig.isPercentageSizing());
+	}
+	
 	@Test
 	public void loadStateFromEmptyPropertiesObject() throws Exception {
 		Properties properties = new Properties();

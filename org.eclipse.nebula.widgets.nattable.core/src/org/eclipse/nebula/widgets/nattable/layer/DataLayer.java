@@ -13,11 +13,13 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import java.util.Collection;
 import java.util.Properties;
 
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
+import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommandHandler;
@@ -45,18 +47,14 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	private final SizeConfig columnWidthConfig;
 	private final SizeConfig rowHeightConfig;
-
+	
 	public DataLayer(IDataProvider dataProvider) {
 		this(dataProvider, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
 	}
 
 	public DataLayer(IDataProvider dataProvider, int defaultColumnWidth, int defaultRowHeight) {
+		this(defaultColumnWidth, defaultRowHeight);
 		this.dataProvider = dataProvider;
-
-		columnWidthConfig = new SizeConfig(defaultColumnWidth);
-		rowHeightConfig = new SizeConfig(defaultRowHeight);
-
-		registerCommandHandlers();
 	}
 
 	protected DataLayer() {
@@ -172,6 +170,11 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		columnWidthConfig.setSize(columnPosition, width);
 		fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
 	}
+	
+	public void setColumnWidthPercentageByPosition(int columnPosition, int width) {
+		columnWidthConfig.setPercentage(columnPosition, width);
+		fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
+	}
 
 	public void setDefaultColumnWidth(int width) {
 		columnWidthConfig.setDefaultSize(width);
@@ -265,6 +268,11 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		rowHeightConfig.setSize(rowPosition, height);
 		fireLayerEvent(new RowResizeEvent(this, rowPosition));
 	}
+	
+	public void setRowHeightPercentageByPosition(int rowPosition, int height) {
+		rowHeightConfig.setPercentage(rowPosition, height);
+		fireLayerEvent(new ColumnResizeEvent(this, rowPosition));
+	}
 
 	public void setDefaultRowHeight(int height) {
 		rowHeightConfig.setDefaultSize(height);
@@ -321,5 +329,68 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
 		return null;
 	}
+	
+	@Override
+	public boolean doCommand(ILayerCommand command) {
+		if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
+			ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
+			
+			boolean refresh = false;
+			if (isColumnPercentageSizing()) {
+				this.columnWidthConfig.calculatePercentages(clientAreaResizeCommand.getCalcArea().width, getColumnCount());
+				refresh = true;
+			}
+			if (isRowPercentageSizing()) {
+				this.rowHeightConfig.calculatePercentages(clientAreaResizeCommand.getCalcArea().height, getRowCount());
+				refresh = true;
+			}
+			
+			if (refresh) {
+				fireLayerEvent(new StructuralRefreshEvent(this));
+			}
 
+			return true;
+		}
+		return super.doCommand(command);
+	}
+	
+	/**
+	 * @return <code>true</code> if the column sizing is done percentaged,
+	 * 			<code>false</code> if the column sizing is done by pixel (default)
+	 */
+	public boolean isColumnPercentageSizing() {
+		return this.columnWidthConfig.isPercentageSizing();
+	}
+	
+	/**
+	 * Configures how the column sizing of this {@link DataLayer} is handled.
+	 * Default is pixel sizing.
+	 * If percentage sizing should be used you have to ensure that the size value for every 
+	 * column is set explicitly and that the sum of the column sizes doesn't exceed 100.
+	 * @param percentageSizing <code>true</code> if the column sizing should be done percentaged,
+	 * 			<code>false</code> if the column sizing should be done by pixel (default)
+	 */
+	public void setColumnPercentageSizing(boolean percentageSizing) {
+		this.columnWidthConfig.setPercentageSizing(percentageSizing);
+	}
+	
+	/**
+	 * @return <code>true</code> if the row sizing is done percentaged,
+	 * 			<code>false</code> if the row sizing is done by pixel (default)
+	 */
+	public boolean isRowPercentageSizing() {
+		return this.rowHeightConfig.isPercentageSizing();
+	}
+	
+	/**
+	 * Configures how the row sizing of this {@link DataLayer} is handled.
+	 * Default is pixel sizing.
+	 * If percentage sizing should be used you have to ensure that the size value for every 
+	 * row is set explicitly and that the sum of the row sizes doesn't exceed 100.
+	 * @param percentageSizing <code>true</code> if the row sizing should be done percentaged,
+	 * 			<code>false</code> if the row sizing should be done by pixel (default)
+	 */
+	public void setRowPercentageSizing(boolean percentageSizing) {
+		this.rowHeightConfig.setPercentageSizing(percentageSizing);
+	}
 }

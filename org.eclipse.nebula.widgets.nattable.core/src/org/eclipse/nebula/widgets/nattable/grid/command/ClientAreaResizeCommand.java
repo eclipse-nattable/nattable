@@ -10,16 +10,27 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.command;
 
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Scrollable;
 
 /**
  * Command that gives the layers access to ClientArea and the Scrollable 
  */
 public class ClientAreaResizeCommand extends AbstractContextFreeCommand {
+	
+	/**
+	 * The {@link Scrollable}, normally the NatTable itself.
+	 */
 	private Scrollable scrollable;
 	
+	/**
+	 * This is the area within the client area that is used for percentage calculation.
+	 * Without using a GridLayer, this will be the client area of the scrollable.
+	 * On using a GridLayer this value will be overriden with the body region area.
+	 */
+	private Rectangle calcArea;
+
 	public ClientAreaResizeCommand(Scrollable scrollable) {
 		super();
 		this.scrollable = scrollable;
@@ -28,4 +39,16 @@ public class ClientAreaResizeCommand extends AbstractContextFreeCommand {
 	public Scrollable getScrollable() {
 		return scrollable;
 	}
+	
+	public Rectangle getCalcArea() {
+		if (calcArea == null) {
+			return scrollable.getClientArea();
+		}
+		return calcArea;
+	}
+	
+	public void setCalcArea(Rectangle calcArea) {
+		this.calcArea = calcArea;
+	}
+	
 }
