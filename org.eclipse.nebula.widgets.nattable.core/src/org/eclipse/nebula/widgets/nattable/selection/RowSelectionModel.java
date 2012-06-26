@@ -144,7 +144,8 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		selectionsLock.writeLock().lock();
 		
 		try {
-			for (int rowPosition = removedSelection.y; rowPosition < removedSelection.y + removedSelection.height; rowPosition++) {
+			int maxY = Math.min(removedSelection.y + removedSelection.height, selectionLayer.getRowCount());
+			for (int rowPosition = removedSelection.y; rowPosition < maxY; rowPosition++) {
 				clearSelection(0, rowPosition);
 			}
 		} finally {
