@@ -97,7 +97,8 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 			
 			Map<Serializable, R> rowsToSelect = new HashMap<Serializable, R>();
 			
-			for (int rowPosition = range.y; rowPosition < range.y + range.height; rowPosition++) {
+			int maxY = Math.min(range.y + range.height, selectionLayer.getRowCount());
+			for (int rowPosition = range.y; rowPosition < maxY; rowPosition++) {
 				R rowObject = getRowObjectByPosition(rowPosition);
 				if (rowObject != null) {
 					Serializable rowId = rowIdAccessor.getRowId(rowObject);
