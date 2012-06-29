@@ -45,7 +45,10 @@ public class Range {
 	}
 
 	public boolean overlap(Range range) {
-		return this.contains(range.start) || this.contains(range.end - 1) || range.contains(start) || range.contains(end - 1);
+		return
+				(start < end) &&  // this is a non-empty range
+				(range.start < range.end) &&  // range parameter is non-empty
+				(this.contains(range.start) || this.contains(range.end - 1) || range.contains(start) || range.contains(end - 1));
 	}
 
 	public Set<Integer> getMembers() {
