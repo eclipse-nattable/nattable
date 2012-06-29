@@ -88,7 +88,7 @@ public class InvertedLayer implements ILayer {
 		return new ILayerPainter() {
 
 			public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configuration) {
-				underlyingLayer.getLayerPainter().paintLayer(natLayer, gc, xOffset, yOffset, InvertUtil.invertRectangle(rectangle), configuration);
+				underlyingLayer.getLayerPainter().paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configuration);
 			}
 
 			public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
