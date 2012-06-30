@@ -33,12 +33,8 @@ public class TestLayerCell extends LayerCell {
 		super(layer, originColumnPosition, originRowPosition, columnPosition, rowPosition, columnSpan, rowSpan);
 	}
 	
-	protected TestLayerCell(TestLayerCell cell) {
+	public TestLayerCell(ILayerCell cell) {
 		super(cell.getLayer(), cell.getOriginColumnPosition(), cell.getOriginRowPosition(), cell.getColumnPosition(), cell.getRowPosition(), cell.getColumnSpan(), cell.getRowSpan());
-	}
-	
-	public TestLayerCell cloneCell() {
-		return new TestLayerCell(this);
 	}
 	
 	@Override

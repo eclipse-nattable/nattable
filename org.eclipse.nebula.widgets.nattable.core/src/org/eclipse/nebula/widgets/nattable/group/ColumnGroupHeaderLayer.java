@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.TransformedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
@@ -236,12 +237,25 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 			// the ColumnGroupGroupHeaderLayer wouldn't work anymore
 			ILayerCell cell = columnHeaderLayer.getCellByPosition(columnPosition, 0);
 			if (cell != null) {
-				cell.updateLayer(this);
+				final int rowSpan;
+				
 				if (calculateHeight && model.size() == 0) {
-					cell.updateRowSpan(1);
+					rowSpan = 1;
 				} else {
-					cell.updateRowSpan(2);
+					rowSpan = 2;
 				}
+				
+				cell = new TransformedLayerCell(cell) {
+					@Override
+					public ILayer getLayer() {
+						return ColumnGroupHeaderLayer.this;
+					}
+					
+					@Override
+					public int getRowSpan() {
+						return rowSpan;
+					}
+				};
 			}
 			return cell;
 		}

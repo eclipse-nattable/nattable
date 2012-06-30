@@ -5,7 +5,10 @@ import org.eclipse.swt.graphics.Rectangle;
 public class InvertUtil {
 	
 	public static Rectangle invertRectangle(Rectangle rect) {
-		return new Rectangle(rect.y, rect.x, rect.height, rect.width);
+		if (rect != null)
+			return new Rectangle(rect.y, rect.x, rect.height, rect.width);
+		else
+			return null;
 	}
 
 }

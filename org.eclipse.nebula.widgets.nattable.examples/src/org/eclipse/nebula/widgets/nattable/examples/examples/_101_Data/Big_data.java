@@ -15,7 +15,6 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.InvertedLayer;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -40,7 +39,7 @@ public class Big_data extends AbstractNatExample {
 		DataLayer rowHeaderDataLayer = (DataLayer) layer.getRowHeaderDataLayer();
 		rowHeaderDataLayer.setColumnWidthByPosition(0, 80);
 		
-		return new NatTable(parent, new InvertedLayer(layer));
+		return new NatTable(parent, layer);
 	}
 	
 }

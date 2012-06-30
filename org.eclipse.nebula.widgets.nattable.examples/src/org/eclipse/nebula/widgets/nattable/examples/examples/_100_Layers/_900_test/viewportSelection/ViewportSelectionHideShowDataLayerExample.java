@@ -17,7 +17,6 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleR
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.InvertedLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
@@ -30,7 +29,7 @@ public class ViewportSelectionHideShowDataLayerExample extends AbstractNatExampl
 	}
 
 	public Control createExampleControl(Composite parent) {
-		return new NatTable(parent, new InvertedLayer(new ViewportLayer(new SelectionLayer(new ColumnHideShowLayer(new DataLayer(new DummyBodyDataProvider(5, 10)))))));
+		return new NatTable(parent, new ViewportLayer(new SelectionLayer(new ColumnHideShowLayer(new DataLayer(new DummyBodyDataProvider(500, 1000000))))));
 	}
 	
 }

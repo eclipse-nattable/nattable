@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.TransformedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -50,7 +51,7 @@ public class TestLayer implements IUniqueIndexLayer {
 	private final int[] rowHeights;
 	private final int[] underlyingRowPositions;
 
-	private final TestLayerCell[][] cells;
+	private final ILayerCell[][] cells;
 	private final Rectangle[][] bounds;
 	private final String[][] displayModes;
 	private final String[][] configLabels;
@@ -218,11 +219,17 @@ public class TestLayer implements IUniqueIndexLayer {
 						// Span from left
 						dataValues[columnPosition][rowPosition] = dataValues[columnPosition - 1][rowPosition];
 
-						TestLayerCell cell = cells[columnPosition - 1][rowPosition];
+						ILayerCell cell = cells[columnPosition - 1][rowPosition];
 						Rectangle boundsRect = bounds[columnPosition - 1][rowPosition];
 
 						if (columnPosition >= cell.getColumnPosition() + cell.getColumnSpan()) {
-							cell.updateColumnSpan(cell.getColumnSpan() + 1);
+							final ILayerCell underlyingCell = cell;
+							cell = new TransformedLayerCell(cell) {
+								@Override
+								public int getColumnSpan() {
+									return underlyingCell.getColumnSpan() + 1;
+								}
+							};
 							boundsRect.width += getColumnWidthByPosition(columnPosition);
 						}
 
@@ -237,11 +244,17 @@ public class TestLayer implements IUniqueIndexLayer {
 						// Span from above
 						dataValues[columnPosition][rowPosition] = dataValues[columnPosition][rowPosition - 1];
 
-						TestLayerCell cell = cells[columnPosition][rowPosition - 1];
+						ILayerCell cell = cells[columnPosition][rowPosition - 1];
 						Rectangle boundsRect = bounds[columnPosition][rowPosition - 1];
 
 						if (rowPosition >= cell.getRowPosition() + cell.getRowSpan()) {
-							cell.updateRowSpan(cell.getRowSpan() + 1);
+							final ILayerCell underlyingCell = cell;
+							cell = new TransformedLayerCell(cell) {
+								@Override
+								public int getRowSpan() {
+									return underlyingCell.getRowSpan() + 1;
+								}
+							};
 							boundsRect.height += getRowHeightByPosition(rowPosition);
 						}
 
@@ -550,7 +563,7 @@ public class TestLayer implements IUniqueIndexLayer {
 	// Cell features
 
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-		return cells[columnPosition][rowPosition].cloneCell();
+		return new TestLayerCell(cells[columnPosition][rowPosition]);
 	}
 
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {

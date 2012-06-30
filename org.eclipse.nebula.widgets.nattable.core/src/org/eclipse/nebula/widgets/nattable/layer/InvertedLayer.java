@@ -18,11 +18,11 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class InvertedLayer implements ILayer {
+public class InvertedLayer implements IUniqueIndexLayer {
 	
-	private ILayer underlyingLayer;
+	private IUniqueIndexLayer underlyingLayer;
 	
-	public InvertedLayer(ILayer underlyingLayer) {
+	public InvertedLayer(IUniqueIndexLayer underlyingLayer) {
 		this.underlyingLayer = underlyingLayer;
 	}
 	
@@ -92,7 +92,7 @@ public class InvertedLayer implements ILayer {
 			}
 
 			public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
-				return underlyingLayer.getLayerPainter().adjustCellBounds(rowPosition, columnPosition, InvertUtil.invertRectangle(cellBounds));
+				return underlyingLayer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cellBounds);
 			}
 			
 		};
@@ -176,6 +176,12 @@ public class InvertedLayer implements ILayer {
 		return underlyingLayer.getUnderlyingLayersByRowPosition(columnPosition);
 	}
 	
+	// Unique index
+
+	public int getColumnPositionByIndex(int columnIndex) {
+		return underlyingLayer.getRowPositionByIndex(columnIndex);
+	}
+	
 	// Vertical features
 	
 	// Rows
@@ -240,6 +246,12 @@ public class InvertedLayer implements ILayer {
 		return underlyingLayer.getUnderlyingLayersByColumnPosition(rowPosition);
 	}
 	
+	// Unique index
+
+	public int getRowPositionByIndex(int rowIndex) {
+		return underlyingLayer.getColumnPositionByIndex(rowIndex);
+	}
+	
 	// Cell features
 	
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
@@ -248,10 +260,11 @@ public class InvertedLayer implements ILayer {
 			return new InvertedLayerCell(cell);
 		else
 			return null;
+//		return underlyingLayer.getCellByPosition(rowPosition, columnPosition);
 	}
 	
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
-		return underlyingLayer.getBoundsByPosition(rowPosition, columnPosition);
+		return InvertUtil.invertRectangle(underlyingLayer.getBoundsByPosition(rowPosition, columnPosition));
 	}
 	
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
