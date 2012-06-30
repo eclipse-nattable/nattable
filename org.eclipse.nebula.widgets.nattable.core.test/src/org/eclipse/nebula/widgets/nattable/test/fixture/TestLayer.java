@@ -77,7 +77,7 @@ public class TestLayer implements IUniqueIndexLayer {
 		rowHeights = new int[rowCount];
 		underlyingRowPositions = new int[rowCount];
 
-		cells = new TestLayerCell[columnCount][rowCount];
+		cells = new ILayerCell[columnCount][rowCount];
 		bounds = new Rectangle[columnCount][rowCount];
 		displayModes = new String[columnCount][rowCount];
 		configLabels = new String[columnCount][rowCount];
@@ -224,13 +224,18 @@ public class TestLayer implements IUniqueIndexLayer {
 
 						if (columnPosition >= cell.getColumnPosition() + cell.getColumnSpan()) {
 							final ILayerCell underlyingCell = cell;
+							final Rectangle transformedRect = new Rectangle(boundsRect.x, boundsRect.y, boundsRect.width + getColumnWidthByPosition(columnPosition), boundsRect.height);
+							boundsRect = transformedRect;
 							cell = new TransformedLayerCell(cell) {
 								@Override
 								public int getColumnSpan() {
 									return underlyingCell.getColumnSpan() + 1;
 								}
+								@Override
+								public Rectangle getBounds() {
+									return transformedRect;
+								}
 							};
-							boundsRect.width += getColumnWidthByPosition(columnPosition);
 						}
 
 						cells[columnPosition][rowPosition] = cell;
@@ -249,13 +254,18 @@ public class TestLayer implements IUniqueIndexLayer {
 
 						if (rowPosition >= cell.getRowPosition() + cell.getRowSpan()) {
 							final ILayerCell underlyingCell = cell;
+							final Rectangle transformedRect = new Rectangle(boundsRect.x, boundsRect.y, boundsRect.width, boundsRect.height + getRowHeightByPosition(rowPosition));
+							boundsRect = transformedRect;
 							cell = new TransformedLayerCell(cell) {
 								@Override
 								public int getRowSpan() {
 									return underlyingCell.getRowSpan() + 1;
 								}
+								@Override
+								public Rectangle getBounds() {
+									return transformedRect;
+								}
 							};
-							boundsRect.height += getRowHeightByPosition(rowPosition);
 						}
 
 						cells[columnPosition][rowPosition] = cell;
