@@ -15,7 +15,6 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class InvertedLayer implements IUniqueIndexLayer {
@@ -85,17 +84,7 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	}
 	
 	public ILayerPainter getLayerPainter() {
-		return new ILayerPainter() {
-
-			public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configuration) {
-				underlyingLayer.getLayerPainter().paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configuration);
-			}
-
-			public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
-				return underlyingLayer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cellBounds);
-			}
-			
-		};
+		return underlyingLayer.getLayerPainter();
 	}
 	
 	// Client area
