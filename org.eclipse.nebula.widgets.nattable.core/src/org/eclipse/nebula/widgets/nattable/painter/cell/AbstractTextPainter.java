@@ -347,8 +347,8 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 					int newTextExtent = getLengthFromCache(gc, trialLabelText);
 					
 					while (newTextExtent > availableLength + 1 && newStringLength > 0) {
-						int avgWidthPerChar = newTextExtent / line.length();
-						numExtraChars = 1 + (newTextExtent - availableLength) / avgWidthPerChar;
+						double avgWidthPerChar = (double) newTextExtent / trialLabelText.length();
+						numExtraChars = 1 + (int) ((newTextExtent - availableLength) / avgWidthPerChar);
 						
 						newStringLength = nextTrialString.length() - numExtraChars;
 						if (newStringLength>0){
