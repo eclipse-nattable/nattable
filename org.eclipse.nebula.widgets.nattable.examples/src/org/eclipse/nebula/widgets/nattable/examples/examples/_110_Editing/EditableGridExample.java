@@ -138,7 +138,7 @@ public class EditableGridExample extends AbstractNatExample {
 				configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
 						column9HeaderPainter,
 						DisplayMode.NORMAL,
-						"COLUMN_9");
+						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 9);
 			}
 			
 			@Override

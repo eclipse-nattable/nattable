@@ -12,10 +12,22 @@ package org.eclipse.nebula.widgets.nattable.layer.cell;
 
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
+
+/**
+ * Accumulator for column labels allowing to configure cells by their column position.
+ * 
+ * The label of a column is {@link #COLUMN_LABEL_PREFIX} + column position.
+ */
 public class ColumnLabelAccumulator implements IConfigLabelAccumulator {
 
+	/**
+	 * The common prefix of column labels (value is {@value}).
+	 */
+	public static final String COLUMN_LABEL_PREFIX = "COLUMN_"; //$NON-NLS-1$
+
+
 	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-		configLabels.addLabel("COLUMN_" + columnPosition); //$NON-NLS-1$
+		configLabels.addLabel(COLUMN_LABEL_PREFIX + columnPosition);
 	}
 
 }

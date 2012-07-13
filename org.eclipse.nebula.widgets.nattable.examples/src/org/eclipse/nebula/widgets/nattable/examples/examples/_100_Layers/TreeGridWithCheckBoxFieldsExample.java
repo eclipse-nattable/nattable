@@ -228,7 +228,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 				configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
 						new BeveledBorderDecorator(new CellPainterDecorator(new SortableHeaderTextPainter(), CellEdgeEnum.LEFT, columnHeaderCheckBoxPainter)),
 						DisplayMode.NORMAL,
-						"COLUMN_0");
+						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0);
 				
 				configRegistry.registerConfigAttribute(
 						CellConfigAttributes.CELL_PAINTER,
