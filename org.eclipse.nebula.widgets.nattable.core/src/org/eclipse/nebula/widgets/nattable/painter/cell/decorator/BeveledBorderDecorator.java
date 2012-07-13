@@ -20,12 +20,38 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
+/**
+ * Decorator for rendering the cell with beveled borders (button look).
+ * It is possible to render the beveled borders to look like the cell is uplifted or sunk.
+ * The default is to render it uplifted.
+ */
 public class BeveledBorderDecorator extends CellPainterWrapper {
 
+	/**
+	 * Flag to determine whether the cell borders should be painted uplift or sunk.
+	 */
+	private boolean uplift = true;
+	
+	/**
+	 * 
+	 * @param interiorPainter The painter which should be wrapped by this decorator.
+	 */
 	public BeveledBorderDecorator(ICellPainter interiorPainter) {
 		super(interiorPainter);
 	}
 
+	/**
+	 * 
+	 * @param interiorPainter The painter which should be wrapped by this decorator.
+	 * @param uplift Flag to determine whether the cell borders should be painted uplift or sunk.
+	 * 			By default this flag is set to <code>true</code>. Set it to <code>false</code> if
+	 * 			the cell should be rendered sunk.
+	 */
+	public BeveledBorderDecorator(ICellPainter interiorPainter, boolean uplift) {
+		super(interiorPainter);
+		this.uplift = uplift;
+	}
+	
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredWidth(cell, gc, configRegistry) + 4;
 	}
@@ -49,20 +75,20 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
 		//TODO: Need to look at the border style
 		
 		// Up
-		gc.setForeground(GUIHelper.COLOR_WIDGET_LIGHT_SHADOW);
+		gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_LIGHT_SHADOW : GUIHelper.COLOR_WIDGET_DARK_SHADOW);
 		gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y);
 		gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y, adjustedCellBounds.x, adjustedCellBounds.y + adjustedCellBounds.height - 1);
 
-		gc.setForeground(GUIHelper.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+		gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_HIGHLIGHT_SHADOW : GUIHelper.COLOR_WIDGET_NORMAL_SHADOW);
 		gc.drawLine(adjustedCellBounds.x + 1, adjustedCellBounds.y + 1, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y + 1);
 		gc.drawLine(adjustedCellBounds.x + 1, adjustedCellBounds.y + 1, adjustedCellBounds.x + 1, adjustedCellBounds.y + adjustedCellBounds.height - 1);
 
 		// Down
-		gc.setForeground(GUIHelper.COLOR_WIDGET_DARK_SHADOW);
+		gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_DARK_SHADOW : GUIHelper.COLOR_WIDGET_LIGHT_SHADOW);
 		gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y + adjustedCellBounds.height - 1, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y + adjustedCellBounds.height - 1);
 		gc.drawLine(adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y + adjustedCellBounds.height - 1);
 
-		gc.setForeground(GUIHelper.COLOR_WIDGET_NORMAL_SHADOW);
+		gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_NORMAL_SHADOW : GUIHelper.COLOR_WIDGET_HIGHLIGHT_SHADOW);
 		gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y + adjustedCellBounds.height - 2, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y + adjustedCellBounds.height - 2);
 		gc.drawLine(adjustedCellBounds.x + adjustedCellBounds.width - 2, adjustedCellBounds.y, adjustedCellBounds.x + adjustedCellBounds.width - 2, adjustedCellBounds.y + adjustedCellBounds.height - 2);
 		

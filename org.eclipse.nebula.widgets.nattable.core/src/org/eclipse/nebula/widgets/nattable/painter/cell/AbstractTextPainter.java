@@ -339,25 +339,23 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 				//this way every line will get ... if it doesn't fit
 				int lineLength = getLengthFromCache(gc, line);
 				if (lineLength > availableLength) {
-					String nextTrialString = line;
 					int numExtraChars = 0;
-					int newStringLength = nextTrialString.length();
-					
-					String trialLabelText = nextTrialString + DOT;
+
+					int newStringLength = line.length();
+					String trialLabelText = line + DOT;
 					int newTextExtent = getLengthFromCache(gc, trialLabelText);
-					
+
 					while (newTextExtent > availableLength + 1 && newStringLength > 0) {
-						int avgWidthPerChar = newTextExtent / line.length();
-						numExtraChars = 1 + (newTextExtent - availableLength) / avgWidthPerChar;
-						
-						newStringLength = nextTrialString.length() - numExtraChars;
-						if (newStringLength>0){
-							nextTrialString = nextTrialString.substring(0, newStringLength);
-							trialLabelText = nextTrialString + DOT;
+						double avgWidthPerChar = (double) newTextExtent / trialLabelText.length();
+						numExtraChars += 1 + (int) ((newTextExtent - availableLength) / avgWidthPerChar);
+
+						newStringLength = line.length() - numExtraChars;
+						if (newStringLength > 0) {
+							trialLabelText = line.substring(0, newStringLength) + DOT;
 							newTextExtent = getLengthFromCache(gc, trialLabelText);
 						}
 					}
-					
+
 					if (numExtraChars > line.length()) {
 						numExtraChars = line.length();
 					}

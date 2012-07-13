@@ -37,6 +37,7 @@ public class FreezePositionCommand extends AbstractPositionCommand implements IF
 	
 	protected FreezePositionCommand(FreezePositionCommand command) {
 		super(command);
+		this.toggle = command.toggle;
 	}
 	
 	public ILayerCommand cloneCommand() {

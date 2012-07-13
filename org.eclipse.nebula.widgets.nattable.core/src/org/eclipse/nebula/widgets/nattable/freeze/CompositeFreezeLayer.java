@@ -11,9 +11,11 @@
 package org.eclipse.nebula.widgets.nattable.freeze;
 
 
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
+import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -69,6 +71,18 @@ public class CompositeFreezeLayer extends CompositeLayer {
 	@Override
 	protected void registerCommandHandlers() {
 		registerCommandHandler(new FreezeCommandHandler(freezeLayer, viewportLayer, selectionLayer));
+	}
+	
+	
+	@Override
+	public boolean doCommand(ILayerCommand command) {
+		//if this layer should handle a ClientAreaResizeCommand we have to ensure that
+		//it is only called on the ViewportLayer, as otherwise an undefined behaviour
+		//could occur because the ViewportLayer isn't informed about potential refreshes
+		if (command instanceof ClientAreaResizeCommand) {
+			this.viewportLayer.doCommand(command);
+		}
+		return super.doCommand(command);
 	}
 	
 	class FreezableLayerPainter extends CompositeLayerPainter {

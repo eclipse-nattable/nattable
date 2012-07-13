@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
+import org.eclipse.nebula.widgets.nattable.layer.event.ResizeStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommandHandler;
@@ -346,7 +347,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 			}
 			
 			if (refresh) {
-				fireLayerEvent(new StructuralRefreshEvent(this));
+				fireLayerEvent(new ResizeStructuralRefreshEvent(this));
 			}
 
 			return true;

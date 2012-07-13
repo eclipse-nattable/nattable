@@ -40,7 +40,7 @@ public class MouseEventMatcher implements IMouseEventMatcher {
 	}
 
 	public MouseEventMatcher(int stateMask, String eventRegion) {
-		this(0, eventRegion, 0);
+		this(stateMask, eventRegion, 0);
 	}
 	
 	/**

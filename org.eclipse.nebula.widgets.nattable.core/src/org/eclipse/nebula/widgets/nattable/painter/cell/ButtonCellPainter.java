@@ -47,7 +47,7 @@ public class ButtonCellPainter extends AbstractCellPainter implements IMouseActi
 	 * 	This will be decorated with a button like look and feel. 
 	 */
 	public ButtonCellPainter(ICellPainter interiorPainter) {
-		this.buttonPressedPainter = interiorPainter;
+		this.buttonPressedPainter = new BeveledBorderDecorator(interiorPainter, false);
 		this.buttonRaisedPainter = new BeveledBorderDecorator(interiorPainter);
 	}
 
