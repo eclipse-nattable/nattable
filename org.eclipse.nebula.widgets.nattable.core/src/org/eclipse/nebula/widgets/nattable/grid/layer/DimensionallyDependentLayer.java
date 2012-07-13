@@ -155,7 +155,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 
 	@Override
 	public ILayerPainter getLayerPainter() {
-		return baseLayer.getLayerPainter();
+		return (layerPainter != null) ? layerPainter : baseLayer.getLayerPainter();
 	}
 
 	// Horizontal features

@@ -31,21 +31,49 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 
 	private final SelectionLayer selectionLayer;
-	private final ILayerPainter layerPainter = new CellLayerPainter();
+
 	protected RenameColumnHelper renameColumnHelper;
 
 	/**
-	 * @param baseLayer data provider for the column header layer
-	 * @param horizontalLayerDependency typically the body layer
-	 * @param selectionLayer required to respond to selection events
+	 * Creates a column header layer using the default configuration and painter
+	 * 
+	 * @param baseLayer
+	 *            The data provider for this layer
+	 * @param horizontalLayerDependency
+	 *            The layer to link the horizontal dimension to, typically the body layer
+	 * @param selectionLayer
+	 *            The selection layer required to respond to selection events
 	 */
 	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, SelectionLayer selectionLayer) {
 		this(baseLayer, horizontalLayerDependency, selectionLayer, true);
 	}
 
 	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, SelectionLayer selectionLayer, boolean useDefaultConfiguration) {
+		this(baseLayer, horizontalLayerDependency, selectionLayer, useDefaultConfiguration, new CellLayerPainter());
+	}
+
+	/**
+	 * @param baseLayer
+	 *            The data provider for this layer
+	 * @param horizontalLayerDependency
+	 *            The layer to link the horizontal dimension to, typically the body layer
+	 * @param selectionLayer
+	 *            The selection layer required to respond to selection events
+	 * @param useDefaultConfiguration
+	 *            If default configuration should be applied to this layer
+	 * @param layerPainter
+	 *            The painter for this layer or <code>null</code> to use the painter of the base layer
+	 */
+	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency,
+			SelectionLayer selectionLayer, boolean useDefaultConfiguration, ILayerPainter layerPainter) {
 		super(baseLayer, horizontalLayerDependency, baseLayer);
+		if (selectionLayer == null) {
+			throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
+		}
+
 		this.selectionLayer = selectionLayer;
+		this.layerPainter = layerPainter;
+
 		this.renameColumnHelper = new RenameColumnHelper(this);
 		registerPersistable(renameColumnHelper);
 
@@ -81,11 +109,6 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 
 	public SelectionLayer getSelectionLayer() {
 		return selectionLayer;
-	}
-
-	@Override
-	public ILayerPainter getLayerPainter() {
-		return layerPainter;
 	}
 
 	@Override
