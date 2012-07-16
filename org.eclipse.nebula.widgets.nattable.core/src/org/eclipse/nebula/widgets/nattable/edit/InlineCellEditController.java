@@ -74,7 +74,7 @@ public class InlineCellEditController {
 					@Override
 					public void focusLost(FocusEvent e) {
 						if (!ActiveCellEditor.commit()) {
-							if (e.widget instanceof Control) {
+							if (e.widget instanceof Control && !e.widget.isDisposed()) {
 								((Control)e.widget).forceFocus();
 							}
 						}
