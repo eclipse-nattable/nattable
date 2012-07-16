@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
@@ -113,7 +114,8 @@ public abstract class AbstractCellEditor implements ICellEditor {
 				if (validationResult) {
 					valErrorHandler.removeError(this);
 				} else {
-					throw new ValidationFailedException("Error whilst validating cell value!"); //$NON-NLS-1$
+					throw new ValidationFailedException(
+							Messages.getString("AbstractCellEditor.validationFailure")); //$NON-NLS-1$
 				}
 				return validationResult;
 			} catch (Exception e) {
