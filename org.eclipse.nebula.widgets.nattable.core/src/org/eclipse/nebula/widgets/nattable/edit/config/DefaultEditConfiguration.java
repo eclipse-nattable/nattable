@@ -39,11 +39,8 @@ public class DefaultEditConfiguration extends AbstractLayerConfiguration<Abstrac
 		configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, new TextCellEditor());
 		configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, new DefaultDataValidator());
 		
-//		configRegistry.registerConfigAttribute(EditConfigAttributes.ERROR_HANDLING, new DialogErrorHandlingStrategy());
-		
 		IStyle validationErrorStyle = new Style();
 		validationErrorStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_RED);
-		configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_STYLE, validationErrorStyle, DisplayMode.NORMAL, EditStyleLabels.VALIDATION_ERROR_STYLE);
 		configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_STYLE, validationErrorStyle, DisplayMode.NORMAL, EditStyleLabels.VALIDATION_ERROR_STYLE);
 	}
 	

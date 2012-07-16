@@ -8,35 +8,40 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.data;
+package org.eclipse.nebula.widgets.nattable.data.convert;
 
 
-import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
+import java.math.BigInteger;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DefaultDisplayConverterTest {
+public class DefaultBigIntegerDisplayConverterTest {
 
-	private DefaultDisplayConverter defaultDisplayTypeConverter = new DefaultDisplayConverter();
+	private DefaultBigIntegerDisplayConverter bigIntConverter = new DefaultBigIntegerDisplayConverter();
 	
 	@Test
 	public void testNonNullDataToDisplay() {
-		Assert.assertEquals("abc", defaultDisplayTypeConverter.canonicalToDisplayValue("abc"));
+		Assert.assertEquals("123", bigIntConverter.canonicalToDisplayValue(new BigInteger("123")));
 	}
 	
 	@Test
 	public void testNullDataToDisplay() {
-		Assert.assertEquals("", defaultDisplayTypeConverter.canonicalToDisplayValue(null));
+		Assert.assertEquals(null, bigIntConverter.canonicalToDisplayValue(null));
 	}
 	
 	@Test
 	public void testNonNullDisplayToData() {
-		Assert.assertEquals("abc", defaultDisplayTypeConverter.displayToCanonicalValue("abc"));
+		Assert.assertEquals(new BigInteger("123"), bigIntConverter.displayToCanonicalValue("123"));
 	}
 	
 	@Test
 	public void testNullDisplayToData() {
-		Assert.assertEquals(null, defaultDisplayTypeConverter.displayToCanonicalValue(""));
+		Assert.assertEquals(null, bigIntConverter.displayToCanonicalValue(""));
 	}
-	
+
+	@Test(expected=ConversionFailedException.class)
+	public void testConversionException() {
+		bigIntConverter.displayToCanonicalValue("abc");
+	}
 }
