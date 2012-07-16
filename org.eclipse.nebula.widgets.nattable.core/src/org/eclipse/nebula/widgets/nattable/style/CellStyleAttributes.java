@@ -41,5 +41,10 @@ public interface CellStyleAttributes {
     public static final ConfigAttribute<Image> IMAGE = new ConfigAttribute<Image>();
     
     public static final ConfigAttribute<BorderStyle> BORDER_STYLE = new ConfigAttribute<BorderStyle>();
-
+    
+    /**
+     * Attribute for configuring the echo character that should be used by PasswordTextPainter and
+     * PassowrdCellEditor.
+     */
+	public static final ConfigAttribute<Character> PASSWORD_ECHO_CHAR = new ConfigAttribute<Character>();
 }
