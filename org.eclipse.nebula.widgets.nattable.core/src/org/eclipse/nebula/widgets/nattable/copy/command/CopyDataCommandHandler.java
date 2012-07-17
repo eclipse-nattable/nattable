@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.copy.serializing.CopyDataToClipboardS
 import org.eclipse.nebula.widgets.nattable.copy.serializing.CopyFormattedTextToClipboardSerializer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.serializing.ISerializer;
 
@@ -60,7 +59,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 		final Set<Range> selectedRows = selectionLayer.getSelectedRowPositions();
 		final int rowOffset = columnHeaderLayer != null ? columnHeaderLayer.getRowCount() : 0;
 		// Add offset to rows, remember they need to include the column header as a row
-		final ILayerCell[][] copiedCells = new LayerCell[selectionLayer.getSelectedRowCount() + rowOffset][1];
+		final ILayerCell[][] copiedCells = new ILayerCell[selectionLayer.getSelectedRowCount() + rowOffset][1];
 		if (columnHeaderLayer != null) {
 			copiedCells[0] = assembleColumnHeaders(selectionLayer.getSelectedColumnPositions());
 		}
@@ -78,7 +77,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	 */
 	protected ILayerCell[] assembleColumnHeaders(int... selectedColumnPositions) {
 		final int columnOffset = rowHeaderLayer.getColumnCount();
-		final ILayerCell[] cells = new LayerCell[selectedColumnPositions.length + columnOffset];
+		final ILayerCell[] cells = new ILayerCell[selectedColumnPositions.length + columnOffset];
 		for (int columnPosition = 0; columnPosition < selectedColumnPositions.length; columnPosition++) {
 			// Pad the width of the vertical layer
 			cells[columnPosition + columnOffset] = columnHeaderLayer.getCellByPosition(selectedColumnPositions[columnPosition], 0);
@@ -95,7 +94,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	protected ILayerCell[] assembleBody(int currentRowPosition) {		
 		final int[] selectedColumns = selectionLayer.getSelectedColumnPositions();
 		final int columnOffset = rowHeaderLayer != null ? rowHeaderLayer.getColumnCount() : 0;
-		final ILayerCell[] bodyCells = new LayerCell[selectedColumns.length + columnOffset];
+		final ILayerCell[] bodyCells = new ILayerCell[selectedColumns.length + columnOffset];
 		
 		if (rowHeaderLayer != null) {
 			bodyCells[0] = rowHeaderLayer.getCellByPosition(0, currentRowPosition);

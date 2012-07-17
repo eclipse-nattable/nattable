@@ -15,12 +15,11 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.eclipse.nebula.widgets.nattable.dataset.pricing.DelimitedFileReader;
-import org.eclipse.nebula.widgets.nattable.dataset.pricing.PricingDataBean;
-import org.eclipse.nebula.widgets.nattable.dataset.pricing.PricingDataFileLoader;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class PricingDataTester {
 
 	@Test

@@ -16,16 +16,6 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public interface ILayerCell {
 	
-	public void updateLayer(ILayer layer);
-
-	public void updatePosition(ILayer layer, int originColumnPosition, int originRowPosition, int columnPosition, int rowPosition);
-
-	public void updateColumnSpan(int columnSpan);
-
-	public void updateRowSpan(int rowSpan);
-
-	public ILayer getSourceLayer();
-	
 	public int getOriginColumnPosition();
 	
 	public int getOriginRowPosition();

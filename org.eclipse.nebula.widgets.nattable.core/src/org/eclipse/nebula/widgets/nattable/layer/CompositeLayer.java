@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.TranslatedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -449,10 +450,11 @@ public class CompositeLayer extends AbstractLayer {
 		int childColumnPosition = compositeColumnPosition - childLayerInfo.getColumnPositionOffset();
 		int childRowPosition = compositeRowPosition - childLayerInfo.getRowPositionOffset();
 
-		final ILayerCell cell = childLayer.getCellByPosition(childColumnPosition, childRowPosition);
+		ILayerCell cell = childLayer.getCellByPosition(childColumnPosition, childRowPosition);
 
 		if (cell != null) {
-			cell.updatePosition(
+			cell = new TranslatedLayerCell(
+					cell,
 					this,
 					underlyingToLocalColumnPosition(childLayer, cell.getOriginColumnPosition()),
 					underlyingToLocalRowPosition(childLayer, cell.getOriginRowPosition()),

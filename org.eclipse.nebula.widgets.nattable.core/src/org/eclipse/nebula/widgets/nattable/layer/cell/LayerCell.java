@@ -13,35 +13,19 @@ package org.eclipse.nebula.widgets.nattable.layer.cell;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.swt.graphics.Rectangle;
 
-public class LayerCell implements ILayerCell {
+public class LayerCell extends AbstractLayerCell {
 	
 	private ILayer layer;
 
 	private int columnPosition;
 	private int rowPosition;
 
-	private ILayer sourceLayer;
-	
 	private int originColumnPosition;
 	private int originRowPosition;
 	
 	private int columnSpan;
 	private int rowSpan;
-	
-	private boolean isDisplayModeCached = false;
-	private String displayMode = null;
-
-	private boolean isConfigLabelsCached = false;
-	private LabelStack configLabels = null;
-
-	private boolean isDataValueCached = false;
-	private Object dataValue = null;
-
-	private boolean isBoundsCached = false;
-	private Rectangle bounds = null;
 
 	public LayerCell(ILayer layer, int columnPosition, int rowPosition, DataCell cell) {
 		this(layer, cell.columnPosition, cell.rowPosition, columnPosition, rowPosition, cell.columnSpan, cell.rowSpan);
@@ -52,11 +36,11 @@ public class LayerCell implements ILayerCell {
 	}
 
 	public LayerCell(ILayer layer, int originColumnPosition, int originRowPosition, int columnPosition, int rowPosition, int columnSpan, int rowSpan) {
-		this.sourceLayer = layer;
+		this.layer = layer;
+		
 		this.originColumnPosition = originColumnPosition;
 		this.originRowPosition = originRowPosition;
 		
-		this.layer = layer;
 		this.columnPosition = columnPosition;
 		this.rowPosition = rowPosition;
 		
@@ -64,50 +48,6 @@ public class LayerCell implements ILayerCell {
 		this.rowSpan = rowSpan;
 	}
 
-	private boolean isReadMode() {
-		return isDisplayModeCached || isConfigLabelsCached || isDataValueCached || isBoundsCached;
-	}
-
-	public void updateLayer(ILayer layer) {
-		if (isReadMode()) {
-			throw new IllegalStateException("Cannot update cell once displayMode, configLabels, dataValue, or bounds have been read"); //$NON-NLS-1$
-		}
-
-		this.layer = layer;
-	}
-
-	public void updatePosition(ILayer layer, int originColumnPosition, int originRowPosition, int columnPosition, int rowPosition) {
-		if (isReadMode()) {
-			throw new IllegalStateException("Cannot update cell once displayMode, configLabels, dataValue, or bounds have been read"); //$NON-NLS-1$
-		}
-
-		this.layer = layer;
-		this.originColumnPosition = originColumnPosition;
-		this.originRowPosition = originRowPosition;
-		this.columnPosition = columnPosition;
-		this.rowPosition = rowPosition;
-	}
-
-	public void updateColumnSpan(int columnSpan) {
-		if (isReadMode()) {
-			throw new IllegalStateException("Cannot update cell once displayMode, configLabels, dataValue, or bounds have been read"); //$NON-NLS-1$
-		}
-
-		this.columnSpan = columnSpan;
-	}
-
-	public void updateRowSpan(int rowSpan) {
-		if (isReadMode()) {
-			throw new IllegalStateException("Cannot update cell once displayMode, configLabels, dataValue, or bounds have been read"); //$NON-NLS-1$
-		}
-
-		this.rowSpan = rowSpan;
-	}
-
-	public ILayer getSourceLayer() {
-		return sourceLayer;
-	}
-	
 	public int getOriginColumnPosition() {
 		return originColumnPosition;
 	}
@@ -129,11 +69,11 @@ public class LayerCell implements ILayerCell {
 	}
 	
 	public int getColumnIndex() {
-		return layer.getColumnIndexByPosition(columnPosition);
+		return getLayer().getColumnIndexByPosition(getColumnPosition());
 	}
 	
 	public int getRowIndex() {
-		return layer.getRowIndexByPosition(rowPosition);
+		return getLayer().getRowIndexByPosition(getRowPosition());
 	}
 	
 	public int getColumnSpan() {
@@ -142,50 +82,6 @@ public class LayerCell implements ILayerCell {
 	
 	public int getRowSpan() {
 		return rowSpan;
-	}
-	
-	public boolean isSpannedCell() {
-		return columnSpan > 1 || rowSpan > 1;
-	}
-
-	public String getDisplayMode() {
-		if (!isDisplayModeCached) {
-			isDisplayModeCached = true;
-
-			displayMode = layer.getDisplayModeByPosition(columnPosition, rowPosition);
-		}
-
-		return displayMode;
-	}
-
-	public LabelStack getConfigLabels() {
-		if (!isConfigLabelsCached) {
-			isConfigLabelsCached = true;
-
-			configLabels = layer.getConfigLabelsByPosition(columnPosition, rowPosition);
-		}
-
-		return configLabels;
-	}
-
-	public Object getDataValue() {
-		if (!isDataValueCached) {
-			isDataValueCached = true;
-
-			dataValue = layer.getDataValueByPosition(columnPosition, rowPosition);
-		}
-
-		return dataValue;
-	}
-
-	public Rectangle getBounds() {
-		if (!isBoundsCached) {
-			isBoundsCached = true;
-
-			bounds = layer.getBoundsByPosition(columnPosition, rowPosition);
-		}
-
-		return bounds;
 	}
 
 	@Override
@@ -198,7 +94,7 @@ public class LayerCell implements ILayerCell {
 		}
 		LayerCell rhs = (LayerCell) obj;
 		return new EqualsBuilder()
-			.append(sourceLayer, rhs.sourceLayer)
+			.append(layer, rhs.layer)
 			.append(originColumnPosition, rhs.originColumnPosition)
 			.append(originRowPosition, rhs.originRowPosition)
 			.append(columnSpan, rhs.columnSpan)
@@ -209,7 +105,7 @@ public class LayerCell implements ILayerCell {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(771, 855)
-			.append(sourceLayer)
+			.append(layer)
 			.append(originColumnPosition)
 			.append(originRowPosition)
 			.append(columnSpan)
@@ -220,12 +116,12 @@ public class LayerCell implements ILayerCell {
 	@Override
 	public String toString() {
 		return "LayerCell: [" //$NON-NLS-1$
-			+ "Data: " + dataValue //$NON-NLS-1$
-			+ ", sourceLayer: " + sourceLayer.getClass().getSimpleName() //$NON-NLS-1$
-			+ ", originColumnPosition: " + originColumnPosition //$NON-NLS-1$
-			+ ", originRowPosition: " + originRowPosition //$NON-NLS-1$
-			+ ", columnSpan: " + columnSpan //$NON-NLS-1$
-			+ ", rowSpan: " + rowSpan //$NON-NLS-1$
+			+ "Data: " + getDataValue() //$NON-NLS-1$
+			+ ", layer: " + getLayer().getClass().getSimpleName() //$NON-NLS-1$
+			+ ", originColumnPosition: " + getOriginColumnPosition() //$NON-NLS-1$
+			+ ", originRowPosition: " + getOriginRowPosition() //$NON-NLS-1$
+			+ ", columnSpan: " + getColumnSpan() //$NON-NLS-1$
+			+ ", rowSpan: " + getRowSpan() //$NON-NLS-1$
 			+ "]"; //$NON-NLS-1$
 	}
 }
