@@ -22,12 +22,8 @@ public class GroupByColumnAccessor<T> implements IColumnAccessor<Object> {
 
 	public Object getDataValue(Object rowObject, int columnIndex) {
 		if (rowObject instanceof GroupByObject) {
-			if (columnIndex == 0) {
-				GroupByObject groupByObject = (GroupByObject) rowObject;
-				return groupByObject.getValue();
-			} else {
-				return null;
-			}
+			GroupByObject groupByObject = (GroupByObject) rowObject;
+			return groupByObject.getValue();
 		} else {
 			return columnAccessor.getDataValue((T) rowObject, columnIndex);
 		}

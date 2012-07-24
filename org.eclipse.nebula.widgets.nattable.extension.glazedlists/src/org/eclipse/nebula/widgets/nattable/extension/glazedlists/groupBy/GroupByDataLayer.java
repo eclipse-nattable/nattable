@@ -19,6 +19,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsData
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 import ca.odell.glazedlists.EventList;
@@ -26,6 +27,8 @@ import ca.odell.glazedlists.TreeList;
 
 public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
+	public static final String GROUP_BY_OBJECT = "GROUP_BY_OBJECT"; //$NON-NLS-1$
+	
 	private final GroupByModel groupByModel;
 	private final EventList<T> eventList;
 	private final IColumnAccessor<T> columnAccessor;
@@ -63,6 +66,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		groupByDataProvider = new GroupByDataProvider(treeList, groupByColumnAccessor);
 		
 		setDataProvider(groupByDataProvider);
+		
+		addConfiguration(new GroupByDataLayerConfiguration());
 	}
 	
 	private void resetTreeList() {
@@ -80,6 +85,15 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
 	public GlazedListTreeRowModel<Object> getTreeRowModel() {
 		return treeRowModel;
+	}
+	
+	@Override
+	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+		LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
+		if (treeData.getDataAtIndex(getRowIndexByPosition(rowPosition)) instanceof GroupByObject) {
+			configLabels.addLabel(GROUP_BY_OBJECT);
+		}
+		return configLabels;
 	}
 	
 	class GroupByDataProvider extends GlazedListsDataProvider<Object> {
