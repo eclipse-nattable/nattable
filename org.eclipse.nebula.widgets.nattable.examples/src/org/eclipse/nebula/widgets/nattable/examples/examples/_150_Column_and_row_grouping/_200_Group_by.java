@@ -42,6 +42,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
+import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -132,6 +133,7 @@ public class _200_Group_by extends AbstractNatExample {
 		NatTable natTable = new NatTable(comp, compositeGridLayer, false);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
+		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
 		
 		natTable.configure();
 		
