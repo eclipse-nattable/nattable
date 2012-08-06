@@ -12,6 +12,10 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -20,7 +24,6 @@ import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
-import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
@@ -37,11 +40,12 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBar
 import org.eclipse.nebula.widgets.nattable.viewport.command.ShowCellInViewportCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ShowColumnInViewportCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ShowRowInViewportCommandHandler;
+import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportDragCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ScrollEvent;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ViewportEventHandler;
-
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.ScrollBar;
 
@@ -70,6 +74,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	private int cachedClientAreaHeight = 0;
 	private int cachedWidth = -1;
 	private int cachedHeight = -1;
+	
+	// Edge hover scrolling
+	
+	private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+	private Point edgeHoverScrollOffset = new Point(0, 0);
+	private ScheduledFuture<?> edgeHoverScrollFuture;
 
 	public ViewportLayer(IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
@@ -80,6 +90,13 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		registerEventHandler(new ViewportEventHandler(this));
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+		
+		scheduler.shutdown();
+	}
+	
 	// Origin
 
 	public int getMinimumOriginColumnPosition() {
@@ -136,7 +153,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	public void setOriginColumnPosition(int scrollableColumnPosition) {
-		
 		if (scrollableColumnPosition < minimumOrigin.columnPosition) {
 			scrollableColumnPosition = minimumOrigin.columnPosition;
 		}
@@ -146,10 +162,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 
 		int originalOriginColumnPosition = getOriginColumnPosition();
-		origin.columnPosition = scrollableColumnPosition;
-		int adjustedOriginColumnPosition = adjustColumnOrigin();
+		int adjustedOriginColumnPosition = adjustColumnOrigin(scrollableColumnPosition);
 
-		if (adjustedOriginColumnPosition != originalOriginColumnPosition && getUnderlyingLayer().getColumnIndexByPosition(scrollableColumnPosition) >= 0) {
+		if (adjustedOriginColumnPosition != originalOriginColumnPosition && getUnderlyingLayer().getColumnIndexByPosition(adjustedOriginColumnPosition) >= 0) {
 			invalidateHorizontalStructure();
 			origin.columnPosition = adjustedOriginColumnPosition;
 			fireScrollEvent();
@@ -166,10 +181,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 
 		int originalOriginRowPosition = getOriginRowPosition();
-		origin.rowPosition = scrollableRowPosition;
-		int adjustedOriginRowPosition = adjustRowOrigin();
+		int adjustedOriginRowPosition = adjustRowOrigin(scrollableRowPosition);
 
-		if (adjustedOriginRowPosition != originalOriginRowPosition && getUnderlyingLayer().getRowIndexByPosition(scrollableRowPosition) >= 0) {
+		if (adjustedOriginRowPosition != originalOriginRowPosition && getUnderlyingLayer().getRowIndexByPosition(adjustedOriginRowPosition) >= 0) {
 			invalidateVerticalStructure();
 			origin.rowPosition = adjustedOriginRowPosition;
 			fireScrollEvent();
@@ -205,6 +219,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		registerCommandHandler(new ShowRowInViewportCommandHandler(this));
 		registerCommandHandler(new ViewportSelectColumnCommandHandler(this));
 		registerCommandHandler(new ViewportSelectRowCommandHandler(this));
+		registerCommandHandler(new ViewportDragCommandHandler(this));
 	}
 
 	// Horizontal features
@@ -655,18 +670,17 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	/**
 	 * @see #adjustRowOrigin()
 	 */
-	protected int adjustColumnOrigin() {
+	protected int adjustColumnOrigin(int originColumnPosition) {
 		if (getColumnCount() == 0) {
 			return 0;
 		}
 
-		int availableWidth = getClientAreaWidth() - getWidth();
+		int availableWidth = getClientAreaWidth() - (scrollableLayer.getWidth() - scrollableLayer.getStartXOfColumnPosition(originColumnPosition));
 		if (availableWidth < 0) {
-			return getOriginColumnPosition();
+			return originColumnPosition;
 		}
 
-		int originColumnPosition = getOriginColumnPosition();
-		int previousColPosition = LayerUtil.convertColumnPosition(this, 0, scrollableLayer) - 1;
+		int previousColPosition = originColumnPosition - 1;
 
 		while (previousColPosition >= 0) {
 			int previousColWidth = getUnderlyingLayer().getColumnWidthByPosition(previousColPosition);
@@ -686,18 +700,17 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * If the client area size is greater than the content size,
 	 *    calculate number of rows to add to viewport i.e move the origin
 	 */
-	protected int adjustRowOrigin() {
+	protected int adjustRowOrigin(int originRowPosition) {
 		if (getRowCount() == 0) {
 			return 0;
 		}
 
-		int availableHeight = getClientAreaHeight() - getHeight();
+		int availableHeight = getClientAreaHeight() - (scrollableLayer.getHeight() - scrollableLayer.getStartYOfRowPosition(originRowPosition));
 		if (availableHeight < 0) {
-			return getOriginRowPosition();
+			return originRowPosition;
 		}
 
-		int originRowPosition = getOriginRowPosition();
-		int previousRowPosition = LayerUtil.convertRowPosition(this, 0, scrollableLayer) - 1;
+		int previousRowPosition = originRowPosition - 1;
 
 		// Can we fit another row ?
 		while (previousRowPosition >= 0) {
@@ -842,6 +855,63 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	
 	protected PositionCoordinate getMinmumOrigin() {
 		return minimumOrigin;
+	}
+	
+	// Edge hover scrolling
+	
+	public void drag(int x, int y) {
+		edgeHoverScrollOffset.x = 0;
+		edgeHoverScrollOffset.y = 0;
+		
+		if (x < 0 || y < 0) {
+			cancelEdgeHoverScroll();
+			return;
+		}
+		
+		Rectangle clientArea = getClientAreaProvider().getClientArea();
+		
+		if (x < clientArea.x + 10) {
+			edgeHoverScrollOffset.x = -1;
+		} else if (x > clientArea.x + clientArea.width - 10) {
+			edgeHoverScrollOffset.x = 1;
+		}
+		
+		if (y < clientArea.y + 10) {
+			edgeHoverScrollOffset.y = -1;
+		} else if (y > clientArea.y + clientArea.height - 10) {
+			edgeHoverScrollOffset.y = 1;
+		}
+		
+		if (edgeHoverScrollOffset.x != 0 || edgeHoverScrollOffset.y != 0) {
+			if (edgeHoverScrollFuture == null || edgeHoverScrollFuture.isDone()) {
+				edgeHoverScrollFuture = scheduler.schedule(new MoveViewportRunnable(), 500, TimeUnit.MILLISECONDS);
+			}
+		} else {
+			cancelEdgeHoverScroll();
+		}
+	}
+	
+	private void cancelEdgeHoverScroll() {
+		edgeHoverScrollOffset.x = 0;
+		edgeHoverScrollOffset.y = 0;
+		
+		if (edgeHoverScrollFuture != null) {
+			edgeHoverScrollFuture.cancel(false);
+			edgeHoverScrollFuture = null;
+		}
+	}
+	
+	class MoveViewportRunnable implements Runnable {
+		
+		public void run() {
+			if (edgeHoverScrollOffset.x != 0 || edgeHoverScrollOffset.y != 0) {
+				setOriginColumnPosition(origin.columnPosition + edgeHoverScrollOffset.x);
+				setOriginRowPosition(origin.rowPosition + edgeHoverScrollOffset.y);
+				
+				edgeHoverScrollFuture = scheduler.schedule(new MoveViewportRunnable(), 100, TimeUnit.MILLISECONDS);
+			}
+		}
+		
 	}
 
 }

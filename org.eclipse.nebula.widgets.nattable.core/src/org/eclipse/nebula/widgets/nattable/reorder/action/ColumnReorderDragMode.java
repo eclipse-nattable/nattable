@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportDragCommand;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -55,7 +56,9 @@ public class ColumnReorderDragMode implements IDragMode {
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		currentEvent = event;
 		
-		natTable.redraw(0, 0, natTable.getWidth(), natTable.getHeight(), false);
+		natTable.doCommand(new ViewportDragCommand(event.x, event.y));
+		
+		natTable.redraw();
 	}
 
 	public void mouseUp(NatTable natTable, MouseEvent event) {
@@ -68,7 +71,9 @@ public class ColumnReorderDragMode implements IDragMode {
 			fireMoveCommand(natTable, dragFromGridColumnPosition, dragToGridColumnPosition);
 		}
 		
-		natTable.redraw(0, 0, natTable.getWidth(), natTable.getHeight(), false);
+		natTable.doCommand(new ViewportDragCommand(-1, -1));  // Cancel any active viewport drag
+		
+		natTable.redraw();
 	}
 	
 	private int getDragFromGridColumnPosition() {

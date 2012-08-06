@@ -145,6 +145,14 @@ public class CompositeFreezeLayerTest {
 
 	@Test
 	public void testFreezeSelectionInMiddle() {
+		compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+
+			public Rectangle getClientArea() {
+				return new Rectangle(0, 0, 301, 120);
+			}
+
+		});
+		
 		selectionLayer.setSelectedCell(2, 2);
 		viewportLayer.setOriginColumnPosition(1);
 		viewportLayer.setOriginRowPosition(1);
