@@ -30,6 +30,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommandHandler;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommandHandler;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultColumnReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
@@ -51,6 +53,8 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 	private final List<Integer> columnIndexOrder = new ArrayList<Integer>();
 
 	private final Map<Integer, Integer> startXCache = new HashMap<Integer, Integer>();
+
+	private int reorderFromColumnPosition;
 
 	public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer) {
 		this(underlyingLayer, true);
@@ -104,6 +108,8 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 	@Override
 	protected void registerCommandHandlers() {
 		registerCommandHandler(new ColumnReorderCommandHandler(this));
+		registerCommandHandler(new ColumnReorderStartCommandHandler(this));
+		registerCommandHandler(new ColumnReorderEndCommandHandler(this));
 		registerCommandHandler(new MultiColumnReorderCommandHandler(this));
 	}
 
@@ -322,6 +328,14 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
 	private void invalidateCache() {
 		startXCache.clear();
+	}
+
+	public int getReorderFromColumnPosition() {
+		return reorderFromColumnPosition;
+	}
+	
+	public void setReorderFromColumnPosition(int fromColumnPosition) {
+		this.reorderFromColumnPosition = fromColumnPosition;
 	}
 
 }

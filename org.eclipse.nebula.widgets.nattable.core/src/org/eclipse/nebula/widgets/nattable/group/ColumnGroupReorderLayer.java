@@ -17,6 +17,8 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.group.command.GroupColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.GroupMultiColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupCommandHandler;
+import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupEndCommandHandler;
+import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupStartCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnsAndGroupsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -32,6 +34,8 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
 	private IUniqueIndexLayer underlyingLayer;
 	
 	private final ColumnGroupModel model;
+
+	private int reorderFromColumnPosition;
 	
 	public ColumnGroupReorderLayer(IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
 		setUnderlyingLayer(underlyingLayer);
@@ -62,6 +66,8 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
 	@Override
 	protected void registerCommandHandlers() {
 		registerCommandHandler(new ReorderColumnGroupCommandHandler(this));
+		registerCommandHandler(new ReorderColumnGroupStartCommandHandler(this));
+		registerCommandHandler(new ReorderColumnGroupEndCommandHandler(this));
 		registerCommandHandler(new ReorderColumnsAndGroupsCommandHandler(this));
 		registerCommandHandler(new GroupColumnReorderCommandHandler(this));
 		registerCommandHandler(new GroupMultiColumnReorderCommandHandler(this));
@@ -99,6 +105,14 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
 		//These positions are actually consecutive but the Column Group does not know about the order 
 		Collections.sort(fromColumnPositions);
 		return fromColumnPositions;
+	}
+	
+	public int getReorderFromColumnPosition() {
+		return reorderFromColumnPosition;
+	}
+
+	public void setReorderFromColumnPosition(int fromColumnPosition) {
+		this.reorderFromColumnPosition = fromColumnPosition;
 	}
 	
 }

@@ -14,7 +14,8 @@ package org.eclipse.nebula.widgets.nattable.group.action;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
-import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupEndCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupStartCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
@@ -62,12 +63,14 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 
 		return (!model.isPartOfAGroup(toColumnIndex)) || betweenGroups;
 	}
-
-	/**
-	 * Fire a {@link ReorderColumnGroupCommand} for the column group
-	 */
+	
 	@Override
-	protected void fireMoveCommand(NatTable natTable, int dragFromGridColumnPosition, int dragToGridColumnPosition) {
-		natTable.doCommand(new ReorderColumnGroupCommand(natTable, dragFromGridColumnPosition, dragToGridColumnPosition));
+	protected void fireMoveStartCommand(NatTable natTable, int dragFromGridColumnPosition) {
+		natTable.doCommand(new ReorderColumnGroupStartCommand(natTable, dragFromGridColumnPosition));
+	}
+	
+	@Override
+	protected void fireMoveEndCommand(NatTable natTable, int dragToGridColumnPosition) {
+		natTable.doCommand(new ReorderColumnGroupEndCommand(natTable, dragToGridColumnPosition));
 	}
 }

@@ -14,7 +14,8 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
-import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
@@ -40,6 +41,7 @@ public class ColumnReorderDragMode implements IDragMode {
 	private NatTable natTable;
 	private MouseEvent initialEvent;
 	private MouseEvent currentEvent;
+	private int dragFromGridColumnPosition;
 	
 	protected ColumnReorderOverlayPainter targetOverlayPainter = new ColumnReorderOverlayPainter();
 	
@@ -47,10 +49,13 @@ public class ColumnReorderDragMode implements IDragMode {
 		this.natTable = natTable;
 		initialEvent = event;
 		currentEvent = initialEvent;
+		dragFromGridColumnPosition = getDragFromGridColumnPosition();
 		
         natTable.addOverlayPainter(targetOverlayPainter);
         
         natTable.doCommand(new ClearAllSelectionsCommand());
+        
+        fireMoveStartCommand(natTable, dragFromGridColumnPosition);
 	}
 	
 	public void mouseMove(NatTable natTable, MouseEvent event) {
@@ -64,12 +69,13 @@ public class ColumnReorderDragMode implements IDragMode {
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		natTable.removeOverlayPainter(targetOverlayPainter);
 		
-		int dragFromGridColumnPosition = getDragFromGridColumnPosition();
 		int dragToGridColumnPosition = getDragToGridColumnPosition(getMoveDirection(event.x), natTable.getColumnPositionByX(event.x));
 		
-		if (isValidTargetColumnPosition(natTable, dragFromGridColumnPosition, dragToGridColumnPosition, event)) {
-			fireMoveCommand(natTable, dragFromGridColumnPosition, dragToGridColumnPosition);
+		if (!isValidTargetColumnPosition(natTable, dragFromGridColumnPosition, dragToGridColumnPosition, event)) {
+			dragToGridColumnPosition = -1;
 		}
+		
+		fireMoveEndCommand(natTable, dragToGridColumnPosition);
 		
 		natTable.doCommand(new ViewportDragCommand(-1, -1));  // Cancel any active viewport drag
 		
@@ -116,9 +122,13 @@ public class ColumnReorderDragMode implements IDragMode {
 	protected boolean isValidTargetColumnPosition(ILayer natLayer, int dragFromGridColumnPosition, int dragToGridColumnPosition, MouseEvent event) {
 		return dragFromGridColumnPosition >= 0 && dragToGridColumnPosition >= 0;
 	}
-
-	protected void fireMoveCommand(NatTable natTable, int dragFromGridColumnPosition, int dragToGridColumnPosition) {
-		natTable.doCommand(new ColumnReorderCommand(natTable, dragFromGridColumnPosition, dragToGridColumnPosition));
+	
+	protected void fireMoveStartCommand(NatTable natTable, int dragFromGridColumnPosition) {
+		natTable.doCommand(new ColumnReorderStartCommand(natTable, dragFromGridColumnPosition));
+	}
+	
+	protected void fireMoveEndCommand(NatTable natTable, int dragToGridColumnPosition) {
+		natTable.doCommand(new ColumnReorderEndCommand(natTable, dragToGridColumnPosition));
 	}
 
 	private class ColumnReorderOverlayPainter implements IOverlayPainter {
