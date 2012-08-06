@@ -57,7 +57,12 @@ public abstract class AbstractLayer implements ILayer {
 	private final List<IPersistable> persistables = new LinkedList<IPersistable>();
 	private final Set<ILayerListener> listeners = new LinkedHashSet<ILayerListener>();
 	private final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
+	
+	// Dispose
 
+	public void dispose() {
+	}
+	
 	// Regions
 	
 	public LabelStack getRegionLabelsByXY(int x, int y) {

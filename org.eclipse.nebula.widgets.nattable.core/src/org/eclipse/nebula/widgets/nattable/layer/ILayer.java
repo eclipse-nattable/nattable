@@ -73,6 +73,10 @@ import org.eclipse.swt.graphics.Rectangle;
  * @see CompositeLayer
  */
 public interface ILayer extends ILayerListener, IPersistable {
+	
+	// Dispose
+	
+	public void dispose();
 
 	// Persistence
 

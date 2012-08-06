@@ -113,6 +113,13 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 		
 		registerCommandHandler(new BlinkTimerEnableCommandHandler(this));
 	}
+    
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	
+    	scheduler.shutdown();
+    }
 	
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {

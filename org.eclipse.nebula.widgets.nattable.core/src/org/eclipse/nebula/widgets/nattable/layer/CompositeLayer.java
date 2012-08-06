@@ -65,6 +65,20 @@ public class CompositeLayer extends AbstractLayer {
 		this.layoutYCount = layoutYCount;
 		childLayerLayout = new ILayer[layoutXCount][layoutYCount];
 	}
+	
+	// Dispose
+	
+	@Override
+	public void dispose() {
+		for (int layoutX = 0; layoutX < layoutXCount; layoutX++) {
+			for (int layoutY = 0; layoutY < layoutYCount; layoutY++) {
+				ILayer childLayer = childLayerLayout[layoutX][layoutY];
+				if (childLayer != null) {
+					childLayer.dispose();
+				}
+			}
+		}
+	}
 
 	// Persistence
 

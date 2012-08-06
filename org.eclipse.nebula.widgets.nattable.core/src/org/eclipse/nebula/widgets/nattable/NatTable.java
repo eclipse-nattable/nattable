@@ -160,6 +160,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 				conflaterChain.stop();
 				InlineCellEditController.dispose();
 				ActiveCellEditor.close();
+				
+				layer.dispose();
 			}
 
 		});

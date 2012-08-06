@@ -41,6 +41,12 @@ public class InvertedLayer implements IUniqueIndexLayer {
 		underlyingLayer.loadState(prefix, properties);
 	}
 	
+	// Dispose
+	
+	public void dispose() {
+		underlyingLayer.dispose();
+	}
+	
 	// Persistence
 	
 	public void registerPersistable(IPersistable persistable) {

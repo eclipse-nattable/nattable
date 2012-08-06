@@ -315,6 +315,10 @@ public class TestLayer implements IUniqueIndexLayer {
 		}
 	}
 
+	public void dispose() {
+		// Do nothing
+	}
+	
 	public void registerPersistable(IPersistable persistable) {
 		// Do nothing
 	}

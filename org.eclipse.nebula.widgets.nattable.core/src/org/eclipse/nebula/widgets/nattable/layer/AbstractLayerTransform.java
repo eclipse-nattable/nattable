@@ -56,6 +56,13 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 		return underlyingLayer;
 	}
 
+	// Dispose
+	
+	@Override
+	public void dispose() {
+		underlyingLayer.dispose();
+	}
+	
 	// Persistence
 
 	@Override
