@@ -194,10 +194,19 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
 
 				public Rectangle getClientArea() {
+					final Rectangle clientArea = new Rectangle(0, 0, 0, 0);
 					if (!isDisposed()) {
-						return NatTable.this.getClientArea();
+						getDisplay().syncExec(new Runnable() {
+							public void run() {
+								Rectangle natClientArea = NatTable.this.getClientArea();
+								clientArea.x = natClientArea.x;
+								clientArea.y = natClientArea.y;
+								clientArea.width = natClientArea.width;
+								clientArea.height = natClientArea.height;
+							}
+						});
 					}
-					else return new Rectangle(0,0,0,0);
+					return clientArea;
 				}
 
 			});
