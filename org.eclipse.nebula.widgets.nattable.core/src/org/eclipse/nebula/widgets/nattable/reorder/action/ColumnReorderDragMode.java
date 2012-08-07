@@ -61,7 +61,7 @@ public class ColumnReorderDragMode implements IDragMode {
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		currentEvent = event;
 		
-		natTable.doCommand(new ViewportDragCommand(event.x, event.y));
+		natTable.doCommand(new ViewportDragCommand(event.x, -1));
 		
 		natTable.redraw();
 	}

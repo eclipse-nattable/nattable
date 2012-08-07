@@ -863,22 +863,26 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		edgeHoverScrollOffset.x = 0;
 		edgeHoverScrollOffset.y = 0;
 		
-		if (x < 0 || y < 0) {
+		if (x < 0 && y < 0) {
 			cancelEdgeHoverScroll();
 			return;
 		}
 		
 		Rectangle clientArea = getClientAreaProvider().getClientArea();
 		
-		if (x < clientArea.x + 10) {
+		int minX = clientArea.x;
+		int maxX = clientArea.x + clientArea.width;
+		if (x >= minX && x < minX + 10) {
 			edgeHoverScrollOffset.x = -1;
-		} else if (x > clientArea.x + clientArea.width - 10) {
+		} else if (x > maxX - 10 && x < maxX) {
 			edgeHoverScrollOffset.x = 1;
 		}
 		
-		if (y < clientArea.y + 10) {
+		int minY = clientArea.y;
+		int maxY = clientArea.y + clientArea.height;
+		if (y >= minY && y < minY + 10) {
 			edgeHoverScrollOffset.y = -1;
-		} else if (y > clientArea.y + clientArea.height - 10) {
+		} else if (y > maxY - 10 && y < maxY) {
 			edgeHoverScrollOffset.y = 1;
 		}
 		
