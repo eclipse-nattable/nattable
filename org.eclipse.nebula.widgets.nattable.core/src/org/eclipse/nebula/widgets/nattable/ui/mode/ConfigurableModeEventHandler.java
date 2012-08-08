@@ -17,28 +17,25 @@ import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
-import org.eclipse.nebula.widgets.nattable.ui.binding.IUiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 
 public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 
 	private final NatTable natTable;
-	
-	private IUiBindingRegistry uiBindingRegistry;
-	
+		
 	public ConfigurableModeEventHandler(ModeSupport modeSupport, NatTable natTable) {
 		super(modeSupport);
 		
 		this.natTable = natTable;
-		this.uiBindingRegistry = natTable.getUiBindingRegistry();
 	}
 	
 	// Event handling /////////////////////////////////////////////////////////
 	
 	@Override
 	public void keyPressed(KeyEvent event) {
-		IKeyAction keyAction = uiBindingRegistry.getKeyEventAction(event);
+		IKeyAction keyAction = natTable.getUiBindingRegistry().getKeyEventAction(event);
 		if (keyAction != null) {
 			natTable.forceFocus();
 			keyAction.run(natTable, event);
@@ -48,15 +45,15 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 	@Override
 	public void mouseDown(MouseEvent event) {
 		if (ActiveCellEditor.commit()) {
-			IMouseAction mouseDownAction = uiBindingRegistry.getMouseDownAction(event);
+			IMouseAction mouseDownAction = natTable.getUiBindingRegistry().getMouseDownAction(event);
 			if (mouseDownAction != null) {
 				event.data = NatEventData.createInstanceFromEvent(event);
 				mouseDownAction.run(natTable, event);
 			}
 			
-			IMouseAction singleClickAction = uiBindingRegistry.getSingleClickAction(event);
-			IMouseAction doubleClickAction = uiBindingRegistry.getDoubleClickAction(event);
-			IDragMode dragMode = uiBindingRegistry.getDragMode(event);
+			IMouseAction singleClickAction = getUiBindingRegistry().getSingleClickAction(event);
+			IMouseAction doubleClickAction = getUiBindingRegistry().getDoubleClickAction(event);
+			IDragMode dragMode = natTable.getUiBindingRegistry().getDragMode(event);
 			
 			if (singleClickAction != null || doubleClickAction != null || dragMode != null) {
 				switchMode(new MouseModeEventHandler(getModeSupport(), natTable, event, singleClickAction, doubleClickAction, dragMode));
@@ -67,7 +64,7 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 	@Override
 	public synchronized void mouseMove(MouseEvent event) {
 		if (event.x >= 0 && event.y >= 0) {
-			IMouseAction mouseMoveAction = uiBindingRegistry.getMouseMoveAction(event);
+			IMouseAction mouseMoveAction = getUiBindingRegistry().getMouseMoveAction(event);
 			if (mouseMoveAction != null) {
 				event.data = NatEventData.createInstanceFromEvent(event);
 				mouseMoveAction.run(natTable, event);
@@ -75,6 +72,10 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 				natTable.setCursor(null);
 			}
 		}
+	}
+	
+	private UiBindingRegistry getUiBindingRegistry() {
+		return natTable.getUiBindingRegistry();
 	}
 
 }

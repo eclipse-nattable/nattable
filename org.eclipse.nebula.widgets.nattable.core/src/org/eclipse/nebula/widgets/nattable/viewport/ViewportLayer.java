@@ -94,6 +94,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public void dispose() {
 		super.dispose();
 		
+		if (hBarListener != null) {
+			hBarListener.dispose();
+		}
+		
+		if (vBarListener != null) {
+			vBarListener.dispose();
+		}
+		
 		scheduler.shutdown();
 	}
 	

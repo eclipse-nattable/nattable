@@ -89,7 +89,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	private IConfigRegistry configRegistry;
 
-	private final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
+	protected final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
 
 	protected String id = GUIHelper.getSequenceNumber();
 

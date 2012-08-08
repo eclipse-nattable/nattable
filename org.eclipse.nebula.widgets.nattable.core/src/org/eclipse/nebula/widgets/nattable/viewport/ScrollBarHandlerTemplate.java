@@ -42,6 +42,12 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		this.scrollBar = scrollBar;
 		this.scrollBar.addListener(SWT.Selection, this);
 	}
+	
+	public void dispose() {
+		if (this.scrollBar != null && !this.scrollBar.isDisposed()) {
+			this.scrollBar.removeListener(SWT.Selection, this);
+		}
+	}
 
 	public void handleEvent(Event event) {
 		boolean handle = true;
