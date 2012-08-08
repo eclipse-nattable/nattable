@@ -412,13 +412,13 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		}
 
 		if (underlyingLayer != null) {
-			underlyingLayer.configure((ConfigRegistry) getConfigRegistry(), uiBindingRegistry);
+			underlyingLayer.configure((ConfigRegistry) getConfigRegistry(), getUiBindingRegistry());
 		}
 
 		for (IConfiguration configuration : configurations) {
 			configuration.configureLayer(this);
 			configuration.configureRegistry(getConfigRegistry());
-			configuration.configureUiBindings(uiBindingRegistry);
+			configuration.configureUiBindings(getUiBindingRegistry());
 		}
 
 		// Once everything is initialized and properly configured we will
