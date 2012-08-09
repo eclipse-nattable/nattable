@@ -14,9 +14,11 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
@@ -65,12 +67,25 @@ public class GlazedListsGridLayer<T> extends GridLayer {
 									Map<String, String> propertyToLabelMap,
 									IConfigRegistry configRegistry,
 									boolean useDefaultConfiguration) {
+		
+		this(eventList,
+				new ReflectiveColumnPropertyAccessor<T>(propertyNames),
+				new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap),
+				configRegistry,
+				useDefaultConfiguration);
+	}
+	
+	public GlazedListsGridLayer(EventList<T> eventList,
+			IColumnPropertyAccessor<T> columnPropertyAccessor,
+			IDataProvider columnHeaderDataProvider,
+			IConfigRegistry configRegistry,
+			boolean useDefaultConfiguration) {
+		
 		super(useDefaultConfiguration);
-
+		
 		// Body - with list event listener
 		//	NOTE: Remember to use the SortedList constructor with 'null' for the Comparator
 		SortedList<T> sortedList = new SortedList<T>(eventList, null);
-		IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(propertyNames);
 		bodyDataProvider = new ListDataProvider<T>(sortedList, columnPropertyAccessor);
 
 		bodyDataLayer = new DataLayer(bodyDataProvider);
@@ -78,8 +93,7 @@ public class GlazedListsGridLayer<T> extends GridLayer {
 		bodyLayerStack = new DefaultBodyLayerStack(glazedListsEventLayer);
 
 		// Column header
-		columnHeaderLayerStack = new GlazedListsColumnHeaderLayerStack<T>(propertyNames, 
-														propertyToLabelMap, 
+		columnHeaderLayerStack = new GlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, 
 														sortedList, 
 														columnPropertyAccessor, 
 														configRegistry, 
@@ -101,7 +115,7 @@ public class GlazedListsGridLayer<T> extends GridLayer {
 		setRowHeaderLayer(rowHeaderLayer);
 		setCornerLayer(cornerLayer);
 	}
-
+	
 	public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
 		return columnLabelAccumulator;
 	}

@@ -43,7 +43,20 @@ public class GlazedListsColumnHeaderLayerStack<T> extends AbstractLayerTransform
 												IConfigRegistry configRegistry,
 												DefaultBodyLayerStack bodyLayerStack) {
 
-		dataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+		this(new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap),
+				sortedList,
+				columnPropertyAccessor, 
+				configRegistry,
+				bodyLayerStack);
+	}
+	
+	public GlazedListsColumnHeaderLayerStack(IDataProvider dataProvider, 
+			SortedList<T> sortedList,
+			IColumnPropertyAccessor<T> columnPropertyAccessor, 
+			IConfigRegistry configRegistry,
+			DefaultBodyLayerStack bodyLayerStack) {
+		
+		this.dataProvider = dataProvider;
 		dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
 		columnHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
@@ -58,7 +71,7 @@ public class GlazedListsColumnHeaderLayerStack<T> extends AbstractLayerTransform
 
 		setUnderlyingLayer(sortHeaderLayer);
 	}
-
+	
 	@Override
 	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
 		super.setClientAreaProvider(clientAreaProvider);

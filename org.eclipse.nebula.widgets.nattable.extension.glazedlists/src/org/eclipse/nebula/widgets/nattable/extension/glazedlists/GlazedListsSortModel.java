@@ -19,13 +19,16 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyResolver;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.gui.AbstractTableComparatorChooser;
 
-public class GlazedListsSortModel<T> implements ISortModel {
+public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
 
 	public static final String PERSISTENCE_KEY_GLAZEDLISTS_SORT_MODEL = ".glazedListsSortModel"; //$NON-NLS-1$
 
@@ -46,6 +49,8 @@ public class GlazedListsSortModel<T> implements ISortModel {
 		this.columnPropertyResolver = columnPropertyResolver;
 		this.configRegistry = configRegistry;
 		this.columnHeaderDataLayer = dataLayer;
+		
+		this.columnHeaderDataLayer.addLayerListener(this);
 	}
 
 	protected NatTableComparatorChooser<T> getComparatorChooser() {
@@ -106,4 +111,9 @@ public class GlazedListsSortModel<T> implements ISortModel {
 		getComparatorChooser().clearComparator();
 	}
 
+	public void handleLayerEvent(ILayerEvent event) {
+		if (event instanceof StructuralRefreshEvent && ((StructuralRefreshEvent) event).isHorizontalStructureChanged()) {
+			this.comparatorChooser = null;
+		}
+	}
 }

@@ -25,7 +25,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
  * instance, the {@link StructuralRefreshCommandHandler} should be registered against
  * the DataLayer.
  * 
- * @author fipro
+ * @author Dirk Fauth
  */
 public class StructuralRefreshCommandHandler implements ILayerCommandHandler<StructuralRefreshCommand> {
 
@@ -35,7 +35,7 @@ public class StructuralRefreshCommandHandler implements ILayerCommandHandler<Str
 
 	public boolean doCommand(ILayer targetLayer, StructuralRefreshCommand command) {
 		targetLayer.fireLayerEvent(new StructuralRefreshEvent(targetLayer));
-		return true;
+		return false;
 	}
 
 }
