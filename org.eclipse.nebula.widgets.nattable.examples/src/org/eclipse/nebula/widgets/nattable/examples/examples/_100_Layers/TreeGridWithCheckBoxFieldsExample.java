@@ -77,9 +77,6 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
 import org.eclipse.nebula.widgets.nattable.tree.SortableTreeComparator;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
-import org.eclipse.nebula.widgets.nattable.tree.action.TreeExpandCollapseAction;
-import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
-import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.CellPainterMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
@@ -157,7 +154,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 		
 		// Switch the ITreeRowModel implementation between using native grid Hide/Show or GlazedList TreeList Hide/Show  
 //		TreeLayer treeLayer = new TreeLayer(selectionLayer, new TreeRowModel<Datum>(treeData), true);
-		final TreeLayer treeLayer = new TreeLayer(selectionLayer, new GlazedListTreeRowModel<Datum>(treeData), false);
+		final TreeLayer treeLayer = new TreeLayer(selectionLayer, new GlazedListTreeRowModel<Datum>(treeData));
 		
 		ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 		
@@ -198,7 +195,6 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 		natTable.setConfigRegistry(configRegistry);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
-		natTable.addConfiguration(new DefaultTreeLayerConfiguration(treeLayer.getModel()));
 		natTable.addConfiguration(new SingleClickSortConfiguration());
 		
 		// Uncomment to see the native tree list printed to stout.
@@ -213,8 +209,6 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 				return dataValue.isOn();
 			}
 		};
-		final IndentedTreeImagePainter indentedTreeImagePainter = new IndentedTreeImagePainter(treeLayer.getModel());
-		final ICellPainter treeImagePainter = indentedTreeImagePainter.getTreeImagePainter();
 		final ICellPainter checkBoxPainter = new TreeCheckBoxPainter() {
 			@Override
 			protected CheckBoxStateEnum getCheckBoxState(ILayerCell cell) {
@@ -242,11 +236,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 											}
 										},
 										CellEdgeEnum.LEFT,
-										new CellPainterDecorator(
-												indentedTreeImagePainter,
-												CellEdgeEnum.RIGHT,
-												checkBoxPainter
-										)
+										checkBoxPainter
 								)
 						),
 						DisplayMode.NORMAL,
@@ -269,11 +259,6 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 				uiBindingRegistry.registerFirstSingleClickBinding(
 						new CellPainterMouseEventMatcher(GridRegion.COLUMN_HEADER, MouseEventMatcher.LEFT_BUTTON, columnHeaderCheckBoxPainter),
 						new ToggleCheckBoxColumnAction(columnHeaderCheckBoxPainter, bodyDataLayer)
-				);
-				
-				uiBindingRegistry.registerFirstSingleClickBinding(
-						new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, treeImagePainter),
-						new TreeExpandCollapseAction()
 				);
 				
 				uiBindingRegistry.registerFirstSingleClickBinding(

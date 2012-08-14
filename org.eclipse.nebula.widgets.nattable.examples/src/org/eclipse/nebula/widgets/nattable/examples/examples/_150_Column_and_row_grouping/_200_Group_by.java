@@ -89,7 +89,7 @@ public class _200_Group_by extends AbstractNatExample {
 		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
 		SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
 		
-		TreeLayer treeLayer = new TreeLayer(selectionLayer, bodyDataLayer.getTreeRowModel(), true);
+		TreeLayer treeLayer = new TreeLayer(selectionLayer, bodyDataLayer.getTreeRowModel());
 		
 		ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 		
