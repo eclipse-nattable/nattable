@@ -11,6 +11,10 @@
 package org.eclipse.nebula.widgets.nattable.freeze;
 
 
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeCommandHandler;
@@ -24,9 +28,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumnCommandHandler;
+import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 
 public class CompositeFreezeLayer extends CompositeLayer {
 
@@ -71,6 +74,12 @@ public class CompositeFreezeLayer extends CompositeLayer {
 	@Override
 	protected void registerCommandHandlers() {
 		registerCommandHandler(new FreezeCommandHandler(freezeLayer, viewportLayer, selectionLayer));
+		
+		final DimensionallyDependentLayer frozenRowLayer = (DimensionallyDependentLayer) getChildLayerByLayoutCoordinate(1, 0);
+		frozenRowLayer.registerCommandHandler(new ViewportSelectRowCommandHandler(frozenRowLayer));
+		
+		final DimensionallyDependentLayer frozenColumnLayer = (DimensionallyDependentLayer) getChildLayerByLayoutCoordinate(0, 1);
+		frozenColumnLayer.registerCommandHandler(new ViewportSelectColumnCommandHandler(frozenColumnLayer));
 	}
 	
 	

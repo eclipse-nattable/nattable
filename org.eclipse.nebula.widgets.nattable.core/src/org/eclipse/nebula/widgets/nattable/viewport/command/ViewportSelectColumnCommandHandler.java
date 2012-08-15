@@ -11,30 +11,28 @@
 package org.eclipse.nebula.widgets.nattable.viewport.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
-import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+
 
 public class ViewportSelectColumnCommandHandler extends AbstractLayerCommandHandler<ViewportSelectColumnCommand> {
 
-	private final ViewportLayer viewportLayer;
 
-	public ViewportSelectColumnCommandHandler(ViewportLayer viewportLayer) {
+	private final AbstractLayer viewportLayer;
+
+	public ViewportSelectColumnCommandHandler(AbstractLayer viewportLayer) {
 		this.viewportLayer = viewportLayer;
-		
 	}
-	
+
 	public Class<ViewportSelectColumnCommand> getCommandClass() {
 		return ViewportSelectColumnCommand.class;
 	}
 
 	@Override
 	protected boolean doCommand(ViewportSelectColumnCommand command) {
-		IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
-		int scrollableColumnPosition = viewportLayer.localToUnderlyingColumnPosition(command.getColumnPosition());
-		int scrollableRowPosition = viewportLayer.getOriginRowPosition();
-		
-		scrollableLayer.doCommand(new SelectColumnCommand(scrollableLayer, scrollableColumnPosition, scrollableRowPosition, command.isWithShiftMask(), command.isWithControlMask()));
+		viewportLayer.doCommand(new SelectColumnCommand(viewportLayer,
+				command.getColumnPosition(), 0,
+				command.isWithShiftMask(), command.isWithControlMask() ));
 		return true;
 	}
 
