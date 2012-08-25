@@ -35,7 +35,7 @@ public class DisplayColumnRenameDialogCommandHandler extends
 		ColumnRenameDialog dialog = new ColumnRenameDialog(Display.getDefault().getActiveShell(), originalLabel, renamedLabel);
 		Rectangle colHeaderBounds = columnHeaderLayer.getBoundsByPosition(columnPosition, 0);
 		Point point = new Point(colHeaderBounds.x, colHeaderBounds.y + colHeaderBounds.height);
-        dialog.setLocation(command.toDisplayCoordingates(point));
+        dialog.setLocation(command.toDisplayCoordinates(point));
 		dialog.open();
 
 		if (dialog.isCancelPressed()) {

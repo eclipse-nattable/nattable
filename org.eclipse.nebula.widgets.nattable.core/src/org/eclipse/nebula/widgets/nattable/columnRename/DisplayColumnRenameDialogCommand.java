@@ -31,7 +31,7 @@ public class DisplayColumnRenameDialogCommand extends AbstractColumnCommand {
         this.natTable = natTable;
 	}
 
-	public Point toDisplayCoordingates(Point point) {
+	public Point toDisplayCoordinates(Point point) {
 	    return natTable.toDisplay(point);
 	}
 	
