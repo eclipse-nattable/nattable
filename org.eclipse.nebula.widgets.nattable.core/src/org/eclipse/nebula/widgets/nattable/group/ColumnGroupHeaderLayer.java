@@ -83,9 +83,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 			} 
 		};
 		
-		if (calculateHeight) {
-			this.model.registerColumnGroupModelListener(modelChangeListener);
-		}
+		this.model.registerColumnGroupModelListener(modelChangeListener);
 	}
 
 	// Persistence

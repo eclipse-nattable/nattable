@@ -432,6 +432,27 @@ public class ColumnGroupModel implements IPersistable {
 		notifyListeners();
 	}
 
+	public ColumnGroup getColumnGroupByName(String groupName) {
+		return nameToColumnGroup.get(groupName);
+	}
+	
+	public ColumnGroup getColumnGroupByIndex(int columnIndex) {
+		return nameToColumnGroup.get(indexToColumnGroupName.get(columnIndex));
+	}
+	
+	public void removeColumnGroup(ColumnGroup columnGroup) {
+		final LinkedList<Integer> members = columnGroup.members;
+		while (members.size() > 0) {
+			int columnIndex = members.pop();
+			members.remove(Integer.valueOf(columnIndex));
+			indexToColumnGroupName.remove(Integer.valueOf(columnIndex));
+			if (members.size() == 0) {
+				nameToColumnGroup.remove(columnGroup.name);
+			}
+		}
+		notifyListeners();
+	}
+	
 	/**
 	 * @return TRUE if index successfully removed from its group.
 	 */

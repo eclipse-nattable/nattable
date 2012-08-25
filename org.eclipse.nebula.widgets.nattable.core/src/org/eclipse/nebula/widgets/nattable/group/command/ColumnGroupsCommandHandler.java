@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.event.GroupColumnsEvent;
 import org.eclipse.nebula.widgets.nattable.group.event.UngroupColumnsEvent;
@@ -50,7 +51,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 				return true;
 			}
 		} else if (command instanceof OpenCreateColumnGroupDialog) {
-			OpenCreateColumnGroupDialog openDialogCommand = (OpenCreateColumnGroupDialog)command;
+			OpenCreateColumnGroupDialog openDialogCommand = (OpenCreateColumnGroupDialog) command;
 			loadSelectedColumnsIndexesWithPositions();
 			if (selectionLayer.getFullySelectedColumnPositions().length > 0 && columnIndexesToPositionsMap.size() > 0) {
 				openDialogCommand.openDialog(contextLayer);
@@ -61,10 +62,15 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 		} else if (command instanceof UngroupColumnCommand) {
 			handleUngroupCommand();
 			return true;
+		} else if (command instanceof RemoveColumnGroupCommand) {
+			RemoveColumnGroupCommand removeColumnGroupCommand = (RemoveColumnGroupCommand) command;
+			int columnIndex = removeColumnGroupCommand.getColumnIndex();
+			handleRemoveColumnGroupCommand(columnIndex);
+			return true;
 		}
 		return false;
 	}
-	
+
 	public Class<IColumnGroupCommand> getCommandClass() {
 		return IColumnGroupCommand.class;
 	}
@@ -158,4 +164,10 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 		}
 		model.removeColumnFromGroup(columnIndex);
 	}	
+	
+	private void handleRemoveColumnGroupCommand(int columnIndex) {
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+		model.removeColumnGroup(columnGroup);
+	}
+
 }

@@ -298,7 +298,7 @@ public class MenuItemProviders {
 			}
 		};
 	}
-
+	
 	public static IMenuItemProvider inspectLabelsMenuItemProvider() {
 		return new IMenuItemProvider() {
 

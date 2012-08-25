@@ -141,7 +141,7 @@ public class PopupMenuBuilder {
 	public PopupMenuBuilder withUngroupColumnsMenuItem() {
 		return withMenuItemProvider(MenuItemProviders.ungroupColumnsMenuItemProvider());
 	}
-
+	
 	public PopupMenuBuilder withUngroupColumnsMenuItem(String menuLabel) {
 		return withMenuItemProvider(MenuItemProviders.ungroupColumnsMenuItemProvider(menuLabel));
 	}
