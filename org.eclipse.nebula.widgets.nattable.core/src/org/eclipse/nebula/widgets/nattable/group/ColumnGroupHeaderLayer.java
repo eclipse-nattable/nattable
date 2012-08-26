@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.config.DefaultColumnGroupHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -267,14 +268,16 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 */
 	protected int getColumnSpan(int columnPosition) {
 		int columnIndex = getColumnIndexByPosition(columnPosition);
-		if (model.isCollapsed(columnIndex)) {
-			int sizeOfStaticColumns = model.sizeOfStaticColumns(columnIndex);
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+		
+		if (columnGroup.isCollapsed()) {
+			int sizeOfStaticColumns = columnGroup.getStaticColumnIndexes().size();
 			return sizeOfStaticColumns == 0 ? 1 : sizeOfStaticColumns;
 		} else {
 			int startPositionOfGroup = getStartPositionOfGroup(columnPosition);
-			int sizeOfGroup = model.sizeOfGroup(columnIndex);
+			int sizeOfGroup = columnGroup.getSize();
 			int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
-			List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(columnIndex);
+			List<Integer> columnIndexesInGroup = columnGroup.getMembers();
 
 			for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
 				int index = getColumnIndexByPosition(i);
@@ -294,7 +297,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 */
 	private int getStartPositionOfGroup(int columnPosition) {
 		int bodyColumnIndex = getColumnIndexByPosition(columnPosition);
-		int leastPossibleStartPositionOfGroup = columnPosition - model.sizeOfGroup(bodyColumnIndex);
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(bodyColumnIndex);
+
+		int leastPossibleStartPositionOfGroup = columnPosition - columnGroup.getSize();
 		int i = 0;
 		for (i = leastPossibleStartPositionOfGroup; i < columnPosition; i++) {
 			if (ColumnGroupUtils.isInTheSameGroup(getColumnIndexByPosition(i), bodyColumnIndex, model)) {
@@ -328,7 +333,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
 		int columnIndex = getColumnIndexByPosition(columnPosition);
 		if (rowPosition == 0 && model.isPartOfAGroup(columnIndex)) {
-			return model.getColumnGroupNameForIndex(columnIndex);
+			return model.getColumnGroupByIndex(columnIndex).getName();
 		} else {
 			return columnHeaderLayer.getDataValueByPosition(columnPosition, 0);
 		}
@@ -350,10 +355,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		model.addColumnsIndexesToGroup(colGroupName, colIndexes);
 	}
 
-	public void collapseColumnGroupByIndex(int columnIndex) {
-		model.collapse(columnIndex);
-	}
-
 	public void clearAllGroups(){
 		model.clear();
 	}
@@ -370,11 +371,13 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 * @see ColumnGroupModel#setGroupUnBreakable(int)
 	 */
 	public void setGroupUnbreakable(int columnIndex){
-		model.setGroupUnBreakable(columnIndex);
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+		columnGroup.setUnbreakable(true);
 	}
 
-	public void setGroupAsCollapsed(int i) {
-		model.collapse(i);
+	public void setGroupAsCollapsed(int columnIndex) {
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+		columnGroup.setCollapsed(true);
 	}
 	
 	public boolean isCalculateHeight() {

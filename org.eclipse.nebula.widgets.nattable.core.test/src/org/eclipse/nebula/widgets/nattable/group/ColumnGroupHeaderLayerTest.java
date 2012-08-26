@@ -80,7 +80,7 @@ public class ColumnGroupHeaderLayerTest {
 	public void aCollapsedColumnGroupShouldNotBeSpanned() throws Exception {
 		assertEquals(2, columnGroupLayer.getCellByPosition(0, 0).getColumnSpan());
 
-		columnGroupLayer.collapseColumnGroupByIndex(0);
+		columnGroupLayer.setGroupAsCollapsed(0);
 		
 		assertEquals(1, columnGroupLayer.getCellByPosition(0, 0).getColumnSpan());
 
@@ -132,7 +132,7 @@ public class ColumnGroupHeaderLayerTest {
 		model.addColumnsIndexesToGroup(TEST_GROUP_NAME_2, 7);
 		assertEquals(3, columnGroupLayer.getColumnSpan(5));
 		
-		model.collapse(5);
+		model.getColumnGroupByIndex(5).setCollapsed(true);
 		assertEquals(1, columnGroupLayer.getColumnSpan(5));
 	}
 	

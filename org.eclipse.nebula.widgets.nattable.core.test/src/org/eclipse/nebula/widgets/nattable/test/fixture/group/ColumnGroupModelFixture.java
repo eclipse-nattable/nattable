@@ -37,17 +37,17 @@ public class ColumnGroupModelFixture extends ColumnGroupModel {
 	public void assertUnchanged() {
 		List<Integer> columnIndexesInGroup;
 		
-		columnIndexesInGroup = getColumnIndexesInGroup(0);
+		columnIndexesInGroup = getColumnGroupByIndex(0).getMembers();
 		Assert.assertEquals(2, columnIndexesInGroup.size());
 		Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(0)));
 		Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(1)));
 
-		columnIndexesInGroup = getColumnIndexesInGroup(3);
+		columnIndexesInGroup = getColumnGroupByIndex(3).getMembers();
 		Assert.assertEquals(2, columnIndexesInGroup.size());
 		Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(3)));
 		Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(4)));
 		
-		columnIndexesInGroup = getColumnIndexesInGroup(10);
+		columnIndexesInGroup = getColumnGroupByIndex(10).getMembers();
 		Assert.assertEquals(3, columnIndexesInGroup.size());
 		Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(10)));
 		Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(11)));
@@ -55,7 +55,7 @@ public class ColumnGroupModelFixture extends ColumnGroupModel {
 	}
 	
 	public void assertTestGroup3IsUnchanged() {
-		List<Integer> columnIndexesInGroup = getColumnIndexesInGroup(10);
+		List<Integer> columnIndexesInGroup = getColumnGroupByIndex(10).getMembers();
 		Assert.assertEquals(3, columnIndexesInGroup.size());
 
 		Assert.assertTrue(columnIndexesInGroup.contains(Integer.valueOf(10)));

@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnGroupEntry;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ISelectionTreeListener;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
@@ -300,7 +301,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
 			// Create a node for the column group - if needed
 			if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(columnEntryIndex)) {
-				String columnGroupName = columnGroupModel.getColumnGroupNameForIndex(columnEntryIndex);
+				ColumnGroup columnGroup = columnGroupModel.getColumnGroupByIndex(columnEntryIndex);
+				String columnGroupName = columnGroup.getName();
 				TreeItem columnGroupTreeItem = getTreeItem(tree, columnGroupName);
 
 				if (columnGroupTreeItem == null) {
@@ -309,7 +311,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 																columnGroupName,
 																columnEntry.getPosition(),
 																columnEntry.getIndex(),
-																columnGroupModel.isCollapsed(columnEntryIndex));
+																columnGroup.isCollapsed());
 					columnGroupTreeItem.setData(columnGroupEntry);
 					columnGroupTreeItem.setText(columnGroupEntry.getLabel());
 				}
@@ -526,7 +528,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 					if (columnGroupMoved) {
 						// If the previous entry is a column group - move above it.
 						if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(previousColumnEntryIndex)) {
-							toPositions.add(firstPositionInGroup - columnGroupModel.getColumnIndexesInGroup(previousColumnEntryIndex).size());
+							ColumnGroup previousColumnGroup = columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
+							toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
 						} else {
 							toPositions.add(firstPositionInGroup - 1);
 						}
@@ -538,7 +541,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
 						// If previous entry is an unbreakable column group - move above it
 						if (columnGroupModel != null && columnGroupModel.isPartOfAnUnbreakableGroup(previousColumnEntryIndex) && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, columnGroupModel)) {
-							toPositions.add(firstPositionInGroup - columnGroupModel.getColumnIndexesInGroup(previousColumnEntryIndex).size());
+							ColumnGroup previousColumnGroup = columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
+							toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
 						} else {
 							toPositions.add(firstPositionInGroup - 1);
 						}
@@ -606,7 +610,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 					if (columnGroupMoved) {
 						// If the next entry is a column group - move past it.
 						if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(nextColumnEntryIndex)) {
-							toPositions.add(lastPositionInGroup + columnGroupModel.getColumnIndexesInGroup(nextColumnEntryIndex).size());
+							ColumnGroup nextColumnGroup = columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
+							toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
 						} else {
 							toPositions.add(lastPositionInGroup + 1);
 						}
@@ -618,7 +623,8 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
 						// If next entry is an unbreakable column group - move past it
 						if (columnGroupModel != null && columnGroupModel.isPartOfAnUnbreakableGroup(nextColumnEntryIndex) && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, columnGroupModel)) {
-							toPositions.add(lastPositionInGroup + columnGroupModel.getColumnIndexesInGroup(nextColumnEntryIndex).size());
+							ColumnGroup nextColumnGroup = columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
+							toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
 						} else {
 							toPositions.add(lastPositionInGroup + 1);
 						}

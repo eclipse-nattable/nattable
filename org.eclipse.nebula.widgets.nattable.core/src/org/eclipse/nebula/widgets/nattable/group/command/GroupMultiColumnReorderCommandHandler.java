@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
@@ -52,17 +53,21 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
 	private boolean updateModel(ILayer underlyingLayer, int toColumnIndex, List<Integer> fromColumnPositions, ColumnGroupModel model) {
 		// Moving INTO a group
 		if (model.isPartOfAGroup(toColumnIndex)) {
-			String toGroupName = model.getColumnGroupNameForIndex(toColumnIndex);
+			ColumnGroup toColumnGroup = model.getColumnGroupByIndex(toColumnIndex);
+			String toGroupName = toColumnGroup.getName();
 			if (model.isPartOfAnUnbreakableGroup(toColumnIndex)) {
 				return false;
 			}
 			
 			for (Integer fromColumnPosition : fromColumnPositions) {
 				int fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition.intValue());
+				ColumnGroup fromColumnGroup = model.getColumnGroupByIndex(fromColumnIndex);
 
 				// If 'from' index not already present in the 'to' group
-				if (!toGroupName.equals(model.getColumnGroupNameForIndex(fromColumnIndex))) {
-					model.removeColumnFromGroup(fromColumnIndex);
+				if (fromColumnGroup != toColumnGroup) {
+					if (fromColumnGroup != null) {
+						fromColumnGroup.removeColumn(fromColumnIndex);
+					}
 					model.addColumnsIndexesToGroup(toGroupName, fromColumnIndex);
 				}
 			}
@@ -74,8 +79,9 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
 			for (Integer fromColumnPosition : fromColumnPositions) {
 				// Remove from model - if present
 				int fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition.intValue());
+				ColumnGroup fromColumnGroup = model.getColumnGroupByIndex(fromColumnIndex);
 				
-				if (model.isPartOfAGroup(fromColumnIndex) && !model.removeColumnFromGroup(fromColumnIndex)) {
+				if (fromColumnGroup != null && !fromColumnGroup.removeColumn(fromColumnIndex)) {
 					return false;
 				}
 			}

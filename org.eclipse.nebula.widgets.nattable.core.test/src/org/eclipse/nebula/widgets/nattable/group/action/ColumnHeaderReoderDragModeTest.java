@@ -30,8 +30,8 @@ public class ColumnHeaderReoderDragModeTest {
 		model = new ColumnGroupModelFixture();
 		model.addColumnsIndexesToGroup("G4", 18, 19, 20);
 
-		model.setGroupUnBreakable(0);
-		model.setGroupUnBreakable(10);
+		model.getColumnGroupByIndex(0).setUnbreakable(true);
+		model.getColumnGroupByIndex(10).setUnbreakable(true);
 
 		testLayer = new DataLayerFixture(20, 10, 100, 20);
 		dragMode = new ColumnHeaderReorderDragMode(model);

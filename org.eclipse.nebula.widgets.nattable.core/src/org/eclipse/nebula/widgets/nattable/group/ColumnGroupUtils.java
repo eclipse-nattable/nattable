@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -31,12 +32,12 @@ public class ColumnGroupUtils {
 	}
 
 	public static boolean isInTheSameGroup(int fromColumnIndex, int toColumnIndex, ColumnGroupModel model) {
-		String fromColumnGroupName = model.getColumnGroupNameForIndex(fromColumnIndex);
-		String toColumnGroupName = model.getColumnGroupNameForIndex(toColumnIndex);
+		ColumnGroup fromColumnGroup = model.getColumnGroupByIndex(fromColumnIndex);
+		ColumnGroup toColumnGroup = model.getColumnGroupByIndex(toColumnIndex);
 
-		return fromColumnGroupName != null
-			   	&& toColumnGroupName != null
-			   	&& fromColumnGroupName.equals(toColumnGroupName);
+		return fromColumnGroup != null
+			   	&& toColumnGroup != null
+			   	&& fromColumnGroup == toColumnGroup;
 	}
 	
 	/**
@@ -56,8 +57,9 @@ public class ColumnGroupUtils {
 	 * group
 	 */
 	public static boolean isStaticOrFirstVisibleColumn(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
-		
-		if (model.sizeOfStaticColumns(columnIndex) == 0) {
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+
+		if (columnGroup.getStaticColumnIndexes().size() == 0) {
 			return isFirstVisibleColumnIndexInGroup(columnIndex, layer, underlyingLayer, model);
 		}
 		else {
@@ -71,7 +73,7 @@ public class ColumnGroupUtils {
 		}
 
 		int columnPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
-		List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(columnIndex);
+		List<Integer> columnIndexesInGroup = model.getColumnGroupByIndex(columnIndex).getMembers();
 		List<Integer> previousVisibleColumnIndexes = new ArrayList<Integer>();
 
 		//All other indexes in the column group which are visible and
@@ -100,11 +102,13 @@ public class ColumnGroupUtils {
 	 * Inclusive of the columnIndex passed as the parameter.
 	 */
 	public static List<Integer> getVisibleIndexesToTheRight(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model){
-		if(model.isCollapsed(columnIndex)){
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+		
+		if(columnGroup.isCollapsed()){
 			return Collections.emptyList();
 		}
 
-		List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(columnIndex);
+		List<Integer> columnIndexesInGroup = columnGroup.getMembers();
 		int columnPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
 		List<Integer> visibleColumnIndexesOnRight = new ArrayList<Integer>();
 

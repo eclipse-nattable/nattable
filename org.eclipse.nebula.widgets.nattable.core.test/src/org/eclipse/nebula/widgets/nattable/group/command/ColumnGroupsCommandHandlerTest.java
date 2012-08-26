@@ -11,11 +11,12 @@
 package org.eclipse.nebula.widgets.nattable.group.command;
 
 
+import java.util.List;
+
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
-import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
@@ -63,10 +64,10 @@ public class ColumnGroupsCommandHandlerTest {
 		handler.loadSelectedColumnsIndexesWithPositions();
 		handler.handleGroupColumnsCommand(columnGroupName);
 		
-		Assert.assertEquals(columnGroupName, model.getColumnGroupNameForIndex(0));
-		Assert.assertEquals(1, model.getColumnIndexesInGroup(0).size());
+		Assert.assertEquals(columnGroupName, getColumnGroupNameForIndex(0));
+		Assert.assertEquals(1, getColumnIndexesInGroup(0).size());
 	}
-	
+
 	@Test
 	public void shouldCreateColumnGroupAfterReordering() {
 		// Reorder column to first position
@@ -78,8 +79,8 @@ public class ColumnGroupsCommandHandlerTest {
 		handler.loadSelectedColumnsIndexesWithPositions();
 		handler.handleGroupColumnsCommand(columnGroupName);
 		
-		Assert.assertEquals(columnGroupName, model.getColumnGroupNameForIndex(9));
-		Assert.assertEquals(9, model.getColumnIndexesInGroup(9).get(0).intValue());
+		Assert.assertEquals(columnGroupName, getColumnGroupNameForIndex(9));
+		Assert.assertEquals(9, getColumnIndexesInGroup(9).get(0).intValue());
 	}
 	
 	@Test
@@ -92,18 +93,18 @@ public class ColumnGroupsCommandHandlerTest {
 		handler.loadSelectedColumnsIndexesWithPositions();
 		handler.handleGroupColumnsCommand(columnGroupName);
 		
-		Assert.assertEquals(3, model.getColumnIndexesInGroup(0).size());
-		Assert.assertEquals(0, model.getColumnIndexesInGroup(0).get(0).intValue());
-		Assert.assertEquals(1, model.getColumnIndexesInGroup(0).get(1).intValue());
-		Assert.assertEquals(2, model.getColumnIndexesInGroup(0).get(2).intValue());
+		Assert.assertEquals(3, getColumnIndexesInGroup(0).size());
+		Assert.assertEquals(0, getColumnIndexesInGroup(0).get(0).intValue());
+		Assert.assertEquals(1, getColumnIndexesInGroup(0).get(1).intValue());
+		Assert.assertEquals(2, getColumnIndexesInGroup(0).get(2).intValue());
 		
 		// Test ungrouping column in middle
 		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0, false, false));
 		handler.handleUngroupCommand();
 		
-		Assert.assertEquals(2, model.getColumnIndexesInGroup(0).size());
-		Assert.assertEquals(0, model.getColumnIndexesInGroup(0).get(0).intValue());
-		Assert.assertEquals(2, model.getColumnIndexesInGroup(0).get(1).intValue());
+		Assert.assertEquals(2, getColumnIndexesInGroup(0).size());
+		Assert.assertEquals(0, getColumnIndexesInGroup(0).get(0).intValue());
+		Assert.assertEquals(2, getColumnIndexesInGroup(0).get(1).intValue());
 		
 		Assert.assertEquals(0, selectionLayer.getColumnPositionByIndex(0));
 		Assert.assertEquals(2, selectionLayer.getColumnPositionByIndex(2));
@@ -113,25 +114,25 @@ public class ColumnGroupsCommandHandlerTest {
 	@Test
 	public void shouldNotUngroupColumnsInUnbreakableGroups() throws Exception {
 		model.addColumnsIndexesToGroup("Test group 1", 0 , 1, 2);
-		model.setGroupUnBreakable(0);
+		model.getColumnGroupByIndex(0).setUnbreakable(true);
 		
 		// Ungroup column in the middle
 		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0, false, false));
 		handler.handleUngroupCommand();
 		
-		Assert.assertEquals(3, model.getColumnIndexesInGroup(0).size());
-		Assert.assertTrue(model.getColumnIndexesInGroup(0).contains(0));
-		Assert.assertTrue(model.getColumnIndexesInGroup(0).contains(1));
-		Assert.assertTrue(model.getColumnIndexesInGroup(0).contains(2));
+		Assert.assertEquals(3, getColumnIndexesInGroup(0).size());
+		Assert.assertTrue(getColumnIndexesInGroup(0).contains(0));
+		Assert.assertTrue(getColumnIndexesInGroup(0).contains(1));
+		Assert.assertTrue(getColumnIndexesInGroup(0).contains(2));
 
 		// Ungroup first column
 		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 0, 0, false, false));
 		handler.handleUngroupCommand();
 
-		Assert.assertEquals(3, model.getColumnIndexesInGroup(0).size());
-		Assert.assertTrue(model.getColumnIndexesInGroup(0).contains(0));
-		Assert.assertTrue(model.getColumnIndexesInGroup(0).contains(1));
-		Assert.assertTrue(model.getColumnIndexesInGroup(0).contains(2));
+		Assert.assertEquals(3, getColumnIndexesInGroup(0).size());
+		Assert.assertTrue(getColumnIndexesInGroup(0).contains(0));
+		Assert.assertTrue(getColumnIndexesInGroup(0).contains(1));
+		Assert.assertTrue(getColumnIndexesInGroup(0).contains(2));
 		
 		// Assert the columns haven't moved
 		Assert.assertEquals(0, selectionLayer.getColumnPositionByIndex(0));
@@ -153,9 +154,9 @@ public class ColumnGroupsCommandHandlerTest {
 		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 0, 0, false, false));
 		handler.handleUngroupCommand();
 		
-		Assert.assertEquals(2, model.getColumnIndexesInGroup(2).size());
-		Assert.assertEquals(1, model.getColumnIndexesInGroup(2).get(0).intValue());
-		Assert.assertEquals(2, model.getColumnIndexesInGroup(2).get(1).intValue());
+		Assert.assertEquals(2, getColumnIndexesInGroup(2).size());
+		Assert.assertEquals(1, getColumnIndexesInGroup(2).get(0).intValue());
+		Assert.assertEquals(2, getColumnIndexesInGroup(2).get(1).intValue());
 		
 		Assert.assertEquals(0, selectionLayer.getColumnPositionByIndex(0));
 		Assert.assertEquals(2, selectionLayer.getColumnPositionByIndex(2));
@@ -177,8 +178,8 @@ public class ColumnGroupsCommandHandlerTest {
 		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 2, 0, false, true));
 		handler.handleUngroupCommand();
 		
-		Assert.assertEquals(1, model.getColumnIndexesInGroup(1).size());
-		Assert.assertEquals(1, model.getColumnIndexesInGroup(1).get(0).intValue());
+		Assert.assertEquals(1, getColumnIndexesInGroup(1).size());
+		Assert.assertEquals(1, getColumnIndexesInGroup(1).get(0).intValue());
 		
 		Assert.assertEquals(0, selectionLayer.getColumnPositionByIndex(0));
 		Assert.assertEquals(2, selectionLayer.getColumnPositionByIndex(2));
@@ -209,4 +210,13 @@ public class ColumnGroupsCommandHandlerTest {
 		Assert.assertEquals(1, selectionLayer.getColumnPositionByIndex(1));
 		Assert.assertEquals(2, selectionLayer.getColumnPositionByIndex(2));
 	}
+	
+	private List<Integer> getColumnIndexesInGroup(int columnIndex) {
+		return model.getColumnGroupByIndex(columnIndex).getMembers();
+	}
+
+	private String getColumnGroupNameForIndex(int columnIndex) {
+		return model.getColumnGroupByIndex(columnIndex).getName();
+	}
+	
 }

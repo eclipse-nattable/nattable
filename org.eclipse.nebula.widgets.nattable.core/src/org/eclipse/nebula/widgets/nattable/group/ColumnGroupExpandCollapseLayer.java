@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.group;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupExpandCollapseCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -48,7 +49,8 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 		
 		boolean isHiddeninUnderlyingLayer = 
 			ColumnGroupUtils.isColumnIndexHiddenInUnderLyingLayer(columnIndex, this, underlyingLayer);
-		boolean isCollapsedAndStaticColumn = model.isCollapsed(columnIndex) &&
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+		boolean isCollapsedAndStaticColumn = columnGroup != null && columnGroup.isCollapsed() &&
 			!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model);
 		
 		return isHiddeninUnderlyingLayer || isCollapsedAndStaticColumn;
@@ -62,8 +64,9 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 		int underlyingColumnCount = underlyingLayer.getColumnCount();
 		for (int i = 0; i < underlyingColumnCount; i++) {
 			int columnIndex = underlyingLayer.getColumnIndexByPosition(i);
+			ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
-			if (model.isCollapsed(columnIndex)) {
+			if (columnGroup != null && columnGroup.isCollapsed()) {
 				if (!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model)) {
 					hiddenColumnIndexes.add(Integer.valueOf(columnIndex));
 				}

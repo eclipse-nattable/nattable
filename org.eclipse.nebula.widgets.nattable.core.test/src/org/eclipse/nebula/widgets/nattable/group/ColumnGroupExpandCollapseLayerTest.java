@@ -51,15 +51,15 @@ public class ColumnGroupExpandCollapseLayerTest {
 		assertEquals(9, expandCollapseLayer.getColumnCount());
 
 		//Collapse and check count
-		model.collapse(3);
+		collapse(3);
 		assertEquals(6, expandCollapseLayer.getColumnCount());
 
 		//Expand and add a column
-		model.expand(3);
+		expand(3);
 		model.addColumnsIndexesToGroup(TEST_GROUP_NAME, 8);
 
 		//Collapse again
-		model.collapse(3);
+		collapse(3);
 		assertEquals(5, expandCollapseLayer.getColumnCount());
 	}
 
@@ -69,10 +69,10 @@ public class ColumnGroupExpandCollapseLayerTest {
 		underlyingLayer.hideColumnPositions(Arrays.asList(2,3));
 		assertEquals(7, expandCollapseLayer.getColumnCount());
 
-		model.collapse(3);
+		collapse(3);
 		assertEquals(6, expandCollapseLayer.getColumnCount());
 
-		model.expand(3);
+		expand(3);
 		assertEquals(7, expandCollapseLayer.getColumnCount());
 	}
 
@@ -157,7 +157,7 @@ public class ColumnGroupExpandCollapseLayerTest {
 
 	@Test
 	public void getVisibleColumnIndexesToTheRight() throws Exception {
-		model.collapse(2);
+		collapse(2);
 
 		List<Integer> indexes = ColumnGroupUtils.getVisibleIndexesToTheRight(2, expandCollapseLayer, underlyingLayer, model);
 		assertEquals(0, indexes.size());
@@ -176,7 +176,7 @@ public class ColumnGroupExpandCollapseLayerTest {
 		assertEquals(5, expandCollapseLayer.getColumnIndexByPosition(5));
 		assertEquals(9, expandCollapseLayer.getColumnCount());
 
-		model.collapse(3);
+		collapse(3);
 
 		assertEquals(6, expandCollapseLayer.getColumnCount());
 
@@ -190,4 +190,13 @@ public class ColumnGroupExpandCollapseLayerTest {
 		assertEquals("[7, 0]", expandCollapseLayer.getDataValueByPosition(4, 0));
 		assertEquals("[8, 0]", expandCollapseLayer.getDataValueByPosition(5, 0));
 	}
+	
+	private void collapse(int columnIndex) {
+		model.getColumnGroupByIndex(columnIndex).setCollapsed(true);
+	}
+	
+	private void expand(int columnIndex) {
+		model.getColumnGroupByIndex(columnIndex).setCollapsed(false);
+	}
+	
 }

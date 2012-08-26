@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -69,41 +70,43 @@ public class GroupColumnReorderCommandHandler extends AbstractLayerCommandHandle
 	}
 
 	private boolean updateModel(int fromColumnIndex, int toColumnIndex, String leftEdgeGroupName, String rightEdgeGroupName) {
+		ColumnGroup fromColumnGroup = model.getColumnGroupByIndex(fromColumnIndex);
+		ColumnGroup toColumnGroup = model.getColumnGroupByIndex(toColumnIndex);
 
 		// If moved to the RIGHT edge of a group - remove from group
 		if (rightEdgeGroupName != null) {
-			return (model.isPartOfAGroup(fromColumnIndex)) ? model.removeColumnFromGroup(fromColumnIndex) : true;
+			return (model.isPartOfAGroup(fromColumnIndex)) ? fromColumnGroup.removeColumn(fromColumnIndex) : true;
 		}
 
 		// If moved to the LEFT edge of a column group - include in the group
 		if (leftEdgeGroupName != null) {
 			boolean removed = true;
 			if (model.isPartOfAGroup(fromColumnIndex)){
-				removed = model.removeColumnFromGroup(fromColumnIndex);
+				removed = fromColumnGroup.removeColumn(fromColumnIndex);
 			}
 			return removed && model.insertColumnIndexes(leftEdgeGroupName, fromColumnIndex);
 		}
 
 		// Move column INTO a group
 		if (model.isPartOfAGroup(toColumnIndex) && !model.isPartOfAGroup(fromColumnIndex)) {
-			String groupName = model.getColumnGroupNameForIndex(toColumnIndex);
+			String groupName = toColumnGroup.getName();
 			return model.insertColumnIndexes(groupName, fromColumnIndex);
 		}
 
 		// Move column OUT of a group
 		if (model.isPartOfAGroup(fromColumnIndex) && !model.isPartOfAGroup(toColumnIndex)) {
-			return model.removeColumnFromGroup(fromColumnIndex);
+			return fromColumnGroup.removeColumn(fromColumnIndex);
 		}
 
 		// Move column BETWEEN groups
 		if (model.isPartOfAGroup(toColumnIndex) && model.isPartOfAGroup(fromColumnIndex)) {
-			String toGroupName = model.getColumnGroupNameForIndex(toColumnIndex);
-			String fromGroupName = model.getColumnGroupNameForIndex(fromColumnIndex);
+			String toGroupName = toColumnGroup.getName();
+			String fromGroupName = fromColumnGroup.getName();
 
 			if (fromGroupName.equals(toGroupName)) {
 				return true;
 			} else {
-				return model.removeColumnFromGroup(fromColumnIndex) && model.insertColumnIndexes(toGroupName, fromColumnIndex);
+				return fromColumnGroup.removeColumn(fromColumnIndex) && model.insertColumnIndexes(toGroupName, fromColumnIndex);
 			}
 		}
 		return true;
@@ -111,14 +114,14 @@ public class GroupColumnReorderCommandHandler extends AbstractLayerCommandHandle
 
 	private String movedToRightEdgeOfAGroup(int dropColumnPosition, int dropColumnIndex){
 		if(ColumnGroupUtils.isRightEdgeOfAColumnGroup(columnGroupReorderLayer, dropColumnPosition, dropColumnIndex, model)){
-			return model.getColumnGroupNameForIndex(dropColumnIndex);
+			return model.getColumnGroupByIndex(dropColumnIndex).getName();
 		}
 		return null;
 	}
 
 	private String movedToLeftEdgeOfAGroup(int dropColumnPosition, int dropColumnIndex){
 		if(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(columnGroupReorderLayer, dropColumnPosition, dropColumnIndex, model)){
-			return model.getColumnGroupNameForIndex(dropColumnIndex);
+			return model.getColumnGroupByIndex(dropColumnIndex).getName();
 		}
 		return null;
 	}

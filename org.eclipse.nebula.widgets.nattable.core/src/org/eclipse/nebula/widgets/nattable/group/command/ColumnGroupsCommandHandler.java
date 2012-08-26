@@ -139,8 +139,10 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 	}
 
 	private void handleRemovalFromGroup(Map<String, Integer> toColumnPositions, int columnIndex) {
-		final String columnGroupName = model.getColumnGroupNameForIndex(columnIndex);
-		final List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(columnIndex);
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+		
+		final String columnGroupName = columnGroup.getName();
+		final List<Integer> columnIndexesInGroup = columnGroup.getMembers();
 		final int columnGroupSize = columnIndexesInGroup.size();
 		if (!toColumnPositions.containsKey(columnGroupName)) {
 			for (int colGroupIndex : columnIndexesInGroup) {
@@ -162,7 +164,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 				toColumnPositions.remove(columnGroupName);
 			}
 		}
-		model.removeColumnFromGroup(columnIndex);
+		columnGroup.removeColumn(columnIndex);
 	}	
 	
 	private void handleRemoveColumnGroupCommand(int columnIndex) {

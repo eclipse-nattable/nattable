@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,10 +37,10 @@ public class ColumnGroupModelTest {
 	
 	@Test
 	public void getColumnGroupForIndex() throws Exception {
-		Assert.assertEquals(TEST_GROUP_NAME_1, model.getColumnGroupNameForIndex(1));
-		Assert.assertEquals(TEST_GROUP_NAME_2, model.getColumnGroupNameForIndex(7));
-		Assert.assertEquals(TEST_GROUP_NAME_3, model.getColumnGroupNameForIndex(13));
-		Assert.assertEquals(null, model.getColumnGroupNameForIndex(15));
+		Assert.assertEquals(TEST_GROUP_NAME_1, model.getColumnGroupByIndex(1).getName());
+		Assert.assertEquals(TEST_GROUP_NAME_2, model.getColumnGroupByIndex(7).getName());
+		Assert.assertEquals(TEST_GROUP_NAME_3, model.getColumnGroupByIndex(13).getName());
+		Assert.assertNull(model.getColumnGroupByIndex(15));
 
 		Assert.assertTrue(model.isPartOfAGroup(1));
 		Assert.assertTrue(model.isPartOfAGroup(7));
@@ -49,7 +50,7 @@ public class ColumnGroupModelTest {
 
 	@Test
 	public void getColumnIndexesInGroup() throws Exception {
-		List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(0);
+		List<Integer> columnIndexesInGroup = model.getColumnGroupByIndex(0).getMembers();
 		Assert.assertNotNull(columnIndexesInGroup);
 		Assert.assertEquals(2, columnIndexesInGroup.size());
 		Assert.assertEquals(0, columnIndexesInGroup.get(0).intValue());
@@ -57,11 +58,9 @@ public class ColumnGroupModelTest {
 	}
 
 	@Test
-	public void getColumnIndexesInGroupForAColumnNotInAGroup() throws Exception {
-		List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(100);
-
-		Assert.assertNotNull(columnIndexesInGroup);
-		Assert.assertEquals(0, columnIndexesInGroup.size());
+	public void noColumnGroup() throws Exception {
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(100);
+		Assert.assertNull(columnGroup);
 	}
 	
 	@Test
@@ -72,68 +71,65 @@ public class ColumnGroupModelTest {
 	
 	@Test
 	public void collapse() throws Exception {
-		model.collapse(0);
+		collapse(0);
 		
-		Assert.assertTrue(model.isCollapsed(0));
-		Assert.assertTrue(model.isCollapsed(1));
+		Assert.assertTrue(isCollapsed(0));
+		Assert.assertTrue(isCollapsed(1));
 
-		Assert.assertFalse(model.isCollapsed(7));
+		Assert.assertFalse(isCollapsed(7));
 	}
 	
 	@Test
 	public void expand() throws Exception {
-		model.collapse(7);
-		Assert.assertTrue(model.isCollapsed(7));
-		Assert.assertTrue(model.isCollapsed(8));
+		collapse(7);
+		Assert.assertTrue(isCollapsed(7));
+		Assert.assertTrue(isCollapsed(8));
 		
-		model.expand(7);
-		Assert.assertFalse(model.isCollapsed(7));
-		Assert.assertFalse(model.isCollapsed(8));
+		expand(7);
+		Assert.assertFalse(isCollapsed(7));
+		Assert.assertFalse(isCollapsed(8));
 	}
 
 	@Test
 	public void getCollapsedColumnCount() throws Exception {
 		Assert.assertEquals(0, model.getCollapsedColumnCount());
 		
-		model.collapse(0);
+		collapse(0);
 		Assert.assertEquals(1, model.getCollapsedColumnCount());
 
-		model.collapse(8);
+		collapse(8);
 		Assert.assertEquals(2, model.getCollapsedColumnCount());
 
-		model.expand(8);
+		expand(8);
 		Assert.assertEquals(1, model.getCollapsedColumnCount());
 	}
 	
 	@Test
 	public void removeColumnFromGroup() {
-		List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(12);
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(12);
+		List<Integer> columnIndexesInGroup = columnGroup.getMembers();
 		
 		Assert.assertTrue(columnIndexesInGroup.contains(12));
-		Assert.assertTrue(model.removeColumnFromGroup(12));
+		Assert.assertTrue(columnGroup.removeColumn(12));
 		
-		columnIndexesInGroup = model.getColumnIndexesInGroup(13);
+		columnGroup = model.getColumnGroupByIndex(13);
+		columnIndexesInGroup = columnGroup.getMembers();
 		Assert.assertEquals(1, columnIndexesInGroup.size());
-		Assert.assertTrue(model.removeColumnFromGroup(13));
+		Assert.assertTrue(columnGroup.removeColumn(13));
 
 		Assert.assertFalse(model.isPartOfAGroup(12));
 	}
 	
 	@Test
-	public void removeanIndexNotInAGroup() throws Exception {
-		Assert.assertFalse(model.removeColumnFromGroup(100));
-	}
-	
-	@Test
 	public void shouldInsertAColumnIndexToAGroup() {
-		List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(0);
+		List<Integer> columnIndexesInGroup = model.getColumnGroupByIndex(0).getMembers();
 		
 		Assert.assertTrue(2 == columnIndexesInGroup.size());
 		Assert.assertTrue(columnIndexesInGroup.contains(new Integer(0)));
 		Assert.assertTrue(columnIndexesInGroup.contains(new Integer(1)));
 		
-		Assert.assertTrue(model.insertColumnIndexes(model.getColumnGroupNameForIndex(0), 4));
-		columnIndexesInGroup = model.getColumnIndexesInGroup(0);
+		Assert.assertTrue(model.insertColumnIndexes(model.getColumnGroupByIndex(0).getName(), 4));
+		columnIndexesInGroup = model.getColumnGroupByIndex(0).getMembers();
 
 		Assert.assertEquals(3, columnIndexesInGroup.size());
 		Assert.assertTrue(columnIndexesInGroup.contains(new Integer(0)));
@@ -145,11 +141,11 @@ public class ColumnGroupModelTest {
 	
 	@Test
 	public void shouldNotInsertIntoAnUnbreakableGroup() throws Exception {
-		model.setGroupUnBreakable(0);
+		model.getColumnGroupByIndex(0).setUnbreakable(true);
 
-		Assert.assertFalse(model.insertColumnIndexes(model.getColumnGroupNameForIndex(0), 4));
+		Assert.assertFalse(model.insertColumnIndexes(model.getColumnGroupByIndex(0).getName(), 4));
 		
-		List<Integer> columnIndexesInGroup = model.getColumnIndexesInGroup(0);
+		List<Integer> columnIndexesInGroup = model.getColumnGroupByIndex(0).getMembers();
 		Assert.assertEquals(2, columnIndexesInGroup.size());
 		Assert.assertTrue(columnIndexesInGroup.contains(new Integer(0)));
 		Assert.assertTrue(columnIndexesInGroup.contains(new Integer(1)));
@@ -157,8 +153,8 @@ public class ColumnGroupModelTest {
 	
 	@Test
 	public void shouldFailWhenTryingToInsertSameColumnTwice() {
-		model.insertColumnIndexes(model.getColumnGroupNameForIndex(0), 4);
-		Assert.assertFalse(model.insertColumnIndexes(model.getColumnGroupNameForIndex(0), 4, 1, 0));
+		model.insertColumnIndexes(model.getColumnGroupByIndex(0).getName(), 4);
+		Assert.assertFalse(model.insertColumnIndexes(model.getColumnGroupByIndex(0).getName(), 4, 1, 0));
 	}
 	
 	@Test
@@ -169,44 +165,43 @@ public class ColumnGroupModelTest {
 	
 	@Test
 	public void toggleColumnGroup() throws Exception {
-		Assert.assertFalse(model.isCollapsed(0));
+		Assert.assertFalse(isCollapsed(0));
 		
-		model.toggleColumnGroupExpandCollapse(0);
-		Assert.assertTrue(model.isCollapsed(0));
+		toggleColumnGroupExpandCollapse(0);
+		Assert.assertTrue(isCollapsed(0));
 
-		model.toggleColumnGroupExpandCollapse(0);
-		Assert.assertFalse(model.isCollapsed(0));
+		toggleColumnGroupExpandCollapse(0);
+		Assert.assertFalse(isCollapsed(0));
 	}
 	
 	@Test
 	public void isCollapsedByName() throws Exception {
-		Assert.assertFalse(model.isCollapsed(TEST_GROUP_NAME_1));
+		Assert.assertFalse(model.getColumnGroupByName(TEST_GROUP_NAME_1).isCollapsed());
 		
-		model.collapse(0);
+		collapse(0);
 		
-		Assert.assertTrue(model.isCollapsed(TEST_GROUP_NAME_1));
-		Assert.assertFalse(model.isCollapsed(TEST_GROUP_NAME_2));
-		Assert.assertFalse(model.isCollapsed("XYZ"));
+		Assert.assertTrue(model.getColumnGroupByName(TEST_GROUP_NAME_1).isCollapsed());
+		Assert.assertFalse(model.getColumnGroupByName(TEST_GROUP_NAME_2).isCollapsed());
 	}
 	
 	@Test
 	public void sizeOfGroup() throws Exception {
-		assertEquals(2, model.sizeOfGroup(0));
-		assertEquals(0, model.sizeOfGroup(100)); //non existent
+		assertEquals(2, model.getColumnGroupByIndex(0).getSize());
 	}
 	
 	@Test
 	public void markAsUnbreakable() throws Exception {
 		Assert.assertFalse(model.isPartOfAnUnbreakableGroup(0));
 
-		model.setGroupUnBreakable(0);
+		model.getColumnGroupByIndex(0).setUnbreakable(true);
 		Assert.assertTrue(model.isPartOfAnUnbreakableGroup(0));
 	}
 	
 	@Test
 	public void shouldNotRemoveFromAnUnbreakableGroup() throws Exception {
-		model.setGroupUnBreakable(7);
-		Assert.assertFalse(model.removeColumnFromGroup(7));
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(7);
+		columnGroup.setUnbreakable(true);
+		Assert.assertFalse(columnGroup.removeColumn(7));
 	}
 	
 	@Test
@@ -226,10 +221,10 @@ public class ColumnGroupModelTest {
 		model.addColumnsIndexesToGroup("TEST_GROUP_NAME_4", 14, 15, 16, 17);
 		model.insertStaticColumnIndexes("TEST_GROUP_NAME_4", 15, 16);
 		
-		Assert.assertEquals(2, model.sizeOfStaticColumns(14));
-		Assert.assertEquals(2, model.sizeOfStaticColumns(15));
-		Assert.assertEquals(2, model.sizeOfStaticColumns(16));
-		Assert.assertEquals(2, model.sizeOfStaticColumns(17));
+		Assert.assertEquals(2, sizeOfStaticColumns(14));
+		Assert.assertEquals(2, sizeOfStaticColumns(15));
+		Assert.assertEquals(2, sizeOfStaticColumns(16));
+		Assert.assertEquals(2, sizeOfStaticColumns(17));
 	}
 	
 	@Test
@@ -237,12 +232,30 @@ public class ColumnGroupModelTest {
 		model.addColumnsIndexesToGroup("TEST_GROUP_NAME_4", 14, 15, 16, 17);
 		model.insertStaticColumnIndexes("TEST_GROUP_NAME_4", 15, 16);
 		
-		Assert.assertEquals(2, model.getStaticColumnIndexesInGroup(14).size());
-		Assert.assertEquals(0, model.getStaticColumnIndexesInGroup(33).size());
+		Assert.assertEquals(2, model.getColumnGroupByIndex(14).getStaticColumnIndexes().size());
 		
-		Assert.assertEquals(15, model.getStaticColumnIndexesInGroup(14).get(0).intValue());
-		Assert.assertEquals(16, model.getStaticColumnIndexesInGroup(14).get(1).intValue());
+		Assert.assertEquals(15, model.getColumnGroupByIndex(14).getStaticColumnIndexes().get(0).intValue());
+		Assert.assertEquals(16, model.getColumnGroupByIndex(14).getStaticColumnIndexes().get(1).intValue());
 	}
 	
+	private void toggleColumnGroupExpandCollapse(int columnIndex) {
+		model.getColumnGroupByIndex(columnIndex).toggleCollapsed();
+	}
+	
+	private boolean isCollapsed(int columnIndex) {
+		return model.getColumnGroupByIndex(columnIndex).isCollapsed();
+	}
+	
+	private void collapse(int columnIndex) {
+		model.getColumnGroupByIndex(columnIndex).setCollapsed(true);
+	}
+	
+	private void expand(int columnIndex) {
+		model.getColumnGroupByIndex(columnIndex).setCollapsed(false);
+	}
+	
+	private int sizeOfStaticColumns(int columnIndex) {
+		return model.getColumnGroupByIndex(columnIndex).getStaticColumnIndexes().size();
+	}
 	
 }

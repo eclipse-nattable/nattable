@@ -39,15 +39,16 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 		
 		int columnIndex = columnGroupExpandCollapseLayer.getColumnIndexByPosition(command.getColumnPosition());
 		ColumnGroupModel model = columnGroupExpandCollapseLayer.getModel();
+		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 		
 		// if group of columnIndex is not collapseable return without any 
 		// further operation ...
-		if (!model.isCollapseable(columnIndex)) {
+		if (!columnGroup.isCollapseable()) {
 			return true;
 		}
 		
-		boolean wasCollapsed = model.isCollapsed(columnIndex);
-		ColumnGroup columnGroup = model.toggleColumnGroupExpandCollapse(columnIndex);
+		boolean wasCollapsed = columnGroup.isCollapsed();
+		columnGroup.toggleCollapsed();
 		
 		List<Integer> columnPositions = new ArrayList<Integer>(columnGroup.getMembers());
 		columnPositions.removeAll(columnGroup.getStaticColumnIndexes());

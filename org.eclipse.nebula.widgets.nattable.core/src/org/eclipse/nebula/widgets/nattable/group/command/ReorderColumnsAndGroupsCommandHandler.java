@@ -49,7 +49,7 @@ public class ReorderColumnsAndGroupsCommandHandler extends AbstractLayerCommandH
 			
 			ColumnGroupModel model = columnGroupReorderLayer.getModel();
 			if (model.isPartOfAGroup(fromColumnIndex)) {
-				String groupName = model.getColumnGroupNameForIndex(fromColumnIndex);
+				String groupName = model.getColumnGroupByIndex(fromColumnIndex).getName();
 				if (!groupsProcessed.contains(groupName)) {
 					groupsProcessed.add(groupName);
 					fromColumnPositionsWithGroupColumns.addAll(columnGroupReorderLayer.getColumnGroupPositions(fromColumnIndex));

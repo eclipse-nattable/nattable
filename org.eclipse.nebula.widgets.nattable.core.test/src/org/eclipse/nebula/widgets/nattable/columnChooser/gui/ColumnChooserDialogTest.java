@@ -111,7 +111,7 @@ public class ColumnChooserDialogTest {
 
 	@Test
 	public void populateTree() throws Exception {
-		columnGroupModel.toggleColumnGroupExpandCollapse(0);
+		columnGroupModel.getColumnGroupByIndex(0).toggleCollapsed();
 		Assert.assertEquals(9, testDialog.getSelectedTree().getItemCount());
 
 		TreeItem item = testDialog.getSelectedTree().getItem(0);
