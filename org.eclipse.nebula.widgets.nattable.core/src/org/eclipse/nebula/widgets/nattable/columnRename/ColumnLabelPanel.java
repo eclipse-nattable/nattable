@@ -39,11 +39,13 @@ public class ColumnLabelPanel extends AbstractEditorPanel<String> {
 		setLayout(gridLayout);
 
 		// Original label
-		Label label = new Label(this, SWT.NONE);
-		label.setText(Messages.getString("ColumnLabel.original")); //$NON-NLS-1$
-
-		Label originalLabel = new Label(this, SWT.NONE);
-		originalLabel.setText(columnLabel);
+		if (columnLabel != null) {
+			Label label = new Label(this, SWT.NONE);
+			label.setText(Messages.getString("ColumnLabel.original")); //$NON-NLS-1$
+	
+			Label originalLabel = new Label(this, SWT.NONE);
+			originalLabel.setText(columnLabel);
+		}
 
 		// Text field for new label
 		Label renameLabel = new Label(this, SWT.NONE);

@@ -152,6 +152,7 @@ public class _000_Column_groups extends AbstractNatExample {
 		// Column group header menu
 		final Menu columnGroupHeaderMenu =
 				new PopupMenuBuilder(natTable)
+					.withMenuItemProvider(ColumnGroupMenuItemProviders.renameColumnGroupMenuItemProvider())
 					.withMenuItemProvider(ColumnGroupMenuItemProviders.removeColumnGroupMenuItemProvider())
 					.build();
 		

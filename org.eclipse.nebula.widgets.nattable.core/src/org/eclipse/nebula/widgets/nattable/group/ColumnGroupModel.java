@@ -391,6 +391,7 @@ public class ColumnGroupModel implements IPersistable {
 		
 		public void setName(String name) {
 			this.name = name;
+			notifyListeners();
 		}
 		
 		public boolean isCollapsed() {
@@ -412,6 +413,7 @@ public class ColumnGroupModel implements IPersistable {
 		
 		public void setCollapseable(boolean collapseable) {
 			this.collapseable = collapseable;
+			notifyListeners();
 		}
 		
 		public boolean isUnbreakable() {
@@ -420,6 +422,7 @@ public class ColumnGroupModel implements IPersistable {
 		
 		public void setUnbreakable(boolean unbreakable) {
 			this.unbreakable = unbreakable;
+			notifyListeners();
 		}
 		
 		public List<Integer> getMembers() {

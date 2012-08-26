@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
+import org.eclipse.nebula.widgets.nattable.columnRename.ColumnRenameDialog;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
@@ -28,6 +29,9 @@ import org.eclipse.nebula.widgets.nattable.group.event.GroupColumnsEvent;
 import org.eclipse.nebula.widgets.nattable.group.event.UngroupColumnsEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 
 
 public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<IColumnGroupCommand>  {
@@ -67,8 +71,28 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 			int columnIndex = removeColumnGroupCommand.getColumnIndex();
 			handleRemoveColumnGroupCommand(columnIndex);
 			return true;
+		} else if (command instanceof DisplayColumnGroupRenameDialogCommand) {
+			return displayColumnGroupRenameDialog((DisplayColumnGroupRenameDialogCommand) command);
 		}
 		return false;
+	}
+
+	private boolean displayColumnGroupRenameDialog(DisplayColumnGroupRenameDialogCommand command) {
+		int columnPosition = command.getColumnPosition();
+
+		ColumnRenameDialog dialog = new ColumnRenameDialog(Display.getDefault().getActiveShell(), null, null);
+		Rectangle colHeaderBounds = contextLayer.getBoundsByPosition(columnPosition, 0);
+		Point point = new Point(colHeaderBounds.x, colHeaderBounds.y + colHeaderBounds.height);
+        dialog.setLocation(command.toDisplayCoordinates(point));
+		dialog.open();
+
+		if (!dialog.isCancelPressed()) {
+			int columnIndex = contextLayer.getColumnIndexByPosition(columnPosition);
+			ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+			columnGroup.setName(dialog.getNewColumnLabel());
+		}
+		
+		return true;
 	}
 
 	public Class<IColumnGroupCommand> getCommandClass() {
