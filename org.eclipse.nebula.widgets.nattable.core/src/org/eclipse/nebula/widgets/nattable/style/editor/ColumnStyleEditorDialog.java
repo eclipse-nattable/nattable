@@ -135,7 +135,7 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
 	// Getters for the modified style
 
-	public Style getNewColumCellStyle() {
+	public Style getNewColumnCellStyle() {
 		return newColumnCellStyle;
 	}
 

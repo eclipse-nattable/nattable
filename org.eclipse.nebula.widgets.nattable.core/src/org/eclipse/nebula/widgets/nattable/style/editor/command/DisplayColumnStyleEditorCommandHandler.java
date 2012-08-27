@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.persistence.StylePersistor;
@@ -57,9 +58,13 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 	@Override
 	public boolean doCommand(DisplayColumnStyleEditorCommand command) {
 		int columnIndexOfClick = command.getNattableLayer().getColumnIndexByPosition(command.columnPosition);
-
+		
+		LabelStack configLabels = new LabelStack();
+		columnLabelAccumulator.accumulateConfigLabels(configLabels, columnIndexOfClick, 0);
+		configLabels.addLabel(getConfigLabel(columnIndexOfClick));
+		
 		// Column style
-		Style clickedCellStyle = (Style) configRegistry.getConfigAttribute(CELL_STYLE, NORMAL, USER_EDITED_STYLE_LABEL + columnIndexOfClick);
+		Style clickedCellStyle = (Style) configRegistry.getConfigAttribute(CELL_STYLE, NORMAL, configLabels.getLabels());
 		
 		dialog = new ColumnStyleEditorDialog(Display.getCurrent().getActiveShell(), clickedCellStyle);
 		dialog.open();
@@ -89,16 +94,17 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 		for (int i=0; i<columnIndeces.length; i++) {
 			final int columnIndex = columnIndeces[i];
 			// Read the edited styles
-			Style newColumnCellStyle = dialog.getNewColumCellStyle(); 
+			Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
 			
+			String configLabel = getConfigLabel(columnIndex);
 			if (newColumnCellStyle == null) {
-				stylesToPersist.remove(getConfigLabel(columnIndex));
+				stylesToPersist.remove(configLabel);
 			} else {
 				newColumnCellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, dialog.getNewColumnBorderStyle());
-				stylesToPersist.put(getConfigLabel(columnIndex), newColumnCellStyle);
+				stylesToPersist.put(configLabel, newColumnCellStyle);
 			}
-			configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, getConfigLabel(columnIndex));
-			columnLabelAccumulator.registerColumnOverrides(columnIndex, getConfigLabel(columnIndex));
+			configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, configLabel);
+			columnLabelAccumulator.registerColumnOverridesOnTop(columnIndex, configLabel);
 		}
 	}
 

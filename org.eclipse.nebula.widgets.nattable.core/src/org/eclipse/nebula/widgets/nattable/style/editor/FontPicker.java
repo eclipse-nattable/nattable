@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
@@ -29,6 +28,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class FontPicker extends Button {
     
+	private Font originalFont;
     private Font selectedFont;
     private FontData[] fontData = new FontData[1];
     private Font displayFont; 
@@ -55,8 +55,11 @@ public class FontPicker extends Button {
     }
     
     private void update(FontData data) {
-        this.fontData[0] = data;
-        this.selectedFont = GUIHelper.getFont(data);
+        fontData[0] = data;
+        selectedFont = GUIHelper.getFont(data);
+        if (originalFont == null) {
+        	originalFont = selectedFont;
+        }
         setText(data.getName() + ", " + data.getHeight() + "pt"); //$NON-NLS-1$ //$NON-NLS-2$
         setFont(createDisplayFont(data));
         setAlignment(SWT.CENTER);
@@ -64,7 +67,7 @@ public class FontPicker extends Button {
     }
     
     private Font createDisplayFont(FontData data) {
-        FontData resizedData = new FontData(data.getName(), 8, data.getStyle());
+        FontData resizedData = new FontData(data.getName(), data.getHeight(), data.getStyle());
         displayFont = GUIHelper.getFont(resizedData);
         return displayFont;
     }
@@ -77,13 +80,19 @@ public class FontPicker extends Button {
         return selectedFont;
     }
     
+    public Font getOriginalFont() {
+		return originalFont;
+	}
+    
     /**
      * Set the selected font. <em>Note that this class will not take ownership of the passed resource. Instead it will
      * create and manage its own internal copy.</em>
      */
-    public void setSelectedFont(Font font) {
-        if (font == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
-        update(font.getFontData()[0]);
+    public void setOriginalFont(Font font) {
+        if (font != null) {
+        	originalFont = font;
+        	update(font.getFontData()[0]);
+        }
     }
 
     @Override

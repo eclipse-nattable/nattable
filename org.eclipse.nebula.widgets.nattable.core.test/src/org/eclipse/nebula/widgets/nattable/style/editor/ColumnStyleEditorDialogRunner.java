@@ -21,7 +21,7 @@ public class ColumnStyleEditorDialogRunner {
 		Shell shell = new Shell();
 		ColumnStyleEditorDialog dialog = new ColumnStyleEditorDialog(shell, new Style());
 		dialog.open();
-		System.out.println("Style: " + dialog.getNewColumCellStyle());
+		System.out.println("Style: " + dialog.getNewColumnCellStyle());
 	}
 
 }

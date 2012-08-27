@@ -31,7 +31,11 @@ public abstract class AbstractOverrider implements IConfigLabelAccumulator {
 		if(existingOverrides == null){
 			registerOverrides(key, ArrayUtil.asList(configLabels));
 		} else {
-			existingOverrides.addAll(ArrayUtil.asList(configLabels));
+			for (String configLabel : configLabels) {
+				if (!existingOverrides.contains(configLabel)) {
+					existingOverrides.add(configLabel);
+				}
+			}
 		}
 	}
 	
@@ -40,7 +44,11 @@ public abstract class AbstractOverrider implements IConfigLabelAccumulator {
 		if(existingOverrides == null){
 			registerOverrides(key, ArrayUtil.asList(configLabels));
 		} else {
-			existingOverrides.addAll(0, ArrayUtil.asList(configLabels));
+			for (String configLabel : configLabels) {
+				if (!existingOverrides.contains(configLabel)) {
+					existingOverrides.add(0, configLabel);
+				}
+			}
 		}
 	}
 	
