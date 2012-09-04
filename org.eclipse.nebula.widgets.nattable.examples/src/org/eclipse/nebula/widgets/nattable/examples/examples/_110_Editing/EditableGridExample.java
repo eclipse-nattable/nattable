@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -39,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.edit.action.ToggleCheckBoxColumnActio
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -64,6 +64,7 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.CellPainterMouseEventMatch
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -93,6 +94,7 @@ public class EditableGridExample extends AbstractNatExample {
 	
 	public static final String ASK_PRICE_CONFIG_LABEL = "askPriceConfigLabel";
 	public static final String SECURITY_ID_CONFIG_LABEL = "SecurityIdConfigLabel";
+	public static final String SECURITY_ID_EDITOR = "SecurityIdEditor";
 	public static final String BID_PRICE_CONFIG_LABEL = "bidPriceConfigLabel";
 	public static final String LOT_SIZE_CONFIG_LABEL = "lotSizeConfigLabel";
 	public static final String SPREAD_CONFIG_LABEL = "spreadConfigLabel";
@@ -188,7 +190,7 @@ public class EditableGridExample extends AbstractNatExample {
 	}
 
 	private static void registerConfigLabelsOnColumns(ColumnOverrideLabelAccumulator columnLabelAccumulator) {
-		columnLabelAccumulator.registerColumnOverrides(RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.SECURITY_ID_PROP_NAME), SECURITY_ID_CONFIG_LABEL);
+		columnLabelAccumulator.registerColumnOverrides(RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.SECURITY_ID_PROP_NAME), SECURITY_ID_EDITOR, SECURITY_ID_CONFIG_LABEL);
 
 		columnLabelAccumulator.registerColumnOverrides(RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.SECURITY_DESCRIPTION_PROP_NAME), ALIGN_CELL_CONTENTS_LEFT_CONFIG_LABEL);
 
@@ -234,6 +236,13 @@ public class EditableGridExample extends AbstractNatExample {
 	}
 
 	private static void registerISINValidator(IConfigRegistry configRegistry) {
+
+		TextCellEditor textCellEditor = new TextCellEditor();
+		textCellEditor.setErrorDecorationEnabled(true);
+		textCellEditor.setErrorDecorationText("Security Id must be 3 alpha characters optionally followed by numbers");
+		textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
+		configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, textCellEditor, DisplayMode.NORMAL, SECURITY_ID_EDITOR);
+		
 		configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, getSecurtityIdValidator(), DisplayMode.EDIT, SECURITY_ID_CONFIG_LABEL);
 	}
 
