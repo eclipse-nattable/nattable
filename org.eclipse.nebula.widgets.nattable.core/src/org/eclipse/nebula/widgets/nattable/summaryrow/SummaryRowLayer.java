@@ -24,9 +24,8 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowUpdateEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
@@ -172,7 +171,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 
 	@Override
 	public void handleLayerEvent(ILayerEvent event) {
-		if (event instanceof RowVisualChangeEvent || event instanceof PropertyUpdateEvent) {
+		if (event instanceof IVisualChangeEvent) {
 			clearSummaryCache();
 		}
 		super.handleLayerEvent(event);
