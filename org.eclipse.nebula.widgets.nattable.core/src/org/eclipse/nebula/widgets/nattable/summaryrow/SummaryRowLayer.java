@@ -33,8 +33,7 @@ import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
 /**
  * Adds a summary row at the end. Uses {@link ISummaryProvider} to calculate the summaries for all columns.
- * The default summary provider is the {@link ISummaryProvider#SUM} which adds up all the cells in the
- * column, if they are numeric values. This layer also adds the following labels:
+ * <p>This layer also adds the following labels:
  * <ol>
  *  <li>{@link SummaryRowLayer#DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX} + column index</li>
  * 	<li>{@link SummaryRowLayer#DEFAULT_SUMMARY_ROW_CONFIG_LABEL} to all cells in the row</li>
@@ -97,7 +96,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 				return potentiallyStaleSummaryValue;
 			}
 			
-			return ISummaryProvider.DEFAULT_SUMMARY_VALUE;
+			return null;
 		}
 		return super.getDataValueByPosition(columnPosition, rowPosition);
 	}
@@ -265,5 +264,4 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 			return -1;
 		}
 	}
-	
 }

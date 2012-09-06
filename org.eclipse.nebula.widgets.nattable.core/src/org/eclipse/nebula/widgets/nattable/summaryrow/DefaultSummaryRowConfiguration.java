@@ -14,11 +14,13 @@ package org.eclipse.nebula.widgets.nattable.summaryrow;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -35,6 +37,7 @@ public class DefaultSummaryRowConfiguration extends AbstractRegistryConfiguratio
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		addSummaryRowStyleConfig(configRegistry);
 		addSummaryProviderConfig(configRegistry);
+		addSummaryRowDisplayConverter(configRegistry);
 	}
 
 	protected void addSummaryRowStyleConfig(IConfigRegistry configRegistry) {
@@ -48,5 +51,24 @@ public class DefaultSummaryRowConfiguration extends AbstractRegistryConfiguratio
 
 	protected void addSummaryProviderConfig(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER, ISummaryProvider.DEFAULT, DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+	}
+	
+	/**
+	 * Add a specialized {@link DefaultDisplayConverter} that will show "..." if there is no value
+	 * to show in the summary row yet.
+	 */
+	protected void addSummaryRowDisplayConverter(IConfigRegistry configRegistry) {
+		DisplayConverter converter = new DefaultDisplayConverter() {
+			@Override
+			public Object canonicalToDisplayValue(Object canonicalValue) {
+				if (canonicalValue == null) {
+					return ISummaryProvider.DEFAULT_SUMMARY_VALUE;
+				}
+				return super.canonicalToDisplayValue(canonicalValue);
+			}
+		};
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.DISPLAY_CONVERTER, converter, 
+				DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 	}
 }

@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.summaryrow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -102,7 +103,7 @@ public class SummaryRowIntegrationTest {
 		System.out.println("askPriceColumnIndex: "+askPriceColumnIndex);
 		// First invocation triggers the summary calculation in a separate thread
 		Object askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex, 4);
-		assertEquals(ISummaryProvider.DEFAULT_SUMMARY_VALUE, askPriceSummary.toString());
+		assertNull(askPriceSummary);
 
 		Thread.sleep(200);
 
@@ -114,11 +115,11 @@ public class SummaryRowIntegrationTest {
 	public void defaultHandlingOfNonNumericColumns() throws Exception {
 		// Non numeric field
 		Object isinSummary = natTable.getDataValueByPosition(securityIdColumnIndex, 4);
-		assertEquals(ISummaryProvider.DEFAULT_SUMMARY_VALUE, isinSummary.toString());
+		assertNull(isinSummary);
 
 		// Summary provider turned off
 		Object bidPriceSummary = natTable.getDataValueByPosition(bidPriceColumnIndex, 4);
-		assertEquals(ISummaryProvider.DEFAULT_SUMMARY_VALUE, bidPriceSummary.toString());
+		assertNull(bidPriceSummary);
 	}
 
 	@Test
@@ -156,7 +157,7 @@ public class SummaryRowIntegrationTest {
 
 		// Trigger summary calculation
 		Object askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex, 4);
-		assertEquals(ISummaryProvider.DEFAULT_SUMMARY_VALUE, askPriceSummary.toString());
+		assertNull(askPriceSummary);
 
 		Thread.sleep(100);
 
@@ -209,7 +210,7 @@ public class SummaryRowIntegrationTest {
 	public void shouldSumUpAllRowsWithAAARating() throws Exception {
 		// Trigger summary calculation
 		Object lotSizeSummary = natTable.getDataValueByPosition(lotSizeColumnIndex, 4);
-		assertEquals(ISummaryProvider.DEFAULT_SUMMARY_VALUE, lotSizeSummary.toString());
+		assertNull(lotSizeSummary);
 
 		Thread.sleep(100);
 
