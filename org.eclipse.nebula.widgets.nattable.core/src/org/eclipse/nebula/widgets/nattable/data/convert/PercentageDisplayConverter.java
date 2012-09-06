@@ -13,9 +13,12 @@ package org.eclipse.nebula.widgets.nattable.data.convert;
 public class PercentageDisplayConverter extends DisplayConverter {
 
 	public Object canonicalToDisplayValue(Object canonicalValue) {
-		double percentageValue = ((Double) canonicalValue).doubleValue();
-		int displayInt = (int) (percentageValue * 100);
-		return String.valueOf(displayInt) + "%"; //$NON-NLS-1$
+		if (canonicalValue != null) {
+			double percentageValue = ((Double) canonicalValue).doubleValue();
+			int displayInt = (int) (percentageValue * 100);
+			return String.valueOf(displayInt) + "%"; //$NON-NLS-1$
+		}
+		return ""; //$NON-NLS-1$
 	}
 
 	public Object displayToCanonicalValue(Object displayValue) {
