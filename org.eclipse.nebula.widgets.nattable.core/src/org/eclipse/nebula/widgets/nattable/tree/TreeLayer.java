@@ -16,10 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
@@ -29,19 +26,10 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
-import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.tree.action.TreeExpandCollapseAction;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseCommandHandler;
-import org.eclipse.nebula.widgets.nattable.tree.config.TreeExportFormatter;
+import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
-import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.CellPainterMouseEventMatcher;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
-import org.eclipse.swt.SWT;
 
 
 public class TreeLayer extends AbstractRowHideShowLayer {
@@ -58,50 +46,36 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	private ICellPainter treeImagePainter;
 	
 	public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel) {
+		this(underlyingLayer, treeRowModel, true);
+	}
+	
+	public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel, boolean useDefaultConfiguration) {
 		super(underlyingLayer);
 		this.treeRowModel = treeRowModel;
 
 		this.hiddenRowIndexes = new TreeSet<Integer>();
+		
+		if (useDefaultConfiguration) {
+			addConfiguration(new DefaultTreeLayerConfiguration(this));
+		}
 
 		indentedTreeImagePainter = new IndentedTreeImagePainter(treeRowModel);
 		treeImagePainter = indentedTreeImagePainter.getTreeImagePainter();
 
 		registerCommandHandler(new TreeExpandCollapseCommandHandler(this));
-	
 	}
 
-	@Override
-	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.CELL_STYLE,
-				new Style() {{
-					setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,  HorizontalAlignmentEnum.LEFT);
-				}},
-				DisplayMode.NORMAL,
-				TreeLayer.TREE_COLUMN_CELL
-		);
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.EXPORT_FORMATTER,
-				new TreeExportFormatter(this.treeRowModel),
-				DisplayMode.NORMAL,
-				TreeLayer.TREE_COLUMN_CELL
-		);
-		
-		uiBindingRegistry.registerFirstDoubleClickBinding(
-				MouseEventMatcher.bodyLeftClick(SWT.NONE), 
-				new TreeExpandCollapseAction()
-		);
-		
-		uiBindingRegistry.registerFirstSingleClickBinding(
-				new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, treeImagePainter),
-				new TreeExpandCollapseAction()
-		);
-	}
-	
 	public ITreeRowModel<?> getModel() {
 		return this.treeRowModel;
 	}
 
+	/**
+	 * @return the treeImagePainter
+	 */
+	public ICellPainter getTreeImagePainter() {
+		return treeImagePainter;
+	}
+	
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		LabelStack stack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
