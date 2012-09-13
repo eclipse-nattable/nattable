@@ -76,7 +76,7 @@ public class EditErrorHandlingExample extends AbstractNatExample {
 	public static String COLUMN_NINE_LABEL = "ColumnNineLabel";
 	
 	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
+		//property names of the NumberValues class
 		String[] propertyNames = {"columnOneNumber", "columnTwoNumber", "columnThreeNumber", "columnFourNumber", 
 				"columnFiveNumber"};
 
@@ -183,7 +183,7 @@ class TableEditConfiguration extends AbstractRegistryConfiguration  {
 		return new DataValidator() {
 			
 			public boolean validate(int columnIndex, int rowIndex, Object newValue) {
-				throw new IllegalArgumentException("This is an exception throwed because of missing constaint checks!");
+				throw new IllegalArgumentException("This is an exception throwed because of missing constraint checks!");
 			}
 		};
 	}
