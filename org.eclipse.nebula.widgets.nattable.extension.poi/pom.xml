@@ -23,5 +23,13 @@
 
   <packaging>eclipse-plugin</packaging>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.nebula.widgets.nattable</groupId>
+			<artifactId>org.apache.poi</artifactId>
+			<version>${poi-version}</version>
+		</dependency>
+	</dependencies>
+
 </project>
 

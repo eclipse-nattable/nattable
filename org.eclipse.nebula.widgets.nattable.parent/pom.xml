@@ -28,7 +28,9 @@
 	</modules>
 
 	<properties>
-		<tycho-version>0.14.1</tycho-version>
+		<tycho-version>0.15.0</tycho-version>
+		<glazedlists-version>1.8.0</glazedlists-version>
+		<poi-version>3.7</poi-version>
 	</properties>
 
 	<build>
@@ -71,18 +73,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>net.java.dev.glazedlists</groupId>
-			<artifactId>glazedlists_java15</artifactId>
-			<version>1.8.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.nebula.widgets.nattable</groupId>
-			<artifactId>org.apache.poi</artifactId>
-			<version>3.7</version>
-		</dependency>
-	</dependencies>
 	
 </project>
