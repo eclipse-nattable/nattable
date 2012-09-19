@@ -24,6 +24,24 @@
 
   <packaging>pom</packaging>
 
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<target-file-name>nattable.target</target-file-name>
+			</properties>
+		</profile>
+		<profile>
+			<id>build-server</id>
+			<properties>
+				<target-file-name>nattable_buildserver.target</target-file-name>
+			</properties>
+		</profile>
+	</profiles>
+
   <build>
     <plugins>
       <plugin>
@@ -40,7 +58,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>nattable.target</file>
+                  <file>${target-file-name}</file>
                   <type>target</type>
                   <classifier>nattable</classifier>
                 </artifact>
