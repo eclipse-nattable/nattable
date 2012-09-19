@@ -22,7 +22,7 @@
 
 	<build>
 		<plugins>
-			<!-- <plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -39,7 +39,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
 
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -51,7 +51,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/site</outputDirectory>
+							<outputDirectory>${basedir}/target/repository</outputDirectory>
 							<resources>
 								<resource>
 									<directory>.</directory>
