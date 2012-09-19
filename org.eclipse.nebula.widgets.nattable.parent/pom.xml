@@ -25,20 +25,30 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
+				<module>../target-platform</module>
+				
 				<module>../org.eclipse.nebula.widgets.nattable.core</module>
 				<module>../org.eclipse.nebula.widgets.nattable.core.test</module>
+				<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
+				
 				<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists</module>
 				<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</module>
+				
 				<module>../org.eclipse.nebula.widgets.nattable.extension.poi</module>
-				<module>../target-platform</module>
+				
+				<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>build-server</id>
 			<modules>
 				<module>../target-platform</module>
+				
 				<module>../org.eclipse.nebula.widgets.nattable.core</module>
 				<module>../org.eclipse.nebula.widgets.nattable.core.test</module>
+				<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
+				
+				<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
 			</modules>
 		</profile>
 	</profiles>
@@ -88,6 +98,19 @@
 				</executions>
 			</plugin>
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.1</version>
+					<configuration>
+						<encoding>ISO-8859-1</encoding>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	
 </project>
