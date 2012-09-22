@@ -258,7 +258,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 			
 		}
 		else if (!calculate && !wrapText) {
-			output.append(modifyTextToDisplay(text, gc, availableLength - (calculatePadding(cell, availableLength) + (2*spacing))));
+			output.append(modifyTextToDisplay(text, gc, availableLength + (2*spacing)));
 		}
 		
 		return output.toString();
