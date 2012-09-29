@@ -38,7 +38,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
 	private final IOutputStreamProvider outputStreamProvider;
 	
-	private Map<ExcelCellStyleAttributes, CellStyle> xlCellStyles = new HashMap<ExcelCellStyleAttributes, CellStyle>();
+	private Map<ExcelCellStyleAttributes, CellStyle> xlCellStyles;
 	
 	protected Workbook xlWorkbook;
 	protected int sheetNumber;
@@ -55,8 +55,11 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 	}
 	
 	public void exportBegin(OutputStream outputStream) throws IOException {
+		xlCellStyles = new HashMap<ExcelCellStyleAttributes, CellStyle>();
 		xlWorkbook = createWorkbook();
 		sheetNumber = 0;
+		xlSheet = null;
+		xlRow = null;
 	}
 	
 	public void exportEnd(OutputStream outputStream) throws IOException {
