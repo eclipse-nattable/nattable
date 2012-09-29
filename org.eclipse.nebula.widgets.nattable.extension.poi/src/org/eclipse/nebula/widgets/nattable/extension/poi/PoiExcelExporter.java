@@ -57,13 +57,16 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 	public void exportBegin(OutputStream outputStream) throws IOException {
 		xlCellStyles = new HashMap<ExcelCellStyleAttributes, CellStyle>();
 		xlWorkbook = createWorkbook();
-		sheetNumber = 0;
-		xlSheet = null;
-		xlRow = null;
 	}
 	
 	public void exportEnd(OutputStream outputStream) throws IOException {
 		xlWorkbook.write(outputStream);
+		
+		xlCellStyles = null;
+		xlWorkbook = null;
+		sheetNumber = 0;
+		xlSheet = null;
+		xlRow = null;
 	}
 
 	@Override
