@@ -12,23 +12,26 @@ package org.eclipse.nebula.widgets.nattable.freeze;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.event.FreezeEventHandler;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 
-public class FreezeLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
+
+public class FreezeLayer extends AbstractIndexLayerTransform {
 
 	private PositionCoordinate topLeftPosition = new PositionCoordinate(this, -1, -1);
 
 	private PositionCoordinate bottomRightPosition = new PositionCoordinate(this, -1, -1);
+
 
 	public FreezeLayer(IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
 
 		registerEventHandler(new FreezeEventHandler(this));
 	}
-	
+
+
 	public boolean isFrozen() {
 		return getColumnCount() > 0 || getRowCount() > 0;
 	}
@@ -67,19 +70,23 @@ public class FreezeLayer extends AbstractLayerTransform implements IUniqueIndexL
 		return getColumnCount();
 	}
 
-	public int getColumnPositionByIndex(int columnIndex) {
-		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		return underlyingToLocalColumnPosition(underlyingLayer, underlyingLayer.getColumnPositionByIndex(columnIndex));
-	}
-
 	@Override
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		return topLeftPosition.columnPosition + localColumnPosition;
+		if (topLeftPosition.columnPosition >= 0) {
+			return topLeftPosition.columnPosition + localColumnPosition;
+		}
+		return -1;
 	}
 
 	@Override
 	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-		return underlyingColumnPosition - topLeftPosition.columnPosition;
+		if (sourceUnderlyingLayer != getUnderlyingLayer()) {
+			return -1;
+		}
+		if (underlyingColumnPosition >= topLeftPosition.columnPosition && underlyingColumnPosition <= bottomRightPosition.columnPosition) {
+			return underlyingColumnPosition - topLeftPosition.columnPosition;
+		}
+		return -1;
 	}
 
 	@Override
@@ -95,16 +102,17 @@ public class FreezeLayer extends AbstractLayerTransform implements IUniqueIndexL
 	public int getPreferredWidth() {
 		return getWidth();
 	}
-	
+
 	@Override
 	public int getColumnPositionByX(int x) {
+		IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
 		int xOffset = underlyingLayer.getStartXOfColumnPosition(topLeftPosition.columnPosition);
 		return underlyingToLocalColumnPosition(underlyingLayer, underlyingLayer.getColumnPositionByX(xOffset + x));
 	}
 
 	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
-		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
+		IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
 		final int underlyingColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, underlyingLayer);
 		return underlyingLayer.getStartXOfColumnPosition(underlyingColumnPosition) - underlyingLayer.getStartXOfColumnPosition(topLeftPosition.columnPosition);
 	}
@@ -127,19 +135,23 @@ public class FreezeLayer extends AbstractLayerTransform implements IUniqueIndexL
 		return getRowCount();
 	}
 
-	public int getRowPositionByIndex(int rowIndex) {
-		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		return underlyingToLocalRowPosition(underlyingLayer, underlyingLayer.getRowPositionByIndex(rowIndex));
-	}
-
 	@Override
 	public int localToUnderlyingRowPosition(int localRowPosition) {
-		return topLeftPosition.rowPosition + localRowPosition;
+		if (topLeftPosition.rowPosition >= 0) {
+			return topLeftPosition.rowPosition + localRowPosition;
+		}
+		return -1;
 	}
 
 	@Override
 	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
-		return underlyingRowPosition - topLeftPosition.rowPosition;
+		if (sourceUnderlyingLayer != getUnderlyingLayer()) {
+			return -1;
+		}
+		if (underlyingRowPosition >= topLeftPosition.rowPosition && underlyingRowPosition <= bottomRightPosition.rowPosition) {
+			return underlyingRowPosition - topLeftPosition.rowPosition;
+		}
+		return -1;
 	}
 
 	@Override
@@ -155,16 +167,17 @@ public class FreezeLayer extends AbstractLayerTransform implements IUniqueIndexL
 	public int getPreferredHeight() {
 		return getHeight();
 	}
-	
+
 	@Override
 	public int getRowPositionByY(int y) {
+		IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
 		int yOffset = underlyingLayer.getStartYOfRowPosition(topLeftPosition.rowPosition);
 		return underlyingToLocalRowPosition(underlyingLayer, underlyingLayer.getRowPositionByY(yOffset + y));
 	}
 
 	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
-		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
+		IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
 		final int underlyingRowPosition = LayerUtil.convertRowPosition(this, rowPosition, underlyingLayer);
 		return underlyingLayer.getStartYOfRowPosition(underlyingRowPosition) - underlyingLayer.getStartYOfRowPosition(topLeftPosition.rowPosition);
 	}

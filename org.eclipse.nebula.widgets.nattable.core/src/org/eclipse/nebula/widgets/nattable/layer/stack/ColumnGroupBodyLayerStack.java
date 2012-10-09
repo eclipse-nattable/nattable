@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupExpandCollapseLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -32,7 +32,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
  * <li>ViewportLayer</li>
  * </ol>
  */
-public class ColumnGroupBodyLayerStack extends AbstractLayerTransform {
+public class ColumnGroupBodyLayerStack extends AbstractIndexLayerTransform {
 
 	private ColumnReorderLayer columnReorderLayer;
 	private ColumnGroupReorderLayer columnGroupReorderLayer;

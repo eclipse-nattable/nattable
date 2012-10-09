@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze;
 
-
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -20,9 +19,10 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
-import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -31,7 +31,8 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 
-public class CompositeFreezeLayer extends CompositeLayer {
+
+public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndexLayer {
 
 	private final FreezeLayer freezeLayer;
 	private final ViewportLayer viewportLayer;
@@ -51,8 +52,8 @@ public class CompositeFreezeLayer extends CompositeLayer {
 		this.selectionLayer = selectionLayer;
 		
 		setChildLayer("FROZEN_REGION", freezeLayer, 0, 0); //$NON-NLS-1$
-		setChildLayer("FROZEN_ROW_REGION", new DimensionallyDependentLayer(selectionLayer, viewportLayer, freezeLayer), 1, 0); //$NON-NLS-1$
-		setChildLayer("FROZEN_COLUMN_REGION", new DimensionallyDependentLayer(selectionLayer, freezeLayer, viewportLayer), 0, 1); //$NON-NLS-1$
+		setChildLayer("FROZEN_ROW_REGION", new DimensionallyDependentIndexLayer(selectionLayer, viewportLayer, freezeLayer), 1, 0); //$NON-NLS-1$
+		setChildLayer("FROZEN_COLUMN_REGION", new DimensionallyDependentIndexLayer(selectionLayer, freezeLayer, viewportLayer), 0, 1); //$NON-NLS-1$
 		setChildLayer("NONFROZEN_REGION", viewportLayer, 1, 1); //$NON-NLS-1$
 		
 		registerCommandHandlers();
@@ -75,10 +76,10 @@ public class CompositeFreezeLayer extends CompositeLayer {
 	protected void registerCommandHandlers() {
 		registerCommandHandler(new FreezeCommandHandler(freezeLayer, viewportLayer, selectionLayer));
 		
-		final DimensionallyDependentLayer frozenRowLayer = (DimensionallyDependentLayer) getChildLayerByLayoutCoordinate(1, 0);
+		final DimensionallyDependentIndexLayer frozenRowLayer = (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(1, 0);
 		frozenRowLayer.registerCommandHandler(new ViewportSelectRowCommandHandler(frozenRowLayer));
 		
-		final DimensionallyDependentLayer frozenColumnLayer = (DimensionallyDependentLayer) getChildLayerByLayoutCoordinate(0, 1);
+		final DimensionallyDependentIndexLayer frozenColumnLayer = (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(0, 1);
 		frozenColumnLayer.registerCommandHandler(new ViewportSelectColumnCommandHandler(frozenColumnLayer));
 	}
 	
@@ -93,7 +94,24 @@ public class CompositeFreezeLayer extends CompositeLayer {
 		}
 		return super.doCommand(command);
 	}
-	
+
+	public int getColumnPositionByIndex(int columnIndex) {
+		int columnPosition = freezeLayer.getColumnPositionByIndex(columnIndex);
+		if (columnPosition >= 0) {
+			return columnPosition;
+		}
+		return freezeLayer.getColumnCount() + viewportLayer.getColumnPositionByIndex(columnIndex);
+	}
+
+	public int getRowPositionByIndex(int rowIndex) {
+		int rowPosition = freezeLayer.getRowPositionByIndex(rowIndex);
+		if (rowPosition >= 0) {
+			return rowPosition;
+		}
+		return freezeLayer.getRowCount() + viewportLayer.getRowPositionByIndex(rowIndex);
+	}
+
+
 	class FreezableLayerPainter extends CompositeLayerPainter {
 		
 		public FreezableLayerPainter() {
@@ -123,5 +141,5 @@ public class CompositeFreezeLayer extends CompositeLayer {
 		}
 		
 	}
-	
+
 }

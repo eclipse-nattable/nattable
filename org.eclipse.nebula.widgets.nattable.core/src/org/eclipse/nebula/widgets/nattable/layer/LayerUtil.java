@@ -70,13 +70,16 @@ public class LayerUtil {
 	 * @param sourceLayer source layer
 	 * @param sourceColumnPosition column position in the source layer
 	 * @param targetLayer layer to convert the from position to 
-	 * @return converted column position
+	 * @return converted column position, or -1 if conversion not possible
 	 */
 	public static final int convertColumnPosition(ILayer sourceLayer, int sourceColumnPosition, IUniqueIndexLayer targetLayer) {
 		if (targetLayer == sourceLayer) {
 			return sourceColumnPosition;
 		}
 		int columnIndex = sourceLayer.getColumnIndexByPosition(sourceColumnPosition);
+		if (columnIndex < 0) {
+			return -1;
+		}
 		return targetLayer.getColumnPositionByIndex(columnIndex);
 	}
 	
@@ -85,13 +88,16 @@ public class LayerUtil {
 	 * @param sourceLayer source layer
 	 * @param sourceRowPosition position in the source layer
 	 * @param targetLayer layer to convert the from position to 
-	 * @return converted row position
+	 * @return converted row position, or -1 if conversion not possible
 	 */
 	public static final int convertRowPosition(ILayer sourceLayer, int sourceRowPosition, IUniqueIndexLayer targetLayer) {
 		if (targetLayer == sourceLayer) {
 			return sourceRowPosition;
 		}
 		int rowIndex = sourceLayer.getRowIndexByPosition(sourceRowPosition);
+		if (rowIndex < 0) {
+			return -1;
+		}
 		return targetLayer.getRowPositionByIndex(rowIndex);
 	}
 	

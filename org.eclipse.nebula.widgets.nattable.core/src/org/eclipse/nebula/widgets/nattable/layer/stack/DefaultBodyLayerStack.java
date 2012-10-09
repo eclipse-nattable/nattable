@@ -12,14 +12,15 @@ package org.eclipse.nebula.widgets.nattable.layer.stack;
 
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-public class DefaultBodyLayerStack extends AbstractLayerTransform {
+
+public class DefaultBodyLayerStack extends AbstractIndexLayerTransform {
 
 	private final ColumnReorderLayer columnReorderLayer;
 	private final ColumnHideShowLayer columnHideShowLayer;
@@ -56,4 +57,5 @@ public class DefaultBodyLayerStack extends AbstractLayerTransform {
 	public ViewportLayer getViewportLayer() {
 		return viewportLayer;
 	}
+
 }

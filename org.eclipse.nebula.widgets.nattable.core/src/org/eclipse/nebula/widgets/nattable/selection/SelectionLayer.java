@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -24,7 +26,7 @@ import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeColu
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeRowsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -41,7 +43,6 @@ import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.SelectionLayerStructuralChangeEventHandler;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
-import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Enables selection of column, rows, cells etc. on the table.
@@ -51,7 +52,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * @see DefaultSelectionLayerConfiguration
  * @see MoveDirectionEnum
  */
-public class SelectionLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
+public class SelectionLayer extends AbstractIndexLayerTransform {
 
 	public static final int MOVE_ALL = -1;
 	public static final int NO_SELECTION = -1;
@@ -355,14 +356,6 @@ public class SelectionLayer extends AbstractLayerTransform implements IUniqueInd
 	}
 
 	// ILayer methods
-
-	public int getColumnPositionByIndex(int columnIndex) {
-		return underlyingLayer.getColumnPositionByIndex(columnIndex);
-	}
-
-	public int getRowPositionByIndex(int rowIndex) {
-		return underlyingLayer.getRowPositionByIndex(rowIndex);
-	}
 
 	@Override
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
