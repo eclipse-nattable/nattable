@@ -19,6 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.style.TextDecorationEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -51,8 +52,8 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	protected int spacing = 5;
 	//can only grow but will not calculate the minimal length
 	protected final boolean calculate;
-	protected boolean underline;
-	protected boolean strikethrough;
+	private boolean underline;
+	private boolean strikethrough;
 
 	private static Map<String,Integer> temporaryMap = new WeakHashMap<String,Integer>();
 	private static Map<org.eclipse.swt.graphics.Font,FontData[]> fontDataCache = new WeakHashMap<org.eclipse.swt.graphics.Font,FontData[]>();
@@ -132,6 +133,36 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 		gc.setBackground(bg != null ? bg : GUIHelper.COLOR_LIST_BACKGROUND);
 	}
 
+	/**
+	 * Checks if there is a underline text decoration configured within the given cell style.
+	 * @param cellStyle The cell style of the current cell to check for the text decoration.
+	 * @return <code>true</code> if there is a underline text decoration configured, 
+	 * 			<code>false</code> otherwise.
+	 */
+	protected boolean renderUnderlined(IStyle cellStyle) {
+		TextDecorationEnum decoration = cellStyle.getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
+		if (decoration != null) {
+				return (decoration.equals(TextDecorationEnum.UNDERLINE) 
+						|| decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
+		}
+		return this.underline;
+	}
+
+	/**
+	 * Checks if there is a strikethrough text decoration configured within the given cell style.
+	 * @param cellStyle The cell style of the current cell to check for the text decoration.
+	 * @return <code>true</code> if there is a strikethrough text decoration configured, 
+	 * 			<code>false</code> otherwise.
+	 */
+	protected boolean renderStrikethrough(IStyle cellStyle) {
+		TextDecorationEnum decoration = cellStyle.getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
+		if (decoration != null) {
+			return (decoration.equals(TextDecorationEnum.STRIKETHROUGH) 
+						|| decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
+		}
+		return this.strikethrough;
+	}
+	
 	/**
 	 * Scans for new line characters and counts the number of lines
 	 * for the given text.

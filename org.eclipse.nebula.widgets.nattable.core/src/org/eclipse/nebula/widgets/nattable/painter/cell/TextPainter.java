@@ -101,6 +101,10 @@ public class TextPainter extends AbstractTextPainter {
 	
 			IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
 			setupGCFromConfig(gc, cellStyle);
+			
+			boolean underline = renderUnderlined(cellStyle);
+			boolean strikethrough = renderStrikethrough(cellStyle);
+			
 			int fontHeight = gc.getFontMetrics().getHeight();
 			String text = convertDataType(cell, configRegistry);
 	

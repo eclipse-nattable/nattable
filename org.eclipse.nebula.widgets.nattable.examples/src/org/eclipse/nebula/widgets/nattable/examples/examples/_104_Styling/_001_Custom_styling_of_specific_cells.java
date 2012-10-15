@@ -34,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.style.TextDecorationEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -52,11 +53,13 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 				"Then a new style is registered in the config registry for the custom label.\n" +
 				"\n" +
 				"This example shows a trivial example that simply changes the background color for the cell at column, row index (1, 5).\n" +
+				"It also shows decorating text underlined and strikethrough for the cell at column, row index (1, 10).\n" +
 				"You can change the IConfigLabelAccumulator to target arbitrary other cells, and you can also modify any other style\n" +
 				"attributes you wish. You can also register custom display converters, editable rules, etc. in the same way.";
 	}
 	
 	private static final String FOO_LABEL = "FOO";
+	private static final String BAR_LABEL = "BAR";
 	
 	public Control createExampleControl(Composite parent) {
 		List<Person> myList = new ArrayList<Person>();
@@ -83,6 +86,9 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 				if (columnIndex == 1 && rowIndex == 5) {
 					configLabels.addLabel(FOO_LABEL);
 				}
+				if (columnIndex == 1 && rowIndex == 10) {
+					configLabels.addLabel(BAR_LABEL);
+				}
 			}
 		};
 		bodyLayer.setConfigLabelAccumulator(cellLabelAccumulator);
@@ -96,6 +102,10 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 				Style cellStyle = new Style();
 				cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_GREEN);
 				configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, FOO_LABEL);
+
+				cellStyle = new Style();
+				cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, TextDecorationEnum.UNDERLINE_STRIKETHROUGH);
+				configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, BAR_LABEL);
 			}
 		});
 		natTable.configure();

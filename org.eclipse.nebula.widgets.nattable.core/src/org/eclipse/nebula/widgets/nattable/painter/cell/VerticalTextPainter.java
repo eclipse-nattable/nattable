@@ -99,6 +99,10 @@ public class VerticalTextPainter extends AbstractTextPainter {
 
 		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
 		setupGCFromConfig(gc, cellStyle);
+		
+		boolean underline = renderUnderlined(cellStyle);
+		boolean strikethrough = renderStrikethrough(cellStyle);
+
 		String text = convertDataType(cell, configRegistry);
 
 		//calculate the text to display, adds dots if the text is longer than the available
