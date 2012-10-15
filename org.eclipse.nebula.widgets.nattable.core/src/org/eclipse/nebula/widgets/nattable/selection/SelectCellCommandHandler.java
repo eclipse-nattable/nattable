@@ -64,37 +64,39 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 		
 		ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
 		
-		selectionLayer.setLastSelectedCell(cell.getOriginColumnPosition(), cell.getOriginRowPosition());
-
-		// Shift pressed + row selected
-		if (withShiftMask && selectionLayer.lastSelectedRegion != null && selectionLayer.hasRowSelection()) {
-			// if cell.rowPosition > selectionAnchor.rowPositon, then use cell.rowPosition + span - 1 (maxRowPosition)
-			// else use cell.originRowPosition (minRowPosition)
-			// and compare with selectionAnchor.rowPosition
-			if (cell.getRowPosition() > selectionLayer.selectionAnchor.rowPosition) {
-				int maxRowPosition = cell.getOriginRowPosition() + cell.getRowSpan() - 1;
-				selectionLayer.lastSelectedRegion.height = Math.abs(selectionLayer.selectionAnchor.rowPosition - maxRowPosition) + 1;
+		if (cell != null) {
+			selectionLayer.setLastSelectedCell(cell.getOriginColumnPosition(), cell.getOriginRowPosition());
+			
+			// Shift pressed + row selected
+			if (withShiftMask && selectionLayer.lastSelectedRegion != null && selectionLayer.hasRowSelection()) {
+				// if cell.rowPosition > selectionAnchor.rowPositon, then use cell.rowPosition + span - 1 (maxRowPosition)
+				// else use cell.originRowPosition (minRowPosition)
+				// and compare with selectionAnchor.rowPosition
+				if (cell.getRowPosition() > selectionLayer.selectionAnchor.rowPosition) {
+					int maxRowPosition = cell.getOriginRowPosition() + cell.getRowSpan() - 1;
+					selectionLayer.lastSelectedRegion.height = Math.abs(selectionLayer.selectionAnchor.rowPosition - maxRowPosition) + 1;
+				} else {
+					int minRowPosition = cell.getOriginRowPosition();
+					selectionLayer.lastSelectedRegion.height = Math.abs(selectionLayer.selectionAnchor.rowPosition - minRowPosition) + 1;
+				}
+				selectionLayer.lastSelectedRegion.y = Math.min(selectionLayer.selectionAnchor.rowPosition, cell.getOriginRowPosition());
+				
+				if (cell.getColumnPosition() > selectionLayer.selectionAnchor.columnPosition) {
+					int maxColumnPosition = cell.getOriginColumnPosition() + cell.getColumnSpan() - 1;
+					selectionLayer.lastSelectedRegion.width = Math.abs(selectionLayer.selectionAnchor.columnPosition - maxColumnPosition) + 1;
+				} else {
+					int minColumnPosition = cell.getOriginColumnPosition();
+					selectionLayer.lastSelectedRegion.width = Math.abs(selectionLayer.selectionAnchor.columnPosition - minColumnPosition) + 1;
+				}
+				selectionLayer.lastSelectedRegion.x = Math.min(selectionLayer.selectionAnchor.columnPosition, cell.getOriginColumnPosition());
+				
+				selectionLayer.addSelection(selectionLayer.lastSelectedRegion);
 			} else {
-				int minRowPosition = cell.getOriginRowPosition();
-				selectionLayer.lastSelectedRegion.height = Math.abs(selectionLayer.selectionAnchor.rowPosition - minRowPosition) + 1;
+				selectionLayer.lastSelectedRegion = null;
+				Rectangle selection = new Rectangle(cell.getOriginColumnPosition(), cell.getOriginRowPosition(), cell.getColumnSpan(), cell.getRowSpan());
+				
+				selectionLayer.addSelection(selection);
 			}
-			selectionLayer.lastSelectedRegion.y = Math.min(selectionLayer.selectionAnchor.rowPosition, cell.getOriginRowPosition());
-
-			if (cell.getColumnPosition() > selectionLayer.selectionAnchor.columnPosition) {
-				int maxColumnPosition = cell.getOriginColumnPosition() + cell.getColumnSpan() - 1;
-				selectionLayer.lastSelectedRegion.width = Math.abs(selectionLayer.selectionAnchor.columnPosition - maxColumnPosition) + 1;
-			} else {
-				int minColumnPosition = cell.getOriginColumnPosition();
-				selectionLayer.lastSelectedRegion.width = Math.abs(selectionLayer.selectionAnchor.columnPosition - minColumnPosition) + 1;
-			}
-			selectionLayer.lastSelectedRegion.x = Math.min(selectionLayer.selectionAnchor.columnPosition, cell.getOriginColumnPosition());
-
-			selectionLayer.addSelection(selectionLayer.lastSelectedRegion);
-		} else {
-			selectionLayer.lastSelectedRegion = null;
-			Rectangle selection = new Rectangle(cell.getOriginColumnPosition(), cell.getOriginRowPosition(), cell.getColumnSpan(), cell.getRowSpan());
-
-			selectionLayer.addSelection(selection);
 		}
 	}
 
