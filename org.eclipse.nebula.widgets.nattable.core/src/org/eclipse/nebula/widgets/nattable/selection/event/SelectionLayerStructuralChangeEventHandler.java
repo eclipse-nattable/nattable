@@ -43,9 +43,10 @@ public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHa
 		if (event.isVerticalStructureChanged()) {
 			Collection<Rectangle> rectangles = event.getChangedPositionRectangles();
 			for (Rectangle rectangle : rectangles) {
-				Range changedRange = new Range(rectangle.y, rectangle.y + rectangle.height - 1);
+				Range changedRange = new Range(rectangle.y, rectangle.y + rectangle.height);
 				if (selectedRowModified(changedRange)) {
 					selectionLayer.clear();
+					break;
 				}
 			}
 		}
