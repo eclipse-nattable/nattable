@@ -49,13 +49,15 @@ public class CopyDataToClipboardSerializer implements ISerializer {
 				textData.append(rowDelimeter);
 			}
 		}
-		final Clipboard clipboard = new Clipboard(Display.getDefault());
-		try {
-			clipboard.setContents(new Object[]{ textData.toString() },
-					new Transfer[]{ textTransfer });
-		}
-		finally {
-			clipboard.dispose();
+		if (textData.length() > 0) {
+			final Clipboard clipboard = new Clipboard(Display.getDefault());
+			try {
+				clipboard.setContents(new Object[]{ textData.toString() },
+						new Transfer[]{ textTransfer });
+			}
+			finally {
+				clipboard.dispose();
+			}
 		}
 	}
 	
