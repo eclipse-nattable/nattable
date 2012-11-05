@@ -21,14 +21,14 @@ import org.eclipse.swt.widgets.Shell;
 
 public class FileOutputStreamProvider implements IOutputStreamProvider {
 
-	protected String fileName;
-	protected String[] filterNames;
-	protected String[] filterExtensions;
+	protected String defaultFileName;
+	protected String[] defaultFilterNames;
+	protected String[] defaultFilterExtensions;
 
-	public FileOutputStreamProvider(String fileName, String[] filterNames, String[] filterExtensions) {
-		this.fileName = fileName;
-		this.filterNames = filterNames;
-		this.filterExtensions = filterExtensions;
+	public FileOutputStreamProvider(String defaultFileName, String[] defaultFilterNames, String[] defaultFilterExtensions) {
+		this.defaultFileName = defaultFileName;
+		this.defaultFilterNames = defaultFilterNames;
+		this.defaultFilterExtensions = defaultFilterExtensions;
 	}
 	
 	public OutputStream getOutputStream(Shell shell) {
@@ -37,22 +37,22 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
 		String filterPath;
 		String relativeFileName;
 		
-		int lastIndexOfFileSeparator = fileName.lastIndexOf(File.separator);
+		int lastIndexOfFileSeparator = defaultFileName.lastIndexOf(File.separator);
 		if (lastIndexOfFileSeparator >= 0) {
-			filterPath = fileName.substring(0, lastIndexOfFileSeparator);
-			relativeFileName = fileName.substring(lastIndexOfFileSeparator + 1);
+			filterPath = defaultFileName.substring(0, lastIndexOfFileSeparator);
+			relativeFileName = defaultFileName.substring(lastIndexOfFileSeparator + 1);
 		} else {
 			filterPath = "/"; //$NON-NLS-1$
-			relativeFileName = fileName;
+			relativeFileName = defaultFileName;
 		}
 		
 		dialog.setFilterPath(filterPath);
 		dialog.setOverwrite(true);
 
 		dialog.setFileName(relativeFileName);
-		dialog.setFilterNames(filterNames);
-		dialog.setFilterExtensions(filterExtensions);
-		fileName = dialog.open();
+		dialog.setFilterNames(defaultFilterNames);
+		dialog.setFilterExtensions(defaultFilterExtensions);
+		String fileName = dialog.open();
 		if (fileName == null) {
 			return null;
 		}
@@ -63,13 +63,6 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
 			e.printStackTrace();
 			return null;
 		}
-	}
-	
-	/**
-	 * This will be the default file name initially; after the dialog is closed this will be the user entered file name.
-	 */
-	public String getFileName() {
-		return fileName;
 	}
 	
 }
