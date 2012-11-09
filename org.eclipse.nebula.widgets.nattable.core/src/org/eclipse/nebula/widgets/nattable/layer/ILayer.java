@@ -204,8 +204,11 @@ public interface ILayer extends ILayerListener, IPersistable {
 	public int getColumnPositionByX(int x);
 
 	/**
-	 * @param columnPosition
-	 * @return starting X coordinate of the column position
+	 * Returns the x offset in pixels of the given column.
+	 * 
+	 * @param rowPosition the column position in this layer
+	 * 
+	 * @return the x offset of the column, or -1
 	 */
 	public int getStartXOfColumnPosition(int columnPosition);
 
@@ -267,6 +270,13 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 */
 	public int getRowPositionByY(int y);
 
+	/**
+	 * Returns the y offset in pixels of the given row.
+	 * 
+	 * @param rowPosition the row position in this layer
+	 * 
+	 * @return the y offset of the row, or -1
+	 */
 	public int getStartYOfRowPosition(int rowPosition);
 
 	// Underlying
@@ -277,6 +287,14 @@ public interface ILayer extends ILayerListener, IPersistable {
 
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition);
 
+	/**
+	 * Calculates the bounds in pixel for the given cell position.
+	 * 
+	 * @param columnPosition the column position of the cell
+	 * @param rowPosition the row position of the cell
+	 * 
+	 * @return the bounds, or <code>null</code> if there are no valid bounds
+	 */
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition);
 
 	/**

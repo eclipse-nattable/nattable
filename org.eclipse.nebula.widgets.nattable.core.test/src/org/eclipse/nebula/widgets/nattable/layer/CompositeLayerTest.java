@@ -12,12 +12,18 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer.ChildLayerInfo;
@@ -27,9 +33,7 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.CompositeLayerFixt
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Before;
-import org.junit.Test;
+
 
 /**
  * @see {@link CompositeLayerFixture} for the layout of columns/rows.
@@ -125,7 +129,7 @@ public class CompositeLayerTest {
 		assertEquals(25, layerFixture.getColumnWidthByPosition(5));
 		assertEquals(25, layerFixture.getColumnWidthByPosition(8));
 		//Non existent
-		assertEquals(-1, layerFixture.getColumnWidthByPosition(15));
+		assertEquals(0, layerFixture.getColumnWidthByPosition(15));
 	}
 
 	@Test
@@ -153,6 +157,7 @@ public class CompositeLayerTest {
 	public void getStartXOfColumnPosition() throws Exception {
 		assertEquals(0, layerFixture.getStartXOfColumnPosition(0));
 		assertEquals(5, layerFixture.getStartXOfColumnPosition(1));
+		//Non existent
 		assertEquals(-1, layerFixture.getStartXOfColumnPosition(12));
 	}
 
@@ -172,7 +177,7 @@ public class CompositeLayerTest {
 
 		assertEquals(0,layerFixture.getRowIndexByPosition(7));
 		assertEquals(1,layerFixture.getRowIndexByPosition(8));
-		//Non existent row position
+		//Non existent
 		assertEquals(-1,layerFixture.getRowIndexByPosition(20));
 	}
 
@@ -195,7 +200,7 @@ public class CompositeLayerTest {
 		assertEquals(5, layerFixture.getRowHeightByPosition(5));
 		assertEquals(5, layerFixture.getRowHeightByPosition(8));
 		//Non existent
-		assertEquals(-1, layerFixture.getRowHeightByPosition(20));
+		assertEquals(0, layerFixture.getRowHeightByPosition(20));
 	}
 
 	@Test
@@ -230,13 +235,13 @@ public class CompositeLayerTest {
 
 	@Test
 	public void getCellBounds() throws Exception {
-		Rectangle cellBounds = layerFixture.getCellBounds(0, 0);
+		Rectangle cellBounds = layerFixture.getBoundsByPosition(0, 0);
 		assertEquals(0, cellBounds.x);
 		assertEquals(0, cellBounds.y);
 		assertEquals(5, cellBounds.height);
 		assertEquals(5, cellBounds.width);
 
-		cellBounds = layerFixture.getCellBounds(6, 6);
+		cellBounds = layerFixture.getBoundsByPosition(6, 6);
 		assertEquals(50, cellBounds.x);
 		assertEquals(30, cellBounds.y);
 		assertEquals(5, cellBounds.height);
@@ -245,11 +250,8 @@ public class CompositeLayerTest {
 
 	@Test
 	public void cellBoundsForNonExistentCellPosition() throws Exception {
-		Rectangle cellBounds = layerFixture.getCellBounds(20, 20);
-		assertEquals(-1, cellBounds.x);
-		assertEquals(-1, cellBounds.y);
-		assertEquals(-1, cellBounds.height);
-		assertEquals(-1, cellBounds.width);
+		Rectangle cellBounds = layerFixture.getBoundsByPosition(20, 20);
+		assertNull(cellBounds);
 	}
 
 	@Test
@@ -261,7 +263,7 @@ public class CompositeLayerTest {
 
 	@Test
 	public void getDataValueForPositionNotInTheViewport() throws Exception {
-		assertEquals("-1", layerFixture.getDataValueByPosition(12, 8).toString());
+		assertNull(layerFixture.getDataValueByPosition(12, 8));
 	}
 
 	@Test

@@ -13,17 +13,18 @@ package org.eclipse.nebula.widgets.nattable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.LayerEventFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.AnyCommandHandlerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+
 
 public class NatTableTest {
 
@@ -34,18 +35,6 @@ public class NatTableTest {
 	public void setup(){
 		underlyingLayerFixture = new DataLayerFixture(10,5,100,20);
 		natTable = new NatTable(new Shell(Display.getDefault()), underlyingLayerFixture);
-	}
-
-	@Test
-	public void getPixelRectangleFromPositionRectangle() throws Exception {
-		Rectangle positionRectangle = new Rectangle(0,0,3,4);
-
-		Rectangle pixelRect = natTable.getPixelRectangleFromPositionRectangle(positionRectangle);
-
-		assertEquals(0,pixelRect.x);
-		assertEquals(0,pixelRect.y);
-		assertEquals(300,pixelRect.width);
-		assertEquals(80,pixelRect.height);
 	}
 
 	@Test

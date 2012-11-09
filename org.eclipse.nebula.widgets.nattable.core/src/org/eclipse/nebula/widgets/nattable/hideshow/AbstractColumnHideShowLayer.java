@@ -168,6 +168,9 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
 		int underlyingPosition = localToUnderlyingColumnPosition(localColumnPosition);
 		int underlyingStartX = underlyingLayer.getStartXOfColumnPosition(underlyingPosition);
+		if (underlyingStartX < 0) {
+			return -1;
+		}
 
 		for (Integer hiddenIndex : getHiddenColumnIndexes()) {
 			int hiddenPosition = underlyingLayer.getColumnPositionByIndex(hiddenIndex.intValue());

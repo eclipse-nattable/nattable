@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -39,7 +41,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 /**
  * Base layer implementation with common methods for managing listeners and caching, etc.
@@ -273,25 +275,40 @@ public abstract class AbstractLayer implements ILayer {
 	
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
-		
 		ILayer cellLayer = cell.getLayer();
-		int originColumnPosition = cell.getOriginColumnPosition();
-		int originRowPosition = cell.getOriginRowPosition();
 		
-		int x = cellLayer.getStartXOfColumnPosition(originColumnPosition);
-		int y = cellLayer.getStartYOfRowPosition(originRowPosition);
-		
+		int xOffset = -1;
+		int yOffset = -1;
 		int width = 0;
-		for (int i = 0; i < cell.getColumnSpan(); i++) {
-			width += cellLayer.getColumnWidthByPosition(originColumnPosition + i);
-		}
-
 		int height = 0;
-		for (int i = 0; i < cell.getRowSpan(); i++) {
-			height += cellLayer.getRowHeightByPosition(originRowPosition + i);
+		{	int column = cell.getOriginColumnPosition();
+			int end = column + cell.getColumnSpan();
+			for (; column < end; column++) {
+				int columnOffset = cellLayer.getStartXOfColumnPosition(column);
+				if (columnOffset >= 0) {
+					xOffset = columnOffset;
+					break;
+				}
+			}
+			for (; column < end; column++) {
+				width += cellLayer.getColumnWidthByPosition(column);
+			}
 		}
-
-		return new Rectangle(x, y, width, height);
+		{	int row = cell.getOriginRowPosition();
+			int end = row + cell.getRowSpan();
+			for (; row < end; row++) {
+				int rowOffset = cellLayer.getStartYOfRowPosition(row);
+				if (rowOffset >= 0) {
+					yOffset = rowOffset;
+					break;
+				}
+			}
+			for (; row < end; row++) {
+				height += cellLayer.getRowHeightByPosition(row);
+			}
+		}
+		
+		return (xOffset >= 0 && yOffset >= 0) ? new Rectangle(xOffset, yOffset, width, height) : null;
 	}
 	
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {

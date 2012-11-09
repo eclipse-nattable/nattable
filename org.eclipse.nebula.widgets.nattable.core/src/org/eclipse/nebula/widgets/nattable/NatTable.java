@@ -17,6 +17,25 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
+
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
@@ -52,24 +71,6 @@ import org.eclipse.nebula.widgets.nattable.ui.mode.ModeSupport;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBarsCommand;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.ScrollBar;
 
 public class NatTable extends Canvas implements ILayer, PaintListener, IClientAreaProvider, ILayerListener, IPersistable {
 
@@ -341,33 +342,33 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		this.layerPainter = layerPainter;
 	}
 
-    /**
-     * Repaint only a specific column in the grid. This method is optimized so that only the specific column is
-     * repainted and nothing else.
-     *
-     * @param gridColumnPosition column of the grid to repaint
-     */
-    public void repaintColumn(int columnPosition) {
-    	redraw(getStartXOfColumnPosition(columnPosition),
-    			0,
-    			getColumnWidthByPosition(columnPosition),
-    			getHeight(),
-    			true);
-    }
+	/**
+	 * Repaint only a specific column in the grid. This method is optimized so that only the specific column is
+	 * repainted and nothing else.
+	 *
+	 * @param gridColumnPosition column of the grid to repaint
+	 */
+	public void repaintColumn(int columnPosition) {
+		int xOffset = getStartXOfColumnPosition(columnPosition);
+		if (xOffset < 0) {
+			return;
+		}
+		redraw(xOffset, 0, getColumnWidthByPosition(columnPosition), getHeight(), true);
+	}
 
-    /**
-     * Repaint only a specific row in the grid. This method is optimized so that only the specific row is repainted and
-     * nothing else.
-     *
-     * @param gridRowPosition row of the grid to repaint
-     */
-    public void repaintRow(int rowPosition) {
-    	redraw(0,
-    			getStartYOfRowPosition(rowPosition),
-    			getWidth(),
-    			getRowHeightByPosition(rowPosition),
-    			true);
-    }
+	/**
+	 * Repaint only a specific row in the grid. This method is optimized so that only the specific row is repainted and
+	 * nothing else.
+	 *
+	 * @param gridRowPosition row of the grid to repaint
+	 */
+	public void repaintRow(int rowPosition) {
+		int yOffset = getStartYOfRowPosition(rowPosition);
+		if (yOffset < 0) {
+			return;
+		}
+		redraw(0, yOffset, getWidth(), getRowHeightByPosition(rowPosition), true);
+	}
 
 	public void updateResize() {
 		updateResize(true);
@@ -446,25 +447,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 				re.printStackTrace();
 			}
 		}
-	}
-
-	protected Rectangle getPixelRectangleFromPositionRectangle(Rectangle positionRectangle){
-    	int positionRectWidthInPixels = 0;
-    	int positionRectHeightInPixels = 0;
-    	Rectangle pixelRectangle = new Rectangle(0,0,0,0);
-
-		for (int i = positionRectangle.x; i < (positionRectangle.x + positionRectangle.width); i++) {
-			positionRectWidthInPixels += getColumnWidthByPosition(i);
-		}
-		for (int i = positionRectangle.y; i < (positionRectangle.y + positionRectangle.height); i++) {
-			positionRectHeightInPixels += getRowHeightByPosition(i);
-		}
-
-		pixelRectangle.x = getStartXOfColumnPosition(positionRectangle.x);
-		pixelRectangle.y = getStartYOfRowPosition(positionRectangle.y);
-		pixelRectangle.width = positionRectWidthInPixels;
-		pixelRectangle.height = positionRectHeightInPixels;
-		return pixelRectangle;
 	}
 
 

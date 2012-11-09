@@ -112,8 +112,14 @@ public class FreezeLayer extends AbstractIndexLayerTransform {
 
 	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
+		if (columnPosition < 0 || columnPosition >= getColumnCount()) {
+			return -1;
+		}
 		IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
 		final int underlyingColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, underlyingLayer);
+		if (underlyingColumnPosition < 0) {
+			return -1;
+		}
 		return underlyingLayer.getStartXOfColumnPosition(underlyingColumnPosition) - underlyingLayer.getStartXOfColumnPosition(topLeftPosition.columnPosition);
 	}
 	
@@ -177,8 +183,14 @@ public class FreezeLayer extends AbstractIndexLayerTransform {
 
 	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
+		if (rowPosition < 0 || rowPosition >= getRowCount()) {
+			return -1;
+		}
 		IUniqueIndexLayer underlyingLayer = getUnderlyingLayer();
 		final int underlyingRowPosition = LayerUtil.convertRowPosition(this, rowPosition, underlyingLayer);
+		if (underlyingRowPosition < 0) {
+			return -1;
+		}
 		return underlyingLayer.getStartYOfRowPosition(underlyingRowPosition) - underlyingLayer.getStartYOfRowPosition(topLeftPosition.rowPosition);
 	}
 

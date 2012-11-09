@@ -17,6 +17,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -31,8 +34,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 /**
  * A composite layer is a layer that is made up of a number of underlying child layers. This class assumes that the child
@@ -65,9 +67,9 @@ public class CompositeLayer extends AbstractLayer {
 		this.layoutYCount = layoutYCount;
 		childLayerLayout = new ILayer[layoutXCount][layoutYCount];
 	}
-	
+
 	// Dispose
-	
+
 	@Override
 	public void dispose() {
 		for (int layoutX = 0; layoutX < layoutXCount; layoutX++) {
@@ -229,7 +231,7 @@ public class CompositeLayer extends AbstractLayer {
 
 	// Width
 
-    public int getWidth() {
+	public int getWidth() {
 		ChildLayerInfo lastChildLayerInfo = getChildLayerInfoByLayout(layoutXCount - 1, 0);
 		return lastChildLayerInfo.getWidthOffset() + lastChildLayerInfo.getLayer().getWidth();
 	}
@@ -242,17 +244,14 @@ public class CompositeLayer extends AbstractLayer {
 		return preferredWidth;
 	}
 
-	/**
-	 * @param compositeColumnPosition position in the composite layer.
-	 */
-    public int getColumnWidthByPosition(int compositeColumnPosition) {
-    	ChildLayerInfo childLayerInfo = getChildLayerInfoByColumnPosition(compositeColumnPosition);
+	public int getColumnWidthByPosition(int column) {
+		ChildLayerInfo childLayerInfo = getChildLayerInfoByColumnPosition(column);
 		if (childLayerInfo == null) {
-			return -1;
+			return 0;
 		}
-    	int childColumnPosition = compositeColumnPosition - childLayerInfo.getColumnPositionOffset();
-		return childLayerInfo.getLayer().getColumnWidthByPosition(childColumnPosition);
-    }
+		return childLayerInfo.getLayer().getColumnWidthByPosition(
+				column - childLayerInfo.getColumnPositionOffset() );
+	}
 
 	// Column resize
 
@@ -371,9 +370,9 @@ public class CompositeLayer extends AbstractLayer {
 
 	// Height
 
-    public int getHeight() {
-    	ChildLayerInfo lastChildLayerInfo = getChildLayerInfoByLayout(0, layoutYCount - 1);
-    	return lastChildLayerInfo.getHeightOffset() + lastChildLayerInfo.getLayer().getHeight();
+	public int getHeight() {
+		ChildLayerInfo lastChildLayerInfo = getChildLayerInfoByLayout(0, layoutYCount - 1);
+		return lastChildLayerInfo.getHeightOffset() + lastChildLayerInfo.getLayer().getHeight();
 	}
 
 	public int getPreferredHeight() {
@@ -384,14 +383,14 @@ public class CompositeLayer extends AbstractLayer {
 		return preferredHeight;
 	}
 
-    public int getRowHeightByPosition(int compositeRowPosition) {
-    	ChildLayerInfo childLayerInfo = getChildLayerInfoByRowPosition(compositeRowPosition);
+	public int getRowHeightByPosition(int row) {
+		ChildLayerInfo childLayerInfo = getChildLayerInfoByRowPosition(row);
 		if (childLayerInfo == null) {
-			return -1;
+			return 0;
 		}
-		int childRowPosition = compositeRowPosition - childLayerInfo.getRowPositionOffset();
-		return childLayerInfo.getLayer().getRowHeightByPosition(childRowPosition);
-    }
+		return childLayerInfo.getLayer().getRowHeightByPosition(
+				row - childLayerInfo.getRowPositionOffset() );
+	}
 
     // Row resize
 
@@ -502,26 +501,6 @@ public class CompositeLayer extends AbstractLayer {
 		return bounds;
 	}
 
-	/**
-	 * @return Rectangle bounding the cell position
-	 *    x - pixel position of the top left of the rectangle
-	 *    y - pixel position of the top left of the rectangle
-	 *    width  - in pixels
-	 *    height - in pixels
-	 * Note - All values are -1 for a position out of bounds.
-	 */
-	public Rectangle getCellBounds(int compositeRowPosition, int compositeColumnPosition) {
-		final Rectangle rectangle = new Rectangle(0, 0, 0, 0);
-
-		rectangle.width = getColumnWidthByPosition(compositeColumnPosition);
-		rectangle.height = getRowHeightByPosition(compositeRowPosition);
-
-		rectangle.x = getStartXOfColumnPosition(compositeColumnPosition);
-		rectangle.y = getStartYOfRowPosition(compositeRowPosition);
-
-		return rectangle;
-	}
-
 	@Override
 	public String getDisplayModeByPosition(int compositeColumnPosition, int compositeRowPosition) {
 		ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(compositeColumnPosition, compositeRowPosition);
@@ -559,7 +538,7 @@ public class CompositeLayer extends AbstractLayer {
 	public Object getDataValueByPosition(int compositeColumnPosition, int compositeRowPosition) {
 		ChildLayerInfo childLayerInfo = getChildLayerInfoByPosition(compositeColumnPosition, compositeRowPosition);
 		if (childLayerInfo == null) {
-			return Integer.valueOf(-1);
+			return null;
 		}
 
 		return childLayerInfo.getLayer().getDataValueByPosition(
