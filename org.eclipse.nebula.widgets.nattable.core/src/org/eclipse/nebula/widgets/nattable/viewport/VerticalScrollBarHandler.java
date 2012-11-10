@@ -13,11 +13,13 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum.DOWN;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum.UP;
 
-import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+
 
 /**
  * Listener for the Vertical scroll bar events.
@@ -66,7 +68,8 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 
 	@Override
 	int getViewportPixelOffset() {
-		return scrollableLayer.getStartYOfRowPosition(viewportLayer.getMinimumOriginRowPosition());
+		int row = viewportLayer.getMinimumOriginRowPosition();
+		return (row < scrollableLayer.getRowCount()) ? scrollableLayer.getStartYOfRowPosition(row) : scrollableLayer.getHeight();
 	}
 
 	@Override

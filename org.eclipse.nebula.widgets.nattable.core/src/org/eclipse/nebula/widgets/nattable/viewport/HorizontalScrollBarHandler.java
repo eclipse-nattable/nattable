@@ -13,10 +13,12 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum.LEFT;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum.RIGHT;
 
-import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ScrollBar;
+
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+
 
 /**
  * Listener for the Horizontal scroll bar events on the Viewport Layer. State is
@@ -61,10 +63,11 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 	int getPositionByPixel(int pixelValue) {
 		return scrollableLayer.getColumnPositionByX(pixelValue);
 	}
-	
+
 	@Override
 	int getViewportPixelOffset() {
-		return scrollableLayer.getStartXOfColumnPosition(viewportLayer.getMinimumOriginColumnPosition());
+		int column = viewportLayer.getMinimumOriginColumnPosition();
+		return (column < scrollableLayer.getColumnCount()) ? scrollableLayer.getStartXOfColumnPosition(column) : scrollableLayer.getWidth();
 	}
 
 	@Override
