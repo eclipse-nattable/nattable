@@ -177,16 +177,22 @@ public interface ILayer extends ILayerListener, IPersistable {
 	// Width
 
 	/**
-	 * Returns the total width of this layer.
+	 * Returns the total width in pixels of this layer.
+	 * 
+	 * @return the width of this layer
 	 */
 	public int getWidth();
 
 	public int getPreferredWidth();
 
 	/**
-	 * Returns the width of the given column.
-	 * @param columnPosition the column position relative to the associated coordinate system
-	 * @return the width of the column, in pixels
+	 * Returns the width in pixels of the given column.
+	 * 
+	 * The width of invisible and non-existing columns is 0.
+	 * 
+	 * @param columnPosition the column position in this layer
+	 * 
+	 * @return the width of the column
 	 */
 	public int getColumnWidthByPosition(int columnPosition);
 
@@ -244,16 +250,22 @@ public interface ILayer extends ILayerListener, IPersistable {
 	// Height
 
 	/**
-	 * Returns the total height of this layer.
+	 * Returns the total height in pixels of this layer.
+	 * 
+	 * @return the height of this layer
 	 */
 	public int getHeight();
 
 	public int getPreferredHeight();
 
 	/**
-	 * Returns the height of the given row.
-	 * @param rowPosition the row position relative to the associated coordinate system
-	 * @return the height of the row, in pixels
+	 * Returns the height in pixels of the given row.
+	 * 
+	 * The height of invisible and non-existing rows is 0.
+	 * 
+	 * @param rowPosition the row position in this layer
+	 * 
+	 * @return the height of the row
 	 */
 	public int getRowHeightByPosition(int rowPosition);
 

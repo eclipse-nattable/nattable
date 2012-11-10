@@ -195,7 +195,7 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 
 	public int getStartXOfColumnPosition(int columnPosition) {
 		return underlyingLayer.getStartXOfColumnPosition(
-				 localToUnderlyingColumnPosition(columnPosition) );
+				localToUnderlyingColumnPosition(columnPosition) );
 	}
 
 	// Underlying
