@@ -112,13 +112,13 @@ public class CopyDataCommandHandlerTest {
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 9, 9, false, true));
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0, false, true));
 
-		ILayerCell[] columns = commandHandler.assembleColumnHeaders(selectionLayer.getSelectedColumnPositions());
+		ILayerCell[][] columns = commandHandler.assembleColumnHeaders();
 
 		assertEquals(5, columns.length);
-		assertEquals("Column 2", columns[1].getDataValue());
-		assertEquals("Column 3", columns[2].getDataValue());
-		assertEquals("Column 5", columns[3].getDataValue());
-		assertEquals("Column 10", columns[4].getDataValue());
+		assertEquals("Column 2", columns[0][1].getDataValue());
+		assertEquals("Column 3", columns[0][2].getDataValue());
+		assertEquals("Column 5", columns[0][3].getDataValue());
+		assertEquals("Column 10", columns[0][4].getDataValue());
 	}
 
 	@Test
