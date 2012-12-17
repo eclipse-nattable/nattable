@@ -22,7 +22,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,10 +92,5 @@ public class StyleInheritanceTest {
 		StyleProxy cellProxy = new CellStyleProxy(configRegistry, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 		final Color fontAttributeValue = cellProxy.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 		Assert.assertEquals(defaultBackgroundColor, fontAttributeValue);
-	}
-	
-	@After
-	public void tearDown() {
-		font.dispose();
 	}
 }
