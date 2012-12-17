@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -31,6 +30,10 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
+import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CustomLineBorderDecorator;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
@@ -53,7 +56,8 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 				"Then a new style is registered in the config registry for the custom label.\n" +
 				"\n" +
 				"This example shows a trivial example that simply changes the background color for the cell at column, row index (1, 5).\n" +
-				"It also shows decorating text underlined and strikethrough for the cell at column, row index (1, 10).\n" +
+				"It also shows decorating text underlined and strikethrough for the cell at column, row index (1, 10),\n" +
+				"and looking at row 13 you will see how to use the CustomLineBorderDecorator to add a border around multiple cells.\n" +
 				"You can change the IConfigLabelAccumulator to target arbitrary other cells, and you can also modify any other style\n" +
 				"attributes you wish. You can also register custom display converters, editable rules, etc. in the same way.";
 	}
@@ -63,7 +67,7 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 	
 	public Control createExampleControl(Composite parent) {
 		List<Person> myList = new ArrayList<Person>();
-		for (int i = 0; i < 100; i++) {
+		for (int i = 1; i <= 100; i++) {
 			myList.add(new Person(i, "Joe" + i, new Date()));
 		}
 		
@@ -89,13 +93,33 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 				if (columnIndex == 1 && rowIndex == 10) {
 					configLabels.addLabel(BAR_LABEL);
 				}
+				
+				//add labels for surrounding borders
+				if (rowIndex == 13) {
+					configLabels.addLabel(CustomLineBorderDecorator.TOP_LINE_BORDER_LABEL);
+					configLabels.addLabel(CustomLineBorderDecorator.BOTTOM_LINE_BORDER_LABEL);
+					
+					if (columnIndex == 0) {
+						configLabels.addLabel(CustomLineBorderDecorator.LEFT_LINE_BORDER_LABEL);
+					}
+					if (columnIndex == 2) {
+						configLabels.addLabel(CustomLineBorderDecorator.RIGHT_LINE_BORDER_LABEL);
+					}
+				}
 			}
 		};
 		bodyLayer.setConfigLabelAccumulator(cellLabelAccumulator);
 		
 		NatTable natTable = new NatTable(parent, gridLayer, false);
 		
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+		natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
+			{
+				//override the LineBorderDecorator here to show how to paint borders on single sides of a cell
+				cellPainter = new CustomLineBorderDecorator(new TextPainter());
+				//set a border style
+				borderStyle = new BorderStyle(2, GUIHelper.COLOR_BLUE, LineStyleEnum.DASHDOT);
+			}
+		});
 		// Custom style for label "FOO"
 		natTable.addConfiguration(new AbstractRegistryConfiguration() {
 			public void configureRegistry(IConfigRegistry configRegistry) {
