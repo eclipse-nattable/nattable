@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Dataset Utilities (Incubation)
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.dataset
-Bundle-Version: 0.9.0.qualifier
+Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.nebula.widgets.nattable.dataset.generator,
  org.eclipse.nebula.widgets.nattable.dataset.pricing,

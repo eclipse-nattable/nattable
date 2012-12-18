@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.nebula.widgets.nattable.core.feature_0.9.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.core.feature" version="0.9.0.qualifier">
+   <feature url="features/org.eclipse.nebula.widgets.nattable.core.feature_1.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.core.feature" version="1.0.0.qualifier">
       <category name="nattable-core"/>
    </feature>
    <category-def name="nattable-core" label="NatTable Core">
