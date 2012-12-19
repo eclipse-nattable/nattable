@@ -350,7 +350,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 				fireLayerEvent(new ResizeStructuralRefreshEvent(this));
 			}
 
-			return true;
+			return refresh;
 		}
 		return super.doCommand(command);
 	}
