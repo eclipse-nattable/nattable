@@ -61,10 +61,10 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 	
 	@Override
 	public void loadState(String prefix, Properties properties) {
+		//Bug 396925: always clear the state of the hidden columns, whether there is a state saved or not
+		hiddenColumnIndexes.clear();
 		String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES);
 		if (property != null) {
-			hiddenColumnIndexes.clear();
-			
 			StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
