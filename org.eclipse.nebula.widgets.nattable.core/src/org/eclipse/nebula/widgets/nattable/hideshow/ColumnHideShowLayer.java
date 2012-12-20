@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsComman
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
 public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
@@ -51,7 +52,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 			StringBuilder strBuilder = new StringBuilder();
 			for (Integer index : hiddenColumnIndexes) {
 				strBuilder.append(index);
-				strBuilder.append(',');
+				strBuilder.append(IPersistable.VALUE_SEPARATOR);
 			}
 			properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES, strBuilder.toString());
 		}
@@ -65,7 +66,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 		hiddenColumnIndexes.clear();
 		String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES);
 		if (property != null) {
-			StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
+			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
 				hiddenColumnIndexes.add(Integer.valueOf(index));

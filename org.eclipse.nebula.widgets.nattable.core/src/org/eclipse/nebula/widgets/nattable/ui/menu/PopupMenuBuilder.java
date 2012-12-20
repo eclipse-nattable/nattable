@@ -174,6 +174,14 @@ public class PopupMenuBuilder {
 		return withMenuItemProvider(MenuItemProviders.clearToggleFilterRowMenuItemProvider(menuLabel));
 	}
 
+	public PopupMenuBuilder stateManagerMenuItemProvider() {
+		return withMenuItemProvider(MenuItemProviders.stateManagerMenuItemProvider());
+	}
+
+	public PopupMenuBuilder stateManagerMenuItemProvider(String menuLabel) {
+		return withMenuItemProvider(MenuItemProviders.stateManagerMenuItemProvider(menuLabel));
+	}
+
 	public PopupMenuBuilder withSeparator(){
 		return withMenuItemProvider(MenuItemProviders.separatorMenuItemProvider());	}
 

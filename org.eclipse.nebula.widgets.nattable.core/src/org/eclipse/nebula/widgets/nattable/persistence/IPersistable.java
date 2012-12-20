@@ -14,7 +14,8 @@ import java.util.Properties;
 
 /**
  * Instances implementing this interface can save and load their
- * state from a properties file.
+ * state from a properties file. The state is therefore a collection
+ * of key value pairs.
  */
 public interface IPersistable {
 
@@ -29,13 +30,22 @@ public interface IPersistable {
 	public static final String VALUE_SEPARATOR = ","; //$NON-NLS-1$
 
 	/**
-	 * Save state. The prefix must to be prepended to the property key. 
+	 * Saves the state to the given Properties using the specified prefix. 
+	 * Note: The prefix must be prepended to the property key to support multiple states
+	 * 		 within one Properties instance.
+	 * @param prefix The prefix to use for the state keys. Is also used as the state
+	 * 			configuration name.
+	 * @param properties The Properties instance to save the state to. 
 	 */
 	public void saveState(String prefix, Properties properties);
 
 	/**
-	 * Restore state. The prefix must to be prepended to the property key.
-	 * 
+	 * Restore the state out of the given Properties identified by the specified prefix. 
+	 * Note: The prefix must be prepended to the property key to support multiple states
+	 * 		 within one Properties instance.
+	 * @param prefix The prefix to use for the state keys. Is also used as the state
+	 * 			configuration name.
+	 * @param properties The Properties instance to load the state from. 
 	 */
 	public void loadState(String prefix, Properties properties);
 	
