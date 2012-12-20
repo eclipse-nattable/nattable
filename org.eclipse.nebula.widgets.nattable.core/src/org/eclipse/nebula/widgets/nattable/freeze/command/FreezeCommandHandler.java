@@ -12,9 +12,8 @@ package org.eclipse.nebula.widgets.nattable.freeze.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeHelper;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
-import org.eclipse.nebula.widgets.nattable.freeze.event.FreezeEvent;
-import org.eclipse.nebula.widgets.nattable.freeze.event.UnfreezeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
@@ -66,31 +65,14 @@ public class FreezeCommandHandler extends AbstractLayerCommandHandler<IFreezeCom
 			final PositionCoordinate topLeftPosition = coordinatesProvider.getTopLeftPosition();
 			final PositionCoordinate bottomRightPosition = coordinatesProvider.getBottomRightPosition();
 	
-			if (topLeftPosition != null && bottomRightPosition != null) {
-				freezeLayer.setTopLeftPosition(topLeftPosition.columnPosition, topLeftPosition.rowPosition);
-				freezeLayer.setBottomRightPosition(bottomRightPosition.columnPosition, bottomRightPosition.rowPosition);
-		
-				viewportLayer.setMinimumOriginPosition(bottomRightPosition.columnPosition + 1, bottomRightPosition.rowPosition + 1);
-				
-				viewportLayer.fireLayerEvent(new FreezeEvent(viewportLayer));
-			}
+			FreezeHelper.freeze(freezeLayer, viewportLayer, topLeftPosition, bottomRightPosition);
 		} else if (toggle) {  // if frozen and toggle = true
 			handleUnfreeze();
 		}
 	}
 	
 	protected void handleUnfreeze() {
-		resetFrozenArea();
-		viewportLayer.fireLayerEvent(new UnfreezeEvent(viewportLayer));
-	}
-
-	private void resetFrozenArea() {
-		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
-		
-		freezeLayer.setTopLeftPosition(-1, -1);
-		freezeLayer.setBottomRightPosition(-1, -1);
-		
-		viewportLayer.resetOrigin(Math.max(0, topLeftPosition.columnPosition), Math.max(0,topLeftPosition.rowPosition));
+		FreezeHelper.unfreeze(freezeLayer, viewportLayer);
 	}
 	
 }
