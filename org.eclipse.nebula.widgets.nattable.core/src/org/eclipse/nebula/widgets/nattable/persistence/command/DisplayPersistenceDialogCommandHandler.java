@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.persistence.command;
 
 import java.util.Properties;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.persistence.gui.PersistenceDialog;
 
@@ -37,7 +38,21 @@ public class DisplayPersistenceDialogCommandHandler extends AbstractLayerCommand
 	 * It can be accessed via getProperties() for further usage.
 	 */
 	public DisplayPersistenceDialogCommandHandler() {
-		this(new Properties());
+		this(new Properties(), null);
+	}
+
+	/**
+	 * Create a new DisplayPersistenceDialogCommandHandler. Using this constructor
+	 * the Properties instance used for save and load operations will be created.
+	 * It can be accessed via getProperties() for further usage. The current state
+	 * of the given NatTable instance will be used to store a default configuration.
+	 * @param natTable The NatTable instance for which this handler is registered. If it is 
+	 * 			not <code>null</code>, the current state of that NatTable will be stored as
+	 * 			default configuration. This default configuration can't be modified anymore
+	 * 			in the opened dialog.
+	 */
+	public DisplayPersistenceDialogCommandHandler(NatTable natTable) {
+		this(new Properties(), natTable);
 	}
 
 	/**
@@ -46,10 +61,29 @@ public class DisplayPersistenceDialogCommandHandler extends AbstractLayerCommand
 	 * @param properties The Properties instance that should be used for saving and loading.
 	 */
 	public DisplayPersistenceDialogCommandHandler(Properties properties) {
+		this(properties, null);
+	}
+
+	/**
+	 * Create a new DisplayPersistenceDialogCommandHandler using the specified Properties
+	 * instance. The current state of the given NatTable instance will be used to store a 
+	 * default configuration.
+	 * @param properties The Properties instance that should be used for saving and loading.
+	 * @param natTable The NatTable instance for which this handler is registered. If it is 
+	 * 			not <code>null</code>, the current state of that NatTable will be stored as
+	 * 			default configuration. This default configuration can't be modified anymore
+	 * 			in the opened dialog.
+	 */
+	public DisplayPersistenceDialogCommandHandler(Properties properties, NatTable natTable) {
 		if (properties == null) {
 			throw new IllegalArgumentException("properties can not be null!"); //$NON-NLS-1$
 		}
 		this.properties = properties;
+		
+		if (natTable != null) {
+			natTable.saveState("", this.properties); //$NON-NLS-1$
+			this.properties.setProperty(PersistenceDialog.ACTIVE_VIEW_CONFIGURATION_KEY, ""); //$NON-NLS-1$
+		}
 	}
 	
 	/* (non-Javadoc)

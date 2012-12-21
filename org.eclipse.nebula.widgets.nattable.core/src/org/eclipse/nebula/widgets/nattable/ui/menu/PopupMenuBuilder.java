@@ -174,11 +174,11 @@ public class PopupMenuBuilder {
 		return withMenuItemProvider(MenuItemProviders.clearToggleFilterRowMenuItemProvider(menuLabel));
 	}
 
-	public PopupMenuBuilder stateManagerMenuItemProvider() {
+	public PopupMenuBuilder withStateManagerMenuItemProvider() {
 		return withMenuItemProvider(MenuItemProviders.stateManagerMenuItemProvider());
 	}
 
-	public PopupMenuBuilder stateManagerMenuItemProvider(String menuLabel) {
+	public PopupMenuBuilder withStateManagerMenuItemProvider(String menuLabel) {
 		return withMenuItemProvider(MenuItemProviders.stateManagerMenuItemProvider(menuLabel));
 	}
 

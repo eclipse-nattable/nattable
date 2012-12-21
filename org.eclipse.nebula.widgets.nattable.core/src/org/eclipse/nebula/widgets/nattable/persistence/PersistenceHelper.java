@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eclipse.nebula.widgets.nattable.persistence.gui.PersistenceDialog;
+
 /**
  * Helper class for dealing with persistence of NatTable states.
  * 
@@ -69,7 +71,8 @@ public class PersistenceHelper {
 		if (properties != null && !properties.isEmpty()) {
 			for (Object key : properties.keySet()) {
 				String keyString = key.toString();
-				stateNames.add(keyString.split("\\.")[0]); //$NON-NLS-1$
+				if (!PersistenceDialog.ACTIVE_VIEW_CONFIGURATION_KEY.equals(keyString))
+					stateNames.add(keyString.split("\\.")[0]); //$NON-NLS-1$
 			}
 		}
 		return stateNames;

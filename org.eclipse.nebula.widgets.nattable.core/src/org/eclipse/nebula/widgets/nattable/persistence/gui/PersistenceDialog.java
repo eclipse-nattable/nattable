@@ -14,6 +14,8 @@ import java.util.Properties;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -21,9 +23,12 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -32,7 +37,13 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -50,6 +61,13 @@ import org.eclipse.swt.widgets.Text;
  */
 public class PersistenceDialog extends Dialog {
 
+	/**
+	 * Key under which the name of the active view configuration is stored within the properties.
+	 * Used to indicate which view configuration is currently active and to be able to restore
+	 * a view based on the last active one, when persisting the states to a file or database.
+	 */
+	public static final String ACTIVE_VIEW_CONFIGURATION_KEY = "PersistenceDialog.activeViewConfiguration"; //$NON-NLS-1$
+	
 	/**
 	 * Constant ID for the save button of this dialog.
 	 */
@@ -79,6 +97,12 @@ public class PersistenceDialog extends Dialog {
 	 * Viewer containing the state configurations.
 	 */
 	private TableViewer viewer;
+	
+	/**
+	 * The decoration for the configNameText field. Needed for showing an error
+	 * when trying to invoke save with an empty name.
+	 */
+	private ControlDecoration configNameDeco;
 	
 	/**
 	 * Text input field for specifying the name of a configuration.
@@ -122,15 +146,7 @@ public class PersistenceDialog extends Dialog {
 
 		this.viewer = new TableViewer(control);
 		this.viewer.setContentProvider(new ArrayContentProvider());
-		this.viewer.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object element) {
-				if (element != null && element.toString().isEmpty()) {
-					return Messages.getString("PersistenceDialog.defaultStateConfigName"); //$NON-NLS-1$
-				}
-				return super.getText(element);
-			}
-		});
+		this.viewer.setLabelProvider(new ViewConfigurationNameLabelProvider());
 		
 		//sort in alphabetical order
 		this.viewer.setComparator(new ViewerComparator());
@@ -154,9 +170,27 @@ public class PersistenceDialog extends Dialog {
 				if ((event.keyCode == SWT.CR && event.stateMask == 0)
 						|| (event.keyCode == SWT.KEYPAD_CR && event.stateMask == 0)) {
 					buttonPressed(SAVE_ID);
+				} 
+			}
+		});
+		
+		this.configNameText.addModifyListener(new ModifyListener() {
+			
+			public void modifyText(ModifyEvent e) {
+				if (configNameText.getText().length() != 0) {
+					configNameDeco.hide();
 				}
 			}
 		});
+		
+		this.configNameDeco = new ControlDecoration(this.configNameText, SWT.RIGHT);
+		Image image = FieldDecorationRegistry.
+				  getDefault().
+				  getFieldDecoration(FieldDecorationRegistry.DEC_ERROR).
+				  getImage();
+		this.configNameDeco.setDescriptionText(Messages.getString("PersistenceDialog.nameErrorText")); //$NON-NLS-1$
+		this.configNameDeco.setImage(image);
+		this.configNameDeco.hide();
 		
 		//add click listener on viewer
 		this.viewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -201,7 +235,20 @@ public class PersistenceDialog extends Dialog {
 	protected void buttonPressed(int buttonId) {
 		if (buttonId == SAVE_ID) {
 			String configName = this.configNameText.getText();
+			if (configName == null || configName.length() == 0) {
+				//it is not possible to store an empty configuration with this dialog
+				//this is because the configuration with an empty name is the default
+				//configuration
+				this.configNameDeco.show();
+				return;
+			} else {
+				this.configNameDeco.hide();
+			}
 			this.natTable.saveState(configName, this.properties);
+			String oldActiveName = getActiveViewConfigurationName();
+			setActiveViewConfigurationName(configName);
+			this.viewer.refresh(oldActiveName, true);
+			
 			this.configNameText.setText(""); //$NON-NLS-1$
 
 			for (int i = 0; i < this.viewer.getTable().getItemCount(); i++) {
@@ -227,6 +274,7 @@ public class PersistenceDialog extends Dialog {
 			if (selection != null && selection instanceof IStructuredSelection) {
 				String configName = ((IStructuredSelection)selection).getFirstElement().toString();
 				this.natTable.loadState(configName, this.properties);
+				setActiveViewConfigurationName(configName);
 			}
 			super.okPressed();
 		} else {
@@ -264,5 +312,63 @@ public class PersistenceDialog extends Dialog {
 	 */
 	public void setProperties(Properties properties) {
 		this.properties = properties;
+	}
+	
+	/**
+	 * @return The name of the current active view configuration
+	 */
+	public String getActiveViewConfigurationName() {
+		return this.properties.getProperty(ACTIVE_VIEW_CONFIGURATION_KEY);
+	}
+	
+	/**
+	 * Sets the name of the current active view configuration.
+	 * Note that this method does not set the active view configuration programmatically.
+	 * It is just used to support highlighting the current active view configuration
+	 * in the viewer of this dialog.
+	 * @param The name of the current active view configuration
+	 */
+	public void setActiveViewConfigurationName(String name) {
+		this.properties.setProperty(ACTIVE_VIEW_CONFIGURATION_KEY, name);
+	}
+	
+	/**
+	 * Special StyledCellLabelProvider that will render the default view configuration
+	 * italic, so a user will know that there is something special about it.
+	 * Will also add a leading '*' to the current active view configuration.
+	 */
+	class ViewConfigurationNameLabelProvider extends StyledCellLabelProvider {
+		private Font italicFont;
+		private Styler italicStyler;
+		
+		ViewConfigurationNameLabelProvider() {
+			italicFont = GUIHelper.getFont(new FontData[]{new FontData("Arial", 8, SWT.ITALIC)}); //$NON-NLS-1$
+			italicStyler = new Styler() {
+				@Override
+				public void applyStyles(TextStyle textStyle) {
+					textStyle.font = italicFont;
+				}
+			};
+		}
+		@Override
+		public void update(ViewerCell cell) {
+			Object element= cell.getElement();
+			String result = element == null ? "" : element.toString();//$NON-NLS-1$
+			String prefix = ""; //$NON-NLS-1$
+			if (result.equals(getActiveViewConfigurationName())) {
+				prefix = "* "; //$NON-NLS-1$
+			}
+			Styler styler = null;
+			if (result.length() == 0) {
+				result = Messages.getString("PersistenceDialog.defaultStateConfigName"); //$NON-NLS-1$
+				styler = italicStyler;
+			}
+			
+			StyledString styledString  = new StyledString(prefix + result, styler);
+			cell.setText(styledString.toString());
+			cell.setStyleRanges(styledString.getStyleRanges());
+			
+			super.update(cell);
+		}
 	}
 }
