@@ -225,7 +225,7 @@ public class PersistenceDialog extends Dialog {
 		createButton(parent, DELETE_ID, Messages.getString("PersistenceDialog.buttonDelete"), false); //$NON-NLS-1$
 		createButton(parent, SAVE_ID, Messages.getString("PersistenceDialog.buttonSave"), false); //$NON-NLS-1$
 		createButton(parent, LOAD_ID, Messages.getString("PersistenceDialog.buttonLoad"), false); //$NON-NLS-1$
-		createButton(parent, IDialogConstants.OK_ID, Messages.getString("PersistenceDialog.buttonDone"), true); //$NON-NLS-1$
+		createButton(parent, IDialogConstants.OK_ID, Messages.getString("PersistenceDialog.buttonDone"), false); //$NON-NLS-1$
 	}
 	
 	/* (non-Javadoc)
