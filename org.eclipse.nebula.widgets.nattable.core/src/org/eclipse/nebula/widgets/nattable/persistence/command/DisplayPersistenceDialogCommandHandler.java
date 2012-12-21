@@ -10,6 +10,8 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.persistence.command;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -31,6 +33,17 @@ public class DisplayPersistenceDialogCommandHandler extends AbstractLayerCommand
 	 * The Properties instance that should be used for saving and loading.
 	 */
 	private Properties properties;
+	
+	/**
+	 * List of {@link IStateChangedListener}s that will be notified if states are changed
+	 * using this dialog.
+	 * 
+	 * <p>Listeners that are registered with this command handler will be propagated to
+	 * the newly created dialog that is created. This way the listeners only need to be
+	 * registered once from a users point of view, while this handler will deal the correct
+	 * registering.
+	 */
+	private List<IStateChangedListener> stateChangeListeners = new ArrayList<IStateChangedListener>();
 
 	/**
 	 * Create a new DisplayPersistenceDialogCommandHandler. Using this constructor
@@ -93,6 +106,9 @@ public class DisplayPersistenceDialogCommandHandler extends AbstractLayerCommand
 	protected boolean doCommand(DisplayPersistenceDialogCommand command) {
 		PersistenceDialog dialog = new PersistenceDialog(
 				command.getNatTable().getShell(), command.getNatTable(), this.properties);
+		//register the listeners
+		dialog.addAllStateChangeListener(this.stateChangeListeners);
+		//open the dialog
 		dialog.open();
 		return true;
 	}
@@ -112,6 +128,24 @@ public class DisplayPersistenceDialogCommandHandler extends AbstractLayerCommand
 			throw new IllegalArgumentException("properties can not be null!"); //$NON-NLS-1$
 		}
 		this.properties = properties;
+	}
+	
+	/**
+	 * Add the given {@link IStateChangedListener} to the local list of listeners.
+	 * The {@link IStateChangedListener} will be registered on every {@link PersistenceDialog}
+	 * that is opened via this command handler.
+	 * @param listener The listener to add.
+	 */
+	public void addStateChangeListener(IStateChangedListener listener) {
+		this.stateChangeListeners.add(listener);
+	}
+	
+	/**
+	 * Removes the given {@link IStateChangedListener} from the local list of listeners.
+	 * @param listener The listener to remove.
+	 */
+	public void removeStateChangeListener(IStateChangedListener listener) {
+		this.stateChangeListeners.remove(listener);
 	}
 
 	/* (non-Javadoc)

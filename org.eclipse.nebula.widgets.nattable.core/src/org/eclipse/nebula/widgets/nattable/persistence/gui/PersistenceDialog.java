@@ -10,6 +10,8 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.persistence.gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -32,7 +34,13 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.persistence.PersistenceHelper;
+import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommand;
+import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
+import org.eclipse.nebula.widgets.nattable.persistence.command.IStateChangedListener;
+import org.eclipse.nebula.widgets.nattable.persistence.command.StateChangeEvent;
+import org.eclipse.nebula.widgets.nattable.persistence.command.StateChangeEvent.StateChangeType;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -57,7 +65,15 @@ import org.eclipse.swt.widgets.Text;
  * If the Properties need to be persisted e.g. in the file system, the
  * developer has to take care of that himself.
  * 
+ * <p>It is possible to listen for state change events on the view configurations.
+ * Rather than adding listeners to this dialog yourself, you should register the 
+ * listeners to the {@link DisplayColumnChooserCommandHandler}, as it will handle
+ * propagating the listeners to newly created instances of this dialog.
+ * 
  * @author Dirk Fauth
+ * 
+ * @see DisplayPersistenceDialogCommand
+ * @see DisplayPersistenceDialogCommandHandler
  */
 public class PersistenceDialog extends Dialog {
 
@@ -110,6 +126,12 @@ public class PersistenceDialog extends Dialog {
 	 * the default state configuration will be used.
 	 */
 	private Text configNameText;
+	
+	/**
+	 * List of {@link IStateChangedListener}s that will be notified if states are changed
+	 * using this dialog.
+	 */
+	private List<IStateChangedListener> stateChangeListeners = new ArrayList<IStateChangedListener>();
 	
 	/**
 	 * Create a new dialog for handling NatTable state.
@@ -254,11 +276,15 @@ public class PersistenceDialog extends Dialog {
 			for (int i = 0; i < this.viewer.getTable().getItemCount(); i++) {
 				String element = this.viewer.getElementAt(i).toString();
 				if (configName.equals(element)) {
+					//fire event for a changed view configuration
+					fireStateChange(new StateChangeEvent(configName, StateChangeType.CHANGE));
 					return;
 				}
 			}
 			
 			this.viewer.add(configName);
+			//fire event for a newly created view configuration
+			fireStateChange(new StateChangeEvent(configName, StateChangeType.CREATE));
 		} else if (buttonId == DELETE_ID) {
 			ISelection selection = this.viewer.getSelection();
 			if (selection != null && selection instanceof IStructuredSelection) {
@@ -268,6 +294,8 @@ public class PersistenceDialog extends Dialog {
 				this.viewer.getTable().deselectAll();
 				this.viewer.remove(configName);
 				this.configNameText.setText(""); //$NON-NLS-1$
+				//fire event for a deleted view configuration
+				fireStateChange(new StateChangeEvent(configName, StateChangeType.DELETE));
 			}
 		} else if (buttonId == LOAD_ID) {
 			ISelection selection = this.viewer.getSelection();
@@ -330,6 +358,48 @@ public class PersistenceDialog extends Dialog {
 	 */
 	public void setActiveViewConfigurationName(String name) {
 		this.properties.setProperty(ACTIVE_VIEW_CONFIGURATION_KEY, name);
+	}
+	
+	/**
+	 * Add the given {@link IStateChangedListener} to the local list of listeners.
+	 * @param listener The listener to add.
+	 */
+	public void addStateChangeListener(IStateChangedListener listener) {
+		this.stateChangeListeners.add(listener);
+	}
+	
+	/**
+	 * Adds the given {@link IStateChangedListener}s to the local list of listeners.
+	 * @param listeners The listeners to add.
+	 */
+	public void addAllStateChangeListener(List<IStateChangedListener> listeners) {
+		this.stateChangeListeners.addAll(listeners);
+	}
+	
+	/**
+	 * Removes the given {@link IStateChangedListener} from the local list of listeners.
+	 * @param listener The listener to remove.
+	 */
+	public void removeStateChangeListener(IStateChangedListener listener) {
+		this.stateChangeListeners.remove(listener);
+	}
+	
+	/**
+	 * Removes the given {@link IStateChangedListener}s from the local list of listeners.
+	 * @param listeners The listeners to remove.
+	 */
+	public void removeAllStateChangeListener(List<IStateChangedListener> listeners) {
+		this.stateChangeListeners.removeAll(listeners);
+	}
+	
+	/**
+	 * Inform all registered listeners about the state change.
+	 * @param event The {@link StateChangeEvent} object. 
+	 */
+	public void fireStateChange(StateChangeEvent event) {
+		for (IStateChangedListener listener : this.stateChangeListeners) {
+			listener.handleStateChange(event);
+		}
 	}
 	
 	/**
