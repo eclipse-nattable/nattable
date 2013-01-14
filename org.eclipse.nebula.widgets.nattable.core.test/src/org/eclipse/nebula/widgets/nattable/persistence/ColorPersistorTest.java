@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.persistence;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Properties;
 
@@ -38,11 +39,15 @@ public class ColorPersistorTest {
 	}
 
 	@Test
-	public void shouldRecostructColorInstanceFromSavedRGBString() throws Exception {
+	public void shouldLoadColorFromSavedRGBString() throws Exception {
 		properties.setProperty("prefix.color", "255, 0, 0");
-		
 		Color actual = ColorPersistor.loadColor("prefix", properties);
-		
 		assertEquals(TEST_COLOR, actual);
+	}
+
+	@Test
+	public void shouldFailToLoadForMissingRGBString() throws Exception {
+		Color actual = ColorPersistor.loadColor("missing", properties);
+		assertNull(actual);
 	}
 }

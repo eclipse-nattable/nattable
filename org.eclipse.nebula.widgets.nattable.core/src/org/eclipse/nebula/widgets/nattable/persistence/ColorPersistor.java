@@ -42,7 +42,7 @@ public class ColorPersistor {
 
 		String colorAsString = properties.getProperty(prefix);
 		if (colorAsString == null) {
-			return DEFAULT_COLOR;
+			return null;
 		} else {
 			return asColor(colorAsString);
 		}
