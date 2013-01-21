@@ -134,7 +134,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 	public boolean doCommand(ILayerCommand command) {
 		// Invoke command handler(s) on the Dimensionally dependent layer
 		ILayerCommand clonedCommand = command.cloneCommand();
-		if (super.doCommand(command)) {
+		if (super.doCommand(clonedCommand)) {
 			return true;
 		}
 		

@@ -72,9 +72,12 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
 			}
 		}
 		
-		rowPositionToHeight = newRowPositionToHeight;
-		
-		return super.convertToTargetLayer(targetLayer);
+		if (super.convertToTargetLayer(targetLayer)) {
+			rowPositionToHeight = newRowPositionToHeight;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public MultiRowResizeCommand cloneCommand() {

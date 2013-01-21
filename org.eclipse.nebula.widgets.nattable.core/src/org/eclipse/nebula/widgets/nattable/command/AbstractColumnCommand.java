@@ -26,8 +26,13 @@ public abstract class AbstractColumnCommand implements ILayerCommand {
 	}
 
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		columnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(columnPositionCoordinate, targetLayer);
-		return columnPositionCoordinate != null;
+		ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(columnPositionCoordinate, targetLayer);
+		if (targetColumnPositionCoordinate != null) {
+			columnPositionCoordinate = targetColumnPositionCoordinate;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public ILayer getLayer() {

@@ -54,9 +54,12 @@ public abstract class AbstractMultiColumnCommand implements ILayerCommand {
 			}
 		}
 		
-		columnPositionCoordinates = convertedColumnPositionCoordinates;
-		
-		return columnPositionCoordinates.size() > 0;
+		if (convertedColumnPositionCoordinates.size() > 0) {
+			columnPositionCoordinates = convertedColumnPositionCoordinates;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

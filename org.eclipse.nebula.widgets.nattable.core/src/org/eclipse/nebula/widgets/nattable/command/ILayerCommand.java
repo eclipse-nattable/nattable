@@ -24,10 +24,11 @@ public interface ILayerCommand {
 	
 	/**
 	 * Convert the row/column coordinates the command might be carrying from the source layer
-	 * to the destination (target) layer.<br/> 
+	 * to the destination (target) layer. If it is not possible to convert the command to the target layer,
+	 * then this method will return false and <b>the state of this command object will remain unchanged</b>.
+	 * Note: Commands should not be processed if they fail conversion.
 	 * 
 	 * @return true if the command is valid after conversion, false if the command is no longer valid.
-	 * 	Note: most commands are not processed if they fail conversion.  
 	 */
 	public boolean convertToTargetLayer(ILayer targetLayer);
 

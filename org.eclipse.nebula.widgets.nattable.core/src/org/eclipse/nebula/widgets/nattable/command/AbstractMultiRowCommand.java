@@ -53,9 +53,12 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
 			}
 		}
 		
-		rowPositionCoordinates = convertedRowPositionCoordinates;
-		
-		return rowPositionCoordinates.size() > 0;
+		if (convertedRowPositionCoordinates.size() > 0) {
+			rowPositionCoordinates = convertedRowPositionCoordinates;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

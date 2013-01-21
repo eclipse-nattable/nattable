@@ -53,9 +53,15 @@ public class ColumnReorderCommand implements ILayerCommand {
 	}
 	
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		fromColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(fromColumnPositionCoordinate, targetLayer);
-		toColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
-		return fromColumnPositionCoordinate != null && toColumnPositionCoordinate != null;
+		ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(fromColumnPositionCoordinate, targetLayer);
+		ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
+		if (targetFromColumnPositionCoordinate != null && targetToColumnPositionCoordinate != null) {
+			fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
+			toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public ColumnReorderCommand cloneCommand() {

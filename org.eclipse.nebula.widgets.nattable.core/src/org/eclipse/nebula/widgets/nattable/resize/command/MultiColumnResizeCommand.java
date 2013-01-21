@@ -77,9 +77,12 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
 			}
 		}
 		
-		colPositionToWidth = newColPositionToWidth;
-
-		return super.convertToTargetLayer(targetLayer);
+		if (super.convertToTargetLayer(targetLayer)) {
+			colPositionToWidth = newColPositionToWidth;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public MultiColumnResizeCommand cloneCommand() {

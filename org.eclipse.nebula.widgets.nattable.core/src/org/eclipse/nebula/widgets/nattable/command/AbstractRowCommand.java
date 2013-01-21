@@ -26,8 +26,13 @@ public abstract class AbstractRowCommand implements ILayerCommand {
 	}
 	
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		rowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(rowPositionCoordinate, targetLayer);
-		return rowPositionCoordinate != null;
+		RowPositionCoordinate targetRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(rowPositionCoordinate, targetLayer);
+		if (targetRowPositionCoordinate != null) {
+			rowPositionCoordinate = targetRowPositionCoordinate;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public int getRowPosition() {

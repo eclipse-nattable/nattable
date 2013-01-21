@@ -26,8 +26,13 @@ public abstract class AbstractPositionCommand implements ILayerCommand {
 	}
 	
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		positionCoordinate = LayerCommandUtil.convertPositionToTargetContext(positionCoordinate, targetLayer);
-		return positionCoordinate != null;
+		PositionCoordinate targetPositionCoordinate = LayerCommandUtil.convertPositionToTargetContext(positionCoordinate, targetLayer);
+		if (targetPositionCoordinate != null) {
+			positionCoordinate = targetPositionCoordinate;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public int getColumnPosition() {

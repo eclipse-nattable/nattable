@@ -72,11 +72,15 @@ public class MultiColumnReorderCommand implements ILayerCommand {
 			}
 		}
 		
-		fromColumnPositionCoordinates = convertedFromColumnPositionCoordinates;
+		ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
 		
-		toColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
-		
-		return fromColumnPositionCoordinates.size() > 0 && toColumnPositionCoordinate != null;
+		if (convertedFromColumnPositionCoordinates.size() > 0 && targetToColumnPositionCoordinate != null) {
+			fromColumnPositionCoordinates = convertedFromColumnPositionCoordinates;
+			toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public MultiColumnReorderCommand cloneCommand() {
