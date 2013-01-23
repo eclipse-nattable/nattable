@@ -51,8 +51,7 @@ public class FilterRowHeaderComposite<T> extends CompositeLayer {
 		if (filterRowVisible) {
 			return super.getHeight();
 		} else {
-			ChildLayerInfo lastChildLayerInfo = getChildLayerInfoByLayout(0, 1);
-			return lastChildLayerInfo.getHeightOffset();
+			return getHeightOffset(0, 1);
 		}
 	}
 

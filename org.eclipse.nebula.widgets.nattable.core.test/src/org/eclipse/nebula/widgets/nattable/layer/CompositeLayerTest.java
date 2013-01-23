@@ -20,20 +20,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer.ChildLayerInfo;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.CompositeLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @see {@link CompositeLayerFixture} for the layout of columns/rows.
@@ -54,30 +51,31 @@ public class CompositeLayerTest {
 
 	@Test
 	public void testingChildLayerInfoForCornerByLayout() {
-		ChildLayerInfo info = layerFixture.getChildLayerInfoByLayout(0,0);
+		ILayer childLayer = layerFixture.getChildLayerByLayoutCoordinate(0,0);
 
-		assertEquals(layerFixture.cornerLayer, info.getLayer());
-		assertEquals(0, info.getColumnPositionOffset());
-		assertEquals(0, info.getRowPositionOffset());
-		assertEquals(0, info.getWidthOffset());
-		assertEquals(0, info.getHeightOffset());
+		assertEquals(layerFixture.cornerLayer, childLayer);
+		assertEquals(0, layerFixture.getColumnPositionOffset(0,0));
+		assertEquals(0, layerFixture.getRowPositionOffset(0,-0));
+		assertEquals(0, layerFixture.getWidthOffset(0,0));
+		assertEquals(0, layerFixture.getHeightOffset(0,0));
 
 	}
 
 	@Test
 	public void testChildLayerInfoForViewportByLayout() {
-		ChildLayerInfo info = layerFixture.getChildLayerInfoByLayout(1,1);
+		ILayer childLayer = layerFixture.getChildLayerByLayoutCoordinate(1,1);
 
-		assertEquals(layerFixture.bodyLayer, info.getLayer());
-		assertEquals(5, info.getColumnPositionOffset());
-		assertEquals(7, info.getRowPositionOffset());
-		assertEquals(layerFixture.cornerLayer.getWidth(), info.getWidthOffset());
-		assertEquals(layerFixture.cornerLayer.getHeight(), info.getHeightOffset());
+		assertEquals(layerFixture.bodyLayer, childLayer);
+		assertEquals(5, layerFixture.getColumnPositionOffset(1,1));
+		assertEquals(7, layerFixture.getRowPositionOffset(1,1));
+		assertEquals(layerFixture.cornerLayer.getWidth(), layerFixture.getWidthOffset(1,1));
+		assertEquals(layerFixture.cornerLayer.getHeight(), layerFixture.getHeightOffset(1,1));
 	}
 
 	@Test
 	public void childLayerInfoByPixelPosition() throws Exception {
-		ILayer layer = layerFixture.getChildLayerByXY(30, 40);
+		Point layoutCoordinate = layerFixture.getLayoutXYByPixelXY(30, 40);
+		ILayer layer = layerFixture.getChildLayerByLayoutCoordinate(layoutCoordinate.x, layoutCoordinate.y);
 		assertEquals(layerFixture.bodyLayer, layer);
 	}
 
@@ -117,7 +115,6 @@ public class CompositeLayerTest {
 		//20 columns total - 100 wide each
 		layerFixture.setChildLayer(GridRegion.CORNER, new DataLayerFixture(10,10, 100, 20), 0, 0);
 		layerFixture.setChildLayer(GridRegion.COLUMN_HEADER, new DataLayerFixture(10,10, 100, 20), 1, 0);
-		layerFixture.populateChildLayerInfos();
 
 		assertEquals(2000, layerFixture.getWidth());
 	}
@@ -188,7 +185,6 @@ public class CompositeLayerTest {
 		//20 rows, each 20 high
 		layerFixture.setChildLayer(GridRegion.CORNER, new DataLayerFixture(10,10, 100, 20), 0, 0);
 		layerFixture.setChildLayer(GridRegion.ROW_HEADER, new DataLayerFixture(10,10, 100, 20), 0, 1);
-		layerFixture.populateChildLayerInfos();
 
 		assertEquals(400, layerFixture.getHeight());
 	}
