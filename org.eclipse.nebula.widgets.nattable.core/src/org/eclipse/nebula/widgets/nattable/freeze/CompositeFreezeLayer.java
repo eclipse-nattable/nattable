@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
@@ -24,12 +24,16 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
 
 public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndexLayer {
@@ -112,6 +116,54 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
 	}
 
 
+	// Persistence
+	
+	@Override
+	public void saveState(String prefix, Properties properties) {
+		PositionCoordinate coord = freezeLayer.getTopLeftPosition();
+		properties.setProperty(prefix + FreezeLayer.PERSISTENCE_TOP_LEFT_POSITION, 
+				coord.columnPosition + IPersistable.VALUE_SEPARATOR + coord.rowPosition);
+		
+		coord = freezeLayer.getBottomRightPosition();
+		properties.setProperty(prefix + FreezeLayer.PERSISTENCE_BOTTOM_RIGHT_POSITION, 
+				coord.columnPosition + IPersistable.VALUE_SEPARATOR + coord.rowPosition);
+		
+		super.saveState(prefix, properties);
+	}
+	
+	@Override
+	public void loadState(String prefix, Properties properties) {
+		String property = properties.getProperty(prefix + FreezeLayer.PERSISTENCE_TOP_LEFT_POSITION);
+		PositionCoordinate topLeftPosition = null;
+		if (property != null) {
+			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
+			String columnPosition = tok.nextToken();
+			String rowPosition = tok.nextToken();
+			topLeftPosition = new PositionCoordinate(this.freezeLayer, 
+					Integer.valueOf(columnPosition), Integer.valueOf(rowPosition));
+		}
+		
+		property = properties.getProperty(prefix + FreezeLayer.PERSISTENCE_BOTTOM_RIGHT_POSITION);
+		PositionCoordinate bottomRightPosition = null;
+		if (property != null) {
+			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
+			String columnPosition = tok.nextToken();
+			String rowPosition = tok.nextToken();
+			bottomRightPosition = new PositionCoordinate(this.freezeLayer, 
+					Integer.valueOf(columnPosition), Integer.valueOf(rowPosition));
+		}
+		
+		if (topLeftPosition.columnPosition == -1 && topLeftPosition.rowPosition == -1
+				&& bottomRightPosition.columnPosition == -1 && bottomRightPosition.rowPosition == -1) {
+			FreezeHelper.unfreeze(this.freezeLayer, this.viewportLayer);
+		} else {
+			FreezeHelper.freeze(this.freezeLayer, this.viewportLayer, topLeftPosition, bottomRightPosition);
+		}
+		
+		super.loadState(prefix, properties);
+	}
+
+	
 	class FreezableLayerPainter extends CompositeLayerPainter {
 		
 		public FreezableLayerPainter() {

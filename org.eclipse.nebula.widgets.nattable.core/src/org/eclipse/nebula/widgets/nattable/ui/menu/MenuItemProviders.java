@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.group.command.OpenCreateColumnGroupDi
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
+import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommand;
@@ -394,6 +395,30 @@ public class MenuItemProviders {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						natTable.doCommand(new ToggleFilterRowCommand());
+					}
+				});
+			}
+		};
+	}
+
+	
+	public static IMenuItemProvider stateManagerMenuItemProvider() {
+		return stateManagerMenuItemProvider(Messages.getString("MenuItemProviders.stateManager")); //$NON-NLS-1$
+	}
+
+	public static IMenuItemProvider stateManagerMenuItemProvider(final String menuLabel) {
+		return new IMenuItemProvider() {
+
+			public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+				MenuItem saveState = new MenuItem(popupMenu, SWT.PUSH);
+				saveState.setText(menuLabel);
+				saveState.setImage(GUIHelper.getImage("table_icon")); //$NON-NLS-1$
+				saveState.setEnabled(true);
+
+				saveState.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						natTable.doCommand(new DisplayPersistenceDialogCommand(natTable));
 					}
 				});
 			}

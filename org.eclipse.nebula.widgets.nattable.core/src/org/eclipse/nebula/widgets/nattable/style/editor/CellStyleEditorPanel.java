@@ -108,29 +108,19 @@ public class CellStyleEditorPanel extends AbstractEditorPanel<Style> {
     	Style newStyle = new Style();
     	
     	Color bgColor = backgroundColorPicker.getSelectedColor();
-    	if (!bgColor.equals(origBgColor)) {
-    		newStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
-    	}
+    	newStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
     	
     	Color fgColor = foregroundColorPicker.getSelectedColor();
-    	if (!fgColor.equals(origFgColor)) {
-    		newStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
-    	}
+    	newStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
     	
     	Font font = fontPicker.getSelectedFont();
-		if (!font.equals(fontPicker.getOriginalFont())) {
-			newStyle.setAttributeValue(CellStyleAttributes.FONT, font);
-		}
+		newStyle.setAttributeValue(CellStyleAttributes.FONT, font);
 		
     	HorizontalAlignmentEnum hAlign = horizontalAlignmentPicker.getSelectedAlignment();
-    	if (hAlign != origHAlign) {
-    		newStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
-    	}
+    	newStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
     	
     	VerticalAlignmentEnum vAlign = verticalAlignmentPicker.getSelectedAlignment();
-		if (vAlign != origVAlign) {
-			newStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);
-		}
+		newStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);
 		
     	return newStyle;
     }

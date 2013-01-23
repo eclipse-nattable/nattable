@@ -20,6 +20,9 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 
 public class FreezeLayer extends AbstractIndexLayerTransform {
 
+	public static final String PERSISTENCE_TOP_LEFT_POSITION = ".freezeTopLeftPosition"; //$NON-NLS-1$
+	public static final String PERSISTENCE_BOTTOM_RIGHT_POSITION = ".freezeBottomRightPosition"; //$NON-NLS-1$
+
 	private PositionCoordinate topLeftPosition = new PositionCoordinate(this, -1, -1);
 
 	private PositionCoordinate bottomRightPosition = new PositionCoordinate(this, -1, -1);
