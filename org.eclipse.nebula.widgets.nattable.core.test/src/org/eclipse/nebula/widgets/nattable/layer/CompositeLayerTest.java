@@ -54,10 +54,10 @@ public class CompositeLayerTest {
 		ILayer childLayer = layerFixture.getChildLayerByLayoutCoordinate(0,0);
 
 		assertEquals(layerFixture.cornerLayer, childLayer);
-		assertEquals(0, layerFixture.getColumnPositionOffset(0,0));
-		assertEquals(0, layerFixture.getRowPositionOffset(0,-0));
-		assertEquals(0, layerFixture.getWidthOffset(0,0));
-		assertEquals(0, layerFixture.getHeightOffset(0,0));
+		assertEquals(0, layerFixture.getColumnPositionOffset(0));
+		assertEquals(0, layerFixture.getRowPositionOffset(0));
+		assertEquals(0, layerFixture.getWidthOffset(0));
+		assertEquals(0, layerFixture.getHeightOffset(0));
 
 	}
 
@@ -66,10 +66,10 @@ public class CompositeLayerTest {
 		ILayer childLayer = layerFixture.getChildLayerByLayoutCoordinate(1,1);
 
 		assertEquals(layerFixture.bodyLayer, childLayer);
-		assertEquals(5, layerFixture.getColumnPositionOffset(1,1));
-		assertEquals(7, layerFixture.getRowPositionOffset(1,1));
-		assertEquals(layerFixture.cornerLayer.getWidth(), layerFixture.getWidthOffset(1,1));
-		assertEquals(layerFixture.cornerLayer.getHeight(), layerFixture.getHeightOffset(1,1));
+		assertEquals(5, layerFixture.getColumnPositionOffset(1));
+		assertEquals(7, layerFixture.getRowPositionOffset(1));
+		assertEquals(layerFixture.cornerLayer.getWidth(), layerFixture.getWidthOffset(1));
+		assertEquals(layerFixture.cornerLayer.getHeight(), layerFixture.getHeightOffset(1));
 	}
 
 	@Test
