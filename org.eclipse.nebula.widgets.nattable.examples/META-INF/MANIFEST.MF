@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Examples (Incubation)
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.examples
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: ca.odell.glazedlists;resolution:=optional,
  ca.odell.glazedlists.event;resolution:=optional,
  ca.odell.glazedlists.matchers,

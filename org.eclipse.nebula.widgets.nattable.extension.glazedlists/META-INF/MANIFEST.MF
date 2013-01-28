@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NatTable GlazedLists Extensions (Incubation)
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.nebula.widgets.nattable.extension.glazedlists,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy,

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Core (Incubation)
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.core
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-ExtensibleAPI: true
 Export-Package: org.eclipse.nebula.widgets.nattable,
  org.eclipse.nebula.widgets.nattable.blink,

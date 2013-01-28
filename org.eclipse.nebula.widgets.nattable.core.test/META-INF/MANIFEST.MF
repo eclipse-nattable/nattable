@@ -4,7 +4,7 @@ Bundle-Name: NatTable Core Tests (Incubation)
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.core.test
 Bundle-Version: 1.0.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.core
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.commons.lang.math,
  org.eclipse.core.commands.common,
  org.osgi.framework

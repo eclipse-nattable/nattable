@@ -4,7 +4,7 @@ Bundle-Name: NatTable GlazedLists Extensions Test (Incubation)
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists.test
 Bundle-Version: 1.0.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4
 Import-Package: org.eclipse.nebula.widgets.nattable.filterrow.command,
  org.eclipse.nebula.widgets.nattable.filterrow.event,
