@@ -10,14 +10,30 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 
+/**
+ * {@link ILayerCommandHandler} that handles {@link UpdateDataCommand}s by updating
+ * the data model. It is usually directly registered to the {@link DataLayer} this
+ * command handler is associated with.
+ */
 public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<UpdateDataCommand> {
 
-	private final DataLayer dataLayer;
+	private static final Log log = LogFactory.getLog(UpdateDataCommandHandler.class);
 
+	/**
+	 * The {@link DataLayer} on which the data model updates should be executed.
+	 */
+	private final DataLayer dataLayer;
+	
+	/**
+	 * @param dataLayer The {@link DataLayer} on which the data model updates should be executed.
+	 */
 	public UpdateDataCommandHandler(DataLayer dataLayer) {
 		this.dataLayer = dataLayer;
 	}
@@ -35,8 +51,7 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
 			dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer, columnPosition, rowPosition));
 			return true;
 		} catch (UnsupportedOperationException e) {
-			e.printStackTrace(System.err);
-			System.err.println("Failed to update value to: "+command.getNewValue()); //$NON-NLS-1$
+			log.error("Failed to update value to: "+command.getNewValue(), e); //$NON-NLS-1$
 			return false;
 		}
 	}

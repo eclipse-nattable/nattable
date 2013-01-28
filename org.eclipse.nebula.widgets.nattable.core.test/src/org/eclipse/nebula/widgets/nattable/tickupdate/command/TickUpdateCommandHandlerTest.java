@@ -48,8 +48,10 @@ public class TickUpdateCommandHandlerTest {
 		selectionLayer.setSelectedCell(1, 1);
 		
 		testConfigRegistry = new ConfigRegistry();
-		testConfigRegistry.registerConfigAttribute(TickUpdateConfigAttributes.UPDATE_HANDLER,	new TickUpdateHandlerFixture());
-		testConfigRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE);
+		testConfigRegistry.registerConfigAttribute(TickUpdateConfigAttributes.UPDATE_HANDLER,	
+				new TickUpdateHandlerFixture());
+		testConfigRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, 
+				IEditableRule.ALWAYS_EDITABLE);
 
 		registerCellStyleAccumulators(bodyDataLayer);
 		commandHandler = new TickUpdateCommandHandler(selectionLayer);

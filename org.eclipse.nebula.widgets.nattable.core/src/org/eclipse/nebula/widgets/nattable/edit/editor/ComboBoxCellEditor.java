@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
@@ -28,103 +27,370 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 
 /**
- * Renders an SWT combo box.
- *    Users can select from the drop down or enter their own values.
+ * {@link ICellEditor} implementation to provide combo box editing behaviour.
+ * Uses the {@link NatCombo} as editor control which provides free editing in
+ * the text control part and multi selection in the dropdown part if configured.
+ * <p>
+ * You can create a ComboBoxCellEditor either by setting the items to show statically
+ * by constructor, or by using an {@link IComboBoxDataProvider}. Last one is a way
+ * to dynamically populate the items showed in a combobox in NatTable. It is not possible
+ * to mix these two approaches!
+ * 
  */
 public class ComboBoxCellEditor extends AbstractCellEditor {
 
+	/**
+	 * The wrapped editor control.
+	 */
 	private NatCombo combo;
 
-	private int maxVisibleItems = 10;
-	
-	private List<?> canonicalValues;
-	private IComboBoxDataProvider dataProvider;
-	
-	private Object originalCanonicalValue;
+	/**
+	 * The maximum number of items the drop down will show before introducing a scroll bar.
+	 */
+	private int maxVisibleItems;
 	
 	/**
-	 * @see this{@link #ComboBoxCellEditor(List, int)}
+	 * The list of canonical values that will be set as selectable items to the combo.
+	 * If this {@link ComboBoxCellEditor} is created for using such a list, the selectable
+	 * values will be static.
+	 * <p>
+	 * The values will be converted to the corresponding display values prior filling the combo.
+	 * <p>
+	 * If this {@link ComboBoxCellEditor} is created for using a {@link IComboBoxDataProvider}
+	 * this list will be ignored.
+	 */
+	private List<?> canonicalValues;
+	
+	/**
+	 * The {@link IComboBoxDataProvider} that is used to set the selectable items to
+	 * the combo. If this {@link ComboBoxCellEditor} is created using such a data provider,
+	 * the selectable value will be dynamic.
+	 * <p>
+	 * The values will be converted to the corresponding display values prior filling the combo.
+	 * <p>
+	 * If a {@link IComboBoxDataProvider} is set, a possible set static list of canonical
+	 * values will be ignored.
+	 */
+	private IComboBoxDataProvider dataProvider;
+	
+	/**
+	 * Flag that indicates whether this ComboBoxCellEditor supports free editing in the
+	 * text control of the NatCombo or not. By default free editing is disabled.
+	 */
+	private boolean freeEdit;
+	
+	/**
+	 * Flag that indicates whether this ComboBoxCellEditor supports multiple selection or not.
+	 * By default multiple selection is disabled.
+	 */
+	private boolean multiselect;
+	
+	/**
+	 * String that is used to separate values in the String representation showed
+	 * in the text control if multiselect is supported. <code>null</code> to use the 
+	 * default String ", ".
+	 */
+	private String multiselectValueSeparator = null;
+	
+	/**
+	 * String that is used to prefix the generated String representation showed
+	 * in the text control if multiselect is supported. Needed to visualize the 
+	 * multiselection to the user. If this value is <code>null</code> the default 
+	 * String "[" is used.
+	 */
+	private String multiselectTextPrefix = null;
+	
+	/**
+	 * String that is used to suffix the generated String representation showed
+	 * in the text control if multiselect is supported. Needed to visualize the 
+	 * multiselection to the user. If this value is <code>null</code> the default 
+	 * String "]" is used.
+	 */
+	private String multiselectTextSuffix = null;
+	
+	/**
+	 * The image to use as overlay to the {@link Text} Control if the dropdown
+	 * is visible. It will indicate that the control is an open combo to the user.
+	 * If this value is <code>null</code> the default image specified in NatCombo
+	 * will be used.
+	 */
+	private Image iconImage;
+	
+	/**
+	 * Create a new single selection {@link ComboBoxCellEditor} based on the given list of items,
+	 * showing the default number of items in the dropdown of the combo.
+	 * @param canonicalValues Array of items to be shown in the drop down box. These will be
+	 * 			converted using the {@link IDisplayConverter} for display purposes
 	 */
 	public ComboBoxCellEditor(List<?> canonicalValues){
 		this(canonicalValues, NatCombo.DEFAULT_NUM_OF_VISIBLE_ITEMS);
 	}
 
 	/**
+	 * Create a new single selection {@link ComboBoxCellEditor} based on the given list of items.
 	 * @param canonicalValues Array of items to be shown in the drop down box. These will be
-	 * 	converted using the {@link IDisplayConverter} for display purposes
-	 * @param maxVisibleItems the max items the drop down will show before introducing a scroll bar.
+	 * 			converted using the {@link IDisplayConverter} for display purposes
+	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
+	 * 			a scroll bar.
 	 */
 	public ComboBoxCellEditor(List<?> canonicalValues, int maxVisibleItems) {
-		this.canonicalValues = canonicalValues;
-		this.maxVisibleItems = maxVisibleItems;
+		this(canonicalValues, maxVisibleItems, false);
 	}
 
 	/**
-	 * @see this{@link #ComboBoxCellEditor(List, int)}
+	 * Create a new {@link ComboBoxCellEditor} based on the given list of items.
+	 * @param canonicalValues Array of items to be shown in the drop down box. These will be
+	 * 			converted using the {@link IDisplayConverter} for display purposes
+	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
+	 * 			a scroll bar.
+	 * @param freeEdit whether this ComboBoxCellEditor supports free editing in the
+	 * 			text control of the NatCombo or not.
+	 */
+	public ComboBoxCellEditor(List<?> canonicalValues, int maxVisibleItems, boolean freeEdit) {
+		this(canonicalValues, maxVisibleItems, freeEdit, false);
+	}
+
+	/**
+	 * Create a new {@link ComboBoxCellEditor} based on the given list of items.
+	 * @param canonicalValues Array of items to be shown in the drop down box. These will be
+	 * 			converted using the {@link IDisplayConverter} for display purposes
+	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
+	 * 			a scroll bar.
+	 * @param freeEdit whether this ComboBoxCellEditor supports free editing in the
+	 * 			text control of the NatCombo or not.
+	 * @param multiselect whether this ComboBoxCellEditor should support multiselect or not.
+	 */
+	public ComboBoxCellEditor(List<?> canonicalValues, int maxVisibleItems, boolean freeEdit, boolean multiselect) {
+		this.canonicalValues = canonicalValues;
+		this.maxVisibleItems = maxVisibleItems;
+		this.freeEdit = freeEdit;
+		this.multiselect = multiselect;
+	}
+
+	/**
+	 * Create a new single selection {@link ComboBoxCellEditor} based on the given {@link IComboBoxDataProvider},
+	 * showing the default number of items in the dropdown of the combo.
+	 * @param dataProvider The {@link IComboBoxDataProvider} that is responsible for populating the 
+	 * 			items to the dropdown box. This is the way to use a ComboBoxCellEditor with dynamic content.
 	 */
 	public ComboBoxCellEditor(IComboBoxDataProvider dataProvider) {
 		this(dataProvider, NatCombo.DEFAULT_NUM_OF_VISIBLE_ITEMS);
 	}
 
 	/**
-	 * @param canonicalValues Array of items to be shown in the drop down box. These will be
-	 * 	converted using the {@link IDisplayConverter} for display purposes
-	 * @param maxVisibleItems the max items the drop down will show before introducing a scroll bar.
+	 * Create a new single selection {@link ComboBoxCellEditor} based on the given {@link IComboBoxDataProvider}.
+	 * @param dataProvider The {@link IComboBoxDataProvider} that is responsible for populating the 
+	 * 			items to the dropdown box. This is the way to use a ComboBoxCellEditor with dynamic content.
+	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
+	 * 			a scroll bar.
 	 */
 	public ComboBoxCellEditor(IComboBoxDataProvider dataProvider, int maxVisibleItems) {
+		this(dataProvider, maxVisibleItems, false);
+	}
+
+	/**
+	 * Create a new {@link ComboBoxCellEditor} based on the given {@link IComboBoxDataProvider}.
+	 * @param dataProvider The {@link IComboBoxDataProvider} that is responsible for populating the 
+	 * 			items to the dropdown box. This is the way to use a ComboBoxCellEditor with dynamic content.
+	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
+	 * 			a scroll bar.
+	 * @param freeEdit whether this ComboBoxCellEditor supports free editing in the
+	 * 			text control of the NatCombo or not.
+	 */
+	public ComboBoxCellEditor(IComboBoxDataProvider dataProvider, int maxVisibleItems, boolean freeEdit) {
+		this(dataProvider, maxVisibleItems, freeEdit, false);
+	}
+
+	/**
+	 * Create a new {@link ComboBoxCellEditor} based on the given {@link IComboBoxDataProvider}.
+	 * @param dataProvider The {@link IComboBoxDataProvider} that is responsible for populating the 
+	 * 			items to the dropdown box. This is the way to use a ComboBoxCellEditor with dynamic content.
+	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
+	 * 			a scroll bar.
+	 * @param freeEdit whether this ComboBoxCellEditor supports free editing in the
+	 * 			text control of the NatCombo or not.
+	 * @param multiselect whether this ComboBoxCellEditor should support multiselect or not.
+	 */
+	public ComboBoxCellEditor(IComboBoxDataProvider dataProvider, int maxVisibleItems, boolean freeEdit, boolean multiselect) {
 		this.dataProvider = dataProvider;
 		this.maxVisibleItems = maxVisibleItems;
+		this.freeEdit = freeEdit;
+		this.multiselect = multiselect;
 	}
 	
-	public NatCombo getCombo() {
-		return combo;
+	@Override
+	protected Control activateCell(Composite parent, Object originalCanonicalValue) {
+		this.combo = createEditorControl(parent);
+		
+		fillCombo();
+
+		setCanonicalValue(originalCanonicalValue);
+		
+		//open the dropdown immediately
+		this.combo.showDropdownControl(originalCanonicalValue instanceof Character);
+		
+		return this.combo;
+	}
+
+	/**
+	 * This implementation overrides the default implementation because we can work on the
+	 * list of canonical items in the combo directly. Only for multiselect in combination with
+	 * free editing, we need to convert here ourself.
+	 */
+	@Override
+	public Object getCanonicalValue() {
+		if (!this.multiselect) {
+			//single selection handling
+			int selectionIndex = this.combo.getSelectionIndex();
+
+			//Item selected from list
+			if (selectionIndex >= 0) {
+				if (this.dataProvider != null) {
+					return this.dataProvider.getValues(getColumnIndex(), getRowIndex()).get(selectionIndex);
+				} else {
+					return this.canonicalValues.get(selectionIndex);
+				}
+			} else {
+				//if there is no selection in the dropdown, we need to check if there is a free edit
+				//in the NatCombo control
+				if (this.combo.getSelection().length > 0) {
+					return super.getCanonicalValue();
+				}
+			}
+		} else {
+			//multi selection handling
+			int[] selectionIndices = this.combo.getSelectionIndices();
+			
+			//Item selected from list
+			if (selectionIndices.length > 0) {
+				List<?> values = null;
+				if (this.dataProvider != null) {
+					values = this.dataProvider.getValues(getColumnIndex(), getRowIndex());
+				} else {
+					values = this.canonicalValues;
+				}
+				List<Object> result = new ArrayList<Object>();
+				for (int i : selectionIndices) {
+					result.add(values.get(i));
+				}
+				return result;
+			} else {
+				//if there is no selection in the dropdown, we need to check if there is a free edit
+				//in the NatCombo control
+				String[] comboSelection = this.combo.getSelection();
+				if (comboSelection.length > 0) {
+					List<Object> result = new ArrayList<Object>();
+					for (String selection : comboSelection) {
+						result.add(handleConversion(selection, this.conversionEditErrorHandler));
+					}
+					return result;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * This implementation overrides the default implementation because of the special
+	 * handling for comboboxes. It can handle multi selection and needs to transfer the
+	 * converted values into a String array so the values in the combobox can be selected.
+	 * @param canonicalValue The canonical value to be set to the wrapped editor control.
+	 */
+	@Override
+	public void setCanonicalValue(Object canonicalValue) {
+		if (canonicalValue != null) {
+			String[] editorValues = null;
+			if (canonicalValue instanceof List<?>) {
+				List<?> temp = (List<?>)canonicalValue;
+				String[] result = new String[temp.size()];
+				for (int i = 0; i < temp.size(); i++) {
+					result[i] = (String) this.displayConverter.canonicalToDisplayValue(
+							this.layerCell, this.configRegistry, temp.get(i));
+				}
+				editorValues = result;
+			} else {
+				editorValues = new String[] {(String) this.displayConverter.canonicalToDisplayValue(
+						this.layerCell, this.configRegistry, canonicalValue)};
+			}
+			setEditorValue(editorValues);
+		}
+	}
+
+	/**
+	 * Will set the items selectable in the combo dependent on the configuration of this {@link ComboBoxCellEditor}.
+	 * As the combo is only able to handle Strings in the combo itself, and this editor works directly on the
+	 * canonical values, the values are converted in here too.
+	 */
+	private void fillCombo() {
+		List<String> displayValues = new ArrayList<String>();
+
+		List<?> values;
+		if (this.dataProvider != null) {
+			values = this.dataProvider.getValues(getColumnIndex(), getRowIndex());
+		} else {
+			values = this.canonicalValues;
+		}
+		
+		for (Object canonicalValue : values) {
+			displayValues.add((String) this.displayConverter.canonicalToDisplayValue(
+					this.layerCell, this.configRegistry, canonicalValue));
+		}
+		
+		this.combo.setItems(displayValues.toArray(ArrayUtil.STRING_TYPE_ARRAY));
+	}
+	
+	@Override
+	public Object getEditorValue() {
+		if (!this.multiselect) {
+			return this.combo.getSelection()[0];
+		}
+		return this.combo.getSelection();
 	}
 
 	@Override
-	protected Control activateCell(Composite parent, Object originalCanonicalValue, Character initialEditValue) {
-		this.originalCanonicalValue = originalCanonicalValue;
+	public void setEditorValue(Object value) {
+		this.combo.setSelection((String[]) value);
+	}
 
-		combo = new NatCombo(parent, getCellStyle(), maxVisibleItems);
+	@Override
+	public NatCombo getEditorControl() {
+		return this.combo;
+	}
+
+	@Override
+	public NatCombo createEditorControl(Composite parent) {
+		int style = this.editMode == EditModeEnum.INLINE ? SWT.NONE : SWT.BORDER;
+		final NatCombo combo = this.iconImage == null ? 
+			new NatCombo(parent, this.cellStyle, this.maxVisibleItems, 
+					this.freeEdit, this.multiselect, style)
+			: new NatCombo(parent, this.cellStyle, this.maxVisibleItems, 
+					this.freeEdit, this.multiselect, style, this.iconImage);
 		
 		combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
 
-		combo.setEditMode(editMode);
-		
-		combo.setItems(getDisplayValues());
-
-		if (originalCanonicalValue != null) {
-			combo.setSelection(new String[] { getDisplayValue() });
+		if (multiselect) {
+			combo.setMultiselectValueSeparator(this.multiselectValueSeparator);
+			combo.setMultiselectTextBracket(this.multiselectTextPrefix, this.multiselectTextSuffix);
 		}
-
+		
 		combo.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyPressed(KeyEvent event) {
-				if ((event.keyCode == SWT.CR && event.stateMask == 0)
-						|| (event.keyCode == SWT.KEYPAD_CR && event.stateMask == 0)) {
-					commit(MoveDirectionEnum.NONE);
-				} else if (event.keyCode == SWT.ESC && event.stateMask == 0){
+				if ((event.keyCode == SWT.CR)
+						|| (event.keyCode == SWT.KEYPAD_CR)) {
+					commit(MoveDirectionEnum.NONE, editMode == EditModeEnum.INLINE);
+				} else if (event.keyCode == SWT.ESC){
 					close();
-				}
-			}
-
-		});
-
-		combo.addTraverseListener(new TraverseListener() {
-
-			public void keyTraversed(TraverseEvent event) {
-				if (event.keyCode == SWT.TAB && event.stateMask == SWT.SHIFT) {
-					commit(MoveDirectionEnum.LEFT);
-				} else if (event.keyCode == SWT.TAB && event.stateMask == 0) {
-					commit(MoveDirectionEnum.RIGHT);
 				}
 			}
 
@@ -133,12 +399,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 		combo.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				if (editMode == EditModeEnum.INLINE) {
-					commit(MoveDirectionEnum.NONE);
-				}
-				else if (editMode == EditModeEnum.MULTI) {
-					combo.hideDropdownControl();
-				}
+				commit(MoveDirectionEnum.NONE, (!multiselect && editMode == EditModeEnum.INLINE));
 			}
 		});
 
@@ -151,7 +412,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 			});
 		}
 		
-		if (editMode == EditModeEnum.MULTI) {
+		if (editMode == EditModeEnum.DIALOG) {
 			combo.addFocusListener(new FocusAdapter() {
 				@Override
 				public void focusLost(FocusEvent e) {
@@ -163,56 +424,72 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 		return combo;
 	}
 
-	public Object getCanonicalValue() {
-		int selectionIndex = combo.getSelectionIndex();
-
-		//Item selected from list
-		if (selectionIndex >= 0) {
-			if (dataProvider != null) {
-				return dataProvider.getValues(getColumnIndex(), getRowIndex()).get(selectionIndex);
-			} else {
-				return canonicalValues.get(selectionIndex);
-			}
-		} else {
-			return originalCanonicalValue;
-		}
-	}
-
+	/**
+	 * Selects the item at the given zero-relative index in the receiver's 
+	 * list.  If the item at the index was already selected, it remains
+	 * selected. Indices that are out of range are ignored.
+	 *
+	 * @param index the index of the item to select
+	 * 
+	 * @see List#select(int)
+	 */
 	public void select(int index){
-		combo.select(index);
+		this.combo.select(index);
 	}
 
-	public void setCanonicalValue(Object value) {
-		//No op - combo is not dynamic
+	/**
+	 * Selects the items at the given zero-relative indices in the receiver.
+	 * The current selection is not cleared before the new items are selected.
+	 * <p>
+	 * If the item at a given index is not selected, it is selected.
+	 * If the item at a given index was already selected, it remains selected.
+	 * Indices that are out of range and duplicate indices are ignored.
+	 * If the receiver is single-select and multiple indices are specified,
+	 * then all indices are ignored.
+	 *
+	 * @param indices the array of indices for the items to select
+	 * 
+	 * @see List#select(int[])
+	 */
+	public void select(int[] index){
+		this.combo.select(index);
 	}
 
-	@Override
-	public void close() {
-		super.close();
 
-		if (combo != null && !combo.isDisposed()) {
-			combo.dispose();
-		}
+	/**
+	 * @param multiselectValueSeparator String that should be used to separate values in the 
+	 * 			String representation showed in the text control if multiselect is supported.
+	 * 			<code>null</code> to use the default value separator.
+	 * @see NatCombo#DEFAULT_MULTI_SELECT_VALUE_SEPARATOR
+	 */
+	public void setMultiselectValueSeparator(String multiselectValueSeparator) {
+		this.multiselectValueSeparator = multiselectValueSeparator;
 	}
 
-	private String getDisplayValue() {
-		return (String) getDataTypeConverter().canonicalToDisplayValue(layerCell, configRegistry, originalCanonicalValue);
+	/**
+	 * Set the prefix and suffix that will parenthesize the text that is created out of
+	 * the selected values if this NatCombo supports multiselection.
+	 * @param multiselectTextPrefix String that should be used to prefix the generated String 
+	 * 			representation showed in the text control if multiselect is supported.
+	 * 			<code>null</code> to use the default prefix.
+	 * @param multiselectTextSuffix String that should be used to suffix the generated String 
+	 * 			representation showed in the text control if multiselect is supported.
+	 * 			<code>null</code> to use the default suffix.
+	 * @see NatCombo#DEFAULT_MULTI_SELECT_PREFIX
+	 * @see NatCombo#DEFAULT_MULTI_SELECT_SUFFIX
+	 */
+	public void setMultiselectTextBracket(String multiselectTextPrefix, String multiselectTextSuffix) {
+		this.multiselectTextPrefix = multiselectTextPrefix;
+		this.multiselectTextSuffix = multiselectTextSuffix;
 	}
 
-	private String[] getDisplayValues() {
-		List<String> displayValues = new ArrayList<String>();
-
-		List<?> values;
-		if (dataProvider != null) {
-			values = dataProvider.getValues(getColumnIndex(), getRowIndex());
-		} else {
-			values = canonicalValues;
-		}
-		
-		for (Object canonicalValue : values) {
-			displayValues.add((String) getDataTypeConverter().canonicalToDisplayValue(layerCell, configRegistry, canonicalValue));
-		}
-
-		return displayValues.toArray(ArrayUtil.STRING_TYPE_ARRAY);
+	/**
+	 * @param iconImage The image to use as overlay to the {@link Text} Control if the dropdown
+	 * 			is visible. It will indicate that the control is an open combo to the user.
+	 * 			If this value is <code>null</code> the default image specified in NatCombo
+	 * 			will be used.
+	 */
+	public void setIconImage(Image iconImage) {
+		this.iconImage = iconImage;
 	}
 }

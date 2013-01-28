@@ -10,8 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
+import java.util.List;
 
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditor;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
@@ -21,9 +23,24 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+/**
+ * {@link ICellEditor} implementation for checkbox editors.
+ * Compared to a TextCellEditor, this editor will immediately commit
+ * and close itself on interaction. This is the same behaviour like
+ * a regular for a regular checkbox.
+ */
 public class CheckBoxCellEditor extends AbstractCellEditor {
 
+	/**
+	 * The current state of the checkbox stating the corresponding value.
+	 */
 	private boolean checked;
+	
+	/**
+	 * The editor control which is a Canvas that paints the corresponding
+	 * checkbox images. To adjust the look & feel for checkbox editors you need
+	 * to look at {@link CheckBoxPainter}
+	 */
 	private Canvas canvas;
 
 	/**
@@ -33,12 +50,73 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
 	 * checkbox image.
 	 */
 	@Override
-	protected Control activateCell(Composite parent, Object originalCanonicalValue, Character initialEditValue) {
+	protected Control activateCell(Composite parent, Object originalCanonicalValue) {
+		//if this editor was activated by clicking a letter or digit key, do nothing
+		if (originalCanonicalValue instanceof Character) {
+			return null;
+		}
+		
 		setCanonicalValue(originalCanonicalValue);
 
-		checked = !checked;
+		this.checked = !this.checked;
 
-		canvas = new Canvas(parent, SWT.NONE);
+		this.canvas = createEditorControl(parent);
+
+		commit(MoveDirectionEnum.NONE, false);
+
+		if (this.editMode == EditModeEnum.INLINE) {
+			// Close editor so will react to subsequent clicks on the cell
+			if (this.canvas != null && !this.canvas.isDisposed()) {
+				this.canvas.getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						close();
+					}
+				});
+			}
+		}
+		
+		return this.canvas;
+	}
+
+	@Override
+	public Boolean getEditorValue() {
+		return Boolean.valueOf(this.checked);
+	}
+
+	/**
+	 * Sets the given value to editor control. As this method is
+	 * called by {@link AbstractCellEditor#setCanonicalValue(Object)} the 
+	 * given value should be already a converted Boolean value. The only
+	 * other values accepted in here are <code>null</code> which is interpreted
+	 * as <code>false</code> and Strings than can be converted to Boolean
+	 * directly. Every other object will result in setting the editor value
+	 * to <code>false</code>.
+	 * @param value The display value to set to the wrapped editor control.
+	 */
+	@Override
+	public void setEditorValue(Object value) {
+		if (value == null) {
+			this.checked = false;
+		} 
+		else {
+			if (value instanceof Boolean) {
+				this.checked = ((Boolean)value).booleanValue();
+			} else if (value instanceof String) {
+				this.checked = Boolean.valueOf((String) value).booleanValue();
+			} else {
+				this.checked = false;
+			}
+		}
+	}
+
+	@Override
+	public Canvas getEditorControl() {
+		return this.canvas;
+	}
+
+	@Override
+	public Canvas createEditorControl(Composite parent) {
+		final Canvas canvas = new Canvas(parent, SWT.NONE);
 
 		canvas.addMouseListener(new MouseAdapter() {
 			@Override
@@ -48,55 +126,21 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
 			}
 		});
 
-		commit(MoveDirectionEnum.NONE, false);
-
-		if (editMode == EditModeEnum.INLINE) {
-			// Close editor so will react to subsequent clicks on the cell
-			if (canvas != null && !canvas.isDisposed()) {
-				canvas.getDisplay().asyncExec(new Runnable() {
-					public void run()
-					{
-						ActiveCellEditor.close();
-					}
-				});
-			}
-		}
-		
 		return canvas;
 	}
 
-	public Object getCanonicalValue() {
-		return getDataTypeConverter().displayToCanonicalValue(layerCell, configRegistry, Boolean.valueOf(checked));
-	}
-
-	public void setCanonicalValue(Object canonicalValue) {
-		if (canonicalValue == null) {
-			checked = false;
-		} else {
-			if (canonicalValue instanceof Boolean) {
-				checked = ((Boolean)canonicalValue).booleanValue();
-			}
-			Object convertedValue = null;
-			if (getDataTypeConverter() != null) {
-				convertedValue = getDataTypeConverter().canonicalToDisplayValue(layerCell, configRegistry, canonicalValue);
-			}
-			if (convertedValue instanceof String) {
-				checked = Boolean.valueOf((String) convertedValue).booleanValue();
-			} else if (convertedValue instanceof Boolean) {
-				checked = ((Boolean)convertedValue).booleanValue();
-			} else {
-				checked = false;
-			}
-		}
-	}
-
 	@Override
-	public void close() {
-		super.close();
-
-		if (canvas != null && !canvas.isDisposed()) {
-			canvas.dispose();
-		}
+	public boolean supportMultiEdit(IConfigRegistry configRegistry, List<String> configLabels) {
+		//as it doesn't make sense to open a subdialog for checkbox multi editing, this is not supported
+		return false;
 	}
-
+	
+	@Override
+	public boolean activateAtAnyPosition() {
+		//as the checkbox should only change its value if the icon that represents the checkbox is
+		//clicked, this method needs to return false so the IMouseEventMatcher can react on that.
+		//Note that on return false here creates the need to add a special matcher for this editor
+		//to be activated.
+		return false;
+	}
 }

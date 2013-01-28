@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.ui.mode;
 
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.DragModeEventHandler;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
@@ -60,7 +60,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 		if (singleClickAction != null) {
 			//convert/validate/commit/close possible open editor
 			//needed in case of conversion/validation errors to cancel any action
-			if (ActiveCellEditor.commit()) {
+			if (EditUtils.commitAndCloseActiveEditor()) {
 				if (exclusive && doubleClickAction != null) {
 					// If a doubleClick action is registered, wait to see if this mouseUp is part of a doubleClick or not.
 					singleClickRunnable = new SingleClickRunnable(singleClickAction, event);
@@ -79,7 +79,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	public void mouseDoubleClick(MouseEvent event) {
 		//convert/validate/commit/close possible open editor
 		//needed in case of conversion/validation errors to cancel any action
-		if (ActiveCellEditor.commit()) {
+		if (EditUtils.commitAndCloseActiveEditor()) {
 			if (doubleClickAction != null) {
 				if (singleClickRunnable != null) {
 					// Cancel any pending singleClick action.
@@ -97,7 +97,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	@Override
 	public synchronized void mouseMove(MouseEvent event) {
 		if (mouseDown && dragMode != null) {
-			if (ActiveCellEditor.commit()) {
+			if (EditUtils.commitAndCloseActiveEditor()) {
 				dragMode.mouseDown(natTable, initialMouseDownEvent);
 				switchMode(new DragModeEventHandler(getModeSupport(), natTable, dragMode));
 			}
@@ -113,7 +113,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	private void executeSingleClickAction(IMouseAction action, MouseEvent event) {
 		//convert/validate/commit/close possible open editor
 		//needed in case of conversion/validation errors to cancel any action
-		if (ActiveCellEditor.commit()) {
+		if (EditUtils.commitAndCloseActiveEditor()) {
 			event.data = NatEventData.createInstanceFromEvent(event);
 			action.run(natTable, event);
 			// Single click action complete. Switch back to normal mode.

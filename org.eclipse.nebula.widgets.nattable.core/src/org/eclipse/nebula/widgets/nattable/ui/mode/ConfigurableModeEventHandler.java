@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.ui.mode;
 
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
@@ -44,7 +44,7 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 	
 	@Override
 	public void mouseDown(MouseEvent event) {
-		if (ActiveCellEditor.commit()) {
+		if (EditUtils.commitAndCloseActiveEditor()) {
 			IMouseAction mouseDownAction = natTable.getUiBindingRegistry().getMouseDownAction(event);
 			if (mouseDownAction != null) {
 				event.data = NatEventData.createInstanceFromEvent(event);

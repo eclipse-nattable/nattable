@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -20,36 +21,71 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * The default location for the ControlDecoration is the top right of the editor. If the editor is located
- * such that the ControlDecoration would not be visible here (i.e. cell is at/extends beyond the right edge of
- * the NatTable) then the decoration is placed at the top left of the editor.
- *
+ * This class adds support for adding a {@link ControlDecoration} to the editor controls of a
+ * {@link ICellEditor}. It is currently only used by the {@link TextCellEditor}.
+ * <p>
+ * The default location for the {@link ControlDecoration} is the top right of the editor. 
+ * If the editor is located such that the {@link ControlDecoration} would not be visible here 
+ * (i.e. cell is at/extends beyond the right edge of the NatTable) then the decoration is placed 
+ * at the top left of the editor.
+ * <p>
  * The location can be overridden, in which case the above behaviour does not get used.
  */
-public class ControlDecorationProvider
-{
+public class ControlDecorationProvider {
+	/**
+	 * The String to determine the {@link FieldDecoration} to use by the {@link ControlDecoration}
+	 * that is provided by this {@link ControlDecorationProvider}.
+	 */
 	private final String fieldDecorationId;
+	/**
+	 * Flag to determine whether this provider is enabled to add {@link ControlDecoration}s or not.
+	 */
 	private boolean errorDecorationEnabled;
+	/**
+	 * The created {@link ControlDecoration} if this provider created one.
+	 */
 	private ControlDecoration errorDecoration;
+	/**
+	 * The text to be shown as a description for the decoration, or
+	 * <code>null</code> if none has been set.
+	 */
 	private String errorDecorationText;
+	/**
+	 * The position configuration where the decoration should be rendered relative to the control
+	 * that should be decorated.
+	 */
 	private int decorationPositionOverride;
 	
+	/**
+	 * Create a default {@link ControlDecorationProvider} for handling
+	 * error decorations.
+	 */
 	public ControlDecorationProvider() {
 		this(FieldDecorationRegistry.DEC_ERROR);
 	}
 	
 	/**
-	 * @param fieldDecorationId see #FieldDecorationRegistry
+	 * @param fieldDecorationId The field decoration to use by this provider.
+	 * @see FieldDecorationRegistry
 	 */
 	public ControlDecorationProvider(String fieldDecorationId) {
 		this.fieldDecorationId = fieldDecorationId;
 		this.decorationPositionOverride = SWT.DEFAULT;
 	}
 	
+	/**
+	 * Enables/disables the error decoration.
+	 * @param enabled <code>true</code> if a decoration should be added, <code>false</code> if not.
+	 */
 	public void setErrorDecorationEnabled(boolean enabled) {
 		errorDecorationEnabled = enabled;
 	}
 	
+	/**
+	 * @param errorText the text to be shown as a description for the decoration, or
+	 * 			<code>null</code> if none has been set.
+	 * @see ControlDecoration#setDescriptionText(String)
+	 */
 	public void setErrorDecorationText(String errorText) {
 		errorDecorationText = errorText;
 		if (errorDecoration != null) {
@@ -57,6 +93,13 @@ public class ControlDecorationProvider
 		}
 	}
 	
+	/**
+	 * Will show the control decoration adding the given text as description text.
+	 * @param errorText the text to be shown in the info hover, or <code>null</code>
+	 * 			if no text should be shown.
+	 * @see ControlDecoration#show()
+	 * @see ControlDecoration#showHoverText(String)
+	 */
 	public void showErrorDecorationHover(String errorText) {
 		if (errorDecoration != null) {
 			errorDecoration.show();
@@ -64,22 +107,41 @@ public class ControlDecorationProvider
 		}
 	}
 	
+	/**
+	 * Set the position configuration where the decoration should be rendered relative to the control
+	 * that should be decorated.
+	 * @param decorationPositionOverride bit-wise or of position constants (<code>SWT.TOP</code>,
+	 * 			<code>SWT.BOTTOM</code>, <code>SWT.LEFT</code>,
+	 * 			<code>SWT.RIGHT</code>, and <code>SWT.CENTER</code>).
+	 */
 	public void setDecorationPositionOverride(int decorationPositionOverride) {
 		this.decorationPositionOverride = decorationPositionOverride;
 	}
 
+	/**
+	 * Will show the control decoration.
+	 * @see ControlDecoration#show()
+	 */
 	public void showDecoration() {
 		if (errorDecoration != null) {
 			errorDecoration.show();
 		}
 	}
 	
+	/**
+	 * Will hide the control decoration.
+	 * @see ControlDecoration#hide()
+	 */
 	public void hideDecoration() {
 		if (errorDecoration != null) {
 			errorDecoration.hide();
 		}
 	}
 	
+	/**
+	 * Ensure to hide the decoration and dispose any resources related to the 
+	 * {@link ControlDecoration}
+	 */
 	public void dispose() {
 		if (errorDecoration != null) {
 			errorDecoration.hide();
@@ -88,15 +150,20 @@ public class ControlDecorationProvider
 		}
 	}
 
+	/**
+	 * If showing an error decoration is enabled, this method will create and add a {@link ControlDecoration}
+	 * for the given {@link Control} by using the configured information.
+	 * @param controlToDecorate The {@link Control} to create the decoration for.
+	 */
 	public void createErrorDecorationIfRequired(final Control controlToDecorate) {
 		
 		if (errorDecorationEnabled) {
 			
 			final Image errorImage = FieldDecorationRegistry.getDefault().getFieldDecoration(fieldDecorationId).getImage();
 			if (decorationPositionOverride == SWT.DEFAULT) {
-				
 				controlToDecorate.addPaintListener(new PaintListener() { // Using a PaintListener as bounds are only set AFTER activateCell()
 					
+					@Override
 					public void paintControl(PaintEvent e) {
 						
 						controlToDecorate.removePaintListener(this);
@@ -117,6 +184,17 @@ public class ControlDecorationProvider
 		}
 	}
 
+	/**
+	 * Will create a new {@link ControlDecoration} for the given {@link Control}. Setting position, image
+	 * and text to the decoration, hiding it initially.
+	 * @param controlToDecorate The {@link Control} to create the decoration for.
+	 * @param errorImage The image to be shown adjacent to the control. Should never be
+	 * 			<code>null</code>.
+	 * @param position bit-wise or of position constants (<code>SWT.TOP</code>,
+	 * 			<code>SWT.BOTTOM</code>, <code>SWT.LEFT</code>,
+	 * 			<code>SWT.RIGHT</code>, and <code>SWT.CENTER</code>).
+	 * @return The created {@link ControlDecoration}
+	 */
 	private ControlDecoration newControlDecoration(Control controlToDecorate, Image errorImage, int position) {
 		final ControlDecoration errorDecoration = new ControlDecoration(controlToDecorate, position);
 		errorDecoration.setImage(errorImage);

@@ -68,9 +68,9 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
 			}
 			writeMethod.invoke(rowObj, newValue);
 		} catch (IllegalArgumentException ex) {
-			System.err.println("Data type being set does not match the data type of the setter method in the backing bean"); //$NON-NLS-1$
+			log.error("Data type being set does not match the data type of the setter method in the backing bean", ex); //$NON-NLS-1$
 		} catch (Exception e) {
-			log.warn(e);
+			log.error(e);
 			throw new RuntimeException("Error while setting data value"); //$NON-NLS-1$
 		}
 	};

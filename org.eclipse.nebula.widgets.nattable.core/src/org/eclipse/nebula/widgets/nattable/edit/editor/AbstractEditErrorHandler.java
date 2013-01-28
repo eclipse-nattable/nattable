@@ -11,23 +11,46 @@
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 /**
- * Abstract implementation of IEditErrorHandler that by default calls
- * the underlying IEditErrorHandler to handle the error.
+ * Abstract implementation of {@link IEditErrorHandler} that by default calls
+ * the underlying {@link IEditErrorHandler} to handle the error. This allows
+ * chaining of {@link IEditErrorHandler}s to support multiple error handling
+ * behaviour, e.g. displaying the error in a dialog and log the error.
+ * 
+ * @author Dirk Fauth
  */
 public abstract class AbstractEditErrorHandler implements IEditErrorHandler {
 
+	/**
+	 * The underlying {@link IEditErrorHandler}
+	 */
 	protected IEditErrorHandler underlyingErrorHandler;
 	
+	/**
+	 * 
+	 * @param underlyingErrorHandler The underlying {@link IEditErrorHandler}
+	 */
 	public AbstractEditErrorHandler(IEditErrorHandler underlyingErrorHandler) {
 		this.underlyingErrorHandler = underlyingErrorHandler;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * This implementation will call its underlying {@link IEditErrorHandler}.
+	 */
+	@Override
 	public void removeError(ICellEditor cellEditor) {
 		if (underlyingErrorHandler != null) {
 			underlyingErrorHandler.removeError(cellEditor);
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * This implementation will call its underlying {@link IEditErrorHandler}.
+	 */
+	@Override
 	public void displayError(ICellEditor cellEditor, Exception e) {
 		if (underlyingErrorHandler != null) {
 			underlyingErrorHandler.displayError(cellEditor, e);

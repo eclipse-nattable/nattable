@@ -11,7 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.viewport;
 
 
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.SWT;
@@ -53,7 +53,9 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		boolean handle = true;
 		
 		if (!this.dragging) {
-			handle = ActiveCellEditor.commit();
+			if (EditUtils.commitAndCloseActiveEditor()) {
+				handle = false;
+			}
 		}
 		if (event.detail == SWT.DRAG) {
 			this.dragging = true;

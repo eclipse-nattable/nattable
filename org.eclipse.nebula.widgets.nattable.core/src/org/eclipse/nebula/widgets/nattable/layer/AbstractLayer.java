@@ -188,6 +188,15 @@ public abstract class AbstractLayer implements ILayer {
 	public void removeLayerListener(ILayerListener listener) {
 		listeners.remove(listener);
 	}
+	
+	public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass) {
+		for (ILayerListener listener : listeners) {
+			if (listener.getClass().equals(layerListenerClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Handle layer event notification. Convert it to your context

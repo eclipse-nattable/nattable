@@ -66,7 +66,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
 	 * @Override
 	 */
 	public String getDescription() {
-		return "Demontrates how to implement a log viewer using NatTable with the percentage " +
+		return "Demonstrates how to implement a log viewer using NatTable with the percentage " +
 				"sizing and the automatic row height calculation feature. If you resize the " +
 				"window you will see the rows growing/shrinking to always show the whole content " +
 				"by wrapping the text and resizing the row heights.";

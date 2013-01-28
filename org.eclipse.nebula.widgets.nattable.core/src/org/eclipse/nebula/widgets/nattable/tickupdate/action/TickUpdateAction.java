@@ -10,20 +10,33 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tickupdate.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.tickupdate.command.TickUpdateCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
+/**
+ * {@link IKeyAction} that will execute the {@link TickUpdateCommand}
+ * with the additional information if the update increments or decrements
+ * the current value.
+ */
 public class TickUpdateAction implements IKeyAction {
 
+	/**
+	 * Flag to determine whether the current value in the data model
+	 * should be incremented or decremented. 
+	 */
 	private final boolean increment;
 
+	/**
+	 * @param increment Flag to determine whether the current value in the data model
+	 * 			should be incremented or decremented. 
+	 */
 	public TickUpdateAction(boolean increment) {
 		this.increment = increment;
 	}
 
+	@Override
 	public void run(NatTable natTable, KeyEvent event) {
 		natTable.doCommand(new TickUpdateCommand(natTable.getConfigRegistry(), increment));
 	}

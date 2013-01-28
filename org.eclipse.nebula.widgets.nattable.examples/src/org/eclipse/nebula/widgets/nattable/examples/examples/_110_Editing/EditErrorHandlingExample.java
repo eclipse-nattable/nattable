@@ -29,15 +29,23 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.DialogErrorHandling;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.NumberValues;
+import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 
 public class EditErrorHandlingExample extends AbstractNatExample {
+
+	public static void main(String[] args) throws Exception {
+		StandaloneNatExampleRunner.run(1024, 400, new EditErrorHandlingExample());
+	}
 
 	@Override
 	public String getDescription() {
@@ -148,6 +156,7 @@ class TableEditConfiguration extends AbstractRegistryConfiguration  {
 		configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, getExceptionValidator(), DisplayMode.EDIT, EditErrorHandlingExample.COLUMN_FIVE_LABEL);
 		
 		registerErrorHandlingStrategies(configRegistry);
+		registerErrorHandlingStyles(configRegistry);
 	}
 
 	private void registerErrorHandlingStrategies(IConfigRegistry configRegistry) {
@@ -163,6 +172,24 @@ class TableEditConfiguration extends AbstractRegistryConfiguration  {
 		configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_HANDLER, 
 				new DialogErrorHandling(), DisplayMode.EDIT, EditErrorHandlingExample.COLUMN_FOUR_LABEL);
 
+	}
+	
+	private void registerErrorHandlingStyles(IConfigRegistry configRegistry) {
+		//this is needed to support different styling on just in time conversion/validation
+		//error rendering in a text editor
+		Style conversionErrorStyle = new Style();
+		conversionErrorStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_RED);
+		conversionErrorStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_WHITE);
+		
+		configRegistry.registerConfigAttribute(EditConfigAttributes.CONVERSION_ERROR_STYLE, 
+				conversionErrorStyle, DisplayMode.EDIT, EditErrorHandlingExample.COLUMN_TWO_LABEL);
+
+		Style validationErrorStyle = new Style();
+		validationErrorStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_BLACK);
+		validationErrorStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_WHITE);
+		
+		configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_STYLE, 
+				validationErrorStyle, DisplayMode.EDIT, EditErrorHandlingExample.COLUMN_TWO_LABEL);
 	}
 	
 	private IDataValidator getExampleValidator() {

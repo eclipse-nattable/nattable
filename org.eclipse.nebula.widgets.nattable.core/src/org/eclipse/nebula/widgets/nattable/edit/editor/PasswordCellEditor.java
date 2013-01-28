@@ -12,12 +12,14 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 import org.eclipse.nebula.widgets.nattable.painter.cell.PasswordTextPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
-import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Specialized {@link TextCellEditor} that sets the echo char of the text control used by
+ * Specialised {@link TextCellEditor} that sets the echo char of the text control used by
  * this editor to a configured character. You can configure the echo character by setting
  * the attribute {@link CellStyleAttributes#PASSWORD_ECHO_CHAR} to the cell style to use. 
  * If there is no echo character configured, the bullet character will be used.
@@ -31,21 +33,34 @@ import org.eclipse.swt.widgets.Text;
  */
 public class PasswordCellEditor extends TextCellEditor {
 
+	/**
+	 * Creates a PasswordCellEditor that will not commit a value on pressing the up or the down key.
+	 */
 	public PasswordCellEditor() {
 		this(false);
 	}
 	
-	public PasswordCellEditor(boolean commitOnUpOrDownCursorKeyPress) {
-		super(commitOnUpOrDownCursorKeyPress);
+	/**
+	 * Creates a PasswordCellEditor.
+	 * @param commitOnUpDown Flag to configure whether the editor should commit and move the selection 
+	 * 			in the corresponding way if the up or down key is pressed.
+	 */
+	public PasswordCellEditor(boolean commitOnUpDown) {
+		super(commitOnUpDown);
 	}
 
 	@Override
-	protected Text createTextControl(Composite parent) {
-		final Text textControl = super.createTextControl(parent);
+	public Text createEditorControl(Composite parent) {
+		int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.PASSWORD;
+		if (this.editMode == EditModeEnum.DIALOG) {
+			style = style | SWT.BORDER;
+		}
+
+		final Text textControl = super.createEditorControl(
+				parent, style);
 		
 		//search for the configured echo character within the ConfigRegistry
-		IStyle cellStyle = getCellStyle();
-		Character configEchoChar = cellStyle.getAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR);
+		Character configEchoChar = this.cellStyle.getAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR);
 		//set the echo char of the Text control to the configured one or if there is
 		//none configured, set the bullet char
 		textControl.setEchoChar(configEchoChar != null ? configEchoChar : '\u2022');

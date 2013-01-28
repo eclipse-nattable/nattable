@@ -21,6 +21,8 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.events.MouseEvent;
 
+//Use the CellEditorMouseEventMatcher instead
+@Deprecated
 public class BodyCellEditorMouseEventMatcher implements IMouseEventMatcher {
 
 	private Class<?> cellEditorClass;

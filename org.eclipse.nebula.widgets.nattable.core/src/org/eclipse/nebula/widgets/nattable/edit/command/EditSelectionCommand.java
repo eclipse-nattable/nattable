@@ -10,42 +10,89 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.swt.widgets.Composite;
 
+/**
+ * Command that will trigger activating the edit mode for the current selection.
+ * The corresponding command handler is responsible for determining if activation
+ * should proceed because of race conditions like e.g. the cell is configured to 
+ * be editable or another editor is active containing an invalid data.
+ */
 public class EditSelectionCommand extends AbstractContextFreeCommand {
 	
+	/**
+	 * The {@link IConfigRegistry} containing the configuration of the current NatTable 
+	 * instance the command should be executed for.
+	 * <p>
+	 * This is necessary because the edit controllers in the current architecture
+	 * are not aware of the instance they are running in.
+	 */
 	private final IConfigRegistry configRegistry;
-	
+	/**
+	 * The Character represented by the key that was typed in case this command
+	 * should be executed because of typing a letter or digit key. Can be <code>null</code> 
+	 * if this command should be executed because of a pressed control key (like F2) or a 
+	 * programmatical execution.
+	 */
 	private final Character character;
-
+	/**
+	 * The parent Composite, needed for the creation of the editor control.
+	 */
 	private final Composite parent;
 
-    private final boolean useAdjustOnMultiCellEdit;
+	/**
+	 * @param parent The parent Composite, needed for the creation of the editor control.
+	 * @param configRegistry The {@link IConfigRegistry} containing the configuration of the
+	 * 			current NatTable instance the command should be executed for.
+	 * 			This is necessary because the edit controllers in the current architecture
+	 * 			are not aware of the instance they are running in.
+	 */
+	public EditSelectionCommand(Composite parent, IConfigRegistry configRegistry) {
+		this(parent, configRegistry, null);
+	}
 
-	public EditSelectionCommand(Composite parent, IConfigRegistry configRegistry, Character character, boolean useAdjustOnMultiCellEdit) {
+	/**
+	 * @param parent The parent Composite, needed for the creation of the editor control.
+	 * @param configRegistry The {@link IConfigRegistry} containing the configuration of the
+	 * 			current NatTable instance the command should be executed for.
+	 * 			This is necessary because the edit controllers in the current architecture
+	 * 			are not aware of the instance they are running in.
+	 * @param character The Character represented by the key that was typed in case this command
+	 * 			should be executed because of typing a letter or digit key. Can be <code>null</code> 
+	 * 			if this command should be executed because of a pressed control key (like F2) or a 
+	 * 			programmatical execution.
+	 */
+	public EditSelectionCommand(Composite parent, IConfigRegistry configRegistry, Character character) {
 		this.parent = parent;
 		this.configRegistry = configRegistry;
 		this.character = character;
-        this.useAdjustOnMultiCellEdit = useAdjustOnMultiCellEdit;
 	}
 
+	/**
+	 * @return The {@link IConfigRegistry} containing the configuration of the current NatTable 
+	 * 			instance the command should be executed for.
+	 */
 	public IConfigRegistry getConfigRegistry() {
 		return configRegistry;
 	}
 	
+	/**
+	 * @return The Character represented by the key that was typed in case this command
+	 * 			should be executed because of typing a letter or digit key. Can be <code>null</code> 
+	 * 			if this command should be executed because of a pressed control key (like F2) or a 
+	 * 			programmatical execution.
+	 */
 	public Character getCharacter() {
 		return character;
 	}
 	
+	/**
+	 * @return The parent Composite, needed for the creation of the editor control.
+	 */
 	public Composite getParent() {
 		return parent;
-	}
-	
-	public boolean isUseAdjustOnMultiCellEdit() {
-	    return useAdjustOnMultiCellEdit;
 	}
 	
 }

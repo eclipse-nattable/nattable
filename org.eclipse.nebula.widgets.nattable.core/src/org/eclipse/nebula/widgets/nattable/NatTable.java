@@ -17,27 +17,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.ScrollBar;
-
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -47,8 +29,6 @@ import org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain;
 import org.eclipse.nebula.widgets.nattable.conflation.IEventConflater;
 import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.InlineCellEditController;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -71,6 +51,24 @@ import org.eclipse.nebula.widgets.nattable.ui.mode.ModeSupport;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBarsCommand;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
 
 public class NatTable extends Canvas implements ILayer, PaintListener, IClientAreaProvider, ILayerListener, IPersistable {
 
@@ -159,9 +157,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			public void widgetDisposed(DisposeEvent e) {
 				doCommand(new DisposeResourcesCommand());
 				conflaterChain.stop();
-				InlineCellEditController.dispose();
-				ActiveCellEditor.close();
-				
 				layer.dispose();
 			}
 
@@ -489,6 +484,14 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		return underlyingLayer.doCommand(command);
 	}
 
+	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
+		underlyingLayer.registerCommandHandler(commandHandler);
+	}
+
+	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
+		underlyingLayer.unregisterCommandHandler(commandClass);
+	}
+	
 	// Events
 
 	private final List<ILayerListener> listeners = new ArrayList<ILayerListener>();
@@ -503,6 +506,15 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	public void removeLayerListener(ILayerListener listener) {
 		listeners.remove(listener);
+	}
+	
+	public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass) {
+		for (ILayerListener listener : listeners) {
+			if (listener.getClass().equals(layerListenerClass)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// Columns

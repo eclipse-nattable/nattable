@@ -14,7 +14,8 @@ public class DefaultNumericDataValidator extends DataValidator {
 
 	public boolean validate(int columnIndex, int rowIndex, Object newValue) {
 		try {
-			new Double(newValue.toString());
+			if (newValue != null)
+				new Double(newValue.toString());
 		} catch (Exception e) {
 			return false;
 		}

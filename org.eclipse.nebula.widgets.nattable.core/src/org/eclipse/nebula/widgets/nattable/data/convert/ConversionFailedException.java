@@ -21,7 +21,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
  * The handling of this exception is done within {@link AbstractCellEditor}
  * where the message is stored and showed within a dialog on trying to commit.
  * 
- * @author fipro
+ * @author Dirk Fauth
  *
  */
 public class ConversionFailedException extends RuntimeException {

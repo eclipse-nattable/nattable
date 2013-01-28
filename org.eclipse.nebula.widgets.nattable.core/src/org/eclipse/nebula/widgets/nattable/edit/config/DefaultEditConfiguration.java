@@ -19,12 +19,24 @@ import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.event.InlineCellEditEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.style.IStyle;
-import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
+/**
+ * Default configuration for edit behaviour in a NatTable.
+ * Will register the {@link EditCellCommandHandler} and the {@link InlineCellEditEventHandler}
+ * to the layer this configuration is added to. Usually this configuration is added to 
+ * a GridLayer.
+ * <p>
+ * It also registers default values on top-level for the following {@link EditConfigAttributes}:
+ * <ul>
+ * <li>{@link EditConfigAttributes#CELL_EDITABLE_RULE} - IEditableRule.NEVER_EDITABLE<br>
+ * by default a NatTable is not editable</li>
+ * <li>{@link EditConfigAttributes} - {@link TextCellEditor}<br>
+ * by default a TextCellEditor will be used for editing cells in a NatTable</li>
+ * <li>{@link EditConfigAttributes} - {@link DefaultDataValidator}<br>
+ * by default a validator is registered that always returns <code>true</code>, regardless of the 
+ * entered value</li>
+ * </ul>
+ */
 public class DefaultEditConfiguration extends AbstractLayerConfiguration<AbstractLayer> {
 
 	@Override
@@ -38,10 +50,6 @@ public class DefaultEditConfiguration extends AbstractLayerConfiguration<Abstrac
 		configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE);
 		configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, new TextCellEditor());
 		configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, new DefaultDataValidator());
-		
-		IStyle validationErrorStyle = new Style();
-		validationErrorStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_RED);
-		configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_STYLE, validationErrorStyle, DisplayMode.NORMAL, EditStyleLabels.VALIDATION_ERROR_STYLE);
 	}
 	
 }

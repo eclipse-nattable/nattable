@@ -10,12 +10,18 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
+/**
+ * Action that will execute an {@link EditCellCommand}.
+ * It determines the cell to edit by mouse pointer coordinates
+ * instead of using a SelectionLayer. So this action is also
+ * working in NatTables that doesn't have a SelectionLayer in
+ * its composition of layers.
+ */
 public class MouseEditAction implements IMouseAction {
 
 	public void run(NatTable natTable, MouseEvent event) {

@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -121,6 +122,10 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 */
 	public boolean doCommand(ILayerCommand command);
 
+	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler);
+
+	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass);
+	
 	// Events
 
 	/**
@@ -135,6 +140,14 @@ public interface ILayer extends ILayerListener, IPersistable {
 	public void addLayerListener(ILayerListener listener);
 
 	public void removeLayerListener(ILayerListener listener);
+	
+	/**
+	 * @param layerListenerClass The type of {@link ILayerListener} to check for existence
+	 * @return <code>true</code> if this {@link ILayer} has a {@link ILayerListener}
+	 * 			registered for the specified type, <code>false</code> if there is
+	 * 			no such listener registered already
+	 */
+	public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass);
 
 	public ILayerPainter getLayerPainter();
 

@@ -10,22 +10,63 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.event;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.swt.widgets.Composite;
 
+/**
+ * This event is used to activate an editor inline.
+ * It is used internally if a single cell should be edited by selection,
+ * e.g. on pressing the F2 key on the current selected cell.
+ * <p>
+ * This event is needed to do the translation of the coordinates and 
+ * bounds needed for inline editing. On activating an editor via selection
+ * these informations are not known and need to be evaluated through the
+ * layer event handlers.
+ */
 public class InlineCellEditEvent implements ILayerEvent {
 
-	private final PositionCoordinate cellCoordinate;
+	/**
+	 * The layer the cellCoordinates rely on. The layer will change on
+	 * event processing to always match the translated coordinates.
+	 */
 	private ILayer layer;
+	/**
+	 * The coordinates of the cell to edit for the set layer.
+	 */
+	private final PositionCoordinate cellCoordinate;
+	/**
+	 * The parent Composite, needed for the creation of the editor control.
+	 */
 	private final Composite parent;
+	/**
+	 * The {@link IConfigRegistry} containing the configuration of the
+	 * current NatTable instance the command should be executed for.
+	 * This is necessary because the edit controllers in the current architecture
+	 * are not aware of the instance they are running in.
+	 */
 	private final IConfigRegistry configRegistry;
-	private final Character initialValue;
+	/**
+	 * The value that should be put to the activated editor control.
+	 */
+	private final Object initialValue;
 
-	public InlineCellEditEvent(ILayer layer, PositionCoordinate cellCoordinate, Composite parent, IConfigRegistry configRegistry, Character initialValue) {
+	/**
+	 * 
+	 * @param layer The layer the cellCoordinates rely on.
+	 * @param cellCoordinate The coordinates of the cell to edit for the set layer.
+	 * @param parent The parent Composite, needed for the creation of the editor control.
+	 * @param configRegistry The {@link IConfigRegistry} containing the configuration of the
+	 * 			current NatTable instance the command should be executed for.
+	 * 			This is necessary because the edit controllers in the current architecture
+	 * 			are not aware of the instance they are running in.
+	 * @param initialValue The value that should be put to the activated editor control. 
+	 */
+	public InlineCellEditEvent(ILayer layer, PositionCoordinate cellCoordinate, Composite parent, 
+			IConfigRegistry configRegistry, Object initialValue) {
+		
 		this.layer = layer;
 		this.cellCoordinate = cellCoordinate;
 		this.parent = parent;
@@ -33,6 +74,7 @@ public class InlineCellEditEvent implements ILayerEvent {
 		this.initialValue = initialValue;
 	}
 	
+	@Override
 	public boolean convertToLocal(ILayer localLayer) {
 		cellCoordinate.columnPosition = localLayer.underlyingToLocalColumnPosition(layer, cellCoordinate.columnPosition);
 		if (cellCoordinate.columnPosition < 0 || cellCoordinate.columnPosition >= localLayer.getColumnCount()) {
@@ -48,26 +90,45 @@ public class InlineCellEditEvent implements ILayerEvent {
 		return true;
 	}
 
+	/**
+	 * @return The column position of the cell to edit.
+	 */
 	public int getColumnPosition() {
 		return cellCoordinate.columnPosition;
 	}
 	
+	/**
+	 * @return The row position of the cell to edit.
+	 */
 	public int getRowPosition() {
 		return cellCoordinate.rowPosition;
 	}
 	
+	/**
+	 * @return The parent Composite, needed for the creation of the editor control.
+	 */
 	public Composite getParent() {
 		return parent;
 	}
 	
+	/**
+	 * @return The {@link IConfigRegistry} containing the configuration of the
+	 * 			current NatTable instance the command should be executed for.
+	 * 			This is necessary because the edit controllers in the current architecture
+	 * 			are not aware of the instance they are running in.
+	 */
 	public IConfigRegistry getConfigRegistry() {
 		return configRegistry;
 	}
 	
-	public Character getInitialValue() {
+	/**
+	 * @return The value that should be put to the activated editor control.
+	 */
+	public Object getInitialValue() {
 		return initialValue;
 	}
 	
+	@Override
 	public InlineCellEditEvent cloneEvent() {
 		return new InlineCellEditEvent(layer, cellCoordinate, parent, configRegistry, initialValue);
 	}

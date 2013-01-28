@@ -10,36 +10,52 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.IMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
+ * Interface for implementing editors that can be used in a NatTable.
+ * Such an editor is mainly a wrapper for a native SWT control, providing
+ * additional functionality to support NatTable specific handling, e.g.
+ * conversion, validation, model updates.
+ * 
  * Implementations are responsible for capturing new cell value during cell edit. 
  */
 public interface ICellEditor {
 	
 	/**
-	 * Invoked by the action handlers to initialize the editor
-	 * @param parent
-	 * @param originalCanonicalValue of the cell being edited
-	 * @param initialEditValue the initial key press char which triggered editing
-	 * @param editMode the edit mode inline or multi
-	 * @param editHandler the edit handler to use
-	 * @param cell the cell that is edited
-	 * @param configRegistry
-	 * @return the SWT {@link Control} to be used for capturing the new cell value
+	 * This method will be called by the framework to activate this cell editor.
+	 * It initializes the the values needed for further processing of the editor
+	 * and will add listeners for general behaviour of the editor control.
+	 * @param parent The parent Composite, needed for the creation of the editor control.
+	 * @param originalCanonicalValue The value that should be put to the activated editor
+	 * 			control.
+	 * @param editMode The {@link EditModeEnum} which is used to activate special behaviour
+	 * 			and styling. This is needed because activating an editor inline will have
+	 * 			different behaviour (e.g. moving the selection after commit) and styling
+	 * 			than rendering the editor on a subdialog.
+	 * @param editHandler The {@link ICellEditHandler} that will be used on commit.
+	 * @param cell The cell whose corresponding editor should be activated.
+	 * @param configRegistry The {@link IConfigRegistry} containing the configuration of the
+	 * 			current NatTable instance.
+	 * 			This is necessary because the editors in the current architecture
+	 * 			are not aware of the NatTable instance they are running in.
+	 * @return The SWT {@link Control} to be used for capturing the new cell value.
 	 */
 	public Control activateCell(
 			Composite parent,
 			Object originalCanonicalValue,
-			Character initialEditValue,
 			EditModeEnum editMode,
 			ICellEditHandler editHandler,
 			ILayerCell cell,
@@ -47,22 +63,217 @@ public interface ICellEditor {
 	);
 	
 	/**
-	 * @param canonicalValue the data value to be set in the backing bean.
-	 * Note: This should be converted using the {@link IDisplayConverter} for display.
+	 * Returns the current value in this editor prior to conversion.
+	 * For a text editor that is used to edit integer values, this would mean
+	 * it returns the text value instead of the converted integer value.
+	 * This method is only intended to be used internally .
+	 * @return The current value in this editor prior to conversion.
 	 */
-	public void setCanonicalValue(Object canonicalValue);
+	Object getEditorValue();
 	
-	public Object getCanonicalValue();
+	/**
+	 * Sets the given value to editor control. This method is used to put the display
+	 * values to the wrapped editor.
+	 * @param value The display value to set to the wrapped editor control.
+	 */
+	void setEditorValue(Object value);
+	
+	/**
+	 * Converts the current value in this editor using the configured {@link IDisplayConverter}.
+	 * If there is no {@link IDisplayConverter} registered for this editor, the value itself 
+	 * will be returned.
+	 * @return The canonical value after converting the current value or the value itself
+	 * 			if no {@link IDisplayConverter} is configured.
+	 * @throws RuntimeException for conversion failures. As the {@link IDisplayConverter} interface
+	 * 			does not specify throwing checked Exceptions on converting data, only unchecked
+	 * 			Exceptions can occur. This is needed to stop further commit processing if the
+	 * 			conversion failed.
+	 * @see IDisplayConverter
+	 */
+	Object getCanonicalValue();
+	
+	/**
+	 * Converts the current value in this editor using the configured {@link IDisplayConverter}.
+	 * If there is no {@link IDisplayConverter} registered for this editor, the value itself 
+	 * will be returned. Will use the specified {@link IEditErrorHandler} for handling 
+	 * conversion errors.
+	 * @param conversionErrorHandler The error handler that will be activated in case of 
+	 * 			conversion errors.
+	 * @return The canonical value after converting the current value or the value itself
+	 * 			if no {@link IDisplayConverter} is configured.
+	 * @throws RuntimeException for conversion failures. As the {@link IDisplayConverter} interface
+	 * 			does not specify throwing checked Exceptions on converting data, only unchecked
+	 * 			Exceptions can occur. This is needed to stop further commit processing if the
+	 * 			conversion failed.
+	 * @see IDisplayConverter
+	 */
+	Object getCanonicalValue(IEditErrorHandler conversionErrorHandler);
+	
+	/**
+	 * Sets the given canonical value to the wrapped editor control. Prior to setting the
+	 * value it needs to be converted to the display value, using the configured {@link IDisplayConverter}.
+	 * @param canonicalValue The canonical value to be set to the wrapped editor control.
+	 */
+	void setCanonicalValue(Object canonicalValue);
 
-	public boolean validateCanonicalValue();
-	public boolean validateCanonicalValue(IEditErrorHandler conversionErrorHandler, IEditErrorHandler validationErrorHandler);
+	/**
+	 * Validates the given value using the configured {@link IDataValidator}. This method should
+	 * be called with the value converted before by using {@link ICellEditor#getCanonicalValue()}.
+	 * @param canonicalValue The canonical value to validate.
+	 * @return <code>true</code> if the current value in this editor is valid or no 
+	 * 			{@link IDataValidator} is registered, <code>false</code> if the value is not valid.
+	 */
+	boolean validateCanonicalValue(Object canonicalValue);
+
+	/**
+	 * Validates the current value in this editor using the configured {@link IDataValidator}.
+	 * Validates the given value using the configured {@link IDataValidator}. This method should
+	 * be called with the value converted before by using {@link ICellEditor#getCanonicalValue()}.
+	 * Will use the specified {@link IEditErrorHandler} for handling validation errors.
+	 * @param canonicalValue The canonical value to validate.
+	 * @param validationErrorHandler The error handler that will be activated in case of 
+	 * 			validation errors.
+	 * @return <code>true</code> if the current value in this editor is valid or no 
+	 * 			{@link IDataValidator} is registered, <code>false</code> if the value is not valid.
+	 */
+	public boolean validateCanonicalValue(Object canonicalValue, IEditErrorHandler validationErrorHandler);
 	
-	public boolean commit(MoveDirectionEnum direction, boolean closeAfterCommit);
+	/**
+	 * Commits the current value of this editor. 
+	 * Will first try to convert and validate the current value, and if that succeeds and
+	 * the value can be committed to the data model, the editor will be closed afterwards.
+	 * @param direction The direction the selection within the NatTable should move
+	 * 			after commit has finished.
+	 * @return <code>true</code> if the commit operation succeeded,
+	 * 			<code>false</code> if the current value could not be committed.
+	 * 			A value might not be committed for example if the conversion or
+	 * 			the validation failed.
+	 */
+	boolean commit(MoveDirectionEnum direction);
+
+	/**
+	 * Commits the current value of this editor. 
+	 * Will first try to convert the current value. Then it is checked if the validation
+	 * should be executed which can be specified via parameter. If that succeeds and
+	 * the value can be committed to the data model, the editor will be closed afterwards.
+	 * @param direction The direction the selection within the NatTable should move
+	 * 			after commit has finished.
+	 * @param closeAfterCommit flag to tell whether this editor needs to closed after
+	 * 			the commit or if it should stay open.
+	 * @return <code>true</code> if the commit operation succeeded,
+	 * 			<code>false</code> if the current value could not be committed.
+	 * 			A value might not be committed for example if the conversion or
+	 * 			the validation failed.
+	 */
+	boolean commit(MoveDirectionEnum direction, boolean closeAfterCommit);
+	
+	/**
+	 * Commits the current value of this editor.
+	 * @param direction The direction the selection within the NatTable should move
+	 * 			after commit has finished.
+	 * @param closeAfterCommit flag to tell whether this editor needs to closed after
+	 * 			the commit or if it should stay open.
+	 * @param skipValidation Flag to specify whether the current value in this editor
+	 * 			should be validated or not.
+	 * @return <code>true</code> if the commit operation succeeded,
+	 * 			<code>false</code> if the current value could not be committed.
+	 * 			A value might not be committed for example if the conversion or
+	 * 			the validation failed.
+	 */
+	boolean commit(MoveDirectionEnum direction, boolean closeAfterCommit, boolean skipValidation);
 
 	/**
 	 * Close/dispose the contained {@link Control}
 	 */
-	public void close();
+	void close();
 
-	public boolean isClosed();
+	/**
+	 * @return <code>true</code> if this editor has been closed already,
+	 * 			<code>false</code> if it is still open
+	 */
+	boolean isClosed();
+	
+	/**
+	 * @return The editor control that is wrapped by this ICellEditor.
+	 */
+	Control getEditorControl();
+	
+	/**
+	 * Creates the editor control that is wrapped by this ICellEditor.
+	 * Will use the style configurations in ConfigRegistry for styling the control.
+	 * @param parent The Composite that will be the parent of the new editor control. 
+	 * 			Can not be <code>null</code> 
+	 * @return The created editor control that is wrapped by this ICellEditor.
+	 */
+	Control createEditorControl(Composite parent);
+	
+	/**
+	 * Determines whether the editor should be opened inline or using a dialog. By default it
+	 * will check this by configuration attribute {@link EditConfigAttributes#OPEN_IN_DIALOG}. 
+	 * If there is no configuration found for this, <code>true</code> will be returned for 
+	 * backwards compatibility.
+	 * <p>If this method returns <code>true</code>, the editor will be opened inline (default).</p>
+	 * <p>There might be editors that are only able to be opened in a dialog. These implementations
+	 * need to override this method to always return <code>false</code>, so the editor never
+	 * gets opened inline.</p>
+	 * @param configRegistry The {@link IConfigRegistry} to retrieve the configuration for
+	 * 			inline/dialog editing out of. Needed here because the instance {@link IConfigRegistry}
+	 * 			might not be set on calling this method.
+	 * @param configLabels The labels out of the LabelStack of the cell whose editor should be activated.
+	 * 			Needed here because this method needs to be called prior to activation to determine
+	 * 			where to activate it.
+	 * @return <code>true</code> if the editor should opened inline, <code>false</code>
+	 * 			if not.
+	 * @see EditConfigAttributes#OPEN_IN_DIALOG
+	 */
+	boolean openInline(IConfigRegistry configRegistry, List<String> configLabels);
+	
+	/**
+	 * Determines whether this editor supports multi edit behaviour or not. If this method returns
+	 * <code>true</code>, on selecting and pressing F2 on several cells that are editable, having 
+	 * the same editor type and converter registered, a multi edit dialog will open. 
+	 * By default this method will return <code>true</code>. You can change this behaviour by setting
+	 * the configuration attribute {@link EditConfigAttributes#SUPPORT_MULTI_EDIT}. 
+	 * <p>You should consider returning <code>false</code> e.g. if the update operation is complex or 
+	 * you use conditional validation, where a value is validated against another value in the data model.
+	 * @param configRegistry The {@link IConfigRegistry} to retrieve the configuration for
+	 * 			multi edit support out of. Needed here because the instance {@link IConfigRegistry}
+	 * 			might not be set on calling this method.
+	 * @param configLabels The labels out of the LabelStack of the cell whose editor should be activated.
+	 * 			Needed here because this method needs to be called prior to activation to determine
+	 * 			where to activate it.
+	 * @return <code>true</code> if this editor will open in a subdialog for multi editing, <code>false</code>
+	 * 			if the multi editing of this kind of cell editor is not supported.
+	 * @see EditConfigAttributes#SUPPORT_MULTI_EDIT
+	 */
+	boolean supportMultiEdit(IConfigRegistry configRegistry, List<String> configLabels);
+	
+	/**
+	 * Determines behaviour after committing the value of this editor in combination with selection
+	 * movement. If this method return <code>true</code> and the selection is moved after committing, 
+	 * the editor for the newly selected cell will be activated immediately. If this method returns
+	 * <code>false</code> or the selection is not moved after commit, no action should be executed.
+	 * <p>
+	 * The behaviour previous to this configuration was to not open the adjacent editor. So if there
+	 * is no configuration registered for this, <code>false</code> will be returned by default.</p>
+	 * <p>
+	 * Note: It only makes sense to call this method if the editor is already activated. Calling this
+	 * 		 method on an editor that has not been activated already will lead to exceptions.</p>
+	 * @return <code>true</code> if the adjacent editor should be opened if the selection moves after
+	 * 			commit, <code>false</code> if not.
+	 * @see EditConfigAttributes#OPEN_ADJACENT_EDITOR
+	 */
+	boolean openAdjacentEditor();
+	
+	/**
+	 * This method is intended to be used by {@link IMouseEventMatcher} implementations that need
+	 * to check for the editor and the click position to determine whether an editor should be
+	 * activated or not. By default this method will return <code>true</code>. Special implementations
+	 * that need a different behaviour need to return <code>false</code> instead. E.g. checkbox editors
+	 * should only be activated in case the icon that represents the checkbox is clicked.
+	 * @return <code>true</code> if this {@link ICellEditor} should be activated by clicking at any
+	 * 			position in the corresponding cell, <code>false</code> if there need to be a special
+	 * 			position clicked.
+	 */
+	boolean activateAtAnyPosition();
 }

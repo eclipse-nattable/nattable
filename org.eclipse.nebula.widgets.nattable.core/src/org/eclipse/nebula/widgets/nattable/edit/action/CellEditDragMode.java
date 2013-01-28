@@ -10,18 +10,28 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommand;
 import org.eclipse.nebula.widgets.nattable.selection.action.CellSelectionDragMode;
 import org.eclipse.swt.events.MouseEvent;
 
+/**
+ * Specialisation of CellSelectionDragMode that is used in the context of editing.
+ * If a drag&drop operation is executed on the same cell, the corresponding editor
+ * will be activated, just as if you performed a click into that cell.
+ * <p>
+ * This is needed to treat minimal (not intended) drag&drop operations like clicks.
+ * It sometimes happens that on performing a click, the mouse moves a bit. So between
+ * mouseDown and mouseUp there is a movement registered, so it is not interpreted as
+ * a click anymore, but as a drag&drop operation. With this implementation registered
+ * the described behaviour is avoided.
+ */
 public class CellEditDragMode extends CellSelectionDragMode {
 
 	private int originalColumnPosition;
-	
 	private int originalRowPosition;
 
+	@Override
 	public void mouseDown(NatTable natTable, MouseEvent event) {
 		super.mouseDown(natTable, event);
 		
@@ -43,6 +53,7 @@ public class CellEditDragMode extends CellSelectionDragMode {
 		}
 	}
 	
+	@Override
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		super.mouseUp(natTable, event);
 		

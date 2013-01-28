@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -344,6 +345,14 @@ public class TestLayer implements IUniqueIndexLayer {
 		return false;
 	}
 
+	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
+		// Do nothing
+	}
+
+	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
+		// Do nothing
+	}
+
 	public void handleLayerEvent(ILayerEvent event) {
 		// Do nothing
 	}
@@ -354,6 +363,10 @@ public class TestLayer implements IUniqueIndexLayer {
 
 	public void removeLayerListener(ILayerListener listener) {
 		// Do nothing
+	}
+
+	public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass) {
+		return false;
 	}
 
 	public ILayerPainter getLayerPainter() {

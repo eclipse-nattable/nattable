@@ -14,30 +14,42 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException;
 import org.eclipse.nebula.widgets.nattable.data.validate.ValidationFailedException;
-import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractEditErrorHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IEditErrorHandler;
 
 
 /**
- * Error handling strategy that simply logs if 
+ * Error handling strategy that simply writes conversion/validation errors to the log. 
  * 
- * @author fipro
+ * @author Dirk Fauth
  *
  */
 public class LoggingErrorHandling extends AbstractEditErrorHandler {
 
-	private static final Log log = LogFactory.getLog(AbstractCellEditor.class);
+	private static final Log log = LogFactory.getLog(LoggingErrorHandling.class);
 
+	/**
+	 * Create a new {@link LoggingErrorHandling} with no underlying {@link IEditErrorHandler}
+	 */
 	public LoggingErrorHandling() {
 		super(null);
 	}
 	
+	/**
+	 * Create a new {@link LoggingErrorHandling} using the given {@link IEditErrorHandler} as
+	 * the underlying to allow chaining of error handling.
+	 * @param underlyingErrorHandler The underlying {@link IEditErrorHandler}
+	 */
 	public LoggingErrorHandling(IEditErrorHandler underlyingErrorHandler) {
 		super(underlyingErrorHandler);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * After the error is handled by its underlying {@link IEditErrorHandler},
+	 * the error will be logged as a warning.
+	 */
 	@Override
 	public void displayError(ICellEditor cellEditor, Exception e) {
 		super.displayError(cellEditor, e);

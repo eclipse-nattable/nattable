@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -84,6 +85,14 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	public boolean doCommand(ILayerCommand command) {
 		return underlyingLayer.doCommand(command);
 	}
+
+	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
+		underlyingLayer.registerCommandHandler(commandHandler);
+	}
+
+	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
+		underlyingLayer.unregisterCommandHandler(commandClass);
+	}
 	
 	// Events
 	
@@ -97,6 +106,10 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	
 	public void removeLayerListener(ILayerListener listener) {
 		underlyingLayer.removeLayerListener(listener);
+	}
+	
+	public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass) {
+		return underlyingLayer.hasLayerListener(layerListenerClass);
 	}
 	
 	public ILayerPainter getLayerPainter() {

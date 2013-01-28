@@ -11,34 +11,54 @@
 package org.eclipse.nebula.widgets.nattable.edit;
 
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
-import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
 
-public class SingleEditHandler implements ICellEditHandler {
+/**
+ * {@link ICellEditHandler} that handles inline editing of single values.
+ * On commit it will execute an {@link UpdateDataCommand} for the specified value
+ * and move the selection in the NatTable.
+ */
+public class InlineEditHandler implements ICellEditHandler {
 
-	private final ICellEditor cellEditor;
+	/**
+	 * The {@link ILayer} to which the column and row positions are related to
+	 * 			and on which the update command should be executed
+	 */
 	private final ILayer layer;
+	/**
+	 * The column position of the cell that is edited
+	 */
 	private final int columnPosition;
+	/**
+	 * The row position of the cell that is edited
+	 */
 	private final int rowPosition;
 
-	public SingleEditHandler(ICellEditor cellEditor, ILayer layer, int columnPosition, int rowPosition) {
-		this.cellEditor = cellEditor;
+	/**
+	 * 
+	 * @param layer The {@link ILayer} to which the column and row positions are related to
+	 * 			and on which the update command should be executed
+	 * @param columnPosition The column position of the cell that is edited
+	 * @param rowPosition The row position of the cell that is edited
+	 */
+	public InlineEditHandler(ILayer layer, int columnPosition, int rowPosition) {
 		this.layer = layer;
 		this.columnPosition = columnPosition;
 		this.rowPosition = rowPosition;
 	}
-	
-	/**
-	 * {@inheritDoc}
- 	 * Note: Assumes that the value is valid.<br/>
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler#commit(java.lang.Object, org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum)
 	 */
-	public boolean commit(MoveDirectionEnum direction, boolean closeEditorAfterCommit) {
-		Object canonicalValue = cellEditor.getCanonicalValue();
-		boolean committed = layer.doCommand(new UpdateDataCommand(layer, columnPosition, rowPosition, canonicalValue));
+	public boolean commit(Object canonicalValue, MoveDirectionEnum direction) {
+		boolean committed = layer.doCommand(
+				new UpdateDataCommand(layer, columnPosition, rowPosition, canonicalValue));
 		
-		switch (direction) {
+		//only move the selection if the update succeeded, otherwise the editor will stay open
+		if (committed) {
+			switch (direction) {
 			case LEFT:
 				layer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 1, false, false));
 				break;
@@ -51,11 +71,7 @@ public class SingleEditHandler implements ICellEditHandler {
 			case DOWN:
 				layer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 1, false, false));
 				break;
-		}
-		
-		if (committed && closeEditorAfterCommit) {
-			cellEditor.close();
-			return true;
+			}
 		}
 		
 		return committed;

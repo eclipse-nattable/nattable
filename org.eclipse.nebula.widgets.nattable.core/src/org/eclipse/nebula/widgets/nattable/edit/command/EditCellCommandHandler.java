@@ -12,10 +12,19 @@ package org.eclipse.nebula.widgets.nattable.edit.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.edit.InlineCellEditController;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.EditController;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.widgets.Composite;
 
+/**
+ * Command handler for handling {@link EditCellCommand}s.
+ * Will first check if putting the cell into edit mode is allowed. If it is
+ * allowed it will call the {@link EditController} for activation of the edit
+ * mode.
+ */
 public class EditCellCommandHandler extends AbstractLayerCommandHandler<EditCellCommand> {
 
 	public Class<EditCellCommand> getCommandClass() {
@@ -28,7 +37,18 @@ public class EditCellCommandHandler extends AbstractLayerCommandHandler<EditCell
 		Composite parent = command.getParent();
 		IConfigRegistry configRegistry = command.getConfigRegistry();
 		
-		return InlineCellEditController.editCellInline(cell, null, parent, configRegistry);
+		//check if the cell is editable
+		IEditableRule rule = configRegistry.getConfigAttribute(
+				EditConfigAttributes.CELL_EDITABLE_RULE, 
+				DisplayMode.EDIT, cell.getConfigLabels().getLabels());
+		
+		if (rule.isEditable(cell, configRegistry)) {
+			EditController.editCell(cell, parent, cell.getDataValue(), configRegistry);
+		}
+
+		//as commands by default are intended to be consumed by the handler, always
+		//return true, whether the activation of the edit mode was successfull or not
+		return true;
 	}
 
 }
