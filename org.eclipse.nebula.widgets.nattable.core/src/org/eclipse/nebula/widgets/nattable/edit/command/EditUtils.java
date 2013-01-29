@@ -37,6 +37,7 @@ public class EditUtils {
 	 * 
 	 * @param selectionLayer The {@link SelectionLayer} to retrieve the current selection from.
 	 * @return The last cell of the current selection in the specified {@link SelectionLayer}.
+	 * 			Will return <code>null</code> if there is no selection.
 	 */
 	public static ILayerCell getLastSelectedCell(SelectionLayer selectionLayer) {
 		PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
@@ -49,13 +50,16 @@ public class EditUtils {
 	 * @param configRegistry The {@link IConfigRegistry} needed to access the configured
 	 * 			{@link ICellEditor}.
 	 * @return The {@link ICellEditor} of the last cell of the current selection in the specified
-	 * 			{@link SelectionLayer}.
+	 * 			{@link SelectionLayer}. Will return <code>null</code> if there is no selection.
 	 */
 	public static ICellEditor getLastSelectedCellEditor(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
-		final List<String> lastSelectedCellLabelsArray = 
-				EditUtils.getLastSelectedCell(selectionLayer).getConfigLabels().getLabels();
-		return configRegistry.getConfigAttribute(
-				EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, lastSelectedCellLabelsArray);
+		ILayerCell lastSelectedCell = EditUtils.getLastSelectedCell(selectionLayer);
+		if (lastSelectedCell != null) {
+			final List<String> lastSelectedCellLabelsArray = lastSelectedCell.getConfigLabels().getLabels();
+			return configRegistry.getConfigAttribute(
+					EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, lastSelectedCellLabelsArray);
+		}
+		return null;
 	}
 
 	/**
@@ -178,17 +182,19 @@ public class EditUtils {
 	 */
 	public static boolean isValueSame(SelectionLayer selectionLayer) {
 		ILayerCell lastSelectedCell = getLastSelectedCell(selectionLayer);
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
-		Object originalCanonicalValue = lastSelectedCell.getDataValue();
-		for (PositionCoordinate selectedCell : selectedCells) {
-			Object cellValue = selectionLayer
-									.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition)
-									.getDataValue();
-			if ((cellValue != null && !cellValue.equals(originalCanonicalValue))
-					|| cellValue == null && originalCanonicalValue != null) {
-				return false;
-			}
-		}                        
+		if (lastSelectedCell != null) {
+			PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+			Object originalCanonicalValue = lastSelectedCell.getDataValue();
+			for (PositionCoordinate selectedCell : selectedCells) {
+				Object cellValue = selectionLayer
+						.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition)
+						.getDataValue();
+				if ((cellValue != null && !cellValue.equals(originalCanonicalValue))
+						|| cellValue == null && originalCanonicalValue != null) {
+					return false;
+				}
+			}                        
+		}
 		return true;
 	}
 	
