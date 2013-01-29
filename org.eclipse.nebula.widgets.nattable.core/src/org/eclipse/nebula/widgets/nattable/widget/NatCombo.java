@@ -496,11 +496,9 @@ public class NatCombo extends Composite {
 	 * 			after updating the text control
 	 */
 	private void updateTextControl(boolean hideDropdown) {
-		if (dropdownList.getSelectionCount() > 0) {
-			text.setText(getTransformedTextForSelection());
-			if (hideDropdown) {
-				hideDropdownControl();
-			}
+		text.setText(getTransformedTextForSelection());
+		if (hideDropdown) {
+			hideDropdownControl();
 		}
 	}
 	
