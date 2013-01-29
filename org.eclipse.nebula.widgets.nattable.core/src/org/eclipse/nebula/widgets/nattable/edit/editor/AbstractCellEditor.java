@@ -34,8 +34,6 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.widgets.Composite;
@@ -144,20 +142,6 @@ public abstract class AbstractCellEditor implements ICellEditor {
 		Control editorControl = activateCell(parent, originalCanonicalValue);
 		
 		if (editorControl != null && editMode == EditModeEnum.INLINE) {
-			editorControl.addFocusListener(new FocusAdapter() {
-				@Override
-				public void focusLost(FocusEvent e) {
-					if (!commit(MoveDirectionEnum.NONE, true)) {
-						if (e.widget instanceof Control && !e.widget.isDisposed()) {
-							((Control)e.widget).forceFocus();
-						}
-					}
-					else {
-						AbstractCellEditor.this.parent.forceFocus();
-					}
-				}
-			});
-			
 			//add a traverse listener that will commit and move the selection on traversal
 			editorControl.addTraverseListener(new TraverseListener() {
 				@Override
