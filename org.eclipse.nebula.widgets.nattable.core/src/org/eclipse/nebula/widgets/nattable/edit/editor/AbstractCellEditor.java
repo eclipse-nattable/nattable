@@ -34,6 +34,9 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.widgets.Composite;
@@ -116,6 +119,18 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	 */
 	protected IConfigRegistry configRegistry;
 	
+	/**
+	 * The {@link FocusListener} that will be added to the created editor control
+	 * for {@link EditModeEnum#INLINE} to close it if it loses focus.
+	 */
+	private FocusListener focusListener = new InlineFocusListener();
+	
+	/**
+	 * The {@link TraverseListener} that will be added to the created editor control
+	 * for {@link EditModeEnum#INLINE} trying to commit the editor prior to traversal.
+	 */
+	private TraverseListener traverseListener = new InlineTraverseListener();
+	
 	@Override
 	public final Control activateCell(Composite parent, Object originalCanonicalValue, EditModeEnum editMode, 
 			ICellEditHandler editHandler, ILayerCell cell, IConfigRegistry configRegistry) {
@@ -139,27 +154,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 		this.validationEditErrorHandler = EditConfigHelper.getEditErrorHandler(
 				configRegistry, EditConfigAttributes.VALIDATION_ERROR_HANDLER, configLabels);
 		
-		Control editorControl = activateCell(parent, originalCanonicalValue);
-		
-		if (editorControl != null && editMode == EditModeEnum.INLINE) {
-			//add a traverse listener that will commit and move the selection on traversal
-			editorControl.addTraverseListener(new TraverseListener() {
-				@Override
-				public void keyTraversed(TraverseEvent event) {
-					boolean committed = false;
-					if (event.keyCode == SWT.TAB && event.stateMask == SWT.SHIFT) {
-						committed = commit(MoveDirectionEnum.LEFT);
-					} else if (event.keyCode == SWT.TAB && event.stateMask == 0) {
-						committed = commit(MoveDirectionEnum.RIGHT);
-					}
-					if (!committed) {
-						event.doit = false;
-					}
-				}
-			});
-		}
-
-		return editorControl;
+		return activateCell(parent, originalCanonicalValue);
 	}
 	
 	/**
@@ -383,6 +378,8 @@ public abstract class AbstractCellEditor implements ICellEditor {
 			this.parent.forceFocus();
 		}
 		
+		removeEditorControlListeners();
+		
 		Control editorControl = getEditorControl();
 		if (editorControl != null && !editorControl.isDisposed()) {
 			editorControl.dispose();
@@ -415,6 +412,26 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	public boolean activateAtAnyPosition() {
 		return true;
 	}
+	
+	@Override
+	public void addEditorControlListeners() {
+		Control editorControl = getEditorControl();
+		if (editorControl != null && !editorControl.isDisposed() && editMode == EditModeEnum.INLINE) {
+			//only add the focus and traverse listeners for inline mode
+			editorControl.addFocusListener(this.focusListener);
+			editorControl.addTraverseListener(this.traverseListener);
+		}
+	}
+	
+	@Override
+	public void removeEditorControlListeners() {
+		Control editorControl = getEditorControl();
+		if (editorControl != null && !editorControl.isDisposed()) {
+			editorControl.removeFocusListener(this.focusListener);
+			editorControl.removeTraverseListener(this.traverseListener);
+		}
+	}
+	
 	/**
 	 * This method can be used to set the {@link IDataValidator} to use. This might be useful
 	 * e.g. the configured validator needs to be wrapped to add special behaviour.
@@ -428,5 +445,40 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	 */
 	public void setDataValidator(IDataValidator validator) {
 		this.dataValidator = validator;
+	}
+	
+	
+	private class InlineFocusListener extends FocusAdapter {
+		@Override
+		public void focusLost(FocusEvent e) {
+			if (!commit(MoveDirectionEnum.NONE, true)) {
+				if (e.widget instanceof Control && !e.widget.isDisposed()) {
+					((Control)e.widget).forceFocus();
+				}
+			}
+			else {
+				parent.forceFocus();
+			}
+		}
+	}
+	
+	/**
+	 * {@link TraverseListener} that will try to commit and close this editor with the
+	 * current value, prior to proceed the traversal. If the commit fails and the
+	 * editor can not be closed, the traversal will not be processed.
+	 */
+	private class InlineTraverseListener implements TraverseListener {
+		@Override
+		public void keyTraversed(TraverseEvent event) {
+			boolean committed = false;
+			if (event.keyCode == SWT.TAB && event.stateMask == SWT.SHIFT) {
+				committed = commit(MoveDirectionEnum.LEFT);
+			} else if (event.keyCode == SWT.TAB && event.stateMask == 0) {
+				committed = commit(MoveDirectionEnum.RIGHT);
+			}
+			if (!committed) {
+				event.doit = false;
+			}
+		}
 	}
 }

@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.EditController;
 import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -276,4 +277,44 @@ public interface ICellEditor {
 	 * 			position clicked.
 	 */
 	boolean activateAtAnyPosition();
+	
+	/**
+	 * This method is intended to add listeners to the wrapped editor control to add context related
+	 * behaviour. For example, in {@link EditModeEnum#INLINE} by default this should add a FocusListener
+	 * that commits the current value if the editor control loses focus.
+	 * <p>
+	 * This method was introduced mainly because of two issues:
+	 * <ol>
+	 * <li>On Mac OS calling setBounds() on a Control will cause losing focus. So listeners need to 
+	 * be added after this method is called by the EditController, otherwise on activating the
+	 * editor it will be closed immediately after the correct size is calculated.</li>
+	 * <li>The main concept for cell editor activation is, that the editor control is disposed on 
+	 * closing the editor. This way everytime the cell editor is activated, a new editor control
+	 * will be created. If an editor is implemented that needs to keep the editor control after
+	 * closing the editor, it needs to be ensured that the listeners are removed again. Otherwise
+	 * the listeners would be added again everytime the editor is activated.</li>
+	 * </ol>
+	 * This method will be called automatically by {@link EditController#editCell(ILayerCell, Composite, 
+	 * Object, IConfigRegistry)}.
+	 */
+	void addEditorControlListeners();
+	
+	/**
+	 * This method is intended to remove listeners from the wrapped editor control that was added by
+	 * {@link ICellEditor#addEditorControlListeners()} before to add context related behaviour. 
+	 * <p>
+	 * This method was introduced to add the possibilty to create an {@link ICellEditor} whose 
+	 * wrapped editor control should not be disposed on closing the editor.
+	 * </p>
+	 * <p>
+	 * The main concept for cell editor activation is, that the editor control is disposed on 
+	 * closing the editor. This way everytime the cell editor is activated, a new editor control
+	 * will be created. If an editor is implemented that needs to keep the editor control after
+	 * closing the editor, it needs to be ensured that the listeners are removed again. Otherwise
+	 * the listeners would be added again everytime the editor is activated.
+	 * </p>
+	 * This method needs to be called on {@link ICellEditor#close()}. There is no automatical call
+	 * by the framework if you are not using the abstract implementation of {@link ICellEditor}.
+	 */
+	void removeEditorControlListeners();
 }

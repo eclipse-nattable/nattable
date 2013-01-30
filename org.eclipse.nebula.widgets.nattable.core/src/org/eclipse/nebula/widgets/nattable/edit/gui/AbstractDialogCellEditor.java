@@ -394,4 +394,20 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	public boolean activateAtAnyPosition() {
 		return true;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#addEditorControlListeners()
+	 */
+	@Override
+	public void addEditorControlListeners() {
+		//there is no need for special editor control listeners here
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#removeEditorControlListeners()
+	 */
+	@Override
+	public void removeEditorControlListeners() {
+		//there is no need for special editor control listeners here
+	}
 }

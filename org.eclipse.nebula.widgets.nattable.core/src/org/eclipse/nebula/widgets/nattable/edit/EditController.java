@@ -23,11 +23,8 @@ import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialogFactory;
 import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -101,27 +98,10 @@ public class EditController {
 				
 				if (editorControl != null && !editorControl.isDisposed()) {
 					editorControl.setBounds(editorBounds);
-					
-					if (editorControl != null) {
-						//Adding the focus listener should be done in the AbstractCellEditor
-						//on activating it. But because of the strange behaviour on Mac that
-						//a control loses focus if its bounds are set, we need to attach
-						//the FocusListener after setting the bounds to it
-						editorControl.addFocusListener(new FocusAdapter() {
-							@Override
-							public void focusLost(FocusEvent e) {
-								if (!cellEditor.commit(MoveDirectionEnum.NONE, true)) {
-									if (e.widget instanceof Control && !e.widget.isDisposed()) {
-										((Control)e.widget).forceFocus();
-									}
-								}
-								else {
-									parent.forceFocus();
-								}
-							}
-						});
-					}
-					
+					//We need to add the control listeners after setting the bounds to it 
+					//because of the strange behaviour on Mac OS where a control loses focus 
+					//if its bounds are set
+					cellEditor.addEditorControlListeners();
 					ActiveCellEditorRegistry.registerActiveCellEditor(cellEditor);
 				}
 			}
