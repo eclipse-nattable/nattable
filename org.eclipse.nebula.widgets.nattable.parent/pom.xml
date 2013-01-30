@@ -56,7 +56,6 @@
 	<properties>
 		<tycho-version>0.16.0</tycho-version>
 		<glazedlists-version>1.8.0</glazedlists-version>
-		<poi-version>3.7</poi-version>
 	</properties>
 
 	<build>
