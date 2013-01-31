@@ -13,9 +13,13 @@ package org.eclipse.nebula.widgets.nattable.tooltip;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.PasswordTextPainter;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 
@@ -83,12 +87,17 @@ public class NatTableContentTooltip extends DefaultToolTip {
 		
 		ILayerCell cell = natTable.getCellByPosition(col, row);
 		if (cell != null) {
-			String tooltipValue = CellDisplayConversionUtils.convertDataType(
-					cell, 
-					natTable.getConfigRegistry());
-			
-			if (tooltipValue.length() > 0) {
-				return tooltipValue;
+			//if the registered cell painter is the PasswordCellPainter, there will be no tooltip
+			ICellPainter painter = natTable.getConfigRegistry().getConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL, cell.getConfigLabels().getLabels());
+			if (!(painter instanceof PasswordTextPainter)) {
+				String tooltipValue = CellDisplayConversionUtils.convertDataType(
+						cell, 
+						natTable.getConfigRegistry());
+				
+				if (tooltipValue.length() > 0) {
+					return tooltipValue;
+				}
 			}
 		}
 		return null;
