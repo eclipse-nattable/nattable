@@ -17,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.PasswordTextPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -90,7 +91,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
 			//if the registered cell painter is the PasswordCellPainter, there will be no tooltip
 			ICellPainter painter = natTable.getConfigRegistry().getConfigAttribute(
 					CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL, cell.getConfigLabels().getLabels());
-			if (!(painter instanceof PasswordTextPainter)) {
+			if (isVisibleContentPainter(painter)) {
 				String tooltipValue = CellDisplayConversionUtils.convertDataType(
 						cell, 
 						natTable.getConfigRegistry());
@@ -101,6 +102,21 @@ public class NatTableContentTooltip extends DefaultToolTip {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Checks if the given {@link ICellPainter} is showing the content directly or if it is
+	 * anonymized by using the {@link PasswordTextPainter}
+	 * @param painter The {@link ICellPainter} to check.
+	 * @return <code>true</code> if the painter is not a {@link PasswordTextPainter}
+	 */
+	private boolean isVisibleContentPainter(ICellPainter painter) {
+		if (painter instanceof PasswordTextPainter) {
+			return false;
+		} else if (painter instanceof CellPainterWrapper) {
+			return isVisibleContentPainter(((CellPainterWrapper) painter).getWrappedPainter());
+		}
+		return true;
 	}
 	
 	/**
