@@ -10,7 +10,7 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.apache.poi" version="3.7.0.v201301211856"/>
 <unit id="org.apache.poi.source" version="3.7.0.v201301211856"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/I20130121215912/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20130201140822/repository/"/>
 </location>
 </locations>
 </target>
