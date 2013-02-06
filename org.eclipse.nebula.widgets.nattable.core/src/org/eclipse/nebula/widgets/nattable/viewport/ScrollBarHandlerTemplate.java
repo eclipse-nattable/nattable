@@ -53,7 +53,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		boolean handle = true;
 		
 		if (!this.dragging) {
-			if (EditUtils.commitAndCloseActiveEditor()) {
+			if (!EditUtils.commitAndCloseActiveEditor()) {
 				handle = false;
 			}
 		}
