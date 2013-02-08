@@ -56,8 +56,8 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
 		this.selectionLayer = selectionLayer;
 		
 		setChildLayer("FROZEN_REGION", freezeLayer, 0, 0); //$NON-NLS-1$
-		setChildLayer("FROZEN_ROW_REGION", new DimensionallyDependentIndexLayer(selectionLayer, viewportLayer, freezeLayer), 1, 0); //$NON-NLS-1$
-		setChildLayer("FROZEN_COLUMN_REGION", new DimensionallyDependentIndexLayer(selectionLayer, freezeLayer, viewportLayer), 0, 1); //$NON-NLS-1$
+		setChildLayer("FROZEN_ROW_REGION", new DimensionallyDependentIndexLayer(viewportLayer.getScrollableLayer(), viewportLayer, freezeLayer), 1, 0); //$NON-NLS-1$
+		setChildLayer("FROZEN_COLUMN_REGION", new DimensionallyDependentIndexLayer(viewportLayer.getScrollableLayer(), freezeLayer, viewportLayer), 0, 1); //$NON-NLS-1$
 		setChildLayer("NONFROZEN_REGION", viewportLayer, 1, 1); //$NON-NLS-1$
 		
 		registerCommandHandlers();
