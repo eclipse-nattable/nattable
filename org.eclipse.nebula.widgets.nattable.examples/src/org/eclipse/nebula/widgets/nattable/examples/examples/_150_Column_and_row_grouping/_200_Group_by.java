@@ -24,6 +24,8 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
+import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -42,6 +44,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
+import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -91,12 +94,18 @@ public class _200_Group_by extends AbstractNatExample {
 		
 		TreeLayer treeLayer = new TreeLayer(selectionLayer, bodyDataLayer.getTreeRowModel());
 		
+		
+		FreezeLayer freeze = new FreezeLayer(treeLayer);
+		
 		ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+		
+		CompositeFreezeLayer compFreeze = new CompositeFreezeLayer(freeze, viewportLayer, selectionLayer);
+		
 		
 		// Column header layer
 		final IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		final DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
+		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, compFreeze, selectionLayer);
 		//	Note: The column header layer is wrapped in a filter row composite.
 		//	This plugs in the filter row functionality
 
@@ -111,7 +120,7 @@ public class _200_Group_by extends AbstractNatExample {
 		// Row header layer
 		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataLayer.getDataProvider());
 		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
+		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, compFreeze, selectionLayer);
 
 		// Corner layer
 		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
@@ -120,7 +129,7 @@ public class _200_Group_by extends AbstractNatExample {
 
 		// Grid
 		GridLayer gridLayer = new GridLayer(
-				viewportLayer,
+				compFreeze,
 				columnHeaderLayer,
 				rowHeaderLayer,
 				cornerLayer, false);
@@ -134,6 +143,7 @@ public class _200_Group_by extends AbstractNatExample {
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
 		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+		natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 		
 		natTable.configure();
 		
