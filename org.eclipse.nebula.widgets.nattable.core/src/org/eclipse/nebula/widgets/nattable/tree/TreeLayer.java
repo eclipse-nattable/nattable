@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -58,6 +59,15 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 		if (useDefaultConfiguration) {
 			addConfiguration(new DefaultTreeLayerConfiguration(this));
 		}
+		
+		setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+			@Override
+			public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+				if (isTreeColumn(columnPosition)) {
+					configLabels.addLabelOnTop(TREE_COLUMN_CELL);
+				}
+			}
+		});
 
 		indentedTreeImagePainter = new IndentedTreeImagePainter(treeRowModel);
 		treeImagePainter = indentedTreeImagePainter.getTreeImagePainter();
@@ -76,30 +86,15 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 		return treeImagePainter;
 	}
 	
-	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		LabelStack stack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
-		if (columnPosition == TREE_COLUMN_NUMBER ) {
-			stack.addLabelOnTop(TREE_COLUMN_CELL);
-		}
-		return stack;
-	}
-
-	@Override
-	public LabelStack getRegionLabelsByXY(int x, int y) {
-		LabelStack stack = super.getRegionLabelsByXY(x, y);
-		if (TREE_COLUMN_NUMBER == getColumnPositionByX(x) ) {
-			stack.addLabelOnTop(TREE_COLUMN_CELL);
-		}
-
-		return stack;
+	private boolean isTreeColumn(int columnPosition) {
+		return columnPosition == TREE_COLUMN_NUMBER;
 	}
 	
 	@Override
 	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		ICellPainter cellPainter = super.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 		
-		if (columnPosition == TREE_COLUMN_NUMBER) {
+		if (cell.getConfigLabels().hasLabel(TREE_COLUMN_CELL)) {
 			cellPainter = new BackgroundPainter(new CellPainterDecorator(cellPainter, CellEdgeEnum.LEFT, indentedTreeImagePainter));
 		}
 		
