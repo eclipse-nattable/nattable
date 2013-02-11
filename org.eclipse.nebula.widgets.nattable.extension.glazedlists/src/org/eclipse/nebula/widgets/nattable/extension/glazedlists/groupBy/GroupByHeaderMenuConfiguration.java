@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 
+import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.UngroupByColumnIndexCommand;
@@ -59,7 +60,7 @@ public class GroupByHeaderMenuConfiguration extends AbstractUiBindingConfigurati
 								new IMenuItemProvider() {
 									public void addMenuItem(final NatTable natTable, Menu popupMenu) {
 										MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-										menuItem.setText("Ungroup By");
+										menuItem.setText(Messages.getString("GroupByHeaderMenuConfiguration.ungroupBy")); //$NON-NLS-1$
 										menuItem.setEnabled(true);
 				
 										menuItem.addSelectionListener(new SelectionAdapter() {
