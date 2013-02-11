@@ -16,7 +16,6 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.UngroupByColumnIndexCommand;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
@@ -28,7 +27,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
@@ -67,14 +65,10 @@ public class GroupByHeaderMenuConfiguration extends AbstractUiBindingConfigurati
 											@Override
 											public void widgetSelected(SelectionEvent event) {
 												NatEventData natEventData = MenuItemProviders.getNatEventData(event);
-												int columnPosition = natEventData.getColumnPosition();
-												int rowPosition = natEventData.getRowPosition();
 												MouseEvent originalEvent = natEventData.getOriginalEvent();
 												
-												ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
-												Rectangle bounds = cell.getBounds();
-												
-												int groupByColumnIndex = groupByHeaderLayer.getGroupByColumnIndexAtXY(originalEvent.x - bounds.x, originalEvent.y - bounds.y);
+												int groupByColumnIndex = groupByHeaderLayer.getGroupByColumnIndexAtXY(
+														originalEvent.x, originalEvent.y);
 												
 												natTable.doCommand(new UngroupByColumnIndexCommand(groupByColumnIndex));
 											}
