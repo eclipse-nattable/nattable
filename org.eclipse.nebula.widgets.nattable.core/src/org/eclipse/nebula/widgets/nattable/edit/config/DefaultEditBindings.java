@@ -57,11 +57,11 @@ public class DefaultEditBindings extends AbstractUiBindingConfiguration {
 		uiBindingRegistry.registerKeyBinding(new LetterOrDigitKeyEventMatcher(), new KeyEditAction());
 		uiBindingRegistry.registerKeyBinding(new LetterOrDigitKeyEventMatcher(SWT.SHIFT), new KeyEditAction());
 		
-		uiBindingRegistry.registerFirstSingleClickBinding(
+		uiBindingRegistry.registerSingleClickBinding(
 				new CellEditorMouseEventMatcher(GridRegion.BODY),
 				new MouseEditAction());
 		
-		uiBindingRegistry.registerFirstMouseDragMode(
+		uiBindingRegistry.registerMouseDragMode(
 				new CellEditorMouseEventMatcher(GridRegion.BODY),
 				new CellEditDragMode());
 
