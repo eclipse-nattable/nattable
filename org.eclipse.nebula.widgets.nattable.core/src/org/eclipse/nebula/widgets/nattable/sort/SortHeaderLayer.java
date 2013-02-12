@@ -60,18 +60,20 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersi
 		if (sortModel != null) {
 			int columnIndex = getColumnIndexByPosition(columnPosition);
 			if (sortModel.isColumnIndexSorted(columnIndex)) {
+				
+				String sortConfig = DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + sortModel.getSortOrder(columnIndex);
+				configLabels.addLabelOnTop(sortConfig);
+
 				SortDirectionEnum sortDirection = sortModel.getSortDirection(columnIndex);
 
 				switch (sortDirection) {
 				case ASC:
-					configLabels.addLabel(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+					configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
 					break;
 				case DESC:
-					configLabels.addLabel(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+					configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
 					break;
 				}
-				String sortConfig = DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + sortModel.getSortOrder(columnIndex);
-				configLabels.addLabel(sortConfig);
 			}
 		}
 		return configLabels;
