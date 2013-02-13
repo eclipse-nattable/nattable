@@ -257,6 +257,11 @@ public class ColumnGroupModel implements IPersistable {
 		return null;
 	}
 	
+	public void addColumnGroup(ColumnGroup columnGroup) {
+		columnGroups.add(columnGroup);
+		notifyListeners();
+	}
+	
 	public void removeColumnGroup(ColumnGroup columnGroup) {
 		columnGroups.remove(columnGroup);
 		notifyListeners();
