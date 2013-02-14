@@ -55,19 +55,19 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends AbstractLayerTransfor
 		columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 
 		columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, selectionLayer);
-
-		columnGroupHeaderLayer = new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer, columnGroupModel);
-
+		
 		final ReflectiveColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(propertyNames);
 		sortableColumnHeaderLayer = new SortHeaderLayer<T>(
-				columnGroupHeaderLayer,
+				columnHeaderLayer,
 				new GlazedListsSortModel<T>(
 						sortedList,
 						columnPropertyAccessor,
 						configRegistry,
 						columnHeaderDataLayer
-				)
-		);
+						)
+				);
+
+		columnGroupHeaderLayer = new ColumnGroupHeaderLayer(sortableColumnHeaderLayer, selectionLayer, columnGroupModel);
 
 		CompositeMatcherEditor<T> autoFilterMatcherEditor = new CompositeMatcherEditor<T>();
 		filterList.setMatcherEditor(autoFilterMatcherEditor);		
@@ -79,7 +79,7 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends AbstractLayerTransfor
 							columnPropertyAccessor,
 							configRegistry
 					),
-					sortableColumnHeaderLayer, columnHeaderDataProvider, configRegistry);
+					columnGroupHeaderLayer, columnHeaderDataProvider, configRegistry);
 
 		setUnderlyingLayer(composite);
 	}

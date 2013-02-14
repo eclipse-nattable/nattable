@@ -36,8 +36,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	
 	private SingleClickRunnable singleClickRunnable;
 	
-	// TODO Placeholder to enable single/double click disambiguation
-	private boolean exclusive = false;
+	private boolean doubleClick;
 	
 	public MouseModeEventHandler(ModeSupport modeSupport, NatTable natTable, MouseEvent initialMouseDownEvent, IMouseAction singleClickAction, IMouseAction doubleClickAction, IDragMode dragMode) {
 		super(modeSupport);
@@ -56,12 +55,13 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	@Override
 	public void mouseUp(MouseEvent event) {
 		mouseDown = false;
+		doubleClick = false;
 		
 		if (singleClickAction != null) {
 			//convert/validate/commit/close possible open editor
 			//needed in case of conversion/validation errors to cancel any action
 			if (EditUtils.commitAndCloseActiveEditor()) {
-				if (exclusive && doubleClickAction != null) {
+				if (doubleClickAction != null) {
 					// If a doubleClick action is registered, wait to see if this mouseUp is part of a doubleClick or not.
 					singleClickRunnable = new SingleClickRunnable(singleClickAction, event);
 					event.display.timerExec(event.display.getDoubleClickTime(), singleClickRunnable);
@@ -77,15 +77,14 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	
 	@Override
 	public void mouseDoubleClick(MouseEvent event) {
+		//double click event is fired after second mouse up event, so it needs to be set to true here
+		//this way the SingleClickRunnable knows that it should not execute as a double click was performed
+		doubleClick = true;
+		
 		//convert/validate/commit/close possible open editor
 		//needed in case of conversion/validation errors to cancel any action
 		if (EditUtils.commitAndCloseActiveEditor()) {
 			if (doubleClickAction != null) {
-				if (singleClickRunnable != null) {
-					// Cancel any pending singleClick action.
-					singleClickRunnable.cancel();
-				}
-				
 				event.data = NatEventData.createInstanceFromEvent(event);
 				doubleClickAction.run(natTable, event);
 				// Double click action complete. Switch back to normal mode.
@@ -133,7 +132,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 		}
 		
 		public void run() {
-			if (!isCancelled()) {
+			if (!doubleClick) {
 				executeSingleClickAction(action, event);
 			}
 		}
