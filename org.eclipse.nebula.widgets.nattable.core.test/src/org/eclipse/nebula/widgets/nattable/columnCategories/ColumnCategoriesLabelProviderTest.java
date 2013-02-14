@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 
+import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node.Type;
 import org.eclipse.nebula.widgets.nattable.columnCategories.gui.ColumnCategoriesLabelProvider;
@@ -38,7 +39,7 @@ public class ColumnCategoriesLabelProviderTest {
 	@Test
 	public void shouldReturnLabelForCategoriesFromTheModel() throws Exception {
 		assertEquals(CATEGORY_B1_LABEL, labelProvider.getText(new Node(CATEGORY_B1_LABEL, Type.CATEGORY)));
-		assertEquals("Unknown", labelProvider.getText(new Node("2")));
+		assertEquals(Messages.getString("Unknown"), labelProvider.getText(new Node("2")));
 	}
 	
 	@Test
