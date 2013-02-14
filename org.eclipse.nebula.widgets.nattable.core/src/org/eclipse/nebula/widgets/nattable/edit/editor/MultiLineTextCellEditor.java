@@ -37,17 +37,39 @@ import org.eclipse.swt.widgets.Text;
 public class MultiLineTextCellEditor extends TextCellEditor {
 
 	/**
+	 * Flag to configure whether the text control should enable automatic line wrap behaviour
+	 * or not. By default this editor will support automatic line wrapping.
+	 */
+	private boolean lineWrap = true;
+	
+	/**
 	 * Create a new multi line text editor that ensures to not commit the editor
-	 * value in case enter is typed.
+	 * value in case enter is typed. The text control will support automatic line wrapping.
 	 */
 	public MultiLineTextCellEditor() {
+		this(true);
+	}
+	
+	/**
+	 * Create a new multi line text editor that ensures to not commit the editor
+	 * value in case enter is typed.
+	 * @param lineWrap Flag to configure whether the text control should enable automatic line 
+	 * 			wrap behaviour or not.
+	 */
+	public MultiLineTextCellEditor(boolean lineWrap) {
 		this.commitOnEnter = false;
+		this.lineWrap = lineWrap;
 	}
 	
 	@Override
 	public Text createEditorControl(Composite parent) {
-		final Text textControl = super.createEditorControl(parent, 
-				HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;
+		if (lineWrap) {
+			style = style | SWT.WRAP;
+		} else {
+			style = style | SWT.H_SCROLL;
+		}
+		final Text textControl = super.createEditorControl(parent, style);
 		
 		if (!openInline(this.configRegistry, this.labelStack.getLabels())) {
 			//add the layout data directly so it will not be layouted by the CellEditDialog
@@ -55,5 +77,13 @@ public class MultiLineTextCellEditor extends TextCellEditor {
 		}
 		
 		return textControl;
+	}
+	
+	/**
+	 * @param lineWrap <code>true</code> if the text control should enable automatic line 
+	 * 			wrap behaviour, <code>false</code> if not
+	 */
+	public void setLineWrap(boolean lineWrap) {
+		this.lineWrap = lineWrap;
 	}
 }
