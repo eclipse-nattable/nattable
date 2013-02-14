@@ -11,10 +11,12 @@
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -95,6 +97,12 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	 * are running in.
 	 */
 	protected IConfigRegistry configRegistry;
+	/**
+	 * Map that contains custom configurations for this {@link CellEditDialog}.
+	 * We do not use the {@link IDialogSettings} provided by JFace, because they are
+	 * used to store and load the settings in XML rather than overriding the behaviour. 
+	 */
+	protected Map<String, Object> editDialogSettings;
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog#getEditType()
@@ -409,5 +417,13 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	@Override
 	public void removeEditorControlListeners() {
 		//there is no need for special editor control listeners here
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog#setDialogSettings(java.util.Map)
+	 */
+	@Override
+	public void setDialogSettings(Map<String, Object> editDialogSettings) {
+		this.editDialogSettings = editDialogSettings;
 	}
 }

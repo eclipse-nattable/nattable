@@ -10,10 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit;
 
+import java.util.Map;
+
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IEditErrorHandler;
+import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 
@@ -98,4 +101,19 @@ public interface EditConfigAttributes {
 	 * another value in the data model.
 	 */
 	public static final ConfigAttribute<Boolean> SUPPORT_MULTI_EDIT = new ConfigAttribute<Boolean>();
+	
+	/**
+	 * The configuration attribute to specify custom dialog settings for edit dialogs. Registering
+	 * a map with matching key-value pairs for this attribute allows to modify the appearance of
+	 * edit dialogs. To see which key-value-pairs are interpreted have a look at the constants
+	 * configured in {@link ICellEditDialog}.
+	 * 
+	 * @see ICellEditDialog#DIALOG_SHELL_TITLE
+	 * @see ICellEditDialog#DIALOG_SHELL_ICON
+	 * @see ICellEditDialog#DIALOG_SHELL_LOCATION
+	 * @see ICellEditDialog#DIALOG_SHELL_SIZE
+	 * @see ICellEditDialog#DIALOG_SHELL_RESIZABLE
+	 * @see ICellEditDialog#DIALOG_MESSAGE
+	 */
+	public static final ConfigAttribute<Map<String, Object>> EDIT_DIALOG_SETTINGS = new ConfigAttribute<Map<String, Object>>();
 }

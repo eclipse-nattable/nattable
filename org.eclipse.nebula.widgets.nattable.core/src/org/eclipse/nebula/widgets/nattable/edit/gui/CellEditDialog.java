@@ -10,7 +10,10 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
+import java.util.Map;
+
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -25,9 +28,12 @@ import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -73,6 +79,13 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
 	protected final IConfigRegistry configRegistry;
 
 	/**
+	 * Map that contains custom configurations for this {@link CellEditDialog}.
+	 * We do not use the {@link IDialogSettings} provided by JFace, because they are
+	 * used to store and load the settings in XML rather than overriding the behaviour. 
+	 */
+	protected Map<String, Object> editDialogSettings;
+	
+	/**
 	 * @param parentShell the parent shell, or <code>null</code> to create a top-level
 	 * 			shell
 	 * @param originalCanonicalValue The value that should be propagated to the editor 
@@ -105,15 +118,50 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText(Messages.getString("CellEditDialog.shellTitle")); //$NON-NLS-1$
-		newShell.setImage(GUIHelper.getImage("editor")); //$NON-NLS-1$
+		
+		String shellTitle = Messages.getString("CellEditDialog.shellTitle"); //$NON-NLS-1$
+		Image shellIcon = GUIHelper.getImage("editor"); //$NON-NLS-1$
+		if (this.editDialogSettings != null) {
+			if (this.editDialogSettings.containsKey(DIALOG_SHELL_TITLE)) {
+			String settingsShellTitle = this.editDialogSettings.get(DIALOG_SHELL_TITLE).toString();
+				shellTitle = settingsShellTitle;
+			}
+			Object settingsShellImage = this.editDialogSettings.get(DIALOG_SHELL_ICON);
+			if (settingsShellImage != null && settingsShellImage instanceof Image) {
+				shellIcon = (Image)settingsShellImage;
+			}
+		}
+		newShell.setText(shellTitle);
+		newShell.setImage(shellIcon);
 	}
 	
 	@Override
 	protected boolean isResizable() {
-		return true;
+		return false;
 	}
 
+	@Override
+	protected Point getInitialLocation(Point initialSize) {
+		if (this.editDialogSettings != null) {
+			Object settingsLocation = this.editDialogSettings.get(DIALOG_SHELL_LOCATION);
+			if (settingsLocation != null && settingsLocation instanceof Point) {
+				return (Point) settingsLocation;
+			}
+		}
+		return super.getInitialLocation(initialSize);
+	}
+	
+	@Override
+	protected Point getInitialSize() {
+		if (this.editDialogSettings != null) {
+			Object settingsSize = this.editDialogSettings.get(DIALOG_SHELL_SIZE);
+			if (settingsSize != null && settingsSize instanceof Point) {
+				return (Point) settingsSize;
+			}
+		}
+		return super.getInitialSize();
+	}
+	
 	@Override
 	protected void okPressed() {
 		//if the editor could not be committed, we should not proceed with closing the editor, as the
@@ -138,6 +186,14 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
 		panelLayout.marginWidth = 8;
 		panel.setLayout(panelLayout);
 
+		//add a custom message if there is one configured in the edit dialog settings
+		if (this.editDialogSettings != null && this.editDialogSettings.containsKey(DIALOG_MESSAGE)) {
+			String customMessage = this.editDialogSettings.get(DIALOG_MESSAGE).toString();
+			Label customMessageLabel = new Label(panel, SWT.NONE);
+			customMessageLabel.setText(customMessage);
+			GridDataFactory.fillDefaults().grab(true, false).hint(100, 20).applyTo(customMessageLabel);
+		}
+		
 		//activate the new editor
 		this.cellEditor.activateCell(
 				panel, 
@@ -205,4 +261,34 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
 		};
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * This implementation will check if the given map contains a value for {@link ICellEditDialog#DIALOG_SHELL_RESIZABLE}.
+	 * If there is a value found for that configuration, the Shell style will be recalculated based on the specified
+	 * value. The style bits are calculated the same way like in the {@link Dialog} constructor.
+	 * This is performed in here because setting the Shell style bits after the creation of the Shell would have no 
+	 * effect.
+	 */
+	@Override
+	public void setDialogSettings(Map<String, Object> editDialogSettings) {
+		this.editDialogSettings = editDialogSettings;
+		
+		//if the edit dialog settings contain a configuration for resizable behaviour
+		//we need to override the shellStyle bits before the shell is created
+		//otherwise this configuration wouldn't have any effect.
+		if (this.editDialogSettings != null) {
+			Object settingsResizable = this.editDialogSettings.get(DIALOG_SHELL_RESIZABLE);
+			if (settingsResizable != null && settingsResizable instanceof Boolean) {
+				if ((Boolean)settingsResizable) {
+					setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE
+							| getDefaultOrientation());
+				} else {
+					setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL
+							| getDefaultOrientation());
+				}
+			}
+		}
+
+	}
 }

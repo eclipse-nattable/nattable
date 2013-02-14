@@ -10,7 +10,14 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
+import java.util.Map;
+
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * Interface for dialogs that can be used as editing dialogs in NatTable.
@@ -20,6 +27,43 @@ import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
  */
 public interface ICellEditDialog {
 
+	/**
+	 * Key to specify a custom shell title of the dialog.
+	 * The value needs to be a {@link String}.
+	 */
+	String DIALOG_SHELL_TITLE = "DIALOG_SHELL_TITLE"; //$NON-NLS-1$
+	/**
+	 * Key to specify a custom shell icon of the dialog.
+	 * The value needs to be an {@link Image}.
+	 */
+	String DIALOG_SHELL_ICON = "DIALOG_SHELL_ICON"; //$NON-NLS-1$
+	/**
+	 * Key to specify the location where the dialog should be shown. 
+	 * Will be interpreted by {@link Dialog#getInitialLocation(Point)}
+	 * The value needs to be a {@link Point}.
+	 */
+	String DIALOG_SHELL_LOCATION = "DIALOG_SHELL_LOCATION"; //$NON-NLS-1$
+	/**
+	 * Key to specify the size of the dialog. 
+	 * Will be interpreted by {@link Dialog#getInitialSize(Point)}
+	 * The value needs to be a {@link Point}.
+	 */
+	String DIALOG_SHELL_SIZE = "DIALOG_SHELL_SIZE"; //$NON-NLS-1$
+	/**
+	 * Key to specify whether the dialog should be resizable or not.
+	 * Will not be interpreted by {@link Dialog#isResizable(Point)} because it is called
+	 * on instantiating the dialog in the constructor of the super class. It will modify
+	 * the set shell style bits instead.
+	 * The value needs to be a {@link Boolean}.
+	 */
+	String DIALOG_SHELL_RESIZABLE = "DIALOG_SHELL_RESIZABLE"; //$NON-NLS-1$
+	/**
+	 * Key to specify a custom message for the to be shown in the dialog.
+	 * The value needs to be a {@link String}.
+	 */
+	String DIALOG_MESSAGE = "DIALOG_MESSAGE"; //$NON-NLS-1$
+
+	
 	/**
 	 * @return The canonical value that was committed to the editor control.
 	 */
@@ -55,4 +99,24 @@ public interface ICellEditDialog {
 	 */
 	int open();
 
+	/**
+	 * Allows to customize the appearance of the dialog. This method will be called by the
+	 * framework at creation time of the dialog via the {@link CellEditDialogFactory}. 
+	 * <p>
+	 * The map containing the settings can be registered to the {@link IConfigRegistry} for 
+	 * the key {@link EditConfigAttributes#EDIT_DIALOG_SETTINGS}. The keys that are valid
+	 * for this map are specified below.
+	 * 
+	 * @param editDialogSettings Map containing the settings to customize the edit dialog 
+	 * 			appearance.
+	 * 
+	 * @see ICellEditDialog#DIALOG_SHELL_TITLE
+	 * @see ICellEditDialog#DIALOG_SHELL_ICON
+	 * @see ICellEditDialog#DIALOG_SHELL_LOCATION
+	 * @see ICellEditDialog#DIALOG_SHELL_SIZE
+	 * @see ICellEditDialog#DIALOG_SHELL_RESIZABLE
+	 * @see ICellEditDialog#DIALOG_MESSAGE
+	 * @see EditConfigAttributes#EDIT_DIALOG_SETTINGS
+	 */
+	void setDialogSettings(Map<String, Object> editDialogSettings);
 }

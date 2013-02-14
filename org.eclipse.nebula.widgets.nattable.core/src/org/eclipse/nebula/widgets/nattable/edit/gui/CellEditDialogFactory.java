@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.edit.gui;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.DialogEditHandler;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -58,24 +59,38 @@ public class CellEditDialogFactory {
 			final ICellEditor cellEditor,
 			final IConfigRegistry configRegistry) {
 		
+		ICellEditDialog result = null;
+		
 		//if the cell editor itself is a ICellEditDialog, simply return it
 		if (cellEditor instanceof ICellEditDialog) {
 			//activate the editor and then return it
 			cellEditor.activateCell(
 					parentShell, originalCanonicalValue, EditModeEnum.DIALOG, 
 					new DialogEditHandler(), cell, configRegistry);
-			return (ICellEditDialog) cellEditor;
+			result = (ICellEditDialog) cellEditor;
+		}
+		else {
+			ITickUpdateHandler tickUpdateHandler = configRegistry.getConfigAttribute(
+					TickUpdateConfigAttributes.UPDATE_HANDLER, 
+					DisplayMode.EDIT, 
+					cell.getConfigLabels().getLabels());
+			if (tickUpdateHandler != null && tickUpdateHandler.isApplicableFor(cell.getDataValue())) {
+				//if a tick update handler is applicable, return the TickUpdateCellEditDialog
+				result = new TickUpdateCellEditDialog(
+						parentShell, originalCanonicalValue, cell, cellEditor, configRegistry, tickUpdateHandler);
+			}
+			else {
+				//return the default edit dialog that will show the underlying editor
+				result = new CellEditDialog(parentShell, originalCanonicalValue, cell, cellEditor, configRegistry);
+			}
 		}
 		
-		ITickUpdateHandler tickUpdateHandler = configRegistry.getConfigAttribute(
-				TickUpdateConfigAttributes.UPDATE_HANDLER, 
+		//check if there are custom edit dialog settings registered
+		result.setDialogSettings(configRegistry.getConfigAttribute(
+				EditConfigAttributes.EDIT_DIALOG_SETTINGS, 
 				DisplayMode.EDIT, 
-				cell.getConfigLabels().getLabels());
-		if (tickUpdateHandler != null && tickUpdateHandler.isApplicableFor(cell.getDataValue())) {
-			return new TickUpdateCellEditDialog(
-					parentShell, originalCanonicalValue, cell, cellEditor, configRegistry, tickUpdateHandler);
-		}
+				cell.getConfigLabels().getLabels()));
 		
-		return new CellEditDialog(parentShell, originalCanonicalValue, cell, cellEditor, configRegistry);
+		return result;
 	}
 }

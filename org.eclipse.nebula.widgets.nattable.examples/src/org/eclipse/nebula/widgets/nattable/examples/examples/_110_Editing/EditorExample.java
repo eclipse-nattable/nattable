@@ -34,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.MultiLineTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.PasswordCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.FileDialogCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.person.ExtendedPersonWithAddress;
@@ -56,8 +57,11 @@ import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes
 import org.eclipse.nebula.widgets.nattable.tooltip.NatTableContentTooltip;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 
 public class EditorExample extends AbstractNatExample {
@@ -190,6 +194,16 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 				Boolean.TRUE,
 				DisplayMode.EDIT,
 				EditorExample.COLUMN_TWO_LABEL);
+		
+		//configure a custom message for the multi edit dialog
+		Map<String, Object> editDialogSettings = new HashMap<String, Object>();
+		editDialogSettings.put(CellEditDialog.DIALOG_MESSAGE, "Please specify the lastname in here:");
+		
+		configRegistry.registerConfigAttribute(
+				EditConfigAttributes.EDIT_DIALOG_SETTINGS, 
+				editDialogSettings,
+				DisplayMode.EDIT,
+				EditorExample.COLUMN_TWO_LABEL);
 	}
 	
 	private void registerColumnThreePasswordEditor(IConfigRegistry configRegistry) {
@@ -220,7 +234,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 		//configure the multi line text editor for column four
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITOR, 
-				new MultiLineTextCellEditor(), 
+				new MultiLineTextCellEditor(false), 
 				DisplayMode.NORMAL, 
 				EditorExample.COLUMN_FOUR_LABEL);
 		
@@ -241,6 +255,30 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_STYLE, 
 				cellStyle,
+				DisplayMode.EDIT,
+				EditorExample.COLUMN_FOUR_LABEL);
+		
+		//configure custom dialog settings
+		Display display = Display.getCurrent();
+		Map<String, Object> editDialogSettings = new HashMap<String, Object>();
+		editDialogSettings.put(CellEditDialog.DIALOG_SHELL_TITLE, "My custom value");
+		editDialogSettings.put(CellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_WARNING));
+		editDialogSettings.put(CellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);
+		
+		Point size = new Point(400, 300);
+		editDialogSettings.put(CellEditDialog.DIALOG_SHELL_SIZE, size);
+		
+		int screenWidth = display.getBounds().width;
+		int screenHeight = display.getBounds().height;
+		Point location = new Point((screenWidth / (2 * display.getMonitors().length)) - (size.x/2), (screenHeight / 2) - (size.y/2));
+		editDialogSettings.put(CellEditDialog.DIALOG_SHELL_LOCATION, location);
+
+		//add custum message 
+		editDialogSettings.put(CellEditDialog.DIALOG_MESSAGE, "Enter some free text in here:");
+		
+		configRegistry.registerConfigAttribute(
+				EditConfigAttributes.EDIT_DIALOG_SETTINGS, 
+				editDialogSettings,
 				DisplayMode.EDIT,
 				EditorExample.COLUMN_FOUR_LABEL);
 	}
