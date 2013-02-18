@@ -130,7 +130,7 @@ public class InlineCellEditEvent implements ILayerEvent {
 	
 	@Override
 	public InlineCellEditEvent cloneEvent() {
-		return new InlineCellEditEvent(layer, cellCoordinate, parent, configRegistry, initialValue);
+		return new InlineCellEditEvent(layer, new PositionCoordinate(cellCoordinate), parent, configRegistry, initialValue);
 	}
 	
 }
