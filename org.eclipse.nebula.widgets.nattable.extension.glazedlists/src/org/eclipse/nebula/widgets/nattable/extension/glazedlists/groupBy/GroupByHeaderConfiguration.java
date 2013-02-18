@@ -25,7 +25,6 @@ import org.eclipse.nebula.widgets.nattable.ui.action.CellDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
 
 public class GroupByHeaderConfiguration extends AbstractRegistryConfiguration {
 	
@@ -50,13 +49,12 @@ public class GroupByHeaderConfiguration extends AbstractRegistryConfiguration {
 							protected boolean isValidTargetColumnPosition(
 									ILayer natLayer,
 									int dragFromGridColumnPosition,
-									int dragToGridColumnPosition,
-									MouseEvent event) {
+									int dragToGridColumnPosition) {
 								// Suppress reorder if cursor is over the group by region
-								LabelStack regionLabels = natLayer.getRegionLabelsByXY(event.x, event.y);
+								LabelStack regionLabels = natLayer.getRegionLabelsByXY(this.currentEvent.x, this.currentEvent.y);
 								if (regionLabels != null && !regionLabels.hasLabel(GroupByHeaderLayer.GROUP_BY_REGION)) {
 									return super.isValidTargetColumnPosition(natLayer, dragFromGridColumnPosition,
-											dragToGridColumnPosition, event);
+											dragToGridColumnPosition);
 								}
 								return false;
 							}

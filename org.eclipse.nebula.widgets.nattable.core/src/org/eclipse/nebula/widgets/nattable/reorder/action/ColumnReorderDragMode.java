@@ -38,10 +38,10 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class ColumnReorderDragMode implements IDragMode {
 	
-	private NatTable natTable;
-	private MouseEvent initialEvent;
-	private MouseEvent currentEvent;
-	private int dragFromGridColumnPosition;
+	protected NatTable natTable;
+	protected MouseEvent initialEvent;
+	protected MouseEvent currentEvent;
+	protected int dragFromGridColumnPosition;
 	
 	protected ColumnReorderOverlayPainter targetOverlayPainter = new ColumnReorderOverlayPainter();
 	
@@ -71,7 +71,7 @@ public class ColumnReorderDragMode implements IDragMode {
 		
 		int dragToGridColumnPosition = getDragToGridColumnPosition(getMoveDirection(event.x), natTable.getColumnPositionByX(event.x));
 		
-		if (!isValidTargetColumnPosition(natTable, dragFromGridColumnPosition, dragToGridColumnPosition, event)) {
+		if (!isValidTargetColumnPosition(natTable, dragFromGridColumnPosition, dragToGridColumnPosition)) {
 			dragToGridColumnPosition = -1;
 		}
 		
@@ -119,7 +119,7 @@ public class ColumnReorderDragMode implements IDragMode {
 	    return natTable.getCellByPosition(gridColumnPosition, gridRowPosition);
 	}
 
-	protected boolean isValidTargetColumnPosition(ILayer natLayer, int dragFromGridColumnPosition, int dragToGridColumnPosition, MouseEvent event) {
+	protected boolean isValidTargetColumnPosition(ILayer natLayer, int dragFromGridColumnPosition, int dragToGridColumnPosition) {
 		return dragFromGridColumnPosition >= 0 && dragToGridColumnPosition >= 0;
 	}
 	
@@ -143,7 +143,7 @@ public class ColumnReorderDragMode implements IDragMode {
 			CellEdgeEnum moveDirection = getMoveDirection(currentEvent.x);
 			int dragToGridColumnPosition = getDragToGridColumnPosition(moveDirection, natTable.getColumnPositionByX(currentEvent.x));
 			
-			if (isValidTargetColumnPosition(natTable, dragFromGridColumnPosition, dragToGridColumnPosition, currentEvent)) {
+			if (isValidTargetColumnPosition(natTable, dragFromGridColumnPosition, dragToGridColumnPosition)) {
 				int dragToColumnHandleX = -1;
 				
 				if (moveDirection != null) {

@@ -16,7 +16,6 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.events.MouseEvent;
 
 /**
  * Extends the regular column drag functionality to work with Column groups.<br/>
@@ -29,13 +28,18 @@ import org.eclipse.swt.events.MouseEvent;
 public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
 
 	private final ColumnGroupModel model;
-	private MouseEvent event;
 
 	public ColumnHeaderReorderDragMode(ColumnGroupModel model) {
 		this.model = model;
 	}
 
+	@Override
 	public boolean isValidTargetColumnPosition(ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition) {
+		if (this.currentEvent != null) {
+			//if this method was triggered by a mouse event, we determine the to column position by the event
+			//if there is no current mouse event referenced it means the reorder is triggered programmatically
+			toGridColumnPosition = natLayer.getColumnPositionByX(this.currentEvent.x);
+		}
 		int toColumnIndex = natLayer.getColumnIndexByPosition(toGridColumnPosition);
 		int fromColumnIndex = natLayer.getColumnIndexByPosition(fromGridColumnPosition);
 
@@ -45,19 +49,12 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
 		}
 
 		boolean betweenTwoGroups = false;
-		if (event != null) {
-			int minX = event.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
-			int maxX = event.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+		if (this.currentEvent != null) {
+			int minX = this.currentEvent.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+			int maxX = this.currentEvent.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
 			betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, model);
 		}
 
 		return (!model.isPartOfAnUnbreakableGroup(toColumnIndex)) || betweenTwoGroups;
-	}
-
-	@Override
-	public boolean isValidTargetColumnPosition(ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition, MouseEvent event) {
-		this.event = event;
-		toGridColumnPosition = natLayer.getColumnPositionByX(event.x);
-		return isValidTargetColumnPosition(natLayer, fromGridColumnPosition, toGridColumnPosition);
 	}
 }

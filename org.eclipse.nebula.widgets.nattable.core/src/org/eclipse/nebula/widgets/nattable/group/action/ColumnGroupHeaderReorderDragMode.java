@@ -20,7 +20,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.events.MouseEvent;
 
 /**
  * Default {@link IDragMode} invoked for 'left click + drag' on the column group header.<br/>
@@ -34,30 +33,28 @@ import org.eclipse.swt.events.MouseEvent;
 public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 
 	private final ColumnGroupModel model;
-	private MouseEvent event;
 
 	public ColumnGroupHeaderReorderDragMode(ColumnGroupModel model) {
 		this.model = model;
-	}
-
-	@Override
-	protected boolean isValidTargetColumnPosition(ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition, MouseEvent event) {
-		this.event = event;
-		toGridColumnPosition = natLayer.getColumnPositionByX(event.x);
-		return isValidTargetColumnPosition(natLayer, fromGridColumnPosition, toGridColumnPosition);
 	}
 
 	/**
 	 * Work off the event coordinates since the drag {@link ColumnReorderDragMode} adjusts the
 	 * 'to' column positions (for on screen semantics)
 	 */
+	@Override
 	protected boolean isValidTargetColumnPosition(ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition) {
+		if (this.currentEvent != null) {
+			//if this method was triggered by a mouse event, we determine the to column position by the event
+			//if there is no current mouse event referenced it means the reorder is triggered programmatically
+			toGridColumnPosition = natLayer.getColumnPositionByX(this.currentEvent.x);
+		}
 		int toColumnIndex = natLayer.getColumnIndexByPosition(toGridColumnPosition);
 
 		boolean betweenGroups = false;
-		if(event != null){
-			int minX = event.x -  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
-			int maxX = event.x +  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+		if(this.currentEvent != null){
+			int minX = this.currentEvent.x -  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+			int maxX = this.currentEvent.x +  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
 			betweenGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, model);
 		}
 
