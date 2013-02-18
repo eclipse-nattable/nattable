@@ -22,7 +22,8 @@
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.builder/bin"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.dataset/bin"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/bin"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="../target-platform/dependencies/glazedlists_java15-1.8.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="../target-platform/dependencies/glazedlists-1.8.0_java15.jar"/>
+            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.poi_3.7.0.v201301211856.jar"/>
             <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.lang_2.4.0.v20081016-1030.jar"/>
             <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.logging_1.0.4.v200904062259.jar"/>
             <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.commands_3.5.0.I20090525-2000.jar"/>
