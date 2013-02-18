@@ -13,13 +13,13 @@ package org.eclipse.nebula.widgets.nattable.freeze.command;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 
-class FreezeColumnStrategy implements IFreezeCoordinatesProvider {
+public class FreezeColumnStrategy implements IFreezeCoordinatesProvider {
 
 	private final FreezeLayer freezeLayer;
 	
 	private final int columnPosition;
 
-	FreezeColumnStrategy(FreezeLayer freezeLayer, int columnPosition) {
+	public FreezeColumnStrategy(FreezeLayer freezeLayer, int columnPosition) {
 		this.freezeLayer = freezeLayer;
 		this.columnPosition = columnPosition;
 	}

@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.freeze.command;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 
-interface IFreezeCoordinatesProvider {
+public interface IFreezeCoordinatesProvider {
 	
 	public PositionCoordinate getTopLeftPosition();
 	

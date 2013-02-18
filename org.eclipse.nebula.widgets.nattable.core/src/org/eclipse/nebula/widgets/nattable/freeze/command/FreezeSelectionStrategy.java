@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
+public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 
 	private final FreezeLayer freezeLayer;
 
@@ -23,7 +23,7 @@ class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 	
 	private final SelectionLayer selectionLayer;
 
-	FreezeSelectionStrategy(FreezeLayer freezeLayer, ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
+	public FreezeSelectionStrategy(FreezeLayer freezeLayer, ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
 		this.freezeLayer = freezeLayer;
 		this.viewportLayer = viewportLayer;
 		this.selectionLayer = selectionLayer;

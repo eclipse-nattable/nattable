@@ -19,11 +19,11 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 public class FreezeCommandHandler extends AbstractLayerCommandHandler<IFreezeCommand> {
 
-	private final FreezeLayer freezeLayer;
+	protected final FreezeLayer freezeLayer;
 	
-	private final ViewportLayer viewportLayer;
+	protected final ViewportLayer viewportLayer;
 	
-	private final SelectionLayer selectionLayer;
+	protected final SelectionLayer selectionLayer;
 
 	public FreezeCommandHandler(FreezeLayer freezeLayer, ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
 		this.freezeLayer = freezeLayer;
