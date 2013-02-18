@@ -152,12 +152,15 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
 			bottomRightPosition = new PositionCoordinate(this.freezeLayer, 
 					Integer.valueOf(columnPosition), Integer.valueOf(rowPosition));
 		}
-		
-		if (topLeftPosition.columnPosition == -1 && topLeftPosition.rowPosition == -1
-				&& bottomRightPosition.columnPosition == -1 && bottomRightPosition.rowPosition == -1) {
-			FreezeHelper.unfreeze(this.freezeLayer, this.viewportLayer);
-		} else {
-			FreezeHelper.freeze(this.freezeLayer, this.viewportLayer, topLeftPosition, bottomRightPosition);
+
+		//only restore a freeze state if there is one persisted
+		if (topLeftPosition != null && bottomRightPosition != null) {
+			if (topLeftPosition.columnPosition == -1 && topLeftPosition.rowPosition == -1
+					&& bottomRightPosition.columnPosition == -1 && bottomRightPosition.rowPosition == -1) {
+				FreezeHelper.unfreeze(this.freezeLayer, this.viewportLayer);
+			} else {
+				FreezeHelper.freeze(this.freezeLayer, this.viewportLayer, topLeftPosition, bottomRightPosition);
+			}
 		}
 		
 		super.loadState(prefix, properties);
