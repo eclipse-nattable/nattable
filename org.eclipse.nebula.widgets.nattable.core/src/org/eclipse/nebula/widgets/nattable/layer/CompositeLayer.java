@@ -264,14 +264,14 @@ public class CompositeLayer extends AbstractLayer {
      * @param x pixel position - starts from 0
      */
     public int getColumnPositionByX(int x) {
-    	Point layoutCoordinate = getLayoutXYByPixelXY(x, 0);
-    	if (layoutCoordinate == null) {
+    	int layoutX = getLayoutXByPixelX(x);
+    	if (layoutX < 0) {
     		return -1;
     	}
-		ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
-		int childX = x - getWidthOffset(layoutCoordinate.x);
+		ILayer childLayer = childLayerLayout[layoutX][0];
+		int childX = x - getWidthOffset(layoutX);
 		int childColumnPosition = childLayer.getColumnPositionByX(childX);
-		return getColumnPositionOffset(layoutCoordinate.x) + childColumnPosition;
+		return getColumnPositionOffset(layoutX) + childColumnPosition;
 	}
 
     public int getStartXOfColumnPosition(int columnPosition) {
@@ -415,14 +415,14 @@ public class CompositeLayer extends AbstractLayer {
 	 * @param x Mouse event Y position.
 	 */
     public int getRowPositionByY(int y) {
-    	Point layoutCoordinate = getLayoutXYByPixelXY(0, y);
-		if (layoutCoordinate == null) {
+    	int layoutY = getLayoutYByPixelY(y);
+		if (layoutY < 0) {
 			return -1;
 		}
-		ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
-		int childY = y - getHeightOffset(layoutCoordinate.y);
+		ILayer childLayer = childLayerLayout[0][layoutY];
+		int childY = y - getHeightOffset(layoutY);
 		int childRowPosition = childLayer.getRowPositionByY(childY);
-		return getRowPositionOffset(layoutCoordinate.y) + childRowPosition;
+		return getRowPositionOffset(layoutY) + childRowPosition;
 	}
 
     public int getStartYOfRowPosition(int rowPosition) {
@@ -680,6 +680,42 @@ public class CompositeLayer extends AbstractLayer {
 			}
 		}
 		return null;
+	}
+	
+	protected int getLayoutXByPixelX(int x) {
+		int layoutX = 0;
+		while (layoutX < layoutXCount) {
+			ILayer childLayer = childLayerLayout[layoutX][0];
+			if (childLayer == null) {
+				return -1;
+			}
+			int widthOffset = getWidthOffset(layoutX);
+			if (x >= widthOffset && x < widthOffset + childLayer.getWidth()) {
+				return layoutX;
+			}
+
+			layoutX++;
+		}
+		
+		return -1;
+	}
+	
+	protected int getLayoutYByPixelY(int y) {
+		int layoutY = 0;
+		while (layoutY < layoutYCount) {
+			ILayer childLayer = getChildLayerByLayoutCoordinate(0, layoutY);
+			if (childLayer == null) {
+				return -1;
+			}
+			int heightOffset = getHeightOffset(layoutY);
+			if (y >= heightOffset && y < heightOffset + childLayer.getHeight()) {
+				return layoutY;
+			}
+
+			layoutY++;
+		}
+		
+		return -1;
 	}
 	
 	protected Point getLayoutXYByPixelXY(int x, int y) {
