@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.freeze;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeColumnCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezePositionCommand;
+import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeRowCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.command.UnFreezeGridCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.event.FreezeEvent;
@@ -26,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
  * appropriate commands instead of using this helper directly.
  * 
  * @see FreezeColumnCommand
+ * @see FreezeRowCommand
  * @see FreezePositionCommand
  * @see FreezeSelectionCommand
  * @see UnFreezeGridCommand
@@ -46,6 +48,7 @@ public class FreezeHelper {
 	 * @param bottomRightPosition The bottom right position of the freeze area
 	 * 
 	 * @see FreezeColumnCommand
+	 * @see FreezeRowCommand
 	 * @see FreezePositionCommand
 	 * @see FreezeSelectionCommand
 	 */
@@ -80,12 +83,22 @@ public class FreezeHelper {
 			throw new IllegalArgumentException("freezeLayer and viewportLayer can not be null!"); //$NON-NLS-1$
 		}
 		
-		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
+		resetViewport(freezeLayer, viewportLayer);
 		
 		freezeLayer.setTopLeftPosition(-1, -1);
 		freezeLayer.setBottomRightPosition(-1, -1);
 		
-		viewportLayer.resetOrigin(Math.max(0, topLeftPosition.columnPosition), Math.max(0,topLeftPosition.rowPosition));
 		viewportLayer.fireLayerEvent(new UnfreezeEvent(viewportLayer));
+	}
+	
+	/**
+	 * Helper method to reset the origin coordinates of the viewport. Is needed to perform an 
+	 * unfreeze or to override a current frozen state.
+	 * @param freezeLayer The FreezeLayer of the grid to perform the freeze action.
+	 * @param viewportLayer The ViewportLayer of the grid to perform the freeze action.
+	 */
+	public static void resetViewport(FreezeLayer freezeLayer, ViewportLayer viewportLayer) {
+		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
+		viewportLayer.resetOrigin(Math.max(0, topLeftPosition.columnPosition), Math.max(0,topLeftPosition.rowPosition));
 	}
 }
