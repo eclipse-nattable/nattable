@@ -433,7 +433,10 @@ public class NatCombo extends Composite {
 					}
 				}
 
-				dropdownList.select(getItemIndexByMousePosition(e.y));
+				int index = getItemIndexByMousePosition(e.y);
+				if (index >= 0) {
+					dropdownList.select(index);
+				}
 			}
 		});
 		
@@ -447,13 +450,15 @@ public class NatCombo extends Composite {
 					//this is why we need to correct that behaviour in here
 					if (e.stateMask == SWT.CTRL) {
 						int index = getItemIndexByMousePosition(e.y);
-						java.util.List<String> currentUserSelection = Arrays.asList(getTextAsArray());
-						
-						if (currentUserSelection.contains(dropdownList.getItems()[index])) {
-							dropdownList.deselect(index);
-						}
-						else {
-							dropdownList.select(index);
+						if (index >= 0) {
+							java.util.List<String> currentUserSelection = Arrays.asList(getTextAsArray());
+							
+							if (currentUserSelection.contains(dropdownList.getItems()[index])) {
+								dropdownList.deselect(index);
+							}
+							else {
+								dropdownList.select(index);
+							}
 						}
 					}
 				}
@@ -506,8 +511,13 @@ public class NatCombo extends Composite {
 	 * Calculates the index of the item at given mouse y position.
 	 * @param mouseY The y coordinate of the current mouse position
 	 * @return The index of the item within the list of combo box items
+	 * 			or -1 if there are no visible items or there is no
+	 * 			visible item selected
 	 */
 	private int getItemIndexByMousePosition(int mouseY) {
+		if (getVisibleItemCount() == 0) {
+			return -1;
+		}
 		int itemHeight = dropdownShell.getSize().y / getVisibleItemCount();
 
 		//operate on the visible items
@@ -592,27 +602,26 @@ public class NatCombo extends Composite {
 	private void calculateBounds() {
 		if (dropdownShell != null && !dropdownShell.isDisposed()) {
 			Point size = getSize();
-			int itemCount = dropdownList.getItemCount();
-			if (itemCount > 0) {
-				//calculate the height by multiplying the number of visible items with
-				//the item height of items in the list and adding 2 to work around a
-				//calculation error regarding the descent of the font metrics for the 
-				//last shown item
-				int listHeight = getVisibleItemCount() * dropdownList.getItemHeight() + 2;
-				int listWidth = dropdownList.computeSize(SWT.DEFAULT, listHeight).x;
-				if (listWidth < size.x) {
-					listWidth = size.x;
-				}
-				dropdownList.setSize(listWidth, listHeight);
-				
-				Point textPosition = text.toDisplay(text.getLocation());
-				
-				dropdownShell.setBounds(
-						textPosition.x, 
-						textPosition.y + text.getBounds().height, 
-						listWidth, 
-						listHeight);
+			//calculate the height by multiplying the number of visible items with
+			//the item height of items in the list and adding 2 to work around a
+			//calculation error regarding the descent of the font metrics for the 
+			//last shown item
+			//Note: if there are no items to show in the combo, calculate with the item count of
+			//		3 so an empty combo will open
+			int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount() : 3) * dropdownList.getItemHeight() + 2;
+			int listWidth = dropdownList.computeSize(SWT.DEFAULT, listHeight).x;
+			if (listWidth < size.x) {
+				listWidth = size.x;
 			}
+			dropdownList.setSize(listWidth, listHeight);
+			
+			Point textPosition = text.toDisplay(text.getLocation());
+			
+			dropdownShell.setBounds(
+					textPosition.x, 
+					textPosition.y + text.getBounds().height, 
+					listWidth, 
+					listHeight);
 		}
 	}
 
