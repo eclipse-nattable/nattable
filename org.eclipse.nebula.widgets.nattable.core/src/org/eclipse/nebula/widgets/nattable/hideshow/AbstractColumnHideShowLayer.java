@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -210,8 +211,25 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
 	// Hide/show
 
+	/**
+	 * Will check if the column at the specified index is hidden or not. Checks this
+	 * layer and also the sublayers for the visibility.
+	 * Note: As the {@link ColumnGroup}s are created index based, this method only
+	 * 		 works correctly with indexes rather than positions.
+	 * @param columnIndex The column index of the column whose visibility state
+	 * 			should be checked.
+	 * @return <code>true</code> if the column at the specified index is hidden,
+	 * 			<code>false</code> if it is visible.
+	 */
 	public abstract boolean isColumnIndexHidden(int columnIndex);
 
+	/**
+	 * Will collect and return all indexes of the columns that are hidden in this layer.
+	 * Note: It is not intended that it also collects the column indexes of underlying
+	 * 		 layers. This would cause issues on calculating positions as every layer
+	 * 		 is responsible for those calculations itself. 
+	 * @return Collection of all column indexes that are hidden in this layer.
+	 */
 	public abstract Collection<Integer> getHiddenColumnIndexes();
 
 	// Cache

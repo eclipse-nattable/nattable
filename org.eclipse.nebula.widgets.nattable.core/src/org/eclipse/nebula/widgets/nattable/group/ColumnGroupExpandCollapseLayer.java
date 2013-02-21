@@ -61,12 +61,6 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 		Collection<Integer> hiddenColumnIndexes = new HashSet<Integer>();
 
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		//if the underlying layer is of type AbstractColumnHideShowLayer, we need to collect
-		//the hidden indexes from there too
-		if (underlyingLayer instanceof AbstractColumnHideShowLayer) {
-			hiddenColumnIndexes.addAll(((AbstractColumnHideShowLayer) underlyingLayer).getHiddenColumnIndexes());
-		}
-		
 		int underlyingColumnCount = underlyingLayer.getColumnCount();
 		for (int i = 0; i < underlyingColumnCount; i++) {
 			int columnIndex = underlyingLayer.getColumnIndexByPosition(i);
