@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.hideshow;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -82,7 +83,23 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 	public int getColumnPositionByIndex(int columnIndex) {
 		return getCachedVisibleColumnIndexes().indexOf(Integer.valueOf(columnIndex));
 	}
+	
+	public Collection<Integer> getColumnPositionsByIndexes(int[] columnIndexes) {
+		Collection<Integer> columnPositions = new HashSet<Integer>();
+		for (int columnIndex : columnIndexes) {
+			columnPositions.add(Integer.valueOf(getColumnPositionByIndex(columnIndex)));
+		}
+		return columnPositions;
+	}
 
+	public Collection<Integer> getColumnPositionsByIndexes(List<Integer> columnIndexes) {
+		int[] indexArray = new int[columnIndexes.size()];
+		for (int i = 0; i < columnIndexes.size(); i++) {
+			indexArray[i] = columnIndexes.get(i);
+		}
+		return getColumnPositionsByIndexes(indexArray);
+	}
+	
 	@Override
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
 		int columnIndex = getColumnIndexByPosition(localColumnPosition);

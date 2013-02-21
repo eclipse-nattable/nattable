@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.group.command;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
@@ -47,17 +48,31 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 			return true;
 		}
 		
+		List<Integer> columnIndexes = new ArrayList<Integer>(columnGroup.getMembers());
+		columnIndexes.removeAll(columnGroup.getStaticColumnIndexes());
+		
 		boolean wasCollapsed = columnGroup.isCollapsed();
+		
+		if (wasCollapsed) {
+			//we need to cleanup the column position list before we toggle
+			//because the columns are hidden before the toggle and will be 
+			//visible afterwards
+			cleanupColumnIndexes(columnIndexes);
+		}
+		
 		columnGroup.toggleCollapsed();
 		
-		List<Integer> columnPositions = new ArrayList<Integer>(columnGroup.getMembers());
-		columnPositions.removeAll(columnGroup.getStaticColumnIndexes());
+		if (!wasCollapsed) {
+			//we need to cleanup the column position list after we toggle
+			//because the columns are hidden now
+			cleanupColumnIndexes(columnIndexes);
+		}
 		
 		ILayerEvent event;
 		if (wasCollapsed) {
-			event = new ShowColumnPositionsEvent(columnGroupExpandCollapseLayer, columnPositions);
+			event = new ShowColumnPositionsEvent(columnGroupExpandCollapseLayer, columnIndexes);
 		} else {
-			event = new HideColumnPositionsEvent(columnGroupExpandCollapseLayer, columnPositions);
+			event = new HideColumnPositionsEvent(columnGroupExpandCollapseLayer, columnIndexes);
 		}
 		
 		columnGroupExpandCollapseLayer.fireLayerEvent(event);
@@ -65,4 +80,19 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 		return true;
 	}
 
+	/**
+	 * Will clean up the given list of column indexes for a column group, so only those
+	 * column indexes will stay in the list that are relevant for the hide/show column
+	 * events.
+	 * @param columnIndexes The column indexes to cleanup.
+	 */
+	private void cleanupColumnIndexes(List<Integer> columnIndexes) {
+		for (Iterator<Integer> it = columnIndexes.iterator(); it.hasNext();) {
+			Integer columnIndex = it.next();
+			
+			if (!columnGroupExpandCollapseLayer.isColumnIndexHidden(columnIndex)) {
+				it.remove();
+			}
+		}
+	}
 }

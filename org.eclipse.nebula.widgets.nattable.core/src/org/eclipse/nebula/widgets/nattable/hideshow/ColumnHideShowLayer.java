@@ -124,12 +124,4 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 		fireLayerEvent(new ShowColumnPositionsEvent(this, hiddenColumns));
 	}
 	
-	private Collection<Integer> getColumnPositionsByIndexes(int[] columnIndexes) {
-		Collection<Integer> columnPositions = new HashSet<Integer>();
-		for (int columnIndex : columnIndexes) {
-			columnPositions.add(Integer.valueOf(getColumnPositionByIndex(columnIndex)));
-		}
-		return columnPositions;
-	}
-	
 }
