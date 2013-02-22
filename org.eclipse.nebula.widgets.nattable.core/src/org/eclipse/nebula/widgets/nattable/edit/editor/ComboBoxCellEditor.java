@@ -387,12 +387,11 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	}
 	
 	/**
-	 * Registers listeners on the combo
-	 * to do some actions : commit, close and hide dropdown list.
+	 * Registers special listeners to the {@link NatCombo} regarding the {@link EditModeEnum},
+	 * that are needed to commit/close or change the visibility state of the {@link NatCombo}
+	 * dependent on UI interactions.
 	 * 
-	 * 
-	 * @param combo
-	 *        the combo on which we add the listeners
+	 * @param combo The {@link NatCombo} to add the listeners to.
 	 */
 	protected void addNatComboListener(final NatCombo combo){
 		combo.addKeyListener(new KeyAdapter() {
