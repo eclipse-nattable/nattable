@@ -285,7 +285,7 @@ public class NatCombo extends Composite {
 	 * @param style The style for the Text Control to construct. Uses this style
 	 * 			adding internal styles via ConfigRegistry.
 	 */
-	private void createTextControl(int style) {
+	protected void createTextControl(int style) {
 		int widgetStyle = style | (freeEdit ? 
 				HorizontalAlignmentEnum.getSWTStyle(cellStyle) : 
 					HorizontalAlignmentEnum.getSWTStyle(cellStyle) | SWT.READ_ONLY);
@@ -401,7 +401,7 @@ public class NatCombo extends Composite {
 	 * Create the dropdown control of this NatCombo, adding styles, look&feel and
 	 * needed listeners for the control only.
 	 */
-	private void createDropdownControl() {
+	protected void createDropdownControl() {
 		dropdownShell = new Shell(getShell(), SWT.MODELESS);
 		dropdownShell.setLayout(new FillLayout());
 

@@ -55,7 +55,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	/**
 	 * The maximum number of items the drop down will show before introducing a scroll bar.
 	 */
-	private int maxVisibleItems;
+	protected int maxVisibleItems;
 	
 	/**
 	 * The list of canonical values that will be set as selectable items to the combo.
@@ -85,20 +85,20 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 * Flag that indicates whether this ComboBoxCellEditor supports free editing in the
 	 * text control of the NatCombo or not. By default free editing is disabled.
 	 */
-	private boolean freeEdit;
+	protected boolean freeEdit;
 	
 	/**
 	 * Flag that indicates whether this ComboBoxCellEditor supports multiple selection or not.
 	 * By default multiple selection is disabled.
 	 */
-	private boolean multiselect;
+	protected boolean multiselect;
 	
 	/**
 	 * String that is used to separate values in the String representation showed
 	 * in the text control if multiselect is supported. <code>null</code> to use the 
 	 * default String ", ".
 	 */
-	private String multiselectValueSeparator = null;
+	protected String multiselectValueSeparator = null;
 	
 	/**
 	 * String that is used to prefix the generated String representation showed
@@ -106,7 +106,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 * multiselection to the user. If this value is <code>null</code> the default 
 	 * String "[" is used.
 	 */
-	private String multiselectTextPrefix = null;
+	protected String multiselectTextPrefix = null;
 	
 	/**
 	 * String that is used to suffix the generated String representation showed
@@ -114,7 +114,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 * multiselection to the user. If this value is <code>null</code> the default 
 	 * String "]" is used.
 	 */
-	private String multiselectTextSuffix = null;
+	protected String multiselectTextSuffix = null;
 	
 	/**
 	 * The image to use as overlay to the {@link Text} Control if the dropdown
@@ -122,7 +122,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 * If this value is <code>null</code> the default image specified in NatCombo
 	 * will be used.
 	 */
-	private Image iconImage;
+	protected Image iconImage;
 	
 	/**
 	 * Create a new single selection {@link ComboBoxCellEditor} based on the given list of items,
@@ -382,6 +382,19 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 			combo.setMultiselectTextBracket(this.multiselectTextPrefix, this.multiselectTextSuffix);
 		}
 		
+		addNatComboListener(combo);
+		return combo;
+	}
+	
+	/**
+	 * Registers listeners on the combo
+	 * to do some actions : commit, close and hide dropdown list.
+	 * 
+	 * 
+	 * @param combo
+	 *        the combo on which we add the listeners
+	 */
+	protected void addNatComboListener(final NatCombo combo){
 		combo.addKeyListener(new KeyAdapter() {
 
 			@Override
@@ -420,8 +433,6 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 				}
 			});
 		}
-		
-		return combo;
 	}
 
 	/**
