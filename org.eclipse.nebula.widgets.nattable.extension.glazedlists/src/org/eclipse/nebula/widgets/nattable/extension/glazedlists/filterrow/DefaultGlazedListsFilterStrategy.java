@@ -58,17 +58,17 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	 * Create GlazedLists matcher editors and apply them to facilitate filtering.
 	 */
 	@SuppressWarnings("unchecked")
-	public void applyFilter(Map<Integer, Object> filterObjectByIndex) {
+	public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
 		try {
 			matcherEditor.getMatcherEditors().clear();
 			
-			if (filterObjectByIndex.isEmpty()) {
+			if (filterIndexToObjectMap.isEmpty()) {
 				return;
 			}
 			
 			EventList<MatcherEditor<T>> matcherEditors = new BasicEventList<MatcherEditor<T>>();
 
-			for (Entry<Integer, Object> mapEntry : filterObjectByIndex.entrySet()) {
+			for (Entry<Integer, Object> mapEntry : filterIndexToObjectMap.entrySet()) {
 				Integer columnIndex = mapEntry.getKey();
 				String filterText = getStringFromColumnObject(columnIndex, mapEntry.getValue());
 				

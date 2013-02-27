@@ -41,7 +41,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 	private final IDataProvider columnHeaderDataProvider;
 	private final IConfigRegistry configRegistry;
 	
-	private Map<Integer, Object> filterObjectByIndex = new HashMap<Integer, Object>();
+	private Map<Integer, Object> filterIndexToObjectMap = new HashMap<Integer, Object>();
 	private int rowCount = 1;
 	
 	public FilterRowDataProvider(IFilterStrategy<T> filterStrategy, ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider, IConfigRegistry configRegistry) {
@@ -50,13 +50,17 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 		this.columnHeaderDataProvider = columnHeaderDataProvider;
 		this.configRegistry = configRegistry;
 	}
+	
+	public void setFilterIndexToObjectMap(Map<Integer, Object> filterIndexToObjectMap) {
+		this.filterIndexToObjectMap = filterIndexToObjectMap;
+	}
 
 	public int getColumnCount() {
 		return columnHeaderDataProvider.getColumnCount();
 	}
 
 	public Object getDataValue(int columnIndex, int rowIndex) {
-		return filterObjectByIndex.get(columnIndex);
+		return filterIndexToObjectMap.get(columnIndex);
 	}
 
 	public int getRowCount() {
@@ -71,12 +75,12 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 		columnIndex = columnHeaderLayer.getColumnIndexByPosition(columnIndex);
 
 		if (ObjectUtils.isNotNull(newValue)) {
-			filterObjectByIndex.put(columnIndex, newValue);
+			filterIndexToObjectMap.put(columnIndex, newValue);
 		} else {
-			filterObjectByIndex.remove(columnIndex);
+			filterIndexToObjectMap.remove(columnIndex);
 		}
 
-		filterStrategy.applyFilter(filterObjectByIndex);
+		filterStrategy.applyFilter(filterIndexToObjectMap);
 
 		columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(columnHeaderLayer));
 	}
@@ -85,10 +89,10 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
 	public void saveState(String prefix, Properties properties) {
 		Map<Integer, String> filterTextByIndex = new HashMap<Integer, String>();
-		for(Integer columnIndex : filterObjectByIndex.keySet()){
+		for(Integer columnIndex : filterIndexToObjectMap.keySet()){
 			final IDisplayConverter converter = configRegistry.getConfigAttribute(
 					FILTER_DISPLAY_CONVERTER, NORMAL, FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
-			filterTextByIndex.put(columnIndex, (String) converter.canonicalToDisplayValue(filterObjectByIndex.get(columnIndex)));
+			filterTextByIndex.put(columnIndex, (String) converter.canonicalToDisplayValue(filterIndexToObjectMap.get(columnIndex)));
 		}
 		
 		String string = PersistenceUtils.mapAsString(filterTextByIndex);
@@ -99,7 +103,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 	}
 	
 	public void loadState(String prefix, Properties properties) {
-		filterObjectByIndex.clear();
+		filterIndexToObjectMap.clear();
 		
 		try {
 			Object property = properties.get(prefix + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
@@ -107,18 +111,18 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 			for (Integer columnIndex : filterTextByIndex.keySet()) {
 				final IDisplayConverter converter = configRegistry.getConfigAttribute(
 						FILTER_DISPLAY_CONVERTER, NORMAL, FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
-				filterObjectByIndex.put(columnIndex, converter.displayToCanonicalValue(filterTextByIndex.get(columnIndex)));
+				filterIndexToObjectMap.put(columnIndex, converter.displayToCanonicalValue(filterTextByIndex.get(columnIndex)));
 			}
 		} catch (Exception e) {
 			System.err.println("Error while restoring filter row text: " + e.getMessage()); //$NON-NLS-1$
 		}
 		
-		filterStrategy.applyFilter(filterObjectByIndex);
+		filterStrategy.applyFilter(filterIndexToObjectMap);
 	}
 
 	public void clearAllFilters() {
-		filterObjectByIndex.clear();
-		filterStrategy.applyFilter(filterObjectByIndex);
+		filterIndexToObjectMap.clear();
+		filterStrategy.applyFilter(filterIndexToObjectMap);
 	}
 	
 }

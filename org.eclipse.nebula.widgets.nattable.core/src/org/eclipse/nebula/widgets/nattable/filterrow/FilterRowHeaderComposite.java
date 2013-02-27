@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
-import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
@@ -32,7 +31,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent
  */
 public class FilterRowHeaderComposite<T> extends CompositeLayer {
 
-	private final DataLayer filterRowDataLayer;
+	private final FilterRowDataLayer<T> filterRowDataLayer;
 	private boolean filterRowVisible = true;
 	
 	public FilterRowHeaderComposite(IFilterStrategy<T> filterStrategy, ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider, IConfigRegistry configRegistry) {
@@ -44,6 +43,10 @@ public class FilterRowHeaderComposite<T> extends CompositeLayer {
 		DimensionallyDependentLayer filterRowLayer = new DimensionallyDependentLayer(filterRowDataLayer, columnHeaderLayer, filterRowDataLayer);
 
 		setChildLayer(GridRegion.FILTER_ROW, filterRowLayer, 0, 1);
+	}
+	
+	public FilterRowDataLayer<T> getFilterRowDataLayer() {
+		return filterRowDataLayer;
 	}
 
 	@Override

@@ -47,8 +47,8 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
 	 * Always adds the static matchers.
 	 */
 	@Override
-	public void applyFilter(Map<Integer, Object> filterObjectByIndex) {
-		super.applyFilter(filterObjectByIndex);
+	public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
+		super.applyFilter(filterIndexToObjectMap);
 		this.matcherEditor.getMatcherEditors().addAll(staticMatcherEditor.values());
 	}
 	

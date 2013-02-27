@@ -47,6 +47,10 @@ public class FilterRowDataLayer<T> extends DataLayer {
 
 		addConfiguration(new DefaultFilterRowConfiguration());
 	}
+	
+	public FilterRowDataProvider<T> getFilterRowDataProvider() {
+		return dataProvider;
+	}
 
 	@Override
 	public boolean doCommand(ILayerCommand command) {
