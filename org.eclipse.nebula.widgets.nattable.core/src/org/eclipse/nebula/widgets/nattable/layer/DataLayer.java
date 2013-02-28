@@ -21,7 +21,6 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ResizeStructuralRefreshEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommandHandler;
@@ -83,7 +82,6 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		super.loadState(prefix, properties);
 		columnWidthConfig.loadState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH, properties);
 		rowHeightConfig.loadState(prefix + PERSISTENCE_KEY_ROW_HEIGHT, properties);
-		fireLayerEvent(new StructuralRefreshEvent(this));
 	}
 
 	// Configuration

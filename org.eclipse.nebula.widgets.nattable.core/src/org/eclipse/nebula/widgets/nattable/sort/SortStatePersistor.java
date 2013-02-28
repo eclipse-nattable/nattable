@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+import org.eclipse.swt.custom.BusyIndicator;
 
 
 /**
@@ -68,6 +69,13 @@ public class SortStatePersistor<T> implements IPersistable {
 	 */
 	public void loadState(String prefix, Properties properties) {
 		
+		/*
+		 * restoring the sortState starts with a clean sortModel. This step
+		 * is necessary because there could be calls to the sortModel before
+		 * which leads to an undefined state afterwards ...
+		 */
+		sortModel.clear();
+		
 		Object savedValue = properties.get(prefix + PERSISTENCE_KEY_SORTING_STATE);
 		if(savedValue == null){
 			return;
@@ -75,29 +83,25 @@ public class SortStatePersistor<T> implements IPersistable {
 		
 		try{
 			
-			/*
-			 * restoring the sortState starts with a clean sortModel. This step
-			 * is necessary because there could be calls to the sortModel before
-			 * which leads to an undefined state afterwards ...
-			 */
-			sortModel.clear();
-			
 			String savedState = savedValue.toString();
 			String[] sortedColumns = savedState.split("\\|"); //$NON-NLS-1$
-			List<SortState> stateInfo = new ArrayList<SortState>();
+			final List<SortState> stateInfo = new ArrayList<SortState>();
 
 			// Parse string
 			for (String token : sortedColumns) {
 				stateInfo.add(getSortStateFromString(token));
 			}
 
-			// Order by the sort order
-			Collections.sort(stateInfo, new SortStateComparator());
-
 			// Restore to the model
-			for (SortState state : stateInfo) {
-				sortModel.sort(state.columnIndex, state.sortDirection, true);
-			}
+			BusyIndicator.showWhile(null, new Runnable() {
+				
+				@Override
+				public void run() {
+					for (SortState state : stateInfo) {
+						sortModel.sort(state.columnIndex, state.sortDirection, false);
+					}
+				}
+			});
 		}
 		catch(Exception ex){
 			sortModel.clear();

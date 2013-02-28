@@ -465,6 +465,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	 */
 	public void loadState(String prefix, Properties properties) {
 		underlyingLayer.loadState(prefix, properties);
+		doCommand(new StructuralRefreshCommand());
 	}
 
 	/**
