@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.examples.examples._130_Sorting;
 
 import java.util.Comparator;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -26,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.examples.fixtures.GlazedListsGridLaye
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
@@ -33,6 +33,8 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
+import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -101,7 +103,18 @@ public class SortableGridExample extends AbstractNatExample {
 		nattable.addConfiguration(getCustomComparatorConfiguration(glazedListsGridLayer.getColumnHeaderLayerStack().getDataLayer()));
 		nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
 
+		nattable.addConfiguration(new HeaderMenuConfiguration(nattable) {
+			@Override
+			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+				return super.createColumnHeaderMenu(natTable).withStateManagerMenuItemProvider();
+			}
+		});
+		
 		nattable.configure();
+		
+		//add the DisplayPersistenceDialogCommandHandler with the created NatTable instance after configure()
+		//so all configuration and states are correctly applied before storing the default state
+		glazedListsGridLayer.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(nattable));
 		return nattable;
 	}
 

@@ -12,10 +12,7 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 import java.util.Properties;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
-import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Assert;
 import org.junit.Before;
@@ -76,8 +73,6 @@ public class DataLayerPersistenceTest {
 		
 		Assert.assertTrue(dataLayer.isColumnPercentageSizing());
 		Assert.assertFalse(dataLayer.isRowPercentageSizing());
-
-		Assert.assertTrue(listener.containsInstanceOf(StructuralRefreshEvent.class));
 	}
 	
 }

@@ -82,7 +82,6 @@ public class SortStatePersistor<T> implements IPersistable {
 		}
 		
 		try{
-			
 			String savedState = savedValue.toString();
 			String[] sortedColumns = savedState.split("\\|"); //$NON-NLS-1$
 			final List<SortState> stateInfo = new ArrayList<SortState>();
@@ -97,8 +96,9 @@ public class SortStatePersistor<T> implements IPersistable {
 				
 				@Override
 				public void run() {
+					Collections.sort(stateInfo, new SortStateComparator());
 					for (SortState state : stateInfo) {
-						sortModel.sort(state.columnIndex, state.sortDirection, false);
+						sortModel.sort(state.columnIndex, state.sortDirection, true);
 					}
 				}
 			});

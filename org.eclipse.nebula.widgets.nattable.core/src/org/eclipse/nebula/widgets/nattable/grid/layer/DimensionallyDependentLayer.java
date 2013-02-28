@@ -88,22 +88,22 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 
 	@Override
 	public void saveState(String prefix, Properties properties) {
-		baseLayer.saveState(prefix, properties);
 		super.saveState(prefix, properties);
+		baseLayer.saveState(prefix, properties);
 	}
 
 	@Override
 	public void loadState(String prefix, Properties properties) {
-		baseLayer.loadState(prefix, properties);
 		super.loadState(prefix, properties);
+		baseLayer.loadState(prefix, properties);
 	}
 
 	// Configuration
 	
 	@Override
 	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
-		super.configure(configRegistry, uiBindingRegistry);
 		baseLayer.configure(configRegistry, uiBindingRegistry);
+		super.configure(configRegistry, uiBindingRegistry);
 	}
 
 	// Dependent layer accessors

@@ -19,12 +19,13 @@ import java.util.TreeMap;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
 /**
  * This class stores the size configuration of rows/columns within the NatTable.
  */
-public class SizeConfig {
+public class SizeConfig implements IPersistable {
 
 	public static final String PERSISTENCE_KEY_DEFAULT_SIZE = ".defaultSize"; //$NON-NLS-1$
 	public static final String PERSISTENCE_KEY_DEFAULT_SIZES = ".defaultSizes"; //$NON-NLS-1$
@@ -77,6 +78,7 @@ public class SizeConfig {
 
 	// Persistence
 
+	@Override
 	public void saveState(String prefix, Properties properties) {
 		properties.put(prefix + PERSISTENCE_KEY_DEFAULT_SIZE, String.valueOf(defaultSize));
 		saveMap(defaultSizeMap, prefix + PERSISTENCE_KEY_DEFAULT_SIZES, properties);
@@ -99,7 +101,13 @@ public class SizeConfig {
 		}
 	}
 
+	@Override
 	public void loadState(String prefix, Properties properties) {
+		//ensure to cleanup the current states prior loading new ones
+		defaultSizeMap.clear();
+		sizeMap.clear();
+		resizablesMap.clear();
+		
 		String persistedDefaultSize = properties.getProperty(prefix + PERSISTENCE_KEY_DEFAULT_SIZE);
 		if (!StringUtils.isEmpty(persistedDefaultSize)) {
 			defaultSize = Integer.valueOf(persistedDefaultSize).intValue();

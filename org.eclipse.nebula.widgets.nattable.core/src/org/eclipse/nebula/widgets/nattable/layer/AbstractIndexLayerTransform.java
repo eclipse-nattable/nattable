@@ -85,16 +85,16 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 	 */
 	@Override
 	public void loadState(String prefix, Properties properties) {
-		underlyingLayer.loadState(prefix, properties);
 		super.loadState(prefix, properties);
+		underlyingLayer.loadState(prefix, properties);
 	}
 
 	// Configuration
 
 	@Override
 	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
-		underlyingLayer.configure(configRegistry, uiBindingRegistry);
 		super.configure(configRegistry, uiBindingRegistry);
+		underlyingLayer.configure(configRegistry, uiBindingRegistry);
 	}
 
 	@Override

@@ -67,8 +67,8 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 
 	@Override
 	public void saveState(String prefix, Properties properties) {
-		underlyingLayer.saveState(prefix, properties);
 		super.saveState(prefix, properties);
+		underlyingLayer.saveState(prefix, properties);
 	}
 
 	/**
@@ -78,8 +78,8 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 	 */
 	@Override
 	public void loadState(String prefix, Properties properties) {
-		underlyingLayer.loadState(prefix, properties);
 		super.loadState(prefix, properties);
+		underlyingLayer.loadState(prefix, properties);
 	}
 
 	// Configuration
