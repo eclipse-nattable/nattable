@@ -38,12 +38,12 @@ public class NatTableContentTooltip extends DefaultToolTip {
 	/**
 	 * The {@link NatTable} instance for which this {@link ToolTip} is used. 
 	 */
-	private NatTable natTable;
+	protected NatTable natTable;
 	/**
 	 * The regions of the {@link NatTable} for which this {@link ToolTip} is
 	 * active.
 	 */
-	private String[] tooltipRegions;
+	protected String[] tooltipRegions;
 	
 	/**
 	 * Creates a new {@link ToolTip} object, attaches it to the given {@link NatTable}
@@ -110,7 +110,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
 	 * @param painter The {@link ICellPainter} to check.
 	 * @return <code>true</code> if the painter is not a {@link PasswordTextPainter}
 	 */
-	private boolean isVisibleContentPainter(ICellPainter painter) {
+	protected boolean isVisibleContentPainter(ICellPainter painter) {
 		if (painter instanceof PasswordTextPainter) {
 			return false;
 		} else if (painter instanceof CellPainterWrapper) {
