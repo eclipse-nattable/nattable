@@ -18,6 +18,7 @@ import org.eclipse.nebula.widgets.nattable.data.validate.ValidationFailedExcepti
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractEditErrorHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IEditErrorHandler;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -37,6 +38,14 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
 	 * Needed so it is possible to operate on it dependent on the users choice.
 	 */
 	protected ICellEditor editor;
+	/**
+	 * Flag to configure if this dialog allows to commit invalid data.
+	 * This is necessary to implement cross validation in NatTable by using dialogs to
+	 * tell the user what is wrong.
+	 * By default this value is set to <code>false</code> as cross validation is not
+	 * the default validation use case.
+	 */
+	protected boolean allowCommit = false;
 	/**
 	 * The shell title that will be used if there is no conversion or validation shell title configured.
 	 */
@@ -59,21 +68,52 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
 	 * The text on the button to discard the entered value.
 	 */
 	private String discardButtonLabel = Messages.getString("DialogErrorHandlingStrategy.warningDialog.discardButton");  //$NON-NLS-1$
+	/**
+	 * The text on the button to commit the entered invalid value. Needed to support cross validation.
+	 */
+	private String commitButtonLabel = Messages.getString("DialogErrorHandlingStrategy.warningDialog.commitButton");  //$NON-NLS-1$
 
 	/**
 	 * Create a new {@link DialogErrorHandling} with no underlying {@link IEditErrorHandler}
+	 * that does not support cross validation.
 	 */
 	public DialogErrorHandling() {
-		super(null);
+		this(null, false);
+	}
+	
+	/**
+	 * Create a new {@link DialogErrorHandling} with no underlying {@link IEditErrorHandler}
+	 * that gives the opportunity to configure the error handling for cross validation.
+	 * @param allowCommit Flag to configure if this dialog allows to commit invalid data.
+	 * 			If this parameter is set to <code>true</code>, an additional button for committing
+	 * 			the invalid data will be provided within the dialog.
+	 */
+	public DialogErrorHandling(boolean allowCommit) {
+		this(null, allowCommit);
+		
+	}
+	
+	/**
+	 * Create a new {@link DialogErrorHandling} using the given {@link IEditErrorHandler} as
+	 * the underlying to allow chaining of error handling. Using this constructor there is
+	 * no cross validation support.
+	 * @param underlyingErrorHandler The underlying {@link IEditErrorHandler}
+	 */
+	public DialogErrorHandling(IEditErrorHandler underlyingErrorHandler) {
+		this(underlyingErrorHandler, false);
 	}
 	
 	/**
 	 * Create a new {@link DialogErrorHandling} using the given {@link IEditErrorHandler} as
 	 * the underlying to allow chaining of error handling.
 	 * @param underlyingErrorHandler The underlying {@link IEditErrorHandler}
+	 * @param allowCommit Flag to configure if this dialog allows to commit invalid data.
+	 * 			If this parameter is set to <code>true</code>, an additional button for committing
+	 * 			the invalid data will be provided within the dialog.
 	 */
-	public DialogErrorHandling(IEditErrorHandler underlyingErrorHandler) {
+	public DialogErrorHandling(IEditErrorHandler underlyingErrorHandler, boolean allowCommit) {
 		super(underlyingErrorHandler);
+		this.allowCommit = allowCommit;
 	}
 	
 	/**
@@ -106,20 +146,26 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
 			//conversion/validation failed - so open dialog with error message
 			
 			if (dialogMessage != null) {
+				String[] buttonLabels = this.allowCommit ?
+						new String[] {changeButtonLabel, discardButtonLabel, commitButtonLabel} :
+						new String[] {changeButtonLabel, discardButtonLabel};
 				MessageDialog warningDialog = new MessageDialog(
 						Display.getCurrent().getActiveShell(), 
 						dialogTitle, 
 						null, 
 						dialogMessage, 
 						MessageDialog.WARNING, 
-						new String[] {
-							changeButtonLabel,
-							discardButtonLabel}, 
+						buttonLabels, 
 						0);
 				
 				//if discard was selected close the editor
-				if (warningDialog.open() == 1) {
+				int returnCode = warningDialog.open();
+				if (returnCode == 1) {
 					this.editor.close();
+				}
+				//if commit was selected, commit the value by skipping the validation
+				else if (returnCode == 2) {
+					this.editor.commit(MoveDirectionEnum.NONE, true, true);
 				}
 			}
 		}
