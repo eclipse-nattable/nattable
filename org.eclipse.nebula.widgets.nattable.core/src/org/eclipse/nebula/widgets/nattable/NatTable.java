@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain;
 import org.eclipse.nebula.widgets.nattable.conflation.IEventConflater;
 import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -158,6 +159,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			public void widgetDisposed(DisposeEvent e) {
 				doCommand(new DisposeResourcesCommand());
 				conflaterChain.stop();
+				ActiveCellEditorRegistry.unregisterActiveCellEditor();
 				layer.dispose();
 			}
 
