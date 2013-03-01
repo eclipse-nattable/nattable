@@ -143,7 +143,7 @@ public class CalculatingGridExample extends AbstractNatExample {
 		final NatTable natTable = new NatTable(gridPanel, gridLayer, false);
 		natTable.setConfigRegistry(configRegistry);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new CalulatingEditConfiguration());
+		natTable.addConfiguration(new CalculatingEditConfiguration());
 		natTable.configure();
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
@@ -336,7 +336,7 @@ class CalculatingGridLayer extends GridLayer {
 /**
  * Configuration for enabling and configuring edit behaviour.
  */
-class CalulatingEditConfiguration extends AbstractRegistryConfiguration  {
+class CalculatingEditConfiguration extends AbstractRegistryConfiguration  {
 
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
