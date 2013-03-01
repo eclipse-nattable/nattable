@@ -10,6 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._131_Filtering;
 
+import static org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes.CELL_PAINTER;
+import static org.eclipse.nebula.widgets.nattable.grid.GridRegion.FILTER_ROW;
+import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.NORMAL;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -27,7 +31,9 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.PersistentNatExampleWrapper;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.FilterRowExampleGridLayer;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterIconPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -78,6 +84,12 @@ public class FilterRowGridExample extends AbstractNatExample {
 		final DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter();
 
 		public void configureRegistry(IConfigRegistry configRegistry) {
+			//override the default filter row configuration for painter
+			configRegistry.registerConfigAttribute(CELL_PAINTER, 
+					new FilterRowPainter(new FilterIconPainter(GUIHelper.getImage("filter"))), 
+					NORMAL, 
+					FILTER_ROW);
+			
 			// Configure custom comparator on the rating column
 			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.FILTER_COMPARATOR,
 					getIngnorecaseComparator(),

@@ -11,19 +11,28 @@
 package org.eclipse.nebula.widgets.nattable.filterrow.event;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.CellPainterMouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.events.MouseEvent;
 
-public class ClearFilterIconMouseEventMatcher extends FilterRowMouseEventMatcher {
+/**
+ * Specialization of a {@link CellPainterMouseEventMatcher} that only matches for the
+ * filter row region if a filter is applied in the clicked cell and the click was
+ * executed on the painted icon in that cell (usually the clear filter icon).
+ */
+public class ClearFilterIconMouseEventMatcher extends CellPainterMouseEventMatcher {
 
-	private final FilterRowPainter filterRowPainter;
-
+	/**
+	 * Create a new {@link ClearFilterIconMouseEventMatcher} for the given {@link FilterRowPainter}
+	 * @param filterRowPainter The {@link FilterRowPainter} needed to determine the filter icon painter.
+	 */
 	public ClearFilterIconMouseEventMatcher(FilterRowPainter filterRowPainter) {
-		this.filterRowPainter = filterRowPainter;
+		super(GridRegion.FILTER_ROW, MouseEventMatcher.LEFT_BUTTON, filterRowPainter.getFilterIconPainter().getClass());
 	}
 	
 	@Override
@@ -33,13 +42,6 @@ public class ClearFilterIconMouseEventMatcher extends FilterRowMouseEventMatcher
 		if (cell == null)
 			return false;
 		
-		IConfigRegistry configRegistry = natTable.getConfigRegistry();
-		
-		boolean clearFilterIconClicked = false;
-		
-		if (ObjectUtils.isNotNull(cell.getDataValue())) {
-			clearFilterIconClicked = filterRowPainter.containsRemoveFilterImage(event.x, event.y, cell, configRegistry);
-		}
-		return (super.matches(natTable, event, regionLabels) && clearFilterIconClicked);		
+		return (super.matches(natTable, event, regionLabels) && ObjectUtils.isNotNull(cell.getDataValue()));		
 	}
 }
