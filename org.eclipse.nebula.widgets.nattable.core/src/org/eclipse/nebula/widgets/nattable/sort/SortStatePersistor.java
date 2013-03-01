@@ -18,8 +18,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
-import org.eclipse.swt.custom.BusyIndicator;
 
 
 /**
@@ -29,6 +30,9 @@ import org.eclipse.swt.custom.BusyIndicator;
  * @param <T> Type of the Beans in the backing data source.
  */
 public class SortStatePersistor<T> implements IPersistable {
+	
+	private static final Log log = LogFactory.getLog(SortStatePersistor.class);
+
 	public static final String PERSISTENCE_KEY_SORTING_STATE = ".SortHeaderLayer.sortingState"; //$NON-NLS-1$
 	private final ISortModel sortModel;
 
@@ -92,21 +96,14 @@ public class SortStatePersistor<T> implements IPersistable {
 			}
 
 			// Restore to the model
-			BusyIndicator.showWhile(null, new Runnable() {
-				
-				@Override
-				public void run() {
-					Collections.sort(stateInfo, new SortStateComparator());
-					for (SortState state : stateInfo) {
-						sortModel.sort(state.columnIndex, state.sortDirection, true);
-					}
-				}
-			});
+			Collections.sort(stateInfo, new SortStateComparator());
+			for (SortState state : stateInfo) {
+				sortModel.sort(state.columnIndex, state.sortDirection, true);
+			}
 		}
 		catch(Exception ex){
 			sortModel.clear();
-			System.err.println("Error while restoring sorting state. Skipping"); //$NON-NLS-1$
-			ex.printStackTrace(System.err);
+			log.error("Error while restoring sorting state: " + ex.getLocalizedMessage(), ex); //$NON-NLS-1$
 		}
 	}
 

@@ -52,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBarsCommand;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
@@ -455,16 +456,30 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	 * This properties object will be populated with the settings of all underlying layers
 	 * and any {@link IPersistable} registered with those layers.
 	 */
-	public void saveState(String prefix, Properties properties) {
-		underlyingLayer.saveState(prefix, properties);
+	@Override
+	public void saveState(final String prefix, final Properties properties) {
+		BusyIndicator.showWhile(null, new Runnable() {
+			
+			@Override
+			public void run() {
+				underlyingLayer.saveState(prefix, properties);
+			}
+		});
 	}
 
 	/**
 	 * Restore the state of the underlying layers from the values in the properties object.
 	 * @see #saveState(String, Properties)
 	 */
-	public void loadState(String prefix, Properties properties) {
-		underlyingLayer.loadState(prefix, properties);
+	@Override
+	public void loadState(final String prefix, final Properties properties) {
+		BusyIndicator.showWhile(null, new Runnable() {
+			
+			@Override
+			public void run() {
+				underlyingLayer.loadState(prefix, properties);
+			}
+		});
 	}
 
 	/**
