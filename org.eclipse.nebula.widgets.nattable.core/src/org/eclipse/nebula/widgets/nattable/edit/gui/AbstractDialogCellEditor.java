@@ -426,4 +426,36 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	public void setDialogSettings(Map<String, Object> editDialogSettings) {
 		this.editDialogSettings = editDialogSettings;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getColumnIndex()
+	 */
+	@Override
+	public int getColumnIndex() {
+		return layerCell.getColumnIndex();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getRowIndex()
+	 */
+	@Override
+	public int getRowIndex() {
+		return layerCell.getRowIndex();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getColumnPosition()
+	 */
+	@Override
+	public int getColumnPosition() {
+		return layerCell.getColumnPosition();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getRowPosition()
+	 */
+	@Override
+	public int getRowPosition() {
+		return layerCell.getRowPosition();
+	}
 }

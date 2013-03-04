@@ -64,6 +64,26 @@ public interface ICellEditor {
 	);
 	
 	/**
+	 * @return The column index of the cell to which this editor is attached.
+	 */
+	int getColumnIndex();
+	
+	/**
+	 * @return The row index of the cell to which this editor is attached.
+	 */
+	int getRowIndex();
+	
+	/**
+	 * @return The column position of the cell to which this editor is attached.
+	 */
+	int getColumnPosition();
+	
+	/**
+	 * @return The row position of the cell to which this editor is attached.
+	 */
+	int getRowPosition();
+	
+	/**
 	 * Returns the current value in this editor prior to conversion.
 	 * For a text editor that is used to edit integer values, this would mean
 	 * it returns the text value instead of the converted integer value.

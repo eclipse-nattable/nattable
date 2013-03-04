@@ -169,34 +169,34 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	protected abstract Control activateCell(Composite parent, Object originalCanonicalValue);
 
 	/**
-	 * @return The column index of the cell to which this editor is attached.
 	 * @see ILayerCell#getColumnIndex()
 	 */
-	final protected int getColumnIndex() {
+	@Override
+	public int getColumnIndex() {
 		return layerCell.getColumnIndex();
 	}
 
 	/**
-	 * @return The row index of the cell to which this editor is attached.
 	 * @see ILayerCell#getRowIndex()
 	 */
-	final protected int getRowIndex() {
+	@Override
+	public int getRowIndex() {
 		return layerCell.getRowIndex();
 	}
 	
 	/**
-	 * @return The column position of the cell to which this editor is attached.
 	 * @see ILayerCell#getColumnPosition()
 	 */
-	final protected int getColumnPosition() {
+	@Override
+	public int getColumnPosition() {
 		return layerCell.getColumnPosition();
 	}
 
 	/**
-	 * @return The row position of the cell to which this editor is attached.
 	 * @see ILayerCell#getRowPosition()
 	 */
-	final protected int getRowPosition() {
+	@Override
+	public int getRowPosition() {
 		return layerCell.getRowPosition();
 	}
 	
