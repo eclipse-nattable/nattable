@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -23,7 +22,6 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 
 public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
@@ -49,12 +47,6 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 			}
 		}
 		super.handleLayerEvent(event);
-	}
-
-	@Override
-	public void loadState(String prefix, Properties properties) {
-		super.loadState(prefix, properties);
-		fireLayerEvent(new RowStructuralRefreshEvent(this));
 	}
 	
 	// Horizontal features
