@@ -30,7 +30,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 public interface IEditErrorHandler {
 
 	/**
-	 * Will remove styling or other decorations that inidicate that an error occured.
+	 * Will remove styling or other decorations that indicate that an error occurred.
 	 * Only necessary to implement if the error handler adds special styling or decorations
 	 * on error.
 	 * @param cellEditor The {@link ICellEditor} to remove the error styling from.
@@ -42,7 +42,7 @@ public interface IEditErrorHandler {
 	 * for showing that error to the user. Usually the message contained within the
 	 * given {@link Exception} will be shown to the user.
 	 * @param cellEditor The {@link ICellEditor} on which the conversion/validation error
-	 * 			occured. Needed to add error styling or special handling.
+	 * 			occurred. Needed to add error styling or special handling.
 	 * @param e The {@link Exception} that contains information about the conversion/validation
 	 * 			error. Used to show a more detailed description on the error to the user.
 	 */
