@@ -34,7 +34,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
@@ -111,18 +111,18 @@ public class _531_ColumnHideShowExample extends AbstractNatExample {
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		
 		//add the header menu configuration for adding the column header menu with hide/show actions
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+		natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
 			@Override
 			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-				return new PopupMenuBuilder(natTable)
+				return super.createColumnHeaderMenu(natTable)
 								.withHideColumnMenuItem()
 								.withShowAllColumnsMenuItem();
 			}
 			
 			@Override
-			protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
-				//override with a builder that has no items
-				return new PopupMenuBuilder(natTable);
+			protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
+				return super.createCornerMenu(natTable)
+								.withShowAllColumnsMenuItem();
 			}
 		});
 		natTable.configure();
