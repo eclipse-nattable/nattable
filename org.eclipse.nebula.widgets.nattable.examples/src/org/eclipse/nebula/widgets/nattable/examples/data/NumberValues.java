@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.fixtures;
+package org.eclipse.nebula.widgets.nattable.examples.data;
 
 public class NumberValues {
 	private int columnOneNumber;
