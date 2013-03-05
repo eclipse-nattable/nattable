@@ -33,7 +33,7 @@ public class HideSelectedColumnsTest {
 	
 	@Test
 	public void shouldAlsoHideColumnWhichIsNotSelectedButHasAMouseOverIt() {
-		selectionLayer.hideMultipleColumnPositions(new MultiColumnHideCommand(selectionLayer, 2));
+		selectionLayer.doCommand(new MultiColumnHideCommand(selectionLayer, 2));
 		Assert.assertTrue(columnHideShowLayer.isColumnIndexHidden(2));
 	}
 	
@@ -43,7 +43,7 @@ public class HideSelectedColumnsTest {
 		selectionLayer.setSelectedCell(3, 0);
 
 		// Hide selection
-		selectionLayer.hideColumnPosition(new ColumnHideCommand(selectionLayer, 3));
+		selectionLayer.doCommand(new ColumnHideCommand(selectionLayer, 3));
 		
 		// The previously selected column should be hidden
 		Assert.assertTrue(columnHideShowLayer.isColumnIndexHidden(3));
@@ -56,7 +56,7 @@ public class HideSelectedColumnsTest {
 		new SelectColumnCommandHandler(selectionLayer).selectColumn(2, 0, false, false);
 		
 		// Hide column
-		selectionLayer.hideMultipleColumnPositions(new MultiColumnHideCommand(selectionLayer, 2));
+		selectionLayer.doCommand(new MultiColumnHideCommand(selectionLayer, 2));
 		
 		// The previously selected column should be hidden
 		Assert.assertTrue(columnHideShowLayer.isColumnIndexHidden(2));
@@ -71,7 +71,7 @@ public class HideSelectedColumnsTest {
 		selectionLayer.selectCell(4, 4, false, true);
 		
 		// Hide selection
-		selectionLayer.hideMultipleColumnPositions(new MultiColumnHideCommand(selectionLayer, new int[]{2, 0,4}));
+		selectionLayer.doCommand(new MultiColumnHideCommand(selectionLayer, new int[]{2, 0, 4}));
 		
 		// Previously selected columns should be hidden
 		Assert.assertTrue(columnHideShowLayer.isColumnIndexHidden(2));

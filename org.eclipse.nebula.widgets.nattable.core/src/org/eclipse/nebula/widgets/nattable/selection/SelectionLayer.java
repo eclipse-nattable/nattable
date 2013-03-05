@@ -26,6 +26,8 @@ import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeColu
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeRowsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -283,40 +285,6 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		selectColumnCommandHandler.selectColumn(columnPosition, rowPosition, withShiftMask, withControlMask);
 	}
 
-	public boolean hideColumnPosition(ColumnHideCommand command) {
-		if (isColumnPositionFullySelected(command.getColumnPosition())) {
-			return super.doCommand(new MultiColumnHideCommand(this, getFullySelectedColumnPositions()));
-		} else {
-			return super.doCommand(command);
-		}
-	}
-
-	/**
-	 * Any selected columns will be hidden. A column is considered selected even if a cell is selected.
-	 */
-	public boolean hideMultipleColumnPositions(MultiColumnHideCommand command) {
-		for (int columnPosition : command.getColumnPositions()) {
-			if (isColumnPositionFullySelected(columnPosition)) {
-				Rectangle selection = new Rectangle(columnPosition, 0, 1, getRowCount());
-				clearSelection(selection);
-			}
-		}
-		return super.doCommand(command);
-	}
-
-	/**
-	 * This method will check to see if the column to resize is part of the selection model, if it is, it will create a
-	 * new MultiResizeColumnCommand and pass it.
-	 * @param command
-	 */
-	protected boolean handleColumnResizeCommand(ColumnResizeCommand command) {
-		if (isColumnPositionFullySelected(command.getColumnPosition())) {
-			return super.doCommand(new MultiColumnResizeCommand(this, selectionModel.getFullySelectedColumnPositions(getRowCount()), command.getNewColumnWidth()));
-		} else {
-			return super.doCommand(command);
-		}
-	}
-
 	// Row features
 
 	public boolean hasRowSelection() {
@@ -345,14 +313,6 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
 	public void selectRow(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
 		selectRowCommandHandler.selectRows(columnPosition, Arrays.asList(Integer.valueOf(rowPosition)), withShiftMask, withControlMask, rowPosition);
-	}
-
-	protected boolean handleRowResizeCommand(RowResizeCommand command) {
-		if (isRowPositionFullySelected(command.getRowPosition())) {
-			return super.doCommand(new MultiRowResizeCommand(this, selectionModel.getFullySelectedRowPositions(getColumnCount()), command.getNewHeight()));
-		} else {
-			return super.doCommand(command);
-		}
 	}
 
 	// ILayer methods
@@ -410,10 +370,14 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		} else if (command instanceof ClearAllSelectionsCommand && command.convertToTargetLayer(this)) {
 			clear();
 			return true;
-		} else if (command instanceof MultiColumnHideCommand && command.convertToTargetLayer(this)) {
-			return hideMultipleColumnPositions((MultiColumnHideCommand)command);
 		} else if (command instanceof ColumnHideCommand && command.convertToTargetLayer(this)) {
-			return hideColumnPosition((ColumnHideCommand)command);
+			return handleColumnHideCommand((ColumnHideCommand)command);
+		} else if (command instanceof MultiColumnHideCommand && command.convertToTargetLayer(this)) {
+			return handleMultiColumnHideCommand((MultiColumnHideCommand)command);
+		} else if (command instanceof RowHideCommand && command.convertToTargetLayer(this)) {
+			return handleRowHideCommand((RowHideCommand)command);
+		} else if (command instanceof MultiRowHideCommand && command.convertToTargetLayer(this)) {
+			return handleMultiRowHideCommand((MultiRowHideCommand)command);
 		} else if (command instanceof ColumnResizeCommand && command.convertToTargetLayer(this)) {
 			return handleColumnResizeCommand((ColumnResizeCommand) command);
 		} else if (command instanceof RowResizeCommand && command.convertToTargetLayer(this)) {
@@ -430,4 +394,137 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		fireLayerEvent(selectionEvent);
 	}
 	
+	// command transformations
+	
+	/**
+	 * Will check if there are fully selected column positions. If there is at least one fully
+	 * selected column position, the {@link ColumnHideCommand} will be consumed and a 
+	 * {@link MultiColumnHideCommand} will be created and executed further down the layer stack,
+	 * that contains all fully selected column positions. Otherwise the given command will be
+	 * executed further.<br>
+	 * 
+	 * This is necessary because neither the ColumnHideShowLayer nor the action that caused the execution
+	 * of the {@link ColumnHideCommand} is aware of the presence of the {@link SelectionLayer}.
+	 * Without this transformation, only the column on which the action was called will be hidden instead
+	 * of all selected ones.
+	 * 
+	 * @param command The {@link ColumnHideCommand} to process
+	 * @return <code>true</code> if the command has been handled, <code>false</code> otherwise
+	 */
+	protected boolean handleColumnHideCommand(ColumnHideCommand command) {
+		if (isColumnPositionFullySelected(command.getColumnPosition())) {
+			return handleMultiColumnHideCommand(
+					new MultiColumnHideCommand(this, getFullySelectedColumnPositions()));
+		} else {
+			return super.doCommand(command);
+		}
+	}
+
+	/**
+	 * Previous to processing the given {@link MultiColumnHideCommand} down the layer stack, the
+	 * fully selected column positions selection state will be cleared. This is necessary so the
+	 * selection also disappears for the selected columns. Otherwise after hiding the selection
+	 * will be showed for different columns.
+	 * 
+	 * @param command The {@link MultiColumnHideCommand} to process
+	 * @return <code>true</code> if the command has been handled, <code>false</code> otherwise
+	 */
+	protected boolean handleMultiColumnHideCommand(MultiColumnHideCommand command) {
+		for (int columnPosition : command.getColumnPositions()) {
+			if (isColumnPositionFullySelected(columnPosition)) {
+				Rectangle selection = new Rectangle(columnPosition, 0, 1, getRowCount());
+				clearSelection(selection);
+			}
+		}
+		return super.doCommand(command);
+	}
+	
+	/**
+	 * Will check if there are fully selected row positions. If there is at least one fully
+	 * selected row position, the {@link RowHideCommand} will be consumed and a 
+	 * {@link MultiRowHideCommand} will be created and executed further down the layer stack,
+	 * that contains all fully selected row positions. Otherwise the given command will be
+	 * executed further.<br>
+	 * 
+	 * This is necessary because neither the RowHideShowLayer nor the action that caused the execution
+	 * of the {@link RowHideCommand} is aware of the presence of the {@link SelectionLayer}.
+	 * Without this transformation, only the row on which the action was called will be hidden instead
+	 * of all selected ones.
+	 * 
+	 * @param command The {@link RowHideCommand} to process
+	 * @return <code>true</code> if the command has been handled, <code>false</code> otherwise
+	 */
+	protected boolean handleRowHideCommand(RowHideCommand command) {
+		if (isRowPositionFullySelected(command.getRowPosition())) {
+			return handleMultiRowHideCommand(
+					new MultiRowHideCommand(this, getFullySelectedRowPositions()));
+		} else {
+			return super.doCommand(command);
+		}
+	}
+
+	/**
+	 * Previous to processing the given {@link MultiRowHideCommand} down the layer stack, the
+	 * fully selected row positions selection state will be cleared. This is necessary so the
+	 * selection also disappears for the selected rows. Otherwise after hiding the selection
+	 * will be showed for different rows.
+	 * 
+	 * @param command The {@link MultiRowHideCommand} to process
+	 * @return <code>true</code> if the command has been handled, <code>false</code> otherwise
+	 */
+	protected boolean handleMultiRowHideCommand(MultiRowHideCommand command) {
+		for (int rowPosition : command.getRowPositions()) {
+			if (isRowPositionFullySelected(rowPosition)) {
+				Rectangle selection = new Rectangle(0, rowPosition, getColumnCount(), 1);
+				clearSelection(selection);
+			}
+		}
+		return super.doCommand(command);
+	}
+
+	/**
+	 * Will check if there are fully selected column positions. If there is at least one fully
+	 * selected column position, the {@link ColumnResizeCommand} will be consumed and a 
+	 * {@link MultiColumnResizeCommand} will be created and executed further down the layer stack,
+	 * that contains all fully selected column positions. Otherwise the given command will be
+	 * executed further.<br>
+	 * 
+	 * This is necessary because neither the underlying layers are not aware of the presence of the 
+	 * {@link SelectionLayer}. Without this transformation, only the column on which the action was 
+	 * called will be resized instead of all selected ones.
+	 * 
+	 * @param command The {@link ColumnResizeCommand} to process
+	 * @return <code>true</code> if the command has been handled, <code>false</code> otherwise
+	 */
+	protected boolean handleColumnResizeCommand(ColumnResizeCommand command) {
+		if (isColumnPositionFullySelected(command.getColumnPosition())) {
+			return super.doCommand(
+					new MultiColumnResizeCommand(this, selectionModel.getFullySelectedColumnPositions(getRowCount()), command.getNewColumnWidth()));
+		} else {
+			return super.doCommand(command);
+		}
+	}
+
+	/**
+	 * Will check if there are fully selected row positions. If there is at least one fully
+	 * selected row position, the {@link RowResizeCommand} will be consumed and a 
+	 * {@link MultiRowResizeCommand} will be created and executed further down the layer stack,
+	 * that contains all fully selected row positions. Otherwise the given command will be
+	 * executed further.<br>
+	 * 
+	 * This is necessary because neither the underlying layers are not aware of the presence of the 
+	 * {@link SelectionLayer}. Without this transformation, only the row on which the action was 
+	 * called will be resized instead of all selected ones.
+	 * 
+	 * @param command The {@link RowResizeCommand} to process
+	 * @return <code>true</code> if the command has been handled, <code>false</code> otherwise
+	 */
+	protected boolean handleRowResizeCommand(RowResizeCommand command) {
+		if (isRowPositionFullySelected(command.getRowPosition())) {
+			return super.doCommand(
+					new MultiRowResizeCommand(this, selectionModel.getFullySelectedRowPositions(getColumnCount()), command.getNewHeight()));
+		} else {
+			return super.doCommand(command);
+		}
+	}
 }
