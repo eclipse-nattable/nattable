@@ -21,7 +21,9 @@ import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowComm
 import org.eclipse.nebula.widgets.nattable.group.command.OpenCreateColumnGroupDialog;
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsCommand;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
@@ -37,6 +39,10 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Widget;
 
+/**
+ * Helper class that provides several {@link IMenuItemProvider} for menu items that can be
+ * used within a popup menu in the NatTable to execute NatTable specific actions.
+ */
 public class MenuItemProviders {
 
 	/**
@@ -67,10 +73,25 @@ public class MenuItemProviders {
 		return data != null ? (NatEventData) data : null;
 	}
 
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link ColumnHideCommand} to a popup menu. This command is intended to hide the current selected
+	 * column immediately.
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ColumnHideCommand}.
+	 * 			The {@link MenuItem} will be shown with the localized default text configured in NatTable core.
+	 */
 	public static IMenuItemProvider hideColumnMenuItemProvider() {
 		return hideColumnMenuItemProvider(Messages.getString("MenuItemProviders.hideColumn")); //$NON-NLS-1$
 	}
 
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link ColumnHideCommand} to a popup menu. This command is intended to hide the current selected
+	 * column immediately.<br/>
+	 * The {@link MenuItem} will be shown with the given menu label.
+	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ColumnHideCommand}.
+	 */
 	public static IMenuItemProvider hideColumnMenuItemProvider(final String menuLabel) {
 		return new IMenuItemProvider() {
 
@@ -91,11 +112,26 @@ public class MenuItemProviders {
 		};
 	}
 
-	public static IMenuItemProvider showAllColumnMenuItemProvider() {
-		return showAllColumnMenuItemProvider(Messages.getString("MenuItemProviders.showAllColumns")); //$NON-NLS-1$
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link ShowAllColumnsCommand} to a popup menu. This command is intended to show all columns of 
+	 * the NatTable and is used to unhide previous hidden columns.
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ShowAllColumnsCommand}.
+	 * 			The {@link MenuItem} will be shown with the localized default text configured in NatTable core.
+	 */
+	public static IMenuItemProvider showAllColumnsMenuItemProvider() {
+		return showAllColumnsMenuItemProvider(Messages.getString("MenuItemProviders.showAllColumns")); //$NON-NLS-1$
 	}
 
-	public static IMenuItemProvider showAllColumnMenuItemProvider(final String menuLabel) {
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link ShowAllColumnsCommand} to a popup menu. This command is intended to show all columns of 
+	 * the NatTable and is used to unhide previous hidden columns.<br/>
+	 * The {@link MenuItem} will be shown with the given menu label.
+	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ShowAllColumnsCommand}.
+	 */
+	public static IMenuItemProvider showAllColumnsMenuItemProvider(final String menuLabel) {
 		return new IMenuItemProvider() {
 
 			public void addMenuItem(final NatTable natTable, Menu popupMenu) {
@@ -108,6 +144,83 @@ public class MenuItemProviders {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						natTable.doCommand(new ShowAllColumnsCommand());
+					}
+				});
+			}
+		};
+	}
+
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link RowHideCommand} to a popup menu. This command is intended to hide the current selected
+	 * row immediately.
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link RowHideCommand}.
+	 * 			The {@link MenuItem} will be shown with the localized default text configured in NatTable core.
+	 */
+	public static IMenuItemProvider hideRowMenuItemProvider() {
+		return hideRowMenuItemProvider(Messages.getString("MenuItemProviders.hideRow")); //$NON-NLS-1$
+	}
+
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link RowHideCommand} to a popup menu. This command is intended to hide the current selected
+	 * row immediately.<br/>
+	 * The {@link MenuItem} will be shown with the given menu label.
+	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link RowHideCommand}.
+	 */
+	public static IMenuItemProvider hideRowMenuItemProvider(final String menuLabel) {
+		return new IMenuItemProvider() {
+
+			public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+				MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+				menuItem.setText(menuLabel);
+				menuItem.setImage(GUIHelper.getImage("hide_row")); //$NON-NLS-1$
+				menuItem.setEnabled(true);
+
+				menuItem.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent event) {
+						int rowPosition = getNatEventData(event).getRowPosition();
+						natTable.doCommand(new RowHideCommand(natTable, rowPosition));
+					}
+				});
+			}
+		};
+	}
+
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link ShowAllRowsCommand} to a popup menu. This command is intended to show all rows of 
+	 * the NatTable and is used to unhide previous hidden rows.
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ShowAllRowsCommand}.
+	 * 			The {@link MenuItem} will be shown with the localized default text configured in NatTable core.
+	 */
+	public static IMenuItemProvider showAllRowsMenuItemProvider() {
+		return showAllRowsMenuItemProvider(Messages.getString("MenuItemProviders.showAllRows")); //$NON-NLS-1$
+	}
+
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link ShowAllRowsCommand} to a popup menu. This command is intended to show all rows of 
+	 * the NatTable and is used to unhide previous hidden rows.<br/>
+	 * The {@link MenuItem} will be shown with the given menu label.
+	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ShowAllRowsCommand}.
+	 */
+	public static IMenuItemProvider showAllRowsMenuItemProvider(final String menuLabel) {
+		return new IMenuItemProvider() {
+
+			public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+				MenuItem showAllRows = new MenuItem(popupMenu, SWT.PUSH);
+				showAllRows.setText(menuLabel);
+				showAllRows.setImage(GUIHelper.getImage("show_row")); //$NON-NLS-1$
+				showAllRows.setEnabled(true);
+
+				showAllRows.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						natTable.doCommand(new ShowAllRowsCommand());
 					}
 				});
 			}
@@ -401,11 +514,28 @@ public class MenuItemProviders {
 		};
 	}
 
-	
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link DisplayPersistenceDialogCommand} to a popup menu. This command is intended to open the 
+	 * DisplayPersistenceDialog for managing NatTable states (also called view management).
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the 
+	 * 			{@link DisplayPersistenceDialogCommand}
+	 * 			The {@link MenuItem} will be shown with the localized default text configured in NatTable core.
+	 */
 	public static IMenuItemProvider stateManagerMenuItemProvider() {
 		return stateManagerMenuItemProvider(Messages.getString("MenuItemProviders.stateManager")); //$NON-NLS-1$
 	}
 
+	/**
+	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
+	 * {@link DisplayPersistenceDialogCommand} to a popup menu. This command is intended to open the 
+	 * DisplayPersistenceDialog for managing NatTable states (also called view management).<br/>
+	 * The {@link MenuItem} will be shown with the given menu label.
+	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
+	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the 
+	 * 			{@link DisplayPersistenceDialogCommand}
+	 * 			The {@link MenuItem} will be shown with the localized default text configured in NatTable core.
+	 */
 	public static IMenuItemProvider stateManagerMenuItemProvider(final String menuLabel) {
 		return new IMenuItemProvider() {
 
@@ -425,6 +555,9 @@ public class MenuItemProviders {
 		};
 	}
 
+	/**
+	 * @return An {@link IMenuItemProvider} for adding a separator to the popup menu.
+	 */
 	public static IMenuItemProvider separatorMenuItemProvider() {
 		return new IMenuItemProvider() {
 			public void addMenuItem(NatTable natTable, Menu popupMenu) {

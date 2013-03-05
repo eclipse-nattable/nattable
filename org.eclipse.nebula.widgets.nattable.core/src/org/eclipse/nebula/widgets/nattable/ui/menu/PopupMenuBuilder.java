@@ -67,27 +67,98 @@ public class PopupMenuBuilder {
 	}
 
 	/**
-	 * Use this to add your own item to the popup menu.
+	 * Adds the menu item provided by the given {@link IMenuItemProvider} to the popup menu.
+	 * You can use this to add your own item to the popup menu.
+	 * @param menuItemProvider The {@link IMenuItemProvider} that provides the menu item
+	 * 			that should be added to the popup menu.
 	 */
 	public PopupMenuBuilder withMenuItemProvider(IMenuItemProvider menuItemProvider){
 		menuItemProvider.addMenuItem(natTable, popupMenu);
 		return this;
 	}
 
+	/**
+	 * Adds the menu item for hiding a column to the popup menu. Uses the default text
+	 * localized in NatTable core resource bundles.
+	 * @return The {@link PopupMenuBuilder} with the hide column menu item added.
+	 * @see MenuItemProviders#hideColumnMenuItemProvider()
+	 */
 	public PopupMenuBuilder withHideColumnMenuItem() {
 		return withMenuItemProvider(MenuItemProviders.hideColumnMenuItemProvider());
 	}
 
+	/**
+	 * Adds the menu item for hiding a column to the popup menu. Uses the given String
+	 * as label for the menu item.
+	 * @param menuLabel The label to use for showing the item in the popup menu.
+	 * @return The {@link PopupMenuBuilder} with the hide column menu item added.
+	 * @see MenuItemProviders#hideColumnMenuItemProvider(String)
+	 */
 	public PopupMenuBuilder withHideColumnMenuItem(String menuLabel) {
 		return withMenuItemProvider(MenuItemProviders.hideColumnMenuItemProvider(menuLabel));
 	}
 
+	/**
+	 * Adds the menu item for showing all columns to the popup menu. Uses the default text
+	 * localized in NatTable core resource bundles.
+	 * @return The {@link PopupMenuBuilder} with the show all columns menu item added.
+	 * @see MenuItemProviders#showAllColumnsMenuItemProvider()
+	 */
 	public PopupMenuBuilder withShowAllColumnsMenuItem() {
-		return withMenuItemProvider(MenuItemProviders.showAllColumnMenuItemProvider());
+		return withMenuItemProvider(MenuItemProviders.showAllColumnsMenuItemProvider());
 	}
 
+	/**
+	 * Adds the menu item for showing all columns to the popup menu. Uses the given String
+	 * as label for the menu item.
+	 * @param menuLabel The label to use for showing the item in the popup menu.
+	 * @return The {@link PopupMenuBuilder} with the show all columns menu item added.
+	 * @see MenuItemProviders#showAllColumnsMenuItemProvider(String)
+	 */
 	public PopupMenuBuilder withShowAllColumnsMenuItem(String menuLabel) {
-		return withMenuItemProvider(MenuItemProviders.showAllColumnMenuItemProvider(menuLabel));
+		return withMenuItemProvider(MenuItemProviders.showAllColumnsMenuItemProvider(menuLabel));
+	}
+
+	/**
+	 * Adds the menu item for hiding a row to the popup menu. Uses the default text
+	 * localized in NatTable core resource bundles.
+	 * @return The {@link PopupMenuBuilder} with the hide row menu item added.
+	 * @see MenuItemProviders#hideRowMenuItemProvider()
+	 */
+	public PopupMenuBuilder withHideRowMenuItem() {
+		return withMenuItemProvider(MenuItemProviders.hideRowMenuItemProvider());
+	}
+
+	/**
+	 * Adds the menu item for hiding a row to the popup menu. Uses the given String
+	 * as label for the menu item.
+	 * @param menuLabel The label to use for showing the item in the popup menu.
+	 * @return The {@link PopupMenuBuilder} with the hide row menu item added.
+	 * @see MenuItemProviders#hideRowMenuItemProvider(String)
+	 */
+	public PopupMenuBuilder withHideRowMenuItem(String menuLabel) {
+		return withMenuItemProvider(MenuItemProviders.hideRowMenuItemProvider(menuLabel));
+	}
+
+	/**
+	 * Adds the menu item for showing all rows to the popup menu. Uses the default text
+	 * localized in NatTable core resource bundles.
+	 * @return The {@link PopupMenuBuilder} with the show all rows menu item added.
+	 * @see MenuItemProviders#showAllRowsMenuItemProvider()
+	 */
+	public PopupMenuBuilder withShowAllRowsMenuItem() {
+		return withMenuItemProvider(MenuItemProviders.showAllRowsMenuItemProvider());
+	}
+
+	/**
+	 * Adds the menu item for showing all rows to the popup menu. Uses the given String
+	 * as label for the menu item.
+	 * @param menuLabel The label to use for showing the item in the popup menu.
+	 * @return The {@link PopupMenuBuilder} with the show all rows menu item added.
+	 * @see MenuItemProviders#showAllRowsMenuItemProvider(String))
+	 */
+	public PopupMenuBuilder withShowAllRowsMenuItem(String menuLabel) {
+		return withMenuItemProvider(MenuItemProviders.showAllRowsMenuItemProvider(menuLabel));
 	}
 
 	public PopupMenuBuilder withAutoResizeSelectedColumnsMenuItem() {
@@ -174,18 +245,42 @@ public class PopupMenuBuilder {
 		return withMenuItemProvider(MenuItemProviders.clearToggleFilterRowMenuItemProvider(menuLabel));
 	}
 
+	/**
+	 * Adds the menu item for opening the view management dialog to the popup menu. Uses the default text
+	 * localized in NatTable core resource bundles. Uses the given String as label for the menu item.
+	 * @return The {@link PopupMenuBuilder} with the menu item added for showing the view 
+	 * 			management dialog for managing NatTable states.
+	 * @see MenuItemProviders#stateManagerMenuItemProvider()
+	 */
 	public PopupMenuBuilder withStateManagerMenuItemProvider() {
 		return withMenuItemProvider(MenuItemProviders.stateManagerMenuItemProvider());
 	}
 
+	/**
+	 * Adds the menu item for opening the view management dialog to the popup menu. 
+	 * @param menuLabel The label to use for showing the item in the popup menu.
+	 * @return The {@link PopupMenuBuilder} with the menu item added for showing the view 
+	 * 			management dialog for managing NatTable states.
+	 * @see MenuItemProviders#stateManagerMenuItemProvider(String)
+	 */
 	public PopupMenuBuilder withStateManagerMenuItemProvider(String menuLabel) {
 		return withMenuItemProvider(MenuItemProviders.stateManagerMenuItemProvider(menuLabel));
 	}
 
-	public PopupMenuBuilder withSeparator(){
-		return withMenuItemProvider(MenuItemProviders.separatorMenuItemProvider());	}
+	/**
+	 * Adds a separator to the popup menu.
+	 * @return The {@link PopupMenuBuilder} with an added separator.
+	 * @see MenuItemProviders#separatorMenuItemProvider()
+	 */
+	public PopupMenuBuilder withSeparator() {
+		return withMenuItemProvider(MenuItemProviders.separatorMenuItemProvider());	
+	}
 
-	public Menu build(){
+	/**
+	 * Builds and returns the created {@link Menu}.
+	 * @return The {@link Menu} that is created by this builder.
+	 */
+	public Menu build() {
 		return popupMenu;
 	}
 
