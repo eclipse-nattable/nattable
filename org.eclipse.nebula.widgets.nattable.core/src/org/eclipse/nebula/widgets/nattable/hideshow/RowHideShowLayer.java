@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommandHa
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
 public class RowHideShowLayer extends AbstractRowHideShowLayer {
@@ -51,7 +52,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer {
 			StringBuilder strBuilder = new StringBuilder();
 			for (Integer index : hiddenRowIndexes) {
 				strBuilder.append(index);
-				strBuilder.append(',');
+				strBuilder.append(IPersistable.VALUE_SEPARATOR);
 			}
 			properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES, strBuilder.toString());
 		}
@@ -61,11 +62,10 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer {
 	
 	@Override
 	public void loadState(String prefix, Properties properties) {
+		hiddenRowIndexes.clear();
 		String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES);
 		if (property != null) {
-			hiddenRowIndexes.clear();
-			
-			StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
+			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
 				hiddenRowIndexes.add(Integer.valueOf(index));
