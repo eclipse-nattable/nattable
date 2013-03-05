@@ -12,37 +12,16 @@ package org.eclipse.nebula.widgets.nattable.ui.menu;
 
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
-import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.widgets.Menu;
 
-public class HeaderMenuConfiguration extends AbstractUiBindingConfiguration {
-
-	private Menu colHeaderMenu;
-	private Menu rowHeaderMenu;
-	public enum MenuOptions {HideColumn, ShowColumn};
+public class HeaderMenuConfiguration extends AbstractHeaderMenuConfiguration {
 
 	public HeaderMenuConfiguration(NatTable natTable) {
-		colHeaderMenu = createColumnHeaderMenu(natTable).build();
-		rowHeaderMenu = createRowHeaderMenu(natTable).build();
-
-		natTable.addDisposeListener(new DisposeListener() {
-
-			public void widgetDisposed(DisposeEvent e) {
-				colHeaderMenu.dispose();
-				rowHeaderMenu.dispose();
-			}
-
-		});
+		super(natTable);
 	}
 
+	@Override
 	protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-		return new PopupMenuBuilder(natTable)
+		return super.createColumnHeaderMenu(natTable)
 								.withHideColumnMenuItem()
 								.withShowAllColumnsMenuItem()
 								.withCreateColumnGroupsMenuItem()
@@ -53,19 +32,15 @@ public class HeaderMenuConfiguration extends AbstractUiBindingConfiguration {
 								.withClearAllFilters();
 	}
 
+	@Override
 	protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
-		return new PopupMenuBuilder(natTable)
+		return super.createRowHeaderMenu(natTable)
 								.withAutoResizeSelectedRowsMenuItem();
 	}
 
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerMouseDownBinding(
-				new MouseEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, MouseEventMatcher.RIGHT_BUTTON),
-				new PopupMenuAction(colHeaderMenu));
-
-		uiBindingRegistry.registerMouseDownBinding(
-				new MouseEventMatcher(SWT.NONE, GridRegion.ROW_HEADER, MouseEventMatcher.RIGHT_BUTTON),
-				new PopupMenuAction(rowHeaderMenu));
+	@Override
+	protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
+		return super.createCornerMenu(natTable)
+								.withShowAllColumnsMenuItem();
 	}
-
 }
