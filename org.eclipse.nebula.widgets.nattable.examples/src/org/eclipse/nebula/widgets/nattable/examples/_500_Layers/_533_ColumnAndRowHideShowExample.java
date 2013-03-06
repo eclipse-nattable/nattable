@@ -106,7 +106,7 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(bodyDataLayer);
 		RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(columnHideShowLayer);
-		SelectionLayer selectionLayer = new SelectionLayer(rowHideShowLayer);
+		final SelectionLayer selectionLayer = new SelectionLayer(rowHideShowLayer);
 		final ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
 		final FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
@@ -187,7 +187,7 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 		hideOne.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new MultiRowHideCommand(viewportLayer, new int[] {0, 1}));
+				natTable.doCommand(new MultiRowHideCommand(selectionLayer, new int[] {0, 1}));
 			}
 		});
 		
@@ -196,7 +196,7 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 		hideTwo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new MultiRowHideCommand(viewportLayer, new int[] {0, 2}));
+				natTable.doCommand(new MultiRowHideCommand(selectionLayer, new int[] {0, 2}));
 			}
 		});
 		
