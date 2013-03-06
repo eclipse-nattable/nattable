@@ -10,17 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Properties;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
-import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
