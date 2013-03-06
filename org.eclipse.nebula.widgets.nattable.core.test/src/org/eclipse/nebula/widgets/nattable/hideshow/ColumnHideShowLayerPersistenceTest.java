@@ -74,17 +74,4 @@ public class ColumnHideShowLayerPersistenceTest {
 		Assert.assertEquals(8, layer.getColumnIndexByPosition(5));
 		Assert.assertEquals(9, layer.getColumnIndexByPosition(6));
 	}
-	
-	@Test
-	public void shouldFireRefreshEventWhehStateIsLoaded() throws Exception {
-		LayerListenerFixture listener = new LayerListenerFixture();
-		layer.addLayerListener(listener);
-		
-		Properties properties = new Properties();
-		properties.setProperty("prefix.hiddenColumnIndexes", "1,3,5,");
-		
-		layer.loadState("prefix", properties);
-		
-		assertTrue(listener.containsInstanceOf(RowStructuralRefreshEvent.class));
-	}
 }
