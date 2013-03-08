@@ -15,10 +15,9 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.IFilterStrategy;
 
-import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
+import ca.odell.glazedlists.matchers.AbstractMatcherEditorListenerSupport;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.matchers.MatcherEditor;
@@ -59,7 +58,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
 	 */
 	public void addStaticFilter(final Matcher<T> matcher) {
 		//create a new MatcherEditor
-		MatcherEditor<T> matcherEditor = new AbstractMatcherEditor<T>() {
+		MatcherEditor<T> matcherEditor = new AbstractMatcherEditorListenerSupport<T>() {
 			@Override
 			public Matcher<T> getMatcher() {
 				return matcher;

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="3">
+<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="6">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.5.1.M20090917-0800"/>
 <unit id="org.apache.commons.lang" version="2.4.0.v20081016-1030"/>
 <repository location="http://download.eclipse.org/releases/galileo"/>
 </location>
-<location path="${project_loc}/dependencies" type="Directory"/>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.apache.poi" version="3.7.0.v201301211856"/>
-<unit id="org.apache.poi.source" version="3.7.0.v201301211856"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20130201140822/repository/"/>
+<unit id="org.apache.poi" version="3.9.0.v201303080712"/>
+<unit id="org.apache.poi.source" version="3.9.0.v201303080712"/>
+<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
+<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+<repository location="http://build.eclipse.org/orbit/committers/orbit-I/20130308121626/I20130308121626/repository/"/>
 </location>
 </locations>
 </target>

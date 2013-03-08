@@ -193,7 +193,7 @@ public class TreeGridExample extends AbstractNatExample {
 			return true;
 		}
 
-		public Comparator<? extends Datum> getComparator(int depth) {
+		public Comparator<Datum> getComparator(int depth) {
 			return new SortableTreeComparator<Datum>(GlazedLists.beanPropertyComparator(Datum.class, "foo"), sortModel);
 		}
 	}
