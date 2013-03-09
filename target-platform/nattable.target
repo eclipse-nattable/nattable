@@ -11,7 +11,7 @@
 <unit id="org.apache.poi.source" version="3.9.0.v201303080712"/>
 <unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
 <unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
-<repository location="http://build.eclipse.org/orbit/committers/orbit-I/20130308121626/I20130308121626/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20130308121626/repository/"/>
 </location>
 </locations>
 </target>
