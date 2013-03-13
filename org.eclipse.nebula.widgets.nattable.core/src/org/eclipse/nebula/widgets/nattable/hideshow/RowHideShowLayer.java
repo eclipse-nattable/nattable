@@ -13,11 +13,14 @@ package org.eclipse.nebula.widgets.nattable.hideshow;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowShowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommandHandler;
@@ -25,10 +28,14 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommandHa
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
-public class RowHideShowLayer extends AbstractRowHideShowLayer {
+public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHideShowCommandLayer {
 
 	public static final String PERSISTENCE_KEY_HIDDEN_ROW_INDEXES = ".hiddenRowIndexes"; //$NON-NLS-1$
 	
@@ -167,47 +174,40 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer {
 		return hiddenRowIndexes; 
 	}
 	
+	@Override
 	public void hideRowPositions(Collection<Integer> rowPositions) {
 		Set<Integer> rowIndexes = new HashSet<Integer>();
 		for (Integer rowPosition : rowPositions) {
-			rowIndexes.add(Integer.valueOf(getRowIndexByPosition(rowPosition.intValue())));
+			rowIndexes.add(getRowIndexByPosition(rowPosition));
+		}
+		hiddenRowIndexes.addAll(rowIndexes);
+		invalidateCache();
+		fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+	}
+
+	@Override
+	public void hideRowIndexes(Collection<Integer> rowIndexes) {
+		Set<Integer> rowPositions = new HashSet<Integer>();
+		for (Integer rowIndex : rowIndexes) {
+			rowPositions.add(getRowPositionByIndex(rowIndex));
 		}
 		hiddenRowIndexes.addAll(rowIndexes);
 		invalidateCache();
 		fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
 	}
 	
-	public void showRowIndexes(int[] rowIndexes) {
-		Set<Integer> rowIndexesSet = new HashSet<Integer>();
-		for (int i = 0; i < rowIndexes.length; i++) {
-			rowIndexesSet.add(Integer.valueOf(rowIndexes[i]));
-		}
-		hiddenRowIndexes.removeAll(rowIndexesSet);
+	@Override
+	public void showRowIndexes(Collection<Integer> rowIndexes) {
+		hiddenRowIndexes.removeAll(rowIndexes);
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(rowIndexes)));
 	}
-	
-	protected void showRowIndexes(Collection<Integer> rowIndexes) {
-		for (int rowIndex : rowIndexes) {
-			hiddenRowIndexes.remove(Integer.valueOf(rowIndex));
-		}
-		invalidateCache();
-		// Since we are exposing this method for showing individual rows, a structure event must be fired here.
-		fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
-	}
 
+	@Override
 	public void showAllRows() {
 		Collection<Integer> hiddenRows = new ArrayList<Integer>(hiddenRowIndexes);
 		hiddenRowIndexes.clear();
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, hiddenRows));
-	}
-	
-	private Collection<Integer> getRowPositionsByIndexes(int[] rowIndexes) {
-		Collection<Integer> rowPositions = new HashSet<Integer>();
-		for (int rowIndex : rowIndexes) {
-			rowPositions.add(Integer.valueOf(getRowPositionByIndex(rowIndex)));
-		}
-		return rowPositions;
 	}
 }

@@ -11,13 +11,13 @@
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowCommandLayer;
 
 public class ShowAllRowsCommandHandler extends AbstractLayerCommandHandler<ShowAllRowsCommand> {
 	
-	private final RowHideShowLayer rowHideShowLayer;
+	private final IRowHideShowCommandLayer rowHideShowLayer;
 
-	public ShowAllRowsCommandHandler(RowHideShowLayer rowHideShowLayer) {
+	public ShowAllRowsCommandHandler(IRowHideShowCommandLayer rowHideShowLayer) {
 		this.rowHideShowLayer = rowHideShowLayer;
 	}
 	
