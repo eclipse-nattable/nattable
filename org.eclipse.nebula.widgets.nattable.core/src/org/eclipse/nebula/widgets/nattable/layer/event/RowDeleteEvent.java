@@ -49,7 +49,7 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
 		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 		
 		for (Range range : getRowPositionRanges()) {
-			new StructuralDiff(DiffTypeEnum.DELETE, range, new Range(range.start, range.start));
+			rowDiffs.add(new StructuralDiff(DiffTypeEnum.DELETE, range, new Range(range.start, range.start)));
 		}
 		
 		return rowDiffs;
