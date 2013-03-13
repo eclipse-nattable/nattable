@@ -226,6 +226,9 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
 	// Cache
 
+	/**
+	 * Invalidate the cache to ensure that information is rebuild.
+	 */
 	protected void invalidateCache() {
 		cachedVisibleColumnIndexOrder = null;
 		startXCache.clear();
