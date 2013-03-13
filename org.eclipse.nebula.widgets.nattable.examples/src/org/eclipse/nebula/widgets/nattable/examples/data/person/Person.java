@@ -7,20 +7,31 @@ public class Person {
 		MALE, FEMALE
 	}
 	
+	private final int id;
 	private String firstName;
 	private String lastName;
 	private Gender gender;
 	private boolean married;
 	private Date birthday;
 	
-	public Person() { }
+	public Person(int id) { 
+		this.id = id;
+	}
 	
-	public Person(String firstName, String lastName, Gender gender, boolean married, Date birthday) {
+	public Person(int id, String firstName, String lastName, Gender gender, boolean married, Date birthday) {
+		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.gender = gender;
 		this.married = married;
 		this.birthday = birthday;
+	}
+	
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
 	}
 	
 	/**

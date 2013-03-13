@@ -27,7 +27,7 @@ public class PersonService {
 		List<Person> result = new ArrayList<Person>();
 		
 		for (int i = 0; i < numberOfPersons; i++) {
-			result.add(createPerson());
+			result.add(createPerson(i));
 		}
 		
 		return result;
@@ -42,7 +42,7 @@ public class PersonService {
 		List<PersonWithAddress> result = new ArrayList<PersonWithAddress>();
 		
 		for (int i = 0; i < numberOfPersons; i++) {
-			result.add(new PersonWithAddress(createPerson(), createAddress()));
+			result.add(new PersonWithAddress(createPerson(i), createAddress()));
 		}
 		
 		return result;
@@ -57,7 +57,7 @@ public class PersonService {
 		List<ExtendedPersonWithAddress> result = new ArrayList<ExtendedPersonWithAddress>();
 		
 		for (int i = 0; i < numberOfPersons; i++) {
-			result.add(new ExtendedPersonWithAddress(createPerson(), createAddress(), 
+			result.add(new ExtendedPersonWithAddress(createPerson(i), createAddress(), 
 					generateSimplePassword(), createRandomLengthText(), createRandomMoneyAmount(), 
 					createFavouriteFood(), createFavouriteDrinks()));
 		}
@@ -70,14 +70,14 @@ public class PersonService {
 	 * and enrich them with random generated married state and birthday date.
 	 * @return
 	 */
-	private static Person createPerson() {
+	private static Person createPerson(int id) {
 		String[] maleNames = {"Bart", "Homer", "Lenny", "Carl", "Waylon", "Ned", "Timothy"};
 		String[] femaleNames = {"Marge", "Lisa", "Maggie", "Edna", "Helen", "Jessica"};
 		String[] lastNames = {"Simpson", "Leonard", "Carlson", "Smithers", "Flanders", "Krabappel", "Lovejoy"};
 		
 		Random randomGenerator = new Random();
 		
-		Person result = new Person();
+		Person result = new Person(id);
 		result.setGender(Gender.values()[randomGenerator.nextInt(2)]);
 		
 		if (result.getGender().equals(Gender.MALE)) {

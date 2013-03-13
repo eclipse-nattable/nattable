@@ -7,14 +7,14 @@ public class PersonWithAddress extends Person {
 
 	private Address address;
 	
-	public PersonWithAddress(String firstName, String lastName, Gender gender,
+	public PersonWithAddress(int id, String firstName, String lastName, Gender gender,
 			boolean married, Date birthday, Address address) {
-		super(firstName, lastName, gender, married, birthday);
+		super(id, firstName, lastName, gender, married, birthday);
 		this.address = address;
 	}
 
 	public PersonWithAddress(Person person, Address address) {
-		super(person.getFirstName(), person.getLastName(), person.getGender(), 
+		super(person.getId(), person.getFirstName(), person.getLastName(), person.getGender(), 
 				person.isMarried(), person.getBirthday());
 		this.address = address;
 	}
