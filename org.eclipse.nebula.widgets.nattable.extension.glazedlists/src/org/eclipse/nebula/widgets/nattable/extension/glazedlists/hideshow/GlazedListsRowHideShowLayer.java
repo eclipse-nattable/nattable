@@ -58,7 +58,13 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
 	implements IRowHideShowCommandLayer, IUniqueIndexLayer {
 
 	private static final Log log = LogFactory.getLog(GlazedListsRowHideShowLayer.class);
-
+	
+	/**
+	 * Key for persisting the number of hidden row id's.
+	 * This is necessary because the id's are serializables and reading them againd
+	 * by ObjectInputStream need to know how long to read.
+	 */
+	public static final String PERSISTENCE_KEY_HIDDEN_ROW_IDS_COUNT = ".hiddenRowIDsCount"; //$NON-NLS-1$
 	public static final String PERSISTENCE_KEY_HIDDEN_ROW_IDS = ".hiddenRowIDs"; //$NON-NLS-1$
 	
 	/**
@@ -268,6 +274,10 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
 	@Override
 	public void saveState(String prefix, Properties properties) {
 		if (this.rowIdsToHide.size() > 0) {
+			//store the number of row id's that will be hidden
+			properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS_COUNT, 
+					Integer.valueOf(this.rowIdsToHide.size()).toString()); 
+					
 			ObjectOutputStream out = null;
 			try {
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -297,14 +307,19 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
 	@Override
 	public void loadState(String prefix, Properties properties) {
 		this.rowIdsToHide.clear();
-		String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS);
+		String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS_COUNT);
+		int count = property != null ? Integer.valueOf(property) : 0;
+		property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS);
 		if (property != null) {
 			ObjectInputStream in = null;
 			try {
 				ByteArrayInputStream bis = new ByteArrayInputStream(Base64.decodeBase64(property.getBytes()));
 				in = new ObjectInputStream(bis);
-				Serializable ser = (Serializable)in.readObject();
-				this.rowIdsToHide.add(ser);
+				Serializable ser = null;
+				for (int i = 0; i < count; i++) {
+					ser = (Serializable)in.readObject();
+					this.rowIdsToHide.add(ser);
+				}
 			} catch (Exception e) {
 				log.error("Error while restoring GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
 			} finally {
