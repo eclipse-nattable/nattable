@@ -26,7 +26,9 @@ import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -39,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
@@ -50,8 +53,10 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
 import org.eclipse.nebula.widgets.nattable.tree.SortableTreeComparator;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
+import org.eclipse.nebula.widgets.nattable.tree.TreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -77,7 +82,6 @@ public class TreeGridExample extends AbstractNatExample {
 		createDatums();
 		EventList<Datum> eventList = GlazedLists.eventList(datums.values());
 		SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
-//		TreeList <RowDataFixture> treeList = new TreeList<RowDataFixture>(eventList, new RowDataFixtureTreeFormat(), new RowDataFixtureExpansionModel());
 		
 		String[] propertyNames = new String[] { "foo", "bar" };
 		IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(propertyNames);
@@ -92,22 +96,30 @@ public class TreeGridExample extends AbstractNatExample {
 				configRegistry, 
 				columnHeaderDataLayer);
 		
-		final TreeList <Datum> treeList = new TreeList<Datum>(sortedList, new DatumTreeFormat(sortModel), new DatumExpansionModel());
+		final TreeList<Datum> treeList = new TreeList<Datum>(sortedList, new DatumTreeFormat(sortModel), new DatumExpansionModel());
 		GlazedListTreeData <Datum> treeData = new DatumTreeData(treeList);
 		
 		GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(treeList, columnPropertyAccessor);
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		
+//		GlazedListsEventLayer<Datum> glazedListsEventLayer = 
+//				new GlazedListsEventLayer<Datum>(bodyDataLayer, treeList);
+		DetailGlazedListsEventLayer<Datum> glazedListsEventLayer = 
+				new DetailGlazedListsEventLayer<Datum>(bodyDataLayer, treeList);
+
 		// Body layer
-		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
+		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
 		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-		SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
+		
+		RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(columnHideShowLayer);
 		
 		// Switch the ITreeRowModel implementation between using native grid Hide/Show or GlazedList TreeList Hide/Show  
-//		TreeLayer treeLayer = new TreeLayer(selectionLayer, new TreeRowModel<Datum>(treeData), true);
-		TreeLayer treeLayer = new TreeLayer(selectionLayer, new GlazedListTreeRowModel<Datum>(treeData), false);
+//		TreeLayer treeLayer = new TreeLayer(rowHideShowLayer, new TreeRowModel<Datum>(treeData), true);
+		TreeLayer treeLayer = new TreeLayer(rowHideShowLayer, new GlazedListTreeRowModel<Datum>(treeData), false);
 		
-		ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+		SelectionLayer selectionLayer = new SelectionLayer(treeLayer);
+		
+		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 		
 		
 		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
@@ -132,13 +144,11 @@ public class TreeGridExample extends AbstractNatExample {
 		// Corner layer
 		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
 		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-//		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, sortHeaderLayer);
 
 		// Grid
 		GridLayer gridLayer = new GridLayer(
 				viewportLayer,
-//				columnHeaderLayer,
 				sortHeaderLayer,
 				rowHeaderLayer,
 				cornerLayer);
@@ -146,7 +156,14 @@ public class TreeGridExample extends AbstractNatExample {
 		NatTable natTable = new NatTable(parent, gridLayer, false);
 		natTable.setConfigRegistry(configRegistry);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+			@Override
+			protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
+				return super.createRowHeaderMenu(natTable)
+						.withHideRowMenuItem()
+						.withShowAllRowsMenuItem();
+			}
+		});
 		natTable.addConfiguration(new DefaultTreeLayerConfiguration(treeLayer));
 		natTable.addConfiguration(new SingleClickSortConfiguration());
 		
