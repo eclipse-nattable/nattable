@@ -44,6 +44,86 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer {
 		registerCommandHandler(new MultiRowShowCommandHandler(this));
 	}
 
+	
+	@Override
+	public void handleLayerEvent(ILayerEvent event) {
+		if (event instanceof IStructuralChangeEvent) {
+			IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
+			if (structuralChangeEvent.isVerticalStructureChanged()) {
+				Collection<StructuralDiff> rowDiffs = structuralChangeEvent.getRowDiffs();
+				if (rowDiffs != null && !rowDiffs.isEmpty()) {
+					handleRowDelete(rowDiffs);
+					handleRowInsert(rowDiffs);
+				}
+			}
+		}
+		super.handleLayerEvent(event);
+	}
+	
+	/**
+	 * Will check for events that indicate that a rows has been deleted. In that case the stored
+	 * hidden indexes need to be updated because the index of the rows might have changed.
+	 * E.g. Row with index 3 is hidden in this layer, deleting row at index 1 will cause the row at index
+	 * 3 to be moved at index 2. Without transforming the index regarding the delete event, the wrong
+	 * row would be hidden.
+	 * @param rowDiffs The collection of {@link StructuralDiff}s to handle
+	 */
+	protected void handleRowDelete(Collection<StructuralDiff> rowDiffs) {
+		List<Integer> toRemove = new ArrayList<Integer>();
+		for (Iterator<StructuralDiff> diffIterator = rowDiffs.iterator(); diffIterator.hasNext();) {
+			StructuralDiff rowDiff = diffIterator.next();
+			if (rowDiff.getDiffType() != null && rowDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
+				Range beforePositionRange = rowDiff.getBeforePositionRange();
+				toRemove.add(underlyingLayer.getRowIndexByPosition(beforePositionRange.start));
+			}
+		}
+		//remove the hidden row indexes that are deleted 
+		this.hiddenRowIndexes.removeAll(toRemove);
+		
+		//modify hidden row indexes regarding the deleted rows
+		Set<Integer> modifiedHiddenRows = new HashSet<Integer>();
+		for (Integer hiddenRow : this.hiddenRowIndexes) {
+			//check number of removed indexes that are lower than the current one
+			int deletedBefore = 0;
+			for (Integer removed : toRemove) {
+				if (removed < hiddenRow) {
+					deletedBefore++;
+				}
+			}
+			modifiedHiddenRows.add(hiddenRow-deletedBefore);
+		}
+		this.hiddenRowIndexes.clear();
+		this.hiddenRowIndexes.addAll(modifiedHiddenRows);
+	}
+	
+	/**
+	 * Will check for events that indicate that a rows are added. In that case the stored
+	 * hidden indexes need to be updated because the index of the rows might have changed.
+	 * E.g. Row with index 3 is hidden in this layer, adding a row at index 1 will cause the row at index
+	 * 3 to be moved to index 4. Without transforming the index regarding the add event, the wrong
+	 * row would be hidden.
+	 * @param rowDiffs The collection of {@link StructuralDiff}s to handle
+	 */
+	protected void handleRowInsert(Collection<StructuralDiff> rowDiffs) {
+		for (StructuralDiff rowDiff : rowDiffs) {
+			if (rowDiff.getDiffType() != null && rowDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
+				Range beforePositionRange = rowDiff.getBeforePositionRange();
+				Set<Integer> modifiedHiddenRows = new HashSet<Integer>();
+				int beforeIndex = underlyingLayer.getRowIndexByPosition(beforePositionRange.start);
+				for (Integer hiddenRow : this.hiddenRowIndexes) {
+					if (hiddenRow >= beforeIndex) {
+						modifiedHiddenRows.add(hiddenRow+1);
+					}
+					else {
+						modifiedHiddenRows.add(hiddenRow);
+					}
+				}
+				this.hiddenRowIndexes.clear();
+				this.hiddenRowIndexes.addAll(modifiedHiddenRows);
+			}
+		}
+	}
+	
 	// Persistence
 	
 	@Override
