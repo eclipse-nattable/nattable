@@ -27,8 +27,7 @@ public class MultiRowShowCommandHandler extends AbstractLayerCommandHandler<Mult
 
 	@Override
 	protected boolean doCommand(MultiRowShowCommand command) {
-		int[] columnIndexes = command.getRowIndexes();
-		rowHideShowLayer.showRowIndexes(columnIndexes);
+		rowHideShowLayer.showRowIndexes(command.getRowIndexes());
 		return true;
 	}
 

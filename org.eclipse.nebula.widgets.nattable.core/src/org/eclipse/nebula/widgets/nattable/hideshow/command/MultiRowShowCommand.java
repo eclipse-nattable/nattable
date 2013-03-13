@@ -10,23 +10,39 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
+/**
+ * Command for showing hidden rows again via index.
+ */
 public class MultiRowShowCommand extends AbstractContextFreeCommand {
 
-	private final int[] rowIndexes;
+	/**
+	 * The indexes of the rows that should be showed again.
+	 */
+	private final Collection<Integer> rowIndexes;
 
-	public MultiRowShowCommand(int[] rowIndexes) {
+	/**
+	 * 
+	 * @param rowIndexes The indexes of the rows that should be showed again.
+	 */
+	public MultiRowShowCommand(Collection<Integer> rowIndexes) {
 		this.rowIndexes = rowIndexes;
 	}
 
-	protected MultiRowShowCommand(MultiRowShowCommand command) {
-		rowIndexes = new int[command.rowIndexes.length];
-		System.arraycopy(command.rowIndexes, 0, rowIndexes, 0, command.rowIndexes.length);
-	}
-
-	public int[] getRowIndexes() {
+	/**
+	 * 
+	 * @return The indexes of the rows that should be showed again.
+	 */
+	public Collection<Integer> getRowIndexes() {
 		return rowIndexes;
 	}
 	
+	@Override
+	public MultiRowShowCommand cloneCommand() {
+		return new MultiRowShowCommand(new ArrayList<Integer>(this.rowIndexes));
+	}
 }

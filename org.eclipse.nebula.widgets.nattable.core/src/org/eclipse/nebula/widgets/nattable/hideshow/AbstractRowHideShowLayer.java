@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.hideshow;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -83,6 +84,14 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 	public int getRowPositionByIndex(int rowIndex) {
 		final Integer position = getCachedVisibleRowIndexes().get(Integer.valueOf(rowIndex));
 		return position != null ? position : -1;
+	}
+	
+	public Collection<Integer> getRowPositionsByIndexes(Collection<Integer> rowIndexes) {
+		Collection<Integer> rowPositions = new HashSet<Integer>();
+		for (int rowIndex : rowIndexes) {
+			rowPositions.add(getRowPositionByIndex(rowIndex));
+		}
+		return rowPositions;
 	}
 	
 	@Override

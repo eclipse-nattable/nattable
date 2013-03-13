@@ -98,23 +98,10 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 		fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
 	}
 
-	public void showColumnIndexes(int[] columnIndexes) {
-		Set<Integer> columnIndexesSet = new HashSet<Integer>();
-		for (int i = 0; i < columnIndexes.length; i++) {
-			columnIndexesSet.add(Integer.valueOf(columnIndexes[i]));
-		}
-		hiddenColumnIndexes.removeAll(columnIndexesSet);
+	public void showColumnIndexes(Collection<Integer> columnIndexes) {
+		hiddenColumnIndexes.removeAll(columnIndexes);
 		invalidateCache();
 		fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(columnIndexes)));
-	}
-
-	protected void showColumnIndexes(Collection<Integer> columnIndexes) {
-		for (int columnIndex : columnIndexes) {
-			hiddenColumnIndexes.remove(Integer.valueOf(columnIndex));
-		}
-		invalidateCache();
-		// Since we are exposing this method for showing individual columns, a structure event must be fired here.
-		fireLayerEvent(new ShowColumnPositionsEvent(this, columnIndexes));
 	}
 
 	public void showAllColumns() {

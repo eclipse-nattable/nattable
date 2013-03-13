@@ -27,8 +27,7 @@ public class MultiColumnShowCommandHandler extends AbstractLayerCommandHandler<M
 
 	@Override
 	protected boolean doCommand(MultiColumnShowCommand command) {
-		int[] columnIndexes = command.getColumnIndexes();
-		columnHideShowLayer.showColumnIndexes(columnIndexes);
+		columnHideShowLayer.showColumnIndexes(command.getColumnIndexes());
 		return true;
 	}
 
