@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -160,6 +161,14 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
 	public void clearSelection(Rectangle selection) {
 		selectionModel.clearSelection(selection);
+		
+		//if the selection anchor is within the selection that is removed
+		//it needs to be cleared also
+		Point anchorPoint = new Point(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
+		if (selection.contains(anchorPoint)) {
+			selectionAnchor.columnPosition = -1;
+			selectionAnchor.rowPosition = -1;
+		}
 	}
 
 	public void selectAll() {
@@ -432,7 +441,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	protected boolean handleMultiColumnHideCommand(MultiColumnHideCommand command) {
 		for (int columnPosition : command.getColumnPositions()) {
 			if (isColumnPositionFullySelected(columnPosition)) {
-				Rectangle selection = new Rectangle(columnPosition, 0, 1, getRowCount());
+				Rectangle selection = new Rectangle(columnPosition, 0, 1, Integer.MAX_VALUE);
 				clearSelection(selection);
 			}
 		}
@@ -475,7 +484,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	protected boolean handleMultiRowHideCommand(MultiRowHideCommand command) {
 		for (int rowPosition : command.getRowPositions()) {
 			if (isRowPositionFullySelected(rowPosition)) {
-				Rectangle selection = new Rectangle(0, rowPosition, getColumnCount(), 1);
+				Rectangle selection = new Rectangle(0, rowPosition, Integer.MAX_VALUE, 1);
 				clearSelection(selection);
 			}
 		}

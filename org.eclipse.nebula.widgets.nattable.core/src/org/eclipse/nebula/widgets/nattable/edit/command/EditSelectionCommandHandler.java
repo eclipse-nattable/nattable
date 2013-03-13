@@ -78,7 +78,8 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
 				//determine the initial value
 				Object initialEditValue = initialValue;
 				if (initialValue == null && EditUtils.isValueSame(this.selectionLayer)) {
-					initialEditValue = EditUtils.getLastSelectedCell(this.selectionLayer).getDataValue();
+					initialEditValue = this.selectionLayer.getDataValueByPosition(
+							selectedCellPositions[0].columnPosition, selectedCellPositions[0].rowPosition);
 				}
 				
 				EditController.editCells(selectedCells, parent, initialEditValue, configRegistry);

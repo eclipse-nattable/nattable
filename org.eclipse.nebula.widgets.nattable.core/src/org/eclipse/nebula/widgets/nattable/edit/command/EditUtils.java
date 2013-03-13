@@ -126,13 +126,20 @@ public class EditUtils {
 	 */
 	public static boolean isEditorSame(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
 		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
-		ICellEditor lastSelectedCellEditor = getLastSelectedCellEditor(selectionLayer, configRegistry);
+		ICellEditor lastSelectedCellEditor = null;
 		for (PositionCoordinate selectedCell : selectedCells) {
 			LabelStack labelStack = selectionLayer.getConfigLabelsByPosition(
 					selectedCell.columnPosition, selectedCell.rowPosition);
 			ICellEditor cellEditor = configRegistry.getConfigAttribute(
 					EditConfigAttributes.CELL_EDITOR, 
 					DisplayMode.EDIT, labelStack.getLabels());
+
+			//The first time we get here we need to remember the editor so further checks can
+			//use it. Getting the editor before by getLastSelectedCellEditor() might cause 
+			//issues in case there is no active selection anchor
+			if (lastSelectedCellEditor == null) {
+				lastSelectedCellEditor = cellEditor;
+			}
 			if (cellEditor != lastSelectedCellEditor) {
 				return false;
 			}
@@ -181,20 +188,20 @@ public class EditUtils {
 	 * 			one cell contains another value.
 	 */
 	public static boolean isValueSame(SelectionLayer selectionLayer) {
-		ILayerCell lastSelectedCell = getLastSelectedCell(selectionLayer);
-		if (lastSelectedCell != null) {
-			PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
-			Object originalCanonicalValue = lastSelectedCell.getDataValue();
-			for (PositionCoordinate selectedCell : selectedCells) {
-				Object cellValue = selectionLayer
-						.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition)
-						.getDataValue();
-				if ((cellValue != null && !cellValue.equals(originalCanonicalValue))
-						|| cellValue == null && originalCanonicalValue != null) {
-					return false;
-				}
-			}                        
-		}
+		Object lastSelectedValue = null;
+		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+		for (PositionCoordinate selectedCell : selectedCells) {
+			Object cellValue = selectionLayer
+					.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition)
+					.getDataValue();
+			if (lastSelectedValue == null) {
+				lastSelectedValue = cellValue;
+			}
+			if ((cellValue != null && !cellValue.equals(lastSelectedValue))
+					|| cellValue == null && lastSelectedValue != null) {
+				return false;
+			}
+		}                        
 		return true;
 	}
 	

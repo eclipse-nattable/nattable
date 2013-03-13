@@ -10,25 +10,23 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
+import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
-import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
-import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
-import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.hideshow.GlazedListsRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -38,10 +36,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
@@ -49,44 +43,36 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.GlazedLists;
+
 /**
- * Simple example showing how to add the {@link ColumnHideShowLayer} and the 
- * {@link RowHideShowLayer} to the layer composition of a grid and how to add 
- * the corresponding actions to the header menus.
- * 
- * Also adds the functionality to manage NatTable states to proof that the
- * visibility states are stored and loaded correctly.
+ * Simple example showing how to add the row hide/show functionality to a grid that is build
+ * using GlazedLists and how to add the corresponding actions to the row header menu.
  * 
  * @author Dirk Fauth
  *
  */
-public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
+public class _532_GlazedListsRowHideShowExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _533_ColumnAndRowHideShowExample());
+		StandaloneNatExampleRunner.run(new _532_GlazedListsRowHideShowExample());
 	}
 
 	@Override
 	public String getDescription() {
-		return "This example shows the usage of the ColumnHideShowLayer and the RowHideShowLayer "
-				+ "within a grid and its corresponding actions in the header menus. If you perform "
-				+ "a right click on the corresponding header, you are able to hide the current "
-				+ "selection or show all columns/rows again.\n"
-				+ "The column header menu also gives the opportunity to manage the NatTable states";
+		return "This example shows the usage of the row hide/show functionality within a grid and "
+				+ "its corresponding actions in the row header menu using the GlazedLists extension. "
+				+ "If you perform a right click on the row header, you are able to hide the current selected "
+				+ "row or show all rows again.";
 	}
 	
 	@Override
 	public Control createExampleControl(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		
 		//property names of the Person class
 		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
 
@@ -102,25 +88,43 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
 		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
 		//directly as body layer is also working.
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
+		
+		//first wrap the base list in a GlazedLists EventList and a FilterList so it is possible to filter
+		EventList<Person> eventList = GlazedLists.eventList(PersonService.getPersons(10));
+		FilterList<Person> filterList = new FilterList<Person>(eventList);
+		
+		//use the GlazedListsDataProvider for some performance tweaks
+		final IRowDataProvider<Person> bodyDataProvider = new GlazedListsDataProvider<Person>(filterList, 
+				new ReflectiveColumnPropertyAccessor<Person>(propertyNames));
+		//create the IRowIdAccessor that is necessary for row hide/show
+		final IRowIdAccessor<Person> rowIdAccessor = new IRowIdAccessor<Person>() {
+			@Override
+			public Serializable getRowId(Person rowObject) {
+				return rowObject.getId();
+			}
+		};
+		
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(bodyDataLayer);
-		RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(columnHideShowLayer);
-		final SelectionLayer selectionLayer = new SelectionLayer(rowHideShowLayer);
-		final ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+		
+		//add a GlazedLists event layer that is responsible for updating the grid on list changes
+		DetailGlazedListsEventLayer<Person> glazedListsEventLayer = 
+				new DetailGlazedListsEventLayer<Person>(bodyDataLayer, filterList);
 
-		final FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
-	    final CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer,viewportLayer, selectionLayer);
+		GlazedListsRowHideShowLayer<Person> rowHideShowLayer = new GlazedListsRowHideShowLayer<Person>(
+				glazedListsEventLayer, bodyDataProvider, rowIdAccessor, filterList);
+		
+		SelectionLayer selectionLayer = new SelectionLayer(rowHideShowLayer);
+		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
 		//build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, compositeFreezeLayer, selectionLayer);
+		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 		
 		//build the row header layer
 		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
 		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, compositeFreezeLayer, selectionLayer);
+		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 		
 		//build the corner layer
 		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
@@ -128,40 +132,21 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 		
 		//build the grid layer
-		GridLayer gridLayer = new GridLayer(compositeFreezeLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
+		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 		
 		//turn the auto configuration off as we want to add our header menu configuration
-		final NatTable natTable = new NatTable(panel, gridLayer, false);
+		NatTable natTable = new NatTable(parent, gridLayer, false);
 		
 		//as the autoconfiguration of the NatTable is turned off, we have to add the 
 		//DefaultNatTableStyleConfiguration manually	
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new DefaultFreezeGridBindings());
-		
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				configRegistry.registerConfigAttribute(
-						EditConfigAttributes.CELL_EDITABLE_RULE, 
-						IEditableRule.ALWAYS_EDITABLE);
-			}
-		});
 		
 		//add the header menu configuration for adding the column header menu with hide/show actions
 		natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
 			
 			@Override
-			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-				return super.createColumnHeaderMenu(natTable)
-							.withHideColumnMenuItem()
-							.withShowAllColumnsMenuItem()
-							.withStateManagerMenuItemProvider();
-			}
-			
-			@Override
 			protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
-				return super.createRowHeaderMenu(natTable)
+				return new PopupMenuBuilder(natTable)
 							.withHideRowMenuItem()
 							.withShowAllRowsMenuItem();
 			}
@@ -169,47 +154,15 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 			@Override
 			protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
 				return super.createCornerMenu(natTable)
-							.withShowAllColumnsMenuItem()
-							.withShowAllRowsMenuItem();
+							.withHideRowMenuItem()
+							.withStateManagerMenuItemProvider();
 			}
 		});
 		natTable.configure();
 		
-		panel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+		natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
 		
-		gridLayer.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
-		
-		
-		Button hideOne = new Button(panel, SWT.PUSH);
-		hideOne.setText("Hide 0 1");
-		hideOne.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new MultiRowHideCommand(selectionLayer, new int[] {0, 1}));
-			}
-		});
-		
-		Button hideTwo = new Button(panel, SWT.PUSH);
-		hideTwo.setText("Hide 0 2");
-		hideTwo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new MultiRowHideCommand(selectionLayer, new int[] {0, 2}));
-			}
-		});
-		
-		Button show = new Button(panel, SWT.PUSH);
-		show.setText("Show");
-		show.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new ShowAllRowsCommand());
-			}
-		});
-		
-		return panel;
+		return natTable;
 	}
 
 }

@@ -39,11 +39,11 @@ public class ColumnChooserUtils {
 	}
 
 	public static void showColumnEntries(List<ColumnEntry> addedItems, ColumnHideShowLayer hideShowLayer) {
-		hideShowLayer.doCommand(new MultiColumnShowCommand(asIntArray(getColumnEntryIndexes(addedItems))));
+		hideShowLayer.doCommand(new MultiColumnShowCommand(getColumnEntryIndexes(addedItems)));
 	}
 
 	public static void showColumnIndexes(List<Integer> addedColumnIndexes, ColumnHideShowLayer hideShowLayer) {
-		hideShowLayer.doCommand(new MultiColumnShowCommand(asIntArray(addedColumnIndexes)));
+		hideShowLayer.doCommand(new MultiColumnShowCommand(addedColumnIndexes));
 	}
 
 	public static List<ColumnEntry> getHiddenColumnEntries(ColumnHideShowLayer columnHideShowLayer, ColumnHeaderLayer columnHeaderLayer, DataLayer columnHeaderDataLayer) {

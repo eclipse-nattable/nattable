@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.layer.event;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -28,6 +29,14 @@ public class RowInsertEvent extends RowStructuralChangeEvent {
 		super(layer, rowPositionRange);
 	}
 	
+	public RowInsertEvent(ILayer layer, Range...rowPositionRanges) {
+		super(layer, Arrays.asList(rowPositionRanges));
+	}
+	
+	public RowInsertEvent(ILayer layer, Collection<Range> rowPositionRanges) {
+		super(layer, rowPositionRanges);
+	}
+
 	public RowInsertEvent(RowInsertEvent event) {
 		super(event);
 	}
@@ -40,7 +49,7 @@ public class RowInsertEvent extends RowStructuralChangeEvent {
 		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 		
 		for (Range range : getRowPositionRanges()) {
-			new StructuralDiff(DiffTypeEnum.ADD, new Range(range.start, range.start), range);
+			rowDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, new Range(range.start, range.start), range));
 		}
 		
 		return rowDiffs;

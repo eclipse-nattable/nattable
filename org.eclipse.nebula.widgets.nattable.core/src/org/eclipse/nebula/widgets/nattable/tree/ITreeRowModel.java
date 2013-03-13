@@ -28,4 +28,5 @@ public interface ITreeRowModel<T> {
 
 	List<Integer> expand(int parentIndex);
 
+	List<Integer> getChildIndexes(int parentIndex);
 }

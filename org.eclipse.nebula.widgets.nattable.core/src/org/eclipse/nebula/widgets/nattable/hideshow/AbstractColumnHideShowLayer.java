@@ -77,20 +77,12 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		return getCachedVisibleColumnIndexes().indexOf(Integer.valueOf(columnIndex));
 	}
 	
-	public Collection<Integer> getColumnPositionsByIndexes(int[] columnIndexes) {
+	public Collection<Integer> getColumnPositionsByIndexes(Collection<Integer> columnIndexes) {
 		Collection<Integer> columnPositions = new HashSet<Integer>();
 		for (int columnIndex : columnIndexes) {
-			columnPositions.add(Integer.valueOf(getColumnPositionByIndex(columnIndex)));
+			columnPositions.add(getColumnPositionByIndex(columnIndex));
 		}
 		return columnPositions;
-	}
-
-	public Collection<Integer> getColumnPositionsByIndexes(List<Integer> columnIndexes) {
-		int[] indexArray = new int[columnIndexes.size()];
-		for (int i = 0; i < columnIndexes.size(); i++) {
-			indexArray[i] = columnIndexes.get(i);
-		}
-		return getColumnPositionsByIndexes(indexArray);
 	}
 	
 	@Override
@@ -226,6 +218,9 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
 	// Cache
 
+	/**
+	 * Invalidate the cache to ensure that information is rebuild.
+	 */
 	protected void invalidateCache() {
 		cachedVisibleColumnIndexOrder = null;
 		startXCache.clear();

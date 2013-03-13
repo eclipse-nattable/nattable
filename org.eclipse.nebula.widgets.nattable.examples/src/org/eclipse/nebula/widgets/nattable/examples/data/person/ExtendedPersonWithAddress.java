@@ -29,11 +29,11 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
 	private String filename;
 	
 	@SuppressWarnings("deprecation")
-	public ExtendedPersonWithAddress(String firstName, String lastName,
+	public ExtendedPersonWithAddress(int id, String firstName, String lastName,
 			Gender gender, boolean married, Date birthday, Address address,
 			String password, String description, double money, List<String> favouriteFood, 
 			List<String> favouriteDrinks) {
-		super(firstName, lastName, gender, married, birthday, address);
+		super(id, firstName, lastName, gender, married, birthday, address);
 
 		this.password = password;
 		this.description = description;

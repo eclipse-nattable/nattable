@@ -28,6 +28,10 @@ public class Scheduler implements ThreadFactory  {
 		this.threadNamePrefix = threadNamePrefix;
 	}
 	
+	public synchronized ScheduledFuture<?> schedule(Runnable runnable, long initialDelayMillis) {
+		return getThreadPool().schedule(runnable, initialDelayMillis, TimeUnit.MILLISECONDS);
+	}
+	
 	public synchronized ScheduledFuture<?> scheduleAtFixedRate(Runnable runnable, long initialDelayMillis, long refreshIntervalMillis) {
 		scheduledTasks++;
 		return getThreadPool().scheduleAtFixedRate(runnable, initialDelayMillis, refreshIntervalMillis, TimeUnit.MILLISECONDS);
