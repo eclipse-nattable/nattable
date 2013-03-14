@@ -334,7 +334,8 @@ public class CellPainterDecorator implements ICellPainter {
 		if (decoratorCellPainterBounds.contains(x, y)) {
 			return decoratorCellPainter.getCellPainterAt(x, y, cell, gc, decoratorCellPainterBounds, configRegistry);
 		} else {
-			Rectangle baseCellPainterBounds = getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
+			Rectangle baseCellPainterBounds = this.paintDecorationDependent ? 
+					getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry) : adjustedCellBounds;
 			if (baseCellPainterBounds.contains(x, y)) {
 				return baseCellPainter.getCellPainterAt(x, y, cell, gc, baseCellPainterBounds, configRegistry);
 			}
