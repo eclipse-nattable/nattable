@@ -154,7 +154,7 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 	public boolean doCommand(ILayerCommand command) {
 		if (command instanceof DisposeResourcesCommand) {
 			//ensure to kill a possible running cleanup task
-			if (cleanupFuture != null && !cleanupFuture.isDone() && !cleanupFuture.isCancelled()) {
+			if (cleanupFuture != null) {
 				scheduler.unschedule(cleanupFuture);
 			}
 		}
