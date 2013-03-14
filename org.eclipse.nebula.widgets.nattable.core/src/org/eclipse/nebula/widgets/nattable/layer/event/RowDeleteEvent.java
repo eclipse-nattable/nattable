@@ -22,7 +22,9 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 public class RowDeleteEvent extends RowStructuralChangeEvent {
 	
 	public RowDeleteEvent(ILayer layer, int rowPosition) {
-		this(layer, new Range(rowPosition, rowPosition + 1));
+		// Start range from position before the deleted row position so that
+		// if the last row in a layer is deleted the delete event will still propagate
+		this(layer, new Range(rowPosition - 1, rowPosition + 1));
 	}
 	
 	public RowDeleteEvent(ILayer layer, Range rowPositionRange) {
