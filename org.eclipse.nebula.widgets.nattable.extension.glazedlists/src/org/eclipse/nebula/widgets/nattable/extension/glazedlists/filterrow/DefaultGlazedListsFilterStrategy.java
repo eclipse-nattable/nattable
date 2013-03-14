@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
@@ -43,6 +45,8 @@ import ca.odell.glazedlists.matchers.ThresholdMatcherEditor;
 
 public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
+	private static final Log log = LogFactory.getLog(DefaultGlazedListsFilterStrategy.class);
+
 	private final IColumnAccessor<T> columnAccessor;
 	private final IConfigRegistry configRegistry;
 	protected final CompositeMatcherEditor<T> matcherEditor;
@@ -57,7 +61,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	/**
 	 * Create GlazedLists matcher editors and apply them to facilitate filtering.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
 		try {
 			matcherEditor.getMatcherEditors().clear();
@@ -106,7 +110,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 			matcherEditor.getMatcherEditors().addAll(matcherEditors);
 			matcherEditor.setMode(CompositeMatcherEditor.AND);
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
+			log.error("Error on applying a filter", e); //$NON-NLS-1$
 		}
 	}
 
