@@ -311,11 +311,6 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 				new DefaultIntegerDisplayConverter(), 
 				DisplayMode.NORMAL,
 				EditorExample.COLUMN_FIVE_LABEL);
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.DISPLAY_CONVERTER, 
-				new DefaultIntegerDisplayConverter(), 
-				DisplayMode.EDIT,
-				EditorExample.COLUMN_FIVE_LABEL);
 	}
 	
 	private void registerColumnSixDoubleEditor(IConfigRegistry configRegistry) {
@@ -352,11 +347,6 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 				CellConfigAttributes.DISPLAY_CONVERTER, 
 				new DefaultDoubleDisplayConverter(), 
 				DisplayMode.NORMAL,
-				EditorExample.COLUMN_SIX_LABEL);
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.DISPLAY_CONVERTER, 
-				new DefaultDoubleDisplayConverter(), 
-				DisplayMode.EDIT,
 				EditorExample.COLUMN_SIX_LABEL);
 	}
 	
