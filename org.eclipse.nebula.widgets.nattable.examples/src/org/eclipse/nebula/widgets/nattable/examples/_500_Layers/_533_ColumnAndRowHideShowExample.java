@@ -15,12 +15,8 @@ import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
@@ -40,8 +36,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
@@ -50,10 +44,7 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfigurati
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -138,16 +129,6 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new DefaultFreezeGridBindings());
 		
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				configRegistry.registerConfigAttribute(
-						EditConfigAttributes.CELL_EDITABLE_RULE, 
-						IEditableRule.ALWAYS_EDITABLE);
-			}
-		});
-		
 		//add the header menu configuration for adding the column header menu with hide/show actions
 		natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
 			
@@ -163,14 +144,16 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 			protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
 				return super.createRowHeaderMenu(natTable)
 							.withHideRowMenuItem()
-							.withShowAllRowsMenuItem();
+							.withShowAllRowsMenuItem()
+							.withStateManagerMenuItemProvider();
 			}
 			
 			@Override
 			protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
 				return super.createCornerMenu(natTable)
 							.withShowAllColumnsMenuItem()
-							.withShowAllRowsMenuItem();
+							.withShowAllRowsMenuItem()
+							.withStateManagerMenuItemProvider();
 			}
 		});
 		natTable.configure();
@@ -180,34 +163,6 @@ public class _533_ColumnAndRowHideShowExample extends AbstractNatExample {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 		
 		gridLayer.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
-		
-		
-		Button hideOne = new Button(panel, SWT.PUSH);
-		hideOne.setText("Hide 0 1");
-		hideOne.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new MultiRowHideCommand(selectionLayer, new int[] {0, 1}));
-			}
-		});
-		
-		Button hideTwo = new Button(panel, SWT.PUSH);
-		hideTwo.setText("Hide 0 2");
-		hideTwo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new MultiRowHideCommand(selectionLayer, new int[] {0, 2}));
-			}
-		});
-		
-		Button show = new Button(panel, SWT.PUSH);
-		show.setText("Show");
-		show.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new ShowAllRowsCommand());
-			}
-		});
 		
 		return panel;
 	}
