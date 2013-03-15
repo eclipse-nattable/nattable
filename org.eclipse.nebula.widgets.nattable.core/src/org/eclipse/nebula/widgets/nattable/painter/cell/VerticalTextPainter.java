@@ -79,7 +79,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 	@Override
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry){
 		setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-		return gc.textExtent(convertDataType(cell, configRegistry)).x;
+		return gc.textExtent(convertDataType(cell, configRegistry)).y;
 	}
 
 	@Override
