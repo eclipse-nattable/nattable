@@ -50,7 +50,7 @@ public class MaxCellBoundsHelperTest {
 		int col1MaxTextWidth = new TextPainter().getPreferredWidth(new CellFixture("Elephant"), gc, registry);
 		gc.dispose();
 
-		int[] maxColumnWidths = MaxCellBoundsHelper.getPreferedColumnWidths(registry, gcFactory, dataLayer, new int[] { 0, 1 });
+		int[] maxColumnWidths = MaxCellBoundsHelper.getPreferredColumnWidths(registry, gcFactory, dataLayer, new int[] { 0, 1 });
 		
 		// Adjust widths
 		int col0AdjustedMaxWidth = dataLayer.getLayerPainter().adjustCellBounds(0, 0, new Rectangle(0, 0, maxColumnWidths[0], 10)).width;
@@ -83,7 +83,7 @@ public class MaxCellBoundsHelperTest {
 		int row1MaxTextHeight = new TextPainter().getPreferredHeight(new CellFixture("Elephant"), gc, registry);
 		gc.dispose();
 
-		int[] maxRowHeights = MaxCellBoundsHelper.getPreferedRowHeights(registry, gcFactory, dataLayer, new int[] { 0, 1 });
+		int[] maxRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(registry, gcFactory, dataLayer, new int[] { 0, 1 });
 		
 		// Adjust heights
 		int row0AdjustedMaxHeight = dataLayer.getLayerPainter().adjustCellBounds(0, 0, new Rectangle(0, 0, 10, maxRowHeights[0])).height;

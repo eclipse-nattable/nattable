@@ -31,7 +31,7 @@ public class MaxCellBoundsHelper {
 	 * @return Preferred widths for columns. Preferred width is the minimum width
 	 *    required to horizontally fit all the contents of the column (including header)
 	 */
-	public static int[] getPreferedColumnWidths(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]columnPositions) {
+	public static int[] getPreferredColumnWidths(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]columnPositions) {
 		int[] columnWidths = new int[columnPositions.length];
 		
 		GC gc = gcFactory.createGC();
@@ -84,9 +84,9 @@ public class MaxCellBoundsHelper {
 	}
 	
 	/**
-	 * @see MaxCellBoundsHelper#getPreferedColumnWidths(IConfiguration, GC, ILayer, int[])
+	 * @see MaxCellBoundsHelper#getPreferredColumnWidths(IConfiguration, GC, ILayer, int[])
 	 */
-	public static int[] getPreferedRowHeights(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]rows) {
+	public static int[] getPreferredRowHeights(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]rows) {
 		int[] rowHeights = new int[rows.length];
 		
 		GC gc = gcFactory.createGC();
