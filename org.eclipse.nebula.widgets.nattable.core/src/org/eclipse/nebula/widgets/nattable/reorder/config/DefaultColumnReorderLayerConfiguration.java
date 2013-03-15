@@ -23,7 +23,7 @@ public class DefaultColumnReorderLayerConfiguration extends AggregateConfigurati
 	}
 
 	protected void addColumnReorderUIBindings() {
-		addConfiguration(new DefaultReorderBindings());
+		addConfiguration(new DefaultColumnReorderBindings());
 	}
 
 }

@@ -117,6 +117,19 @@ public class CellEdgeDetectUtil {
 		}
 	}
 
+	/**
+	 * Gets the edge (top/bottom) of the cell which is closer to the click point.  
+	 * @param cellBounds bounds of the cell containing the click
+	 * @param clickPt usually the coordinates of a mouse click
+	 */
+	public static CellEdgeEnum getVerticalCellEdge(Rectangle cellBounds, Point clickPt) {
+		return getVerticalCellEdge(cellBounds, clickPt, -1);
+	}
+
+	public static CellEdgeEnum getVerticalCellEdge(ILayer layer, Point clickPt) {
+		return getVerticalCellEdge(layer, clickPt, -1);
+	}
+
 	public static CellEdgeEnum getVerticalCellEdge(ILayer layer, Point clickPt, int handleHeight) {
 		ILayerCell cell = layer.getCellByPosition(
 				layer.getColumnPositionByX(clickPt.x), 

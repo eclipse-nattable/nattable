@@ -48,6 +48,10 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 		return rowPositionRanges;
 	}
 	
+	protected void setRowPositionRanges(Collection<Range> rowPositionRanges) {
+		this.rowPositionRanges = rowPositionRanges;
+	}
+
 	public boolean convertToLocal(ILayer localLayer) {
 		rowPositionRanges = localLayer.underlyingToLocalRowPositions(layer, rowPositionRanges);
 		layer = localLayer;

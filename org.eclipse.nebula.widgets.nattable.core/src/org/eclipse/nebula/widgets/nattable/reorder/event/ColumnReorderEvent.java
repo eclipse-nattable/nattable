@@ -48,6 +48,10 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 		setColumnPositionRanges(PositionUtil.getRanges(allColumnPositions));
 	}
 
+	/**
+	 * Constructor for internal use to clone this event.
+	 * @param event The event out of which the new one should be created
+	 */
 	public ColumnReorderEvent(ColumnReorderEvent event) {
 		super(event);
 		this.beforeFromColumnPositionRanges = event.beforeFromColumnPositionRanges;
@@ -67,6 +71,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 		return reorderToLeftEdge;
 	}
 
+	@Override
 	public Collection<StructuralDiff> getColumnDiffs() {
 		Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
 
@@ -117,6 +122,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 		}
 	}
 
+	@Override
 	public ColumnReorderEvent cloneEvent() {
 		return new ColumnReorderEvent(this);
 	}

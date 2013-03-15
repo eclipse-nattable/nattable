@@ -22,7 +22,7 @@ import org.eclipse.swt.SWT;
 /**
  * Column reorder bindings. Added by {@link DefaultColumnReorderLayerConfiguration}
  */
-public class DefaultReorderBindings extends AbstractUiBindingConfiguration {
+public class DefaultColumnReorderBindings extends AbstractUiBindingConfiguration {
 
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
 		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.columnHeaderLeftClick(SWT.NONE), new AggregateDragMode(new CellDragMode(), new ColumnReorderDragMode()));
