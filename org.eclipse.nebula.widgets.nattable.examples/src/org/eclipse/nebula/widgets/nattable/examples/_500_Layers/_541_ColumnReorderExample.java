@@ -97,7 +97,6 @@ public class _541_ColumnReorderExample extends AbstractNatExample {
 		//build the grid layer
 		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 		
-		//turn the auto configuration off as we want to add our header menu configuration
 		NatTable natTable = new NatTable(parent, gridLayer);
 		
 		return natTable;
