@@ -20,6 +20,8 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerCon
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommandHandler;
+import org.eclipse.nebula.widgets.nattable.resize.command.AutoResizeColumnsCommand;
+import org.eclipse.nebula.widgets.nattable.resize.command.AutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -139,6 +141,13 @@ public class GridLayer extends CompositeLayer {
 	
 	public void setBodyLayer(ILayer bodyLayer) {
 		setChildLayer(GridRegion.BODY, bodyLayer, 1, 1);
+		
+		//update the command handlers for auto resize because of the connection to the body layer stack
+		unregisterCommandHandler(AutoResizeColumnsCommand.class);
+		unregisterCommandHandler(AutoResizeRowsCommand.class);
+		
+		registerCommandHandler(new AutoResizeColumnCommandHandler(this));
+		registerCommandHandler(new AutoResizeRowCommandHandler(this));		
 	}
 	
 	@Override
