@@ -25,7 +25,6 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
@@ -146,7 +145,6 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 				columnIndexOrder.addAll(newColumnIndexOrder);
 			}
 		}
-		fireLayerEvent(new ColumnStructuralRefreshEvent(this));
 	}
 
 	/**
@@ -188,6 +186,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		}
 	}
 
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		return columnIndexOrder.indexOf(Integer.valueOf(columnIndex));
 	}
@@ -252,6 +251,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
 	// Rows
 
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		return underlyingLayer.getRowPositionByIndex(rowIndex);
 	}

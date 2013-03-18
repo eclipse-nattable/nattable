@@ -27,7 +27,6 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
@@ -155,7 +154,6 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 				rowIndexOrder.addAll(newRowIndexOrder);
 			}
 		}
-		fireLayerEvent(new RowStructuralRefreshEvent(this));
 	}
 
 	/**
