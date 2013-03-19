@@ -77,8 +77,12 @@ public class _342_AutomaticDataSpanningExample extends AbstractNatExample {
 		AutomaticSpanningDataProvider spanningDataProvider = 
 				new AutomaticSpanningDataProvider(dataProvider, true, false);
 		
-		spanningDataProvider.addAutoSpanningColumnPositions(2, 3, 4);
-		spanningDataProvider.addAutoSpanningRowPositions(0, 1, 4);
+//		spanningDataProvider.addAutoSpanningColumnPositions(0, 1, 2);
+//		spanningDataProvider.addAutoSpanningColumnPositions(2, 3, 4);
+//		spanningDataProvider.addAutoSpanningColumnPositions(0, 1, 3, 4);
+//		spanningDataProvider.addAutoSpanningRowPositions(0, 1, 2);
+//		spanningDataProvider.addAutoSpanningRowPositions(2, 3, 4);
+//		spanningDataProvider.addAutoSpanningRowPositions(0, 1, 3, 4);
 		
 		NatTable natTable = new NatTable(parent, 
 				new ViewportLayer(new SelectionLayer(new SpanningDataLayer(spanningDataProvider))), false);

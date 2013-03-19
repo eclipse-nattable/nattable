@@ -61,15 +61,13 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 */
 	private boolean autoRowSpan;
 	/**
-	 * List of column positions for which automatic row spanning is enabled. Only for column positions
-	 * set in here automatic row spanning is performed.
+	 * List of column positions for which automatic spanning is enabled. 
 	 * <p>
 	 * <b>Note: </b>If this list is empty, all columns will do auto row spanning.  
 	 */
 	private List<Integer> autoSpanColumns = new ArrayList<Integer>();
 	/**
-	 * List of row positions for which automatic column spanning is enabled. Only for row positions
-	 * set in here automatic column spanning is performed.
+	 * List of row positions for which automatic spanning is enabled. 
 	 * <p>
 	 * <b>Note: </b>If this list is empty, all rows will do auto column spanning.  
 	 */
@@ -133,8 +131,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @return <code>true</code> if for that column position auto spanning is enabled
 	 */
 	protected boolean isAutoSpanEnabledForColumn(int columnPosition, int rowPosition) {
-		return (this.autoColumnSpan && 
-				(this.autoSpanRows.isEmpty() || this.autoSpanRows.contains(rowPosition)));
+		return (this.autoColumnSpan && isAutoSpanRow(rowPosition));
 	}
 
 	/**
@@ -144,8 +141,25 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @return <code>true</code> if for that row position auto spanning is enabled
 	 */
 	protected boolean isAutoSpanEnabledForRow(int columnPosition, int rowPosition) {
-		return (this.autoRowSpan && 
-				(this.autoSpanColumns.isEmpty() || this.autoSpanColumns.contains(columnPosition)));
+		return (this.autoRowSpan && isAutoSpanColumn(columnPosition));
+	}
+	
+	/**
+	 * Checks if the given column position is configured as a auto span column.
+	 * @param columnPosition The column position to check
+	 * @return <code>true</code> if the given column position is configured as a auto span column.
+	 */
+	private boolean isAutoSpanColumn(int columnPosition) {
+		return (this.autoSpanColumns.isEmpty() || this.autoSpanColumns.contains(columnPosition));
+	}
+	
+	/**
+	 * Checks if the given row position is configured as a auto span row.
+	 * @param rowPosition The row position to check
+	 * @return <code>true</code> if the given row position is configured as a auto span row.
+	 */
+	private boolean isAutoSpanRow(int rowPosition) {
+		return (this.autoSpanRows.isEmpty() || this.autoSpanRows.contains(rowPosition));
 	}
 	
 	/**
@@ -198,7 +212,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * 			if it is not spanned with the columns to the left.
 	 */
 	protected int getStartColumnPosition(int columnPosition, int rowPosition) {
-		if (columnPosition <= 0) {
+		if (columnPosition <= 0 || !isAutoSpanColumn(columnPosition) || !isAutoSpanColumn(columnPosition-1)) {
 			return columnPosition;
 		}
 		
@@ -226,7 +240,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * 			if it is not spanned with rows above.
 	 */
 	protected int getStartRowPosition(int columnPosition, int rowPosition) {
-		if (rowPosition <= 0) {
+		if (rowPosition <= 0 || !isAutoSpanRow(rowPosition) || !isAutoSpanRow(rowPosition - 1)) {
 			return rowPosition;
 		}
 		
@@ -253,6 +267,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 		int span = 1;
 		
 		while (columnPosition < getColumnCount()-1
+				&& isAutoSpanColumn(columnPosition)
+				&& isAutoSpanColumn(columnPosition+1)
 				&& !valuesNotEqual(
 					getDataValue(columnPosition, rowPosition), 
 					getDataValue(columnPosition+1, rowPosition))) {
@@ -273,6 +289,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 		int span = 1;
 		
 		while (rowPosition < getRowCount()-1
+				&& isAutoSpanRow(rowPosition)
+				&& isAutoSpanRow(rowPosition+1)
 				&& !valuesNotEqual(
 					getDataValue(columnPosition, rowPosition), 
 					getDataValue(columnPosition, rowPosition+1))) {
