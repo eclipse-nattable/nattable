@@ -14,7 +14,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
@@ -75,8 +74,8 @@ public class AutomaticRowHeightTextPainter extends TextPainter {
 			int contentHeight = fontHeight * numberOfNewLines;
 			int contentToCellDiff = (cell.getBounds().height - rectangle.height);
 	
-			//this code differs from nattable original and needs to be preserved for dlfp
-			if ((contentHeight != rectangle.height) && calculate) {
+			//this code differs from TextPainter
+			if ((contentHeight != rectangle.height) && calculateByTextHeight) {
 				ILayer layer = cell.getLayer();
 				layer.doCommand(
 						new RowResizeCommand(
@@ -90,8 +89,8 @@ public class AutomaticRowHeightTextPainter extends TextPainter {
 				
 				gc.drawText(
 						text,
-						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth + spacing),
-						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing),
+						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing,
+						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + spacing,
 						SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
 				);
 			}
@@ -105,7 +104,7 @@ public class AutomaticRowHeightTextPainter extends TextPainter {
 					
 					gc.drawText(
 							line,
-							rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth + spacing),
+							rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth) + spacing,
 							yStartPos + spacing,
 							SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
 					);

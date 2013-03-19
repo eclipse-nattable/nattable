@@ -43,7 +43,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
+	 * @param spacing The space between text and cell border
 	 */
 	public VerticalTextPainter(boolean wrapText, boolean paintBg, int spacing) {
 		this(wrapText, paintBg, spacing, false);
@@ -52,28 +52,51 @@ public class VerticalTextPainter extends AbstractTextPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public VerticalTextPainter(boolean wrapText, boolean paintBg, boolean calculate) {
 		this(wrapText, paintBg, 0, calculate);
+	}
+
+	/**
+	 * @param wrapText split text over multiple lines
+	 * @param paintBg skips painting the background if is FALSE
+	 * @param calculateByTextLength tells the text painter to calculate the cell border by containing
+	 * 			text length. For horizontal text rendering, this means the width of the cell is calculated
+	 * 			by content, for vertical text rendering the height is calculated
+	 * @param calculateByTextHeight tells the text painter to calculate the cell border by containing
+	 * 			text height. For horizontal text rendering, this means the height of the cell is calculated
+	 * 			by content, for vertical text rendering the width is calculated
+	 */
+	public VerticalTextPainter(boolean wrapText, boolean paintBg, 
+			boolean calculateByTextLength, boolean calculateByTextHeight) {
+		this(wrapText, paintBg, 0, calculateByTextLength, calculateByTextHeight);
 	}
 	
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param spacing The space between text and cell border
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public VerticalTextPainter(boolean wrapText, boolean paintBg, int spacing, boolean calculate) {
 		super(wrapText, paintBg, spacing, calculate);
+	}
+
+	/**
+	 * @param wrapText split text over multiple lines
+	 * @param paintBg skips painting the background if is FALSE
+	 * @param spacing The space between text and cell border
+	 * @param calculateByTextLength tells the text painter to calculate the cell border by containing
+	 * 			text length. For horizontal text rendering, this means the width of the cell is calculated
+	 * 			by content, for vertical text rendering the height is calculated
+	 * @param calculateByTextHeight tells the text painter to calculate the cell border by containing
+	 * 			text height. For horizontal text rendering, this means the height of the cell is calculated
+	 * 			by content, for vertical text rendering the width is calculated
+	 */
+	public VerticalTextPainter(boolean wrapText, boolean paintBg, int spacing, 
+			boolean calculateByTextLength, boolean calculateByTextHeight) {
+		super(wrapText, paintBg, spacing, calculateByTextLength, calculateByTextHeight);
 	}
 
 	@Override
@@ -117,7 +140,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 		int contentWidth = fontHeight * numberOfNewLines;
 		int contentToCellDiff = (cell.getBounds().width - rectangle.width);
 		
-		if ((contentWidth > rectangle.width) && calculate) {
+		if ((contentWidth > rectangle.width) && calculateByTextHeight) {
 			ILayer layer = cell.getLayer();
 			layer.doCommand(
 					new ColumnResizeCommand(
@@ -173,8 +196,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 		if (cellLength < contentHeight) {
 
 			ILayer layer = cell.getLayer();
-			int row = layer.getRowIndexByPosition(cell.getRowPosition());
-			layer.doCommand(new RowResizeCommand(layer, row, 
+			layer.doCommand(new RowResizeCommand(layer, cell.getRowPosition(), 
 					contentHeight));
 		}
 	}

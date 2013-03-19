@@ -43,7 +43,7 @@ public class TextPainter extends AbstractTextPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
+	 * @param spacing The space between text and cell border
 	 */
 	public TextPainter(boolean wrapText, boolean paintBg, int spacing) {
 		this(wrapText, paintBg, spacing, false);
@@ -52,30 +52,53 @@ public class TextPainter extends AbstractTextPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public TextPainter(boolean wrapText, boolean paintBg, boolean calculate) {
 		this(wrapText, paintBg, 0, calculate);
+	}
+
+	/**
+	 * @param wrapText split text over multiple lines
+	 * @param paintBg skips painting the background if is FALSE
+	 * @param calculateByTextLength tells the text painter to calculate the cell border by containing
+	 * 			text length. For horizontal text rendering, this means the width of the cell is calculated
+	 * 			by content, for vertical text rendering the height is calculated
+	 * @param calculateByTextHeight tells the text painter to calculate the cell border by containing
+	 * 			text height. For horizontal text rendering, this means the height of the cell is calculated
+	 * 			by content, for vertical text rendering the width is calculated
+	 */
+	public TextPainter(boolean wrapText, boolean paintBg, 
+			boolean calculateByTextLength, boolean calculateByTextHeight) {
+		this(wrapText, paintBg, 0, calculateByTextLength, calculateByTextHeight);
 	}
 	
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param spacing The space between text and cell border
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public TextPainter(boolean wrapText, boolean paintBg, int spacing, boolean calculate) {
 		super(wrapText, paintBg, spacing, calculate);
 	}
 
+	/**
+	 * @param wrapText split text over multiple lines
+	 * @param paintBg skips painting the background if is FALSE
+	 * @param spacing The space between text and cell border
+	 * @param calculateByTextLength tells the text painter to calculate the cell border by containing
+	 * 			text length. For horizontal text rendering, this means the width of the cell is calculated
+	 * 			by content, for vertical text rendering the height is calculated
+	 * @param calculateByTextHeight tells the text painter to calculate the cell border by containing
+	 * 			text height. For horizontal text rendering, this means the height of the cell is calculated
+	 * 			by content, for vertical text rendering the width is calculated
+	 */
+	public TextPainter(boolean wrapText, boolean paintBg, int spacing, 
+			boolean calculateByTextLength, boolean calculateByTextHeight) {
+		super(wrapText, paintBg, spacing, calculateByTextLength, calculateByTextHeight);
+	}
+	
 	@Override
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry){
 		setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
@@ -118,7 +141,7 @@ public class TextPainter extends AbstractTextPainter {
 			int contentHeight = fontHeight * numberOfNewLines;
 			int contentToCellDiff = (cell.getBounds().height - rectangle.height);
 	
-			if ((contentHeight > rectangle.height) && calculate) {
+			if ((contentHeight > rectangle.height) && calculateByTextHeight) {
 				ILayer layer = cell.getLayer();
 				layer.doCommand(
 						new RowResizeCommand(
@@ -132,16 +155,16 @@ public class TextPainter extends AbstractTextPainter {
 				
 				gc.drawText(
 						text,
-						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth + spacing),
-						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing),
+						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing,
+						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + spacing,
 						SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
 				);
 				
 				if (underline || strikethrough) {
 					//start x of line = start x of text
-					int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth + spacing);
+					int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing;
 					//y = start y of text
-					int y = rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing); 
+					int y = rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + spacing; 
 					
 					//check and draw underline and strikethrough separately so it is possible to combine both
 					if (underline) {
@@ -170,21 +193,22 @@ public class TextPainter extends AbstractTextPainter {
 			else {
 				//draw every line by itself because of the alignment, otherwise the whole text
 				//is always aligned right
-				int yStartPos = rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight);
+				int yStartPos = rectangle.y
+						+ CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight);
 				String[] lines = text.split("\n"); //$NON-NLS-1$
 				for (String line : lines) {
 					int lineContentWidth = Math.min(getLengthFromCache(gc, line), rectangle.width);
 					
 					gc.drawText(
 							line,
-							rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth + spacing),
+							rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth) + spacing,
 							yStartPos + spacing,
 							SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
 					);
 					
 					if (underline || strikethrough) {
 						//start x of line = start x of text
-						int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth + spacing);
+						int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth) + spacing;
 						//y = start y of text
 						int y = yStartPos + spacing; 
 								

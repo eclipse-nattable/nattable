@@ -51,7 +51,8 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	protected boolean paintFg = true;
 	protected int spacing = 5;
 	//can only grow but will not calculate the minimal length
-	protected final boolean calculate;
+	protected final boolean calculateByTextLength;
+	protected final boolean calculateByTextHeight;
 	private boolean underline;
 	private boolean strikethrough;
 
@@ -73,7 +74,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
+	 * @param spacing The space between text and cell border
 	 */
 	public AbstractTextPainter(boolean wrapText, boolean paintBg, int spacing) {
 		this(wrapText, paintBg, spacing, false);
@@ -82,11 +83,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public AbstractTextPainter(boolean wrapText, boolean paintBg, boolean calculate) {
 		this(wrapText, paintBg, 0, calculate);
@@ -95,18 +92,46 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param calculateByTextLength tells the text painter to calculate the cell border by containing
+	 * 			text length. For horizontal text rendering, this means the width of the cell is calculated
+	 * 			by content, for vertical text rendering the height is calculated
+	 * @param calculateByTextHeight tells the text painter to calculate the cell border by containing
+	 * 			text height. For horizontal text rendering, this means the height of the cell is calculated
+	 * 			by content, for vertical text rendering the width is calculated
+	 */
+	public AbstractTextPainter(boolean wrapText, boolean paintBg, 
+			boolean calculateByTextLength, boolean calculateByTextHeight) {
+		this(wrapText, paintBg, 0, calculateByTextLength, calculateByTextHeight);
+	}
+	
+	/**
+	 * @param wrapText split text over multiple lines
+	 * @param paintBg skips painting the background if is FALSE
+	 * @param spacing The space between text and cell border
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public AbstractTextPainter(boolean wrapText, boolean paintBg, int spacing, boolean calculate) {
+		this(wrapText, paintBg, spacing, calculate, calculate);
+	}
+	
+	/**
+	 * @param wrapText split text over multiple lines
+	 * @param paintBg skips painting the background if is FALSE
+	 * @param spacing The space between text and cell border
+	 * @param calculateByTextLength tells the text painter to calculate the cell border by containing
+	 * 			text length. For horizontal text rendering, this means the width of the cell is calculated
+	 * 			by content, for vertical text rendering the height is calculated
+	 * @param calculateByTextHeight tells the text painter to calculate the cell border by containing
+	 * 			text height. For horizontal text rendering, this means the height of the cell is calculated
+	 * 			by content, for vertical text rendering the width is calculated
+	 */
+	public AbstractTextPainter(boolean wrapText, boolean paintBg, int spacing, 
+			boolean calculateByTextLength, boolean calculateByTextHeight) {
 		this.wrapText = wrapText;
 		this.paintBg = paintBg;
 		this.spacing = spacing;
-		this.calculate = calculate;
+		this.calculateByTextLength = calculateByTextLength;
+		this.calculateByTextHeight = calculateByTextHeight;
 	}
 
 	/**
@@ -231,7 +256,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
 		//take the whole width of the text
 		int textLength = getLengthFromCache(gc, text);
-		if (calculate && wrapText) {
+		if (calculateByTextLength && wrapText) {
 			if (availableLength < textLength) {
 				//calculate length by finding the longest word in text
 				textLength = availableLength;
@@ -261,7 +286,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 			
 			setNewMinLength(cell, textLength + calculatePadding(cell, availableLength));
 		}
-		else if (calculate && !wrapText){
+		else if (calculateByTextLength && !wrapText){
 			output.append(modifyTextToDisplay(text, gc, textLength));
 			
 			//add padding and spacing to textLength because they are needed for correct sizing
@@ -269,7 +294,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 			//PaddingDecorator
 			setNewMinLength(cell, textLength + calculatePadding(cell, availableLength) + (2*spacing));
 		}
-		else if (!calculate && wrapText) {
+		else if (!calculateByTextLength && wrapText) {
 			String[] lines = text.split(NEW_LINE_REGEX);
 			for (String line : lines) {
 				if (output.length() > 0) {
@@ -288,7 +313,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 			}
 			
 		}
-		else if (!calculate && !wrapText) {
+		else if (!calculateByTextLength && !wrapText) {
 			output.append(modifyTextToDisplay(text, gc, availableLength + (2*spacing)));
 		}
 		

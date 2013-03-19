@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._102_Configuration;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -30,14 +31,13 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.VerticalTextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.LineBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
-import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -64,6 +64,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 				"6: wrap, calculate, spacing used, wrapped by PaddingDecorator - the content is showed completely as the cell will grow with its content by wrapping the text.";
 	}
 	
+	@Override
 	public Control createExampleControl(Composite parent) {
 		parent.setLayout(new GridLayout(1, false));
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
@@ -109,6 +110,33 @@ public class TextPainter_Examples extends AbstractNatExample {
 		vunderlineStrikethroughTextPainer.setStrikethrough(true);
 		createVerticalHeaderNatTable(tableContainer, vunderlineStrikethroughTextPainer);
 		
+		//uncomment the following lines to see different calculation configurations with greater font sizes
+//		createNatTable3(tableContainer, new TextPainter(false, false, false, true));
+//		createNatTable3(tableContainer, new TextPainter(false, false, true, false));
+//		createNatTable3(tableContainer, new TextPainter(false, false, true, true));
+//		createNatTable3(tableContainer, new TextPainter(false, false, 10, true, true));
+//		
+//		TextPainter tp = new TextPainter(false, false, 10, true, true);
+//		tp.setUnderline(true);
+//		createNatTable3(tableContainer, tp);
+//		
+//		tp = new TextPainter(false, false, 10, true, true);
+//		tp.setStrikethrough(true);
+//		createNatTable3(tableContainer, tp);
+//		
+//		createVerticalNatTable(tableContainer, new VerticalTextPainter(false, false, false, true));
+//		createVerticalNatTable(tableContainer, new VerticalTextPainter(false, false, true, false));
+//		createVerticalNatTable(tableContainer, new VerticalTextPainter(false, false, true, true));
+//		createVerticalNatTable(tableContainer, new VerticalTextPainter(false, false, 10, true, true));
+//		
+//		VerticalTextPainter vp = new VerticalTextPainter(false, false, 10, true, true);
+//		vp.setUnderline(true);
+//		createVerticalNatTable(tableContainer, vp);
+//		
+//		vp = new VerticalTextPainter(false, false, 10, true, true);
+//		vp.setStrikethrough(true);
+//		createVerticalNatTable(tableContainer, vp);
+		
 		return tableContainer;
 	}
 	
@@ -117,7 +145,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 		IDataProvider bodyDataProvider = new ExampleTextBodyDataProvider();
 		DataLayer dataLayer = new DataLayer(bodyDataProvider);
 		dataLayer.setRowHeightByPosition(0, 32);
-		SelectionLayer selectionLayer = new SelectionLayer(new ColumnReorderLayer(dataLayer));
+		SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
 		ILayer columnHeaderLayer = new ColumnHeaderLayer(
@@ -147,7 +175,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 		IDataProvider bodyDataProvider = new ExampleTextBodyDataProvider();
 		DataLayer dataLayer = new DataLayer(bodyDataProvider);
 		dataLayer.setRowHeightByPosition(0, 32);
-		SelectionLayer selectionLayer = new SelectionLayer(new ColumnReorderLayer(dataLayer));
+		SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
 		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
@@ -156,6 +184,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 			selectionLayer,
 			false);
 		columnHeaderLayer.addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
+			@Override
 			protected void addColumnHeaderStyleConfig() {
 				addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
 					{
@@ -185,7 +214,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 	
 	private void createVerticalHeaderNatTable(Composite parent, final ICellPainter painter) {
 		IDataProvider bodyDataProvider = new ExampleHeaderDataProvider();
-		SelectionLayer selectionLayer = new SelectionLayer(new ColumnReorderLayer(new DataLayer(bodyDataProvider)));
+		SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(bodyDataProvider));
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
 		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
@@ -193,6 +222,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 			viewportLayer, 
 			selectionLayer, false);
 		columnHeaderLayer.addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
+			@Override
 			protected void addColumnHeaderStyleConfig() {
 				addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
 					{
@@ -212,8 +242,83 @@ public class TextPainter_Examples extends AbstractNatExample {
 	}
 	
 	
+	@SuppressWarnings("unused")
+	private void createNatTable3(Composite parent, final ICellPainter painter) {
+		IDataProvider bodyDataProvider = new ExampleHeaderDataProvider();
+		DataLayer dataLayer = new DataLayer(bodyDataProvider);
+		
+		SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+		ILayer columnHeaderLayer = new ColumnHeaderLayer(
+			new DataLayer(new DummyColumnHeaderDataProvider(bodyDataProvider)),
+			viewportLayer, 
+			selectionLayer);
+		
+		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
+		compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+		
+		NatTable natTable = new NatTable(parent, compositeLayer, false);
+		
+		natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
+			{
+				vAlign = VerticalAlignmentEnum.TOP;
+				hAlign = HorizontalAlignmentEnum.LEFT;
+				cellPainter = new LineBorderDecorator(painter);
+				font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
+			}
+		});
+		
+		natTable.configure();
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+	}
+
+	
+	@SuppressWarnings("unused")
+	private void createVerticalNatTable(Composite parent, final ICellPainter painter) {
+		IDataProvider bodyDataProvider = new ExampleHeaderDataProvider();
+		SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(bodyDataProvider, 20, 100));
+		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+				new DataLayer(new DummyColumnHeaderDataProvider(bodyDataProvider), 20, 100),
+				viewportLayer, 
+				selectionLayer);
+		columnHeaderLayer.addConfiguration(new DefaultColumnHeaderLayerConfiguration() {
+			@Override
+			protected void addColumnHeaderStyleConfig() {
+				addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
+					{
+						cellPainter = new BeveledBorderDecorator(new VerticalTextPainter());
+					}
+				});
+			}
+		});
+		
+		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
+		compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+		
+		NatTable natTable = new NatTable(parent, compositeLayer, false);
+		
+		natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
+			{
+				vAlign = VerticalAlignmentEnum.MIDDLE;
+				hAlign = HorizontalAlignmentEnum.LEFT;
+				cellPainter = new LineBorderDecorator(painter);
+				font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
+			}
+		});
+		
+		natTable.configure();
+
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+	}
+	
 	class ExampleTextBodyDataProvider implements IDataProvider {
 
+		@Override
 		public Object getDataValue(int columnIndex, int rowIndex) {
 			return "Lorem\nipsum dolor sit amet, consetetur sadipscing elitr, " +
 					"sed diam nonumy.";
@@ -229,14 +334,17 @@ public class TextPainter_Examples extends AbstractNatExample {
 //			"gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 		}
 
+		@Override
 		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 1;
 		}
 
+		@Override
 		public int getRowCount() {
 			return 1;
 		}
@@ -245,18 +353,22 @@ public class TextPainter_Examples extends AbstractNatExample {
 	
 	class ExampleHeaderDataProvider implements IDataProvider {
 
+		@Override
 		public Object getDataValue(int columnIndex, int rowIndex) {
 			return "Lorem ipsum.";
 		}
 
+		@Override
 		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 1;
 		}
 
+		@Override
 		public int getRowCount() {
 			return 1;
 		}
