@@ -51,7 +51,7 @@ public class SelectionLayerStructuralChangeEventHandlerTest {
 		selectionModel.addSelection(2, 3);
 		
 		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer, selectionModel);
-		handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 4));
+		handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 5));
 		
 		Assert.assertFalse(selectionModel.isEmpty());
 		Assert.assertTrue(selectionModel.isRowPositionSelected(3));
