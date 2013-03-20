@@ -185,6 +185,22 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	}
 	
 	/**
+	 * Removes the given column positions for auto spanning. 
+	 * @param columnPositions The column positions to remove for auto spanning.
+	 */
+	public void removeAutoSpanningColumnPositions(Integer... columnPositions) {
+		this.autoSpanColumns.removeAll(Arrays.asList(columnPositions));
+	}
+	
+	/**
+	 * Removes the given row positions for auto spanning. 
+	 * @param rowPositions The row positions to remove for auto spanning.
+	 */
+	public void removeAutoSpanningRowPositions(Integer... rowPositions) {
+		this.autoSpanRows.removeAll(Arrays.asList(rowPositions));
+	}
+	
+	/**
 	 * Clears the list of column positions for which auto spanning rows is enabled.
 	 * Note that clearing the list and leaving the autoRowSpan flag set to <code>true</code>
 	 * will cause that on all columns the row spanning will be performed.
