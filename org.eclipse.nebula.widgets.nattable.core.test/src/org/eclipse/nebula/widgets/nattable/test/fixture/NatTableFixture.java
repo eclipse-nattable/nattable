@@ -48,6 +48,11 @@ public class NatTableFixture extends NatTable {
 		initClientArea();
 	}
 
+	public NatTableFixture(Shell shell, ILayer underlyingLayer, int width, int height) {
+		super(shell, underlyingLayer, true);
+		initClientArea(width, height);
+	}
+
 	public NatTableFixture(ILayer underlyingLayer, boolean autoconfigure) {
 		super(new Shell(Display.getDefault()), underlyingLayer, autoconfigure);
 		initClientArea();
@@ -109,6 +114,12 @@ public class NatTableFixture extends NatTable {
 		DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
 		gridLayer.getBodyLayer().getViewportLayer().invalidateHorizontalStructure();
 		gridLayer.getBodyLayer().getViewportLayer().setOriginColumnPosition(gridColumnPosition);
+	}
+
+	public void scrollToRow(int gridRowPosition) {
+		DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
+		gridLayer.getBodyLayer().getViewportLayer().invalidateVerticalStructure();
+		gridLayer.getBodyLayer().getViewportLayer().setOriginRowPosition(gridRowPosition);
 	}
 
 	public void enableEditingOnAllCells() {

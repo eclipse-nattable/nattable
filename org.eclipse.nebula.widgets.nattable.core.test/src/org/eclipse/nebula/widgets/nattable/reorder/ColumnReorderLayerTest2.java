@@ -12,9 +12,7 @@ package org.eclipse.nebula.widgets.nattable.reorder;
 
 import java.util.Properties;
 
-
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
-import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.test.LayerAssert;
 import org.eclipse.nebula.widgets.nattable.test.fixture.TestLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;

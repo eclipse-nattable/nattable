@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,6 +31,8 @@ public class HideColumnCommandTest {
 	public void testHideColumnCommand() {
 		int columnPosition = 2;
 		ILayerCommand hideColumnCommand = new MultiColumnHideCommand(columnHideShowLayer, columnPosition);
+		
+		Assert.assertEquals(5, columnHideShowLayer.getColumnCount());
 		
 		columnHideShowLayer.doCommand(hideColumnCommand);
 		

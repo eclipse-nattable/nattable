@@ -15,12 +15,16 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.Properties;
 
-
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
+import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
+import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,19 +36,28 @@ public class PersistenceIntegrationTest {
 
 	@Before
 	public void setup() {
-		natTableFixture = new NatTableFixture();
+		natTableFixture = new NatTableFixture(new Shell(), 
+				new DummyGridLayerStack() {
+			
+					@Override
+					protected void init(IUniqueIndexLayer bodyDataLayer, IUniqueIndexLayer columnHeaderDataLayer, IUniqueIndexLayer rowHeaderDataLayer, IUniqueIndexLayer cornerDataLayer) {
+						RowReorderLayer rowReorderLayer = new RowReorderLayer(bodyDataLayer);
+						super.init(rowReorderLayer, columnHeaderDataLayer, rowHeaderDataLayer, cornerDataLayer);
+					}
+
+		});
 		properties = new Properties();
 	}
 
 	@Test
 	public void stateIsLoadedCorrectlyFromProperties() throws Exception {
 		saveStateToPropeties();
-		natTableFixture = new NatTableFixture();
 		natTableFixture.loadState(TEST_PERSISTENCE_PREFIX, properties);
 
 		// Originally resized position 2, after reorder became position 1
 		assertEquals(200, natTableFixture.getColumnWidthByPosition(1));
-		assertEquals(100, natTableFixture.getRowHeightByPosition(2));
+		// Originally resized position 2, after reorder became position 1
+		assertEquals(100, natTableFixture.getRowHeightByPosition(1));
 		assertEquals(1, natTableFixture.getColumnIndexByPosition(1));
 		assertEquals(0, natTableFixture.getColumnIndexByPosition(3));
 	}
@@ -65,6 +78,12 @@ public class PersistenceIntegrationTest {
 		assertEquals(0, natTableFixture.getColumnIndexByPosition(1));
 		natTableFixture.doCommand(new ColumnReorderCommand(natTableFixture, 1, 5));
 		assertEquals(1, natTableFixture.getColumnIndexByPosition(1));
+
+		// Reorder row 1 --> 5 (grid coordinates)
+		// 0, 1, 2, 3, 4, 5,.. --> 1, 2, 3, 0, 4, 5,..
+		assertEquals(0, natTableFixture.getRowIndexByPosition(1));
+		natTableFixture.doCommand(new RowReorderCommand(natTableFixture, 1, 5));
+		assertEquals(1, natTableFixture.getRowIndexByPosition(1));
 
 		// Hide column with index 3 (grid coordinates)
 		assertEquals(3, natTableFixture.getColumnIndexByPosition(3));
