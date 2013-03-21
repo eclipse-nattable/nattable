@@ -14,40 +14,20 @@
 
 	<packaging>pom</packaging>
 
-	<profiles>
-		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>../target-platform</module>
+	<modules>
+		<module>../target-platform</module>
 
-				<module>../org.eclipse.nebula.widgets.nattable.core</module>
-				<module>../org.eclipse.nebula.widgets.nattable.core.test</module>
-				<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
+		<module>../org.eclipse.nebula.widgets.nattable.core</module>
+		<module>../org.eclipse.nebula.widgets.nattable.core.test</module>
+		<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
 
-				<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists</module>
-				<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</module>
+		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists</module>
+		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</module>
 
-				<module>../org.eclipse.nebula.widgets.nattable.extension.poi</module>
+		<module>../org.eclipse.nebula.widgets.nattable.extension.poi</module>
 
-				<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>build-server</id>
-			<modules>
-				<module>../target-platform</module>
-
-				<module>../org.eclipse.nebula.widgets.nattable.core</module>
-				<module>../org.eclipse.nebula.widgets.nattable.core.test</module>
-				<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
-
-				<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
-			</modules>
-		</profile>
-	</profiles>
+		<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
+	</modules>
 
 	<properties>
 		<tycho-version>0.16.0</tycho-version>
