@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (c) 2012 Original authors and others.
-  All rights reserved. This program and the accompanying materials
-  are made available under the terms of the Eclipse Public License v1.0
-  which accompanies this distribution, and is available at
-  http://www.eclipse.org/legal/epl-v10.html
-  
-  Contributors:
-      Original authors and others - initial API and implementation
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!-- Copyright (c) 2012 Original authors and others. All rights reserved. 
+	This program and the accompanying materials are made available under the 
+	terms of the Eclipse Public License v1.0 which accompanies this distribution, 
+	and is available at http://www.eclipse.org/legal/epl-v10.html Contributors: 
+	Original authors and others - initial API and implementation -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.eclipse.nebula.widgets.nattable</groupId>
@@ -26,16 +22,16 @@
 			</activation>
 			<modules>
 				<module>../target-platform</module>
-				
+
 				<module>../org.eclipse.nebula.widgets.nattable.core</module>
 				<module>../org.eclipse.nebula.widgets.nattable.core.test</module>
 				<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
-				
+
 				<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists</module>
 				<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</module>
-				
+
 				<module>../org.eclipse.nebula.widgets.nattable.extension.poi</module>
-				
+
 				<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
 			</modules>
 		</profile>
@@ -43,11 +39,11 @@
 			<id>build-server</id>
 			<modules>
 				<module>../target-platform</module>
-				
+
 				<module>../org.eclipse.nebula.widgets.nattable.core</module>
 				<module>../org.eclipse.nebula.widgets.nattable.core.test</module>
 				<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
-				
+
 				<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
 			</modules>
 		</profile>
@@ -55,7 +51,6 @@
 
 	<properties>
 		<tycho-version>0.16.0</tycho-version>
-		<glazedlists-version>1.8.0</glazedlists-version>
 	</properties>
 
 	<build>
@@ -78,6 +73,23 @@
 							<version>${project.version}</version>
 						</artifact>
 					</target>
+					<environments>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -108,5 +120,5 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	
+
 </project>
