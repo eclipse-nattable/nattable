@@ -3,9 +3,16 @@
    <feature url="features/org.eclipse.nebula.widgets.nattable.core.feature_1.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.core.feature" version="1.0.0.qualifier">
       <category name="nattable-core"/>
    </feature>
+   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature_1.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature" version="1.0.0.qualifier">
+      <category name="nattable-extensions"/>
+   </feature>
+   <feature url="features/org.eclipse.nebula.widgets.nattable.extension.poi.feature_1.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.nattable.extension.poi.feature" version="1.0.0.qualifier">
+      <category name="nattable-extensions"/>
+   </feature>
    <category-def name="nattable-core" label="NatTable Core">
       <description>
          NatTable Core plugin
       </description>
    </category-def>
+   <category-def name="nattable-extensions" label="NatTable Extensions"/>
 </site>
