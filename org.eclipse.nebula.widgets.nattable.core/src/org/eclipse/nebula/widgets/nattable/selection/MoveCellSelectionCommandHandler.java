@@ -32,23 +32,24 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 		if (selectionLayer.hasColumnSelection()) {
 			lastSelectedCellPosition = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
 			ILayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
-			
-			newSelectedColumnPosition =
-					stepSize >= 0
-					? lastSelectedCell.getOriginColumnPosition() - stepSize
-					: 0;
-			if (newSelectedColumnPosition < 0) {
-				newSelectedColumnPosition = 0;
-			}
-
-			newSelectedRowPosition = lastSelectedCellPosition.rowPosition;
-			
-			if (newSelectedColumnPosition != lastSelectedCellPosition.columnPosition) {
-				if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
-					selectionLayer.clear(false);
+			if (lastSelectedCell != null) {
+				newSelectedColumnPosition =
+						stepSize >= 0
+						? lastSelectedCell.getOriginColumnPosition() - stepSize
+						: 0;
+				if (newSelectedColumnPosition < 0) {
+					newSelectedColumnPosition = 0;
 				}
-				selectionLayer.selectCell(newSelectedColumnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
-				selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+	
+				newSelectedRowPosition = lastSelectedCellPosition.rowPosition;
+				
+				if (newSelectedColumnPosition != lastSelectedCellPosition.columnPosition) {
+					if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
+						selectionLayer.clear(false);
+					}
+					selectionLayer.selectCell(newSelectedColumnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
+					selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+				}
 			}
 		}
 	}
@@ -58,23 +59,24 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 		if (selectionLayer.hasColumnSelection()) {
 			lastSelectedCellPosition = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
 			ILayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
-
-			newSelectedColumnPosition =
-					stepSize >= 0 
-					? lastSelectedCell.getOriginColumnPosition() + lastSelectedCell.getColumnSpan() - 1 + stepSize 
-					: selectionLayer.getColumnCount() - 1;
-			if (newSelectedColumnPosition >= selectionLayer.getColumnCount()) {
-				newSelectedColumnPosition = selectionLayer.getColumnCount() - 1;
-			}
-			
-			newSelectedRowPosition = lastSelectedCellPosition.rowPosition;
-			
-			if (newSelectedColumnPosition != lastSelectedCellPosition.columnPosition) {
-				if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
-					selectionLayer.clear(false);
+			if (lastSelectedCell != null) {
+				newSelectedColumnPosition =
+						stepSize >= 0 
+						? lastSelectedCell.getOriginColumnPosition() + lastSelectedCell.getColumnSpan() - 1 + stepSize 
+						: selectionLayer.getColumnCount() - 1;
+				if (newSelectedColumnPosition >= selectionLayer.getColumnCount()) {
+					newSelectedColumnPosition = selectionLayer.getColumnCount() - 1;
 				}
-				selectionLayer.selectCell(newSelectedColumnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
-				selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+				
+				newSelectedRowPosition = lastSelectedCellPosition.rowPosition;
+				
+				if (newSelectedColumnPosition != lastSelectedCellPosition.columnPosition) {
+					if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
+						selectionLayer.clear(false);
+					}
+					selectionLayer.selectCell(newSelectedColumnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
+					selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+				}
 			}
 		}
 	}
@@ -84,20 +86,21 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 		if (selectionLayer.hasRowSelection()) {
 			lastSelectedCellPosition = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
 			ILayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
-			
-			newSelectedColumnPosition = lastSelectedCellPosition.columnPosition;
-			
-			newSelectedRowPosition =
-					stepSize >= 0
-					? lastSelectedCell.getOriginRowPosition() - stepSize
-					: 0;
-			if (newSelectedRowPosition < 0) {
-				newSelectedRowPosition = 0;
-			}
-			
-			if (newSelectedRowPosition != lastSelectedCellPosition.rowPosition) {
-				selectionLayer.selectCell(lastSelectedCellPosition.columnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
-				selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+			if (lastSelectedCell != null) {
+				newSelectedColumnPosition = lastSelectedCellPosition.columnPosition;
+				
+				newSelectedRowPosition =
+						stepSize >= 0
+						? lastSelectedCell.getOriginRowPosition() - stepSize
+						: 0;
+				if (newSelectedRowPosition < 0) {
+					newSelectedRowPosition = 0;
+				}
+				
+				if (newSelectedRowPosition != lastSelectedCellPosition.rowPosition) {
+					selectionLayer.selectCell(lastSelectedCellPosition.columnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
+					selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+				}
 			}
 		}
 	}
@@ -107,20 +110,21 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 		if (selectionLayer.hasRowSelection()) {
 			lastSelectedCellPosition = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
 			ILayerCell lastSelectedCell = selectionLayer.getCellByPosition(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition);
-			
-			newSelectedColumnPosition = lastSelectedCellPosition.columnPosition;
-			
-			newSelectedRowPosition =
-					stepSize >= 0
-					? lastSelectedCell.getOriginRowPosition() + lastSelectedCell.getRowSpan() - 1 + stepSize
-					: selectionLayer.getRowCount() - 1;
-			if (newSelectedRowPosition >= selectionLayer.getRowCount()) {
-				newSelectedRowPosition = selectionLayer.getRowCount() - 1;
-			}
-			
-			if (newSelectedRowPosition != lastSelectedCellPosition.rowPosition) {
-				selectionLayer.selectCell(lastSelectedCellPosition.columnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
-				selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+			if (lastSelectedCell != null) {
+				newSelectedColumnPosition = lastSelectedCellPosition.columnPosition;
+				
+				newSelectedRowPosition =
+						stepSize >= 0
+						? lastSelectedCell.getOriginRowPosition() + lastSelectedCell.getRowSpan() - 1 + stepSize
+						: selectionLayer.getRowCount() - 1;
+				if (newSelectedRowPosition >= selectionLayer.getRowCount()) {
+					newSelectedRowPosition = selectionLayer.getRowCount() - 1;
+				}
+				
+				if (newSelectedRowPosition != lastSelectedCellPosition.rowPosition) {
+					selectionLayer.selectCell(lastSelectedCellPosition.columnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
+					selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+				}
 			}
 		}
 	}
