@@ -28,8 +28,8 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
-import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiRowReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommandHandler;
@@ -98,13 +98,8 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 				} 
 				else {
 					// only react on ADD or DELETE and not on CHANGE
-					for (StructuralDiff structuralDiff : structuralDiffs) {
-						if (!structuralDiff.getDiffType().equals(DiffTypeEnum.CHANGE)) {
-							rowIndexOrder.clear();
-							populateIndexOrder();
-							break;
-						}
-					}
+					StructuralChangeEventHelper.handleRowDelete(structuralDiffs, underlyingLayer, rowIndexOrder, true);
+					StructuralChangeEventHelper.handleRowInsert(structuralDiffs, underlyingLayer, rowIndexOrder, true);
 				}
 				invalidateCache();
 			}
@@ -213,7 +208,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 	}
 
 	/**
-	 * Initially poppulate the index order to the local cache.
+	 * Initially populate the index order to the local cache.
 	 */
 	private void populateIndexOrder() {
 		ILayer underlyingLayer = getUnderlyingLayer();
