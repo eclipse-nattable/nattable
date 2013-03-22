@@ -108,7 +108,7 @@ public class TextPainter extends AbstractTextPainter {
 	@Override
 	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-		return gc.textExtent(convertDataType(cell, configRegistry)).y;
+		return gc.textExtent(convertDataType(cell, configRegistry)).y + (spacing*2) + 1;
 	}
 
 
@@ -138,7 +138,7 @@ public class TextPainter extends AbstractTextPainter {
 			
 			//if the content height is bigger than the available row height
 			//we're extending the row height (only if word wrapping is enabled)
-			int contentHeight = fontHeight * numberOfNewLines;
+			int contentHeight = (fontHeight * numberOfNewLines) + (spacing*2);
 			int contentToCellDiff = (cell.getBounds().height - rectangle.height);
 	
 			if ((contentHeight > rectangle.height) && calculateByTextHeight) {
@@ -147,7 +147,7 @@ public class TextPainter extends AbstractTextPainter {
 						new RowResizeCommand(
 								layer, 
 								cell.getRowPosition(), 
-								contentHeight + (spacing*2) + contentToCellDiff));
+								contentHeight + contentToCellDiff));
 			}
 			
 			if (numberOfNewLines == 1) {

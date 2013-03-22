@@ -102,7 +102,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 	@Override
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry){
 		setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-		return gc.textExtent(convertDataType(cell, configRegistry)).y;
+		return gc.textExtent(convertDataType(cell, configRegistry)).y + (spacing*2);
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 		//if the content width is bigger than the available column width
 		//we're extending the column width (only if word wrapping is enabled)
 		int fontHeight = gc.getFontMetrics().getHeight();
-		int contentWidth = fontHeight * numberOfNewLines;
+		int contentWidth = (fontHeight * numberOfNewLines) + (spacing*2);
 		int contentToCellDiff = (cell.getBounds().width - rectangle.width);
 		
 		if ((contentWidth > rectangle.width) && calculateByTextHeight) {
@@ -146,7 +146,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
 					new ColumnResizeCommand(
 							layer, 
 							cell.getColumnPosition(), 
-							contentWidth + (spacing*2) + contentToCellDiff));
+							contentWidth + contentToCellDiff));
 		}
 		
 		if (text != null && text.length() > 0) {
