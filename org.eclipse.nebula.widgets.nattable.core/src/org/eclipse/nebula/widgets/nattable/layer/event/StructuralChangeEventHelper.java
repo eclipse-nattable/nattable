@@ -108,24 +108,23 @@ public class StructuralChangeEventHelper {
 		for (StructuralDiff rowDiff : rowDiffs) {
 			if (rowDiff.getDiffType() != null && rowDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
 				Range beforePositionRange = rowDiff.getBeforePositionRange();
-				List<Integer> modifiedHiddenRows = new ArrayList<Integer>();
+				List<Integer> modifiedRows = new ArrayList<Integer>();
 				int beforeIndex = underlyingLayer.getRowIndexByPosition(beforePositionRange.start);
-				for (Integer hiddenRow : cachedRowIndexes) {
-					if (hiddenRow >= beforeIndex) {
-						modifiedHiddenRows.add(hiddenRow+1);
+				for (Integer row : cachedRowIndexes) {
+					if (row >= beforeIndex) {
+						modifiedRows.add(row+1);
 					}
 					else {
-						modifiedHiddenRows.add(hiddenRow);
+						modifiedRows.add(row);
 					}
 				}
 				
 				if (addToCache)
-					modifiedHiddenRows.add(beforeIndex, beforePositionRange.start);
+					modifiedRows.add(beforeIndex, beforePositionRange.start);
 				
 				cachedRowIndexes.clear();
-				cachedRowIndexes.addAll(modifiedHiddenRows);
+				cachedRowIndexes.addAll(modifiedRows);
 			}
 		}
 	}
-
 }
