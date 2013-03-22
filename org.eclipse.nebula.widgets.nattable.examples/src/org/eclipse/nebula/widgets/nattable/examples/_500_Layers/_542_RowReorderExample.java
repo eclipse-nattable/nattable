@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -47,7 +48,7 @@ import org.eclipse.swt.widgets.Control;
 public class _542_RowReorderExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _542_RowReorderExample());
+		StandaloneNatExampleRunner.run(800, 400, new _542_RowReorderExample());
 	}
 
 	@Override
@@ -73,10 +74,11 @@ public class _542_RowReorderExample extends AbstractNatExample {
 		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
 		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
 		//directly as body layer is also working.
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		RowReorderLayer rowReorderLayer = new RowReorderLayer(bodyDataLayer);
-		SelectionLayer selectionLayer = new SelectionLayer(rowReorderLayer);
+		final List<Person> contents = PersonService.getPersons(10);
+		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(contents, propertyNames);
+		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+		final RowReorderLayer rowReorderLayer = new RowReorderLayer(bodyDataLayer);
+		final SelectionLayer selectionLayer = new SelectionLayer(rowReorderLayer);
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
 		//build the column header layer
@@ -97,9 +99,7 @@ public class _542_RowReorderExample extends AbstractNatExample {
 		//build the grid layer
 		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 		
-		NatTable natTable = new NatTable(parent, gridLayer);
-		
-		return natTable;
+		return new NatTable(parent, gridLayer);
 	}
 
 }

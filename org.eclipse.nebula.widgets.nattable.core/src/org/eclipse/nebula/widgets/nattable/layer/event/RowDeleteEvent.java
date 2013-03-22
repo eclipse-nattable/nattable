@@ -13,6 +13,8 @@ package org.eclipse.nebula.widgets.nattable.layer.event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -22,9 +24,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 public class RowDeleteEvent extends RowStructuralChangeEvent {
 	
 	public RowDeleteEvent(ILayer layer, int rowPosition) {
-		// Start range from position before the deleted row position so that
-		// if the last row in a layer is deleted the delete event will still propagate
-		this(layer, new Range(rowPosition - 1, rowPosition + 1));
+		this(layer, new Range(rowPosition, rowPosition + 1));
 	}
 	
 	public RowDeleteEvent(ILayer layer, Range rowPositionRange) {
@@ -43,10 +43,28 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
 		super(event);
 	}
 	
+	@Override
 	public RowDeleteEvent cloneEvent() {
 		return new RowDeleteEvent(this);
 	}
 	
+	@Override
+	public boolean convertToLocal(ILayer localLayer) {
+		super.convertToLocal(localLayer);
+		return true;
+	}
+	
+	public Collection<Integer> getDeletedRowIndexes() {
+		Set<Integer> rowIndexes = new HashSet<Integer>();
+		for (Range range : getRowPositionRanges()) {
+			for (int i = range.start; i < range.end; i++) {
+				rowIndexes.add(getLayer().getRowIndexByPosition(i));
+			}
+		}
+		return getDeletedRowIndexes();
+	}
+	
+	@Override
 	public Collection<StructuralDiff> getRowDiffs() {
 		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 		

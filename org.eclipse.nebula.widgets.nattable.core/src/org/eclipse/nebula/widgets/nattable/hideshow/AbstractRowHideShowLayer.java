@@ -54,6 +54,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
 	// Columns
 	
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		return ((IUniqueIndexLayer) getUnderlyingLayer()).getColumnPositionByIndex(columnIndex);
 	}
@@ -81,6 +82,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 		}
 	}
 	
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		final Integer position = getCachedVisibleRowIndexes().get(Integer.valueOf(rowIndex));
 		return position != null ? position : -1;
@@ -225,6 +227,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 	protected void invalidateCache() {
 		cachedVisibleRowIndexOrder = null;
 		cachedVisibleRowPositionOrder = null;
+		cachedHiddenRowIndexToPositionMap = null;
 		startYCache.clear();
 	}
 

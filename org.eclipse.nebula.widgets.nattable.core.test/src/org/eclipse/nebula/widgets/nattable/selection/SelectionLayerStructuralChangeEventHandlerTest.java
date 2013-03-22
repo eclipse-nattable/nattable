@@ -13,8 +13,6 @@ package org.eclipse.nebula.widgets.nattable.selection;
 
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
-import org.eclipse.nebula.widgets.nattable.selection.ISelectionModel;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.event.SelectionLayerStructuralChangeEventHandler;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.junit.Assert;
@@ -55,5 +53,16 @@ public class SelectionLayerStructuralChangeEventHandlerTest {
 		
 		Assert.assertFalse(selectionModel.isEmpty());
 		Assert.assertTrue(selectionModel.isRowPositionSelected(3));
+	}
+
+	@Test
+	public void shouldLeaveSelectionUnchangedIfTheFollowingRowIsModified() throws Exception {
+		selectionModel.addSelection(3, 4);
+		
+		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer, selectionModel);
+		handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 5));
+		
+		Assert.assertFalse(selectionModel.isEmpty());
+		Assert.assertTrue(selectionModel.isRowPositionSelected(4));
 	}
 }
