@@ -29,6 +29,15 @@ import org.eclipse.swt.widgets.Control;
 public class RenderErrorHandling extends AbstractEditErrorHandler {
 
 	/**
+	 * The default error styling used for rendering an error.
+	 */
+	protected IStyle defaultErrorStyle;
+	{
+        this.defaultErrorStyle = new Style();
+        this.defaultErrorStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_RED);
+	}
+	
+	/**
 	 * The original foreground color, needed to be able to restore the
 	 * normal rendering if the error is removed.
 	 */
@@ -83,8 +92,7 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
     public RenderErrorHandling(IEditErrorHandler underlyingErrorHandler, ControlDecorationProvider decorationProvider) {
 		super(underlyingErrorHandler);
         this.decorationProvider = decorationProvider;
-        this.errorStyle = new Style();
-        this.errorStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_RED);
+        this.errorStyle = this.defaultErrorStyle;
 	}
 	
     /**
@@ -143,7 +151,7 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
 	 * 			Supported style attributes are foreground color, background color and font.
 	 */
 	public void setErrorStyle(IStyle errorStyle) {
-		this.errorStyle = errorStyle;
+		this.errorStyle = errorStyle != null ? errorStyle : this.defaultErrorStyle;
 	}
 
 }

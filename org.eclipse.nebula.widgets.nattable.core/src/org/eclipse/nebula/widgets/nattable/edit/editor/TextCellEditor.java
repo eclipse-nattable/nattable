@@ -160,9 +160,7 @@ public class TextCellEditor extends AbstractCellEditor {
 					DisplayMode.EDIT, 
 					this.labelStack.getLabels());
 			
-			if (conversionErrorStyle != null) {
-				((RenderErrorHandling) this.inputConversionErrorHandler).setErrorStyle(conversionErrorStyle);
-			}
+			((RenderErrorHandling) this.inputConversionErrorHandler).setErrorStyle(conversionErrorStyle);
 		}
 
 		if (this.inputValidationErrorHandler instanceof RenderErrorHandling) {
@@ -171,9 +169,7 @@ public class TextCellEditor extends AbstractCellEditor {
 					DisplayMode.EDIT, 
 					this.labelStack.getLabels());
 			
-			if (validationErrorStyle != null) {
-				((RenderErrorHandling) this.inputValidationErrorHandler).setErrorStyle(validationErrorStyle);
-			}
+			((RenderErrorHandling) this.inputValidationErrorHandler).setErrorStyle(validationErrorStyle);
 		}
 		
 		this.text.forceFocus(); 
