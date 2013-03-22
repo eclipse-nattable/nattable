@@ -10,13 +10,11 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
@@ -34,17 +32,11 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 
 /**
  * Simple example showing how to add the {@link RowReorderLayer} to the layer
@@ -107,29 +99,7 @@ public class _542_RowReorderExample extends AbstractNatExample {
 		//build the grid layer
 		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 		
-		NatTable natTable = new NatTable(parent, gridLayer);
-		
-
-		Menu menu = new Menu(natTable);
-		MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
-		menuItem.setText("Delete");
-		menuItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int[] rowPositions = selectionLayer.getFullySelectedRowPositions();
-				List<Range> positions = new ArrayList<Range>();
-				for (int pos : rowPositions) {
-					int index = rowReorderLayer.getRowIndexByPosition(pos);
-					contents.remove(index);
-					positions.add(new Range(index, index+1));
-				}
-				
-				bodyDataLayer.fireLayerEvent(new RowDeleteEvent(bodyDataLayer, positions));
-			}
-		});
-		natTable.setMenu(menu);
-
-		return natTable;
+		return new NatTable(parent, gridLayer);
 	}
 
 }
