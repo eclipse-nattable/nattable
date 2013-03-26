@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.nebula.widgets.nattable.extension.poi.feature"
-      label="NatTable POI Extension Feature"
+      id="org.eclipse.nebula.widgets.nattable.extension.poi.source.feature"
+      label="NatTable POI Extension Source Feature"
       version="1.0.0.qualifier">
 
    <description url="http://nattable.org">
-      NatTable POI Extension
+      NatTable POI Extension Source
    </description>
 
    <copyright>
@@ -89,12 +89,8 @@ Everyone is permitted to copy and distribute copies of this Agreement, but in or
 This Agreement is governed by the laws of the State of New York and the intellectual property laws of the United States of America.  No party to this Agreement will bring a legal action under this Agreement more than one year after the cause of action arose.  Each party waives its rights to a jury trial in any resulting litigation.
    </license>
 
-   <requires>
-      <import plugin="org.apache.poi"/>
-   </requires>
-
    <plugin
-         id="org.eclipse.nebula.widgets.nattable.extension.poi"
+         id="org.eclipse.nebula.widgets.nattable.extension.poi.source"
          download-size="0"
          install-size="0"
          version="0.0.0"

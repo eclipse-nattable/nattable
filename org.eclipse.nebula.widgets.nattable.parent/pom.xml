@@ -20,13 +20,16 @@
 		<module>../org.eclipse.nebula.widgets.nattable.core</module>
 		<module>../org.eclipse.nebula.widgets.nattable.core.test</module>
 		<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
+		<module>../org.eclipse.nebula.widgets.nattable.core.source.feature</module>
 
 		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists</module>
 		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</module>
 		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature</module>
+		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature</module>
 
 		<module>../org.eclipse.nebula.widgets.nattable.extension.poi</module>
 		<module>../org.eclipse.nebula.widgets.nattable.extension.poi.feature</module>
+		<module>../org.eclipse.nebula.widgets.nattable.extension.poi.source.feature</module>
 
 		<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
 	</modules>
