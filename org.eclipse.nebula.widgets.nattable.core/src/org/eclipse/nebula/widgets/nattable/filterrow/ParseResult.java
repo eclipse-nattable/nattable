@@ -20,11 +20,12 @@ public class ParseResult {
 	 * Comparison tokens
 	 */
 	public enum MatchType {
-		EQUALS("="), //$NON-NLS-1$
-		GREATER(">"), //$NON-NLS-1$
-		GREATER_THAN_EQUALS(">="), //$NON-NLS-1$
-		LESS_THAN_EQUALS("<="), //$NON-NLS-1$
-		LESSER("<"), //$NON-NLS-1$
+		EQUAL("="), //$NON-NLS-1$
+		NOT_EQUAL("<>"), //$NON-NLS-1$
+		GREATER_THAN(">"), //$NON-NLS-1$
+		GREATER_THAN_OR_EQUAL(">="), //$NON-NLS-1$
+		LESS_THAN_OR_EQUAL("<="), //$NON-NLS-1$
+		LESS_THAN("<"), //$NON-NLS-1$
 		NONE(""); //$NON-NLS-1$
 
 		private String symbol;
@@ -39,15 +40,17 @@ public class ParseResult {
 
 		public static MatchType parse(String symbol) {
 			if ("=".equals(symbol)) { //$NON-NLS-1$
-				return EQUALS;
+				return EQUAL;
+			} else if ("<>".equals(symbol)) { //$NON-NLS-1$
+				return NOT_EQUAL;
 			} else if (">".equals(symbol)) { //$NON-NLS-1$
-				return GREATER;
+				return GREATER_THAN;
 			} else if ("<".equals(symbol)) { //$NON-NLS-1$
-				return LESSER;
+				return LESS_THAN;
 			} else if (">=".equals(symbol)) { //$NON-NLS-1$
-				return GREATER_THAN_EQUALS;
+				return GREATER_THAN_OR_EQUAL;
 			} else if ("<=".equals(symbol)) { //$NON-NLS-1$
-				return LESS_THAN_EQUALS;
+				return LESS_THAN_OR_EQUAL;
 			}
 			return NONE;
 		}

@@ -69,14 +69,16 @@ public class FilterRowUtils {
 		Scanner scanner = new Scanner(string.trim());
 		ParseResult parseResult = new ParseResult();
 
-		Pattern p = Pattern.compile("[>|<]?=?"); //$NON-NLS-1$
+		Pattern p = Pattern.compile("<>|([>|<]?=?)"); //$NON-NLS-1$
 		String opToken = scanner.findWithinHorizon(p, 2);
 		if (isNotEmpty(opToken)) {
 			parseResult.setMatchType(MatchType.parse(opToken));
+			while (scanner.hasNext()) {
+				parseResult.setValueToMatch(scanner.next());
+			}
 		}
-
-		while (scanner.hasNext()) {
-			parseResult.setValueToMatch(scanner.next());
+		else {
+			parseResult.setValueToMatch(string);
 		}
 		scanner.close();
 		return parseResult;
@@ -95,22 +97,25 @@ public class FilterRowUtils {
 	 *
 	 * @param <T> type of the row object
 	 */
-public static <T> void setMatchOperation(ThresholdMatcherEditor<T, Object> thresholdMatcherEditor, MatchType matchType) {
+	public static <T> void setMatchOperation(ThresholdMatcherEditor<T, Object> thresholdMatcherEditor, MatchType matchType) {
 		switch (matchType) {
-		case GREATER:
-			thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.GREATER_THAN);
-			break;
-		case GREATER_THAN_EQUALS:
-			thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.GREATER_THAN_OR_EQUAL);
-			break;
-		case LESSER:
-			thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.LESS_THAN);
-			break;
-		case LESS_THAN_EQUALS:
-			thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.LESS_THAN_OR_EQUAL);
-			break;
-		default:
-			thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.EQUAL);
+			case GREATER_THAN:
+				thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.GREATER_THAN);
+				break;
+			case GREATER_THAN_OR_EQUAL:
+				thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.GREATER_THAN_OR_EQUAL);
+				break;
+			case LESS_THAN:
+				thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.LESS_THAN);
+				break;
+			case LESS_THAN_OR_EQUAL:
+				thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.LESS_THAN_OR_EQUAL);
+				break;
+			case NOT_EQUAL:
+				thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.NOT_EQUAL);
+				break;
+			default:
+				thresholdMatcherEditor.setMatchOperation(ThresholdMatcherEditor.EQUAL);
 		}
 	}
 
