@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
 
 /**
- * Modifies the default sort configuration to sort on a <i>single left</i> <br/>
+ * Modifies the default sort configuration to sort on a <i>single left</i>
  * click on the column header.
  */
 public class SingleClickSortConfiguration extends DefaultSortConfiguration {

@@ -87,7 +87,8 @@ public class MenuItemProviders {
 	/**
 	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
 	 * {@link ColumnHideCommand} to a popup menu. This command is intended to hide the current selected
-	 * column immediately.<br/>
+	 * column immediately.
+	 * <p>
 	 * The {@link MenuItem} will be shown with the given menu label.
 	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
 	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ColumnHideCommand}.
@@ -126,7 +127,8 @@ public class MenuItemProviders {
 	/**
 	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
 	 * {@link ShowAllColumnsCommand} to a popup menu. This command is intended to show all columns of 
-	 * the NatTable and is used to unhide previous hidden columns.<br/>
+	 * the NatTable and is used to unhide previous hidden columns.
+	 * <p>
 	 * The {@link MenuItem} will be shown with the given menu label.
 	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
 	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ShowAllColumnsCommand}.
@@ -164,7 +166,8 @@ public class MenuItemProviders {
 	/**
 	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
 	 * {@link RowHideCommand} to a popup menu. This command is intended to hide the current selected
-	 * row immediately.<br/>
+	 * row immediately.
+	 * <p>
 	 * The {@link MenuItem} will be shown with the given menu label.
 	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
 	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link RowHideCommand}.
@@ -203,7 +206,8 @@ public class MenuItemProviders {
 	/**
 	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
 	 * {@link ShowAllRowsCommand} to a popup menu. This command is intended to show all rows of 
-	 * the NatTable and is used to unhide previous hidden rows.<br/>
+	 * the NatTable and is used to unhide previous hidden rows.
+	 * <p>
 	 * The {@link MenuItem} will be shown with the given menu label.
 	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
 	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the {@link ShowAllRowsCommand}.
@@ -529,7 +533,8 @@ public class MenuItemProviders {
 	/**
 	 * Will create and return the {@link IMenuItemProvider} that adds the action for executing the
 	 * {@link DisplayPersistenceDialogCommand} to a popup menu. This command is intended to open the 
-	 * DisplayPersistenceDialog for managing NatTable states (also called view management).<br/>
+	 * DisplayPersistenceDialog for managing NatTable states (also called view management).
+	 * <p>
 	 * The {@link MenuItem} will be shown with the given menu label.
 	 * @param menuLabel The text that will be showed for the generated {@link MenuItem}
 	 * @return The {@link IMenuItemProvider} for the {@link MenuItem} that executes the 

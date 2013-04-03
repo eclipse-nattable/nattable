@@ -18,7 +18,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 
 /**
- * An {@link ICellLabelAccumulator} that can aggregate labels from other <code>ICellLabelAccumulator</code>s.<br/> 
+ * An {@link ICellLabelAccumulator} that can aggregate labels from other <code>ICellLabelAccumulator</code>s. 
  * All the labels provided by the aggregated accumulators are applied to the cell.<be/>
  */
 public class AggregrateConfigLabelAccumulator implements IConfigLabelAccumulator {

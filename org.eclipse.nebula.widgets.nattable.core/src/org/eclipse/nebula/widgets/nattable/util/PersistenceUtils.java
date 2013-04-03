@@ -17,8 +17,8 @@ import java.util.Map.Entry;
 public class PersistenceUtils {
 
 	/**
-	 * Parse the persisted property and create a TreeMap<Integer, String> from it.<br/>
-	 * Works in conjunction with the {@link PersistenceUtils#mapAsString(Map)}.<br/>
+	 * Parse the persisted property and create a TreeMap<Integer, String> from it.
+	 * Works in conjunction with the {@link PersistenceUtils#mapAsString(Map)}.
 	 * 
 	 * @param property from the properties file.
 	 */
@@ -41,7 +41,7 @@ public class PersistenceUtils {
 
 	/**
 	 * Convert the Map to a String suitable for persisting in the Properties file.
-	 * {@link PersistenceUtils#parseString(Object)} can be used to reconstruct this Map object from the String.<br/>
+	 * {@link PersistenceUtils#parseString(Object)} can be used to reconstruct this Map object from the String.
 	 */
 	public static String mapAsString(Map<Integer, String> map) {
 		StringBuffer buffer = new StringBuffer();

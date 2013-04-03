@@ -17,11 +17,11 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
 
 /**
- * Configure the behavior when the selection is moved. Example: by using arrow keys.<br/>
- * This default configuration moves by cell.<br/>
+ * Configure the behavior when the selection is moved. Example: by using arrow keys.
+ * This default configuration moves by cell.
  * 
- * {@link MoveSelectionCommand} are fired by the {@link DefaultSelectionBindings}.<br/>
- * An suitable handler can be plugged in to handle the move commands as required.<br/>
+ * {@link MoveSelectionCommand} are fired by the {@link DefaultSelectionBindings}.
+ * A suitable handler can be plugged in to handle the move commands as required.
  * 
  * @see MoveRowSelectionCommandHandler
  */

@@ -84,6 +84,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	/**
 	 * Persistables registered with a layer will have a chance to write their data out to the
 	 * {@link Properties} instance when the layer is persisted.
+	 * @param persistable the persistable to be registered
 	 */
 	public void registerPersistable(IPersistable persistable);
 
@@ -105,6 +106,9 @@ public interface ILayer extends ILayerListener, IPersistable {
 
 	/**
 	 * Layer can apply its own labels to any cell it wishes.
+	 * @param x the x pixel coordinate
+	 * @param y the y pixel coordinate
+	 * @return a LabelStack containing the region labels for the cell at the given pixel position
 	 */
 	public LabelStack getRegionLabelsByXY(int x, int y);
 
@@ -118,6 +122,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * Note: Before the layer can process a command it <i>must</i> convert the
 	 * command to its local co-ordinates using {@link ILayerCommand#convertToTargetLayer(ILayer)}
 	 *
+	 * @param command the command to perform
 	 * @return true if the command has been handled, false otherwise
 	 */
 	public boolean doCommand(ILayerCommand command);
@@ -129,11 +134,13 @@ public interface ILayer extends ILayerListener, IPersistable {
 	// Events
 
 	/**
-	 * Events can be fired to notify other components of the grid.<br/>
+	 * Events can be fired to notify other components of the grid.
 	 * Events travel <i>up</i> the layer stack and may cause a repaint.
-	 *
+	 * <p>
 	 * Example: When the contents of the grid change {@link IVisualChangeEvent} can be
 	 * fired to notify other layers to refresh their caches etc.
+	 * 
+	 * @param event the event to fire
 	 */
 	public void fireLayerEvent(ILayerEvent event);
 
@@ -162,7 +169,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	// Columns
 
 	/**
-	 * Returns the number of columns in this coordinate model.
+	 * @return the number of columns in this coordinate model
 	 */
 	public int getColumnCount();
 
@@ -180,6 +187,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * Convert a column position to the coordinates of the underlying layer.
 	 * This is possible since each layer is aware of its underlying layer.
 	 * @param localColumnPosition column position in local (the layer's own) coordinates
+	 * @return column position in the underlying layer's coordinates
 	 */
 	public int localToUnderlyingColumnPosition(int localColumnPosition);
 
@@ -225,8 +233,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	/**
 	 * Returns the x offset in pixels of the given column.
 	 * 
-	 * @param rowPosition the column position in this layer
-	 * 
+	 * @param columnPosition the column position in this layer
 	 * @return the x offset of the column, or -1
 	 */
 	public int getStartXOfColumnPosition(int columnPosition);
@@ -240,7 +247,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	// Rows
 
 	/**
-	 * Returns the number of rows in this coordinate model.
+	 * @return the number of rows in this coordinate model
 	 */
 	public int getRowCount();
 
@@ -323,12 +330,14 @@ public interface ILayer extends ILayerListener, IPersistable {
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition);
 
 	/**
-	 * @return {@link DisplayMode} for the cell at the given position.<br/>
-	 * 	The {@link DisplayMode} affects the settings out of the {@link ConfigRegistry}.
-	 * 	Display mode is <i>NORMAL</i> by default.<br/>
-	 *
-	 *  <b>Example:</b> {@link SelectionLayer} overrides this to return the <i>SELECT</i>
-	 *  label for cells which are selected.
+	 * @param columnPosition the column position of the cell
+	 * @param rowPosition the row position of the cell
+	 * @return {@link DisplayMode} for the cell at the given position.
+	 * The {@link DisplayMode} affects the settings out of the {@link ConfigRegistry}.
+	 * Display mode is <i>NORMAL</i> by default.
+	 * <p>
+	 * <b>Example:</b> {@link SelectionLayer} overrides this to return the <i>SELECT</i>
+	 * label for cells which are selected.
 	 */
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition);
 

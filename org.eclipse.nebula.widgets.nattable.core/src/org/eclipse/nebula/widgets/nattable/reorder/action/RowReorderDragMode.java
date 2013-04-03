@@ -29,8 +29,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Default {@link IDragMode} invoked for 'left click + drag' on the row header.<br/>
- * It does the following when invoked: <br/>
+ * Default {@link IDragMode} invoked for 'left click + drag' on the row header.
+ * It does the following when invoked:
  * <ol>
  *    <li>Fires a row reorder command, to move columns</li>
  *    <li>Overlays a black line indicating the new row position</li>

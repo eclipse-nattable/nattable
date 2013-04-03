@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * Paints the cell background using an image.<br/>
+ * Paints the cell background using an image.
  * Image is repeated to cover the background. Similar to HTML table painting.
  */
 public class BackgroundImagePainter extends CellPainterWrapper {

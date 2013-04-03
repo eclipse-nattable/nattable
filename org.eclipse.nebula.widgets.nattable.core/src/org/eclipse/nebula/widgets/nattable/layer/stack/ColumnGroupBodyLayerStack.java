@@ -22,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 /**
- * A pre-configured layer stack which includes the following layers (in that order):<br/>
+ * A pre-configured layer stack which includes the following layers (in that order):
  * <ol>
  * <li>ColumnReorderLayer</li>
  * <li>ColumnGroupReorderLayer</li>

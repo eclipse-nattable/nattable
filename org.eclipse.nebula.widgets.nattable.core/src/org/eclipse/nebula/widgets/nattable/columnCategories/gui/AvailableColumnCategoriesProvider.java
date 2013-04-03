@@ -23,8 +23,8 @@ import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
 import org.eclipse.nebula.widgets.nattable.util.ObjectCloner;
 
 /**
- * Provides data to the tree viewer representation of Column categories.<br/>
- * Data is in the form of {@link Node} objects exposed from the {@link ColumnCategoriesModel}<br/>
+ * Provides data to the tree viewer representation of Column categories.
+ * Data is in the form of {@link Node} objects exposed from the {@link ColumnCategoriesModel}
  */
 public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 

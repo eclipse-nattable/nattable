@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.Messages;
 
 
 /**
- * Object representation of a NatTable Column. <br/>
+ * Object representation of a NatTable Column.
  * This is used in the Column chooser dialogs as a mechanism of preserving
  * meta data on the columns in the dialog.
  * 

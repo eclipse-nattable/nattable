@@ -14,9 +14,9 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * GlazedLists require that the comparator be set to 'null' if a column is not sortable.<br/>
- * If a null value is set in the {@link IConfigRegistry} it will attempt to find<br/>
- * other matching values.<br/>
+ * GlazedLists require that the comparator be set to 'null' if a column is not sortable.
+ * If a null value is set in the {@link IConfigRegistry} it will attempt to find
+ * other matching values.
  * This comparator can be set in the {@link ConfigRegistry} to indicate that the column can not be sorted.
  *
  * @see SortableGridExample

@@ -25,19 +25,20 @@ import org.eclipse.nebula.widgets.nattable.style.IDisplayModeOrdering;
 public interface IConfigRegistry {
 
 	/**
-	 * If retrieving registered values<br/>
-	 * Example 1:<br/>
-	 * 	 configRegistry.getConfigAttribute(attribute, DisplayMode.EDIT);<br/>
+	 * If retrieving registered values
+	 * <p>
+	 * Example 1:
+	 * 	 <p>configRegistry.getConfigAttribute(attribute, DisplayMode.EDIT);</p>
 	 * <ol>
 	 * <li>It will look for an attribute registered using the EDIT display mode</li>
 	 * <li>If it can't find that it will try and find an attribute under the NORMAL mode</li>
 	 * <li>If it can't find one it will try and find one registered without a display mode {@link #registerConfigAttribute(ConfigAttribute, Object)}</li>
 	 * </ol>
-	 * Example 2:<br/>
-	 *   configRegistry.getConfigAttribute(attribute, DisplayMode.NORMAL, "testLabel", "testLabel_1");<br/>
+	 * Example 2:
+	 *   <p>configRegistry.getConfigAttribute(attribute, DisplayMode.NORMAL, "testLabel", "testLabel_1");</p>
 	 * <ol>
-	 * <li>It will look for an attribute registered by display mode NORMAL and "testLabel"<li/>
-	 * <li>It will look for an attribute registered by display mode NORMAL and "testLabel_1"<li/>
+	 * <li>It will look for an attribute registered by display mode NORMAL and "testLabel"</li>
+	 * <li>It will look for an attribute registered by display mode NORMAL and "testLabel_1"</li>
 	 * </ol>
 	 * @param <T> Type of the attribute
 	 * @param configAttribute to be registered

@@ -22,10 +22,11 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 /**
- * 1 column x 2 rows Composite layer<br/>
- * - First row is the {@link ColumnHeaderLayer}<br/>
- * - Second row is the composite is the filter row layer. The filter row layer is a {@link DimensionallyDependentLayer}
- * 		dependent on the {@link ColumnHeaderLayer}
+ * 1 column x 2 rows Composite layer
+ * <ul>
+ *   <li>First row is the {@link ColumnHeaderLayer}</li>
+ *   <li>Second row is the composite is the filter row layer. The filter row layer is a {@link DimensionallyDependentLayer}
+ * 		dependent on the {@link ColumnHeaderLayer}</li>
  *
  * @see FilterRowDataLayer
  */

@@ -20,11 +20,11 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Paints the background of the cell using the color from the cell style.<br/>
+ * Paints the background of the cell using the color from the cell style.
  * If no background color is registered in the {@link ConfigRegistry} the painting
- * is skipped.<br/>
- *
- * Example: The {@link TextPainter} inherits this and uses the paint method<br/>
+ * is skipped.
+ * <p>
+ * Example: The {@link TextPainter} inherits this and uses the paint method
  * in this class to paint the background of the cell.
  *
  * Can be used as a cell painter or a decorator.

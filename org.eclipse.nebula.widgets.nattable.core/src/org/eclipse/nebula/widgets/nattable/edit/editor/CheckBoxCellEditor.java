@@ -44,8 +44,8 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
 	private Canvas canvas;
 
 	/**
-	 * As soon as the editor is activated, flip the current data value and commit it.<br/>
-	 * The repaint will pick up the new value and flip the image.<br/>
+	 * As soon as the editor is activated, flip the current data value and commit it.
+	 * The repaint will pick up the new value and flip the image.
 	 * This is only done if the mouse click is done within the rectangle of the painted 
 	 * checkbox image.
 	 */

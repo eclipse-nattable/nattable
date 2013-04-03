@@ -67,7 +67,7 @@ public class RowDataListFixture {
 	public static final PricingTypeBean PRICING_AUTO = new PricingTypeBean("AT");
 
 	/**
-	 * @return list containing 13 {@link RowDataFixture}.<br/>
+	 * @return list containing 13 {@link RowDataFixture}.
 	 *         The ISIN is unique and randomly generated.
 	 */
 	public static List<RowDataFixture> getList() {

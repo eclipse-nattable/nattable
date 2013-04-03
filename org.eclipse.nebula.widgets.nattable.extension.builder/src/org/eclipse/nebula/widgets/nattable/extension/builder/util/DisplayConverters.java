@@ -25,7 +25,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 public class DisplayConverters {
 
 	/**
-	 * Convert using the FormatterFactory. (Typically Broker and Book columns)<br/>
+	 * Convert using the FormatterFactory. (Typically Broker and Book columns)
 	 *
 	 * @see BrokerFormatter
 	 * @see BookFormatter

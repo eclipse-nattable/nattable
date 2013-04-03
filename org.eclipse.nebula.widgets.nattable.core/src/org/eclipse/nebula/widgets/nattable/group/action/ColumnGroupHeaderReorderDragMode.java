@@ -22,11 +22,11 @@ import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
 /**
- * Default {@link IDragMode} invoked for 'left click + drag' on the column group header.<br/>
- *
+ * Default {@link IDragMode} invoked for 'left click + drag' on the column group header.
+ * <p>
  * It overrides the isValidTargetColumnPosition() to calculate if a destination position is valid
- * for the column group to be reordered to.<br/>
- *
+ * for the column group to be reordered to.
+ * <p>
  * Example, a column group cannot only be reordered to be inside another column group.
  * @see ColumnGroupHeaderReorderDragModeTest
  */

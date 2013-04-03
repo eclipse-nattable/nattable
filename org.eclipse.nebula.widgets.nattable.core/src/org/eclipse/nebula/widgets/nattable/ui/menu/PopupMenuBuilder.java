@@ -45,10 +45,10 @@ public class PopupMenuBuilder {
 	 * Creates a popup menu builder based on the given menu. 
 	 * Using this enables the possibility to use configured context menus from plugin.xml
 	 * and adding NatTable commands programatically.
-	 * 
-	 * <p>As an example you might want to create a PopupMenuBuilder by using a configured menu
+	 * <p>
+	 * As an example you might want to create a PopupMenuBuilder by using a configured menu
 	 * with the id <i>org.eclipse.nebula.widgets.nattable.example.contextmenu</i>
-	 * <br/><br/>
+	 * <p>
 	 * <code>
 	 * ISelectionProvider isp = new RowSelectionProvider<?>(selectionLayer, bodyDataProvider, false);<br/>
 	 * MenuManager menuManager = new MenuManager();<br/>

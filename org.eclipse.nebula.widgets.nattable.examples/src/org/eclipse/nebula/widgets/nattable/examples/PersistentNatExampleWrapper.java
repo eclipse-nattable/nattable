@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Adds hooks to the onStart() and onStop() methods to save the settings to a
- * properties file.<br/>
- *
+ * properties file.
+ * <p>
  * The following state is persisted out of the box</br>
  * <ol>
  * 		<li>Column widths</li>
@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Control;
  * 		<li>Column groups</li>
  * </ol>
  *
- * Any additional state can be persisted by registering a IPersistable <br/>
+ * Any additional state can be persisted by registering a IPersistable
  * on an {@link ILayer}.
  *
  * @see PersistentStyleGridExample

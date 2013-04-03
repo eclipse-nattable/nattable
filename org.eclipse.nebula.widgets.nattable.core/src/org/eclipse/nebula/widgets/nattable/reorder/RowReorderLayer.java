@@ -40,7 +40,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
 
 
 /**
- * Adds functionality for reordering rows(s)<br/>
+ * Adds functionality for reordering rows(s)
  * Also responsible for saving/loading the row order state.
  * 
  * @see DefaultRowReorderLayerConfiguration

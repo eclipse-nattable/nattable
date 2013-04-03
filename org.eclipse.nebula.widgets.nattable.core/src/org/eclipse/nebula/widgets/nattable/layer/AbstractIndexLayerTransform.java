@@ -79,8 +79,8 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 	}
 
 	/**
-	 * Underlying layers <i>must</i> load state first.<br/>
-	 * If this is not done, {@link IStructuralChangeEvent} from underlying<br/>
+	 * Underlying layers <i>must</i> load state first.
+	 * If this is not done, {@link IStructuralChangeEvent} from underlying
 	 * layers will reset caches after state has been loaded
 	 */
 	@Override

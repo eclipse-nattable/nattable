@@ -35,10 +35,10 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 
 /**
- * Adds the Column grouping functionality to the column headers.<br/>
- * Also persists the state of the column groups when {@link NatTable#saveState()} is invoked.<br/>
- * <br/>
- * Internally uses the {@link ColumnGroupModel} to track the column groups.<br/>
+ * Adds the Column grouping functionality to the column headers.
+ * Also persists the state of the column groups when {@link NatTable#saveState()} is invoked.
+ * 
+ * Internally uses the {@link ColumnGroupModel} to track the column groups.
  * @see ColumnGroupGridExample
  */
 public class ColumnGroupHeaderLayer extends AbstractLayerTransform {

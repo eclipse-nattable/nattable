@@ -47,11 +47,11 @@ public class PositionUtil {
 	}
 
 	/**
-	 * Creates {@link Range}s out of list of numbers.<br/>
-	 * The contiguous numbers are grouped together in Ranges.<br/>
-	 *
-	 * Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]<br/>
-	 * The last number in the Range is not inclusive.
+	 * <p>Creates {@link Range}s out of list of numbers.
+	 * The contiguous numbers are grouped together in Ranges.</p>
+	 * 
+	 * <p>Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]</p>
+	 * <p>The last number in the Range is not inclusive.</p>
 	 */
 	public static List<Range> getRanges(Collection<Integer> numbers) {
 		List<Range> ranges = new ArrayList<Range>();

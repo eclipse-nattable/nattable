@@ -35,10 +35,10 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 
 /**
- * Adds the Row grouping functionality to the row headers.<br/>
- * Also persists the state of the row groups when {@link NatTable#saveState()} is invoked.<br/>
- * <br/>
- * Internally uses the {@link IRowGroupModel} to track the row groups.<br/>
+ * Adds the Row grouping functionality to the row headers.
+ * Also persists the state of the row groups when {@link NatTable#saveState()} is invoked.
+ * 
+ * Internally uses the {@link IRowGroupModel} to track the row groups.
  * @see RowGroupGridExample
  */
 public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {

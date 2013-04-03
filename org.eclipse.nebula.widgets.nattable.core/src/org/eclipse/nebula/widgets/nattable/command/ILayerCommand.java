@@ -28,6 +28,7 @@ public interface ILayerCommand {
 	 * then this method will return false and <b>the state of this command object will remain unchanged</b>.
 	 * Note: Commands should not be processed if they fail conversion.
 	 * 
+	 * @param targetLayer the target layer
 	 * @return true if the command is valid after conversion, false if the command is no longer valid.
 	 */
 	public boolean convertToTargetLayer(ILayer targetLayer);
@@ -36,7 +37,8 @@ public interface ILayerCommand {
 	 * Same semantics as {@link Object#clone()}
 	 * Used to make a copies of the command if has to passed to different layer stacks.
 	 * 
-	 *  @see GridLayer#doCommand(ILayerCommand)
+	 * @see GridLayer#doCommand(ILayerCommand)
+	 * @return a cloned instance of the command
 	 */
 	public ILayerCommand cloneCommand();
 	

@@ -54,7 +54,7 @@ public class Node implements Serializable {
 
     /**
      * Return the children of Node. The Tree is represented by a single
-     * root Node whose children are represented by a List<Node>. Each of
+     * root Node whose children are represented by a List&lt;Node&gt;. Each of
      * these Node elements in the List can have children. The getChildren()
      * method will return the children of a Node.
      * @return the children of Node
@@ -79,7 +79,7 @@ public class Node implements Serializable {
 
     /**
      * Adds a child to the list of children for this Node. The addition of
-     * the first child will create a new List<Node>.
+     * the first child will create a new List&lt;Node&gt;.
      * @param child a Node object to set.
      * @return Child node just added 
      */
@@ -103,7 +103,8 @@ public class Node implements Serializable {
 	}
 
     /**
-     * Inserts a Node at the specified position in the child list. Will     * throw an ArrayIndexOutOfBoundsException if the index does not exist.
+     * Inserts a Node at the specified position in the child list. Will
+     * throw an ArrayIndexOutOfBoundsException if the index does not exist.
      * @param index the position to insert at.
      * @param child the Node object to insert.
      * @throws IndexOutOfBoundsException if thrown.
@@ -120,7 +121,7 @@ public class Node implements Serializable {
     }
 
     /**
-     * Remove the Node element at index index of the List<Node>.
+     * Remove the Node element at index index of the List&lt;Node&gt;.
      * @param index the index of the element to delete.
      * @throws IndexOutOfBoundsException if thrown.
      */

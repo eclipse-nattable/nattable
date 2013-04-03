@@ -83,10 +83,13 @@ public class ChooseColumnsFromCategoriesCommandHandler
 	}
 
 	/**
-	 * Moves the columns up or down by firing commands on the dialog.<br/>
-	 *
-	 * Individual columns are moved using the {@link ColumnReorderCommand}<br/>
-	 * Contiguously selected columns are moved using the {@link MultiColumnReorderCommand}<br/>
+	 * Moves the columns up or down by firing commands on the dialog.
+	 * 
+	 * Individual columns are moved using the {@link ColumnReorderCommand}
+	 * Contiguously selected columns are moved using the {@link MultiColumnReorderCommand}
+	 * 
+	 * @param direction the direction to move
+	 * @param selectedPositions the column positions to move
 	 */
 	public void itemsMoved(MoveDirectionEnum direction, List<Integer> selectedPositions) {
 		List<List<Integer>> fromPositions = PositionUtil.getGroupedByContiguous(selectedPositions);
@@ -113,10 +116,15 @@ public class ChooseColumnsFromCategoriesCommandHandler
 	 * Calculates the destination positions taking into account the move direction
 	 * and single/contiguous selection.
 	 *
+	 * @param direction the direction to move
 	 * @param selectedPositions grouped together if they are contiguous.
-	 * 	Example: if 2,3,4, 9, 12 are selected, they are grouped as [[2, 3, 4], 9, 12]
-	 * 		While moving up the destination position for [2, 3, 4] is 1
-	 * 		While moving up the destination position for [2, 3, 4] is 6
+	 * <p>
+	 * Example: if 2,3,4, 9, 12 are selected, they are grouped as [[2, 3, 4], 9, 12]
+	 * <ul>
+	 *   <li>While moving up the destination position for [2, 3, 4] is 1</li>
+	 *   <li>While moving up the destination position for [2, 3, 4] is 6</li>
+	 * </ul>
+	 * @return a List of destination positions
 	 */
 	protected List<Integer> getDestinationPositions(MoveDirectionEnum direction, List<List<Integer>> selectedPositions) {
 		List<Integer> destinationPositions = new ArrayList<Integer>();
@@ -143,3 +151,4 @@ public class ChooseColumnsFromCategoriesCommandHandler
 	}
 
 }
+ 

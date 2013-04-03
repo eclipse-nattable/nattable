@@ -20,8 +20,8 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 public interface IBlinkingCellResolver {
 	
 	/**
-	 * @param oldValue
-	 * @param newValue
+	 * @param oldValue the old value
+	 * @param newValue the new value
 	 * @return Possibly the config type associated with the blinking style.
 	 */
 	public String[] resolve(Object oldValue, Object newValue);

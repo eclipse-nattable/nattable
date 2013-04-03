@@ -46,7 +46,7 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersi
 	}
 
 	/**
-	 * @return adds a special configuration label to the stack taking into account the following:<br/>
+	 * @return adds a special configuration label to the stack taking into account the following:
 	 * 	<ol>
 	 * 		<li>Is the column sorted ?</li>
 	 * 		<li>What is the sort order of the column</li>

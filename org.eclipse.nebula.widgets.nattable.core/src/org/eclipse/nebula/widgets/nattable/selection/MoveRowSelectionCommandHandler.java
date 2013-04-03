@@ -13,8 +13,8 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 
 /**
- * Preserves the basic semantics of the cell selection. <br/>
- * Additionally it selects the entire row when a cell in the row is selected.<br/>
+ * Preserves the basic semantics of the cell selection.
+ * Additionally it selects the entire row when a cell in the row is selected.
  */
 public class MoveRowSelectionCommandHandler extends MoveCellSelectionCommandHandler {
 

@@ -72,10 +72,10 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	}
 
 	/**
-	 * Calculates the summary for the column using the {@link ISummaryProvider} from the {@link IConfigRegistry}.<br/>
+	 * Calculates the summary for the column using the {@link ISummaryProvider} from the {@link IConfigRegistry}.
 	 * In order to prevent the table from freezing (for large data sets), the summary is calculated in a separate Thread. While
 	 * summary is being calculated {@link ISummaryProvider#DEFAULT_SUMMARY_VALUE} is returned.
-	 * 
+	 * <p>
 	 * NOTE: Since this is a {@link IUniqueIndexLayer} sitting close to the {@link DataLayer}, columnPosition == columnIndex
 	 */
 	@Override

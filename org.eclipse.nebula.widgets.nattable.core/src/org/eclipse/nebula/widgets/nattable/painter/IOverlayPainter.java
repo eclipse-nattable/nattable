@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.GC;
 
 /**
- * An overlay painter is given a chance to paint the canvas once<br/>
+ * An overlay painter is given a chance to paint the canvas once
  * the layers have finished rendering.
  * 
  *  @see NatTable#addOverlayPainter(IOverlayPainter)

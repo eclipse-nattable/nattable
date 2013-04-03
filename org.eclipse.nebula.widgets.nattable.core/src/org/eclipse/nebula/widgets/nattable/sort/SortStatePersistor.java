@@ -24,8 +24,8 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
 /**
- * Handles persisting of the sorting state.<br/>
- * The sorting state is read from and restored to the {@link ISortModel}.<br/>
+ * Handles persisting of the sorting state.
+ * The sorting state is read from and restored to the {@link ISortModel}.
  *
  * @param <T> Type of the Beans in the backing data source.
  */
@@ -41,11 +41,12 @@ public class SortStatePersistor<T> implements IPersistable {
 	}
 
 	/**
-	 * Save the sorting state in the properties file.<br/>
+	 * Save the sorting state in the properties file.
+	 * <p>
 	 * Key:
-	 * 	{@link #PERSISTENCE_KEY_SORTING_STATE}<br/>
-	 *
-	 * Format:<br/>
+	 * 	{@link #PERSISTENCE_KEY_SORTING_STATE}
+	 * <p>
+	 * Format:
 	 * 	column index : sort direction : sort order |
 	 */
 	public void saveState(String prefix, Properties properties) {

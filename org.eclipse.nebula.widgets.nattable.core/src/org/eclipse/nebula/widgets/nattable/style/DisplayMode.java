@@ -17,8 +17,8 @@ package org.eclipse.nebula.widgets.nattable.style;
  *    <li>If the contents of the cell are being edited, its in EDIT mode.</li>
  *    <li>If a cell has been selected, its in SELECT mode.</li>
  * </ol>
- * <br/>
- * These modes are used to bind different settings to different modes.<br/>
+ * 
+ * These modes are used to bind different settings to different modes.
  * For example, a different style can be registered for a cell
  * when it is in SELECT mode.
  *

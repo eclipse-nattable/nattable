@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Specifies the rectangular area available to an {@link ILayer}<br/>
+ * Specifies the rectangular area available to an {@link ILayer}
  * Note: All layers get the client area from {@link NatTable} which implements this interface. 
  * 
  * @see ILayer#getClientAreaProvider()

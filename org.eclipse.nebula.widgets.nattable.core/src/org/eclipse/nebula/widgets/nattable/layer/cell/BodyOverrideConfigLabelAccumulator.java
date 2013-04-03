@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 
 /**
- * Applies the given labels to all the cells in the grid.<br/>
+ * Applies the given labels to all the cells in the grid.
  * Used to apply styles to the entire grid.
  */
 public class BodyOverrideConfigLabelAccumulator implements IConfigLabelAccumulator {

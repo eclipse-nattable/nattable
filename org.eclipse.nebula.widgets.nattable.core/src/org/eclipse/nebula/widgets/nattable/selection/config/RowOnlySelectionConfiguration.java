@@ -16,8 +16,8 @@ import org.eclipse.nebula.widgets.nattable.selection.MoveRowSelectionCommandHand
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
 /**
- * Configure the move selection behavior so that we always move by a row.<br/>
- * Add {@link ILayerEventHandler} to preserve row selection.<br/>
+ * Configure the move selection behavior so that we always move by a row.
+ * Add {@link ILayerEventHandler} to preserve row selection.
  * 
  * @see DefaultMoveSelectionConfiguration
  */

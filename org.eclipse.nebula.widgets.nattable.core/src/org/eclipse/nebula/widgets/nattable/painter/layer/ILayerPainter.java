@@ -18,9 +18,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Classes implementing this interface are responsible for painting to the relevant {@link Device}.<br/>
+ * Classes implementing this interface are responsible for painting to the relevant {@link Device}.
  * Every layer has a layer painter. A layer can contribute to painting by providing its own painter.
- * 
  */
 public interface ILayerPainter {
 	

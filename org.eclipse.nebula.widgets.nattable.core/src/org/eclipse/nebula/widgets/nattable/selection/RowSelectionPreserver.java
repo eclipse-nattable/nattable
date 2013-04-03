@@ -26,8 +26,8 @@ import org.eclipse.nebula.widgets.nattable.sort.event.SortColumnEvent;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
- * Preserves the selected row when the underlying data changes or column is sorted.<br/>
- *
+ * Preserves the selected row when the underlying data changes or column is sorted.
+ * <p>
  * <b>Example:</b>
  * 	Data 'A' is the 1st row. An update comes in and data 'A' moves to the 5th row.
  * 	This class clears current selection and selects row 5.

@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 
 /**
- * {@link IDataProvider} to use for the {@link RowHeaderLayer} if the {@link SummaryRowLayer} is present in the body layer stack. <br/>
+ * {@link IDataProvider} to use for the {@link RowHeaderLayer} if the {@link SummaryRowLayer} is present in the body layer stack.
  * This adds an extra row to the row header for displaying the summary row.
  */
 public class DefaultSummaryRowHeaderDataProvider extends DefaultRowHeaderDataProvider implements IDataProvider {

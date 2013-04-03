@@ -24,7 +24,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 
 /**
- * Matches a click on the column header, except if the click is on the column edge.<br/>
+ * Matches a click on the column header, except if the click is on the column edge.
  */
 public class ColumnHeaderClickEventMatcher extends MouseEventMatcher {
 

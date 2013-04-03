@@ -14,7 +14,7 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 
 /**
- * Handles renaming of columns.<br/>
+ * Handles renaming of columns.
  * Registered with the {@link ColumnHeaderLayer}.
  */
 public class RenameColumnHeaderCommandHandler 

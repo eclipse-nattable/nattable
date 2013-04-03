@@ -37,8 +37,8 @@ import ca.odell.glazedlists.event.ListEventListener;
  *    <li>Bean updates - PropertyChangeEvent(s)
  * </ol>
  * GlazedLists Events are conflated at a 100ms interval i.e a single {@link RowStructuralRefreshEvent}
- * is fired for any number of GlazedLists events received during that interval.<br/>
- *
+ * is fired for any number of GlazedLists events received during that interval.
+ * <p>
  * PropertyChangeEvent(s) are propagated immediately as a {@link PropertyUpdateEvent}.
  *
  * @param <T> Type of the bean in the backing list.

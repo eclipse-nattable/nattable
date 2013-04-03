@@ -216,10 +216,10 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	}
 
 	/**
-	 * Adds a configuration to the table.<br/>
-	 *
-	 * Configurations are processed when the {@link #configure()} method is invoked.<br/>
-	 * Each configuration object then has a chance to configure the<br/>
+	 * Adds a configuration to the table.
+	 * <p>
+	 * Configurations are processed when the {@link #configure()} method is invoked.
+	 * Each configuration object then has a chance to configure the
 	 * 	<ol>
 	 * 		<li>ILayer</li>
 	 * 		<li>ConfigRegistry</li>
@@ -235,7 +235,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	}
 
 	/**
-	 * @return {@link IConfigRegistry} used to hold the configuration bindings<br/>
+	 * @return {@link IConfigRegistry} used to hold the configuration bindings
 	 * 	by Layer, DisplayMode and Config labels.
 	 */
 	public IConfigRegistry getConfigRegistry() {

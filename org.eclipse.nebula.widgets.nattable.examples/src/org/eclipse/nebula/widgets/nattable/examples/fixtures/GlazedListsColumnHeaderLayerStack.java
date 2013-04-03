@@ -28,7 +28,7 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import ca.odell.glazedlists.SortedList;
 
 /**
- * Column header layer stack, with a {@link SortHeaderLayer}.<br/>
+ * Column header layer stack, with a {@link SortHeaderLayer}.
  * 	Utilizes {@link GlazedListsSortModel} for sorting
  */
 public class GlazedListsColumnHeaderLayerStack<T> extends AbstractLayerTransform {

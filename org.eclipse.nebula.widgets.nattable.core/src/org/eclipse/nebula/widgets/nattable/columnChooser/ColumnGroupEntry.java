@@ -19,8 +19,8 @@ import org.eclipse.nebula.widgets.nattable.columnChooser.gui.ColumnChooserDialog
 import org.eclipse.swt.widgets.TreeItem;
 
 /**
- * Object representation of a ColumnGroup in the SWT tree.<br/>
- * NOTE: this is set as the SWT data on the {@link TreeItem}.<br/>
+ * Object representation of a ColumnGroup in the SWT tree.
+ * NOTE: this is set as the SWT data on the {@link TreeItem}.
  *
  * @see ColumnChooserDialog#populateModel
  */

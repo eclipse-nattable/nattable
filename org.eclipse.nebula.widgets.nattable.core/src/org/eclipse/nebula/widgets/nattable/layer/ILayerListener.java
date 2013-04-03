@@ -20,6 +20,7 @@ public interface ILayerListener {
 
     /**
      * Handle an event notification from an {@link ILayer}
+     * @param event the event
      */
     public void handleLayerEvent(ILayerEvent event);
     

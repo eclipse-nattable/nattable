@@ -38,7 +38,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 
 
 /**
- * Adds functionality for reordering column(s)<br/>
+ * Adds functionality for reordering column(s)
  * Also responsible for saving/loading the column order state.
  * 
  * @see DefaultColumnReorderLayerConfiguration

@@ -18,7 +18,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * General event indicating that structures cached by the layers need refreshing. <br/>
+ * General event indicating that structures cached by the layers need refreshing.
+ * <p>
  * TIP: Consider throwing a more focused event (subclass) if you need to do this.
  */
 public class StructuralRefreshEvent implements IStructuralChangeEvent {

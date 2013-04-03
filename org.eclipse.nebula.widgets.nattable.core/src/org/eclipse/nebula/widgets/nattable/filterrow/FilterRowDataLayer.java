@@ -23,9 +23,9 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 /**
- * {@link DataLayer} with a custom {@link IDataProvider} which stores/tracks the filter text on columns.<br/>
- * Applies region name of {@link FilterRowHeaderComposite#FILTER_ROW} to the filter row.<br/>
- * Persists the filter text to the properties file.<br/>
+ * {@link DataLayer} with a custom {@link IDataProvider} which stores/tracks the filter text on columns.
+ * Applies region name of {@link FilterRowHeaderComposite#FILTER_ROW} to the filter row.
+ * Persists the filter text to the properties file.
  *
  * @param <T> type of the underlying row object
  */

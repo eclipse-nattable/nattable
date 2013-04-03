@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Painter fixture for unit tests. Helps probe state after a paint call has been made to it.<br/>
+ * Painter fixture for unit tests. Helps probe state after a paint call has been made to it.
  * Does not do any actual painting.
  */
 public class CellPainterFixture extends AbstractCellPainter {

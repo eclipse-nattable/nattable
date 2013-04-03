@@ -18,8 +18,8 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 
 /**
- * Represents a Tree of Objects.<br/>
- * The Tree is represented as a single rootElement which points to a List<Node> of children.<br/>
+ * Represents a Tree of Objects.
+ * The Tree is represented as a single rootElement which points to a List&lt;Node&gt; of children.
  * 
  * Adapted from public domain code at http://sujitpal.blogspot.com/. 
  */
@@ -54,7 +54,7 @@ public class Tree implements Serializable {
     /**
      * Returns the Tree as a List of Node objects. The elements of the
      * List are generated from a pre-order traversal of the tree.
-     * @return a List<Node>.
+     * @return a List&lt;Node&gt;.
      */
     public List<Node> toList() {
         List<Node> list = new ArrayList<Node>();
@@ -90,6 +90,7 @@ public class Tree implements Serializable {
 	/**
 	 * Find the Node in the tree containing the supplied data.
 	 * Stops searching at the first match. 
+	 * @param nodeData the node data
 	 * @return matching Node if found, NULL otherwise
 	 */
 	public Node find(String nodeData) {
@@ -122,6 +123,7 @@ public class Tree implements Serializable {
 
 	/**
 	 * Removes the node with the supplied node data. Deletes the first matching node.
+	 * @param nodeData the node data
 	 * @return TRUE if a node was found and removed
 	 */
 	public boolean remove(String nodeData) {

@@ -25,12 +25,12 @@ import org.eclipse.swt.graphics.Rectangle;
 public interface IVisualChangeEvent extends ILayerEvent {
 
 	/**
-	 * Get the layer that the visible change event is originating from.
+	 * @return the layer that the visible change event is originating from.
 	 */
 	public ILayer getLayer();
 	
 	/**
-	 * Get the position rectangles that have changed and need to be redrawn.
+	 * @return the position rectangles that have changed and need to be redrawn.
 	 * If no rectangles are returned, then the receiver should assume that the
 	 * entire layer is changed and will need to be redrawn.
 	 */

@@ -16,9 +16,9 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
 
 /**
- * Abstraction of the selection behavior during navigation in the grid.<br/>
- * Implementations of this class specify what to select when the selection moves<br/>
- * by responding to the {@link MoveSelectionCommand}.<br/>
+ * Abstraction of the selection behavior during navigation in the grid.
+ * Implementations of this class specify what to select when the selection moves
+ * by responding to the {@link MoveSelectionCommand}.
  *
  * @param <T> an instance of the {@link MoveSelectionCommand}
  * @see MoveCellSelectionCommandHandler

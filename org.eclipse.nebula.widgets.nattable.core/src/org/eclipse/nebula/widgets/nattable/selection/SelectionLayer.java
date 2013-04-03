@@ -50,7 +50,7 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 /**
  * Enables selection of column, rows, cells etc. on the table.
  * Also responds to UI bindings by changing the current selection.
- * Internally it uses the {@link ISelectionModel} to track the selection state.<br/>
+ * Internally it uses the {@link ISelectionModel} to track the selection state.
  *
  * @see DefaultSelectionLayerConfiguration
  * @see MoveDirectionEnum

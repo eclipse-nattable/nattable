@@ -178,8 +178,11 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 
 	/**
 	 * Find the {@link IBlinkingCellResolver} from the {@link ConfigRegistry}.
-	 * Use the above to find the config types associated with a blinking cell.
-	 * @param indexCoordinate 
+	 * Use this to find the config types associated with a blinking cell.
+	 * @param cell the cell
+	 * @param oldValue the old value
+	 * @param newValue the new value
+	 * @return a LabelStack containing resolved config types associated with the cell
 	 */
 	public LabelStack resolveConfigTypes(ILayerCell cell, Object oldValue, Object newValue) {
 		// Acquire default config types for the coordinate. Use these to search for the associated resolver.

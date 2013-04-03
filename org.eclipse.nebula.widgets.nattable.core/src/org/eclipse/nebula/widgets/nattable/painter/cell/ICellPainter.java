@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Implementations are responsible for painting a cell.<br/>
+ * Implementations are responsible for painting a cell.
  * 
  * Custom {@link ICellPainter} can be registered in the {@link IConfigRegistry}.
  * This is a mechanism for plugging in custom cell painting.

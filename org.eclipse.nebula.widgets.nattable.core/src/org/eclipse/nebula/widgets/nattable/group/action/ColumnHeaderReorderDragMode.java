@@ -18,8 +18,8 @@ import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
 /**
- * Extends the regular column drag functionality to work with Column groups.<br/>
- * It does the following checks:<br/>
+ * Extends the regular column drag functionality to work with Column groups.
+ * It does the following checks:
  * <ol>
  * <li>Checks that the destination is not part of a Unbreakable column group</li>
  * <li>Checks if the destination is between two adjoining column groups</li>

@@ -35,7 +35,7 @@ public class RenameColumnHelper implements IPersistable {
 	}
 
 	/**
-	 * Rename the column at the given position.<br/>
+	 * Rename the column at the given position.
 	 * Note: This does not change the underlying column name.
 	 *
 	 * @return
