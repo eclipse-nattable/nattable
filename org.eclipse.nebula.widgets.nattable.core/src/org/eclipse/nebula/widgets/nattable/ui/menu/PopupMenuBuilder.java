@@ -49,17 +49,17 @@ public class PopupMenuBuilder {
 	 * As an example you might want to create a PopupMenuBuilder by using a configured menu
 	 * with the id <i>org.eclipse.nebula.widgets.nattable.example.contextmenu</i>
 	 * <p>
-	 * <code>
-	 * ISelectionProvider isp = new RowSelectionProvider<?>(selectionLayer, bodyDataProvider, false);<br/>
-	 * MenuManager menuManager = new MenuManager();<br/>
-	 * menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));<br/>
-	 * getSite().registerContextMenu("org.eclipse.nebula.widgets.nattable.example.contextmenu", menuManager, isp);<br/>
-	 * PopupMenuBuilder popupMenu = new PopupMenuBuilder(menuManager.createContextMenu(natTable));<br/>
-	 * </code>
+	 * <pre>
+	 * ISelectionProvider isp = new RowSelectionProvider&lt;?&gt;(selectionLayer, bodyDataProvider, false);
+	 * MenuManager menuManager = new MenuManager();
+	 * menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+	 * getSite().registerContextMenu("org.eclipse.nebula.widgets.nattable.example.contextmenu", menuManager, isp);
+	 * PopupMenuBuilder popupMenu = new PopupMenuBuilder(menuManager.createContextMenu(natTable));
+	 * </pre>
 	 * 
 	 * @param natTable The active NatTable instance which might be needed for creation of 
 	 * 			menu items that need the NatTable instance to work.
-	 * @param menuId The id of the registered context menu.
+	 * @param menu The registered context menu.
 	 */
 	public PopupMenuBuilder(NatTable natTable, Menu menu) {
 		this.natTable = natTable;
@@ -155,7 +155,7 @@ public class PopupMenuBuilder {
 	 * as label for the menu item.
 	 * @param menuLabel The label to use for showing the item in the popup menu.
 	 * @return The {@link PopupMenuBuilder} with the show all rows menu item added.
-	 * @see MenuItemProviders#showAllRowsMenuItemProvider(String))
+	 * @see MenuItemProviders#showAllRowsMenuItemProvider(String)
 	 */
 	public PopupMenuBuilder withShowAllRowsMenuItem(String menuLabel) {
 		return withMenuItemProvider(MenuItemProviders.showAllRowsMenuItemProvider(menuLabel));

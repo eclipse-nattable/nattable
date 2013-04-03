@@ -34,7 +34,7 @@ import org.eclipse.nebula.widgets.nattable.util.PersistenceUtils;
  * Data provider for the filter row
  * <ul>
  *   <li>Stores filter strings</li>
- *   <li>Applies them to the {@link MatcherEditor} on the {@link FilterList}</li>
+ *   <li>Applies them to the ca.odell.glazedlists.matchers.MatcherEditor on the ca.odell.glazedlists.FilterList</li>
  * </ul>
  */
 public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {

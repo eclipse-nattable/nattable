@@ -289,7 +289,7 @@ public class SelectionModel implements ISelectionModel {
 	 * We need to take into account any overlapping selections or any selection rectangles
 	 * contained within each other.
 	 * 
-	 * @see the related tests for a better understanding.
+	 * See the related tests for a better understanding.
 	 */
 	public boolean isColumnPositionFullySelected(int columnPosition, int columnHeight) {
 		selectionsLock.readLock().lock();

@@ -17,10 +17,10 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IDisplayModeOrdering;
 
 /**
- * Holds all the settings, bindings and other configuration for NatTable.</br>
- *
+ * Holds all the settings, bindings and other configuration for NatTable.
+ * <p>
+ * See ConfigRegistryTest for a better understanding.
  * @see ConfigRegistry
- * @see ConfigRegistryTest for a better understanding
  */
 public interface IConfigRegistry {
 

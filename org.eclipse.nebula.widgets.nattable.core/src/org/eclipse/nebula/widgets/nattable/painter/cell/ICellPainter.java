@@ -25,16 +25,6 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public interface ICellPainter {
 	
-	/**
-	 * 
-	 * @param gc SWT graphics context used to draw the cell
-	 * @param rectangle cell bounds
-	 * @param natTable :-)
-	 * @param cellRenderer
-	 * @param rowIndex of the cell to paint
-	 * @param colIndex of the cell to paint
-	 * @param selected is the cell selected ?
-	 */
 	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry);
 
 	/**

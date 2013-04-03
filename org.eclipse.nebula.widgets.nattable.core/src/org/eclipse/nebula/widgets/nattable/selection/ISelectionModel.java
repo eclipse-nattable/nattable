@@ -73,9 +73,6 @@ public interface ISelectionModel {
 	 */
 	public int[] getFullySelectedRowPositions(int rowWidth);
 
-	/**
-	 * @param columnHeight the number of rows in a fully selected column
-	 */
 	public boolean isRowPositionFullySelected(int rowPosition, int rowWidth);
 	
 }

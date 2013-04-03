@@ -35,10 +35,9 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
  * Injection) and therefore will be addressed in a future architecture design.
  * </p>
  * 
- * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=392535
+ * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=392535">bug 392535</a>
  * 
  * @author Dirk Fauth
- *
  */
 public class ActiveCellEditorRegistry {
 

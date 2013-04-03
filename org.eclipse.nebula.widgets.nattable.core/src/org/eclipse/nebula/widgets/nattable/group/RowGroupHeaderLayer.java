@@ -36,10 +36,11 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 
 /**
  * Adds the Row grouping functionality to the row headers.
- * Also persists the state of the row groups when {@link NatTable#saveState()} is invoked.
+ * Also persists the state of the row groups when {@link NatTable#saveState(String, Properties)} is invoked.
  * 
  * Internally uses the {@link IRowGroupModel} to track the row groups.
- * @see RowGroupGridExample
+ * <p>
+ * See RowGroupGridExample
  */
 public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
@@ -210,7 +211,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	 * Calculates the span of a cell in a Row Group.
 	 * Takes into account collapsing and hidden rows in the group.
 	 *
-	 * @param selectionLayerColumnPosition of any row belonging to the group
+	 * @param rowPosition position of any row belonging to the group
 	 */
 	protected int getRowSpan(int rowPosition) {
 		int rowIndex = getRowIndexByPosition(rowPosition);

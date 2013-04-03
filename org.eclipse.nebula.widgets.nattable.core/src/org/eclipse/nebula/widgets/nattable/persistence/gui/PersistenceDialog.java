@@ -354,7 +354,7 @@ public class PersistenceDialog extends Dialog {
 	 * Note that this method does not set the active view configuration programmatically.
 	 * It is just used to support highlighting the current active view configuration
 	 * in the viewer of this dialog.
-	 * @param The name of the current active view configuration
+	 * @param name The name of the current active view configuration
 	 */
 	public void setActiveViewConfigurationName(String name) {
 		this.properties.setProperty(ACTIVE_VIEW_CONFIGURATION_KEY, name);

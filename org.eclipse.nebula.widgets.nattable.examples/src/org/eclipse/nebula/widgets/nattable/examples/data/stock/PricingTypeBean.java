@@ -30,7 +30,7 @@ public class PricingTypeBean implements Comparable<PricingTypeBean>{
 	}
 
 	/**
-	 * Format: Items displayed in the Combo <-> Canonical value
+	 * Format: Items displayed in the Combo &lt;-&gt; Canonical value
 	 */
 	public static IDisplayConverter getDisplayConverter() {
 		return new DisplayConverter() {

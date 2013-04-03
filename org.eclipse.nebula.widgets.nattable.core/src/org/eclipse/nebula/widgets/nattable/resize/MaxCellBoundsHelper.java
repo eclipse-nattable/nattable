@@ -83,9 +83,6 @@ public class MaxCellBoundsHelper {
 		return maxWidth;
 	}
 	
-	/**
-	 * @see MaxCellBoundsHelper#getPreferredColumnWidths(IConfiguration, GC, ILayer, int[])
-	 */
 	public static int[] getPreferredRowHeights(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]rows) {
 		int[] rowHeights = new int[rows.length];
 		

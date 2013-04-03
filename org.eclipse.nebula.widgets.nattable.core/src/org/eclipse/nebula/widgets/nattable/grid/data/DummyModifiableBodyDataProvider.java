@@ -38,7 +38,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
 	}
 
 	/**
-	 * You have to fire a {@link StructuralRefreshEvent} after using this method for refreshing the NatTable.
+	 * You have to fire a {@link org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent} after using this method for refreshing the NatTable.
 	 * @param columnCount
 	 */
 	public void setColumnCount(int columnCount) {
@@ -46,7 +46,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
 	}
 
 	/**
-	 * You have to fire a {@link StructuralRefreshEvent} after using this method for refreshing the NatTable.
+	 * You have to fire a {@link org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent} after using this method for refreshing the NatTable.
 	 * @param rowCount
 	 */
 	public void setRowCount(int rowCount) {

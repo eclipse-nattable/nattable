@@ -69,8 +69,7 @@ public class DimensionallyDependentIndexLayer extends AbstractIndexLayerTransfor
 	}
 
 	/**
-	 * Creates a new DimensionallyDependentIndexLayer. The horizontal and vertical layer dependency must be set
-	 * by calling {@link #init(IUniqueIndexLayer, IUniqueIndexLayer)} before the layer is used.
+	 * Creates a new DimensionallyDependentIndexLayer.
 	 * 
 	 * @param baseLayer the underlying base layer
 	 */

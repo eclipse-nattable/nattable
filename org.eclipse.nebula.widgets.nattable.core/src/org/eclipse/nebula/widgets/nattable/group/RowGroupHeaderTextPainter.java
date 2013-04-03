@@ -38,7 +38,6 @@ public class RowGroupHeaderTextPainter<T> extends CellPainterWrapper {
 	/**
 	 * @param rowGroupModel Column group model used by the grid
 	 * @param interiorPainter for painting the text portion
-	 * @param imagePainter for painting the icon image on the right
 	 */
 	public RowGroupHeaderTextPainter(IRowGroupModel<T> rowGroupModel, ICellPainter interiorPainter) {
 		this.rowGroupModel = rowGroupModel;

@@ -344,7 +344,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	 * Repaint only a specific column in the grid. This method is optimized so that only the specific column is
 	 * repainted and nothing else.
 	 *
-	 * @param gridColumnPosition column of the grid to repaint
+	 * @param columnPosition column of the grid to repaint
 	 */
 	public void repaintColumn(int columnPosition) {
 		int xOffset = getStartXOfColumnPosition(columnPosition);
@@ -358,7 +358,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	 * Repaint only a specific row in the grid. This method is optimized so that only the specific row is repainted and
 	 * nothing else.
 	 *
-	 * @param gridRowPosition row of the grid to repaint
+	 * @param rowPosition row of the grid to repaint
 	 */
 	public void repaintRow(int rowPosition) {
 		int yOffset = getStartYOfRowPosition(rowPosition);

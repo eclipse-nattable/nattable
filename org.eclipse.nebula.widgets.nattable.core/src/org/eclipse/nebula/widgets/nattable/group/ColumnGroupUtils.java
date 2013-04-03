@@ -136,7 +136,7 @@ public class ColumnGroupUtils {
 	}
 
 	/**
-	 * @see ColumnGroupUtilsTest
+	 * See ColumnGroupUtilsTest
 	 * @return TRUE if the given column is the <i>right</i> most column in a group
 	 */
 	public static boolean isRightEdgeOfAColumnGroup(ILayer natLayer, int columnPosition, int columnIndex, ColumnGroupModel model) {
@@ -156,7 +156,7 @@ public class ColumnGroupUtils {
 	}
 
 	/**
-	 * @see ColumnGroupUtilsTest
+	 * See ColumnGroupUtilsTest
 	 * @return TRUE if the given column is the <i>left</i> most column in a group
 	 */
 	public static boolean isLeftEdgeOfAColumnGroup(ILayer natLayer, int columnPosition, int columnIndex, ColumnGroupModel model) {

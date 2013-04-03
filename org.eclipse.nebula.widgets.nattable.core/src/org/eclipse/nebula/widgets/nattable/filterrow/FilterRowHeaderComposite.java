@@ -27,7 +27,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent
  *   <li>First row is the {@link ColumnHeaderLayer}</li>
  *   <li>Second row is the composite is the filter row layer. The filter row layer is a {@link DimensionallyDependentLayer}
  * 		dependent on the {@link ColumnHeaderLayer}</li>
- *
+ * </ul>
+ * 
  * @see FilterRowDataLayer
  */
 public class FilterRowHeaderComposite<T> extends CompositeLayer {

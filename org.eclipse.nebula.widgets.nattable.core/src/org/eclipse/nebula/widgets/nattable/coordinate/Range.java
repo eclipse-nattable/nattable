@@ -21,7 +21,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 /**
  * Represents an Range of numbers.
  * Example a Range of selected rows: 1 - 100
- * Ranges are inclusive of their start value and not inclusive of their end value, i.e. start <= x < end
+ * Ranges are inclusive of their start value and not inclusive of their end value, i.e. start &lt;= x &lt; end
  */
 public class Range {
 

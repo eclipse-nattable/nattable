@@ -25,7 +25,6 @@ import org.junit.Test;
 
 /**
  * Integration test for all default selection behavior.
- * @see http://nattable.org/jira/browse/NTBL-262
  */
 public class SelectionIntegrationTest {
 

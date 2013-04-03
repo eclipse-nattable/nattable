@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 
 /**
  * Bean wired with a property change listener for Glazed lists.
- * @see Glazed Lists ObservableElementList Screencast for details
+ * See Glazed Lists ObservableElementList Screencast for details
  *
  */
 public class BlinkingRowDataFixture extends RowDataFixture {

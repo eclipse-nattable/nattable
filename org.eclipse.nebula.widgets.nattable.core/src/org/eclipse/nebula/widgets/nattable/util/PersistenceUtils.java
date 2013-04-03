@@ -17,7 +17,7 @@ import java.util.Map.Entry;
 public class PersistenceUtils {
 
 	/**
-	 * Parse the persisted property and create a TreeMap<Integer, String> from it.
+	 * Parse the persisted property and create a TreeMap&lt;Integer, String&gt; from it.
 	 * Works in conjunction with the {@link PersistenceUtils#mapAsString(Map)}.
 	 * 
 	 * @param property from the properties file.

@@ -280,7 +280,7 @@ public class NatCombo extends Composite {
 	}
 
 	/**
-	 * Creates the Text control of this NatCombo, adding styles, look&feel and
+	 * Creates the Text control of this NatCombo, adding styles, look&amp;feel and
 	 * needed listeners for the control only.
 	 * @param style The style for the Text Control to construct. Uses this style
 	 * 			adding internal styles via ConfigRegistry.
@@ -398,7 +398,7 @@ public class NatCombo extends Composite {
 	}
 	
 	/**
-	 * Create the dropdown control of this NatCombo, adding styles, look&feel and
+	 * Create the dropdown control of this NatCombo, adding styles, look&amp;feel and
 	 * needed listeners for the control only.
 	 */
 	protected void createDropdownControl() {
@@ -724,9 +724,7 @@ public class NatCombo extends Composite {
 	 * The text control of this NatCombo will also be updated with the new
 	 * selected values.
 	 *
-	 * @param indices the indices of the items to select
-	 * 
-	 * @see List#setSelection(int[])
+	 * @param items the items to select
 	 */
 	public void setSelection(String[] items) {
 		String textValue = ""; //$NON-NLS-1$
@@ -777,15 +775,15 @@ public class NatCombo extends Composite {
 	 * 
 	 * @see List#select(int[])
 	 */
-	public void select(int[] indeces) {
+	public void select(int[] indices) {
 		if (!this.dropdownList.isDisposed()) {
-			this.dropdownList.select(indeces);
+			this.dropdownList.select(indices);
 			this.text.setText(getTransformedTextForSelection());
 		} else {
-			String[] selectedItems = new String[indeces.length];
-			for (int i = 0; i < indeces.length; i++) {
-				if (indeces[i] >= 0) {
-					selectedItems[i] = this.items[indeces[i]];
+			String[] selectedItems = new String[indices.length];
+			for (int i = 0; i < indices.length; i++) {
+				if (indices[i] >= 0) {
+					selectedItems[i] = this.items[indices[i]];
 				}
 			}
 			this.text.setText(getTransformedText(selectedItems));

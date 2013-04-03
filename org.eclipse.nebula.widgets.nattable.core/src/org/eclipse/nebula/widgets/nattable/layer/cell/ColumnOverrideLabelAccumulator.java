@@ -97,7 +97,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 
 	/**
 	 * Load the overrides state from the given properties file.
-	 * @see CellOverrideLabelAccumulator#saveState() 
+	 * @see #saveState(String, Properties)
 	 */
 	public void loadState(String prefix, Properties properties) {
 		Set<Object> keySet = properties.keySet();

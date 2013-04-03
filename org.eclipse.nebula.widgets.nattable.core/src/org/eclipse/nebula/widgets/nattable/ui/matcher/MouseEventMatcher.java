@@ -46,8 +46,8 @@ public class MouseEventMatcher implements IMouseEventMatcher {
 	/**
 	 * Constructor
 	 * @param stateMask @see "org.eclipse.swt.events.MouseEvent.stateMask"
-	 * @param eventRegion {@linkplain org.eclipse.nebula.widgets.nattable.grid.GridRegionEnum}
-	 * @param button @see "org.eclipse.swt.events.MouseEvent.button"
+	 * @param eventRegion {@linkplain org.eclipse.nebula.widgets.nattable.grid.GridRegion}
+	 * @param button @see org.eclipse.swt.events.MouseEvent#button
 	 *  	{@link MouseEventMatcher#LEFT_BUTTON}, {@link MouseEventMatcher#RIGHT_BUTTON}
 	 *  	can be used for convenience
 	 */

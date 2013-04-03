@@ -480,7 +480,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
 	/**
 	 * Set if the text should be rendered strikethrough or not.
-	 * @param underline <code>true</code> if the text should be printed strikethrough,
+	 * @param strikethrough <code>true</code> if the text should be printed strikethrough,
 	 * 			<code>false</code> if not
 	 */
 	public void setStrikethrough(boolean strikethrough) {

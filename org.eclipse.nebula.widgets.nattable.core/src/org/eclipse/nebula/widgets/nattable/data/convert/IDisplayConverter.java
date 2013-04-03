@@ -25,27 +25,27 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 public interface IDisplayConverter {
 
 	/**
-	 * Convert backing data value -> value to be displayed
+	 * Convert backing data value to value to be displayed
 	 * Typically converted to a String for display.
 	 */
 	public Object canonicalToDisplayValue(Object canonicalValue);
 
 	/**
-	 * Convert from display value -> value in the backing data structure
+	 * Convert from display value to value in the backing data structure
 	 * NOTE: The type the display value is converted to <i>must</i> match the type
 	 * in the setter of the backing bean/row object
 	 */
 	public Object displayToCanonicalValue(Object displayValue);
 
 	/**
-	 * Convert backing data value -> value to be displayed
+	 * Convert backing data value to value to be displayed
 	 * Typically converted to a String for display.
 	 * Use this method for contextual conversion.
 	 */
 	public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue);
 	
 	/**
-	 * Convert from display value -> value in the backing data structure
+	 * Convert from display value to value in the backing data structure
 	 * NOTE: The type the display value is converted to <i>must</i> match the type
 	 * in the setter of the backing bean/row object
 	 * Use this method for contextual conversion.

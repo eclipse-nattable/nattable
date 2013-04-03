@@ -412,7 +412,7 @@ public class CompositeLayer extends AbstractLayer {
 
 	/**
 	 * Get the <i>row</i> position relative to the layer the containing coordinate y.
-	 * @param x Mouse event Y position.
+	 * @param y Mouse event Y position.
 	 */
     public int getRowPositionByY(int y) {
     	int layoutY = getLayoutYByPixelY(y);

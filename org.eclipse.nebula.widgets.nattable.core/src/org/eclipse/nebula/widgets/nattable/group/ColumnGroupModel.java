@@ -151,7 +151,7 @@ public class ColumnGroupModel implements IPersistable {
 	/**
 	 * Creates the column group if one does not exist with the given name
 	 * and adds the column indexes to it.
-	 * @see ColumnGroupModel#insertColumnIndexes(String, int...);
+	 * @see #insertColumnIndexes(String, int[])
 	 */
 	public void addColumnsIndexesToGroup(String colGroupName, int... bodyColumnIndexs) {
 		if (getColumnGroupByName(colGroupName) == null) {
@@ -165,7 +165,7 @@ public class ColumnGroupModel implements IPersistable {
 	/**
 	 * This method will add column index(s) to an existing group
 	 * @param colGroupName to add the indexes to
-	 * @param columnIndexToInsert
+	 * @param columnIndexesToInsert
 	 * @return FALSE if:
 	 * 		The column group is frozen
 	 * 		Index is already s part of a column group
@@ -216,7 +216,7 @@ public class ColumnGroupModel implements IPersistable {
 	 * This method will add static column index(s) to an existing group
 	 * 
 	 * @param colGroupName to add the indexes to
-	 * @param columnIndexToInsert
+	 * @param columnIndexesToInsert
 	 */
 	public void insertStaticColumnIndexes(String colGroupName, int... columnIndexesToInsert) {
 		
@@ -344,7 +344,7 @@ public class ColumnGroupModel implements IPersistable {
 	}
 
 	/**
-	 * @param columnIndex
+	 * @param bodyColumnIndex
 	 * @return The position of the index within the column group
 	 */
 	public int getColumnGroupPositionFromIndex(int bodyColumnIndex) {

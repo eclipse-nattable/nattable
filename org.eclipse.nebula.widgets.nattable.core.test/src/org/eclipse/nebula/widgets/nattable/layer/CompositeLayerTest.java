@@ -33,7 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @see {@link CompositeLayerFixture} for the layout of columns/rows.
+ * @see org.eclipse.nebula.widgets.nattable.test.fixture.layer.CompositeLayerFixture for the layout of columns/rows.
  */
 public class CompositeLayerTest {
 

@@ -10,8 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit;
 
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
@@ -79,7 +81,7 @@ public interface EditConfigAttributes {
 	 * The configuration attribute to specify if cell editors should be opened inline or in a dialog.
 	 * If this configuration is not set, the editors will open inline, unless the editors themself
 	 * specify different behaviour.
-	 * @see ICellEditor#openInline() 
+	 * @see ICellEditor#openInline(IConfigRegistry configRegistry, List configLabels) 
 	 */
 	public static final ConfigAttribute<Boolean> OPEN_IN_DIALOG = new ConfigAttribute<Boolean>();
 

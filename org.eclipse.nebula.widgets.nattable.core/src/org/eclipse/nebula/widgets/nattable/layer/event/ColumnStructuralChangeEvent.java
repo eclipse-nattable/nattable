@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Event indicating a change in the structure of the columns. 
- * This event carried ColumnDiffs (Collection<StructuralDiff>) indicating the columns which have changed. 
+ * This event carried ColumnDiffs (Collection&lt;StructuralDiff&gt;) indicating the columns which have changed. 
  */
 public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEvent implements IStructuralChangeEvent {
 

@@ -17,13 +17,13 @@ import org.eclipse.swt.events.MouseEvent;
 
 /**
  * Specialisation of CellSelectionDragMode that is used in the context of editing.
- * If a drag&drop operation is executed on the same cell, the corresponding editor
+ * If a drag&amp;drop operation is executed on the same cell, the corresponding editor
  * will be activated, just as if you performed a click into that cell.
  * <p>
- * This is needed to treat minimal (not intended) drag&drop operations like clicks.
+ * This is needed to treat minimal (not intended) drag&amp;drop operations like clicks.
  * It sometimes happens that on performing a click, the mouse moves a bit. So between
  * mouseDown and mouseUp there is a movement registered, so it is not interpreted as
- * a click anymore, but as a drag&drop operation. With this implementation registered
+ * a click anymore, but as a drag&amp;drop operation. With this implementation registered
  * the described behaviour is avoided.
  */
 public class CellEditDragMode extends CellSelectionDragMode {

@@ -101,13 +101,13 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
 	}
 	
 	/**
-	 * Searches the foreground color to be used for gradient sweeping. First checks the {@link ConfigRegistry} if there
+	 * Searches the foreground color to be used for gradient sweeping. First checks the {@link org.eclipse.nebula.widgets.nattable.config.ConfigRegistry} if there
 	 * is a value for the attribute {@link CellStyleAttributes#GRADIENT_FOREGROUND_COLOR} is registered. If there is one
 	 * this value will be returned, if not it is checked if there is a value registered for {@link CellStyleAttributes#FOREGROUND_COLOR}
 	 * and returned. If there is no value registered for any of these attributes, <code>null</code> will be returned which
 	 * will skip the painting.
-	 * @param cell The {@link LayerCell} for which the style attributes should be retrieved out of the {@link ConfigRegistry}
-	 * @param configRegistry The {@link ConfigRegistry} to retrieve the attribute values from.
+	 * @param cell The {@link org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell} for which the style attributes should be retrieved out of the {@link org.eclipse.nebula.widgets.nattable.config.ConfigRegistry}
+	 * @param configRegistry The {@link org.eclipse.nebula.widgets.nattable.config.ConfigRegistry} to retrieve the attribute values from.
 	 * @return The {@link Color} to use as foreground color of the gradient sweeping or <code>null</code> if none was configured.
 	 */
 	protected Color getForeGroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
@@ -116,13 +116,13 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
 	}
 	
 	/**
-	 * Searches the background color to be used for gradient sweeping. First checks the {@link ConfigRegistry} if there
+	 * Searches the background color to be used for gradient sweeping. First checks the {@link org.eclipse.nebula.widgets.nattable.config.ConfigRegistry} if there
 	 * is a value for the attribute {@link CellStyleAttributes#GRADIENT_BACKGROUND_COLOR} is registered. If there is one
 	 * this value will be returned, if not it is checked if there is a value registered for {@link CellStyleAttributes#BACKGROUND_COLOR}
 	 * and returned. If there is no value registered for any of these attributes, <code>null</code> will be returned which
 	 * will skip the painting.
-	 * @param cell The {@link LayerCell} for which the style attributes should be retrieved out of the {@link ConfigRegistry}
-	 * @param configRegistry The {@link ConfigRegistry} to retrieve the attribute values from.
+	 * @param cell The {@link org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell} for which the style attributes should be retrieved out of the {@link org.eclipse.nebula.widgets.nattable.config.ConfigRegistry}
+	 * @param configRegistry The {@link org.eclipse.nebula.widgets.nattable.config.ConfigRegistry} to retrieve the attribute values from.
 	 * @return The {@link Color} to use as background color of the gradient sweeping or <code>null</code> if none was configured.
 	 */
 	protected Color getBackgroundColour(ILayerCell cell, IConfigRegistry configRegistry) {

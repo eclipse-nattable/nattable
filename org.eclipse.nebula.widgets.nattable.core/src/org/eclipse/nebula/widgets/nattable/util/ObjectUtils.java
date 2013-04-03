@@ -25,7 +25,7 @@ public class ObjectUtils {
 
 	/**
 	 * Transfers the iterator to an unmodifiable collection.
-	 * @return Contents of the Iterator<Cell> as a Collection.
+	 * @return Contents of the Iterator&lt;Cell&gt; as a Collection.
 	 */
 	public static <T>Collection<T> asCollection(Iterator<T> iterator) {
 		Collection<T> collection = new ArrayList<T>();
@@ -104,7 +104,7 @@ public class ObjectUtils {
 	}
 
 	/**
-	 * @return TRUE if string != null && string.length() > 0
+	 * @return TRUE if string != null &amp;&amp; string.length() &gt; 0
 	 */
 	public static <T> boolean isNotEmpty(String string) {
 		return string != null && string.length() > 0;

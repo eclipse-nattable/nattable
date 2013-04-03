@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.reorder.config;
 import org.eclipse.nebula.widgets.nattable.config.AggregateConfiguration;
 
 /**
- * Added by the {@link RowReorderLayer}
+ * Added by the {@link org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer}
  */
 public class DefaultRowReorderLayerConfiguration extends AggregateConfiguration {
 

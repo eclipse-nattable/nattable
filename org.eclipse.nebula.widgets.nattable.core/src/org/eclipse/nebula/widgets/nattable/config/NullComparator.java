@@ -18,8 +18,8 @@ import java.util.Comparator;
  * If a null value is set in the {@link IConfigRegistry} it will attempt to find
  * other matching values.
  * This comparator can be set in the {@link ConfigRegistry} to indicate that the column can not be sorted.
- *
- * @see SortableGridExample
+ * <p>
+ * See SortableGridExample
  */
 public class NullComparator implements Comparator<Object>, Serializable {
 

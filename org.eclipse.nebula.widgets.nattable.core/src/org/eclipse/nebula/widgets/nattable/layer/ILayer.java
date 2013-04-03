@@ -45,16 +45,16 @@ import org.eclipse.swt.graphics.Rectangle;
  * </p>
  * <pre>
  * Hide Layer C
- * 0 1 2 3 4 <- column positions
- * 1 0 3 4 5 <- column indexes
+ * 0 1 2 3 4 &lt;- column positions
+ * 1 0 3 4 5 &lt;- column indexes
  *
  * Reorder Layer B
- * 0 1 2 3 4 5 <- column positions
- * 2 1 0 3 4 5 <- column indexes
+ * 0 1 2 3 4 5 &lt;- column positions
+ * 2 1 0 3 4 5 &lt;- column indexes
  *
  * Data Layer A
- * 0 1 2 3 4 5 <- column positions
- * 0 1 2 3 4 5 <- column indexes
+ * 0 1 2 3 4 5 &lt;- column positions
+ * 0 1 2 3 4 5 &lt;- column indexes
  * </pre>
  * <p>
  * In the above example, Hide Layer C is stacked on top of Reorder Layer B, which is in turn stacked on top of Data
@@ -67,6 +67,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * body layer, column header layer, row header layer, and corner layer:
  * </p>
  * <table border=1>
+ *   <caption></caption>
  *   <tr><td>corner</td><td>column header</td></tr>
  *   <tr><td>row header</td><td>body</td></tr>
  * </table>

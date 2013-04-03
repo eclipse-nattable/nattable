@@ -469,13 +469,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * This method will add the indexes of the column which fit in the available
 	 * view port width. Every time a column is added, the available width is
 	 * reduced by the width of the added column.
-	 *
-	 * @param availableWidth
-	 * @param displayableColumns
-	 *            all indexes
-	 * @param columnIndex
-	 *            to try and add to the displayable columns
-	 * @return
 	 */
 	protected void recalculateAvailableWidthAndColumnIndexes() {
 		int availableWidth = getClientAreaWidth();
@@ -563,7 +556,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	/**
-	 * @see {@link #moveColumnPositionIntoViewport(int, boolean)}
+	 * @see #moveColumnPositionIntoViewport(int, boolean)
 	 */
 	public void moveRowPositionIntoViewport(int scrollableRowPosition, boolean forceEntireCellIntoViewport) {
 		ILayer underlyingLayer = getUnderlyingLayer();
@@ -687,7 +680,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	/**
-	 * @see #adjustRowOrigin()
+	 * @see #adjustRowOrigin(int)
 	 */
 	protected int adjustColumnOrigin(int originColumnPosition) {
 		if (getColumnCount() == 0) {

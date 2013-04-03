@@ -120,7 +120,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	}
 	
 	/**
-	 * Set up a threshold matcher for tokens like '>20', '<=10' etc.
+	 * Set up a threshold matcher for tokens like '&gt;20', '&lt;=10' etc.
 	 * @param columnIndex of the column for which the matcher editor is being set up
 	 */
 	protected ThresholdMatcherEditor<T, Object> getThresholdMatcherEditor(Integer columnIndex, Object threshold, Comparator<Object> comparator, Function<T, Object> columnValueProvider, MatchType matchOperation) {

@@ -28,7 +28,8 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
  * for the column group to be reordered to.
  * <p>
  * Example, a column group cannot only be reordered to be inside another column group.
- * @see ColumnGroupHeaderReorderDragModeTest
+ * <p>
+ * See ColumnGroupHeaderReorderDragModeTest
  */
 public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 

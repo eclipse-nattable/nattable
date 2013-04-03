@@ -81,13 +81,8 @@ public interface IRowGroup<T> {
 	 * <p>
 	 * Adds the row into the group.
 	 * </p>
-	 * <p>
-	 * It's position will be left as -1 and must be set externally using the
-	 * {@link RowGroupModel#reindexRow()} method.
-	 * </p>
 	 * 
-	 * @param row
-	 *            The row T to be add.
+	 * @param row the row to be added
 	 */
 	void addMemberRow(final T row);
 	

@@ -23,7 +23,7 @@ import org.eclipse.swt.events.KeyEvent;
  * are able to be populated to an editor like e.g. the question mark. The
  * following regular expression will be used by this matcher:
  * 
- * <b>[\\.:,;\\-_#\'+*~!?§$%&/()\\[\\]\\{\\}=\\\\\"]</b>
+ * <b>[\\.:,;\\-_#\'+*~!?§$%&amp;/()\\[\\]\\{\\}=\\\\\"]</b>
  */
 public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
 

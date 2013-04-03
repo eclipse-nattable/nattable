@@ -441,7 +441,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 *
 	 * @param index the index of the item to select
 	 * 
-	 * @see List#select(int)
+	 * @see org.eclipse.swt.widgets.List#select(int)
 	 */
 	public void select(int index){
 		this.combo.select(index);
@@ -459,10 +459,10 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 *
 	 * @param indices the array of indices for the items to select
 	 * 
-	 * @see List#select(int[])
+	 * @see org.eclipse.swt.widgets.List#select(int[])
 	 */
-	public void select(int[] index){
-		this.combo.select(index);
+	public void select(int[] indices){
+		this.combo.select(indices);
 	}
 
 

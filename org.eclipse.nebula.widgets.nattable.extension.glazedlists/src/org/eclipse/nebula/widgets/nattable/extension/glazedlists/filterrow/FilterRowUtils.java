@@ -60,8 +60,7 @@ public class FilterRowUtils {
 	
 	/**
 	 * Parses the text entered in the filter row. The text is parsed to figure out the
-	 * type of match operation (<, > etc.) and the value next to it.
-	 * @param textMatchingMode 
+	 * type of match operation (&lt;, &gt; etc.) and the value next to it.
 	 *
 	 * @param string entered by the user in the filter row text box
 	 */

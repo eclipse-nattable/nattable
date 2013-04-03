@@ -359,8 +359,6 @@ public class CellSelectionTest {
 	/**
 	 * If a range of cells is selected - clear selection and move anchor
 	 *    to the next cell in the direction moved
-	 *
-	 * @see NTBL-252 (Left Click + None)
 	 */
 	@Test
 	public void moveCellWhenARangeOfCellsIsSelected() throws Exception {

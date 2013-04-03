@@ -15,8 +15,8 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 /**
  * Resolves the configuration/config label(s) which are tied to a given cell.
- * Various attributes can be registered in the {@link IConfigRegistry} against this</br>
- * label</br> 
+ * Various attributes can be registered in the {@link IConfigRegistry} against this
+ * label
  */
 public interface IConfigLabelAccumulator {
 	

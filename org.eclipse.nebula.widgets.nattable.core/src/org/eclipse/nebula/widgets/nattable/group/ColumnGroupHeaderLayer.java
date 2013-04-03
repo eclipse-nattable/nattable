@@ -36,10 +36,10 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 /**
  * Adds the Column grouping functionality to the column headers.
- * Also persists the state of the column groups when {@link NatTable#saveState()} is invoked.
+ * Also persists the state of the column groups when {@link NatTable#saveState(String, Properties)} is invoked.
  * 
  * Internally uses the {@link ColumnGroupModel} to track the column groups.
- * @see ColumnGroupGridExample
+ * See ColumnGroupGridExample
  */
 public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
@@ -264,7 +264,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 * Calculates the span of a cell in a Column Group.
 	 * Takes into account collapsing and hidden columns in the group.
 	 *
-	 * @param selectionLayerColumnPosition of any column belonging to the group
+	 * @param columnPosition position of any column belonging to the group
 	 */
 	protected int getColumnSpan(int columnPosition) {
 		int columnIndex = getColumnIndexByPosition(columnPosition);
@@ -368,7 +368,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	}
 
 	/**
-	 * @see ColumnGroupModel#setGroupUnBreakable(int)
+	 * @see ColumnGroup#setUnbreakable(boolean)
 	 */
 	public void setGroupUnbreakable(int columnIndex){
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);

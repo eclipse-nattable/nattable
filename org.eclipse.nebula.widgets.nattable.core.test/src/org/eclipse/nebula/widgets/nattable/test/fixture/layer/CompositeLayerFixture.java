@@ -15,21 +15,23 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 
 /**
  * Fixture for the CompositeLayer with 2 rows and 2 columns
- *
- * DO NOT FORMAT !
- *
- * 			   |  |
- * 		       |  |
- * 	Corner     7  |   Col Header
- *   	       |  |
- *  	  	   v  |      |<-Hidden->
+ * 
+ * <pre>
+ * {@code
+ *             |  |
+ *             |  |
+ *  Corner     7  |   Col Header
+ *             |  |
+ *             v  |      |<-Hidden->
  *  --------------|------|-----------
  *  <---- 5 ----->|<-2-->|<--3----->
- * 			   ^  |
- * 		       |  |<---- 5 -------->
- * 	Row	       7  |   Body
+ *             ^  |
+ *             |  |<---- 5 -------->
+ *  Row        7  |   Body
  *  Header     |  |
- *  	  	   v  |
+ *             v  |
+ * }
+ * </pre>
  */
 public class CompositeLayerFixture extends CompositeLayer {
 

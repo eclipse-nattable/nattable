@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * 
  * <strong>Note that this command takes a Grid PositionCoordinate describing a cell on the screen on which the user has 
  * clicked. Do not pass it anything else or you will introduce very subtle and very difficult to debug bugs into the 
- * code and then we will have to pay you a visit on one random Sunday morning when you least expect it.<strong>
+ * code and then we will have to pay you a visit on one random Sunday morning when you least expect it.</strong>
  */
 public class SelectCellCommand extends AbstractPositionCommand {
     

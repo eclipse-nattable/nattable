@@ -21,7 +21,8 @@ public class PositionUtil {
 
 	/**
 	 * Finds contiguous numbers in a group of numbers.
-	 * @see ColumnChooserDialogTest#getGroupedByContiguous()
+	 * <p>
+	 * See ColumnChooserDialogTest#getGroupedByContiguous()
 	 */
 	public static List<List<Integer>> getGroupedByContiguous(Collection<Integer> numberCollection) {
 		List<Integer> numbers = new ArrayList<Integer>(numberCollection);

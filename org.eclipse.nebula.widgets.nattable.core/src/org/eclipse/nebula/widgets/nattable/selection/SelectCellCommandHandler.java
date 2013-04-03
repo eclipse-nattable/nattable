@@ -37,7 +37,6 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 
 	/**
 	 * Toggles the selection state of the given row and column.
-	 * @return <code>false</code> if the cell was unselected.
 	 */
 	protected void toggleCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask, boolean forcingEntireCellIntoViewport) {
 		boolean selectCell = true;

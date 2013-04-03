@@ -19,8 +19,6 @@ import org.eclipse.swt.events.MouseEvent;
 /**
  * Event fired when the <i>ctrl</i> key is pressed and the row header is clicked.
  * Note: Fires command in NatTable coordinates.
- * 
- * @see NatTable#configureMouseBindings()
  */
 public class ViewportSelectRowAction implements IMouseAction {
 	

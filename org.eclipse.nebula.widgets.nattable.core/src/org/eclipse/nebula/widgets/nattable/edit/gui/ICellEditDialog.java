@@ -12,11 +12,9 @@ package org.eclipse.nebula.widgets.nattable.edit.gui;
 
 import java.util.Map;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
 /**
@@ -29,37 +27,37 @@ public interface ICellEditDialog {
 
 	/**
 	 * Key to specify a custom shell title of the dialog.
-	 * The value needs to be a {@link String}.
+	 * The value needs to be a {@link java.lang.String}.
 	 */
 	String DIALOG_SHELL_TITLE = "DIALOG_SHELL_TITLE"; //$NON-NLS-1$
 	/**
 	 * Key to specify a custom shell icon of the dialog.
-	 * The value needs to be an {@link Image}.
+	 * The value needs to be an {@link org.eclipse.swt.graphics.Image}.
 	 */
 	String DIALOG_SHELL_ICON = "DIALOG_SHELL_ICON"; //$NON-NLS-1$
 	/**
 	 * Key to specify the location where the dialog should be shown. 
-	 * Will be interpreted by {@link Dialog#getInitialLocation(Point)}
-	 * The value needs to be a {@link Point}.
+	 * Will be interpreted by {@CellEditDialog#getInitialLocation(Point)}
+	 * The value needs to be a {@link org.eclipse.swt.graphics.Point}.
 	 */
 	String DIALOG_SHELL_LOCATION = "DIALOG_SHELL_LOCATION"; //$NON-NLS-1$
 	/**
 	 * Key to specify the size of the dialog. 
-	 * Will be interpreted by {@link Dialog#getInitialSize(Point)}
-	 * The value needs to be a {@link Point}.
+	 * Will be interpreted by {@link CellEditDialog#getInitialSize()}
+	 * The value needs to be a {@link org.eclipse.swt.graphics.Point}.
 	 */
 	String DIALOG_SHELL_SIZE = "DIALOG_SHELL_SIZE"; //$NON-NLS-1$
 	/**
 	 * Key to specify whether the dialog should be resizable or not.
-	 * Will not be interpreted by {@link Dialog#isResizable(Point)} because it is called
+	 * Will not be interpreted by {@link CellEditDialog#isResizable()} because it is called
 	 * on instantiating the dialog in the constructor of the super class. It will modify
 	 * the set shell style bits instead.
-	 * The value needs to be a {@link Boolean}.
+	 * The value needs to be a {@link java.lang.Boolean}.
 	 */
 	String DIALOG_SHELL_RESIZABLE = "DIALOG_SHELL_RESIZABLE"; //$NON-NLS-1$
 	/**
 	 * Key to specify a custom message for the to be shown in the dialog.
-	 * The value needs to be a {@link String}.
+	 * The value needs to be a {@link java.lang.String}.
 	 */
 	String DIALOG_MESSAGE = "DIALOG_MESSAGE"; //$NON-NLS-1$
 
@@ -71,7 +69,7 @@ public interface ICellEditDialog {
 	
 	/**
 	 * @return The edit type that has impact on how the set value will be updated to 
-	 * 			the data model. By default {@link EditTypeEnum#SET} is returned, which
+	 * 			the data model. By default {@link org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum#SET} is returned, which
 	 * 			will simply set the committed value to the data model. Every other
 	 * 			edit type will do some calculation based on the committed value and 
 	 * 			the current value in the data model.
@@ -104,7 +102,7 @@ public interface ICellEditDialog {
 	 * framework at creation time of the dialog via the {@link CellEditDialogFactory}. 
 	 * <p>
 	 * The map containing the settings can be registered to the {@link IConfigRegistry} for 
-	 * the key {@link EditConfigAttributes#EDIT_DIALOG_SETTINGS}. The keys that are valid
+	 * the key {@link org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes#EDIT_DIALOG_SETTINGS}. The keys that are valid
 	 * for this map are specified below.
 	 * 
 	 * @param editDialogSettings Map containing the settings to customize the edit dialog 
