@@ -36,6 +36,7 @@ public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 
 	/**
 	 * Hide the given {@link ColumnEntry} (ies) i.e. do not show them in the viewer. 
+	 * @param entriesToHide the entries to hide
 	 */
 	public void hideEntries(List<ColumnEntry> entriesToHide) {
 		for (ColumnEntry hiddenColumnEntry : entriesToHide) {

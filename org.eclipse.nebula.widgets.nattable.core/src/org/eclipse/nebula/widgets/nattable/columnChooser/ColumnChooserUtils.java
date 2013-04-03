@@ -60,6 +60,9 @@ public class ColumnChooserUtils {
 	}
 
 	/**
+	 * @param columnHeaderLayer
+	 * @param columnHeaderDataLayer
+	 * @param columnIndex
 	 * @return The renamed column header name for the given column index (if the column has been renamed),
 	 * 	the original column name otherwise.
 	 */
