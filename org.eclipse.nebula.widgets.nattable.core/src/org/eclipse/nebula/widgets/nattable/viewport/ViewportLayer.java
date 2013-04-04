@@ -159,6 +159,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	// Origin
 	
+	private Point getOrigin() {
+		return viewportOff ? minimumOrigin : origin;
+	}
+	
 //	public int getOriginColumnPosition() {
 //		return viewportOff ? minimumOriginPosition.columnPosition : originPosition.columnPosition;
 //	}
@@ -283,7 +287,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	public int getColumnPositionByIndex(int columnIndex) {
-		return scrollableLayer.getColumnPositionByIndex(columnIndex) - getOriginColumnPosition();
+//		return scrollableLayer.getColumnPositionByIndex(columnIndex) - getOriginColumnPosition();
+		return scrollableLayer.getColumnPositionByIndex(columnIndex) - scrollableLayer.getColumnPositionByX(getOrigin().x);
 	}
 
 	@Override
@@ -382,7 +387,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	public int getRowPositionByIndex(int rowIndex) {
-		return scrollableLayer.getRowPositionByIndex(rowIndex) - getOriginRowPosition();
+//		return scrollableLayer.getRowPositionByIndex(rowIndex) - getOriginRowPosition();
+		return scrollableLayer.getRowPositionByIndex(rowIndex) - scrollableLayer.getRowPositionByY(getOrigin().y);
 	}
 
 	@Override
