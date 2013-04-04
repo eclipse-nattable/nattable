@@ -38,8 +38,8 @@ import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.FileDialogCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
+import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -56,7 +56,6 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tooltip.NatTableContentTooltip;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -90,6 +89,7 @@ public class EditorExample extends AbstractNatExample {
 	public static String COLUMN_TWELVE_LABEL = "ColumnTwelveLabel";
 	public static String COLUMN_THIRTEEN_LABEL = "ColumnThirteenLabel";
 	
+	@Override
 	public Control createExampleControl(Composite parent) {
 		//property names of the Person class
 		String[] propertyNames = {"firstName", "lastName", "password", "description", "age", "money",
@@ -156,6 +156,7 @@ public class EditorExample extends AbstractNatExample {
 
 class EditorConfiguration extends AbstractRegistryConfiguration  {
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, 
@@ -459,8 +460,8 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 	 */
 	private void registerColumnTenComboBox(IConfigRegistry configRegistry) {
 		//register a combobox for the city names
-		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-				Arrays.asList(PersonService.getCityNames()), -1, true);
+		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(PersonService.getCityNames()), -1);
+		comboBoxCellEditor.setFreeEdit(true);
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITOR, 
 				comboBoxCellEditor, 
@@ -484,8 +485,9 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 	 */
 	private void registerColumnElevenComboBox(IConfigRegistry configRegistry) {
 		//register a combobox for the city names
-		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-				Arrays.asList(PersonService.getFoodList()), NatCombo.DEFAULT_NUM_OF_VISIBLE_ITEMS, false, true);
+		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(PersonService.getFoodList()));
+		comboBoxCellEditor.setMultiselect(true);
+		comboBoxCellEditor.setUseCheckbox(true);
 		comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITOR, 
@@ -505,8 +507,9 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 	 */
 	private void registerColumnTwelveComboBox(IConfigRegistry configRegistry) {
 		//register a combobox for the city names
-		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-				Arrays.asList(PersonService.getDrinkList()), -1, true, true);
+		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(PersonService.getDrinkList()), -1);
+		comboBoxCellEditor.setFreeEdit(true);
+		comboBoxCellEditor.setMultiselect(true);
 		comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITOR, 

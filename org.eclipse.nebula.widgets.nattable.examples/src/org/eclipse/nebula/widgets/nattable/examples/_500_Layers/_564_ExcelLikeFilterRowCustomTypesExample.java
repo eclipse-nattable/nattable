@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
@@ -31,16 +31,16 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConv
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples._500_Layers._562_FilterRowCustomTypesExample.MyRowObject.Gender;
+import org.eclipse.nebula.widgets.nattable.examples._500_Layers._564_ExcelLikeFilterRowCustomTypesExample.MyRowObject.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
-import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
-import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterIconPainter;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -60,6 +60,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -69,24 +70,24 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 /**
- * Simple example showing how to add the filter row to the layer
- * composition of a grid.
+ * Example showing how to add the filter row to the layer
+ * composition of a grid that looks like the Excel filter.
  * 
  * @author Dirk Fauth
  *
  */
-public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
+public class _564_ExcelLikeFilterRowCustomTypesExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _562_FilterRowCustomTypesExample());
+		StandaloneNatExampleRunner.run(new _564_ExcelLikeFilterRowCustomTypesExample());
 	}
 
 	@Override
 	public String getDescription() {
-		return "This example shows the usage of the filter row within a grid.";
+		return "This example shows the usage of the filter row within a grid that looks like the Excel"
+				+ " filter row.";
 	}
 	
 	@Override
@@ -111,21 +112,24 @@ public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
 				new BodyLayerStack<MyRowObject>(createMyRowObjects(50), columnPropertyAccessor);
 		//add a label accumulator to be able to register converter
 		bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
-
+		
 		//build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-		//	Note: The column header layer is wrapped in a filter row composite.
-		//	This plugs in the filter row functionality
-		CompositeMatcherEditor<MyRowObject> autoFilterMatcherEditor = new CompositeMatcherEditor<MyRowObject>();
-		bodyLayerStack.getFilterList().setMatcherEditor(autoFilterMatcherEditor);
 		
-		FilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer =
-			new FilterRowHeaderComposite<MyRowObject>(
-					new DefaultGlazedListsFilterStrategy<MyRowObject>(autoFilterMatcherEditor, columnPropertyAccessor, configRegistry),
-					columnHeaderLayer, columnHeaderDataLayer.getDataProvider(), configRegistry
-			);
+		//example on how to configure a different icon if a filter is applied
+		ComboBoxFilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer =
+				new ComboBoxFilterRowHeaderComposite<MyRowObject>(
+						bodyLayerStack.getFilterList(), bodyLayerStack.getBodyDataLayer(), columnPropertyAccessor, 
+						columnHeaderLayer, columnHeaderDataProvider, configRegistry, false);
+		final IComboBoxDataProvider comboBoxDataProvider = filterRowHeaderLayer.getComboBoxDataProvider();
+		filterRowHeaderLayer.addConfiguration(new ComboBoxFilterRowConfiguration() {
+			{
+				this.cellEditor = new FilterRowComboBoxCellEditor(comboBoxDataProvider, 5);
+				this.filterIconPainter = new ComboBoxFilterIconPainter(comboBoxDataProvider, GUIHelper.getImage("filter"), null);
+			}
+		});
 		
 		//build the row header layer
 		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
@@ -147,9 +151,8 @@ public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
 		//DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
 		natTable.setConfigRegistry(configRegistry);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		//add filter row configuration
-		natTable.addConfiguration(new FilterRowConfiguration());
 		natTable.addConfiguration(new MyRowObjectTableConfiguration());
+		natTable.addConfiguration(new FilterRowConfiguration());
 		
 		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
 			@Override
@@ -157,6 +160,17 @@ public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
 				return super.createCornerMenu(natTable)
 						.withStateManagerMenuItemProvider();
 			}
+		});
+		
+		natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+			@Override
+			public void configureRegistry(IConfigRegistry configRegistry) {
+				configRegistry.registerConfigAttribute(
+						EditConfigAttributes.CELL_EDITABLE_RULE, 
+						IEditableRule.ALWAYS_EDITABLE);
+			}
+			
 		});
 		
 		natTable.configure();
@@ -198,7 +212,7 @@ public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
 			
 			//layer for event handling of GlazedLists and PropertyChanges
 			GlazedListsEventLayer<T> glazedListsEventLayer = 
-				new GlazedListsEventLayer<T>(getBodyDataLayer(), filterList);
+				new GlazedListsEventLayer<T>(bodyDataLayer, filterList);
 
 			this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 			ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
@@ -314,26 +328,6 @@ public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
 		@Override
 		public void configureRegistry(IConfigRegistry configRegistry) {
 
-			//register a combo box cell editor for the gender column in the filter row
-			//the label is set automatically to the value of 
-			//FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column position
-			ICellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(Gender.FEMALE, Gender.MALE));
-			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-					comboBoxCellEditor, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
-
-			
-			//register a combo box cell editor for the city column in the filter row
-			//the label is set automatically to the value of 
-			//FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column position
-			comboBoxCellEditor = new ComboBoxCellEditor(possibleCities);
-			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-					comboBoxCellEditor, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
-			
-
 			//register the converters used by the filter logic
 			configRegistry.registerConfigAttribute(
 					FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER, 
@@ -371,34 +365,6 @@ public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
 					new CityDisplayConverter(), 
 					DisplayMode.NORMAL, 
 					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
-
-			//register the matching mode to use
-			configRegistry.registerConfigAttribute(
-					FilterRowConfigAttributes.TEXT_MATCHING_MODE, 
-					TextMatchingMode.EXACT, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 3);
-
-			configRegistry.registerConfigAttribute(
-					FilterRowConfigAttributes.TEXT_MATCHING_MODE, 
-					TextMatchingMode.EXACT, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
-
-			configRegistry.registerConfigAttribute(
-					FilterRowConfigAttributes.TEXT_MATCHING_MODE, 
-					TextMatchingMode.REGULAR_EXPRESSION, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
-		
-			configRegistry.registerConfigAttribute(
-					FilterRowConfigAttributes.TEXT_MATCHING_MODE, 
-					TextMatchingMode.REGULAR_EXPRESSION, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
-		
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.TEXT_DELIMITER, "&"); //$NON-NLS-1$
-
 		}
 
 	}
@@ -511,4 +477,5 @@ public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
 			return name;
 		}
 	}
+
 }

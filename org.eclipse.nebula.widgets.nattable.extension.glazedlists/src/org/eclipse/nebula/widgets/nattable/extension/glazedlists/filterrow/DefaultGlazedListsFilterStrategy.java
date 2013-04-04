@@ -47,8 +47,8 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
 	private static final Log log = LogFactory.getLog(DefaultGlazedListsFilterStrategy.class);
 
-	private final IColumnAccessor<T> columnAccessor;
-	private final IConfigRegistry configRegistry;
+	protected final IColumnAccessor<T> columnAccessor;
+	protected final IConfigRegistry configRegistry;
 	protected final CompositeMatcherEditor<T> matcherEditor;
 	
 
@@ -61,6 +61,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	/**
 	 * Create GlazedLists matcher editors and apply them to facilitate filtering.
 	 */
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
 		try {
@@ -114,8 +115,16 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 		}
 	}
 
-	private String getStringFromColumnObject(final int columnIndex, final Object object) {
-		final IDisplayConverter displayConverter = this.configRegistry.getConfigAttribute(FILTER_DISPLAY_CONVERTER, NORMAL, FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
+	/**
+	 * Converts the object inserted to the filter cell at the given column position to the corresponding String.
+	 * @param columnIndex The column index of the filter cell that should be processed.
+	 * @param object The value set to the filter cell that needs to be converted
+	 * @return The String value for the given filter value.
+	 */
+	protected String getStringFromColumnObject(final int columnIndex, final Object object) {
+		final IDisplayConverter displayConverter = 
+				this.configRegistry.getConfigAttribute(
+						FILTER_DISPLAY_CONVERTER, NORMAL, FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
 		return displayConverter.canonicalToDisplayValue(object).toString();
 	}
 	
@@ -139,6 +148,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	 */
 	protected FunctionList.Function<T, Object> getColumnValueProvider(final int columnIndex) {
 		return new FunctionList.Function<T, Object>() {
+			@Override
 			public Object evaluate(T rowObject) {
 				return columnAccessor.getDataValue(rowObject, columnIndex);
 			}
@@ -162,6 +172,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	 */
 	protected TextFilterator<T> getTextFilterator(final Integer columnIndex, final IDisplayConverter converter) {
 		return new TextFilterator<T>() {
+			@Override
 			public void getFilterStrings(List<String> objectAsListOfStrings, T rowObject) {
 				Object cellData = columnAccessor.getDataValue(rowObject, columnIndex);
 				Object displayValue = converter.canonicalToDisplayValue(cellData);
