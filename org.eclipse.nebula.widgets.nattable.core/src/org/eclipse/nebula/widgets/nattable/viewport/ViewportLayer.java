@@ -10,16 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.ScrollBar;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -49,6 +43,9 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumn
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ScrollEvent;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ViewportEventHandler;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.ScrollBar;
 
 /**
  * Viewport - the visible area of NatTable
@@ -69,8 +66,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	private int savedOriginColumnPosition, savedOriginRowPosition = 0;
 
 	// Cache
-	private List<Integer> cachedColumnIndexOrder;
-	private List<Integer> cachedRowIndexOrder;
+	private int cachedColumnCount = -1;
+	private int cachedRowCount = -1;
 	private int cachedClientAreaWidth = 0;
 	private int cachedClientAreaHeight = 0;
 	private int cachedWidth = -1;
@@ -260,7 +257,19 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		if (viewportOff) {
 			return Math.max(scrollableLayer.getColumnCount() - minimumOriginPosition.columnPosition, 0);
 		} else {
-			return getColumnIndexes().size();
+			if (cachedColumnCount < 0) {
+				int availableWidth = getClientAreaWidth();
+				if (availableWidth >= 0) {
+					
+					if (getOriginColumnPosition() < minimumOriginPosition.columnPosition) {
+						originPosition.columnPosition = minimumOriginPosition.columnPosition;
+					}
+	
+					recalculateAvailableWidthAndColumnCount();
+				}
+			}
+			
+			return cachedColumnCount;
 		}
 	}
 
@@ -289,24 +298,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return underlyingColumnPosition - getOriginColumnPosition();
 	}
 
-	private List<Integer> getColumnIndexes() {
-		
-		if (cachedColumnIndexOrder == null || cachedColumnIndexOrder.size() == 0) {
-			
-			int availableWidth = getClientAreaWidth();
-			if (availableWidth >= 0) {
-				
-				if (getOriginColumnPosition() < minimumOriginPosition.columnPosition) {
-					originPosition.columnPosition = minimumOriginPosition.columnPosition;
-				}
-
-				recalculateAvailableWidthAndColumnIndexes();
-			}
-		}
-
-		return cachedColumnIndexOrder;
-	}
-
 	// Width
 
 	/**
@@ -318,7 +309,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			return scrollableLayer.getWidth() - scrollableLayer.getStartXOfColumnPosition(minimumOriginPosition.columnPosition);
 		}
 		if (cachedWidth < 0) {
-			recalculateAvailableWidthAndColumnIndexes();
+			recalculateAvailableWidthAndColumnCount();
 		}
 		return cachedWidth;
 	}
@@ -360,8 +351,21 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public int getRowCount() {
 		if (viewportOff) {
 			return Math.max(scrollableLayer.getRowCount() - minimumOriginPosition.rowPosition, 0);
+		} else {
+			if (cachedRowCount < 0) {
+				int availableHeight = getClientAreaHeight();
+				if (availableHeight >= 0) {
+					
+					if (getOriginRowPosition() < minimumOriginPosition.rowPosition) {
+						originPosition.rowPosition = minimumOriginPosition.rowPosition;
+					}
+					
+					recalculateAvailableHeightAndRowCount();
+				}
+			}
+			
+			return cachedRowCount;
 		}
-		return getRowIndexes().size();
 	}
 
 	public int getRowPositionByIndex(int rowIndex) {
@@ -389,24 +393,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return underlyingRowPosition - getOriginRowPosition();
 	}
 	
-	private List<Integer> getRowIndexes() {
-		
-		if (cachedRowIndexOrder == null || cachedRowIndexOrder.size() == 0) {
-			
-			int availableHeight = getClientAreaHeight();
-			if (availableHeight >= 0) {
-				
-				if (getOriginRowPosition() < minimumOriginPosition.rowPosition) {
-					originPosition.rowPosition = minimumOriginPosition.rowPosition;
-				}
-				
-				recalculateAvailableHeightAndRowIndexes();
-			}
-		}
-
-		return cachedRowIndexOrder;
-	}
-
 	// Height
 
 	@Override
@@ -415,7 +401,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			return scrollableLayer.getHeight() - scrollableLayer.getStartYOfRowPosition(minimumOriginPosition.rowPosition);
 		}
 		if (cachedHeight < 0) {
-			recalculateAvailableHeightAndRowIndexes();
+			recalculateAvailableHeightAndRowCount();
 		}
 		return cachedHeight;
 	}
@@ -451,7 +437,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * Clear horizontal caches
 	 */
 	public void invalidateHorizontalStructure() {
-		cachedColumnIndexOrder = null;
+		cachedColumnCount = -1;
 		cachedClientAreaWidth = 0;
 		cachedWidth = -1;
 	}
@@ -460,7 +446,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * Clear vertical caches
 	 */
 	public void invalidateVerticalStructure() {
-		cachedRowIndexOrder = null;
+		cachedRowCount = -1;
 		cachedClientAreaHeight = 0;
 		cachedHeight = -1;
 	}
@@ -470,37 +456,36 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * view port width. Every time a column is added, the available width is
 	 * reduced by the width of the added column.
 	 */
-	protected void recalculateAvailableWidthAndColumnIndexes() {
+	protected void recalculateAvailableWidthAndColumnCount() {
 		int availableWidth = getClientAreaWidth();
 		ILayer underlyingLayer = getUnderlyingLayer();
 
 		cachedWidth = 0;
-		cachedColumnIndexOrder = new ArrayList<Integer>();
+		cachedColumnCount = 0;
 
 		for (int columnPosition = getOriginColumnPosition(); columnPosition < underlyingLayer.getColumnCount() && availableWidth > 0; columnPosition++) {
-			int columnIndex = underlyingLayer.getColumnIndexByPosition(columnPosition);
 			int width = underlyingLayer.getColumnWidthByPosition(columnPosition);
 			availableWidth -= width;
 			cachedWidth += width;
-			cachedColumnIndexOrder.add(Integer.valueOf(columnIndex));
+			cachedColumnCount++;
 		}
 
 		originPosition.columnPosition = checkOriginColumnPosition(originPosition.columnPosition);
 	}
 
-	protected void recalculateAvailableHeightAndRowIndexes() {
+	protected void recalculateAvailableHeightAndRowCount() {
 		int availableHeight = getClientAreaHeight();
 		ILayer underlyingLayer = getUnderlyingLayer();
 
 		cachedHeight = 0;
-		cachedRowIndexOrder = new ArrayList<Integer>();
+		cachedRowCount = 0;
 
 		for (int currentPosition = getOriginRowPosition(); currentPosition < underlyingLayer.getRowCount() && availableHeight > 0; currentPosition++) {
 			int rowIndex = underlyingLayer.getRowIndexByPosition(currentPosition);
-			int height = underlyingLayer.getRowHeightByPosition(rowIndex);
+			int height = underlyingLayer.getRowHeightByPosition(rowIndex);  // TODO this looks funny.. shouldn't this be the row position instead?
 			availableHeight -= height;
 			cachedHeight += height;
-			cachedRowIndexOrder.add(Integer.valueOf(rowIndex));
+			cachedRowCount++;
 		}
 
 		originPosition.rowPosition = checkOriginRowPosition(originPosition.rowPosition);
