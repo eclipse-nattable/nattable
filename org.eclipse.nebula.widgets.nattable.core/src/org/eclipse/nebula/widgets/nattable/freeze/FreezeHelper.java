@@ -99,6 +99,6 @@ public class FreezeHelper {
 	 */
 	public static void resetViewport(FreezeLayer freezeLayer, ViewportLayer viewportLayer) {
 		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
-		viewportLayer.resetOrigin(Math.max(0, topLeftPosition.columnPosition), Math.max(0,topLeftPosition.rowPosition));
+		viewportLayer.resetOriginPosition(Math.max(0, topLeftPosition.columnPosition), Math.max(0,topLeftPosition.rowPosition));
 	}
 }

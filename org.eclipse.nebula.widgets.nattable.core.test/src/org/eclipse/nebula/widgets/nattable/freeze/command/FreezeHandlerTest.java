@@ -108,7 +108,7 @@ public class FreezeHandlerTest {
 	@Test
 	public void shouldFreezeAfterScrolling() {
 		// Scroll the viewport to the first column
-		viewportLayer.resetOrigin(0, 0);
+		viewportLayer.resetOriginPosition(0, 0);
 		viewportLayer.setOriginColumnPosition(1);
 		Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 				
@@ -146,7 +146,7 @@ public class FreezeHandlerTest {
 		viewportLayer.addLayerListener(reorderListener);
 
 		// Scroll the viewport to the first column
-		viewportLayer.resetOrigin(0, 0);
+		viewportLayer.resetOriginPosition(0, 0);
 		viewportLayer.setOriginColumnPosition(1);
 		Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 				

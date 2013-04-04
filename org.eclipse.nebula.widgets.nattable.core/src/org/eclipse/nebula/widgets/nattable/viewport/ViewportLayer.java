@@ -63,10 +63,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	private final IUniqueIndexLayer scrollableLayer;
 
 	// The viewport origin, in scrollable position coordinates.
-	private final PositionCoordinate origin = new PositionCoordinate(this, 0, 0);
-	private final PositionCoordinate minimumOrigin = new PositionCoordinate(this, 0, 0);
+	private final PositionCoordinate originPosition = new PositionCoordinate(this, 0, 0);
+	private final PositionCoordinate minimumOriginPosition = new PositionCoordinate(this, 0, 0);
 	private boolean viewportOff = false;
-	private int savedOriginColumn, savedOriginRow = 0;
+	private int savedOriginColumnPosition, savedOriginRowPosition = 0;
 
 	// Cache
 	private List<Integer> cachedColumnIndexOrder;
@@ -109,21 +109,21 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	// Origin
 
 	public int getMinimumOriginColumnPosition() {
-		return minimumOrigin.columnPosition;
+		return minimumOriginPosition.columnPosition;
 	}
 
 	public void setMinimumOriginColumnPosition(int minColumnPosition) {
-		int previousOriginColumnPosition = origin.columnPosition;
+		int previousOriginColumnPosition = originPosition.columnPosition;
 
-		if (previousOriginColumnPosition == minimumOrigin.columnPosition || getOriginColumnPosition() < minColumnPosition) {
-			minimumOrigin.columnPosition = minColumnPosition;
-			origin.columnPosition = minColumnPosition;
+		if (previousOriginColumnPosition == minimumOriginPosition.columnPosition || getOriginColumnPosition() < minColumnPosition) {
+			minimumOriginPosition.columnPosition = minColumnPosition;
+			originPosition.columnPosition = minColumnPosition;
 		} else {
-			origin.columnPosition = getOriginColumnPosition() + minColumnPosition - minimumOrigin.columnPosition;
-			minimumOrigin.columnPosition = minColumnPosition;
+			originPosition.columnPosition = getOriginColumnPosition() + minColumnPosition - minimumOriginPosition.columnPosition;
+			minimumOriginPosition.columnPosition = minColumnPosition;
 		}
 
-		if (origin.columnPosition != previousOriginColumnPosition) {
+		if (originPosition.columnPosition != previousOriginColumnPosition) {
 			invalidateHorizontalStructure();
 		}
 
@@ -131,21 +131,21 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	public int getMinimumOriginRowPosition() {
-		return minimumOrigin.rowPosition;
+		return minimumOriginPosition.rowPosition;
 	}
 
 	public void setMinimumOriginRowPosition(int minRowPosition) {
-		int previousOriginRowPosition = origin.rowPosition;
+		int previousOriginRowPosition = originPosition.rowPosition;
 
 		if (getOriginRowPosition() < minRowPosition) {
-			origin.rowPosition = minRowPosition;
+			originPosition.rowPosition = minRowPosition;
 		} else {
-			origin.rowPosition = getOriginRowPosition() + minRowPosition - minimumOrigin.rowPosition;
+			originPosition.rowPosition = getOriginRowPosition() + minRowPosition - minimumOriginPosition.rowPosition;
 		}
 
-		minimumOrigin.rowPosition = minRowPosition;
+		minimumOriginPosition.rowPosition = minRowPosition;
 
-		if (origin.rowPosition != previousOriginRowPosition) {
+		if (originPosition.rowPosition != previousOriginRowPosition) {
 			invalidateVerticalStructure();
 		}
 
@@ -158,7 +158,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	public int getOriginColumnPosition() {
-		return viewportOff ? minimumOrigin.columnPosition : origin.columnPosition;
+		return viewportOff ? minimumOriginPosition.columnPosition : originPosition.columnPosition;
 	}
 
 	private int checkOriginColumnPosition(int column) {
@@ -177,17 +177,17 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		scrollableColumnPosition = checkOriginColumnPosition(scrollableColumnPosition);
 
 		int originalOriginColumnPosition = getOriginColumnPosition();
-		scrollableColumnPosition = checkOriginColumnPosition(adjustColumnOrigin(scrollableColumnPosition));
+		scrollableColumnPosition = checkOriginColumnPosition(adjustColumnOriginPosition(scrollableColumnPosition));
 
 		if (scrollableColumnPosition != originalOriginColumnPosition) {
 			invalidateHorizontalStructure();
-			origin.columnPosition = scrollableColumnPosition;
+			originPosition.columnPosition = scrollableColumnPosition;
 			fireScrollEvent();
 		}
 	}
 
 	public int getOriginRowPosition() {
-		return viewportOff ? minimumOrigin.rowPosition : origin.rowPosition;
+		return viewportOff ? minimumOriginPosition.rowPosition : originPosition.rowPosition;
 	}
 
 	private int checkOriginRowPosition(int row) {
@@ -206,29 +206,29 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		scrollableRowPosition = checkOriginRowPosition(scrollableRowPosition);
 
 		int originalOriginRowPosition = getOriginRowPosition();
-		scrollableRowPosition = checkOriginRowPosition(adjustRowOrigin(scrollableRowPosition));
+		scrollableRowPosition = checkOriginRowPosition(adjustRowOriginPosition(scrollableRowPosition));
 
 		if (scrollableRowPosition != originalOriginRowPosition) {
 			invalidateVerticalStructure();
-			origin.rowPosition = scrollableRowPosition;
+			originPosition.rowPosition = scrollableRowPosition;
 			fireScrollEvent();
 		}
 	}
 
-	public void resetOrigin(int columnPosition, int rowPosition) {
-		int previousOriginColumnPosition = origin.columnPosition;
-		int previousOriginRowPosition = origin.rowPosition;
+	public void resetOriginPosition(int columnPosition, int rowPosition) {
+		int previousOriginColumnPosition = originPosition.columnPosition;
+		int previousOriginRowPosition = originPosition.rowPosition;
 
-		minimumOrigin.columnPosition = 0;
-		origin.columnPosition = columnPosition;
+		minimumOriginPosition.columnPosition = 0;
+		originPosition.columnPosition = columnPosition;
 
-		minimumOrigin.rowPosition = 0;
-		origin.rowPosition = rowPosition;
+		minimumOriginPosition.rowPosition = 0;
+		originPosition.rowPosition = rowPosition;
 
-		if (origin.columnPosition != previousOriginColumnPosition) {
+		if (originPosition.columnPosition != previousOriginColumnPosition) {
 			invalidateHorizontalStructure();
 		}
-		if (origin.rowPosition != previousOriginRowPosition) {
+		if (originPosition.rowPosition != previousOriginRowPosition) {
 			invalidateVerticalStructure();
 		}
 	}
@@ -258,7 +258,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getColumnCount() {
 		if (viewportOff) {
-			return Math.max(scrollableLayer.getColumnCount() - minimumOrigin.columnPosition, 0);
+			return Math.max(scrollableLayer.getColumnCount() - minimumOriginPosition.columnPosition, 0);
 		} else {
 			return getColumnIndexes().size();
 		}
@@ -296,8 +296,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			int availableWidth = getClientAreaWidth();
 			if (availableWidth >= 0) {
 				
-				if (getOriginColumnPosition() < minimumOrigin.columnPosition) {
-					origin.columnPosition = minimumOrigin.columnPosition;
+				if (getOriginColumnPosition() < minimumOriginPosition.columnPosition) {
+					originPosition.columnPosition = minimumOriginPosition.columnPosition;
 				}
 
 				recalculateAvailableWidthAndColumnIndexes();
@@ -315,7 +315,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getWidth() {
 		if (viewportOff) {
-			return scrollableLayer.getWidth() - scrollableLayer.getStartXOfColumnPosition(minimumOrigin.columnPosition);
+			return scrollableLayer.getWidth() - scrollableLayer.getStartXOfColumnPosition(minimumOriginPosition.columnPosition);
 		}
 		if (cachedWidth < 0) {
 			recalculateAvailableWidthAndColumnIndexes();
@@ -359,7 +359,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getRowCount() {
 		if (viewportOff) {
-			return Math.max(scrollableLayer.getRowCount() - minimumOrigin.rowPosition, 0);
+			return Math.max(scrollableLayer.getRowCount() - minimumOriginPosition.rowPosition, 0);
 		}
 		return getRowIndexes().size();
 	}
@@ -396,8 +396,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			int availableHeight = getClientAreaHeight();
 			if (availableHeight >= 0) {
 				
-				if (getOriginRowPosition() < minimumOrigin.rowPosition) {
-					origin.rowPosition = minimumOrigin.rowPosition;
+				if (getOriginRowPosition() < minimumOriginPosition.rowPosition) {
+					originPosition.rowPosition = minimumOriginPosition.rowPosition;
 				}
 				
 				recalculateAvailableHeightAndRowIndexes();
@@ -412,7 +412,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getHeight() {
 		if (viewportOff) {
-			return scrollableLayer.getHeight() - scrollableLayer.getStartYOfRowPosition(minimumOrigin.rowPosition);
+			return scrollableLayer.getHeight() - scrollableLayer.getStartYOfRowPosition(minimumOriginPosition.rowPosition);
 		}
 		if (cachedHeight < 0) {
 			recalculateAvailableHeightAndRowIndexes();
@@ -485,7 +485,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			cachedColumnIndexOrder.add(Integer.valueOf(columnIndex));
 		}
 
-		origin.columnPosition = checkOriginColumnPosition(origin.columnPosition);
+		originPosition.columnPosition = checkOriginColumnPosition(originPosition.columnPosition);
 	}
 
 	protected void recalculateAvailableHeightAndRowIndexes() {
@@ -503,7 +503,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			cachedRowIndexOrder.add(Integer.valueOf(rowIndex));
 		}
 
-		origin.rowPosition = checkOriginRowPosition(origin.rowPosition);
+		originPosition.rowPosition = checkOriginRowPosition(originPosition.rowPosition);
 	}
 
 	/**
@@ -538,7 +538,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 					if (viewportEndX < scrollableColumnEndX) {
 						int targetOriginColumnPosition;
-						if (forceEntireCellIntoViewport || isLastColumn(scrollableColumnPosition)) {
+						if (forceEntireCellIntoViewport || isLastColumnPosition(scrollableColumnPosition)) {
 							targetOriginColumnPosition = underlyingLayer.getColumnPositionByX(scrollableColumnEndX - clientAreaWidth) + 1;
 						} else {
 							targetOriginColumnPosition = underlyingLayer.getColumnPositionByX(scrollableColumnStartX - clientAreaWidth) + 1;
@@ -575,7 +575,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 					if (viewportEndY < scrollableRowEndY) {
 						int targetOriginRowPosition;
-						if (forceEntireCellIntoViewport || isLastRow(scrollableRowPosition)) {
+						if (forceEntireCellIntoViewport || isLastRowPosition(scrollableRowPosition)) {
 							targetOriginRowPosition = underlyingLayer.getRowPositionByY(scrollableRowEndY - clientAreaHeight) + 1;
 						} else {
 							targetOriginRowPosition = underlyingLayer.getRowPositionByY(scrollableRowStartY - clientAreaHeight) + 1;
@@ -592,11 +592,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
-	private boolean isLastColumn(int scrollableColumnPosition) {
+	private boolean isLastColumnPosition(int scrollableColumnPosition) {
 		return scrollableColumnPosition == getUnderlyingLayer().getColumnCount()-1;
 	}
 
-	private boolean isLastRow(int scrollableRowPosition) {
+	private boolean isLastRowPosition(int scrollableRowPosition) {
 		return scrollableRowPosition == getUnderlyingLayer().getRowCount()-1;
 	}
 
@@ -632,14 +632,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			possibleArea.height = possibleArea.height - heightDiff;
 			clientAreaResizeCommand.setCalcArea(possibleArea);
 		} else if (command instanceof TurnViewportOffCommand) {
-			savedOriginColumn = localToUnderlyingColumnPosition(0);
-			savedOriginRow = localToUnderlyingRowPosition(0);
+			savedOriginColumnPosition = localToUnderlyingColumnPosition(0);
+			savedOriginRowPosition = localToUnderlyingRowPosition(0);
 			viewportOff = true;
 			return true;
 		} else if (command instanceof TurnViewportOnCommand) {
 			viewportOff = false;
-			setOriginColumnPosition(savedOriginColumn);
-			setOriginRowPosition(savedOriginRow);
+			setOriginColumnPosition(savedOriginColumnPosition);
+			setOriginRowPosition(savedOriginRowPosition);
 			return true;
 		} else if (command instanceof PrintEntireGridCommand) {
 			moveCellPositionIntoViewport(0, 0, false);
@@ -673,16 +673,16 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	protected void handleGridResize() {
-		setOriginColumnPosition(origin.columnPosition);
+		setOriginColumnPosition(originPosition.columnPosition);
 		recalculateHorizontalScrollBar();
-		setOriginRowPosition(origin.rowPosition);
+		setOriginRowPosition(originPosition.rowPosition);
 		recalculateVerticalScrollBar();
 	}
 
 	/**
 	 * @see #adjustRowOrigin(int)
 	 */
-	protected int adjustColumnOrigin(int originColumnPosition) {
+	protected int adjustColumnOriginPosition(int originColumnPosition) {
 		if (getColumnCount() == 0) {
 			return 0;
 		}
@@ -697,7 +697,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		while (previousColPosition >= 0) {
 			int previousColWidth = getUnderlyingLayer().getColumnWidthByPosition(previousColPosition);
 
-			if (availableWidth >= previousColWidth && originColumnPosition - 1 >= minimumOrigin.columnPosition) {
+			if (availableWidth >= previousColWidth && originColumnPosition - 1 >= minimumOriginPosition.columnPosition) {
 				originColumnPosition--;
 				availableWidth -= previousColWidth;
 			} else {
@@ -712,7 +712,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * If the client area size is greater than the content size,
 	 *    calculate number of rows to add to viewport i.e move the origin
 	 */
-	protected int adjustRowOrigin(int originRowPosition) {
+	protected int adjustRowOriginPosition(int originRowPosition) {
 		if (getRowCount() == 0) {
 			return 0;
 		}
@@ -728,7 +728,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		while (previousRowPosition >= 0) {
 			int previousRowHeight = getUnderlyingLayer().getRowHeightByPosition(previousRowPosition);
 
-			if (availableHeight >= previousRowHeight && originRowPosition - 1 >= minimumOrigin.rowPosition) {
+			if (availableHeight >= previousRowHeight && originRowPosition - 1 >= minimumOriginPosition.rowPosition) {
 				originRowPosition--;
 				availableHeight -= previousRowHeight;
 			} else {
@@ -861,12 +861,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return "Viewport Layer"; //$NON-NLS-1$
 	}
 	
-	protected PositionCoordinate getOrigin() {
-		return origin;
+	protected PositionCoordinate getOriginPosition() {
+		return originPosition;
 	}
 	
-	protected PositionCoordinate getMinmumOrigin() {
-		return minimumOrigin;
+	protected PositionCoordinate getMinmumOriginPosition() {
+		return minimumOriginPosition;
 	}
 	
 	// Edge hover scrolling
@@ -921,8 +921,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		
 		public void run() {
 			if (edgeHoverScrollOffset.x != 0 || edgeHoverScrollOffset.y != 0) {
-				setOriginColumnPosition(origin.columnPosition + edgeHoverScrollOffset.x);
-				setOriginRowPosition(origin.rowPosition + edgeHoverScrollOffset.y);
+				setOriginColumnPosition(originPosition.columnPosition + edgeHoverScrollOffset.x);
+				setOriginRowPosition(originPosition.rowPosition + edgeHoverScrollOffset.y);
 				
 				edgeHoverScrollFuture = scheduler.schedule(new MoveViewportRunnable(), 100, TimeUnit.MILLISECONDS);
 			}

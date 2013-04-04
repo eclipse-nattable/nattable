@@ -394,11 +394,11 @@ public class ViewportLayerTest {
 		assertEquals(5, viewportLayer.getRowCount());
 
 		viewportLayer.setOriginRowPosition(10);
-		assertEquals(10, viewportLayer.adjustRowOrigin(10));
+		assertEquals(10, viewportLayer.adjustRowOriginPosition(10));
 
 		//Increase view port height
 		viewportLayer.getClientAreaProvider().getClientArea().height = 400;
-		assertEquals(0, viewportLayer.adjustRowOrigin(10));
+		assertEquals(0, viewportLayer.adjustRowOriginPosition(10));
 	}
 
 	@Test
@@ -409,16 +409,16 @@ public class ViewportLayerTest {
 
 		viewportLayer.setOriginColumnPosition(4);
 		assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
-		assertEquals(4, viewportLayer.adjustColumnOrigin(4));
+		assertEquals(4, viewportLayer.adjustColumnOriginPosition(4));
 		
 		// Try to scroll off the end
 		viewportLayer.setOriginColumnPosition(9);
 		assertEquals(6, viewportLayer.getColumnIndexByPosition(0));
-		assertEquals(6, viewportLayer.adjustColumnOrigin(9));
+		assertEquals(6, viewportLayer.adjustColumnOriginPosition(9));
 
 		//Increase viewport width
 		viewportLayer.getClientAreaProvider().getClientArea().width = 500;
-		assertEquals(0, viewportLayer.adjustColumnOrigin(9));
+		assertEquals(0, viewportLayer.adjustColumnOriginPosition(9));
 	}
 
 	@Test
