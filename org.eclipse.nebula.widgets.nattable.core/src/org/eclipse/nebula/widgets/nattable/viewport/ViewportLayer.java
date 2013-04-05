@@ -179,6 +179,30 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return scrollableLayer.getRowPositionByY(getOrigin().y);
 	}
 	
+	private int checkOriginX(int x) {
+		int min = minimumOrigin.x;
+		if (x <= min) {
+			return min;
+		}
+		int max = Math.max(getUnderlyingLayer().getStartXOfColumnPosition(0) + getUnderlyingLayer().getWidth(), min);
+		if (x > max) {
+			return max;
+		}
+		return x;
+	}
+	
+	private int checkOriginY(int y) {
+		int min = minimumOrigin.y;
+		if (y <= min) {
+			return min;
+		}
+		int max = Math.max(getUnderlyingLayer().getStartYOfRowPosition(0) + getUnderlyingLayer().getHeight(), min);
+		if (y > max) {
+			return max;
+		}
+		return y;
+	}
+	
 //	public int getOriginColumnPosition() {
 //		return viewportOff ? minimumOriginPosition.columnPosition : originPosition.columnPosition;
 //	}
@@ -505,7 +529,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			cachedColumnCount++;
 		}
 
-		originPosition.columnPosition = checkOriginColumnPosition(originPosition.columnPosition);
+//		originPosition.columnPosition = checkOriginColumnPosition(originPosition.columnPosition);
+		origin.x = checkOriginX(origin.x);
 	}
 
 	protected void recalculateAvailableHeightAndRowCount() {
@@ -523,7 +548,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			cachedRowCount++;
 		}
 
-		originPosition.rowPosition = checkOriginRowPosition(originPosition.rowPosition);
+//		originPosition.rowPosition = checkOriginRowPosition(originPosition.rowPosition);
+		origin.y = checkOriginY(origin.y);
 	}
 
 	/**
