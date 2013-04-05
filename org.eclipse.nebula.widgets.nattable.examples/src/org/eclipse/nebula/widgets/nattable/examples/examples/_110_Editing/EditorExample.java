@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.examples.examples._110_Editing;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
@@ -485,9 +487,35 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 	 */
 	private void registerColumnElevenComboBox(IConfigRegistry configRegistry) {
 		//register a combobox for the city names
-		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(PersonService.getFoodList()));
+		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(PersonService.getFoodList()), -1);
 		comboBoxCellEditor.setMultiselect(true);
 		comboBoxCellEditor.setUseCheckbox(true);
+		
+		//change the multi selection brackets that are added to the String that is shown in the editor
+		comboBoxCellEditor.setMultiselectTextBracket("", "");
+		//register a special converter that removes the brackets in case the returned value is a Collection
+		//this is necessary because editing and displaying are not directly coupled to each other
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.DISPLAY_CONVERTER, 
+				new DefaultDisplayConverter() {
+					
+					@Override
+					public Object canonicalToDisplayValue(Object canonicalValue) {
+						if (canonicalValue instanceof Collection) {
+							//Collection.toString() will add [ and ] around the values in the Collection
+							//So by removing the leading and ending character, we remove the brackets
+							String result = canonicalValue.toString();
+							result = result.substring(1, result.length()-1);
+							return result;
+						}
+						//if the value is not a Collection we simply let the super class do the conversion
+						//this is necessary to show single values in the ComboBox correctly
+						return super.canonicalToDisplayValue(canonicalValue);
+					}
+				}, 
+				DisplayMode.NORMAL, 
+				EditorExample.COLUMN_ELEVEN_LABEL);
+		
 		comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITOR, 
