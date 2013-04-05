@@ -31,12 +31,11 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
@@ -406,25 +405,6 @@ public class NatCombo extends Composite {
 		dropdownTable.setBackground(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
 		dropdownTable.setForeground(cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 		dropdownTable.setFont(cellStyle.getAttributeValue(CellStyleAttributes.FONT));
-
-		dropdownTable.addMouseMoveListener(new MouseMoveListener() {
-			@Override
-			public void mouseMove(MouseEvent e) {
-				cleanHoverSelection(!multiselect);
-
-				int index = getItemIndexByMousePosition(e.y);
-				if (index >= 0) {
-					dropdownTable.select(index);
-				}
-			}
-		});
-		
-		dropdownTable.addMouseTrackListener(new MouseTrackAdapter() {
-			@Override
-			public void mouseExit(MouseEvent e) {
-				cleanHoverSelection(!multiselect);
-			}
-		});
 		
 		dropdownTable.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -443,41 +423,12 @@ public class NatCombo extends Composite {
 				}
 				//item selected, now sync checkbox
 				else if (useCheckbox) {
-						//after selection is performed we need to ensure that selection and checkboxes are in sync
-						for (TableItem tableItem : dropdownTable.getItems()) {
-							tableItem.setChecked(dropdownTable.isSelected(itemList.indexOf(tableItem.getText())));
-						}
-				}
-
-				updateTextControl(!multiselect);
-			}
-		});
-		
-		//we need to keep this mouse listener additionally to the selection listener because
-		//the selection listener does not get the state mask in the SelectionEvent
-		dropdownTable.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				if (multiselect) {
-					//if a user tries in multiselect mode to perform a multiselect
-					//by holding the CTRL key, because of the preselection on mouseMove
-					//and the SWT.MULTI style, a deselection is performed
-					//this is why we need to correct that behaviour in here
-					if (e.stateMask == SWT.CTRL || useCheckbox) {
-						int index = getItemIndexByMousePosition(e.y);
-						if (index >= 0) {
-							java.util.List<String> currentUserSelection = Arrays.asList(getTextAsArray());
-							
-							if (currentUserSelection.contains(dropdownTable.getItems()[index].getText())) {
-								dropdownTable.deselect(index);
-							}
-							else {
-								dropdownTable.select(index);
-							}
-						}
+					//after selection is performed we need to ensure that selection and checkboxes are in sync
+					for (TableItem tableItem : dropdownTable.getItems()) {
+						tableItem.setChecked(dropdownTable.isSelected(itemList.indexOf(tableItem.getText())));
 					}
 				}
-				
+
 				updateTextControl(!multiselect);
 			}
 		});
@@ -509,28 +460,6 @@ public class NatCombo extends Composite {
 		}
 		setDropdownSelection(getTextAsArray());
 	}
-
-	/**
-	 * The NatCombo marks the current item the mouse hovers as selected. On moving the item
-	 * out of the dropdown, this mark needs to be removed if the item is not selected by
-	 * user interaction.
-	 * @param cleanAll flag to configure whether every selection should be cleared or if
-	 * 			only the hover selection needs to be cleared. This is necessary for multiselect
-	 * 			handling, for single selection every selection needs to be cleared while for
-	 * 			multiselect only the hover selection needs to be cleared.
-	 */
-	protected void cleanHoverSelection(boolean cleanAll) {
-		java.util.List<String> currentUserSelection = Arrays.asList(getTextAsArray());
-		
-		TableItem[] dropdownSelection = dropdownTable.getSelection();
-		
-		for (TableItem item : dropdownSelection) {
-			String ds = item.getText();
-			if (cleanAll || !currentUserSelection.contains(ds)) {
-				dropdownTable.deselect(itemList.indexOf(ds));
-			}
-		}
-	}
 	
 	/**
 	 * This method will be called if an item of the dropdown control is selected
@@ -545,32 +474,6 @@ public class NatCombo extends Composite {
 		if (hideDropdown) {
 			hideDropdownControl();
 		}
-	}
-	
-	/**
-	 * Calculates the index of the item at given mouse y position.
-	 * @param mouseY The y coordinate of the current mouse position
-	 * @return The index of the item within the list of combo box items
-	 * 			or -1 if there are no visible items or there is no
-	 * 			visible item selected
-	 */
-	protected int getItemIndexByMousePosition(int mouseY) {
-		if (getVisibleItemCount() == 0) {
-			return -1;
-		}
-		int itemHeight = dropdownShell.getSize().y / getVisibleItemCount();
-
-		//operate on the visible items
-		int resultIndex = -1;
-		int topIndex = dropdownTable.getTopIndex();
-		if (mouseY <= itemHeight) {
-			resultIndex = topIndex;
-		}
-		else {
-			resultIndex = topIndex + mouseY / itemHeight;
-		}
-		
-		return resultIndex;
 	}
 	
 	/**
@@ -733,7 +636,7 @@ public class NatCombo extends Composite {
 	 */
 	public String[] getSelection() {
 		String[] result = getTransformedSelection();
-		if (result == null || result.length == 0) { 
+		if (result == null || (result.length == 0 && this.text.getText().length() > 0)) { 
 			result = getTextAsArray();
 		}
 		return result;
@@ -830,10 +733,14 @@ public class NatCombo extends Composite {
 		//should not trigger anything else than it is handled by the text control itself.
 		this.dropdownTable.addMouseListener(listener);
 	}
-
+	
 	@Override
 	public void notifyListeners(int eventType, Event event) {
 		this.dropdownTable.notifyListeners(eventType, event);
+	}
+	
+	public void addSelectionListener(SelectionListener listener) {
+		this.dropdownTable.addSelectionListener(listener);
 	}
 	
 	public void addShellListener(ShellListener listener) {
@@ -895,24 +802,29 @@ public class NatCombo extends Composite {
 	protected String[] getTextAsArray() {
 		if (!this.text.isDisposed()) {
 			String transform = this.text.getText();
-			if (this.multiselect) {
-				//for multiselect the String is defined by default in format [a, b, c]
-				//the prefix and suffix for multiselect String representation need to 
-				//be removed
-				//in free edit mode we need to check if the format is used
-				int prefixLength = this.multiselectTextPrefix.length();
-				int suffixLength = this.multiselectTextSuffix.length();
-				if (this.freeEdit) {
-					if (!transform.startsWith(multiselectTextPrefix)) {
-						prefixLength = 0;
+			if (transform.length() > 0) {
+				if (this.multiselect) {
+					//for multiselect the String is defined by default in format [a, b, c]
+					//the prefix and suffix for multiselect String representation need to 
+					//be removed
+					//in free edit mode we need to check if the format is used
+					int prefixLength = this.multiselectTextPrefix.length();
+					int suffixLength = this.multiselectTextSuffix.length();
+					if (this.freeEdit) {
+						if (!transform.startsWith(multiselectTextPrefix)) {
+							prefixLength = 0;
+						}
+						if (!transform.endsWith(multiselectTextSuffix)) {
+							suffixLength = 0;
+						}
 					}
-					if (!transform.endsWith(multiselectTextSuffix)) {
-						suffixLength = 0;
-					}
+					transform = transform.substring(prefixLength, transform.length()-suffixLength);
 				}
-				transform = transform.substring(prefixLength, transform.length()-suffixLength);
+				//if the transform value length is still > 0, then try to split
+				if (transform.length() > 0) {
+					return transform.split(this.multiselectValueSeparator);
+				}
 			}
-			return transform.split(this.multiselectValueSeparator);
 		}
 		return new String[] {};
 	}
@@ -961,12 +873,7 @@ public class NatCombo extends Composite {
 					result += this.multiselectValueSeparator;
 				}
 			}
-			//if at least one value was selected, add the prefix and suffix
-			//we check the values array instead of the result length because there can be also
-			//an empty String be selected
-			if (values.length > 0) {
-				result = this.multiselectTextPrefix + result + this.multiselectTextSuffix;
-			}
+			result = this.multiselectTextPrefix + result + this.multiselectTextSuffix;
 		}
 		else if (values.length > 0) {
 			result = values[0];

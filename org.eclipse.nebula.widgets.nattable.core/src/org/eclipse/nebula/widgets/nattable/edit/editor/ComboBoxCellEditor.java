@@ -23,8 +23,8 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -216,6 +216,9 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 		} else {
 			//multi selection handling
 			int[] selectionIndices = this.combo.getSelectionIndices();
+
+			//as we are in multiselection mode, we always return a Collection and never null
+			List<Object> result = new ArrayList<Object>();
 			
 			//Item selected from list
 			if (selectionIndices.length > 0) {
@@ -225,23 +228,22 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 				} else {
 					values = this.canonicalValues;
 				}
-				List<Object> result = new ArrayList<Object>();
 				for (int i : selectionIndices) {
 					result.add(values.get(i));
 				}
-				return result;
 			} else {
 				//if there is no selection in the dropdown, we need to check if there is a free edit
 				//in the NatCombo control
 				String[] comboSelection = this.combo.getSelection();
 				if (comboSelection.length > 0) {
-					List<Object> result = new ArrayList<Object>();
 					for (String selection : comboSelection) {
 						result.add(handleConversion(selection, this.conversionEditErrorHandler));
 					}
-					return result;
 				}
 			}
+			
+			//if nothing is selected and there is no free edit, we return an empty Collection
+			return result;
 		}
 		
 		return null;
@@ -363,9 +365,9 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
 		});
 
-		combo.addMouseListener(new MouseAdapter() {
+		combo.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void mouseDown(MouseEvent e) {
+			public void widgetSelected(SelectionEvent e) {
 				commit(MoveDirectionEnum.NONE, (!multiselect && editMode == EditModeEnum.INLINE));
 			}
 		});
