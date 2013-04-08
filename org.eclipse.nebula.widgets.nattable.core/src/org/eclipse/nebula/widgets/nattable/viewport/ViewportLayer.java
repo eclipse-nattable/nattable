@@ -16,7 +16,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -24,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
@@ -108,6 +108,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	
 	// Minimum Origin
 	
+	public Point getMinimumOrigin() {
+		return minimumOrigin;
+	}
+	
 	private int getMinimumOriginColumnPosition() {
 		return scrollableLayer.getColumnPositionByX(minimumOrigin.x);
 	}
@@ -167,7 +171,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	// Origin
 	
-	private Point getOrigin() {
+	public Point getOrigin() {
 		return viewportOff ? minimumOrigin : origin;
 	}
 	
@@ -210,6 +214,28 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 		return y;
 	}
+
+	public void setOriginX(int newOriginX) {
+		newOriginX = boundsCheckOriginX(newOriginX);
+		newOriginX = boundsCheckOriginX(adjustOriginX(newOriginX));
+
+		if (newOriginX != origin.x) {
+			invalidateHorizontalStructure();
+			origin.x = newOriginX;
+			fireScrollEvent();
+		}
+	}
+
+	public void setOriginY(int newOriginY) {
+		newOriginY = boundsCheckOriginY(newOriginY);
+		newOriginY = boundsCheckOriginY(adjustOriginY(newOriginY));
+
+		if (newOriginY != origin.y) {
+			invalidateVerticalStructure();
+			origin.y = newOriginY;
+			fireScrollEvent();
+		}
+	}
 	
 //	public int getOriginColumnPosition() {
 //		return viewportOff ? minimumOriginPosition.columnPosition : originPosition.columnPosition;
@@ -238,7 +264,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 //			originPosition.columnPosition = scrollableColumnPosition;
 //			fireScrollEvent();
 //		}
-//	}=
+//	}
 //
 //	public int getOriginRowPosition() {
 //		return viewportOff ? minimumOriginPosition.rowPosition : originPosition.rowPosition;
@@ -495,8 +521,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
 		Rectangle bounds = getUnderlyingLayer().getBoundsByPosition(underlyingColumnPosition, underlyingRowPosition);
-		bounds.x -= getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition());
-		bounds.y -= getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
+		bounds.x -= origin.x; //getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition());
+		bounds.y -= origin.y; //getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
 		return bounds;
 	}
 
@@ -583,7 +609,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 				if (scrollableColumnPosition < originColumnPosition) {
 					// Move left
-					setOriginColumnPosition(scrollableColumnPosition);
+					setOriginX(scrollableLayer.getStartXOfColumnPosition(scrollableColumnPosition));
 				} else {
 					int scrollableColumnStartX = underlyingLayer.getStartXOfColumnPosition(scrollableColumnPosition);
 					int scrollableColumnEndX = scrollableColumnStartX + underlyingLayer.getColumnWidthByPosition(scrollableColumnPosition);
@@ -599,7 +625,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 						}
 
 						// Move right
-						setOriginColumnPosition(targetOriginColumnPosition);
+						setOriginX(scrollableLayer.getStartXOfColumnPosition(targetOriginColumnPosition));
 					}
 				}
 				
@@ -620,7 +646,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 				if (scrollableRowPosition < originRowPosition) {
 					// Move up
-					setOriginRowPosition(scrollableRowPosition);
+					setOriginY(scrollableLayer.getStartYOfRowPosition(scrollableRowPosition));
 				} else {
 					int scrollableRowStartY = underlyingLayer.getStartYOfRowPosition(scrollableRowPosition);
 					int scrollableRowEndY = scrollableRowStartY + underlyingLayer.getRowHeightByPosition(scrollableRowPosition);
@@ -636,7 +662,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 						}
 
 						// Move down
-						setOriginRowPosition(targetOriginRowPosition);
+						setOriginY(scrollableLayer.getStartYOfRowPosition(targetOriginRowPosition));
 					}
 				}
 				
@@ -710,7 +736,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			hBarListener.recalculateScrollBarSize();
 			
 			if (!hBarListener.scrollBar.getEnabled()) {
-				setOriginColumnPosition(0);
+				setOriginX(0);
 			}
 		}
 	}
@@ -720,7 +746,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			vBarListener.recalculateScrollBarSize();
 			
 			if (!vBarListener.scrollBar.getEnabled()) {
-				setOriginRowPosition(0);
+				setOriginY(0);
 			}
 		}
 	}
@@ -731,71 +757,75 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	protected void handleGridResize() {
-		setOriginColumnPosition(originPosition.columnPosition);
+//		setOriginColumnPosition(originPosition.columnPosition);
+		setOriginX(origin.x);
 		recalculateHorizontalScrollBar();
-		setOriginRowPosition(originPosition.rowPosition);
+//		setOriginRowPosition(originPosition.rowPosition);
+		setOriginY(origin.y);
 		recalculateVerticalScrollBar();
 	}
 
 	/**
-	 * If the client area size is greater than the content size,
-	 *    calculate number of columns to add to viewport i.e move the origin
+	 * If the client area size is greater than the content size, move origin to fill as much content as possible.
 	 */
-	protected int adjustColumnOriginPosition(int originColumnPosition) {
+	protected int adjustOriginX(int originX) {
 		if (getColumnCount() == 0) {
 			return 0;
 		}
 
-		int availableWidth = getClientAreaWidth() - (scrollableLayer.getWidth() - scrollableLayer.getStartXOfColumnPosition(originColumnPosition));
-		if (availableWidth < 0) {
-			return originColumnPosition;
+		int availableWidth = getClientAreaWidth() - (scrollableLayer.getWidth() - originX);
+		if (availableWidth <= 0) {
+			return originX;
+		} else {
+			return boundsCheckOriginX(originX - availableWidth);
 		}
 
-		int previousColPosition = originColumnPosition - 1;
-
-		while (previousColPosition >= 0) {
-			int previousColWidth = getUnderlyingLayer().getColumnWidthByPosition(previousColPosition);
-
-			if (availableWidth >= previousColWidth && originColumnPosition - 1 >= getMinimumOriginColumnPosition()) {
-				originColumnPosition--;
-				availableWidth -= previousColWidth;
-			} else {
-				break;
-			}
-			previousColPosition--;
-		}
-		return originColumnPosition;
+//		int previousColPosition = originColumnPosition - 1;
+//
+//		while (previousColPosition >= 0) {
+//			int previousColWidth = getUnderlyingLayer().getColumnWidthByPosition(previousColPosition);
+//
+//			if (availableWidth >= previousColWidth && originColumnPosition - 1 >= getMinimumOriginColumnPosition()) {
+//				originColumnPosition--;
+//				availableWidth -= previousColWidth;
+//			} else {
+//				break;
+//			}
+//			previousColPosition--;
+//		}
+//		return originColumnPosition;
 	}
 
 	/**
-	 * If the client area size is greater than the content size,
-	 *    calculate number of rows to add to viewport i.e move the origin
+	 * If the client area size is greater than the content size, move origin to fill as much content as possible.
 	 */
-	protected int adjustRowOriginPosition(int originRowPosition) {
+	protected int adjustOriginY(int originY) {
 		if (getRowCount() == 0) {
 			return 0;
 		}
 
-		int availableHeight = getClientAreaHeight() - (scrollableLayer.getHeight() - scrollableLayer.getStartYOfRowPosition(originRowPosition));
-		if (availableHeight < 0) {
-			return originRowPosition;
+		int availableHeight = getClientAreaHeight() - (scrollableLayer.getHeight() - originY);
+		if (availableHeight <= 0) {
+			return originY;
+		} else {
+			return boundsCheckOriginY(originY - availableHeight);
 		}
 
-		int previousRowPosition = originRowPosition - 1;
-
-		// Can we fit another row ?
-		while (previousRowPosition >= 0) {
-			int previousRowHeight = getUnderlyingLayer().getRowHeightByPosition(previousRowPosition);
-
-			if (availableHeight >= previousRowHeight && originRowPosition - 1 >= getMinimumOriginRowPosition()) {
-				originRowPosition--;
-				availableHeight -= previousRowHeight;
-			} else {
-				break;
-			}
-			previousRowPosition--;
-		}
-		return originRowPosition;
+//		int previousRowPosition = originRowPosition - 1;
+//
+//		// Can we fit another row ?
+//		while (previousRowPosition >= 0) {
+//			int previousRowHeight = getUnderlyingLayer().getRowHeightByPosition(previousRowPosition);
+//
+//			if (availableHeight >= previousRowHeight && originRowPosition - 1 >= getMinimumOriginRowPosition()) {
+//				originRowPosition--;
+//				availableHeight -= previousRowHeight;
+//			} else {
+//				break;
+//			}
+//			previousRowPosition--;
+//		}
+//		return originRowPosition;
 	}
 
 	public void scrollVerticallyByAPage(ScrollSelectionCommand scrollSelectionCommand) {
@@ -988,6 +1018,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			}
 		}
 		
+	}
+	
+	@Override
+	public ILayerPainter getLayerPainter() {
+		return super.getLayerPainter();
 	}
 
 }

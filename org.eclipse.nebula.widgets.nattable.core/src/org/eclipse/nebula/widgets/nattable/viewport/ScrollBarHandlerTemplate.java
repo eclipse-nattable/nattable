@@ -67,11 +67,10 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		if (handle) {
 			ScrollBar scrollBar = (ScrollBar) event.widget;
 			
-			int position = getPositionByPixel(getViewportPixelOffset() + scrollBar.getSelection());
-			
-			setViewportOrigin(position);
-		}
-		else {
+//			int position = getPositionByPixel(getViewportPixelOffset() + scrollBar.getSelection());
+//			setViewportOrigin(position);
+			setViewportOrigin(getViewportMinimumOrigin() + scrollBar.getSelection());
+		} else {
 			adjustScrollBar();
 		}
 	}
@@ -81,8 +80,9 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		if (scrollBar.isDisposed()) {
 			return;
 		}
-		int scrollablePosition = getScrollablePosition();
-		int startPixel = getStartPixelOfPosition(scrollablePosition) - getViewportPixelOffset();
+//		int scrollablePosition = getScrollablePosition();
+//		int startPixel = getStartPixelOfPosition(scrollablePosition) - getViewportPixelOffset();
+		int startPixel = getViewportOrigin() - getViewportMinimumOrigin();
 		
 		scrollBar.setSelection(startPixel);
 	}
@@ -92,7 +92,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 			return;
 		}
 		
-		int max = getScrollableLayerSpan() - getViewportPixelOffset() + getScrollBarOverhang();
+		int max = getScrollableLayerSpan() - getViewportMinimumOrigin();// + getScrollBarOverhang();
 		if (! scrollBar.isDisposed()) {
 			scrollBar.setMaximum(max);
 		}
@@ -115,52 +115,52 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		adjustScrollBar();
 	}
 
-	/**
-	 * Overhang - the extra white area left at the right/bottom edge
-	 *    (due to the first column aligning with the left edge)
-	 */
-	protected int getScrollBarOverhang() {
-		/*
-		 * If the scrollbar is moved to its max extent and the left/topmost cell is partially visible, then the viewport
-		 * would be snapped back to align with the left/top edge of the first visible cell as above, but this would then
-		 * move the right/bottommost cell out of the viewport. In this case there would be no way to view the
-		 * right/bottommost edge of the right/bottommost cells. In order to remedy this, an overhang size is calculated
-		 * and added to the size of the underlying scrollable area when calculating the scroll handle sizes, like so
-		 * (this example is for column widths; similar logic applies for row heights):
-		 *
-		 * a. take the width of the viewport
-		 * b. take the width of the underlying scrollable area
-		 * c. subtract the width of the viewport from the width of the scrollable area to get an x pixel position
-		 * d. find the column at the x pixel position
-		 * e. find the start x pixel position of the column found in d
-		 * f. if the start x pixel position in e is not equal to the x pixel position in c, then we must calculate an
-		 *    overhang
-		 * g. overhang = width of column d - (x pixel position found in c - start x position of column d)
-		 *
-		 * The scrollbar handle width is then proportional to the viewport width compared to the scrollable area width
-		 * plus this overhang. The end effect is that when the scroll handle is moved to its maximal position, instead
-		 * of the left edge of the viewport being positioned in the middle of a cell, it will be positioned on the right
-		 * edge of that cell (or the left edge of the next cell). The last cell will then be completely visible, along
-		 * with some extra white space.
-		 */
-
-		int viewportWindowSpan = getViewportWindowSpan();
-		int scrollableLayerSpan = getScrollableLayerSpan();
-		int viewportPixelOffset = getViewportPixelOffset();
-		if (viewportWindowSpan <= 0 || viewportWindowSpan >= scrollableLayerSpan - viewportPixelOffset) {
-			return 0;
-		}
-
-		int edgePixel = scrollableLayerSpan - viewportWindowSpan;
-		int positionAtEdge = getPositionByPixel(edgePixel);
-		int startPixelOfPositionAtEdge = getStartPixelOfPosition(positionAtEdge);
-
-		int overhang = 0;
-		if (edgePixel != startPixelOfPositionAtEdge) {
-			overhang = (getSpanByPosition(positionAtEdge)) - (edgePixel - startPixelOfPositionAtEdge);
-		}
-		return overhang;
-	}
+//	/**
+//	 * Overhang - the extra white area left at the right/bottom edge
+//	 *    (due to the first column aligning with the left edge)
+//	 */
+//	protected int getScrollBarOverhang() {
+//		/*
+//		 * If the scrollbar is moved to its max extent and the left/topmost cell is partially visible, then the viewport
+//		 * would be snapped back to align with the left/top edge of the first visible cell as above, but this would then
+//		 * move the right/bottommost cell out of the viewport. In this case there would be no way to view the
+//		 * right/bottommost edge of the right/bottommost cells. In order to remedy this, an overhang size is calculated
+//		 * and added to the size of the underlying scrollable area when calculating the scroll handle sizes, like so
+//		 * (this example is for column widths; similar logic applies for row heights):
+//		 *
+//		 * a. take the width of the viewport
+//		 * b. take the width of the underlying scrollable area
+//		 * c. subtract the width of the viewport from the width of the scrollable area to get an x pixel position
+//		 * d. find the column at the x pixel position
+//		 * e. find the start x pixel position of the column found in d
+//		 * f. if the start x pixel position in e is not equal to the x pixel position in c, then we must calculate an
+//		 *    overhang
+//		 * g. overhang = width of column d - (x pixel position found in c - start x position of column d)
+//		 *
+//		 * The scrollbar handle width is then proportional to the viewport width compared to the scrollable area width
+//		 * plus this overhang. The end effect is that when the scroll handle is moved to its maximal position, instead
+//		 * of the left edge of the viewport being positioned in the middle of a cell, it will be positioned on the right
+//		 * edge of that cell (or the left edge of the next cell). The last cell will then be completely visible, along
+//		 * with some extra white space.
+//		 */
+//
+//		int viewportWindowSpan = getViewportWindowSpan();
+//		int scrollableLayerSpan = getScrollableLayerSpan();
+//		int viewportPixelOffset = getViewportPixelOffset();
+//		if (viewportWindowSpan <= 0 || viewportWindowSpan >= scrollableLayerSpan - viewportPixelOffset) {
+//			return 0;
+//		}
+//
+//		int edgePixel = scrollableLayerSpan - viewportWindowSpan;
+//		int positionAtEdge = getPositionByPixel(edgePixel);
+//		int startPixelOfPositionAtEdge = getStartPixelOfPosition(positionAtEdge);
+//
+//		int overhang = 0;
+//		if (edgePixel != startPixelOfPositionAtEdge) {
+//			overhang = (getSpanByPosition(positionAtEdge)) - (edgePixel - startPixelOfPositionAtEdge);
+//		}
+//		return overhang;
+//	}
 
 	/**
 	 * Methods to be implemented by the Horizontal/Vertical scroll bar handlers.
@@ -172,19 +172,19 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 
 	abstract boolean keepScrolling();
 
-	abstract int pageScrollDistance();
+//	abstract int pageScrollDistance();
 
-	abstract int getSpanByPosition(int scrollablePosition);
+//	abstract int getSpanByPosition(int scrollablePosition);
 
-	abstract int getScrollablePosition();
+	abstract int getViewportOrigin();
 
-	abstract int getStartPixelOfPosition(int position);
+//	abstract int getStartPixelOfPosition(int position);
 
-	abstract int getPositionByPixel(int pixelValue);
+//	abstract int getPositionByPixel(int pixelValue);
 	
-	abstract int getViewportPixelOffset();
+	abstract int getViewportMinimumOrigin();
 
-	abstract void setViewportOrigin(int position);
+	abstract void setViewportOrigin(int pixel);
 
 	abstract MoveDirectionEnum scrollDirectionForEventDetail(int eventDetail);
 

@@ -13,12 +13,10 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum.DOWN;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum.UP;
 
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
-
-import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 
 
 /**
@@ -30,21 +28,21 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 		super(viewportLayer, scrollBar);
 	}
 
-	/**
-	 * In a normal scenario scroll by the height of the viewport. If the row
-	 * being scrolled is wider than above, use the row height
-	 */
-	@Override
-	int pageScrollDistance() {
-		int heightOfRowBeingScrolled = scrollableLayer.getRowHeightByPosition(getScrollablePosition());
-		int viewportHeight = viewportLayer.getClientAreaHeight();
-		return (heightOfRowBeingScrolled > viewportHeight) ? heightOfRowBeingScrolled : viewportHeight;
-	}
+//	/**
+//	 * In a normal scenario scroll by the height of the viewport. If the row
+//	 * being scrolled is wider than above, use the row height
+//	 */
+//	@Override
+//	int pageScrollDistance() {
+//		int heightOfRowBeingScrolled = scrollableLayer.getRowHeightByPosition(getScrollablePosition());
+//		int viewportHeight = viewportLayer.getClientAreaHeight();
+//		return (heightOfRowBeingScrolled > viewportHeight) ? heightOfRowBeingScrolled : viewportHeight;
+//	}
 
-	@Override
-	int getSpanByPosition(int scrollablePosition) {
-		return scrollableLayer.getRowHeightByPosition(scrollablePosition);
-	}
+//	@Override
+//	int getSpanByPosition(int scrollablePosition) {
+//		return scrollableLayer.getRowHeightByPosition(scrollablePosition);
+//	}
 
 	/**
 	 * Convert Viewport 0 pos -> Scrollable 0 pos
@@ -52,30 +50,32 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 	 * @return
 	 */
 	@Override
-	int getScrollablePosition() {
-		return LayerUtil.convertRowPosition(viewportLayer, 0, scrollableLayer);
+	int getViewportOrigin() {
+//		return LayerUtil.convertRowPosition(viewportLayer, 0, scrollableLayer);
+		return viewportLayer.getOrigin().y;
+	}
+
+//	@Override
+//	int getStartPixelOfPosition(int position) {
+//		return scrollableLayer.getStartYOfRowPosition(position);
+//	}
+//
+//	@Override
+//	int getPositionByPixel(int pixelValue) {
+//		return scrollableLayer.getRowPositionByY(pixelValue);
+//	}
+
+	@Override
+	int getViewportMinimumOrigin() {
+		return viewportLayer.getMinimumOrigin().y;
+//		int row = viewportLayer.getMinimumOriginRowPosition();
+//		return (row < scrollableLayer.getRowCount()) ? scrollableLayer.getStartYOfRowPosition(row) : scrollableLayer.getHeight();
 	}
 
 	@Override
-	int getStartPixelOfPosition(int position) {
-		return scrollableLayer.getStartYOfRowPosition(position);
-	}
-
-	@Override
-	int getPositionByPixel(int pixelValue) {
-		return scrollableLayer.getRowPositionByY(pixelValue);
-	}
-
-	@Override
-	int getViewportPixelOffset() {
-		int row = viewportLayer.getMinimumOriginRowPosition();
-		return (row < scrollableLayer.getRowCount()) ? scrollableLayer.getStartYOfRowPosition(row) : scrollableLayer.getHeight();
-	}
-
-	@Override
-	void setViewportOrigin(int position) {
+	void setViewportOrigin(int y) {
 		viewportLayer.invalidateVerticalStructure();
-		viewportLayer.setOriginRowPosition(position);
+		viewportLayer.setOriginY(y);
 		scrollBar.setIncrement(viewportLayer.getRowHeightByPosition(0));
 	}
 
