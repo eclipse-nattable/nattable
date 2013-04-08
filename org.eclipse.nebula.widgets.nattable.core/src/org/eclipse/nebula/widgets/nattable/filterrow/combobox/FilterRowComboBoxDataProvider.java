@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
-import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -39,16 +39,22 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
  * to the body DataLayer. If values are updated or rows get added/deleted, it will update the cache
  * accordingly.
  * 
+ * @param <T> The type of the objects shown within the NatTable. Needed to access the data columnwise.
+ * 
  * @author Dirk Fauth
  *
  */
-public class FilterRowComboBoxDataProvider implements IComboBoxDataProvider, ILayerListener {
-
+public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, ILayerListener {
 	/**
-	 * The IDataProvider of the body. Needed to read the available values for 
-	 * the configured column.
+	 * The base collection used to collect the unique values from. This need to be a collection that
+	 * 	is not filtered, otherwise after modifications the content of the filter row combo boxes will only
+	 * 	contain the current visible (not filtered) elements.
 	 */
-	private final IDataProvider bodyDataProvider;
+	private Collection<T> baseCollection;
+	/**
+	 * The IColumnAccessor to be able to read the values out of the base collection objects.
+	 */
+	private IColumnAccessor<T> columnAccessor;
 	/**
 	 * The local cache for the values to show in the filter row combobox.
 	 * This is needed because otherwise the calculation of the necessary values
@@ -57,17 +63,27 @@ public class FilterRowComboBoxDataProvider implements IComboBoxDataProvider, ILa
 	 * which is currently used for filtering.
 	 */
 	private final Map<Integer, List<?>> valueCache =  new HashMap<Integer, List<?>>();
+	/**
+	 * List of listeners that get informed if the value cache gets updated.
+	 */
+	private List<IFilterRowComboUpdateListener> cacheUpdateListener = new ArrayList<IFilterRowComboUpdateListener>();
 	
 	/**
-	 * @param bodyDataLayer The DataLayer of the body region.
+	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list event handling.
+	 * 			Needed to register ourself as listener for data changes.
+	 * @param baseCollection The base collection used to collect the unique values from. This need to be a collection that
+	 * 			is not filtered, otherwise after modifications the content of the filter row combo boxes will only
+	 * 			contain the current visible (not filtered) elements.
+	 * @param columnAccessor The IColumnAccessor to be able to read the values out of the base collection objects. 
 	 */
-	public FilterRowComboBoxDataProvider(DataLayer bodyDataLayer) {
-		this.bodyDataProvider = bodyDataLayer.getDataProvider();
+	public FilterRowComboBoxDataProvider(ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> columnAccessor) {
+		this.baseCollection = baseCollection;
+		this.columnAccessor = columnAccessor;
 		
 		//build the cache
 		buildValueCache();
 		
-		bodyDataLayer.addLayerListener(this);
+		bodyLayer.addLayerListener(this);
 	}
 
 	@Override
@@ -79,7 +95,7 @@ public class FilterRowComboBoxDataProvider implements IComboBoxDataProvider, ILa
 	 * Builds the local value cache for all columns.
 	 */
 	protected void buildValueCache() {
-		for (int i = 0; i < bodyDataProvider.getColumnCount(); i++) {
+		for (int i = 0; i < columnAccessor.getColumnCount(); i++) {
 			this.valueCache.put(i, collectValues(i));
 		}
 	}
@@ -105,8 +121,8 @@ public class FilterRowComboBoxDataProvider implements IComboBoxDataProvider, ILa
 	protected List<?> collectValues(int columnIndex) {
 		Set uniqueValues = new HashSet();
 		
-		for (int i = 0; i < this.bodyDataProvider.getRowCount(); i++) {
-			uniqueValues.add(bodyDataProvider.getDataValue(columnIndex, i));
+		for (T rowObject : this.baseCollection) {
+			uniqueValues.add(this.columnAccessor.getDataValue(rowObject, columnIndex));
 		}
 		
 		List result = new ArrayList(uniqueValues);
@@ -120,17 +136,89 @@ public class FilterRowComboBoxDataProvider implements IComboBoxDataProvider, ILa
 	@Override
 	public void handleLayerEvent(ILayerEvent event) {
 		if (event instanceof CellVisualChangeEvent) {
-			//usually this if fired for data updates
+			//usually this is fired for data updates
 			//so we need to update the value cache for the updated column
 			int column = ((CellVisualChangeEvent)event).getColumnPosition();
+			
+			List<?> cacheBefore = this.valueCache.get(column);
+			
 			this.valueCache.put(column, collectValues(column));
+			
+			//get the diff and fire the event
+			fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, this.valueCache.get(column)));
 		}
 		else if (event instanceof IStructuralChangeEvent
 				&& ((IStructuralChangeEvent) event).isVerticalStructureChanged()) {
 			//a new row was added or a row was deleted
+			
+			//remember the cache before updating
+			Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(this.valueCache);
+			
 			//perform a refresh of the whole cache
 			this.valueCache.clear();
 			buildValueCache();
+			
+			//fire events for every column
+			for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+				fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(), entry.getValue(), this.valueCache.get(entry.getKey())));
+			}
 		}
+	}
+	
+	/**
+	 * Creates a FilterRowComboUpdateEvent for the given column index. Calculates the diffs of the value cache
+	 * for that column based on the given lists.
+	 * @param columnIndex The column index for which the value cache was updated.
+	 * @param cacheBefore The value cache for the column before the change. Needed to determine which values
+	 * 			where removed by the update.
+	 * @param cacheAfter The value cache for the column after the change. Needed to determine which values
+	 * 			where added by the update.
+	 * @return Event to tell about value cache updates for the given column.
+	 */
+	protected FilterRowComboUpdateEvent buildUpdateEvent(int columnIndex, List<?> cacheBefore, List<?> cacheAfter) {
+		Set<Object> addedValues = new HashSet<Object>();
+		Set<Object> removedValues = new HashSet<Object>();
+
+		//find the added values
+		for (Object after : cacheAfter) {
+			if (!cacheBefore.contains(after)) {
+				addedValues.add(after);
+			}
+		}
+		
+		//find the removed values
+		for (Object before : cacheBefore) {
+			if (!cacheAfter.contains(before)) {
+				removedValues.add(before);
+			}
+		}
+		
+		return new FilterRowComboUpdateEvent(columnIndex, addedValues, removedValues);
+	}
+	
+	/**
+	 * Fire the given event to all registered listeners.
+	 * @param event The event to handle.
+	 */
+	protected void fireCacheUpdateEvent(FilterRowComboUpdateEvent event) {
+		for (IFilterRowComboUpdateListener listener : this.cacheUpdateListener) {
+			listener.handleEvent(event);
+		}
+	}
+	
+	/**
+	 * Adds the given listener to the list of listeners for value cache updates.
+	 * @param listener The listener to add.
+	 */
+	public void addCacheUpdateListener(IFilterRowComboUpdateListener listener) {
+		this.cacheUpdateListener.add(listener);
+	}
+	
+	/**
+	 * Removes the given listener from the list of listeners for value cache updates.
+	 * @param listener The listener to remove.
+	 */
+	public void removeCacheUdpateListener(IFilterRowComboUpdateListener listener) {
+		this.cacheUpdateListener.remove(listener);
 	}
 }

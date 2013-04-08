@@ -312,7 +312,7 @@ public class FilterNatCombo extends NatCombo {
 	@Override
 	public String[] getSelection() {
 		String[] result = getTransformedSelection();
-		if (result == null || (result.length == 0 && this.filterText != null && this.filterText.length() > 0)) {
+		if (result == null || (result.length == 0 && this.filterText != null)) {
 			result = getTextAsArray();
 		}
 		return result;
@@ -360,6 +360,30 @@ public class FilterNatCombo extends NatCombo {
 			}
 			this.filterText = getTransformedText(selectedItems);
 		}
+	}
+	
+	@Override
+	protected String getTransformedText(String[] values) {
+		String result = ""; //$NON-NLS-1$
+		if (this.multiselect) {
+			for (int i = 0; i < values.length; i++) {
+				String selection = values[i];
+				result += selection;
+				if ((i+1) < values.length) {
+					result += this.multiselectValueSeparator;
+				}
+			}
+			//if at least one value was selected, add the prefix and suffix
+			//we check the values array instead of the result length because there can be also
+			//an empty String be selected
+			if (values.length > 0) {
+				result = this.multiselectTextPrefix + result + this.multiselectTextSuffix;
+			}
+		}
+		else if (values.length > 0) {
+			result = values[0];
+		}
+		return result;
 	}
 	
 	@Override

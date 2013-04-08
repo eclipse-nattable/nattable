@@ -47,7 +47,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 	 * If there are no values specified for filtering of a column then everything should be filtered, 
 	 * if all possible values are given as filter then no filter needs to be applied.
 	 */
-	private FilterRowComboBoxDataProvider comboBoxDataProvider;
+	private FilterRowComboBoxDataProvider<T> comboBoxDataProvider;
 	
 	/**
 	 * A MatcherEditor that will never match anything.
@@ -68,7 +68,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 	 * @param columnAccessor The IColumnAccessor needed to access the row data to perform filtering
 	 * @param configRegistry The IConfigRegistry to retrieve several configurations from
 	 */
-	public ComboBoxGlazedListsFilterStrategy(FilterRowComboBoxDataProvider comboBoxDataProvider, 
+	public ComboBoxGlazedListsFilterStrategy(FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
 			CompositeMatcherEditor<T> matcherEditor,
 			IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
 		super(matcherEditor, columnAccessor, configRegistry);
@@ -92,7 +92,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 		for (Integer index : this.comboBoxDataProvider.getCachedColumnIndexes()) {
 			List<?> dataProviderList = this.comboBoxDataProvider.getValues(index, 0);
 			Object filterObject = newIndexToObjectMap.get(index);
-			if (filterObject == null) {
+			if (filterObject == null || (filterObject instanceof Collection && ((Collection)filterObject).isEmpty())) {
 				//for one column there are no items selected in the combo, therefore nothing matches
 				this.matcherEditor.getMatcherEditors().add(matchNone);
 				return;

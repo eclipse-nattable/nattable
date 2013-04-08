@@ -10,10 +10,12 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -26,6 +28,8 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
+import org.eclipse.nebula.widgets.nattable.examples.data.person.Address;
+import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -50,6 +54,11 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -80,6 +89,9 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 	
 	@Override
 	public Control createExampleControl(Composite parent) {
+		Composite container = new Composite(parent, SWT.NONE);
+		container.setLayout(new GridLayout());
+		
 		//create a new ConfigRegistry which will be needed for GlazedLists handling
 		ConfigRegistry configRegistry = new ConfigRegistry();
 
@@ -102,7 +114,7 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 		IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = 
 				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 		
-		BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
+		final BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
 				PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
 		
 		//build the column header layer
@@ -112,8 +124,8 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 		
 		ComboBoxFilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer =
 				new ComboBoxFilterRowHeaderComposite<PersonWithAddress>(
-						bodyLayerStack.getFilterList(), bodyLayerStack.getBodyDataLayer(), columnPropertyAccessor, 
-						columnHeaderLayer, columnHeaderDataProvider, configRegistry);
+						bodyLayerStack.getFilterList(), bodyLayerStack.getGlazedListsEventLayer(), bodyLayerStack.getSortedList(), 
+						columnPropertyAccessor, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
 		
 		//build the row header layer
 		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
@@ -129,7 +141,7 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 		GridLayer gridLayer = new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
 		
 		//turn the auto configuration off as we want to add our header menu configuration
-		NatTable natTable = new NatTable(parent, gridLayer, false);
+		NatTable natTable = new NatTable(container, gridLayer, false);
 		
 		//as the autoconfiguration of the NatTable is turned off, we have to add the 
 		//DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
@@ -159,7 +171,25 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 		
 		natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
 		
-		return natTable;
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+		
+		Button button = new Button(container, SWT.PUSH);
+		button.setText("Add Row");
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Address address = new Address();
+				address.setStreet("Some Street");
+				address.setHousenumber(42);
+				address.setPostalCode(12345);
+				address.setCity("In the clouds");
+				PersonWithAddress person = new PersonWithAddress(42, "Ralph", "Wiggum", Gender.MALE, false, new Date(), address);
+				
+				bodyLayerStack.getSortedList().add(person);
+			}
+		});
+		
+		return container;
 	}
 	
 	/**
@@ -169,10 +199,12 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 	 */
 	class BodyLayerStack<T> extends AbstractLayerTransform {
 		
+		private final SortedList<T> sortedList;
 		private final FilterList<T> filterList;
 		
 		private final IDataProvider bodyDataProvider;
 		private final DataLayer bodyDataLayer;
+		private final GlazedListsEventLayer<T> glazedListsEventLayer;
 		
 		private final SelectionLayer selectionLayer;
 		
@@ -184,7 +216,7 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 			
 			//use the SortedList constructor with 'null' for the Comparator because the Comparator
 			//will be set by configuration
-			SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+			this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 			// wrap the SortedList with the FilterList
 			this.filterList = new FilterList<T>(sortedList);
 			
@@ -193,10 +225,9 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 			this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 			
 			//layer for event handling of GlazedLists and PropertyChanges
-			GlazedListsEventLayer<T> glazedListsEventLayer = 
-				new GlazedListsEventLayer<T>(bodyDataLayer, filterList);
+			this.glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, filterList);
 
-			this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
+			this.selectionLayer = new SelectionLayer(getGlazedListsEventLayer());
 			ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
 			
 			FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
@@ -207,6 +238,10 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 
 		public SelectionLayer getSelectionLayer() {
 			return selectionLayer;
+		}
+
+		public SortedList<T> getSortedList() {
+			return sortedList;
 		}
 		
 		public FilterList<T> getFilterList() {
@@ -219,6 +254,10 @@ public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 
 		public DataLayer getBodyDataLayer() {
 			return bodyDataLayer;
+		}
+
+		public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+			return glazedListsEventLayer;
 		}
 	}
 

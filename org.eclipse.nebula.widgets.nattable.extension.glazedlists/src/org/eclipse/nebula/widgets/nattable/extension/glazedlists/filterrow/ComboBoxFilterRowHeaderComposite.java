@@ -10,6 +10,9 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
@@ -17,13 +20,14 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.filterrow.combobox.IFilterRowComboUpdateListener;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
-import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
@@ -43,7 +47,7 @@ import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
  * @author Dirk Fauth
  *
  */
-public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
+public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implements IFilterRowComboUpdateListener {
 
 	/**
 	 * The FilterRowDataLayer which serves as the filter row layer.
@@ -60,7 +64,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	/**
 	 * The IComboBoxDataProvider that is used to fill the filter row comboboxes.
 	 */
-	protected final FilterRowComboBoxDataProvider comboBoxDataProvider;
+	protected final FilterRowComboBoxDataProvider<T> comboBoxDataProvider;
 	/**
 	 * The IFilterStrategy that is used by this ComboBoxFilterRowHeaderComposite.
 	 */
@@ -71,8 +75,10 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 * Using this constructor will create a new CompositeMatcherEditor and add it to the
 	 * given FilterList directly. Also the default ComboBoxFilterRowConfiguration will be added.
 	 * @param filterList The FilterList that will be used for filtering.
-	 * @param bodyDataLayer The DataLayer of the body layer stack. Needed to determine the values
-	 * 			to show in the filter comboboxes and to initially pre-select them.
+	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
+	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
+	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
+	 * 			to show in the filter comboboxes and initially pre-select them.
 	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
 	 * 			to perform filtering.
 	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
@@ -84,11 +90,11 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			FilterList<T> filterList,
-			DataLayer bodyDataLayer, IColumnAccessor<T> bodyDataColumnAccessor,
+			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry) {
 		
-		this(filterList, bodyDataLayer, bodyDataColumnAccessor, 
+		this(filterList, bodyLayer, baseCollection, bodyDataColumnAccessor, 
 				columnHeaderLayer, columnHeaderDataProvider, configRegistry, true);
 	}
 	
@@ -110,7 +116,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			FilterList<T> filterList,
-			FilterRowComboBoxDataProvider comboBoxDataProvider, 
+			FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
 			IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry) {
@@ -140,7 +146,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			FilterList<T> filterList,
-			FilterRowComboBoxDataProvider comboBoxDataProvider, 
+			FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
 			IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry,
@@ -157,8 +163,10 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 * Using this constructor will create a new CompositeMatcherEditor and add it to the
 	 * given FilterList directly. 
 	 * @param filterList The FilterList that will be used for filtering.
-	 * @param bodyDataLayer The DataLayer of the body layer stack. Needed to determine the values
-	 * 			to show in the filter comboboxes and to initially pre-select them.
+	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
+	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
+	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
+	 * 			to show in the filter comboboxes and initially pre-select them.
 	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
 	 * 			to perform filtering.
 	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
@@ -173,12 +181,12 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			FilterList<T> filterList,
-			DataLayer bodyDataLayer, IColumnAccessor<T> bodyDataColumnAccessor,
+			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry,
 			boolean useDefaultConfiguration) {
 		
-		this(new CompositeMatcherEditor<T>(), bodyDataLayer, bodyDataColumnAccessor, 
+		this(new CompositeMatcherEditor<T>(), bodyLayer, baseCollection, bodyDataColumnAccessor, 
 				columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
 		
 		filterList.setMatcherEditor(this.matcherEditor);
@@ -193,8 +201,10 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 * 		 FilterList this ComboBoxFilterRowHeaderComposite operates on yourself.
 	 * @param matcherEditor The CompositeMatcherEditor that is set to the FilterList and needs to 
 	 * 			be used by the ComboBoxGlazedListsFilterStrategy to apply the filters via filter row.
-	 * @param bodyDataLayer The DataLayer of the body layer stack. Needed to determine the values
-	 * 			to show in the filter comboboxes and to initially pre-select them.
+	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
+	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
+	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
+	 * 			to show in the filter comboboxes and initially pre-select them.
 	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
 	 * 			to perform filtering.
 	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
@@ -206,11 +216,11 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			CompositeMatcherEditor<T> matcherEditor,
-			DataLayer bodyDataLayer, IColumnAccessor<T> bodyDataColumnAccessor,
+			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry) {
 		
-		this(matcherEditor, bodyDataLayer, bodyDataColumnAccessor, 
+		this(matcherEditor, bodyLayer, baseCollection, bodyDataColumnAccessor, 
 				columnHeaderLayer, columnHeaderDataProvider, configRegistry, true);
 	}
 	
@@ -223,8 +233,10 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 * 		 FilterList this ComboBoxFilterRowHeaderComposite operates on yourself.
 	 * @param matcherEditor The CompositeMatcherEditor that is set to the FilterList and needs to 
 	 * 			be used by the ComboBoxGlazedListsFilterStrategy to apply the filters via filter row.
-	 * @param bodyDataLayer The DataLayer of the body layer stack. Needed to determine the values
-	 * 			to show in the filter comboboxes and to initially pre-select them.
+	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
+	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
+	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
+	 * 			to show in the filter comboboxes and initially pre-select them.
 	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
 	 * 			to perform filtering.
 	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
@@ -239,13 +251,13 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			CompositeMatcherEditor<T> matcherEditor,
-			DataLayer bodyDataLayer, IColumnAccessor<T> bodyDataColumnAccessor,
+			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry,
 			boolean useDefaultConfiguration) {
 		
-		this(matcherEditor, new FilterRowComboBoxDataProvider(bodyDataLayer), bodyDataColumnAccessor, 
-				columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
+		this(matcherEditor, new FilterRowComboBoxDataProvider<T>(bodyLayer, baseCollection, bodyDataColumnAccessor), 
+				bodyDataColumnAccessor,	columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
 	}
 	
 	/**
@@ -270,7 +282,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			CompositeMatcherEditor<T> matcherEditor,
-			FilterRowComboBoxDataProvider comboBoxDataProvider, 
+			FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
 			IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry) {
@@ -304,7 +316,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			CompositeMatcherEditor<T> matcherEditor,
-			FilterRowComboBoxDataProvider comboBoxDataProvider, 
+			FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
 			IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry,
@@ -319,6 +331,8 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 		this.comboBoxDataProvider = comboBoxDataProvider;
 		this.filterStrategy = new ComboBoxGlazedListsFilterStrategy<T>(
 				this.comboBoxDataProvider, this.matcherEditor, bodyDataColumnAccessor, configRegistry);
+		
+		this.comboBoxDataProvider.addCacheUpdateListener(this);
 		
 		this.filterRowDataLayer = new FilterRowDataLayer<T>(
 				getFilterStrategy(), columnHeaderLayer, columnHeaderDataProvider, configRegistry);
@@ -365,7 +379,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	/**
 	 * @return The IComboBoxDataProvider that is used to fill the filter row comboboxes.
 	 */
-	public FilterRowComboBoxDataProvider getComboBoxDataProvider() {
+	public FilterRowComboBoxDataProvider<T> getComboBoxDataProvider() {
 		return comboBoxDataProvider;
 	}
 	
@@ -397,8 +411,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 	 */
 	public void setAllValuesSelected() {
 		for (int i = 0; i < this.filterRowDataLayer.getColumnCount(); i++) {
-			//TODO check for the cell editor to support mixed mode
-			this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().put(i, getComboBoxDataProvider().getValues(i, 0));
+			this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().put(i, comboBoxDataProvider.getValues(i, 0));
 		}
 		getFilterStrategy().applyFilter(this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap());
 	}
@@ -447,5 +460,25 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer {
 		} else {
 			return super.doCommand(command);
 		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void handleEvent(FilterRowComboUpdateEvent event) {
+		Map<Integer, Object> filterIndexToObjectMap = this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap();
+		Object filterObject = filterIndexToObjectMap.get(event.getColumnIndex());
+		if (filterObject != null && filterObject instanceof Collection) {
+			//if a new value was added than ensure it is also added to the filter
+			if (event.getAddedItems() != null && !event.getAddedItems().isEmpty()) {
+				((Collection)filterObject).addAll(event.getAddedItems());
+			}
+			//if a value was removed than ensure it is also removed from the filter
+			if (event.getRemovedItems() != null && !event.getRemovedItems().isEmpty()) {
+				((Collection)filterObject).removeAll(event.getRemovedItems());
+			}
+		}
+		
+		//apply the filter to be sure filter row and applied filter are the same
+		getFilterStrategy().applyFilter(this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap());
 	}
 }

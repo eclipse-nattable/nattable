@@ -121,8 +121,8 @@ public class _564_ExcelLikeFilterRowCustomTypesExample extends AbstractNatExampl
 		//example on how to configure a different icon if a filter is applied
 		ComboBoxFilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer =
 				new ComboBoxFilterRowHeaderComposite<MyRowObject>(
-						bodyLayerStack.getFilterList(), bodyLayerStack.getBodyDataLayer(), columnPropertyAccessor, 
-						columnHeaderLayer, columnHeaderDataProvider, configRegistry, false);
+						bodyLayerStack.getFilterList(), bodyLayerStack.getBodyDataLayer(), bodyLayerStack.getSortedList(), 
+						columnPropertyAccessor, columnHeaderLayer, columnHeaderDataProvider, configRegistry, false);
 		final IComboBoxDataProvider comboBoxDataProvider = filterRowHeaderLayer.getComboBoxDataProvider();
 		filterRowHeaderLayer.addConfiguration(new ComboBoxFilterRowConfiguration() {
 			{
@@ -187,6 +187,7 @@ public class _564_ExcelLikeFilterRowCustomTypesExample extends AbstractNatExampl
 	 */
 	class BodyLayerStack<T> extends AbstractLayerTransform {
 		
+		private final SortedList<T> sortedList;
 		private final FilterList<T> filterList;
 		
 		private final IDataProvider bodyDataProvider;
@@ -202,9 +203,9 @@ public class _564_ExcelLikeFilterRowCustomTypesExample extends AbstractNatExampl
 			
 			//use the SortedList constructor with 'null' for the Comparator because the Comparator
 			//will be set by configuration
-			SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+			this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 			// wrap the SortedList with the FilterList
-			this.filterList = new FilterList<T>(sortedList);
+			this.filterList = new FilterList<T>(getSortedList());
 			
 			this.bodyDataProvider = 
 				new ListDataProvider<T>(filterList, columnPropertyAccessor);
@@ -222,6 +223,10 @@ public class _564_ExcelLikeFilterRowCustomTypesExample extends AbstractNatExampl
 
 		public SelectionLayer getSelectionLayer() {
 			return selectionLayer;
+		}
+
+		public SortedList<T> getSortedList() {
+			return sortedList;
 		}
 		
 		public FilterList<T> getFilterList() {
