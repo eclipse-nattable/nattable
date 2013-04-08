@@ -17,10 +17,10 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-
 import org.apache.commons.lang.StringUtils;
+
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+
 
 /**
  * This class stores the size configuration of rows/columns within the NatTable.
@@ -156,18 +156,24 @@ public class SizeConfig implements IPersistable {
 
 	// Default size
 
-	public void setDefaultSize(int defaultSize) {
-		this.defaultSize = defaultSize;
+	public void setDefaultSize(int size) {
+		if (size < 0) {
+			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
+		}
+		this.defaultSize = size;
 	}
 
 	public void setDefaultSize(int position, int size) {
+		if (defaultSize < 0) {
+			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
+		}
 		defaultSizeMap.put(Integer.valueOf(position), Integer.valueOf(size));
 	}
 
 	private int getDefaultSize(int position) {
-		int size = getSize(defaultSizeMap, position);
-		if (size >= 0) {
-			return size;
+		Integer size = defaultSizeMap.get(Integer.valueOf(position));
+		if (size != null) {
+			return size.intValue();
 		} else {
 			return defaultSize;
 		}
@@ -203,17 +209,14 @@ public class SizeConfig implements IPersistable {
 	}
 
 	public int getSize(int position) {
-		int size = -1;
+		Integer size;
 		if (percentageSizing) {
-			size = getSize(realSizeMap, position);
+			size = realSizeMap.get(Integer.valueOf(position));
 		} else {
-			size = getSize(sizeMap, position);
+			size = sizeMap.get(Integer.valueOf(position));
 		}
-
-		if (size <= 0 && sizeMap.containsKey(Integer.valueOf(position))) {
-			return GUIHelper.DEFAULT_MIN_DISPLAY_SIZE;
-		} else if (size >= 0) {
-			return size;
+		if (size != null) {
+			return size.intValue();
 		} else {
 			return getDefaultSize(position);
 		}
@@ -233,6 +236,9 @@ public class SizeConfig implements IPersistable {
 	 * @param size The size in pixels to set for the given position.
 	 */
 	public void setSize(int position, int size) {
+		if (size < 0) {
+			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
+		}
 		if (isPositionResizable(position)) {
 			//check whether the given value should be remembered as is or if it needs to be calculated
 			if (!isPercentageSizing()) {
@@ -255,6 +261,9 @@ public class SizeConfig implements IPersistable {
 	 * @param percentage
 	 */
 	public void setPercentage(int position, int percentage) {
+		if (percentage < 0) {
+			throw new IllegalArgumentException("percentage < 0"); //$NON-NLS-1$
+		}
 		if (isPositionResizable(position) && isPercentageSizing()) {
 			sizeMap.put(Integer.valueOf(position), Integer.valueOf(percentage));
 			realSizeMap.put(position, calculatePercentageValue(percentage, availableSpace));
@@ -319,25 +328,6 @@ public class SizeConfig implements IPersistable {
 		return defaultSizeMap.size() == 0 && sizeMap.size() == 0;
 	}
 
-	/**
-	 * Returns the size value for the given position out of the given map.
-	 * If there is no value for the given position within the given map, 
-	 * -1 will be returned.
-	 * @param map The map to get the value from.
-	 * @param position The position for which the size value should be retrieved.
-	 * @return The size value for the given position out of the given map or -1 if
-	 * 			there is no value for the given position within the given map.
-	 */
-	private int getSize(Map<Integer, Integer> map, int position) {
-		Integer sizeFromMap = map.get(Integer.valueOf(position));
-
-		if (sizeFromMap != null) {
-			return sizeFromMap;
-		}
-
-		return -1;
-	}
-	
 	/**
 	 * @return <code>true</code> if the size of the positions is interpreted percentaged,
 	 * 			<code>false</code> if the size of the positions is interpreted by pixel.
