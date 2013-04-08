@@ -372,7 +372,7 @@ public class EditIntegrationTest {
 
 		// Click - expand select value 'Automatic'
 		combo.select(1);
-		SWTUtils.leftClickOnCombo(startX + 10, startY + 35, SWT.NONE, combo);
+		SWTUtils.selectInCombo(startX + 10, startY + 35, SWT.NONE, combo);
 
 		assertTrue(natTable.getDataValueByPosition(columnPosition, rowPosition) instanceof PricingTypeBean);
 		assertEquals("AT", natTable.getDataValueByPosition(columnPosition, rowPosition).toString());
@@ -401,6 +401,7 @@ public class EditIntegrationTest {
 
 	private static IDisplayConverter getPricingTypeDisplayConverter() {
 		return new DisplayConverter() {
+			@Override
 			public Object canonicalToDisplayValue(Object canonicalValue) {
 				if (canonicalValue == null) {
 					return null;
@@ -409,6 +410,7 @@ public class EditIntegrationTest {
 				}
 			}
 
+			@Override
 			public Object displayToCanonicalValue(Object displayValue) {
 				return displayValue.toString().equals("Manual") ? new PricingTypeBean("MN") : new PricingTypeBean("AT");
 			}
@@ -417,6 +419,7 @@ public class EditIntegrationTest {
 
 	private IDataValidator getStartingWithCValidator() {
 		return new DataValidator() {
+			@Override
 			public boolean validate(int columnIndex, int rowIndex, Object newValue) {
 				String asString = newValue.toString();
 				return asString.startsWith("C");
