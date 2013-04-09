@@ -425,7 +425,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
-		return getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + columnPosition) - getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition());
+		return getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + columnPosition) - getOrigin().x;
 	}
 
 	// Vertical features
@@ -511,7 +511,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
-		return getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + rowPosition) - getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
+		return getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + rowPosition) - getOrigin().y;
 	}
 
 	// Cell features
