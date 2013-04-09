@@ -50,7 +50,7 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 	@Override
 	int getViewportOrigin() {
 //		return LayerUtil.convertColumnPosition(viewportLayer, 0, scrollableLayer);
-		return viewportLayer.getOrigin().x;
+		return viewportLayer.getOrigin().getX();
 	}
 	
 //	@Override
@@ -65,7 +65,7 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 
 	@Override
 	int getViewportMinimumOrigin() {
-		return viewportLayer.getMinimumOrigin().x;
+		return viewportLayer.getMinimumOrigin().getX();
 //		int column = viewportLayer.getMinimumOriginColumnPosition();
 //		return (column < scrollableLayer.getColumnCount()) ? scrollableLayer.getStartXOfColumnPosition(column) : scrollableLayer.getWidth();
 	}

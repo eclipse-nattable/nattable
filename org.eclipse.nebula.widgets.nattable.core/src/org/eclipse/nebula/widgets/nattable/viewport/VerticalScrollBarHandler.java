@@ -52,7 +52,7 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 	@Override
 	int getViewportOrigin() {
 //		return LayerUtil.convertRowPosition(viewportLayer, 0, scrollableLayer);
-		return viewportLayer.getOrigin().y;
+		return viewportLayer.getOrigin().getY();
 	}
 
 //	@Override
@@ -67,7 +67,7 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 
 	@Override
 	int getViewportMinimumOrigin() {
-		return viewportLayer.getMinimumOrigin().y;
+		return viewportLayer.getMinimumOrigin().getY();
 //		int row = viewportLayer.getMinimumOriginRowPosition();
 //		return (row < scrollableLayer.getRowCount()) ? scrollableLayer.getStartYOfRowPosition(row) : scrollableLayer.getHeight();
 	}
