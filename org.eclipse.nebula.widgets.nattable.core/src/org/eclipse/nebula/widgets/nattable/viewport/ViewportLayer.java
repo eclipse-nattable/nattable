@@ -348,6 +348,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 //					if (getOriginColumnPosition() < minimumOriginPosition.columnPosition) {
 //						originPosition.columnPosition = minimumOriginPosition.columnPosition;
 //					}
+					// lower bound check
 					if (origin.x < minimumOrigin.x) {
 						origin.x = minimumOrigin.x;
 					}
@@ -413,14 +414,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	@Override
 	public int getColumnPositionByX(int x) {
-		
-		int originPos = getOriginColumnPosition();
-		int originX = getUnderlyingLayer().getStartXOfColumnPosition(originPos);
-		
-		int columnPos = 
-			getUnderlyingLayer().getColumnPositionByX(originX + x) - originPos;
-
-		return columnPos;
+		return getUnderlyingLayer().getColumnPositionByX(getOrigin().x + x) - getOriginColumnPosition();
 	}
 
 	@Override
@@ -448,6 +442,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 //					if (getOriginRowPosition() < minimumOriginPosition.rowPosition) {
 //						originPosition.rowPosition = minimumOriginPosition.rowPosition;
 //					}
+					// lower bound check
 					if (origin.y < minimumOrigin.y) {
 						origin.y = minimumOrigin.y;
 					}
@@ -505,8 +500,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	@Override
 	public int getRowPositionByY(int y) {
-		int originY = getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
-		return getUnderlyingLayer().getRowPositionByY(originY + y) - getOriginRowPosition();
+		return getUnderlyingLayer().getRowPositionByY(getOrigin().y + y) - getOriginRowPosition();
 	}
 
 	@Override
