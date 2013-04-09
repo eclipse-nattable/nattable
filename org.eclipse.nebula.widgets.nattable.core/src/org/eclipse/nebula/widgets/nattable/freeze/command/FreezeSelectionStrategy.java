@@ -35,12 +35,12 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 			return null;
 		}
 			
-		int columnPosition = viewportLayer.getOriginColumnPosition();
+		int columnPosition = viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX());
 		if (columnPosition >= lastSelectedCellPosition.columnPosition) {
 			columnPosition = lastSelectedCellPosition.columnPosition - 1;
 		}
 		
-		int rowPosition = viewportLayer.getOriginRowPosition();
+		int rowPosition = viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY());
 		if (rowPosition >= lastSelectedCellPosition.rowPosition) {
 			rowPosition = lastSelectedCellPosition.rowPosition - 1;
 		}

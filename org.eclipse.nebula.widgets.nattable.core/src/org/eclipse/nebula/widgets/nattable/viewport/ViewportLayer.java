@@ -113,11 +113,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return minimumOrigin;
 	}
 	
-	private int getMinimumOriginColumnPosition() {
+	public int getMinimumOriginColumnPosition() {
 		return scrollableLayer.getColumnPositionByX(minimumOrigin.getX());
 	}
 	
-	private int getMinimumOriginRowPosition() {
+	public int getMinimumOriginRowPosition() {
 		return scrollableLayer.getRowPositionByY(minimumOrigin.getY());
 	}
 

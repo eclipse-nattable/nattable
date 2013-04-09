@@ -47,7 +47,7 @@ public class HorizontalScrollBarHandlerTest {
 	}
 
 	private void scrollViewportByOffset(int offset) {
-		scrollHandler.setViewportOrigin(viewport.getOriginColumnPosition() + offset);
+		scrollHandler.setViewportOrigin(viewport.getColumnPositionByX(viewport.getOrigin().getX()) + offset);
 	}
 
 	private void scrollViewportToPixel(int x) {

@@ -49,7 +49,7 @@ public class ViewportLayerTest2 {
 	
 	@Test
 	public void testScrollRight() {
-		viewportLayer.setOriginColumnPosition(2);
+		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(2));
 
 		String columnInfo = "2:2;100 | 3:3;100";
 		String rowInfo =    "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40";

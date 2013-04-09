@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumul
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -112,14 +113,16 @@ public class NatTableFixture extends NatTable {
 
 	public void scrollToColumn(int gridColumnPosition) {
 		DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
-		gridLayer.getBodyLayer().getViewportLayer().invalidateHorizontalStructure();
-		gridLayer.getBodyLayer().getViewportLayer().setOriginColumnPosition(gridColumnPosition);
+		ViewportLayer viewportLayer = gridLayer.getBodyLayer().getViewportLayer();
+		viewportLayer.invalidateHorizontalStructure();
+		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(gridColumnPosition));
 	}
 
 	public void scrollToRow(int gridRowPosition) {
 		DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
-		gridLayer.getBodyLayer().getViewportLayer().invalidateVerticalStructure();
-		gridLayer.getBodyLayer().getViewportLayer().setOriginRowPosition(gridRowPosition);
+		ViewportLayer viewportLayer = gridLayer.getBodyLayer().getViewportLayer();
+		viewportLayer.invalidateVerticalStructure();
+		viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(gridRowPosition));
 	}
 
 	public void enableEditingOnAllCells() {

@@ -42,8 +42,8 @@ public class ResizeEventDiffTest {
 			}
 			
 		});
-		viewportLayer.setOriginColumnPosition(2);
-		viewportLayer.setOriginRowPosition(2);
+		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(2));
+		viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(2));
 		event = new ColumnResizeEvent(dataLayer, 2);
 	}
 	

@@ -55,7 +55,7 @@ public class VerticalScrollBarHandlerTest {
 	}
 
 	private void scrollViewportByOffset(int offset) {
-		scrollHandler.setViewportOrigin(viewport.getOriginRowPosition() + offset);
+		scrollHandler.setViewportOrigin(viewport.getRowPositionByY(viewport.getOrigin().getY()) + offset);
 	}
 
 	private void scrollViewportToPixel(int y) {
