@@ -62,18 +62,20 @@ public class ImagePainter extends BackgroundPainter {
 
 	@Override
 	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
-		Rectangle imageBounds = getImage(cell, configRegistry).getBounds();
-		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
-		int x0 = bounds.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width);
-		int y0 = bounds.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, bounds, imageBounds.height);
-		if (	x >= x0 &&
-				x < x0 + imageBounds.width &&
-				y >= y0 &&
-				y < y0 + imageBounds.height) {
-			return super.getCellPainterAt(x, y, cell, gc, bounds, configRegistry);
-		} else {
-			return null;
+		Image image = getImage(cell, configRegistry);
+		if (image != null) {
+			Rectangle imageBounds = image.getBounds();
+			IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
+			int x0 = bounds.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width);
+			int y0 = bounds.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, bounds, imageBounds.height);
+			if (	x >= x0 &&
+					x < x0 + imageBounds.width &&
+					y >= y0 &&
+					y < y0 + imageBounds.height) {
+				return super.getCellPainterAt(x, y, cell, gc, bounds, configRegistry);
+			}
 		}
+		return null;
 	}
 	
 	@Override
