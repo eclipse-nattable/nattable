@@ -20,71 +20,87 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedList
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TreeList;
 
 public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
+	/**
+	 * Label that indicates the shown tree item object as GroupByObject
+	 */
 	public static final String GROUP_BY_OBJECT = "GROUP_BY_OBJECT"; //$NON-NLS-1$
-	
-	private final GroupByModel groupByModel;
+	/**
+	 * The underlying base EventList.
+	 */
 	private final EventList<T> eventList;
-	private final IColumnAccessor<T> columnAccessor;
-	private final TreeList.ExpansionModel<Object> treeExpansionModel;
-	
+	/**
+	 * Convenience class to retrieve information and operate on the TreeList.
+	 */
 	private final GlazedListTreeData<Object> treeData;
+	/**
+	 * The ITreeRowModel that is responsible to retrieve information and operate on tree items.
+	 */
 	private final GlazedListTreeRowModel<Object> treeRowModel;
-	private final GroupByDataProvider groupByDataProvider;
-
+	/**
+	 * The TreeList that is created internally by this GroupByDataLayer to enable groupBy.
+	 */
+	private final TreeList<Object> treeList;
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor) {
-		this.groupByModel = groupByModel;
 		this.eventList = eventList;
-		this.columnAccessor = columnAccessor;
 		
 		groupByModel.addObserver(this);
 		
-		treeExpansionModel = new TreeList.ExpansionModel<Object>() {
-			public boolean isExpanded(Object arg0, List<Object> arg1) {
-				return true;
-			}
-			public void setExpanded(Object arg0, List<Object> arg1, boolean arg2) {
-			}
-		};
-		
-		treeData = new GlazedListTreeData<Object>(null);
-		
 		TreeList.Format<Object> treeFormat = new GroupByTreeFormat<T>(groupByModel, columnAccessor);
-		TreeList<Object> treeList = new TreeList(eventList, treeFormat, treeExpansionModel);
+		this.treeList = new TreeList(eventList, treeFormat, new GroupByExpansionModel());
 		
-		treeData.setTreeList(treeList);
+		treeData = new GlazedListTreeData<Object>(getTreeList());
 		treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
 		
 		IColumnAccessor<Object> groupByColumnAccessor = new GroupByColumnAccessor<T>(columnAccessor);
-		groupByDataProvider = new GroupByDataProvider(treeList, groupByColumnAccessor);
-		
-		setDataProvider(groupByDataProvider);
+		setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(), groupByColumnAccessor));
 		
 		addConfiguration(new GroupByDataLayerConfiguration());
 	}
 	
-	private void resetTreeList() {
-		TreeList.Format<Object> treeFormat = new GroupByTreeFormat<T>(groupByModel, columnAccessor);
-		TreeList<Object> treeList = new TreeList(eventList, treeFormat, treeExpansionModel);
-		
-		treeData.setTreeList(treeList);
-		groupByDataProvider.setList(treeList);
-	}
-	
-	public void update(Observable o, Object arg) {
-		resetTreeList();
-		fireLayerEvent(new RowStructuralRefreshEvent(this));
+	/**
+	 * Method to update the tree list after filter or TreeList.Format changed.
+	 * Need this workaround to update the tree list for presentation because of
+	 * http://java.net/jira/browse/GLAZEDLISTS-521
+	 * 
+	 * @see http://glazedlists.1045722.n5.nabble.com/sorting-a-treelist-td4704550.html
+	 */
+	protected void updateTree() {
+		this.eventList.getReadWriteLock().writeLock().lock();
+		try {
+			for (int i = 0; i < this.eventList.size(); i++) {
+				this.eventList.set(i,
+						this.eventList.get(i));
+			}
+		} finally {
+			this.eventList.getReadWriteLock().writeLock().unlock();
+		}
 	}
 
+	@Override
+	public void update(Observable o, Object arg) {
+		updateTree();
+	}
+
+	/**
+	 * @return The ITreeRowModel that is responsible to retrieve information and operate on tree items.
+	 */
 	public GlazedListTreeRowModel<Object> getTreeRowModel() {
 		return treeRowModel;
+	}
+	
+	/**
+	 * @return The TreeList that is created internally by this GroupByDataLayer to enable groupBy.
+	 */
+	public TreeList<Object> getTreeList() {
+		return treeList;
 	}
 	
 	@Override
@@ -95,17 +111,35 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		}
 		return configLabels;
 	}
-	
-	class GroupByDataProvider extends GlazedListsDataProvider<Object> {
 
-		public GroupByDataProvider(EventList<Object> list, IColumnAccessor<Object> columnAccessor) {
-			super(list, columnAccessor);
+	/**
+	 * Simple {@link ExpansionModel} that shows every node expanded initially
+	 * and doesn't react on expand/collapse state changes.
+	 * 
+	 * It is not strictly necessary for implementors to record the
+	 * expand/collapsed state of all nodes, since TreeList caches node state
+	 * internally.
+	 * 
+	 * @see http://publicobject.com/glazedlists/glazedlists-1.8.0/api/ca/odell/
+	 *      glazedlists/TreeList.ExpansionModel.html
+	 */
+	private class GroupByExpansionModel implements TreeList.ExpansionModel<Object> {
+		/**
+		 * Determine the specified element's initial expand/collapse state.
+		 */
+		@Override
+		public boolean isExpanded(final Object element, final List<Object> path) {
+			return true;
 		}
-		
-		public void setList(List<Object> list) {
-			this.list = list;
+
+		/**
+		 * Notifies this handler that the specified element's expand/collapse
+		 * state has changed.
+		 */
+		@Override
+		public void setExpanded(final Object element, final List<Object> path, final boolean expanded) {
+			//do nothing
 		}
-		
 	}
-	
+
 }
