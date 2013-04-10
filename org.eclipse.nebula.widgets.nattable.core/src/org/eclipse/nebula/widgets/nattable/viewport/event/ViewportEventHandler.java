@@ -61,7 +61,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 				}
 			}
 			
-			viewportLayer.setMinimumOriginColumnPosition(minimumOriginColumnPosition + columnOffset);
+			viewportLayer.setMinimumOriginX(viewportLayer.getStartXOfColumnPosition(minimumOriginColumnPosition + columnOffset));
 		}
 		
 		Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
@@ -86,7 +86,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 				}
 			}
 			
-			viewportLayer.setMinimumOriginRowPosition(minimumOriginRowPosition + rowOffset);
+			viewportLayer.setMinimumOriginY(viewportLayer.getStartYOfRowPosition(minimumOriginRowPosition + rowOffset));
 		}
 	}
 

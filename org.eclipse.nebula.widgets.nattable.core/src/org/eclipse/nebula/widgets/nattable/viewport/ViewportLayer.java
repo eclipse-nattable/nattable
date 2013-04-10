@@ -120,6 +120,53 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public int getMinimumOriginRowPosition() {
 		return scrollableLayer.getRowPositionByY(minimumOrigin.getY());
 	}
+	
+	public void setMinimumOriginX(int newMinimumOriginX) {
+		if (newMinimumOriginX != minimumOrigin.getX()) {
+			minimumOrigin = new PixelCoordinate(newMinimumOriginX, minimumOrigin.getY());
+		}
+		
+		PixelCoordinate previousOrigin = origin;
+		
+		if (previousOrigin.getX() == newMinimumOriginX || origin.getX() < newMinimumOriginX) {
+			origin = minimumOrigin;
+		} else {
+			// TODO I don't think we need this, but test..
+//			origin = new PixelCoordinate(origin.getX() + newMinimumOriginX - minimumOrigin.getX(), origin.getY());
+		}
+		
+		if (origin != previousOrigin) {
+			invalidateHorizontalStructure();
+		}
+		
+		recalculateHorizontalScrollBar();
+	}
+	
+	public void setMinimumOriginY(int newMinimumOriginY) {
+		if (newMinimumOriginY != minimumOrigin.getY()) {
+			minimumOrigin = new PixelCoordinate(minimumOrigin.getX(), newMinimumOriginY);
+		}
+		
+		PixelCoordinate previousOrigin = origin;
+		
+		if (previousOrigin.getY() == newMinimumOriginY || origin.getY() < newMinimumOriginY) {
+			origin = minimumOrigin;
+		} else {
+			// TODO I don't think we need this, but test..
+//			origin = new PixelCoordinate(origin.getX(), origin.getY() + newMinimumOriginY - minimumOrigin.getY());
+		}
+		
+		if (origin != previousOrigin) {
+			invalidateHorizontalStructure();
+		}
+		
+		recalculateHorizontalScrollBar();
+	}
+	
+	public void setMinimumOrigin(int newMinimumOriginX, int newMinimumOriginY) {
+		setMinimumOriginX(newMinimumOriginX);
+		setMinimumOriginY(newMinimumOriginY);
+	}
 
 //	public int getMinimumOriginColumnPosition() {
 //		return minimumOriginPosition.columnPosition;
@@ -235,6 +282,21 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			invalidateVerticalStructure();
 			origin = new PixelCoordinate(origin.getX(), newOriginY);
 			fireScrollEvent();
+		}
+	}
+	
+	public void resetOrigin(int newOriginX, int newOriginY) {
+		PixelCoordinate previousOrigin = origin;
+		
+		minimumOrigin = new PixelCoordinate(0, 0);
+		origin = new PixelCoordinate(newOriginX, newOriginY);
+		
+		if (origin.getX() != previousOrigin.getX()) {
+			invalidateHorizontalStructure();
+		}
+		
+		if (origin.getY() != previousOrigin.getY()) {
+			invalidateVerticalStructure();
 		}
 	}
 	

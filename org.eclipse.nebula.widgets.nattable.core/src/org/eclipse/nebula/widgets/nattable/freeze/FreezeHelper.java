@@ -63,7 +63,7 @@ public class FreezeHelper {
 			freezeLayer.setTopLeftPosition(topLeftPosition.columnPosition, topLeftPosition.rowPosition);
 			freezeLayer.setBottomRightPosition(bottomRightPosition.columnPosition, bottomRightPosition.rowPosition);
 	
-			viewportLayer.setMinimumOriginPosition(bottomRightPosition.columnPosition + 1, bottomRightPosition.rowPosition + 1);
+			viewportLayer.setMinimumOrigin(viewportLayer.getStartXOfColumnPosition(bottomRightPosition.columnPosition + 1), viewportLayer.getStartYOfRowPosition(bottomRightPosition.rowPosition + 1));
 			viewportLayer.fireLayerEvent(new FreezeEvent(viewportLayer));
 		}
 	}
@@ -99,6 +99,6 @@ public class FreezeHelper {
 	 */
 	public static void resetViewport(FreezeLayer freezeLayer, ViewportLayer viewportLayer) {
 		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
-		viewportLayer.resetOriginPosition(Math.max(0, topLeftPosition.columnPosition), Math.max(0,topLeftPosition.rowPosition));
+		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(Math.max(0, topLeftPosition.columnPosition)), viewportLayer.getStartYOfRowPosition(Math.max(0,topLeftPosition.rowPosition)));
 	}
 }
