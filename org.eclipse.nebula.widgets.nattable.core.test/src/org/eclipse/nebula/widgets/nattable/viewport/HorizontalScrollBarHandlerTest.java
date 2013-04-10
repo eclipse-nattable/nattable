@@ -103,12 +103,13 @@ public class HorizontalScrollBarHandlerTest {
 		assertEquals(0, viewport.getColumnIndexByPosition(0));
 	}
 
-	@Test
-	public void widthToScrollBy() throws Exception {
-		assertEquals(0, viewport.getColumnIndexByPosition(0));
-
-		assertEquals(200, scrollHandler.pageScrollDistance());
-	}
+	// TODO restore if needed
+//	@Test
+//	public void widthToScrollBy() throws Exception {
+//		assertEquals(0, viewport.getColumnIndexByPosition(0));
+//
+//		assertEquals(200, scrollHandler.pageScrollDistance());
+//	}
 
 	/**
 	 * Test for issue reported in http://nattable.org/jira/browse/NTBL-99.
@@ -178,19 +179,20 @@ public class HorizontalScrollBarHandlerTest {
 		assertFalse(scrollBar.isVisible());
 	}
 
-	@Test
-	public void getHBarOverhang() throws Exception {
-		assertEquals(200, viewport.getClientAreaWidth());
-		assertEquals(20, scrollHandler.getScrollBarOverhang());
-	}
-
-	@Test
-	public void noHBarOverhangForPerfectFit() throws Exception {
-		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 180, 100));
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
-
-		assertEquals(180, viewport.getClientAreaWidth());
-		assertEquals(0, scrollHandler.getScrollBarOverhang());
-	}
+	// TODO restore if needed
+//	@Test
+//	public void getHBarOverhang() throws Exception {
+//		assertEquals(200, viewport.getClientAreaWidth());
+//		assertEquals(20, scrollHandler.getScrollBarOverhang());
+//	}
+//
+//	@Test
+//	public void noHBarOverhangForPerfectFit() throws Exception {
+//		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 180, 100));
+//		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+//
+//		assertEquals(180, viewport.getClientAreaWidth());
+//		assertEquals(0, scrollHandler.getScrollBarOverhang());
+//	}
 
 }

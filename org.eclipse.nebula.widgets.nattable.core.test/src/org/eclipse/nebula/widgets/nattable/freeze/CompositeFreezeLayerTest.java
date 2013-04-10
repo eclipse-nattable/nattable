@@ -154,8 +154,8 @@ public class CompositeFreezeLayerTest {
 		});
 		
 		selectionLayer.setSelectedCell(2, 2);
-		viewportLayer.setOriginColumnPosition(1);
-		viewportLayer.setOriginRowPosition(1);
+		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
+		viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(1));
 		compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
 
 		TestLayer expectedLayer =

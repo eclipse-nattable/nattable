@@ -108,8 +108,8 @@ public class FreezeHandlerTest {
 	@Test
 	public void shouldFreezeAfterScrolling() {
 		// Scroll the viewport to the first column
-		viewportLayer.resetOriginPosition(0, 0);
-		viewportLayer.setOriginColumnPosition(1);
+		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(0), viewportLayer.getStartYOfRowPosition(0));
+		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
 		Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 				
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 3, false, false));
@@ -146,8 +146,8 @@ public class FreezeHandlerTest {
 		viewportLayer.addLayerListener(reorderListener);
 
 		// Scroll the viewport to the first column
-		viewportLayer.resetOriginPosition(0, 0);
-		viewportLayer.setOriginColumnPosition(1);
+		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(0), viewportLayer.getStartYOfRowPosition(0));
+		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
 		Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 				
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 3, false, false));

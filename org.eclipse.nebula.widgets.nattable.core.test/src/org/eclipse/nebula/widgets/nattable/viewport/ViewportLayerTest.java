@@ -276,39 +276,39 @@ public class ViewportLayerTest {
 	public void setViewportMinOriginColumnPosition() throws Exception {
 		viewportLayer = new ViewportLayerFixture(10, 20, 50, 20);
 		
-		viewportLayer.setMinimumOriginColumnPosition(2);
+		viewportLayer.setMinimumOriginX(viewportLayer.getStartXOfColumnPosition(2));
 		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(2, viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX()));
 		assertEquals(2, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(4, viewportLayer.getColumnCount());
 		
-		viewportLayer.setMinimumOriginColumnPosition(4);
+		viewportLayer.setMinimumOriginX(viewportLayer.getStartXOfColumnPosition(4));
 		assertEquals(4, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(4, viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX()));
 		assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(4, viewportLayer.getColumnCount());
 		
-		viewportLayer.setMinimumOriginColumnPosition(2);
+		viewportLayer.setMinimumOriginX(viewportLayer.getStartXOfColumnPosition(2));
 		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(2, viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX()));
 		
 		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(3));
-		viewportLayer.setMinimumOriginColumnPosition(4);
+		viewportLayer.setMinimumOriginX(viewportLayer.getStartXOfColumnPosition(4));
 		assertEquals(4, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(4, viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX()));
 		
 		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(5));
-		viewportLayer.setMinimumOriginColumnPosition(2);
+		viewportLayer.setMinimumOriginX(viewportLayer.getStartXOfColumnPosition(2));
 		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(3, viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX()));
 		
-		viewportLayer.setMinimumOriginColumnPosition(9);
+		viewportLayer.setMinimumOriginX(viewportLayer.getStartXOfColumnPosition(9));
 		assertEquals(9, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(9, viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX()));
 		assertEquals(9, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(1, viewportLayer.getColumnCount());
 		
-		viewportLayer.setMinimumOriginColumnPosition(10);
+		viewportLayer.setMinimumOriginX(viewportLayer.getStartXOfColumnPosition(10));
 		assertEquals(10, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(10, viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX()));
 		assertEquals(-1, viewportLayer.getColumnIndexByPosition(0));
@@ -336,39 +336,39 @@ public class ViewportLayerTest {
 	public void setViewportMinOriginRowPosition() throws Exception {
 		viewportLayer = new ViewportLayerFixture(10, 20, 50, 20);
 		
-		viewportLayer.setMinimumOriginRowPosition(2);
+		viewportLayer.setMinimumOriginY(viewportLayer.getStartYOfRowPosition(2));
 		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(2, viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY()));
 		assertEquals(2, viewportLayer.getRowIndexByPosition(0));
 		assertEquals(5, viewportLayer.getRowCount());
 		
-		viewportLayer.setMinimumOriginRowPosition(4);
+		viewportLayer.setMinimumOriginY(viewportLayer.getStartYOfRowPosition(4));
 		assertEquals(4, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(4, viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY()));
 		assertEquals(4, viewportLayer.getRowIndexByPosition(0));
 		assertEquals(5, viewportLayer.getRowCount());
 		
-		viewportLayer.setMinimumOriginRowPosition(2);
+		viewportLayer.setMinimumOriginY(viewportLayer.getStartYOfRowPosition(2));
 		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(2, viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY()));
 		
 		viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(3));
-		viewportLayer.setMinimumOriginRowPosition(4);
+		viewportLayer.setMinimumOriginY(viewportLayer.getStartYOfRowPosition(4));
 		assertEquals(4, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(4, viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY()));
 		
 		viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(5));
-		viewportLayer.setMinimumOriginRowPosition(2);
+		viewportLayer.setMinimumOriginY(viewportLayer.getStartYOfRowPosition(2));
 		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(3, viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY()));
 		
-		viewportLayer.setMinimumOriginRowPosition(19);
+		viewportLayer.setMinimumOriginY(viewportLayer.getStartYOfRowPosition(19));
 		assertEquals(19, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(19, viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY()));
 		assertEquals(19, viewportLayer.getRowIndexByPosition(0));
 		assertEquals(1, viewportLayer.getRowCount());
 		
-		viewportLayer.setMinimumOriginRowPosition(20);
+		viewportLayer.setMinimumOriginY(viewportLayer.getStartYOfRowPosition(20));
 		assertEquals(20, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(20, viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY()));
 		assertEquals(-1, viewportLayer.getRowIndexByPosition(0));
