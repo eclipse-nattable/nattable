@@ -294,7 +294,7 @@ public abstract class AbstractLayer implements ILayer {
 			int end = column + cell.getColumnSpan();
 			for (; column < end; column++) {
 				int columnOffset = cellLayer.getStartXOfColumnPosition(column);
-				if (columnOffset >= 0) {
+				if (column < cellLayer.getColumnCount()) {
 					xOffset = columnOffset;
 					break;
 				}
@@ -307,7 +307,7 @@ public abstract class AbstractLayer implements ILayer {
 			int end = row + cell.getRowSpan();
 			for (; row < end; row++) {
 				int rowOffset = cellLayer.getStartYOfRowPosition(row);
-				if (rowOffset >= 0) {
+				if (row < cellLayer.getRowCount()) {
 					yOffset = rowOffset;
 					break;
 				}
@@ -317,7 +317,7 @@ public abstract class AbstractLayer implements ILayer {
 			}
 		}
 		
-		return (xOffset >= 0 && yOffset >= 0) ? new Rectangle(xOffset, yOffset, width, height) : null;
+		return new Rectangle(xOffset, yOffset, width, height);
 	}
 	
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
