@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.config;
 
 
-import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -43,6 +42,29 @@ public class DefaultComparatorTest {
 
 	@Test
 	public void testCompareNonComparables() {
-		Assert.assertEquals(0, defaultComparator.compare(new Object(), new Object()));
+		Assert.assertEquals(0, defaultComparator.compare(new SimpleObject("Test"), new SimpleObject("Test")));
+	}
+
+	@Test
+	public void testCompareNonComparables1() {
+		Assert.assertEquals(-1, defaultComparator.compare(new SimpleObject("Test1"), new SimpleObject("Test2")));
+	}
+
+	@Test
+	public void testCompareNonComparables2() {
+		Assert.assertEquals(1, defaultComparator.compare(new SimpleObject("Test2"), new SimpleObject("Test1")));
+	}
+	
+	class SimpleObject {
+		final String value;
+		
+		public SimpleObject(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value.toString();
+		}
 	}
 }

@@ -24,6 +24,8 @@ public class DefaultComparator implements Comparator<Object> {
 		return singleton;
 	}
 
+	@Override
+	@SuppressWarnings("rawtypes")
 	public int compare(final Object o1, final Object o2) {
 		if (o1 == null) {
 			if (o2 == null) {
@@ -34,9 +36,9 @@ public class DefaultComparator implements Comparator<Object> {
 		} else if (o2 == null) {
 			return 1;
 		} else if (o1 instanceof Comparable && o2 instanceof Comparable) {
-			return ((Comparable) o1).compareTo((Comparable) o2);
+			return ((Comparable) o1).compareTo(o2);
 		} else {
-			return 0;
+			return o1.toString().compareTo(o2.toString());
 		}
 	}
 
