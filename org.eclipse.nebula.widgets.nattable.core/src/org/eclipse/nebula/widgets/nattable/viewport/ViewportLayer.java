@@ -157,10 +157,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 		
 		if (origin != previousOrigin) {
-			invalidateHorizontalStructure();
+			invalidateVerticalStructure();
 		}
 		
-		recalculateHorizontalScrollBar();
+		recalculateVerticalScrollBar();
 	}
 	
 	public void setMinimumOrigin(int newMinimumOriginX, int newMinimumOriginY) {
@@ -629,7 +629,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		cachedWidth = 0;
 		cachedColumnCount = 0;
 
-		for (int columnPosition = getOriginColumnPosition(); columnPosition < underlyingLayer.getColumnCount() && availableWidth > 0; columnPosition++) {
+		for (int columnPosition = getOriginColumnPosition(); columnPosition >= 0 && columnPosition < underlyingLayer.getColumnCount() && availableWidth > 0; columnPosition++) {
 			int width = underlyingLayer.getColumnWidthByPosition(columnPosition);
 			availableWidth -= width;
 			cachedWidth += width;
@@ -650,7 +650,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		cachedHeight = 0;
 		cachedRowCount = 0;
 
-		for (int currentPosition = getOriginRowPosition(); currentPosition < underlyingLayer.getRowCount() && availableHeight > 0; currentPosition++) {
+		for (int currentPosition = getOriginRowPosition(); currentPosition >= 0 && currentPosition < underlyingLayer.getRowCount() && availableHeight > 0; currentPosition++) {
 			int rowIndex = underlyingLayer.getRowIndexByPosition(currentPosition);
 			int height = underlyingLayer.getRowHeightByPosition(rowIndex);  // TODO this looks funny.. shouldn't this be the row position instead?
 			availableHeight -= height;
