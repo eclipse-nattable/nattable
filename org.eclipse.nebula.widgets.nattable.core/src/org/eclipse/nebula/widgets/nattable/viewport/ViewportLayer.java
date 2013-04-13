@@ -465,6 +465,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 		return cachedWidth;
 	}
+	
+	@Override
+	public int getColumnWidthByPosition(int columnPosition) {
+		int width = super.getColumnWidthByPosition(columnPosition);
+		if (columnPosition == 0)
+			width -= getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition());
+		return width;
+	}
 
 	// Column resize
 
@@ -482,7 +490,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
-		return getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + columnPosition) - getOrigin().getX();
+		return Math.max(0, getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + columnPosition) - getOrigin().getX());
 	}
 
 	// Vertical features
@@ -556,7 +564,15 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 		return cachedHeight;
 	}
-
+	
+	@Override
+	public int getRowHeightByPosition(int rowPosition) {
+		int height = super.getRowHeightByPosition(rowPosition);
+		if (rowPosition == 0)
+			height -= getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
+		return height;
+	}
+	
 	// Row resize
 
 	// Y
@@ -568,7 +584,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
-		return getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + rowPosition) - getOrigin().getY();
+		return Math.max(0, getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + rowPosition) - getOrigin().getY());
 	}
 
 	// Cell features
@@ -578,8 +594,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
 		Rectangle bounds = getUnderlyingLayer().getBoundsByPosition(underlyingColumnPosition, underlyingRowPosition);
-		bounds.x -= origin.getX(); //getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition());
-		bounds.y -= origin.getY(); //getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
+		bounds.x -= getOrigin().getX(); //getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition());
+		bounds.y -= getOrigin().getY(); //getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
 		return bounds;
 	}
 
