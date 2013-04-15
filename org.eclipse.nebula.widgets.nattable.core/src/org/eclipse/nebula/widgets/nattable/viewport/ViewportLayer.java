@@ -631,6 +631,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 		for (int columnPosition = getOriginColumnPosition(); columnPosition >= 0 && columnPosition < underlyingLayer.getColumnCount() && availableWidth > 0; columnPosition++) {
 			int width = underlyingLayer.getColumnWidthByPosition(columnPosition);
+			if (columnPosition == getOriginColumnPosition()) {
+				width -= getOrigin().getX() - underlyingLayer.getStartXOfColumnPosition(columnPosition);
+			}
 			availableWidth -= width;
 			cachedWidth += width;
 			cachedColumnCount++;
@@ -651,8 +654,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		cachedRowCount = 0;
 
 		for (int currentPosition = getOriginRowPosition(); currentPosition >= 0 && currentPosition < underlyingLayer.getRowCount() && availableHeight > 0; currentPosition++) {
-			int rowIndex = underlyingLayer.getRowIndexByPosition(currentPosition);
-			int height = underlyingLayer.getRowHeightByPosition(rowIndex);  // TODO this looks funny.. shouldn't this be the row position instead?
+			int height = underlyingLayer.getRowHeightByPosition(currentPosition);
+			if (currentPosition == getOriginRowPosition()) {
+				height -= getOrigin().getY() - underlyingLayer.getStartYOfRowPosition(currentPosition);
+			}
 			availableHeight -= height;
 			cachedHeight += height;
 			cachedRowCount++;

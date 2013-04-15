@@ -89,7 +89,7 @@ public class ViewportLayerTest {
 
 		viewportLayer.setOriginX(600);
 		assertEquals(3, viewportLayer.getColumnCount());
-		assertEquals(240, viewportLayer.getWidth());
+		assertEquals(200, viewportLayer.getWidth());
 		assertEquals(7, viewportLayer.getColumnIndexByPosition(0));
 
 		//Keep moving left by 1 col
