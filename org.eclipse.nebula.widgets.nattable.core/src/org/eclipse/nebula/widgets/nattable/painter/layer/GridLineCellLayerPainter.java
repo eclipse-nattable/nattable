@@ -10,13 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class GridLineCellLayerPainter extends CellLayerPainter {
 	
@@ -43,7 +44,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	
 	@Override
 	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle bounds) {
-		return new Rectangle(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
+		return new Rectangle(bounds.x, bounds.y, Math.max(bounds.width - 1, 0), Math.max(bounds.height - 1, 0));
 	}
 	
 	protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle) {
@@ -59,8 +60,11 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 		int rowPositionByY = natLayer.getRowPositionByY(rectangle.y + rectangle.height);
 		int maxRowPosition = rowPositionByY > 0 ? Math.min(natLayer.getRowCount(), rowPositionByY) : natLayer.getRowCount();
 		for (int rowPosition = natLayer.getRowPositionByY(rectangle.y); rowPosition < maxRowPosition; rowPosition++) {
-			int y = natLayer.getStartYOfRowPosition(rowPosition) + natLayer.getRowHeightByPosition(rowPosition) - 1;
-			gc.drawLine(rectangle.x, y, endX, y);
+			final int size = natLayer.getRowHeightByPosition(rowPosition);
+			if (size > 0) {
+				int y = natLayer.getStartYOfRowPosition(rowPosition) + size - 1;
+				gc.drawLine(rectangle.x, y, endX, y);
+			}
 		}
 	}
 
@@ -70,8 +74,11 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 		int columnPositionByX = natLayer.getColumnPositionByX(rectangle.x + rectangle.width);
 		int maxColumnPosition = columnPositionByX > 0 ? Math.min(natLayer.getColumnCount(), columnPositionByX) : natLayer.getColumnCount();
 		for (int columnPosition = natLayer.getColumnPositionByX(rectangle.x); columnPosition < maxColumnPosition; columnPosition++) {
-			int x = natLayer.getStartXOfColumnPosition(columnPosition) + natLayer.getColumnWidthByPosition(columnPosition) - 1;
-			gc.drawLine(x, rectangle.y, x, endY);
+			final int size = natLayer.getColumnWidthByPosition(columnPosition);
+			if (size > 0) {
+				int x = natLayer.getStartXOfColumnPosition(columnPosition) + size - 1;
+				gc.drawLine(x, rectangle.y, x, endY);
+			}
 		}
 	}
 

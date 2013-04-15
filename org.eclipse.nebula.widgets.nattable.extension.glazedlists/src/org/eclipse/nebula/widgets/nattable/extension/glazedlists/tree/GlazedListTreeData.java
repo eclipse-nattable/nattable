@@ -18,15 +18,11 @@ import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
 import ca.odell.glazedlists.TreeList;
 import ca.odell.glazedlists.TreeList.Node;
 
-public class GlazedListTreeData <T> implements ITreeData<T> {
+public class GlazedListTreeData<T> implements ITreeData<T> {
 
-	private TreeList <T> treeList;
+	private final TreeList<T> treeList;
 	
-	public GlazedListTreeData(TreeList <T> treeList) {
-		setTreeList(treeList);
-	}
-	
-	public void setTreeList(TreeList <T> treeList) {
+	public GlazedListTreeData(TreeList<T> treeList) {
 		this.treeList = treeList;
 	}
 	
@@ -34,6 +30,7 @@ public class GlazedListTreeData <T> implements ITreeData<T> {
 		return formatDataForDepth(depth, this.treeList.get(index));
 	}
 
+	@Override
 	public String formatDataForDepth(int depth, T object) {
 		if (object != null) {
 			return object.toString();
@@ -42,10 +39,12 @@ public class GlazedListTreeData <T> implements ITreeData<T> {
 		}
 	}
 	
+	@Override
 	public T getDataAtIndex(int index) {
 		return this.treeList.get(index);
 	}
 
+	@Override
 	public int getDepthOfData(T object) {
 		return getDepthOfData(indexOf(object));
 	}
@@ -54,10 +53,12 @@ public class GlazedListTreeData <T> implements ITreeData<T> {
 		return this.treeList.depth(index);
 	}
 	
+	@Override
 	public int indexOf(T object) {
 		return this.treeList.indexOf(object);
 	}
 
+	@Override
 	public boolean hasChildren(T object) {
 		return hasChildren(indexOf(object));
 	}
@@ -66,6 +67,7 @@ public class GlazedListTreeData <T> implements ITreeData<T> {
 		return this.treeList.hasChildren(index);
 	}
 
+	@Override
 	public List<T> getChildren(T object) {
 		return getChildren(indexOf(object));
 	}

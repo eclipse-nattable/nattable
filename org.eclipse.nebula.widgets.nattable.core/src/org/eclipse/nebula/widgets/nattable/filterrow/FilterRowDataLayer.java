@@ -37,19 +37,18 @@ public class FilterRowDataLayer<T> extends DataLayer {
 	/** Prefix for the persistence key in the properties file */
 	public static final String PERSISTENCE_KEY_FILTER_ROW_TOKENS = ".filterTokens"; //$NON-NLS-1$
 
-	private final FilterRowDataProvider<T> dataProvider;
 
 	public FilterRowDataLayer(IFilterStrategy<T> filterStrategy, ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider, IConfigRegistry configRegistry) {
-		this.dataProvider = new FilterRowDataProvider<T>(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
-		registerPersistable(dataProvider);
-
-		setDataProvider(dataProvider);
+		super(new FilterRowDataProvider<T>(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry));
+		
+		registerPersistable(getFilterRowDataProvider());
 
 		addConfiguration(new DefaultFilterRowConfiguration());
 	}
 	
+	@SuppressWarnings("unchecked")
 	public FilterRowDataProvider<T> getFilterRowDataProvider() {
-		return dataProvider;
+		return (FilterRowDataProvider<T>)dataProvider;
 	}
 
 	@Override
@@ -60,7 +59,7 @@ public class FilterRowDataLayer<T> extends DataLayer {
 			dataProvider.setDataValue(columnPosition, 0, null);
 			handled = true;
 		} else if (command instanceof ClearAllFiltersCommand) {
-			dataProvider.clearAllFilters();
+			getFilterRowDataProvider().clearAllFilters();
 			handled = true;
 		}
 

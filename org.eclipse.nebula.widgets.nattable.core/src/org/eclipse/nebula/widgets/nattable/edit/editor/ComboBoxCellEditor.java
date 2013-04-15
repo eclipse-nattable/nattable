@@ -23,8 +23,8 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -85,13 +85,19 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 * Flag that indicates whether this ComboBoxCellEditor supports free editing in the
 	 * text control of the NatCombo or not. By default free editing is disabled.
 	 */
-	protected boolean freeEdit;
+	protected boolean freeEdit = false;
 	
 	/**
 	 * Flag that indicates whether this ComboBoxCellEditor supports multiple selection or not.
 	 * By default multiple selection is disabled.
 	 */
-	protected boolean multiselect;
+	protected boolean multiselect = false;
+	
+	/**
+	 * Flag that indicates whether this ComboBoxCellEditor shows checkboxes for items in the dropdown
+	 * or not.
+	 */
+	protected boolean useCheckbox = false;
 	
 	/**
 	 * String that is used to separate values in the String representation showed
@@ -142,37 +148,8 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 * 			a scroll bar.
 	 */
 	public ComboBoxCellEditor(List<?> canonicalValues, int maxVisibleItems) {
-		this(canonicalValues, maxVisibleItems, false);
-	}
-
-	/**
-	 * Create a new {@link ComboBoxCellEditor} based on the given list of items.
-	 * @param canonicalValues Array of items to be shown in the drop down box. These will be
-	 * 			converted using the {@link IDisplayConverter} for display purposes
-	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
-	 * 			a scroll bar.
-	 * @param freeEdit whether this ComboBoxCellEditor supports free editing in the
-	 * 			text control of the NatCombo or not.
-	 */
-	public ComboBoxCellEditor(List<?> canonicalValues, int maxVisibleItems, boolean freeEdit) {
-		this(canonicalValues, maxVisibleItems, freeEdit, false);
-	}
-
-	/**
-	 * Create a new {@link ComboBoxCellEditor} based on the given list of items.
-	 * @param canonicalValues Array of items to be shown in the drop down box. These will be
-	 * 			converted using the {@link IDisplayConverter} for display purposes
-	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
-	 * 			a scroll bar.
-	 * @param freeEdit whether this ComboBoxCellEditor supports free editing in the
-	 * 			text control of the NatCombo or not.
-	 * @param multiselect whether this ComboBoxCellEditor should support multiselect or not.
-	 */
-	public ComboBoxCellEditor(List<?> canonicalValues, int maxVisibleItems, boolean freeEdit, boolean multiselect) {
 		this.canonicalValues = canonicalValues;
 		this.maxVisibleItems = maxVisibleItems;
-		this.freeEdit = freeEdit;
-		this.multiselect = multiselect;
 	}
 
 	/**
@@ -193,37 +170,8 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 * 			a scroll bar.
 	 */
 	public ComboBoxCellEditor(IComboBoxDataProvider dataProvider, int maxVisibleItems) {
-		this(dataProvider, maxVisibleItems, false);
-	}
-
-	/**
-	 * Create a new {@link ComboBoxCellEditor} based on the given {@link IComboBoxDataProvider}.
-	 * @param dataProvider The {@link IComboBoxDataProvider} that is responsible for populating the 
-	 * 			items to the dropdown box. This is the way to use a ComboBoxCellEditor with dynamic content.
-	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
-	 * 			a scroll bar.
-	 * @param freeEdit whether this ComboBoxCellEditor supports free editing in the
-	 * 			text control of the NatCombo or not.
-	 */
-	public ComboBoxCellEditor(IComboBoxDataProvider dataProvider, int maxVisibleItems, boolean freeEdit) {
-		this(dataProvider, maxVisibleItems, freeEdit, false);
-	}
-
-	/**
-	 * Create a new {@link ComboBoxCellEditor} based on the given {@link IComboBoxDataProvider}.
-	 * @param dataProvider The {@link IComboBoxDataProvider} that is responsible for populating the 
-	 * 			items to the dropdown box. This is the way to use a ComboBoxCellEditor with dynamic content.
-	 * @param maxVisibleItems The maximum number of items the drop down will show before introducing 
-	 * 			a scroll bar.
-	 * @param freeEdit whether this ComboBoxCellEditor supports free editing in the
-	 * 			text control of the NatCombo or not.
-	 * @param multiselect whether this ComboBoxCellEditor should support multiselect or not.
-	 */
-	public ComboBoxCellEditor(IComboBoxDataProvider dataProvider, int maxVisibleItems, boolean freeEdit, boolean multiselect) {
 		this.dataProvider = dataProvider;
 		this.maxVisibleItems = maxVisibleItems;
-		this.freeEdit = freeEdit;
-		this.multiselect = multiselect;
 	}
 	
 	@Override
@@ -268,6 +216,9 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 		} else {
 			//multi selection handling
 			int[] selectionIndices = this.combo.getSelectionIndices();
+
+			//as we are in multiselection mode, we always return a Collection and never null
+			List<Object> result = new ArrayList<Object>();
 			
 			//Item selected from list
 			if (selectionIndices.length > 0) {
@@ -277,23 +228,22 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 				} else {
 					values = this.canonicalValues;
 				}
-				List<Object> result = new ArrayList<Object>();
 				for (int i : selectionIndices) {
 					result.add(values.get(i));
 				}
-				return result;
 			} else {
 				//if there is no selection in the dropdown, we need to check if there is a free edit
 				//in the NatCombo control
 				String[] comboSelection = this.combo.getSelection();
 				if (comboSelection.length > 0) {
-					List<Object> result = new ArrayList<Object>();
 					for (String selection : comboSelection) {
 						result.add(handleConversion(selection, this.conversionEditErrorHandler));
 					}
-					return result;
 				}
 			}
+			
+			//if nothing is selected and there is no free edit, we return an empty Collection
+			return result;
 		}
 		
 		return null;
@@ -369,11 +319,18 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	@Override
 	public NatCombo createEditorControl(Composite parent) {
 		int style = this.editMode == EditModeEnum.INLINE ? SWT.NONE : SWT.BORDER;
+		if (!this.freeEdit) {
+			style |= SWT.READ_ONLY;
+		}
+		if (this.multiselect) {
+			style |= SWT.MULTI;
+		}
+		if (this.useCheckbox) {
+			style |= SWT.CHECK;
+		}
 		final NatCombo combo = this.iconImage == null ? 
-			new NatCombo(parent, this.cellStyle, this.maxVisibleItems, 
-					this.freeEdit, this.multiselect, style)
-			: new NatCombo(parent, this.cellStyle, this.maxVisibleItems, 
-					this.freeEdit, this.multiselect, style, this.iconImage);
+			new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style)
+			: new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage);
 		
 		combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
 
@@ -408,9 +365,9 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
 		});
 
-		combo.addMouseListener(new MouseAdapter() {
+		combo.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void mouseDown(MouseEvent e) {
+			public void widgetSelected(SelectionEvent e) {
 				commit(MoveDirectionEnum.NONE, (!multiselect && editMode == EditModeEnum.INLINE));
 			}
 		});
@@ -493,6 +450,17 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 		this.multiselectTextSuffix = multiselectTextSuffix;
 	}
 
+	
+	/**
+	 * @return The image that is used as overlay to the {@link Text} Control if the dropdown
+	 * 			is visible. It will indicate that the control is an open combo to the user.
+	 * 			If this value is <code>null</code> the default image specified in NatCombo
+	 * 			will be used.
+	 */
+	public Image getIconImage() {
+		return this.iconImage;
+	}
+	
 	/**
 	 * @param iconImage The image to use as overlay to the {@link Text} Control if the dropdown
 	 * 			is visible. It will indicate that the control is an open combo to the user.
@@ -501,5 +469,53 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	 */
 	public void setIconImage(Image iconImage) {
 		this.iconImage = iconImage;
+	}
+
+	/**
+	 * @return <code>true</code> if this ComboBoxCellEditor supports free editing in the
+	 * 			text control of the NatCombo or not. By default free editing is disabled.
+	 */
+	public boolean isFreeEdit() {
+		return freeEdit;
+	}
+
+	/**
+	 * @param freeEdit <code>true</code> to indicate that this ComboBoxCellEditor supports free 
+	 * 			editing in the text control of the NatCombo, <code>false</code> if not. 
+	 */
+	public void setFreeEdit(boolean freeEdit) {
+		this.freeEdit = freeEdit;
+	}
+
+	/**
+	 * @return <code>true</code> if this ComboBoxCellEditor supports multiple selection or not.
+	 * 			By default multiple selection is disabled.
+	 */
+	public boolean isMultiselect() {
+		return multiselect;
+	}
+
+	/**
+	 * @param multiselect <code>true</code> to indicate that this ComboBoxCellEditor supports 
+	 * 			multiple selection, <code>false</code> if not.
+	 */
+	public void setMultiselect(boolean multiselect) {
+		this.multiselect = multiselect;
+	}
+
+	/**
+	 * @return <code>true</code> if this ComboBoxCellEditor shows checkboxes for items in the dropdown.
+	 * 			By default there are not checkboxes shown.
+	 */
+	public boolean isUseCheckbox() {
+		return useCheckbox;
+	}
+
+	/**
+	 * @param useCheckbox <code>true</code> if this ComboBoxCellEditor should show checkboxes for items 
+	 * 			in the dropdown, <code>false</code> if not.
+	 */
+	public void setUseCheckbox(boolean useCheckbox) {
+		this.useCheckbox = useCheckbox;
 	}
 }

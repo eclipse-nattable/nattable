@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.examples.examples._110_Editing;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
@@ -38,8 +40,8 @@ import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.FileDialogCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
+import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -56,7 +58,6 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tooltip.NatTableContentTooltip;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -90,6 +91,7 @@ public class EditorExample extends AbstractNatExample {
 	public static String COLUMN_TWELVE_LABEL = "ColumnTwelveLabel";
 	public static String COLUMN_THIRTEEN_LABEL = "ColumnThirteenLabel";
 	
+	@Override
 	public Control createExampleControl(Composite parent) {
 		//property names of the Person class
 		String[] propertyNames = {"firstName", "lastName", "password", "description", "age", "money",
@@ -156,6 +158,7 @@ public class EditorExample extends AbstractNatExample {
 
 class EditorConfiguration extends AbstractRegistryConfiguration  {
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, 
@@ -459,8 +462,8 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 	 */
 	private void registerColumnTenComboBox(IConfigRegistry configRegistry) {
 		//register a combobox for the city names
-		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-				Arrays.asList(PersonService.getCityNames()), -1, true);
+		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(PersonService.getCityNames()), -1);
+		comboBoxCellEditor.setFreeEdit(true);
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITOR, 
 				comboBoxCellEditor, 
@@ -484,8 +487,35 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 	 */
 	private void registerColumnElevenComboBox(IConfigRegistry configRegistry) {
 		//register a combobox for the city names
-		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-				Arrays.asList(PersonService.getFoodList()), NatCombo.DEFAULT_NUM_OF_VISIBLE_ITEMS, false, true);
+		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(PersonService.getFoodList()), -1);
+		comboBoxCellEditor.setMultiselect(true);
+		comboBoxCellEditor.setUseCheckbox(true);
+		
+		//change the multi selection brackets that are added to the String that is shown in the editor
+		comboBoxCellEditor.setMultiselectTextBracket("", "");
+		//register a special converter that removes the brackets in case the returned value is a Collection
+		//this is necessary because editing and displaying are not directly coupled to each other
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.DISPLAY_CONVERTER, 
+				new DefaultDisplayConverter() {
+					
+					@Override
+					public Object canonicalToDisplayValue(Object canonicalValue) {
+						if (canonicalValue instanceof Collection) {
+							//Collection.toString() will add [ and ] around the values in the Collection
+							//So by removing the leading and ending character, we remove the brackets
+							String result = canonicalValue.toString();
+							result = result.substring(1, result.length()-1);
+							return result;
+						}
+						//if the value is not a Collection we simply let the super class do the conversion
+						//this is necessary to show single values in the ComboBox correctly
+						return super.canonicalToDisplayValue(canonicalValue);
+					}
+				}, 
+				DisplayMode.NORMAL, 
+				EditorExample.COLUMN_ELEVEN_LABEL);
+		
 		comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITOR, 
@@ -505,8 +535,9 @@ class EditorConfiguration extends AbstractRegistryConfiguration  {
 	 */
 	private void registerColumnTwelveComboBox(IConfigRegistry configRegistry) {
 		//register a combobox for the city names
-		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-				Arrays.asList(PersonService.getDrinkList()), -1, true, true);
+		ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(PersonService.getDrinkList()), -1);
+		comboBoxCellEditor.setFreeEdit(true);
+		comboBoxCellEditor.setMultiselect(true);
 		comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITOR, 

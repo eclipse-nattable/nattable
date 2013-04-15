@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.widget;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -30,9 +31,11 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
@@ -46,8 +49,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -57,6 +61,13 @@ import org.eclipse.swt.widgets.Text;
  * <p>This control supports the ability for multi select in the dropdown of the combo
  * which is not available for the SWT Combo control. This feature was added with
  * Nebula NatTable 1.0.0
+ * 
+ * <p>
+ * The following style bits are supported by this control.
+ * @see SWT#BORDER (if a border should be added to the Text control)
+ * @see SWT#READ_ONLY (default for Text control, if this is missing, the Text control can be edited)
+ * @see SWT#CHECK (if the items in the combo should be showed with checkboxes)
+ * @see SWT#MULTI (if multi selection is allowed)
  */
 public class NatCombo extends Composite {
 
@@ -85,57 +96,63 @@ public class NatCombo extends Composite {
 	 * The important configurations used are horizontal alignment, background and 
 	 * foreground color and font.
 	 */
-	private final IStyle cellStyle;
+	protected final IStyle cellStyle;
 
 	/**
 	 * The maximum number of visible items of the combo.
 	 * Setting this value to -1 will result in always showing all items at once.
 	 */
-	private int maxVisibleItems;
-
-	/**
-	 * The items that are showed within the combo.
-	 */
-	private String[] items;
+	protected int maxVisibleItems;
 
 	/**
 	 * The items that are showed within the combo transformed to a java.util.List.
 	 * Needed for indexed operations in the dropdown
 	 */
-	private java.util.List<String> itemList;
+	protected java.util.List<String> itemList;
 
 	/**
 	 * The text control of this NatCombo, allowing to enter values directly.
 	 */
-	private Text text;
+	protected Text text;
 
 	/**
 	 * The Shell containing the dropdown of this NatCombo
 	 */
-	private Shell dropdownShell;
+	protected Shell dropdownShell;
 
 	/**
-	 * The List control used for the combo component of this NatCombo
+	 * The Table control used for the combo component of this NatCombo
 	 */
-	private List dropdownList;
+	protected Table dropdownTable;
 
 	/**
 	 * The image that is shown at the right edge of the text control if the NatCombo
 	 * is opened.
 	 */
-	private Image iconImage;
+	protected Image iconImage;
 
+	/**
+	 * The style bits that where set on creation time. Needed in case the dropdown shell
+	 * was disposed and needs to be created again.
+	 */
+	protected final int style;
+	
 	/**
 	 * Flag that indicates whether this ComboBoxCellEditor supports free editing in the
 	 * text control of the NatCombo or not. By default free editing is disabled.
 	 */
-	private boolean freeEdit;
+	protected boolean freeEdit;
 	
 	/**
 	 * Flag that indicates whether this NatCombo supports multiselect or not.
 	 * By default multiselect is disabled.
 	 */
-	private boolean multiselect;
+	protected boolean multiselect;
+	
+	/**
+	 * Flag that indicates whether checkboxes should be shown for the items in the dropdown.
+	 */
+	protected boolean useCheckbox;
 	
 	/**
 	 * String that is used to separate values in the String representation showed
@@ -156,6 +173,13 @@ public class NatCombo extends Composite {
 	protected String multiselectTextSuffix = DEFAULT_MULTI_SELECT_SUFFIX;
 	
 	/**
+	 * Flag to determine whether the dropdown was hidden on focus lost.
+	 * Is only interpreted by the dropdown icon mouse listener, as it shouldn't
+	 * show the dropdown again when it is clicked with an open dropdown.
+	 */
+	private boolean hideByFocusLost = false;
+	
+	/**
 	 * Creates a new NatCombo using the given IStyle for rendering, showing the default number
 	 * of items at once in the dropdown. Creating the NatCombo with this constructor, there is
 	 * no free edit and no multiple selection enabled.
@@ -166,7 +190,7 @@ public class NatCombo extends Composite {
 	 * 			adding internal styles via ConfigRegistry.
 	 */
 	public NatCombo(Composite parent, IStyle cellStyle, int style) {
-		this(parent, cellStyle, DEFAULT_NUM_OF_VISIBLE_ITEMS, style);
+		this(parent, cellStyle, DEFAULT_NUM_OF_VISIBLE_ITEMS, style, GUIHelper.getImage("down_2")); //$NON-NLS-1$
 	}
 
 	/**
@@ -182,24 +206,7 @@ public class NatCombo extends Composite {
 	 * 			adding internal styles via ConfigRegistry.
 	 */
 	public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style) {
-		this(parent, cellStyle, maxVisibleItems, false, style);
-	}
-
-	/**
-	 * Creates a new NatCombo using the given IStyle for rendering, showing the given amount
-	 * of items at once in the dropdown. Creating the NatCombo with this constructor, there is
-	 * no multiple selection enabled.
-	 * @param parent A widget that will be the parent of this NatCombo
-	 * @param cellStyle Style configuration containing horizontal alignment, font, foreground and 
-	 * 			background color information.
-	 * @param maxVisibleItems the max number of items the drop down will show before introducing a 
-	 * 			scroll bar.
-	 * @param freeEdit whether this NatCombo supports free editing in the text control or not.
-	 * @param style The style for the Text Control to construct. Uses this style
-	 * 			adding internal styles via ConfigRegistry.
-	 */
-	public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, boolean freeEdit, int style) {
-		this(parent, cellStyle, maxVisibleItems, freeEdit, false, style);
+		this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2")); //$NON-NLS-1$
 	}
 
 	/**
@@ -210,43 +217,24 @@ public class NatCombo extends Composite {
 	 * 			background color information.
 	 * @param maxVisibleItems the max number of items the drop down will show before introducing a 
 	 * 			scroll bar.
-	 * @param freeEdit whether this NatCombo supports free editing in the text control or not.
-	 * @param multiselect whether this NatCombo should support multiselect or not.
-	 * @param style The style for the {@link Text} Control to construct. Uses this style
-	 * 			adding internal styles via ConfigRegistry.
-	 */
-	public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, boolean freeEdit, 
-			boolean multiselect, int style) {
-		this(parent, cellStyle, maxVisibleItems, freeEdit, multiselect, style, 
-				GUIHelper.getImage("down_2")); //$NON-NLS-1$;
-	}
-	
-
-	/**
-	 * Creates a new NatCombo using the given IStyle for rendering, showing the given amount
-	 * of items at once in the dropdown. 
-	 * @param parent A widget that will be the parent of this NatCombo
-	 * @param cellStyle Style configuration containing horizontal alignment, font, foreground and 
-	 * 			background color information.
-	 * @param maxVisibleItems the max number of items the drop down will show before introducing a 
-	 * 			scroll bar.
-	 * @param freeEdit whether this NatCombo supports free editing in the text control or not.
-	 * @param multiselect whether this NatCombo should support multiselect or not.
 	 * @param style The style for the {@link Text} Control to construct. Uses this style
 	 * 			adding internal styles via ConfigRegistry.
 	 * @param iconImage The image to use as overlay to the {@link Text} Control if the dropdown
 	 * 			is visible. Using this image will indicate that the control is an open combo
 	 * 			to the user.
 	 */
-	public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, boolean freeEdit, 
-			boolean multiselect, int style, Image iconImage) {
+	public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage) {
 		super(parent, SWT.NONE);
 
 		this.cellStyle = cellStyle;
 		this.maxVisibleItems = maxVisibleItems;
-		this.freeEdit = freeEdit;
-		this.multiselect = multiselect;
 		this.iconImage = iconImage;
+
+		this.style = style;
+		
+		this.freeEdit = (style & SWT.READ_ONLY) == 0;
+		this.multiselect = (style & SWT.MULTI) != 0;
+		this.useCheckbox = (style & SWT.CHECK) != 0;
 
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = 0;
@@ -255,7 +243,7 @@ public class NatCombo extends Composite {
 		setLayout(gridLayout);
 
 		createTextControl(style);
-		createDropdownControl();
+		createDropdownControl(style);
 	}
 	
 	@Override
@@ -271,14 +259,16 @@ public class NatCombo extends Composite {
 	 */
 	public void setItems(String[] items) {
 		if (items != null) {
-			this.items = items;
-			this.itemList = Arrays.asList(this.items);
-			if (!dropdownList.isDisposed() && items != null && items.length > 0) {
-				dropdownList.setItems(items);
+			this.itemList = Arrays.asList(items);
+			if (!dropdownTable.isDisposed()) {
+				for (String item : items) {
+					TableItem tableItem = new TableItem(dropdownTable, SWT.NONE);
+					tableItem.setText(item);
+				}
 			}
 		}
 	}
-
+	
 	/**
 	 * Creates the Text control of this NatCombo, adding styles, look&amp;feel and
 	 * needed listeners for the control only.
@@ -286,9 +276,7 @@ public class NatCombo extends Composite {
 	 * 			adding internal styles via ConfigRegistry.
 	 */
 	protected void createTextControl(int style) {
-		int widgetStyle = style | (freeEdit ? 
-				HorizontalAlignmentEnum.getSWTStyle(cellStyle) : 
-					HorizontalAlignmentEnum.getSWTStyle(cellStyle) | SWT.READ_ONLY);
+		int widgetStyle = style | HorizontalAlignmentEnum.getSWTStyle(cellStyle);
 		text = new Text(this, widgetStyle);
 		text.setBackground(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
 		text.setForeground(cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
@@ -304,20 +292,20 @@ public class NatCombo extends Composite {
 				if (event.keyCode == SWT.ARROW_DOWN || event.keyCode == SWT.ARROW_UP) {
 					showDropdownControl();
 
-					int selectionIndex = dropdownList.getSelectionIndex();
+					int selectionIndex = dropdownTable.getSelectionIndex();
 					selectionIndex += event.keyCode == SWT.ARROW_DOWN ? 1 : -1;
 					if (selectionIndex < 0) {
 						selectionIndex = 0;
 					}
 
-					dropdownList.select(selectionIndex);
+					dropdownTable.select(selectionIndex);
 				}
 				else if (!LetterOrDigitKeyEventMatcher.isLetterOrDigit(event.character)) {
 					if (freeEdit) {
 						//simply clear the selection in dropdownlist so the free value in text control
 						//will be used
-						if (!dropdownList.isDisposed()) {
-							dropdownList.deselectAll();
+						if (!dropdownTable.isDisposed()) {
+							dropdownTable.deselectAll();
 						}
 					} else {
 						showDropdownControl();
@@ -331,12 +319,12 @@ public class NatCombo extends Composite {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				if (!freeEdit) {
-					if (dropdownList.isDisposed() || !dropdownList.isVisible()) {
+					if (dropdownTable.isDisposed() || !dropdownTable.isVisible()) {
 						showDropdownControl();
 					} else {
 						//if there is no free edit enabled, set the focus back to the
 						//dropdownlist so it handles key strokes itself
-						dropdownList.forceFocus();
+						dropdownTable.forceFocus();
 					}
 				}
 			}
@@ -391,7 +379,11 @@ public class NatCombo extends Composite {
 
 			@Override
 			public void mouseDown(MouseEvent e) {
-				showDropdownControl();
+				if (!hideByFocusLost) {
+					showDropdownControl();
+				} else {
+					hideByFocusLost = false;
+				}
 			}
 
 		});
@@ -400,74 +392,48 @@ public class NatCombo extends Composite {
 	/**
 	 * Create the dropdown control of this NatCombo, adding styles, look&amp;feel and
 	 * needed listeners for the control only.
+	 * @param style The style for the Table Control to construct. Uses this style
+	 * 			adding internal styles via ConfigRegistry.
 	 */
-	protected void createDropdownControl() {
+	protected void createDropdownControl(int style) {
 		dropdownShell = new Shell(getShell(), SWT.MODELESS);
 		dropdownShell.setLayout(new FillLayout());
 
-		int dropdownListStyle = SWT.V_SCROLL | HorizontalAlignmentEnum.getSWTStyle(cellStyle);
-		if (this.multiselect) {
-			dropdownListStyle = dropdownListStyle | SWT.MULTI;
-		}
-		dropdownList = new List(dropdownShell, dropdownListStyle);
-		dropdownList.setBackground(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-		dropdownList.setForeground(cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-		dropdownList.setFont(cellStyle.getAttributeValue(CellStyleAttributes.FONT));
+		int dropdownListStyle = style | SWT.V_SCROLL | HorizontalAlignmentEnum.getSWTStyle(cellStyle) | SWT.FULL_SELECTION;
 
-		dropdownList.addMouseMoveListener(new MouseMoveListener() {
-			@Override
-			public void mouseMove(MouseEvent e) {
-				//for multiselect the highlighting feature will result in selecting all
-				//items because of the SWT.MULTI style
-				//to avoid this we need to ensure that items are deselected that are not
-				//selected because of user interaction
-				if (multiselect) {
-					java.util.List<String> currentUserSelection = Arrays.asList(getTextAsArray());
-					
-					String[] dropdownSelection = dropdownList.getSelection();
-					
-					for (String ds : dropdownSelection) {
-						if (!currentUserSelection.contains(ds)) {
-							dropdownList.deselect(itemList.indexOf(ds));
-						}
-					}
-				}
-
-				int index = getItemIndexByMousePosition(e.y);
-				if (index >= 0) {
-					dropdownList.select(index);
-				}
-			}
-		});
+		dropdownTable = new Table(dropdownShell, dropdownListStyle);
+		dropdownTable.setBackground(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+		dropdownTable.setForeground(cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+		dropdownTable.setFont(cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 		
-		dropdownList.addMouseListener(new MouseAdapter() {
+		dropdownTable.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void mouseDown(MouseEvent e) {
-				if (multiselect) {
-					//if a user tries in multiselect mode to perform a multiselect
-					//by holding the Ctrl key, because of the preselection on mouseMove
-					//and the SWT.MULTI style, a deselection is performed
-					//this is why we need to correct that behaviour in here
-					if (e.stateMask == SWT.CTRL) {
-						int index = getItemIndexByMousePosition(e.y);
-						if (index >= 0) {
-							java.util.List<String> currentUserSelection = Arrays.asList(getTextAsArray());
-							
-							if (currentUserSelection.contains(dropdownList.getItems()[index])) {
-								dropdownList.deselect(index);
-							}
-							else {
-								dropdownList.select(index);
-							}
-						}
+			public void widgetSelected(SelectionEvent e) {
+				boolean selected = e.detail != SWT.CHECK;
+				TableItem item = (TableItem) e.item;
+
+				//checkbox clicked, now sync the selection
+				if (!selected) {
+					if (!item.getChecked()) {
+						dropdownTable.deselect(itemList.indexOf(item.getText()));
+					}
+					else {
+						dropdownTable.select(itemList.indexOf(item.getText()));
 					}
 				}
-				
+				//item selected, now sync checkbox
+				else if (useCheckbox) {
+					//after selection is performed we need to ensure that selection and checkboxes are in sync
+					for (TableItem tableItem : dropdownTable.getItems()) {
+						tableItem.setChecked(dropdownTable.isSelected(itemList.indexOf(tableItem.getText())));
+					}
+				}
+
 				updateTextControl(!multiselect);
 			}
 		});
 		
-		dropdownList.addKeyListener(new KeyAdapter() {
+		dropdownTable.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent event) {
 				if ((event.keyCode == SWT.CR)
@@ -477,21 +443,24 @@ public class NatCombo extends Composite {
 			}
 		});
 		
-		dropdownList.addFocusListener(new FocusAdapter() {
+		dropdownTable.addFocusListener(new FocusAdapter() {
 			
 			@Override
 			public void focusLost(FocusEvent e) {
 				hideDropdownControl();
+				hideByFocusLost = true;
 				if (freeEdit) {
 					text.forceFocus();
 				}
 			}
 		});
 		
-		setItems(items);
-		dropdownList.setSelection(getTextAsArray());
+		if (this.itemList != null) {
+			setItems(this.itemList.toArray(new String[] {}));
+		}
+		setDropdownSelection(getTextAsArray());
 	}
-
+	
 	/**
 	 * This method will be called if an item of the dropdown control is selected
 	 * via mouse click or pressing enter. It will populate the text control with
@@ -500,37 +469,11 @@ public class NatCombo extends Composite {
 	 * @param hideDropdown <code>true</code> if the dropdown should be hidden 
 	 * 			after updating the text control
 	 */
-	private void updateTextControl(boolean hideDropdown) {
+	protected void updateTextControl(boolean hideDropdown) {
 		text.setText(getTransformedTextForSelection());
 		if (hideDropdown) {
 			hideDropdownControl();
 		}
-	}
-	
-	/**
-	 * Calculates the index of the item at given mouse y position.
-	 * @param mouseY The y coordinate of the current mouse position
-	 * @return The index of the item within the list of combo box items
-	 * 			or -1 if there are no visible items or there is no
-	 * 			visible item selected
-	 */
-	private int getItemIndexByMousePosition(int mouseY) {
-		if (getVisibleItemCount() == 0) {
-			return -1;
-		}
-		int itemHeight = dropdownShell.getSize().y / getVisibleItemCount();
-
-		//operate on the visible items
-		int resultIndex = -1;
-		int topIndex = dropdownList.getTopIndex();
-		if (mouseY <= itemHeight) {
-			resultIndex = topIndex;
-		}
-		else {
-			resultIndex = topIndex + mouseY / itemHeight;
-		}
-		
-		return resultIndex;
 	}
 	
 	/**
@@ -552,7 +495,7 @@ public class NatCombo extends Composite {
 	 */
 	public void showDropdownControl(boolean focusOnText) {
 		if (dropdownShell.isDisposed()) {
-			createDropdownControl();
+			createDropdownControl(this.style);
 		}
 		calculateBounds();
 		dropdownShell.open();
@@ -580,8 +523,8 @@ public class NatCombo extends Composite {
 	 * maximum.
 	 * @return the number of items that should be showed in the dropdown at once.
 	 */
-	private int getVisibleItemCount() {
-		int itemCount = dropdownList.getItemCount();
+	protected int getVisibleItemCount() {
+		int itemCount = dropdownTable.getItemCount();
 		if (itemCount > 0) {
 			//if maxVisibleItems == -1 show all items at once
 			//otherwise use the minimum for item count or max visible item configuration
@@ -599,7 +542,7 @@ public class NatCombo extends Composite {
 	 * of this NatCombo. Size and location will be calculated dependent the position and
 	 * size of the corresponding Text control and the information showed in the dropdown.
 	 */
-	private void calculateBounds() {
+	protected void calculateBounds() {
 		if (dropdownShell != null && !dropdownShell.isDisposed()) {
 			Point size = getSize();
 			//calculate the height by multiplying the number of visible items with
@@ -608,12 +551,12 @@ public class NatCombo extends Composite {
 			//last shown item
 			//Note: if there are no items to show in the combo, calculate with the item count of
 			//		3 so an empty combo will open
-			int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount() : 3) * dropdownList.getItemHeight() + 2;
-			int listWidth = dropdownList.computeSize(SWT.DEFAULT, listHeight).x;
+			int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount() : 3) * dropdownTable.getItemHeight() + 2;
+			int listWidth = dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x;
 			if (listWidth < size.x) {
 				listWidth = size.x;
 			}
-			dropdownList.setSize(listWidth, listHeight);
+			dropdownTable.setSize(listWidth, listHeight);
 			
 			Point textPosition = text.toDisplay(text.getLocation());
 			
@@ -633,12 +576,10 @@ public class NatCombo extends Composite {
 	 * single selection or only one item is selected.
 	 * 
 	 * @return the index of the selected item or -1
-	 * 
-	 * @see List#getSelectionIndex()
 	 */
 	public int getSelectionIndex() {
-		if (!this.dropdownList.isDisposed()) {
-			return this.dropdownList.getSelectionIndex();
+		if (!this.dropdownTable.isDisposed()) {
+			return this.dropdownTable.getSelectionIndex();
 		} else if (!this.text.isDisposed()) {
 			return this.itemList.indexOf(this.text.getText());
 		}
@@ -655,18 +596,15 @@ public class NatCombo extends Composite {
 	 * not affect the receiver. 
 	 * </p>
 	 * @return the array of indices of the selected items
-	 * 
-	 * @see List#getSelectionIndices()
 	 */
 	public int[] getSelectionIndices() {
-		if (!this.dropdownList.isDisposed()) {
-			return this.dropdownList.getSelectionIndices();
+		if (!this.dropdownTable.isDisposed()) {
+			return this.dropdownTable.getSelectionIndices();
 		} else {
-			java.util.List<String> itemList = Arrays.asList(this.items);
 			String[] selectedItems = getTextAsArray();
 			int[] result = new int[selectedItems.length];
 			for (int i = 0; i < selectedItems.length; i++) {
-				result[i] = itemList.indexOf(selectedItems[i]);
+				result[i] = this.itemList.indexOf(selectedItems[i]);
 			}
 			return result;
 		}
@@ -676,12 +614,10 @@ public class NatCombo extends Composite {
 	 * Returns the number of selected items contained in the receiver.
 	 *
 	 * @return the number of selected items
-	 * 
-	 * @see List#getSelectionCount()
 	 */
 	public int getSelectionCount() {
-		if (!this.dropdownList.isDisposed()) {
-			return this.dropdownList.getSelectionCount();
+		if (!this.dropdownTable.isDisposed()) {
+			return this.dropdownTable.getSelectionCount();
 		} else {
 			return getTextAsArray().length;
 		}
@@ -697,17 +633,10 @@ public class NatCombo extends Composite {
 	 * not affect the receiver. 
 	 * </p>
 	 * @return an array representing the selection
-	 * 
-	 * @see List#getSelection()
 	 */
 	public String[] getSelection() {
-		String[] result = null;
-		if (!this.dropdownList.isDisposed()) {
-			result = this.dropdownList.getSelection();
-			if (result.length == 0 && this.text.getText().length() > 0) {
-				result = getTextAsArray();
-			}
-		} else {
+		String[] result = getTransformedSelection();
+		if (result == null || (result.length == 0 && this.text.getText().length() > 0)) { 
 			result = getTextAsArray();
 		}
 		return result;
@@ -729,9 +658,9 @@ public class NatCombo extends Composite {
 	public void setSelection(String[] items) {
 		String textValue = ""; //$NON-NLS-1$
 		if (items != null) {
-			if (!this.dropdownList.isDisposed()) {
-				this.dropdownList.setSelection(items);
-				if (this.freeEdit && this.dropdownList.getSelectionCount() == 0) {
+			if (!this.dropdownTable.isDisposed()) {
+				setDropdownSelection(items);
+				if (this.freeEdit && this.dropdownTable.getSelectionCount() == 0) {
 					textValue = getTransformedText(items);
 				} else {
 					textValue = getTransformedTextForSelection();
@@ -749,15 +678,13 @@ public class NatCombo extends Composite {
 	 * selected. Indices that are out of range are ignored.
 	 *
 	 * @param index the index of the item to select
-	 * 
-	 * @see List#select(int)
 	 */
 	public void select(int index) {
-		if (!this.dropdownList.isDisposed()) {
-			this.dropdownList.select(index);
+		if (!this.dropdownTable.isDisposed()) {
+			this.dropdownTable.select(index);
 			this.text.setText(getTransformedTextForSelection());
 		} else if (index >= 0) {
-			this.text.setText(this.items[index]);
+			this.text.setText(this.itemList.get(index));
 		}
 	}
 
@@ -772,18 +699,16 @@ public class NatCombo extends Composite {
 	 * then all indices are ignored.
 	 *
 	 * @param indices the array of indices for the items to select
-	 * 
-	 * @see List#select(int[])
 	 */
-	public void select(int[] indices) {
-		if (!this.dropdownList.isDisposed()) {
-			this.dropdownList.select(indices);
+	public void select(int[] indeces) {
+		if (!this.dropdownTable.isDisposed()) {
+			this.dropdownTable.select(indeces);
 			this.text.setText(getTransformedTextForSelection());
 		} else {
-			String[] selectedItems = new String[indices.length];
-			for (int i = 0; i < indices.length; i++) {
-				if (indices[i] >= 0) {
-					selectedItems[i] = this.items[indices[i]];
+			String[] selectedItems = new String[indeces.length];
+			for (int i = 0; i < indeces.length; i++) {
+				if (indeces[i] >= 0) {
+					selectedItems[i] = this.itemList.get(indeces[i]);
 				}
 			}
 			this.text.setText(getTransformedText(selectedItems));
@@ -793,29 +718,74 @@ public class NatCombo extends Composite {
 	@Override
 	public void addKeyListener(KeyListener listener) {
 		this.text.addKeyListener(listener);
-		this.dropdownList.addKeyListener(listener);
+		this.dropdownTable.addKeyListener(listener);
 	}
 
 	@Override
 	public void addTraverseListener(TraverseListener listener) {
 		this.text.addTraverseListener(listener);
-		this.dropdownList.addTraverseListener(listener);
+		this.dropdownTable.addTraverseListener(listener);
 	}
 
 	@Override
 	public void addMouseListener(MouseListener listener) {
 		//only add the mouse listener to the dropdown, as clicking in the text control
 		//should not trigger anything else than it is handled by the text control itself.
-		this.dropdownList.addMouseListener(listener);
+		this.dropdownTable.addMouseListener(listener);
 	}
-
+	
 	@Override
 	public void notifyListeners(int eventType, Event event) {
-		this.dropdownList.notifyListeners(eventType, event);
+		this.dropdownTable.notifyListeners(eventType, event);
+	}
+	
+	public void addSelectionListener(SelectionListener listener) {
+		this.dropdownTable.addSelectionListener(listener);
 	}
 	
 	public void addShellListener(ShellListener listener) {
 		this.dropdownShell.addShellListener(listener);
+	}
+	
+	/**
+	 * Transforms the selection in the Table control dropdown into a String[].
+	 * Doing this is necessary to provide a SWT List like interface regarding 
+	 * selections for the NatCombo.
+	 * @return Array containing all selected TableItem text attributes
+	 */
+	protected String[] getTransformedSelection() {
+		String[] selection = null;
+		if (!this.dropdownTable.isDisposed()) {
+			TableItem[] selectedItems = this.dropdownTable.getSelection();
+			selection = new String[selectedItems.length];
+			for (int i = 0; i < selectedItems.length; i++) {
+				selection[i] = selectedItems[i].getText();
+			}
+		}
+		return selection;
+	}
+	
+	/**
+	 * Transforms the given String array whose contents represents selected items
+	 * to a selection that can be handled by the underlying Table control in the
+	 * dropdown.
+	 * 
+	 * @param selection The Strings that represent the selected items
+	 */
+	protected void setDropdownSelection(String[] selection) {
+		if (selection.length > 0) {
+			java.util.List<String> selectionList = Arrays.asList(selection); 
+			java.util.List<TableItem> selectedItems = new ArrayList<TableItem>();
+			for (TableItem item : this.dropdownTable.getItems()) {
+				if (selectionList.contains(item.getText())) {
+					selectedItems.add(item);
+					if (useCheckbox) {
+						item.setChecked(true);
+					}
+				}
+			}
+			this.dropdownTable.setSelection(selectedItems.toArray(new TableItem[] {}));
+		}
 	}
 	
 	/**
@@ -850,7 +820,10 @@ public class NatCombo extends Composite {
 					}
 					transform = transform.substring(prefixLength, transform.length()-suffixLength);
 				}
-				return transform.split(this.multiselectValueSeparator);
+				//if the transform value length is still > 0, then try to split
+				if (transform.length() > 0) {
+					return transform.split(this.multiselectValueSeparator);
+				}
 			}
 		}
 		return new String[] {};
@@ -868,14 +841,15 @@ public class NatCombo extends Composite {
 	 */
 	protected String getTransformedTextForSelection() {
 		String result = ""; //$NON-NLS-1$
-		if (!this.dropdownList.isDisposed()) {
-			result = getTransformedText(this.dropdownList.getSelection());
+		String[] selection = getTransformedSelection();
+		if (selection != null) {
+			result = getTransformedText(selection);
 		}
 		return result;
 	}
 	
 	/**
-	 * Transforms the given array of Strings to a text representatino that
+	 * Transforms the given array of Strings to a text representation that
 	 * can be added to the text control of this combo.
 	 * <p>
 	 * If this NatCombo is only configured to support single selection, than
@@ -892,15 +866,14 @@ public class NatCombo extends Composite {
 	protected String getTransformedText(String[] values) {
 		String result = ""; //$NON-NLS-1$
 		if (this.multiselect) {
-			for (String selection : values) {
-				if (result.length() > 0 && selection.length() > 0) {
+			for (int i = 0; i < values.length; i++) {
+				String selection = values[i];
+				result += selection;
+				if ((i+1) < values.length) {
 					result += this.multiselectValueSeparator;
 				}
-				result += selection;
 			}
-			if (result.length() > 0) {
-				result = this.multiselectTextPrefix + result + this.multiselectTextSuffix;
-			}
+			result = this.multiselectTextPrefix + result + this.multiselectTextSuffix;
 		}
 		else if (values.length > 0) {
 			result = values[0];

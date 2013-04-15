@@ -10,36 +10,33 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers;
 
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.DataModelConstants;
+import org.eclipse.nebula.widgets.nattable.examples.data.person.Address;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
-import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
-import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
-import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
-import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
+import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -54,10 +51,14 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -66,28 +67,31 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 /**
- * Simple example showing how to add the filter row to the layer
- * composition of a grid.
+ * Example showing how to add the filter row to the layer
+ * composition of a grid that looks like the Excel filter.
  * 
  * @author Dirk Fauth
  *
  */
-public class _561_FilterRowExample extends AbstractNatExample {
+public class _563_ExcelLikeFilterRowExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _561_FilterRowExample());
+		StandaloneNatExampleRunner.run(new _563_ExcelLikeFilterRowExample());
 	}
 
 	@Override
 	public String getDescription() {
-		return "This example shows the usage of the filter row within a grid.";
+		return "This example shows the usage of the filter row within a grid that looks like the Excel"
+				+ " filter row.";
 	}
 	
 	@Override
 	public Control createExampleControl(Composite parent) {
+		Composite container = new Composite(parent, SWT.NONE);
+		container.setLayout(new GridLayout());
+		
 		//create a new ConfigRegistry which will be needed for GlazedLists handling
 		ConfigRegistry configRegistry = new ConfigRegistry();
 
@@ -110,23 +114,18 @@ public class _561_FilterRowExample extends AbstractNatExample {
 		IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = 
 				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 		
-		BodyLayerStack<PersonWithAddress> bodyLayerStack = 
-				new BodyLayerStack<PersonWithAddress>(PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
-
+		final BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
+				PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
+		
 		//build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-		//	Note: The column header layer is wrapped in a filter row composite.
-		//	This plugs in the filter row functionality
-		CompositeMatcherEditor<PersonWithAddress> autoFilterMatcherEditor = new CompositeMatcherEditor<PersonWithAddress>();
-		bodyLayerStack.getFilterList().setMatcherEditor(autoFilterMatcherEditor);
 		
-		FilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer =
-			new FilterRowHeaderComposite<PersonWithAddress>(
-					new DefaultGlazedListsFilterStrategy<PersonWithAddress>(autoFilterMatcherEditor, columnPropertyAccessor, configRegistry),
-					columnHeaderLayer, columnHeaderDataLayer.getDataProvider(), configRegistry
-			);
+		ComboBoxFilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer =
+				new ComboBoxFilterRowHeaderComposite<PersonWithAddress>(
+						bodyLayerStack.getFilterList(), bodyLayerStack.getGlazedListsEventLayer(), bodyLayerStack.getSortedList(), 
+						columnPropertyAccessor, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
 		
 		//build the row header layer
 		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
@@ -142,14 +141,12 @@ public class _561_FilterRowExample extends AbstractNatExample {
 		GridLayer gridLayer = new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
 		
 		//turn the auto configuration off as we want to add our header menu configuration
-		NatTable natTable = new NatTable(parent, gridLayer, false);
+		NatTable natTable = new NatTable(container, gridLayer, false);
 		
 		//as the autoconfiguration of the NatTable is turned off, we have to add the 
 		//DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
 		natTable.setConfigRegistry(configRegistry);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		//add filter row configuration
-		natTable.addConfiguration(new FilterRowConfiguration());
 		
 		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
 			@Override
@@ -159,11 +156,40 @@ public class _561_FilterRowExample extends AbstractNatExample {
 			}
 		});
 		
+		natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+			@Override
+			public void configureRegistry(IConfigRegistry configRegistry) {
+				configRegistry.registerConfigAttribute(
+						EditConfigAttributes.CELL_EDITABLE_RULE, 
+						IEditableRule.ALWAYS_EDITABLE);
+			}
+			
+		});
+		
 		natTable.configure();
 		
 		natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
 		
-		return natTable;
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+		
+		Button button = new Button(container, SWT.PUSH);
+		button.setText("Add Row");
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Address address = new Address();
+				address.setStreet("Some Street");
+				address.setHousenumber(42);
+				address.setPostalCode(12345);
+				address.setCity("In the clouds");
+				PersonWithAddress person = new PersonWithAddress(42, "Ralph", "Wiggum", Gender.MALE, false, new Date(), address);
+				
+				bodyLayerStack.getSortedList().add(person);
+			}
+		});
+		
+		return container;
 	}
 	
 	/**
@@ -173,9 +199,12 @@ public class _561_FilterRowExample extends AbstractNatExample {
 	 */
 	class BodyLayerStack<T> extends AbstractLayerTransform {
 		
+		private final SortedList<T> sortedList;
 		private final FilterList<T> filterList;
 		
 		private final IDataProvider bodyDataProvider;
+		private final DataLayer bodyDataLayer;
+		private final GlazedListsEventLayer<T> glazedListsEventLayer;
 		
 		private final SelectionLayer selectionLayer;
 		
@@ -187,26 +216,32 @@ public class _561_FilterRowExample extends AbstractNatExample {
 			
 			//use the SortedList constructor with 'null' for the Comparator because the Comparator
 			//will be set by configuration
-			SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+			this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 			// wrap the SortedList with the FilterList
 			this.filterList = new FilterList<T>(sortedList);
 			
 			this.bodyDataProvider = 
 				new ListDataProvider<T>(filterList, columnPropertyAccessor);
-			DataLayer bodyDataLayer = new DataLayer(getBodyDataProvider());
+			this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 			
 			//layer for event handling of GlazedLists and PropertyChanges
-			GlazedListsEventLayer<T> glazedListsEventLayer = 
-				new GlazedListsEventLayer<T>(bodyDataLayer, filterList);
+			this.glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, filterList);
 
-			this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
+			this.selectionLayer = new SelectionLayer(getGlazedListsEventLayer());
 			ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
 			
-			setUnderlyingLayer(viewportLayer);
+			FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+		    CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
+
+			setUnderlyingLayer(compositeFreezeLayer);
 		}
 
 		public SelectionLayer getSelectionLayer() {
 			return selectionLayer;
+		}
+
+		public SortedList<T> getSortedList() {
+			return sortedList;
 		}
 		
 		public FilterList<T> getFilterList() {
@@ -216,61 +251,14 @@ public class _561_FilterRowExample extends AbstractNatExample {
 		public IDataProvider getBodyDataProvider() {
 			return bodyDataProvider;
 		}
-	}
 
-	/**
-	 * The configuration to enable the edit mode for the grid and additional
-	 * edit configurations like converters and validators.
-	 * 
-	 * @author Dirk Fauth
-	 */
-	class FilterRowConfiguration extends AbstractRegistryConfiguration {
-
-		@Override
-		public void configureRegistry(IConfigRegistry configRegistry) {
-
-			//register a combo box cell editor for the gender column in the filter row
-			//the label is set automatically to the value of 
-			//FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column position
-			ICellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(Gender.FEMALE, Gender.MALE));
-			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-					comboBoxCellEditor, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.GENDER_COLUMN_POSITION);
-
-			
-			//register a combo box cell editor for the married column in the filter row
-			//the label is set automatically to the value of 
-			//FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column position
-			comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(Boolean.TRUE, Boolean.FALSE));
-			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-					comboBoxCellEditor, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.MARRIED_COLUMN_POSITION);
-			
-
-			configRegistry.registerConfigAttribute(
-					FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER, 
-					new DefaultIntegerDisplayConverter(), 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
-			
-			
-			configRegistry.registerConfigAttribute(
-					FilterRowConfigAttributes.TEXT_MATCHING_MODE, 
-					TextMatchingMode.EXACT, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.GENDER_COLUMN_POSITION);
-
-			configRegistry.registerConfigAttribute(
-					FilterRowConfigAttributes.TEXT_MATCHING_MODE, 
-					TextMatchingMode.REGULAR_EXPRESSION, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.HOUSENUMBER_COLUMN_POSITION);
-		
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.TEXT_DELIMITER, "&"); //$NON-NLS-1$
-
+		public DataLayer getBodyDataLayer() {
+			return bodyDataLayer;
 		}
 
+		public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+			return glazedListsEventLayer;
+		}
 	}
+
 }

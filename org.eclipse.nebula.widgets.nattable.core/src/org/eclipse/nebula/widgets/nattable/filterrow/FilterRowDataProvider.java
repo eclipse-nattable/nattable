@@ -66,6 +66,8 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 	
 	/**
 	 * Contains the filter objects mapped to the column index.
+	 * Basically the data storage for the set filters in the filter row so they are
+	 * visible to the user who entered them.
 	 */
 	private Map<Integer, Object> filterIndexToObjectMap = new HashMap<Integer, Object>();
 	
@@ -88,8 +90,30 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 	}
 	
 	/**
-	 * 
-	 * @param filterIndexToObjectMap
+	 * Returns the map that contains the filter objects mapped to the column index.
+	 * It is the data storage for the inserted filters into the filter row by the user.
+	 * <p>
+	 * Note: Usually it is not intended to modify this Map directly. You should rather call
+	 * 		 <code>setDataValue(int, int, Object)</code> or <code>clearAllFilters()</code>
+	 * 		 to modify this Map to ensure consistency in other framework code. It is made visible
+	 * 		 because there might be code that needs to modify the Map without index transformations
+	 * 		 or firing events.
+	 * @return Map that contains the filter objects mapped to the column index.
+	 */
+	public Map<Integer, Object> getFilterIndexToObjectMap() {
+		return this.filterIndexToObjectMap;
+	}
+	
+	/**
+	 * Set the map that contains the filter objects mapped to the column index to be the
+	 * data storage for the inserted filters into the filter row by the user.
+	 * <p>
+	 * Note: Usually it is not intended to set this Map from the outside as it is created in the
+	 * 		 constructor. But there might be use cases where you e.g. need to connect filter rows
+	 * 		 to each other. In this case it might be useful to override the local Map with the one
+	 * 		 form another FilterRowDataProvider. This is not a typical use case, therefore you should
+	 * 		 use this method carefully!
+	 * @param filterIndexToObjectMap Map that contains the filter objects mapped to the column index.
 	 */
 	public void setFilterIndexToObjectMap(Map<Integer, Object> filterIndexToObjectMap) {
 		this.filterIndexToObjectMap = filterIndexToObjectMap;

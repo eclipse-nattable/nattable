@@ -26,7 +26,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * Default implementation of an {@link IFilterStrategy} for the filter row which can
  * also take static filters and combine them with the filter logic from the filter row.
  * 
- * @author fipro
+ * @author Dirk Fauth
  *
  * @param <T> the type of the objects shown within the NatTable
  */

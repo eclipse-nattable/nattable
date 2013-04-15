@@ -14,9 +14,6 @@ package org.eclipse.nebula.widgets.nattable.freeze.command;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
-import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeColumnCommand;
-import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeCommandHandler;
-import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -35,7 +32,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class FreezeHandlerTest {
@@ -59,6 +55,7 @@ public class FreezeHandlerTest {
 	    compositeFreezeLayer.registerCommandHandler(commandHandler);
 	    
 	    compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+			@Override
 			public Rectangle getClientArea() {
 				return new Rectangle(0,0,600,400);
 			}
@@ -104,7 +101,6 @@ public class FreezeHandlerTest {
 		Assert.assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
 	}
 	
-	@Ignore
 	@Test
 	public void shouldFreezeAfterScrolling() {
 		// Scroll the viewport to the first column
@@ -140,7 +136,6 @@ public class FreezeHandlerTest {
 	}
 	
 	@Test
-	@Ignore
 	public void shouldRestructureFrozenArea() {
 		final ReorderListener reorderListener = new ReorderListener();
 		viewportLayer.addLayerListener(reorderListener);
@@ -157,7 +152,6 @@ public class FreezeHandlerTest {
 		Assert.assertEquals(2, freezeLayer.getColumnCount());
 		compositeFreezeLayer.doCommand(new ColumnReorderCommand(compositeFreezeLayer, 1, 3));
 		
-		// TODO FIX
 		Assert.assertEquals(1, freezeLayer.getColumnCount());
 	}
 	
@@ -165,6 +159,7 @@ public class FreezeHandlerTest {
 		
 		private ColumnReorderEvent reorderEvent;
 
+		@Override
 		public void handleLayerEvent(ILayerEvent event) {
 			if (event instanceof ColumnReorderEvent) {
 				reorderEvent = (ColumnReorderEvent)event;
