@@ -1128,9 +1128,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		
 		public void run() {
 			if (edgeHoverScrollOffset.x != 0 || edgeHoverScrollOffset.y != 0) {
-				// TODO re-enable edge hover scroll w/appropriate step values
-//				setOriginColumnPosition(originPosition.columnPosition + edgeHoverScrollOffset.x);
-//				setOriginRowPosition(originPosition.rowPosition + edgeHoverScrollOffset.y);
+				setOriginX(getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + edgeHoverScrollOffset.x));
+				setOriginY(getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + edgeHoverScrollOffset.y));
 				
 				edgeHoverScrollFuture = scheduler.schedule(new MoveViewportRunnable(), 100, TimeUnit.MILLISECONDS);
 			}
