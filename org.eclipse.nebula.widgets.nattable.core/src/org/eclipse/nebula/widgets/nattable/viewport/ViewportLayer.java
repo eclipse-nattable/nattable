@@ -727,7 +727,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			if (scrollableColumnPosition >= getMinimumOriginColumnPosition()) {
 				int originColumnPosition = getOriginColumnPosition();
 
-				if (scrollableColumnPosition < originColumnPosition) {
+				if (scrollableColumnPosition <= originColumnPosition) {
 					// Move left
 					setOriginX(scrollableLayer.getStartXOfColumnPosition(scrollableColumnPosition));
 				} else {
@@ -764,7 +764,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
 				int originRowPosition = getOriginRowPosition();
 
-				if (scrollableRowPosition < originRowPosition) {
+				if (scrollableRowPosition <= originRowPosition) {
 					// Move up
 					setOriginY(scrollableLayer.getStartYOfRowPosition(scrollableRowPosition));
 				} else {
