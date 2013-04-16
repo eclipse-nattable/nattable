@@ -537,8 +537,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		cachedHeight = 0;
 		cachedRowCount = 0;
 
-		for (int currentPosition = getOriginRowPosition(); currentPosition >= 0 && currentPosition < underlyingLayer.getRowCount() && availableHeight > 0; currentPosition++) {
-			int height = underlyingLayer.getRowHeightByPosition(currentPosition);
+		for (int rowPosition = getOriginRowPosition(); rowPosition >= 0 && rowPosition < underlyingLayer.getRowCount() && availableHeight > 0; rowPosition++) {
+			int height = underlyingLayer.getRowHeightByPosition(rowPosition);
 			availableHeight -= height;
 			cachedHeight += height;
 			cachedRowCount++;
