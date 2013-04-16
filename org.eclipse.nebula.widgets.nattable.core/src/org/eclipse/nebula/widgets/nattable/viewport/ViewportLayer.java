@@ -582,7 +582,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 					if (viewportEndX < scrollableColumnEndX) {
 						// Move right
-						setOriginX(scrollableColumnEndX - clientAreaWidth);
+						setOriginX(Math.min(scrollableColumnEndX - clientAreaWidth, scrollableColumnStartX));
 					}
 				}
 				
@@ -612,7 +612,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 					if (viewportEndY < scrollableRowEndY) {
 						// Move down
-						setOriginY(scrollableRowEndY - clientAreaHeight);
+						setOriginY(Math.min(scrollableRowEndY - clientAreaHeight, scrollableRowStartY));
 					}
 				}
 				
