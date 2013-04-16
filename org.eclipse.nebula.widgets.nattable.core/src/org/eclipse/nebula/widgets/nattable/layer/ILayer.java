@@ -238,6 +238,10 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @return the x offset of the column, or -1
 	 */
 	public int getStartXOfColumnPosition(int columnPosition);
+	
+	public int getXMinClipExtentOfColumnPosition(int columnPosition);
+	
+	public int getXMaxClipExtentOfColumnPosition(int columnPosition);
 
 	// Underlying
 
@@ -311,6 +315,10 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @return the y offset of the row, or -1
 	 */
 	public int getStartYOfRowPosition(int rowPosition);
+	
+	public int getYMinClipExtentOfRowPosition(int rowPosition);
+	
+	public int getYMaxClipExtentOfRowPosition(int rowPosition);
 
 	// Underlying
 

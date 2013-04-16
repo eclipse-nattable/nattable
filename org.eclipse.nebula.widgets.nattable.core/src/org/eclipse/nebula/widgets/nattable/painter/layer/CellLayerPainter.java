@@ -63,10 +63,24 @@ public class CellLayerPainter implements ILayerPainter {
 	}
 
 	protected void paintCell(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-		ICellPainter cellPainter = cell.getLayer().getCellPainter(cell.getColumnPosition(), cell.getRowPosition(), cell, configRegistry);
-		Rectangle adjustedCellBounds = cell.getLayer().getLayerPainter().adjustCellBounds(cell.getColumnPosition(), cell.getRowPosition(), cell.getBounds());
+		ILayer layer = cell.getLayer();
+		int columnPosition = cell.getColumnPosition();
+		int rowPosition = cell.getRowPosition();
+		ICellPainter cellPainter = layer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
+		Rectangle adjustedCellBounds = layer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
 		if (cellPainter != null) {
+			Rectangle originalClipping = gc.getClipping();
+			int xMinClip = layer.getXMinClipExtentOfColumnPosition(columnPosition);
+			int xMaxClip = layer.getXMaxClipExtentOfColumnPosition(columnPosition);
+			int yMinClip = layer.getYMinClipExtentOfRowPosition(rowPosition);
+			int yMaxClip = layer.getYMaxClipExtentOfRowPosition(rowPosition);
+			Rectangle clipBounds = new Rectangle(xMinClip, yMinClip, xMaxClip - xMinClip, yMaxClip - yMinClip);
+			Rectangle adjustedClipBounds = layer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, clipBounds);
+			gc.setClipping(adjustedClipBounds);
+			
 			cellPainter.paintCell(cell, gc, adjustedCellBounds, configRegistry);
+			
+			gc.setClipping(originalClipping);
 		}
 	}
 

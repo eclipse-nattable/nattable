@@ -197,6 +197,16 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 		return underlyingLayer.getStartXOfColumnPosition(
 				localToUnderlyingColumnPosition(columnPosition) );
 	}
+	
+	@Override
+	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
+		return underlyingLayer.getXMinClipExtentOfColumnPosition(localToUnderlyingColumnPosition(columnPosition));
+	}
+	
+	@Override
+	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
+		return underlyingLayer.getXMaxClipExtentOfColumnPosition(localToUnderlyingColumnPosition(columnPosition));
+	}
 
 	// Underlying
 
@@ -279,6 +289,16 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 	public int getStartYOfRowPosition(int rowPosition) {
 		return underlyingLayer.getStartYOfRowPosition(
 				localToUnderlyingRowPosition(rowPosition) );
+	}
+	
+	@Override
+	public int getYMinClipExtentOfRowPosition(int rowPosition) {
+		return underlyingLayer.getYMinClipExtentOfRowPosition(localToUnderlyingRowPosition(rowPosition));
+	}
+	
+	@Override
+	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
+		return underlyingLayer.getYMaxClipExtentOfRowPosition(localToUnderlyingRowPosition(rowPosition));
 	}
 
 	// Underlying

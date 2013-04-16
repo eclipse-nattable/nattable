@@ -475,6 +475,16 @@ public class TestLayer implements IUniqueIndexLayer {
 		}
 		return width;
 	}
+	
+	@Override
+	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
+		return getStartXOfColumnPosition(columnPosition);
+	}
+	
+	@Override
+	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
+		return getXMinClipExtentOfColumnPosition(columnPosition) + getColumnWidthByPosition(columnPosition);
+	}
 
 	// Underlying
 
@@ -571,6 +581,16 @@ public class TestLayer implements IUniqueIndexLayer {
 			height += rowHeights[rowPosition];
 		}
 		return height;
+	}
+	
+	@Override
+	public int getYMinClipExtentOfRowPosition(int rowPosition) {
+		return getStartYOfRowPosition(rowPosition);
+	}
+	
+	@Override
+	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
+		return getYMinClipExtentOfRowPosition(rowPosition) + getRowHeightByPosition(rowPosition);
 	}
 
 	// Underlying

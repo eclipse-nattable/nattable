@@ -273,6 +273,26 @@ public abstract class AbstractLayer implements ILayer {
 		return getClass().getSimpleName();
 	}
 	
+	@Override
+	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
+		return getStartXOfColumnPosition(columnPosition);
+	}
+	
+	@Override
+	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
+		return getXMinClipExtentOfColumnPosition(columnPosition) + getColumnWidthByPosition(columnPosition);
+	}
+	
+	@Override
+	public int getYMinClipExtentOfRowPosition(int rowPosition) {
+		return getStartYOfRowPosition(rowPosition);
+	}
+	
+	@Override
+	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
+		return getYMinClipExtentOfRowPosition(rowPosition) + getRowHeightByPosition(rowPosition);
+	};
+	
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()
 				|| rowPosition < 0 || rowPosition >= getRowCount()) {

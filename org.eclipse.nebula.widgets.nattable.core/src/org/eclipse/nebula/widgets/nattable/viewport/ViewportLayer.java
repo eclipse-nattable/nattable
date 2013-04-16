@@ -469,8 +469,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getColumnWidthByPosition(int columnPosition) {
 		int width = super.getColumnWidthByPosition(columnPosition);
-		if (columnPosition == 0)
-			width -= getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition());
+//		if (columnPosition == 0)
+//			width -= getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition());
 		return width;
 	}
 
@@ -490,9 +490,27 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
-		return Math.max(0, getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + columnPosition) - getOrigin().getX());
+		return getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + columnPosition) - getOrigin().getX();
 	}
 
+	@Override
+	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
+		int xMinClip = getStartXOfColumnPosition(columnPosition);
+		if (columnPosition == 0) {
+			xMinClip += getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(localToUnderlyingColumnPosition(columnPosition));
+		}
+		return xMinClip;
+	}
+	
+	@Override
+	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
+		int xMaxClip = getXMinClipExtentOfColumnPosition(columnPosition) + getColumnWidthByPosition(columnPosition);
+		if (columnPosition == 0) {
+			xMaxClip -= getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(localToUnderlyingColumnPosition(columnPosition));
+		}
+		return xMaxClip;
+	}
+	
 	// Vertical features
 
 	// Rows
@@ -568,8 +586,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getRowHeightByPosition(int rowPosition) {
 		int height = super.getRowHeightByPosition(rowPosition);
-		if (rowPosition == 0)
-			height -= getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
+//		if (rowPosition == 0)
+//			height -= getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition());
 		return height;
 	}
 	
@@ -584,7 +602,25 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
-		return Math.max(0, getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + rowPosition) - getOrigin().getY());
+		return getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + rowPosition) - getOrigin().getY();
+	}
+
+	@Override
+	public int getYMinClipExtentOfRowPosition(int rowPosition) {
+		int yMinClip = getStartYOfRowPosition(rowPosition);
+		if (rowPosition == 0) {
+			yMinClip += getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(localToUnderlyingRowPosition(rowPosition));
+		}
+		return yMinClip;
+	}
+	
+	@Override
+	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
+		int yMaxClip = getYMinClipExtentOfRowPosition(rowPosition) + getRowHeightByPosition(rowPosition);
+		if (rowPosition == 0) {
+			yMaxClip -= getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(localToUnderlyingRowPosition(rowPosition));
+		}
+		return yMaxClip;
 	}
 
 	// Cell features
@@ -631,9 +667,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 		for (int columnPosition = getOriginColumnPosition(); columnPosition >= 0 && columnPosition < underlyingLayer.getColumnCount() && availableWidth > 0; columnPosition++) {
 			int width = underlyingLayer.getColumnWidthByPosition(columnPosition);
-			if (columnPosition == getOriginColumnPosition()) {
-				width -= getOrigin().getX() - underlyingLayer.getStartXOfColumnPosition(columnPosition);
-			}
+//			if (columnPosition == getOriginColumnPosition()) {
+//				width -= getOrigin().getX() - underlyingLayer.getStartXOfColumnPosition(columnPosition);
+//			}
 			availableWidth -= width;
 			cachedWidth += width;
 			cachedColumnCount++;
@@ -655,9 +691,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 		for (int currentPosition = getOriginRowPosition(); currentPosition >= 0 && currentPosition < underlyingLayer.getRowCount() && availableHeight > 0; currentPosition++) {
 			int height = underlyingLayer.getRowHeightByPosition(currentPosition);
-			if (currentPosition == getOriginRowPosition()) {
-				height -= getOrigin().getY() - underlyingLayer.getStartYOfRowPosition(currentPosition);
-			}
+//			if (currentPosition == getOriginRowPosition()) {
+//				height -= getOrigin().getY() - underlyingLayer.getStartYOfRowPosition(currentPosition);
+//			}
 			availableHeight -= height;
 			cachedHeight += height;
 			cachedRowCount++;

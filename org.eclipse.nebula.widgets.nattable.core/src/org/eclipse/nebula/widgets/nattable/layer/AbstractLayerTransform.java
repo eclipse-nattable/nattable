@@ -192,6 +192,18 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		return underlyingLayer.getStartXOfColumnPosition(underlyingColumnPosition);
 	}
+	
+	@Override
+	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
+		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
+		return underlyingLayer.getXMinClipExtentOfColumnPosition(underlyingColumnPosition);
+	}
+	
+	@Override
+	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
+		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
+		return underlyingLayer.getXMaxClipExtentOfColumnPosition(underlyingColumnPosition);
+	}
 
 	// Underlying
 
@@ -272,6 +284,18 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 	public int getStartYOfRowPosition(int rowPosition) {
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
 		return underlyingLayer.getStartYOfRowPosition(underlyingRowPosition);
+	}
+	
+	@Override
+	public int getYMinClipExtentOfRowPosition(int rowPosition) {
+		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
+		return underlyingLayer.getYMinClipExtentOfRowPosition(underlyingRowPosition);
+	}
+	
+	@Override
+	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
+		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
+		return underlyingLayer.getYMaxClipExtentOfRowPosition(underlyingRowPosition);
 	}
 
 	// Underlying
