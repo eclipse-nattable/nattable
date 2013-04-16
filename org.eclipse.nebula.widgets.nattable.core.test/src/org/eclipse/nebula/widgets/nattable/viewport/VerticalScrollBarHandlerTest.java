@@ -55,22 +55,23 @@ public class VerticalScrollBarHandlerTest {
 	}
 
 	private void scrollViewportByOffset(int offset) {
-		scrollHandler.setViewportOrigin(viewport.getRowPositionByY(viewport.getOrigin().getY()) + offset);
+		scrollHandler.setViewportOrigin(viewport.getOrigin().getY() + offset);
 	}
 
 	private void scrollViewportToPixel(int y) {
-		scrollHandler.setViewportOrigin(viewport.getScrollableLayer().getRowPositionByY(y));
+		scrollHandler.setViewportOrigin(y);
 	}
 
 	@Test
 	public void scrollViewportUpByOffset() throws Exception {
-		viewport.moveRowPositionIntoViewport(4);
+		viewport.setOriginY(viewport.getStartYOfRowPosition(2));
 		assertEquals(2, viewport.getRowIndexByPosition(0));
 
 		scrollViewportByOffset(-1);
 		assertEquals(1, viewport.getRowIndexByPosition(0));
 		assertEquals(2, viewport.getRowIndexByPosition(1));
 
+		viewport.setOriginY(viewport.getStartYOfRowPosition(1));
 		scrollViewportByOffset(-1);
 		assertEquals(0, viewport.getRowIndexByPosition(0));
 		assertEquals(1, viewport.getRowIndexByPosition(1));
@@ -78,12 +79,13 @@ public class VerticalScrollBarHandlerTest {
 
 	@Test
 	public void scrollViewportDownByOffset() throws Exception {
-		scrollViewportByOffset(1);
-		assertEquals(1, viewport.getRowIndexByPosition(0));
+		viewport.moveRowPositionIntoViewport(2);
+		assertEquals(0, viewport.getRowIndexByPosition(0));
 
-		scrollViewportByOffset(2);
-		assertEquals(3, viewport.getRowIndexByPosition(0));
-		assertEquals(4, viewport.getRowIndexByPosition(1));
+		scrollViewportByOffset(20);
+		assertEquals(1, viewport.getRowIndexByPosition(0));
+		assertEquals(2, viewport.getRowIndexByPosition(1));
+		assertEquals(3, viewport.getRowIndexByPosition(2));
 	}
 
 	@Test

@@ -51,7 +51,7 @@ public class ViewportLayerTest {
 
 	@Test
 	public void testMoveColumnPositionIntoViewportSimpleCase() {
-		viewportLayer = new ViewportLayerFixture(new Rectangle(0, 0, 285, 100));
+		viewportLayer = new ViewportLayerFixture();
 		assertEquals(0, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(1));
 		assertEquals(2, viewportLayer.getColumnIndexByPosition(2));
@@ -188,7 +188,7 @@ public class ViewportLayerTest {
 
 	@Test
 	public void testMoveRowPositionIntoViewport() {
-		viewportLayer.moveRowPositionIntoViewport(2);
+		viewportLayer.moveRowPositionIntoViewport(3);
 		assertEquals(1, viewportLayer.getRowIndexByPosition(0));
 
 		viewportLayer.moveRowPositionIntoViewport(0);
@@ -197,7 +197,7 @@ public class ViewportLayerTest {
 
 	@Test
 	public void testMoveCellPositionIntoViewport() {
-		viewportLayer.moveCellPositionIntoViewport(2, 2);
+		viewportLayer.moveCellPositionIntoViewport(3, 3);
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(1, viewportLayer.getRowIndexByPosition(0));
 
@@ -205,7 +205,7 @@ public class ViewportLayerTest {
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(0, viewportLayer.getRowIndexByPosition(0));
 
-		viewportLayer.moveCellPositionIntoViewport(0, 2);
+		viewportLayer.moveCellPositionIntoViewport(0, 3);
 		assertEquals(0, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(1, viewportLayer.getRowIndexByPosition(0));
 

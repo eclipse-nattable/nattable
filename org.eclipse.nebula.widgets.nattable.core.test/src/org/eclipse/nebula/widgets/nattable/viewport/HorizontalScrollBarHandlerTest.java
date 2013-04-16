@@ -22,13 +22,11 @@ import org.junit.Test;
 
 /**
  * Test for Horizontal scrolling of the viewport.
- *
- * The <code>DataLayerFixture</code> has the following config. Used by all tests.
- * The viewport is 200px wide.
- *
- * Col pos      0     1   2  3    4
- * 			  ------ ---- - ---- ---
- * Col width   150   100  35 100  80
+ * 
+ * The <code>DataLayerFixture</code> has the following config. Used by all
+ * tests. The viewport is 200px wide.
+ * 
+ * Col pos 0 1 2 3 4 ------ ---- - ---- --- Col width 150 100 35 100 80
  */
 public class HorizontalScrollBarHandlerTest {
 
@@ -37,7 +35,7 @@ public class HorizontalScrollBarHandlerTest {
 	private HorizontalScrollBarHandler scrollHandler;
 
 	@Before
-	public void init(){
+	public void init() {
 		viewport = new ViewportLayerFixture();
 		scrollBar = ViewportLayerFixture.DEFAULT_SCROLLABLE.getHorizontalBar();
 		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
@@ -47,11 +45,11 @@ public class HorizontalScrollBarHandlerTest {
 	}
 
 	private void scrollViewportByOffset(int offset) {
-		scrollHandler.setViewportOrigin(viewport.getColumnPositionByX(viewport.getOrigin().getX()) + offset);
+		scrollHandler.setViewportOrigin(viewport.getOrigin().getX() + offset);
 	}
 
 	private void scrollViewportToPixel(int x) {
-		scrollHandler.setViewportOrigin(viewport.getScrollableLayer().getColumnPositionByX(x));
+		scrollHandler.setViewportOrigin(x);
 	}
 
 	@Test
@@ -65,31 +63,30 @@ public class HorizontalScrollBarHandlerTest {
 
 	@Test
 	public void scrollViewportLeftByOffset() throws Exception {
-		//Origin adjusted
-		viewport.moveColumnPositionIntoViewport(4);
-		assertEquals(2, viewport.getColumnIndexByPosition(0));
-
-		scrollViewportByOffset(-1);
-		assertEquals(2, viewport.getColumnIndexByPosition(0));
-
+		// Origin adjusted
+		viewport.setOriginX(viewport.getStartXOfColumnPosition(2));
 		scrollViewportByOffset(-1);
 		assertEquals(1, viewport.getColumnIndexByPosition(0));
+
+		viewport.setOriginX(viewport.getStartXOfColumnPosition(1));
+		scrollViewportByOffset(-1);
+		assertEquals(0, viewport.getColumnIndexByPosition(0));
 	}
 
-   @Test
+	@Test
 	public void scrollViewportRightByOffset() throws Exception {
-		scrollViewportByOffset(1);
+		scrollViewportByOffset(200);
 		assertEquals(1, viewport.getColumnIndexByPosition(0));
 
-		scrollViewportByOffset(2);
-		assertEquals(3, viewport.getColumnIndexByPosition(0));
+		scrollViewportByOffset(200);
+		assertEquals(2, viewport.getColumnIndexByPosition(0));
 	}
 
 	@Test
 	public void dragRight() throws Exception {
 		scrollViewportToPixel(300);
-		assertEquals(3, viewport.getColumnIndexByPosition(0));
-		assertEquals(4, viewport.getColumnIndexByPosition(1));
+		assertEquals(2, viewport.getColumnIndexByPosition(0));
+		assertEquals(3, viewport.getColumnIndexByPosition(1));
 	}
 
 	@Test
@@ -102,23 +99,12 @@ public class HorizontalScrollBarHandlerTest {
 		assertEquals(0, viewport.getColumnIndexByPosition(0));
 	}
 
-	// TODO restore if needed
-//	@Test
-//	public void widthToScrollBy() throws Exception {
-//		assertEquals(0, viewport.getColumnIndexByPosition(0));
-//
-//		assertEquals(200, scrollHandler.pageScrollDistance());
-//	}
-
 	/**
 	 * Test for issue reported in http://nattable.org/jira/browse/NTBL-99.
-	 *    Resizing the last column to be larger than the width of a table
-	 *    and scrolling to the right results in a all white background and no columns
-	 *
-	 *  COLUMNS
-	 *     0      1
-	 *  |------|------|
-	 *    250    250
+	 * Resizing the last column to be larger than the width of a table and
+	 * scrolling to the right results in a all white background and no columns
+	 * 
+	 * COLUMNS 0 1 |------|------| 250 250
 	 */
 	@Test
 	public void issueNTBL99MoveByColumn() throws Exception {
@@ -130,12 +116,14 @@ public class HorizontalScrollBarHandlerTest {
 
 		assertEquals(0, viewport.getColumnIndexByPosition(0));
 
-		scrollViewportByOffset(1);
+		scrollViewportByOffset(200);
+		assertEquals(0, viewport.getColumnIndexByPosition(0));
+		
+		scrollViewportByOffset(200);
 		assertEquals(1, viewport.getColumnIndexByPosition(0));
 
-		//No more scrolling - i.e no white area
-		scrollViewportByOffset(1);
-		//scrollHandler.scrollViewportByOffset(RIGHT, 1);
+		// No more scrolling
+		scrollViewportByOffset(200);
 		assertEquals(1, viewport.getColumnIndexByPosition(0));
 	}
 
@@ -152,10 +140,10 @@ public class HorizontalScrollBarHandlerTest {
 
 	@Test
 	public void horizontalScrollbarThumbSize() throws Exception {
-		viewport = new ViewportLayerFixture(new Rectangle(0,0,250,100));
+		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 250, 100));
 		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
 
-		assertEquals(250,viewport.getWidth());
+		assertEquals(250, viewport.getWidth());
 		scrollHandler.recalculateScrollBarSize();
 
 		// Fixture data - viewport (250px), scrollable(465px)
@@ -171,7 +159,7 @@ public class HorizontalScrollBarHandlerTest {
 		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
 
 		scrollHandler.recalculateScrollBarSize();
-		assertEquals(465,viewport.getWidth());
+		assertEquals(465, viewport.getWidth());
 
 		assertEquals(465, scrollHandler.scrollBar.getThumb());
 		assertFalse(scrollBar.isEnabled());

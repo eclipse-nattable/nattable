@@ -121,13 +121,13 @@ public class ColumnHideShowLayerTest2 {
 		LayerListenerFixture natTableListener = new LayerListenerFixture();
 		natTable.addLayerListener(natTableListener);
 
-		// Scroll to position 16 in grid/15 in body
-		natTable.scrollToColumn(16);
-		assertEquals(15, natTable.getColumnIndexByPosition(1));
+		// Scroll to position 14 in grid/14 in body
+		natTable.scrollToColumn(14);
+		assertEquals(14, natTable.getColumnIndexByPosition(1));
 
-		// Hide last column - position 5/index 19
-		assertEquals(19, natTable.getColumnIndexByPosition(5));
-		natTable.doCommand(new ColumnHideCommand(natTable, 5));
+		// Hide last column - position 6/index 19
+		assertEquals(19, natTable.getColumnIndexByPosition(6));
+		natTable.doCommand(new ColumnHideCommand(natTable, 6));
 
 		// Assert event received
 		assertNotNull(natTableListener.getReceivedEvent(HideColumnPositionsEvent.class));
@@ -138,7 +138,7 @@ public class ColumnHideShowLayerTest2 {
 
 		// View port adjusted origin to move an extra column in
 		Range hiddenRange = hideEvent.getColumnPositionRanges().iterator().next();
-		assertEquals(5, hiddenRange.start);
-		assertEquals(6, hiddenRange.end);
+		assertEquals(6, hiddenRange.start);
+		assertEquals(7, hiddenRange.end);
 	}
 }

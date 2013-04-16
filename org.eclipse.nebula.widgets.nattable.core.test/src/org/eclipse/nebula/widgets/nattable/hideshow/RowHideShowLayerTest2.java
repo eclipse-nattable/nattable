@@ -81,13 +81,13 @@ public class RowHideShowLayerTest2 {
 		LayerListenerFixture natTableListener = new LayerListenerFixture();
 		natTable.addLayerListener(natTableListener);
 
-		// Scroll to position 16 in grid/15 in body
-		natTable.scrollToRow(16);
-		assertEquals(16, natTable.getRowIndexByPosition(1));
+		// Scroll to position 15 in grid/15 in body
+		natTable.scrollToRow(15);
+		assertEquals(15, natTable.getRowIndexByPosition(1));
 
-		// Hide last row - position 4/index 19
-		assertEquals(19, natTable.getRowIndexByPosition(4));
-		natTable.doCommand(new RowHideCommand(natTable, 4));
+		// Hide last row - position 5/index 19
+		assertEquals(19, natTable.getRowIndexByPosition(5));
+		natTable.doCommand(new RowHideCommand(natTable, 5));
 
 		// Assert event received
 		assertNotNull(natTableListener.getReceivedEvent(HideRowPositionsEvent.class));
@@ -98,7 +98,7 @@ public class RowHideShowLayerTest2 {
 
 		// View port adjusted origin to move an extra row in
 		Range hiddenRange = hideEvent.getRowPositionRanges().iterator().next();
-		assertEquals(4, hiddenRange.start);
-		assertEquals(5, hiddenRange.end);
+		assertEquals(5, hiddenRange.start);
+		assertEquals(6, hiddenRange.end);
 	}
 }
