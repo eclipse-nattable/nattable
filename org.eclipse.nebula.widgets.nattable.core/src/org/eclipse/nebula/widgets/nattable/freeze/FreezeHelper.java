@@ -18,6 +18,7 @@ import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeSelectionCommand
 import org.eclipse.nebula.widgets.nattable.freeze.command.UnFreezeGridCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.event.FreezeEvent;
 import org.eclipse.nebula.widgets.nattable.freeze.event.UnfreezeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 /**
@@ -63,7 +64,10 @@ public class FreezeHelper {
 			freezeLayer.setTopLeftPosition(topLeftPosition.columnPosition, topLeftPosition.rowPosition);
 			freezeLayer.setBottomRightPosition(bottomRightPosition.columnPosition, bottomRightPosition.rowPosition);
 	
-			viewportLayer.setMinimumOrigin(viewportLayer.getStartXOfColumnPosition(bottomRightPosition.columnPosition + 1), viewportLayer.getStartYOfRowPosition(bottomRightPosition.rowPosition + 1));
+			IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
+			int originX = bottomRightPosition.columnPosition == scrollableLayer.getColumnCount() - 1 ? scrollableLayer.getWidth() : scrollableLayer.getStartXOfColumnPosition(bottomRightPosition.columnPosition + 1);
+			int originY = bottomRightPosition.rowPosition == scrollableLayer.getRowCount() - 1 ? scrollableLayer.getHeight() : scrollableLayer.getStartYOfRowPosition(bottomRightPosition.rowPosition + 1);
+			viewportLayer.setMinimumOrigin(originX, originY);
 			viewportLayer.fireLayerEvent(new FreezeEvent(viewportLayer));
 		}
 	}
