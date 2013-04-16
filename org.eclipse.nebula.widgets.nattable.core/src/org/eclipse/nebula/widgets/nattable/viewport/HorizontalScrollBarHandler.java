@@ -30,44 +30,14 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 		
 	}
 
-//	/**
-//	 * In a normal scenario scroll by the width of the viewport. 
-//	 * If the col being scrolled is wider than above, use the col width
-//	 */
-//	@Override
-//	int pageScrollDistance() {
-//		int widthOfColBeingScrolled = scrollableLayer.getColumnWidthByPosition(getScrollablePosition());
-//		int viewportWidth = viewportLayer.getClientAreaWidth(); 
-//		int scrollWidth = (widthOfColBeingScrolled > viewportWidth) ? widthOfColBeingScrolled : viewportWidth;
-//		return scrollWidth;
-//	}
-	
-//	@Override
-//	int getSpanByPosition(int scrollablePosition) {
-//		return scrollableLayer.getColumnWidthByPosition(scrollablePosition);
-//	}
-	
 	@Override
 	int getViewportOrigin() {
-//		return LayerUtil.convertColumnPosition(viewportLayer, 0, scrollableLayer);
 		return viewportLayer.getOrigin().getX();
 	}
 	
-//	@Override
-//	int getStartPixelOfPosition(int position){
-//		return scrollableLayer.getStartXOfColumnPosition(position);
-//	}
-//	
-//	@Override
-//	int getPositionByPixel(int pixelValue) {
-//		return scrollableLayer.getColumnPositionByX(pixelValue);
-//	}
-
 	@Override
 	int getViewportMinimumOrigin() {
 		return viewportLayer.getMinimumOrigin().getX();
-//		int column = viewportLayer.getMinimumOriginColumnPosition();
-//		return (column < scrollableLayer.getColumnCount()) ? scrollableLayer.getStartXOfColumnPosition(column) : scrollableLayer.getWidth();
 	}
 
 	@Override
