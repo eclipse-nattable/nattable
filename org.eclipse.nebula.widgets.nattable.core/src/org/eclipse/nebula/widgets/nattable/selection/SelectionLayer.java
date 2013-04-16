@@ -399,7 +399,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 			boolean forcingEntireCellIntoViewport, boolean withShiftMask, boolean withControlMask) {
 
 		final CellSelectionEvent selectionEvent = new CellSelectionEvent(this, columnPosition, rowPosition,
-				forcingEntireCellIntoViewport, withShiftMask, withControlMask);
+				withShiftMask, withControlMask);
 		fireLayerEvent(selectionEvent);
 	}
 	

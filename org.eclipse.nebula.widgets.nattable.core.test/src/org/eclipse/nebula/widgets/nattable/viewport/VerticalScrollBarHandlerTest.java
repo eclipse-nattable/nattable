@@ -64,7 +64,7 @@ public class VerticalScrollBarHandlerTest {
 
 	@Test
 	public void scrollViewportUpByOffset() throws Exception {
-		viewport.moveRowPositionIntoViewport(4, false);
+		viewport.moveRowPositionIntoViewport(4);
 		assertEquals(2, viewport.getRowIndexByPosition(0));
 
 		scrollViewportByOffset(-1);
@@ -95,7 +95,7 @@ public class VerticalScrollBarHandlerTest {
 
 	@Test
 	public void dragUp() throws Exception {
-		viewport.moveRowPositionIntoViewport(4, false);
+		viewport.moveRowPositionIntoViewport(4);
 		assertEquals(2, viewport.getRowIndexByPosition(0));
 
 		scrollViewportToPixel(50);
@@ -114,7 +114,7 @@ public class VerticalScrollBarHandlerTest {
 		// No overhang
 		assertEquals(100, scrollHandler.scrollBar.getThumb());
 
-		viewport.moveRowPositionIntoViewport(5, false);
+		viewport.moveRowPositionIntoViewport(5);
 		assertEquals(100, scrollHandler.scrollBar.getThumb());
 	}
 
@@ -132,21 +132,5 @@ public class VerticalScrollBarHandlerTest {
 		assertFalse(scrollBar.isEnabled());
 		assertFalse(scrollBar.isVisible());
 	}
-
-	// TODO restore if needed
-//	@Test
-//	public void getVBarOverhang() throws Exception {
-//		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 200, 120));
-//		scrollHandler = new VerticalScrollBarHandler(viewport, scrollBar);
-//
-//		assertEquals(120, viewport.getClientAreaHeight());
-//		assertEquals(20, scrollHandler.getScrollBarOverhang());
-//	}
-//
-//	@Test
-//	public void noVBarOverhangForPerfectFit() throws Exception {
-//		assertEquals(100, viewport.getClientAreaHeight());
-//		assertEquals(0, scrollHandler.getScrollBarOverhang());
-//	}
 
 }

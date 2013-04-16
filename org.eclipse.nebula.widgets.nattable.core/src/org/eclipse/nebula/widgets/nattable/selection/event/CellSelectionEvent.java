@@ -17,17 +17,14 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 public class CellSelectionEvent extends CellVisualChangeEvent implements ISelectionEvent {
 
 	private final SelectionLayer selectionLayer;
-	private boolean forcingEntireCellIntoViewport = false;
 
 	// The state of the keys when the event was raised
 	private boolean withShiftMask = false;
 	private boolean withControlMask = false;
 
-	public CellSelectionEvent(SelectionLayer selectionLayer, int columnPosition, int rowPosition,
-			boolean forcingEntireCellIntoViewport, boolean withShiftMask, boolean withControlMask) {
+	public CellSelectionEvent(SelectionLayer selectionLayer, int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
 		super(selectionLayer, columnPosition, rowPosition);
 		this.selectionLayer = selectionLayer;
-		this.forcingEntireCellIntoViewport = forcingEntireCellIntoViewport;
 		this.withControlMask = withControlMask;
 		this.withShiftMask = withShiftMask;
 	}
@@ -36,17 +33,12 @@ public class CellSelectionEvent extends CellVisualChangeEvent implements ISelect
 	protected CellSelectionEvent(CellSelectionEvent event) {
 		super(event);
 		this.selectionLayer = event.selectionLayer;
-		this.forcingEntireCellIntoViewport = event.forcingEntireCellIntoViewport;
 		this.withControlMask = event.withControlMask;
 		this.withShiftMask = event.withShiftMask;
 	}
 
 	public SelectionLayer getSelectionLayer() {
 		return selectionLayer;
-	}
-
-	public boolean isForcingEntireCellIntoViewport() {
-		return forcingEntireCellIntoViewport;
 	}
 
 	@Override

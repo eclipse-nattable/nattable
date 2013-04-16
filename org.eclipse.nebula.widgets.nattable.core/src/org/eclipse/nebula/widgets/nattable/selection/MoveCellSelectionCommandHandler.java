@@ -99,7 +99,7 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 				
 				if (newSelectedRowPosition != lastSelectedCellPosition.rowPosition) {
 					selectionLayer.selectCell(lastSelectedCellPosition.columnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
-					selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+					selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, true, withShiftMask, withControlMask);
 				}
 			}
 		}
@@ -123,7 +123,7 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 				
 				if (newSelectedRowPosition != lastSelectedCellPosition.rowPosition) {
 					selectionLayer.selectCell(lastSelectedCellPosition.columnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
-					selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, false, withShiftMask, withControlMask);
+					selectionLayer.fireCellSelectionEvent(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, true, withShiftMask, withControlMask);
 				}
 			}
 		}

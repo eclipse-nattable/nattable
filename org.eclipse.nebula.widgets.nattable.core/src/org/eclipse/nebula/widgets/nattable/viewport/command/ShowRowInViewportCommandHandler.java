@@ -27,7 +27,7 @@ public class ShowRowInViewportCommandHandler extends AbstractLayerCommandHandler
 
 	@Override
 	protected boolean doCommand(ShowRowInViewportCommand command) {
-		viewportLayer.moveRowPositionIntoViewport(command.getRowPosition(), false);
+		viewportLayer.moveRowPositionIntoViewport(command.getRowPosition());
 		return true;
 	}
 

@@ -712,16 +712,16 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param scrollableRowPosition
 	 * @param forceEntireCellIntoViewport
 	 */
-	public void moveCellPositionIntoViewport(int scrollableColumnPosition, int scrollableRowPosition, boolean forceEntireCellIntoViewport) {
-		moveColumnPositionIntoViewport(scrollableColumnPosition, forceEntireCellIntoViewport);
-		moveRowPositionIntoViewport(scrollableRowPosition, forceEntireCellIntoViewport);
+	public void moveCellPositionIntoViewport(int scrollableColumnPosition, int scrollableRowPosition) {
+		moveColumnPositionIntoViewport(scrollableColumnPosition);
+		moveRowPositionIntoViewport(scrollableRowPosition);
 	}
 
 	/**
 	 * Scrolls the viewport (if required) so that the specified column is visible.
 	 * @param scrollableColumnPosition column position in terms of the Scrollable Layer
 	 */
-	public void moveColumnPositionIntoViewport(int scrollableColumnPosition, boolean forceEntireCellIntoViewport) {
+	public void moveColumnPositionIntoViewport(int scrollableColumnPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
 		if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0) {
 			if (scrollableColumnPosition >= getMinimumOriginColumnPosition()) {
@@ -737,15 +737,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 					int viewportEndX = underlyingLayer.getStartXOfColumnPosition(getOriginColumnPosition()) + clientAreaWidth;
 
 					if (viewportEndX < scrollableColumnEndX) {
-						int targetOriginColumnPosition;
-						if (forceEntireCellIntoViewport || isLastColumnPosition(scrollableColumnPosition)) {
-							targetOriginColumnPosition = underlyingLayer.getColumnPositionByX(scrollableColumnEndX - clientAreaWidth) + 1;
-						} else {
-							targetOriginColumnPosition = underlyingLayer.getColumnPositionByX(scrollableColumnStartX - clientAreaWidth) + 1;
-						}
-
 						// Move right
-						setOriginX(scrollableLayer.getStartXOfColumnPosition(targetOriginColumnPosition));
+						setOriginX(scrollableColumnEndX - clientAreaWidth);
 					}
 				}
 				
@@ -758,7 +751,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	/**
 	 * @see #moveColumnPositionIntoViewport(int, boolean)
 	 */
-	public void moveRowPositionIntoViewport(int scrollableRowPosition, boolean forceEntireCellIntoViewport) {
+	public void moveRowPositionIntoViewport(int scrollableRowPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
 		if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0) {
 			if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
@@ -774,15 +767,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 					int viewportEndY = underlyingLayer.getStartYOfRowPosition(getOriginRowPosition()) + clientAreaHeight;
 
 					if (viewportEndY < scrollableRowEndY) {
-						int targetOriginRowPosition;
-						if (forceEntireCellIntoViewport || isLastRowPosition(scrollableRowPosition)) {
-							targetOriginRowPosition = underlyingLayer.getRowPositionByY(scrollableRowEndY - clientAreaHeight) + 1;
-						} else {
-							targetOriginRowPosition = underlyingLayer.getRowPositionByY(scrollableRowStartY - clientAreaHeight) + 1;
-						}
-
 						// Move down
-						setOriginY(scrollableLayer.getStartYOfRowPosition(targetOriginRowPosition));
+						setOriginY(scrollableRowEndY - clientAreaHeight);
 					}
 				}
 				
@@ -844,7 +830,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			origin = savedOrigin;
 			return true;
 		} else if (command instanceof PrintEntireGridCommand) {
-			moveCellPositionIntoViewport(0, 0, false);
+			moveCellPositionIntoViewport(0, 0);
 		}
 		return super.doCommand(command);
 	}
@@ -1003,14 +989,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param selectionEvent
 	 */
 	private void processSelection(CellSelectionEvent selectionEvent) {
-		moveCellPositionIntoViewport(selectionEvent.getColumnPosition(), selectionEvent.getRowPosition(), selectionEvent.isForcingEntireCellIntoViewport());
+		moveCellPositionIntoViewport(selectionEvent.getColumnPosition(), selectionEvent.getRowPosition());
 		adjustHorizontalScrollBar();
 		adjustVerticalScrollBar();
 	}
 
 	private void processColumnSelection(ColumnSelectionEvent selectionEvent) {
 		for (Range columnPositionRange : selectionEvent.getColumnPositionRanges()) {
-			moveColumnPositionIntoViewport(columnPositionRange.end - 1, false);
+			moveColumnPositionIntoViewport(columnPositionRange.end - 1);
 			adjustHorizontalScrollBar();
 		}
 	}
@@ -1018,7 +1004,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	private void processRowSelection(RowSelectionEvent selectionEvent) {
 		int rowPositionToMoveIntoViewport = selectionEvent.getRowPositionToMoveIntoViewport();
 		if (rowPositionToMoveIntoViewport >= 0) {
-			moveRowPositionIntoViewport(rowPositionToMoveIntoViewport, false);
+			moveRowPositionIntoViewport(rowPositionToMoveIntoViewport);
 			adjustVerticalScrollBar();
 		}
 	}

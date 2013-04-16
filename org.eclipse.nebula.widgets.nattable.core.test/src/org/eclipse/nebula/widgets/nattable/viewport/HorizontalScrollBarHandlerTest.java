@@ -56,19 +56,18 @@ public class HorizontalScrollBarHandlerTest {
 
 	@Test
 	public void scrollViewportLeftByPage() throws Exception {
-		viewport.moveColumnPositionIntoViewport(3, true);
-		assertEquals(2, viewport.getColumnIndexByPosition(0));
+		viewport.moveColumnPositionIntoViewport(3);
+		assertEquals(1, viewport.getColumnIndexByPosition(0));
 
-		//Adjusted to occupy available white space on the right
-		viewport.moveColumnPositionIntoViewport(4, true);
-		assertEquals(3, viewport.getColumnIndexByPosition(0));
+		viewport.moveColumnPositionIntoViewport(4);
+		assertEquals(2, viewport.getColumnIndexByPosition(0));
 	}
 
 	@Test
 	public void scrollViewportLeftByOffset() throws Exception {
 		//Origin adjusted
-		viewport.moveColumnPositionIntoViewport(4, true);
-		assertEquals(3, viewport.getColumnIndexByPosition(0));
+		viewport.moveColumnPositionIntoViewport(4);
+		assertEquals(2, viewport.getColumnIndexByPosition(0));
 
 		scrollViewportByOffset(-1);
 		assertEquals(2, viewport.getColumnIndexByPosition(0));
@@ -96,7 +95,7 @@ public class HorizontalScrollBarHandlerTest {
 	@Test
 	public void dragLeft() throws Exception {
 		// Origin adjusted
-		viewport.moveColumnPositionIntoViewport(3, false);
+		viewport.moveColumnPositionIntoViewport(3);
 		assertEquals(1, viewport.getColumnIndexByPosition(0));
 
 		scrollViewportToPixel(50);
@@ -162,7 +161,7 @@ public class HorizontalScrollBarHandlerTest {
 		// Fixture data - viewport (250px), scrollable(465px)
 		assertEquals(250, scrollHandler.scrollBar.getThumb());
 
-		viewport.moveColumnPositionIntoViewport(9, false);
+		viewport.moveColumnPositionIntoViewport(9);
 		assertEquals(250, scrollHandler.scrollBar.getThumb());
 	}
 
@@ -178,21 +177,5 @@ public class HorizontalScrollBarHandlerTest {
 		assertFalse(scrollBar.isEnabled());
 		assertFalse(scrollBar.isVisible());
 	}
-
-	// TODO restore if needed
-//	@Test
-//	public void getHBarOverhang() throws Exception {
-//		assertEquals(200, viewport.getClientAreaWidth());
-//		assertEquals(20, scrollHandler.getScrollBarOverhang());
-//	}
-//
-//	@Test
-//	public void noHBarOverhangForPerfectFit() throws Exception {
-//		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 180, 100));
-//		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
-//
-//		assertEquals(180, viewport.getClientAreaWidth());
-//		assertEquals(0, scrollHandler.getScrollBarOverhang());
-//	}
 
 }

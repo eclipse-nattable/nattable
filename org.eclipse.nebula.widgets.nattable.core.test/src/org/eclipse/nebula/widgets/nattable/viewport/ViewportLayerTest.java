@@ -56,19 +56,19 @@ public class ViewportLayerTest {
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(1));
 		assertEquals(2, viewportLayer.getColumnIndexByPosition(2));
 
-		viewportLayer.moveColumnPositionIntoViewport(3, false);
+		viewportLayer.moveColumnPositionIntoViewport(3);
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(2, viewportLayer.getColumnIndexByPosition(1));
 		assertEquals(3, viewportLayer.getColumnIndexByPosition(2));
 
-		viewportLayer.moveColumnPositionIntoViewport(0, false);
+		viewportLayer.moveColumnPositionIntoViewport(0);
 		assertEquals(0, viewportLayer.getColumnIndexByPosition(0));
 	}
 
 	@Test
 	public void testMoveColumnPositionIntoViewportForAColumnAlreadyInTheViewport() {
 		viewportLayer = new ViewportLayerFixture(new Rectangle(0, 0, 285, 100));
-		viewportLayer.moveColumnPositionIntoViewport(2, false);
+		viewportLayer.moveColumnPositionIntoViewport(2);
 		assertEquals(0, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(1));
 		assertEquals(2, viewportLayer.getColumnIndexByPosition(2));
@@ -89,30 +89,30 @@ public class ViewportLayerTest {
 
 		viewportLayer.setOriginX(600);
 		assertEquals(3, viewportLayer.getColumnCount());
-		assertEquals(200, viewportLayer.getWidth());
+		assertEquals(240, viewportLayer.getWidth());
 		assertEquals(7, viewportLayer.getColumnIndexByPosition(0));
 
 		//Keep moving left by 1 col
-		viewportLayer.moveColumnPositionIntoViewport(9, false);
+		viewportLayer.moveColumnPositionIntoViewport(9);
 		assertEquals(7, viewportLayer.getColumnIndexByPosition(0));
 
-		viewportLayer.moveColumnPositionIntoViewport(8, false);
+		viewportLayer.moveColumnPositionIntoViewport(8);
 		assertEquals(7, viewportLayer.getColumnIndexByPosition(0));
 
-		viewportLayer.moveColumnPositionIntoViewport(7, false);
+		viewportLayer.moveColumnPositionIntoViewport(7);
 		assertEquals(7, viewportLayer.getColumnIndexByPosition(0));
 
-		viewportLayer.moveColumnPositionIntoViewport(6, false);
+		viewportLayer.moveColumnPositionIntoViewport(6);
 		assertEquals(6, viewportLayer.getColumnIndexByPosition(0));
 
-		viewportLayer.moveColumnPositionIntoViewport(5, false);
+		viewportLayer.moveColumnPositionIntoViewport(5);
 		assertEquals(5, viewportLayer.getColumnIndexByPosition(0));
 
 		//Move right
-		viewportLayer.moveColumnPositionIntoViewport(7, false); //partially displayed
+		viewportLayer.moveColumnPositionIntoViewport(7); //partially displayed
 		assertEquals(5, viewportLayer.getColumnIndexByPosition(0));
 
-		viewportLayer.moveColumnPositionIntoViewport(8, false);
+		viewportLayer.moveColumnPositionIntoViewport(8);
 		assertEquals(6, viewportLayer.getColumnIndexByPosition(0));
 	}
 
@@ -131,14 +131,14 @@ public class ViewportLayerTest {
 		assertEquals(3, viewportLayer.getRowIndexByPosition(0));
 
 		//Keep moving up by 1 row
-		viewportLayer.moveRowPositionIntoViewport(2, false);
+		viewportLayer.moveRowPositionIntoViewport(2);
 		assertEquals(2, viewportLayer.getRowIndexByPosition(0));
 
-		viewportLayer.moveRowPositionIntoViewport(1, false);
+		viewportLayer.moveRowPositionIntoViewport(1);
 		assertEquals(1, viewportLayer.getRowIndexByPosition(0));
 
 		//Move down
-		viewportLayer.moveRowPositionIntoViewport(3, false);
+		viewportLayer.moveRowPositionIntoViewport(3);
 		assertEquals(2, viewportLayer.getRowIndexByPosition(0)); //partially visible
 		assertEquals(3, viewportLayer.getRowIndexByPosition(1));
 		assertEquals(4, viewportLayer.getRowIndexByPosition(2));
@@ -151,7 +151,7 @@ public class ViewportLayerTest {
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(1));
 		assertEquals(2, viewportLayer.getColumnIndexByPosition(2));	//Partially visible
 
-		viewportLayer.moveColumnPositionIntoViewport(2, false);
+		viewportLayer.moveColumnPositionIntoViewport(2);
 		assertEquals(0, viewportLayer.getColumnIndexByPosition(0));	//no movement
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(1));
 		assertEquals(2, viewportLayer.getColumnIndexByPosition(2));
@@ -188,28 +188,28 @@ public class ViewportLayerTest {
 
 	@Test
 	public void testMoveRowPositionIntoViewport() {
-		viewportLayer.moveRowPositionIntoViewport(2, false);
+		viewportLayer.moveRowPositionIntoViewport(2);
 		assertEquals(1, viewportLayer.getRowIndexByPosition(0));
 
-		viewportLayer.moveRowPositionIntoViewport(0, false);
+		viewportLayer.moveRowPositionIntoViewport(0);
 		assertEquals(0, viewportLayer.getRowIndexByPosition(0));
 	}
 
 	@Test
 	public void testMoveCellPositionIntoViewport() {
-		viewportLayer.moveCellPositionIntoViewport(2, 2, false);
+		viewportLayer.moveCellPositionIntoViewport(2, 2);
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(1, viewportLayer.getRowIndexByPosition(0));
 
-		viewportLayer.moveCellPositionIntoViewport(2, 0, false);
+		viewportLayer.moveCellPositionIntoViewport(2, 0);
 		assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(0, viewportLayer.getRowIndexByPosition(0));
 
-		viewportLayer.moveCellPositionIntoViewport(0, 2, false);
+		viewportLayer.moveCellPositionIntoViewport(0, 2);
 		assertEquals(0, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(1, viewportLayer.getRowIndexByPosition(0));
 
-		viewportLayer.moveCellPositionIntoViewport(0, 0, false);
+		viewportLayer.moveCellPositionIntoViewport(0, 0);
 		assertEquals(0, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(0, viewportLayer.getRowIndexByPosition(0));
 	}
@@ -255,7 +255,7 @@ public class ViewportLayerTest {
 	@Test
 	public void testMoveColumnPositionIntoViewportFiresEvent() throws Exception {
 		viewportLayer.addLayerListener(layerListener);
-		viewportLayer.moveColumnPositionIntoViewport(4, false);
+		viewportLayer.moveColumnPositionIntoViewport(4);
 		ILayerEvent event = layerListener.getReceivedEvents().get(0);
 
 		assertTrue(event instanceof IVisualChangeEvent);

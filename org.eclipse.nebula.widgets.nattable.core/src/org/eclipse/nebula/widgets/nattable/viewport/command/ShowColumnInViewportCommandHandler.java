@@ -27,7 +27,7 @@ public class ShowColumnInViewportCommandHandler extends AbstractLayerCommandHand
 
 	@Override
 	protected boolean doCommand(ShowColumnInViewportCommand command) {
-		viewportLayer.moveColumnPositionIntoViewport(command.getColumnPosition(), false);
+		viewportLayer.moveColumnPositionIntoViewport(command.getColumnPosition());
 		return true;
 	}
 
