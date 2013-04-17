@@ -198,6 +198,16 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 		return underlyingStartY;
 	}
 	
+	@Override
+	public int getYMinClipExtentOfRowPosition(int rowPosition) {
+		return getStartYOfRowPosition(rowPosition);
+	}
+	
+	@Override
+	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
+		return getYMinClipExtentOfRowPosition(rowPosition) + getRowHeightByPosition(rowPosition);
+	}
+	
 	// Hide/show
 
 	/**

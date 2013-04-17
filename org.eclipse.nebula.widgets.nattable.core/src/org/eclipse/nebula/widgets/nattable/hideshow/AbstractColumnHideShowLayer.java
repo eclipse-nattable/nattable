@@ -184,6 +184,16 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		startXCache.put(Integer.valueOf(localColumnPosition), Integer.valueOf(underlyingStartX));
 		return underlyingStartX;
 	}
+	
+	@Override
+	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
+		return getStartXOfColumnPosition(columnPosition);
+	}
+	
+	@Override
+	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
+		return getXMinClipExtentOfColumnPosition(columnPosition) + getColumnWidthByPosition(columnPosition);
+	}
 
 	// Vertical features
 
