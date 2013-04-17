@@ -207,6 +207,16 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 		return aggregateWidth;
 	}
 
+	@Override
+	public int getYMinClipExtentOfRowPosition(int rowPosition) {
+		return getStartYOfRowPosition(rowPosition);
+	}
+	
+	@Override
+	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
+		return getYMinClipExtentOfRowPosition(rowPosition) + getRowHeightByPosition(rowPosition);
+	}
+	
 	/**
 	 * Initially populate the index order to the local cache.
 	 */

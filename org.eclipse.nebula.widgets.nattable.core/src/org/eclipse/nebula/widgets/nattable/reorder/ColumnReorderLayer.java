@@ -241,6 +241,16 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		startXCache.put(Integer.valueOf(targetColumnPosition), Integer.valueOf(aggregateWidth));
 		return aggregateWidth;
 	}
+	
+	@Override
+	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
+		return getStartXOfColumnPosition(columnPosition);
+	}
+	
+	@Override
+	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
+		return getXMinClipExtentOfColumnPosition(columnPosition) + getColumnWidthByPosition(columnPosition);
+	}
 
 	private void populateIndexOrder() {
 		ILayer underlyingLayer = getUnderlyingLayer();
