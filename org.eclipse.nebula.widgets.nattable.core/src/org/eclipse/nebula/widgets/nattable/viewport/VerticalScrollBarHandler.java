@@ -45,7 +45,6 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 
 	@Override
 	void setViewportOrigin(int y) {
-		viewportLayer.invalidateVerticalStructure();
 		viewportLayer.setOriginY(y);
 	}
 

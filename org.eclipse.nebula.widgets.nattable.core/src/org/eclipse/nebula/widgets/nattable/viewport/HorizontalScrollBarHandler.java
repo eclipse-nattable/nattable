@@ -42,7 +42,6 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 
 	@Override
 	void setViewportOrigin(int x) {
-		viewportLayer.invalidateHorizontalStructure();
 		viewportLayer.setOriginX(x);
 	}
 	
