@@ -44,7 +44,6 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 	void setViewportOrigin(int x) {
 		viewportLayer.invalidateHorizontalStructure();
 		viewportLayer.setOriginX(x);
-		scrollBar.setIncrement(viewportLayer.getColumnWidthByPosition(0));
 	}
 	
 	@Override
@@ -67,4 +66,8 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 		return scrollableLayer.getWidth();
 	}
 	
+	@Override
+	int getScrollIncrement() {
+		return viewportLayer.getColumnWidthByPosition(0);
+	}
 }

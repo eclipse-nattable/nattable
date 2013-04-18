@@ -47,7 +47,6 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 	void setViewportOrigin(int y) {
 		viewportLayer.invalidateVerticalStructure();
 		viewportLayer.setOriginY(y);
-		scrollBar.setIncrement(viewportLayer.getRowHeightByPosition(0));
 	}
 
 	@Override
@@ -68,5 +67,10 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 	@Override
 	int getScrollableLayerSpan() {
 		return scrollableLayer.getHeight();
+	}
+	
+	@Override
+	int getScrollIncrement() {
+		return viewportLayer.getRowHeightByPosition(0);
 	}
 }
