@@ -68,7 +68,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 			ScrollBar scrollBar = (ScrollBar) event.widget;
 			
 			setViewportOrigin(getViewportMinimumOrigin() + scrollBar.getSelection());
-			scrollBar.setIncrement(getScrollIncrement());
+			setScrollIncrement();
 		} else {
 			adjustScrollBar();
 		}
@@ -94,7 +94,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 			scrollBar.setMaximum(max);
 		}
 		
-		scrollBar.setIncrement(getScrollIncrement());
+		setScrollIncrement();
 		
 		int viewportWindowSpan = getViewportWindowSpan();
 		scrollBar.setPageIncrement(viewportWindowSpan);
@@ -114,6 +114,11 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		adjustScrollBar();
 	}
 
+	void setScrollIncrement() {
+		int scrollIncrement = Math.min(getScrollIncrement(), getViewportWindowSpan() / 4);
+		scrollBar.setIncrement(scrollIncrement);
+	}
+	
 	/**
 	 * Methods to be implemented by the Horizontal/Vertical scroll bar handlers.
 	 * @return
