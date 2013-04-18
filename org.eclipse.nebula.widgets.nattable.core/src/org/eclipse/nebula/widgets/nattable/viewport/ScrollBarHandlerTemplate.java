@@ -94,16 +94,17 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 			scrollBar.setMaximum(max);
 		}
 		
-		setScrollIncrement();
-		
 		int viewportWindowSpan = getViewportWindowSpan();
-		scrollBar.setPageIncrement(viewportWindowSpan);
 		
 		int thumbSize;
 		if (viewportWindowSpan < max && viewportWindowSpan != 0) {
 			thumbSize = viewportWindowSpan;
 			scrollBar.setEnabled(true);
 			scrollBar.setVisible(true);
+			
+			setScrollIncrement();
+			
+			scrollBar.setPageIncrement(viewportWindowSpan);
 		} else {
 			thumbSize = max;
 			scrollBar.setEnabled(false);
