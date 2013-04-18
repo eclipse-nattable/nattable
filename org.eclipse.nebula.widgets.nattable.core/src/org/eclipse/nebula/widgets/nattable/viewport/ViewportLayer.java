@@ -511,7 +511,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * reduced by the width of the added column.
 	 */
 	protected void recalculateAvailableWidthAndColumnCount() {
-		int availableWidth = (getOrigin().getX() - getStartXOfColumnPosition(0)) + getClientAreaWidth();
+		int availableWidth = (getOrigin().getX() - underlyingLayer.getStartXOfColumnPosition(getOriginColumnPosition())) + getClientAreaWidth();
 		ILayer underlyingLayer = getUnderlyingLayer();
 
 		cachedWidth = 0;
@@ -531,7 +531,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	protected void recalculateAvailableHeightAndRowCount() {
-		int availableHeight = (getOrigin().getY() - getStartYOfRowPosition(0)) + getClientAreaHeight();
+		int availableHeight = (getOrigin().getY() - underlyingLayer.getStartYOfRowPosition(getOriginRowPosition())) + getClientAreaHeight();
 		ILayer underlyingLayer = getUnderlyingLayer();
 
 		cachedHeight = 0;
