@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.viewport.event;
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
@@ -40,10 +41,12 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 		}
 		
 		Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
+		IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
 		if (columnDiffs != null) {
 			int columnOffset = 0;
 			
 			int minimumOriginColumnPosition = viewportLayer.getMinimumOriginColumnPosition();
+			if (minimumOriginColumnPosition < 0) minimumOriginColumnPosition = scrollableLayer.getColumnCount();
 			for (StructuralDiff columnDiff : columnDiffs) {
 				switch (columnDiff.getDiffType()) {
 				case ADD:
@@ -61,7 +64,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 				}
 			}
 			
-			viewportLayer.setMinimumOriginX(viewportLayer.getScrollableLayer().getStartXOfColumnPosition(minimumOriginColumnPosition + columnOffset));
+			viewportLayer.setMinimumOriginX(scrollableLayer.getStartXOfColumnPosition(minimumOriginColumnPosition + columnOffset));
 		}
 		
 		Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
@@ -69,6 +72,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 			int rowOffset = 0;
 			
 			int minimumOriginRowPosition = viewportLayer.getMinimumOriginRowPosition();
+			if (minimumOriginRowPosition < 0) minimumOriginRowPosition = scrollableLayer.getColumnCount();
 			for (StructuralDiff rowDiff : rowDiffs) {
 				switch (rowDiff.getDiffType()) {
 				case ADD:
@@ -86,7 +90,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 				}
 			}
 			
-			viewportLayer.setMinimumOriginY(viewportLayer.getScrollableLayer().getStartYOfRowPosition(minimumOriginRowPosition + rowOffset));
+			viewportLayer.setMinimumOriginY(scrollableLayer.getStartYOfRowPosition(minimumOriginRowPosition + rowOffset));
 		}
 	}
 

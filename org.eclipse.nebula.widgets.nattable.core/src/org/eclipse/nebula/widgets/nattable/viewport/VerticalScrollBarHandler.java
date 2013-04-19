@@ -70,6 +70,6 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 	
 	@Override
 	int getScrollIncrement() {
-		return viewportLayer.getRowHeightByPosition(0);
+		return viewportLayer.getRowCount() > 0 ? viewportLayer.getRowHeightByPosition(0) : 0;
 	}
 }

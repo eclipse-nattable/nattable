@@ -511,13 +511,17 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * reduced by the width of the added column.
 	 */
 	protected void recalculateAvailableWidthAndColumnCount() {
-		int availableWidth = (getOrigin().getX() - underlyingLayer.getStartXOfColumnPosition(getOriginColumnPosition())) + getClientAreaWidth();
+		int availableWidth = getClientAreaWidth();
+		int originColumnPosition = getOriginColumnPosition();
+		if (originColumnPosition >= 0) {
+			availableWidth += getOrigin().getX() - underlyingLayer.getStartXOfColumnPosition(originColumnPosition);
+		}
 		ILayer underlyingLayer = getUnderlyingLayer();
 
 		cachedWidth = 0;
 		cachedColumnCount = 0;
 
-		for (int columnPosition = getOriginColumnPosition(); columnPosition >= 0 && columnPosition < underlyingLayer.getColumnCount() && availableWidth > 0; columnPosition++) {
+		for (int columnPosition = originColumnPosition; columnPosition >= 0 && columnPosition < underlyingLayer.getColumnCount() && availableWidth > 0; columnPosition++) {
 			int width = underlyingLayer.getColumnWidthByPosition(columnPosition);
 			availableWidth -= width;
 			cachedWidth += width;
@@ -531,7 +535,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	protected void recalculateAvailableHeightAndRowCount() {
-		int availableHeight = (getOrigin().getY() - underlyingLayer.getStartYOfRowPosition(getOriginRowPosition())) + getClientAreaHeight();
+		int availableHeight = getClientAreaHeight();
+		int originRowPosition = getOriginRowPosition();
+		if (originRowPosition >= 0) {
+			availableHeight += getOrigin().getY() - underlyingLayer.getStartYOfRowPosition(originRowPosition);
+		}
 		ILayer underlyingLayer = getUnderlyingLayer();
 
 		cachedHeight = 0;

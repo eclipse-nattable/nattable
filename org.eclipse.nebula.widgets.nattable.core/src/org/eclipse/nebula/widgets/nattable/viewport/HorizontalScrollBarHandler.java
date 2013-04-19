@@ -67,6 +67,6 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 	
 	@Override
 	int getScrollIncrement() {
-		return viewportLayer.getColumnWidthByPosition(0);
+		return viewportLayer.getColumnCount() > 0 ? viewportLayer.getColumnWidthByPosition(0) : 0;
 	}
 }
