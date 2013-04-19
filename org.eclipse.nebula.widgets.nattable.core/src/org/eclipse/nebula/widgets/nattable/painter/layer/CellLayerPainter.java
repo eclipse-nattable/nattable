@@ -11,7 +11,9 @@
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -21,11 +23,17 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class CellLayerPainter implements ILayerPainter {
-
+	
+	private ILayer natLayer;
+	private Map<Integer, Integer> horizontalPositionToPixelMap;
+	private Map<Integer, Integer> verticalPositionToPixelMap;
+	
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle pixelRectangle, IConfigRegistry configRegistry) {
 		if (pixelRectangle.width <= 0 || pixelRectangle.height <= 0) {
 			return;
 		}
+		
+		calculateDimensionInfo(natLayer);
 		
 		Collection<ILayerCell> spannedCells = new HashSet<ILayerCell>();
 		
@@ -49,6 +57,28 @@ public class CellLayerPainter implements ILayerPainter {
 		}
 	}
 	
+	private void calculateDimensionInfo(ILayer natLayer) {
+		this.natLayer = natLayer;
+		horizontalPositionToPixelMap = new HashMap<Integer, Integer>();
+		verticalPositionToPixelMap = new HashMap<Integer, Integer>();
+		
+		for (int columnPosition = 0; columnPosition < natLayer.getColumnCount(); columnPosition++) {
+			for (int rowPosition = 0; rowPosition < natLayer.getRowCount(); rowPosition++) {
+				int x = natLayer.getStartXOfColumnPosition(columnPosition);
+				Integer extantX = horizontalPositionToPixelMap.get(columnPosition);
+				int width = natLayer.getColumnWidthByPosition(columnPosition);
+				horizontalPositionToPixelMap.put(columnPosition, extantX != null ? Math.max(x, extantX) : x);
+				horizontalPositionToPixelMap.put(columnPosition + 1, x + width);
+				
+				int y = natLayer.getStartYOfRowPosition(rowPosition);
+				Integer extantY = verticalPositionToPixelMap.get(rowPosition);
+				int height = natLayer.getRowHeightByPosition(rowPosition);
+				verticalPositionToPixelMap.put(rowPosition, extantY != null ? Math.max(y, extantY) : y);
+				verticalPositionToPixelMap.put(rowPosition + 1, y + height);
+			}
+		}
+	}
+
 	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
 		return cellBounds;
 	}
@@ -70,11 +100,11 @@ public class CellLayerPainter implements ILayerPainter {
 		Rectangle adjustedCellBounds = layer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
 		if (cellPainter != null) {
 			Rectangle originalClipping = gc.getClipping();
-			int xMinClip = layer.getXMinClipExtentOfColumnPosition(columnPosition);
-			int xMaxClip = layer.getXMaxClipExtentOfColumnPosition(columnPosition);
-			int yMinClip = layer.getYMinClipExtentOfRowPosition(rowPosition);
-			int yMaxClip = layer.getYMaxClipExtentOfRowPosition(rowPosition);
-			Rectangle clipBounds = new Rectangle(xMinClip, yMinClip, xMaxClip - xMinClip, yMaxClip - yMinClip);
+			Rectangle clipBounds = new Rectangle(
+					getStartXOfColumnPosition(columnPosition),
+					getStartYOfRowPosition(rowPosition),
+					getStartXOfColumnPosition(columnPosition + cell.getColumnSpan()),
+					getStartYOfRowPosition(rowPosition + cell.getRowSpan()));
 			Rectangle adjustedClipBounds = layer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, clipBounds);
 			gc.setClipping(adjustedClipBounds);
 			
@@ -83,5 +113,21 @@ public class CellLayerPainter implements ILayerPainter {
 			gc.setClipping(originalClipping);
 		}
 	}
-
+	
+	int getStartXOfColumnPosition(int columnPosition) {
+		if (columnPosition < natLayer.getColumnCount()) {
+			return horizontalPositionToPixelMap.get(columnPosition);
+		} else {
+			return natLayer.getWidth();
+		}
+	}
+	
+	int getStartYOfRowPosition(int rowPosition) {
+		if (rowPosition < natLayer.getRowCount()) {
+			return verticalPositionToPixelMap.get(rowPosition);
+		} else {
+			return natLayer.getHeight();
+		}
+	}
+	
 }

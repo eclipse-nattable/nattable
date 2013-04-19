@@ -352,24 +352,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + columnPosition) - getOrigin().getX();
 	}
 
-	@Override
-	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
-		int xMinClip = getStartXOfColumnPosition(columnPosition);
-		if (columnPosition == 0) {
-			xMinClip += getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(localToUnderlyingColumnPosition(columnPosition));
-		}
-		return xMinClip;
-	}
-	
-	@Override
-	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
-		int xMaxClip = getXMinClipExtentOfColumnPosition(columnPosition) + getColumnWidthByPosition(columnPosition);
-		if (columnPosition == 0) {
-			xMaxClip -= getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(localToUnderlyingColumnPosition(columnPosition));
-		}
-		return xMaxClip;
-	}
-	
 	// Vertical features
 
 	// Rows
@@ -455,24 +437,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
 		return getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + rowPosition) - getOrigin().getY();
-	}
-
-	@Override
-	public int getYMinClipExtentOfRowPosition(int rowPosition) {
-		int yMinClip = getStartYOfRowPosition(rowPosition);
-		if (rowPosition == 0) {
-			yMinClip += getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(localToUnderlyingRowPosition(rowPosition));
-		}
-		return yMinClip;
-	}
-	
-	@Override
-	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
-		int yMaxClip = getYMinClipExtentOfRowPosition(rowPosition) + getRowHeightByPosition(rowPosition);
-		if (rowPosition == 0) {
-			yMaxClip -= getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(localToUnderlyingRowPosition(rowPosition));
-		}
-		return yMaxClip;
 	}
 
 	// Cell features

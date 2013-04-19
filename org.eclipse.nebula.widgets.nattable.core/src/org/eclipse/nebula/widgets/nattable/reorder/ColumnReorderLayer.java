@@ -242,16 +242,6 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		return aggregateWidth;
 	}
 	
-	@Override
-	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
-		return getStartXOfColumnPosition(columnPosition);
-	}
-	
-	@Override
-	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
-		return getXMinClipExtentOfColumnPosition(columnPosition) + getColumnWidthByPosition(columnPosition);
-	}
-
 	private void populateIndexOrder() {
 		ILayer underlyingLayer = getUnderlyingLayer();
 		for (int columnPosition = 0; columnPosition < underlyingLayer.getColumnCount(); columnPosition++) {

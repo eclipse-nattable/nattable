@@ -188,16 +188,6 @@ public class InvertedLayer implements IUniqueIndexLayer {
 		return underlyingLayer.getStartYOfRowPosition(columnPosition);
 	}
 	
-	@Override
-	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
-		return underlyingLayer.getXMinClipExtentOfColumnPosition(columnPosition);
-	}
-	
-	@Override
-	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
-		return underlyingLayer.getXMaxClipExtentOfColumnPosition(columnPosition);
-	}
-	
 	// Underlying
 	
 	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
@@ -266,16 +256,6 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	
 	public int getStartYOfRowPosition(int rowPosition) {
 		return underlyingLayer.getStartXOfColumnPosition(rowPosition);
-	}
-	
-	@Override
-	public int getYMinClipExtentOfRowPosition(int rowPosition) {
-		return underlyingLayer.getYMinClipExtentOfRowPosition(rowPosition);
-	}
-	
-	@Override
-	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
-		return underlyingLayer.getYMaxClipExtentOfRowPosition(rowPosition);
 	}
 	
 	// Underlying

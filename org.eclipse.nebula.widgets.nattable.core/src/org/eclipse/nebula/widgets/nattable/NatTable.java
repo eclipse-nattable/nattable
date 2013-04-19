@@ -597,16 +597,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	public int getStartXOfColumnPosition(int columnPosition) {
 		return underlyingLayer.getStartXOfColumnPosition(columnPosition);
 	}
-	
-	@Override
-	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
-		return underlyingLayer.getXMinClipExtentOfColumnPosition(columnPosition);
-	}
-	
-	@Override
-	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
-		return underlyingLayer.getXMaxClipExtentOfColumnPosition(columnPosition);
-	}
 
 	// Underlying
 
@@ -678,16 +668,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	public int getStartYOfRowPosition(int rowPosition) {
 		return underlyingLayer.getStartYOfRowPosition(rowPosition);
-	}
-	
-	@Override
-	public int getYMinClipExtentOfRowPosition(int rowPosition) {
-		return underlyingLayer.getYMinClipExtentOfRowPosition(rowPosition);
-	}
-	
-	@Override
-	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
-		return underlyingLayer.getYMaxClipExtentOfRowPosition(rowPosition);
 	}
 
 	// Underlying

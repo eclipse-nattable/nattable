@@ -239,10 +239,6 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 */
 	public int getStartXOfColumnPosition(int columnPosition);
 	
-	public int getXMinClipExtentOfColumnPosition(int columnPosition);
-	
-	public int getXMaxClipExtentOfColumnPosition(int columnPosition);
-
 	// Underlying
 
 	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition);
@@ -316,10 +312,6 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 */
 	public int getStartYOfRowPosition(int rowPosition);
 	
-	public int getYMinClipExtentOfRowPosition(int rowPosition);
-	
-	public int getYMaxClipExtentOfRowPosition(int rowPosition);
-
 	// Underlying
 
 	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition);

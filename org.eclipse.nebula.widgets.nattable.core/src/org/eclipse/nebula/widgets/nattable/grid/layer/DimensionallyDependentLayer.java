@@ -216,16 +216,6 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 		return horizontalLayerDependency.getStartXOfColumnPosition(columnPosition);
 	}
 	
-	@Override
-	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
-		return horizontalLayerDependency.getXMinClipExtentOfColumnPosition(columnPosition);
-	}
-	
-	@Override
-	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
-		return horizontalLayerDependency.getXMaxClipExtentOfColumnPosition(columnPosition);
-	}
-
 	// Underlying
 
 	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
@@ -292,16 +282,6 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 		return verticalLayerDependency.getStartYOfRowPosition(rowPosition);
 	}
 	
-	@Override
-	public int getYMinClipExtentOfRowPosition(int rowPosition) {
-		return verticalLayerDependency.getYMinClipExtentOfRowPosition(rowPosition);
-	}
-	
-	@Override
-	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
-		return verticalLayerDependency.getYMaxClipExtentOfRowPosition(rowPosition);
-	}
-
 	// Underlying
 
 	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {

@@ -284,28 +284,6 @@ public class CompositeLayer extends AbstractLayer {
 		return getWidthOffset(layoutX) + childLayer.getStartXOfColumnPosition(childColumnPosition);
 	}
     
-    @Override
-    public int getXMinClipExtentOfColumnPosition(int columnPosition) {
-    	int layoutX = getLayoutXByColumnPosition(columnPosition);
-		if (layoutX < 0) {
-			return -1;
-		}
-		ILayer childLayer = childLayerLayout[layoutX][0];
-		int childColumnPosition = columnPosition - getColumnPositionOffset(layoutX);
-		return getWidthOffset(layoutX) + childLayer.getXMinClipExtentOfColumnPosition(childColumnPosition);
-    }
-    
-    @Override
-    public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
-    	int layoutX = getLayoutXByColumnPosition(columnPosition);
-		if (layoutX < 0) {
-			return -1;
-		}
-		ILayer childLayer = childLayerLayout[layoutX][0];
-		int childColumnPosition = columnPosition - getColumnPositionOffset(layoutX);
-		return getWidthOffset(layoutX) + childLayer.getXMaxClipExtentOfColumnPosition(childColumnPosition);
-    }
-
     // Underlying
 
     public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
@@ -457,28 +435,6 @@ public class CompositeLayer extends AbstractLayer {
 		return getHeightOffset(layoutY) + childLayer.getStartYOfRowPosition(childRowPosition);
 	}
     
-    @Override
-    public int getYMinClipExtentOfRowPosition(int rowPosition) {
-    	int layoutY = getLayoutYByRowPosition(rowPosition);
-		if (layoutY < 0) {
-			return -1;
-		}
-		ILayer childLayer = childLayerLayout[0][layoutY];
-		int childRowPosition = rowPosition - getRowPositionOffset(layoutY);
-		return getHeightOffset(layoutY) + childLayer.getYMinClipExtentOfRowPosition(childRowPosition);
-    }
-    
-    @Override
-    public int getYMaxClipExtentOfRowPosition(int rowPosition) {
-    	int layoutY = getLayoutYByRowPosition(rowPosition);
-		if (layoutY < 0) {
-			return -1;
-		}
-		ILayer childLayer = childLayerLayout[0][layoutY];
-		int childRowPosition = rowPosition - getRowPositionOffset(layoutY);
-		return getHeightOffset(layoutY) + childLayer.getYMaxClipExtentOfRowPosition(childRowPosition);
-    }
-
     public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 

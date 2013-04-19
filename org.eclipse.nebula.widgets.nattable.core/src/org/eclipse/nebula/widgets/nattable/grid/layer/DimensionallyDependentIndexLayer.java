@@ -201,16 +201,6 @@ public class DimensionallyDependentIndexLayer extends AbstractIndexLayerTransfor
 		return horizontalLayerDependency.getStartXOfColumnPosition(columnPosition);
 	}
 	
-	@Override
-	public int getXMinClipExtentOfColumnPosition(int columnPosition) {
-		return horizontalLayerDependency.getXMinClipExtentOfColumnPosition(columnPosition);
-	}
-	
-	@Override
-	public int getXMaxClipExtentOfColumnPosition(int columnPosition) {
-		return horizontalLayerDependency.getXMaxClipExtentOfColumnPosition(columnPosition);
-	}
-
 	// Vertical features
 
 	// Rows
@@ -269,14 +259,4 @@ public class DimensionallyDependentIndexLayer extends AbstractIndexLayerTransfor
 		return verticalLayerDependency.getStartYOfRowPosition(rowPosition);
 	}
 	
-	@Override
-	public int getYMinClipExtentOfRowPosition(int rowPosition) {
-		return verticalLayerDependency.getYMinClipExtentOfRowPosition(rowPosition);
-	}
-	
-	@Override
-	public int getYMaxClipExtentOfRowPosition(int rowPosition) {
-		return verticalLayerDependency.getYMaxClipExtentOfRowPosition(rowPosition);
-	}
-
 }
