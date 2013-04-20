@@ -22,10 +22,12 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.util.Scheduler;
+import org.eclipse.swt.widgets.Display;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -110,44 +112,50 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 	 * GlazedLists event handling.
 	 */
 	@Override
-	public void listChanged(ListEvent<T> event) {
-		if (this.lastFiredEvent == null || !this.lastFiredEvent.equals(event)) {
-			this.lastFiredEvent = event;
+	public void listChanged(final ListEvent<T> event) {
+		scheduler.submit(new Runnable() {
 			
-			int deletedCount = 0;
-			
-			List<Range> deleteRanges = new ArrayList<Range>();
-			List<Range> insertRanges = new ArrayList<Range>();
-			while (event.next()) {
-				int eventType = event.getType();
-				if (eventType == ListEvent.DELETE) {
-					int index = event.getIndex() + deletedCount;
-					deleteRanges.add(new Range(index, index + 1));
-					deletedCount++;
-				}
-				else if (eventType == ListEvent.INSERT) {
-					insertRanges.add(new Range(event.getIndex(), event.getIndex() + 1));
-				}
-			}
-			
-			if (!deleteRanges.isEmpty()) {
-				fireLayerEvent(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
-			}
-			
-			if (!insertRanges.isEmpty()) {
-				fireLayerEvent(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
-			}
-			
-			//start cleanup task that will set the last fired event to null after 100 milliseconds
-			if (cleanupFuture == null || cleanupFuture.isDone() || cleanupFuture.isCancelled()) {
-				cleanupFuture = scheduler.schedule(new Runnable() {
-					@Override
-					public void run() {
-						DetailGlazedListsEventLayer.this.lastFiredEvent = null;
+			@Override
+			public void run() {
+				if (lastFiredEvent == null || !lastFiredEvent.equals(event)) {
+					lastFiredEvent = event;
+					
+					int deletedCount = 0;
+					
+					List<Range> deleteRanges = new ArrayList<Range>();
+					List<Range> insertRanges = new ArrayList<Range>();
+					while (event.next()) {
+						int eventType = event.getType();
+						if (eventType == ListEvent.DELETE) {
+							int index = event.getIndex() + deletedCount;
+							deleteRanges.add(new Range(index, index + 1));
+							deletedCount++;
+						}
+						else if (eventType == ListEvent.INSERT) {
+							insertRanges.add(new Range(event.getIndex(), event.getIndex() + 1));
+						}
 					}
-				}, 100L);
+					
+					if (!deleteRanges.isEmpty()) {
+						fireEventFromSWTDisplayThread(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
+					}
+					
+					if (!insertRanges.isEmpty()) {
+						fireEventFromSWTDisplayThread(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
+					}
+					
+					//start cleanup task that will set the last fired event to null after 100 milliseconds
+					if (cleanupFuture == null || cleanupFuture.isDone() || cleanupFuture.isCancelled()) {
+						cleanupFuture = scheduler.schedule(new Runnable() {
+							@Override
+							public void run() {
+								DetailGlazedListsEventLayer.this.lastFiredEvent = null;
+							}
+						}, 100L);
+					}
+				}
 			}
-		}
+		});
 	}
 
 	@Override
@@ -176,7 +184,24 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 	                                                  event.getPropertyName(),
 	                                                  event.getOldValue(),
 	                                                  event.getNewValue());
-		fireLayerEvent(updateEvent);
+		fireEventFromSWTDisplayThread(updateEvent);
+	}
+
+
+	/**
+	 * These update events are likely to cause a repaint on NatTable.
+	 * If these are not thrown from the SWT Display thread, SWT
+	 * will throw an Exception. Painting can only be triggered from the
+	 * SWT Display thread.
+	 * @param event The ILayerEvent to fire from the SWT Display thread.
+	 */
+	protected void fireEventFromSWTDisplayThread(final ILayerEvent event) {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				fireLayerEvent(event);
+			}
+		});
 	}
 
 	/**

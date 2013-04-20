@@ -16,6 +16,9 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
+import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -44,14 +47,17 @@ public class PaddingDecorator extends CellPainterWrapper {
 		this.leftPadding = leftPadding;
 	}
 
+	@Override
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return leftPadding + super.getPreferredWidth(cell, gc, configRegistry) + rightPadding;
 	}
 	
+	@Override
 	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return topPadding + super.getPreferredHeight(cell, gc, configRegistry) + bottomPadding;
 	}
 
+	@Override
 	public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle interiorBounds = getInteriorBounds(adjustedCellBounds);
 		
@@ -79,4 +85,30 @@ public class PaddingDecorator extends CellPainterWrapper {
 		return CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);		
 	}
 	
+	@Override
+	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+		//need to take the alignment into account
+		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
+		
+		HorizontalAlignmentEnum horizontalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
+		int horizontalAlignmentPadding = 0;
+		switch (horizontalAlignment) {
+			case LEFT: horizontalAlignmentPadding = leftPadding;
+						break;
+			case CENTER: horizontalAlignmentPadding = leftPadding/2;
+						break;
+		}
+
+		VerticalAlignmentEnum verticalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
+		int verticalAlignmentPadding = 0;
+		switch (verticalAlignment) {
+			case TOP: verticalAlignmentPadding = topPadding;
+						break;
+			case MIDDLE: verticalAlignmentPadding = topPadding/2;
+						break;
+		}
+
+		return super.getCellPainterAt(x - horizontalAlignmentPadding, y - verticalAlignmentPadding, cell, gc, adjustedCellBounds,
+				configRegistry);
+	}
 }

@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.util;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
@@ -57,7 +58,12 @@ public class Scheduler implements ThreadFactory  {
 		}
 	}
 
+	@Override
 	public Thread newThread(Runnable r) {
 		return new Thread(ObjectUtils.getNatTableThreadGroup(),r,threadNamePrefix+"-"+counter.incrementAndGet()); //$NON-NLS-1$
+	}
+	
+	public synchronized Future<?> submit(Runnable runnable) {
+		return getThreadPool().submit(runnable);
 	}
 }
