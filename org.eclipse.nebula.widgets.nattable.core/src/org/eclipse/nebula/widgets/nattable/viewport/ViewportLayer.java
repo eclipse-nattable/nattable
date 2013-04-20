@@ -106,18 +106,31 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	
 	// Minimum Origin
 	
+	/**
+	 * @return The minimum origin pixel position.
+	 */
 	public PixelCoordinate getMinimumOrigin() {
 		return minimumOrigin;
 	}
 	
+	/**
+	 * @return The minimum origin column position
+	 */
 	public int getMinimumOriginColumnPosition() {
 		return scrollableLayer.getColumnPositionByX(minimumOrigin.getX());
 	}
 	
+	/**
+	 * @return The minimum origin row position
+	 */
 	public int getMinimumOriginRowPosition() {
 		return scrollableLayer.getRowPositionByY(minimumOrigin.getY());
 	}
 	
+	/**
+	 * Set the minimum origin X pixel position.
+	 * @param newMinimumOriginX
+	 */
 	public void setMinimumOriginX(int newMinimumOriginX) {
 		if (newMinimumOriginX != minimumOrigin.getX()) {
 			minimumOrigin = new PixelCoordinate(newMinimumOriginX, minimumOrigin.getY());
@@ -136,6 +149,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		recalculateHorizontalScrollBar();
 	}
 	
+	/**
+	 * Set the minimum origin Y pixel position.
+	 * @param newMinimumOriginY
+	 */
 	public void setMinimumOriginY(int newMinimumOriginY) {
 		if (newMinimumOriginY != minimumOrigin.getY()) {
 			minimumOrigin = new PixelCoordinate(minimumOrigin.getX(), newMinimumOriginY);
@@ -154,6 +171,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		recalculateVerticalScrollBar();
 	}
 	
+	/**
+	 * Set the minimum origin pixel position to the given values.
+	 * @param newMinimumOriginX
+	 * @param newMinimumOriginY
+	 */
 	public void setMinimumOrigin(int newMinimumOriginX, int newMinimumOriginY) {
 		setMinimumOriginX(newMinimumOriginX);
 		setMinimumOriginY(newMinimumOriginY);
@@ -161,21 +183,31 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	// Origin
 	
+	/**
+	 * @return The origin pixel position
+	 */
 	public PixelCoordinate getOrigin() {
 		return viewportOff ? minimumOrigin : origin;
 	}
 	
+	/**
+	 * @return The origin column position
+	 */
 	private int getOriginColumnPosition() {
 		return scrollableLayer.getColumnPositionByX(getOrigin().getX());
 	}
 	
+	/**
+	 * @return The origin row position
+	 */
 	private int getOriginRowPosition() {
 		return scrollableLayer.getRowPositionByY(getOrigin().getY());
 	}
 	
 	/**
+	 * Range checking for origin X pixel position.
 	 * @param x
-	 * @return valid x value within bounds: minimum origin x < x < max x (= column 0 x + width)
+	 * @return A valid x value within bounds: minimum origin x < x < max x (= column 0 x + width)
 	 */
 	private int boundsCheckOriginX(int x) {
 		int min = minimumOrigin.getX();
@@ -190,8 +222,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 	
 	/**
+	 * Range checking for origin Y pixel position.
 	 * @param y
-	 * @return valid y value within bounds: minimum origin y < y < max y (= row 0 y + height)
+	 * @return A valid y value within bounds: minimum origin y < y < max y (= row 0 y + height)
 	 */
 	private int boundsCheckOriginY(int y) {
 		int min = minimumOrigin.getY();
@@ -205,6 +238,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return y;
 	}
 
+	/**
+	 * Set the origin X pixel position.
+	 * @param newOriginX
+	 */
 	public void setOriginX(int newOriginX) {
 		newOriginX = boundsCheckOriginX(newOriginX);
 		newOriginX = boundsCheckOriginX(adjustOriginX(newOriginX));
@@ -216,6 +253,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	/**
+	 * Set the origin Y pixel position.
+	 * @param newOriginY
+	 */
 	public void setOriginY(int newOriginY) {
 		newOriginY = boundsCheckOriginY(newOriginY);
 		newOriginY = boundsCheckOriginY(adjustOriginY(newOriginY));
@@ -227,6 +268,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 	
+	/**
+	 * Reset the origin pixel position to the given values.
+	 * @param newOriginX
+	 * @param newOriginY
+	 */
 	public void resetOrigin(int newOriginX, int newOriginY) {
 		PixelCoordinate previousOrigin = origin;
 		
@@ -470,9 +516,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	/**
-	 * This method will add the indexes of the column which fit in the available
-	 * view port width. Every time a column is added, the available width is
-	 * reduced by the width of the added column.
+	 * Recalculate horizontal dimension properties.
 	 */
 	protected void recalculateAvailableWidthAndColumnCount() {
 		int availableWidth = getClientAreaWidth();
@@ -498,6 +542,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	/**
+	 * Recalculate vertical dimension properties.
+	 */
 	protected void recalculateAvailableHeightAndRowCount() {
 		int availableHeight = getClientAreaHeight();
 		int originRowPosition = getOriginRowPosition();
@@ -639,6 +686,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return super.doCommand(command);
 	}
 
+	/**
+	 * Recalculate horizontal scrollbar characteristics.
+	 */
 	private void recalculateHorizontalScrollBar() {
 		if (hBarListener != null) {
 			hBarListener.recalculateScrollBarSize();
@@ -649,6 +699,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	/**
+	 * Recalculate vertical scrollbar characteristics;
+	 */
 	private void recalculateVerticalScrollBar() {
 		if (vBarListener != null) {
 			vBarListener.recalculateScrollBarSize();
@@ -659,11 +712,17 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	/**
+	 * Recalculate scrollbar characteristics.
+	 */
 	public void recalculateScrollBars() {
 		recalculateHorizontalScrollBar();
 		recalculateVerticalScrollBar();
 	}
 
+	/**
+	 * Recalculate viewport characteristics when the grid has been resized.
+	 */
 	protected void handleGridResize() {
 		setOriginX(origin.getX());
 		recalculateHorizontalScrollBar();
@@ -703,6 +762,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	/**
+	 * Scrolls the viewport vertically by a page. This is done by creating a MoveSelectionCommand to move the selection, which will
+	 * then trigger an update of the viewport.
+	 * @param scrollSelectionCommand
+	 */
 	public void scrollVerticallyByAPage(ScrollSelectionCommand scrollSelectionCommand) {
 		getUnderlyingLayer().doCommand(scrollVerticallyByAPageCommand(scrollSelectionCommand));
 	}
@@ -714,6 +778,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 										scrollSelectionCommand.isControlMask());
 	}
 
+	/**
+	 * @return true if last column is completely displayed, false otherwise
+	 */
 	protected boolean isLastColumnCompletelyDisplayed() {
 		int lastDisplayableColumnIndex = getUnderlyingLayer().getColumnIndexByPosition(getUnderlyingLayer().getColumnCount() - 1);
 		int visibleColumnCount = getColumnCount();
@@ -722,6 +789,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return (lastVisibleColumnIndex == lastDisplayableColumnIndex) && (getClientAreaWidth() >= getWidth());
 	}
 
+	/**
+	 * @return true if last row is completely displayed, false otherwise
+	 */
 	protected boolean isLastRowCompletelyDisplayed() {
 		int lastDisplayableRowIndex = getUnderlyingLayer().getRowIndexByPosition(getUnderlyingLayer().getRowCount() - 1);
 		int visibleRowCount = getRowCount();
@@ -756,7 +826,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	/**
-	 * Handle the {@link CellSelectionEvent}
+	 * Handle {@link CellSelectionEvent}
 	 * @param selectionEvent
 	 */
 	private void processSelection(CellSelectionEvent selectionEvent) {
@@ -765,6 +835,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		adjustVerticalScrollBar();
 	}
 
+	/**
+	 * Handle {@link ColumnSelectionEvent}
+	 * @param selectionEvent
+	 */
 	private void processColumnSelection(ColumnSelectionEvent selectionEvent) {
 		for (Range columnPositionRange : selectionEvent.getColumnPositionRanges()) {
 			moveColumnPositionIntoViewport(columnPositionRange.end - 1);
@@ -772,6 +846,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	/**
+	 * Handle {@link RowSelectionEvent}
+	 * @param selectionEvent
+	 */
 	private void processRowSelection(RowSelectionEvent selectionEvent) {
 		int rowPositionToMoveIntoViewport = selectionEvent.getRowPositionToMoveIntoViewport();
 		if (rowPositionToMoveIntoViewport >= 0) {
@@ -780,12 +858,18 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	/**
+	 * Adjusts horizontal scrollbar to sync with current state of viewport.
+	 */
 	private void adjustHorizontalScrollBar() {
 		if (hBarListener != null) {
 			hBarListener.adjustScrollBar();
 		}
 	}
 
+	/**
+	 * Adjusts vertical scrollbar to sync with current state of viewport.
+	 */
 	private void adjustVerticalScrollBar() {
 		if (vBarListener != null) {
 			vBarListener.adjustScrollBar();
@@ -794,6 +878,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 	// Accessors
 
+	/**
+	 * @return The width of the visible client area. Will recalculate horizontal dimension information if the width has changed.
+	 */
 	public int getClientAreaWidth() {
 		int clientAreaWidth = getClientAreaProvider().getClientArea().width;
 		if (clientAreaWidth != cachedClientAreaWidth) {
@@ -803,6 +890,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return cachedClientAreaWidth;
 	}
 
+	/**
+	 * @return The height of the visible client area. Will recalculate vertical dimension information if the height has changed.
+	 */
 	public int getClientAreaHeight() {
 		int clientAreaHeight = getClientAreaProvider().getClientArea().height;
 		if (clientAreaHeight != cachedClientAreaHeight) {
@@ -812,10 +902,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		return cachedClientAreaHeight;
 	}
 
-	public SelectionLayer getSelectionLayer() {
-		return (SelectionLayer) getUnderlyingLayer();
-	}
-
+	/**
+	 * @return The scrollable layer underlying the viewport.
+	 */
 	public IUniqueIndexLayer getScrollableLayer() {
 		return scrollableLayer;
 	}
@@ -827,6 +916,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	
 	// Edge hover scrolling
 	
+	/**
+	 * Used for edge hover scrolling. Called from the ViewportDragCommandHandler.
+	 * @param x
+	 * @param y
+	 */
 	public void drag(int x, int y) {
 		edgeHoverScrollOffset.x = 0;
 		edgeHoverScrollOffset.y = 0;
@@ -863,6 +957,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 	
+	/**
+	 * Cancels an edge hover scroll.
+	 */
 	private void cancelEdgeHoverScroll() {
 		edgeHoverScrollOffset.x = 0;
 		edgeHoverScrollOffset.y = 0;
@@ -873,6 +970,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 	
+	/**
+	 * Runnable that incrementally scrolls the viewport when drag hovering over an edge.
+	 */
 	class MoveViewportRunnable implements Runnable {
 		
 		public void run() {
