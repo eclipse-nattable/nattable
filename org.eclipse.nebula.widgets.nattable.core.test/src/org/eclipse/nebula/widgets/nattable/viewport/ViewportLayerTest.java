@@ -295,17 +295,16 @@ public class ViewportLayerTest {
 		
 		viewportLayer.setMinimumOriginX(100);
 		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
-		assertEquals(200, viewportLayer.getOrigin().getX());
+		assertEquals(100, viewportLayer.getOrigin().getX());
 		
 		viewportLayer.setOriginX(150);
 		viewportLayer.setMinimumOriginX(200);
 		assertEquals(4, viewportLayer.getMinimumOriginColumnPosition());
-		assertEquals(200, viewportLayer.getOrigin().getX());
+		assertEquals(250, viewportLayer.getOrigin().getX());
 		
-		viewportLayer.setOriginX(250);
 		viewportLayer.setMinimumOriginX(100);
 		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
-		assertEquals(250, viewportLayer.getOrigin().getX());
+		assertEquals(150, viewportLayer.getOrigin().getX());
 		
 		viewportLayer.setMinimumOriginX(450);
 		assertEquals(9, viewportLayer.getMinimumOriginColumnPosition());
@@ -355,17 +354,16 @@ public class ViewportLayerTest {
 		
 		viewportLayer.setMinimumOriginY(40);
 		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
-		assertEquals(80, viewportLayer.getOrigin().getY());
+		assertEquals(40, viewportLayer.getOrigin().getY());
 		
 		viewportLayer.setOriginY(60);
 		viewportLayer.setMinimumOriginY(80);
 		assertEquals(4, viewportLayer.getMinimumOriginRowPosition());
-		assertEquals(80, viewportLayer.getOrigin().getY());
+		assertEquals(100, viewportLayer.getOrigin().getY());
 		
-		viewportLayer.setOriginY(100);
 		viewportLayer.setMinimumOriginY(40);
 		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
-		assertEquals(100, viewportLayer.getOrigin().getY());
+		assertEquals(60, viewportLayer.getOrigin().getY());
 		
 		viewportLayer.setMinimumOriginY(380);
 		assertEquals(19, viewportLayer.getMinimumOriginRowPosition());

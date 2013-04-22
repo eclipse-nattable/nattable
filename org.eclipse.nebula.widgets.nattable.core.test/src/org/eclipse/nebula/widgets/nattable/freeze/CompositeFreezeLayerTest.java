@@ -61,7 +61,7 @@ public class CompositeFreezeLayerTest {
 		compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
 
 			public Rectangle getClientArea() {
-				return new Rectangle(0, 0, 401, 160);
+				return new Rectangle(0, 0, 400, 160);
 			}
 
 		});
@@ -148,7 +148,7 @@ public class CompositeFreezeLayerTest {
 		compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
 
 			public Rectangle getClientArea() {
-				return new Rectangle(0, 0, 301, 120);
+				return new Rectangle(0, 0, 300, 120);
 			}
 
 		});

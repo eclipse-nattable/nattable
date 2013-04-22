@@ -132,7 +132,7 @@ public class FreezeHandlerTest {
 		// Test viewport		
 		Assert.assertEquals(3, viewportLayer.getMinimumOriginColumnPosition());
 		Assert.assertEquals(3, viewportLayer.getMinimumOriginRowPosition());
-		Assert.assertEquals(3, viewportLayer.getColumnIndexByPosition(0));
+		Assert.assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
 	}
 	
 	@Test

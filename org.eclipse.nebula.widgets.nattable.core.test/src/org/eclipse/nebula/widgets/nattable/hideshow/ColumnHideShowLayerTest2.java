@@ -138,7 +138,7 @@ public class ColumnHideShowLayerTest2 {
 
 		// View port adjusted origin to move an extra column in
 		Range hiddenRange = hideEvent.getColumnPositionRanges().iterator().next();
-		assertEquals(6, hiddenRange.start);
-		assertEquals(7, hiddenRange.end);
+		assertEquals(7, hiddenRange.start);
+		assertEquals(8, hiddenRange.end);
 	}
 }

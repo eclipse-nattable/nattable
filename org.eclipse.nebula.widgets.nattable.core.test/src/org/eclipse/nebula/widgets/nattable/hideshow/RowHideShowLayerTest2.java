@@ -98,7 +98,7 @@ public class RowHideShowLayerTest2 {
 
 		// View port adjusted origin to move an extra row in
 		Range hiddenRange = hideEvent.getRowPositionRanges().iterator().next();
-		assertEquals(5, hiddenRange.start);
-		assertEquals(6, hiddenRange.end);
+		assertEquals(6, hiddenRange.start);
+		assertEquals(7, hiddenRange.end);
 	}
 }
