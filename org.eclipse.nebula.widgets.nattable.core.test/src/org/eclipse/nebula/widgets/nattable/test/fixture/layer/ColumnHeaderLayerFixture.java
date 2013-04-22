@@ -19,14 +19,15 @@ public class ColumnHeaderLayerFixture extends ColumnHeaderLayer {
 
 	//Viewport is 400px wide
 	public static DataLayer dataLayer = new DataLayerFixture();
-	public static ViewportLayer bodyLayer = new ViewportLayerFixture(new SelectionLayer(dataLayer));
+	public static SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+	public static ViewportLayer bodyLayer = new ViewportLayerFixture(selectionLayer);
 
 	public ColumnHeaderLayerFixture() {
-		super(dataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+		super(dataLayer, bodyLayer, selectionLayer);
 	}
 
 	public ColumnHeaderLayerFixture(ViewportLayer viewportLayer) {
-		super(dataLayer, viewportLayer, viewportLayer.getSelectionLayer());
+		super(dataLayer, viewportLayer, selectionLayer);
 	}
 
 	public static DataLayer getDataLayer() {

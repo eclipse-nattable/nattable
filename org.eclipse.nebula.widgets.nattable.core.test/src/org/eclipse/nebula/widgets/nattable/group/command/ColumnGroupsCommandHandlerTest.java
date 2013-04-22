@@ -40,7 +40,7 @@ public class ColumnGroupsCommandHandlerTest {
 	@Before
 	public void setUp() {	
 		gridLayer = new GridLayerFixture();
-		selectionLayer = gridLayer.getBodyLayer().getViewportLayer().getSelectionLayer();
+		selectionLayer = (SelectionLayer) gridLayer.getBodyLayer().getViewportLayer().getScrollableLayer();
 		model = new ColumnGroupModel();
 		handler = new ColumnGroupsCommandHandler(model, selectionLayer, new ColumnGroupHeaderLayer(gridLayer.getColumnHeaderLayer(), gridLayer.getBodyLayer().getSelectionLayer(), new ColumnGroupModel()));
 		gridLayer.setClientAreaProvider(new IClientAreaProvider() {
