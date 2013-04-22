@@ -141,7 +141,7 @@ public class TextPainter extends AbstractTextPainter {
 			int contentHeight = (fontHeight * numberOfNewLines) + (spacing*2);
 			int contentToCellDiff = (cell.getBounds().height - rectangle.height);
 	
-			if ((contentHeight > rectangle.height) && calculateByTextHeight) {
+			if (performRowResize(contentHeight, rectangle)) {
 				ILayer layer = cell.getLayer();
 				layer.doCommand(
 						new RowResizeCommand(
@@ -261,5 +261,15 @@ public class TextPainter extends AbstractTextPainter {
 	@Override
 	protected int calculatePadding(ILayerCell cell, int availableLength) {
 		return cell.getBounds().width - availableLength;
+	}
+	
+	/**
+	 * Checks if a row resize needs to be triggered.
+	 * @param contentHeight The necessary height to show the content completely
+	 * @param rectangle The available rectangle to render to
+	 * @return <code>true</code> if a row resize needs to be performed, <code>false</code> if not
+	 */
+	protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
+		return ((contentHeight > rectangle.height) && calculateByTextHeight);
 	}
 }

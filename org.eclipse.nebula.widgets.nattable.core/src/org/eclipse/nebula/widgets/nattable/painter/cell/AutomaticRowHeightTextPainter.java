@@ -10,15 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
-import org.eclipse.nebula.widgets.nattable.style.IStyle;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
@@ -50,72 +42,8 @@ public class AutomaticRowHeightTextPainter extends TextPainter {
 	}
 
 	@Override
-	public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
-		if (paintBg) {
-			super.paintCell(cell, gc, rectangle, configRegistry);
-		}
-
-		if (paintFg) {
-			Rectangle originalClipping = gc.getClipping();
-			gc.setClipping(rectangle.intersection(originalClipping));
-	
-			IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
-			setupGCFromConfig(gc, cellStyle);
-			int fontHeight = gc.getFontMetrics().getHeight();
-			String text = convertDataType(cell, configRegistry);
-	
-			// Draw Text
-			text = getTextToDisplay(cell, gc, rectangle.width, text);
-	
-			int numberOfNewLines = getNumberOfNewLines(text);
-			
-			//if the content height is bigger than the available row height
-			//we're extending the row height (only if word wrapping is enabled)
-			int contentHeight = fontHeight * numberOfNewLines;
-			int contentToCellDiff = (cell.getBounds().height - rectangle.height);
-	
-			//this code differs from TextPainter
-			if ((contentHeight != rectangle.height) && calculateByTextHeight) {
-				ILayer layer = cell.getLayer();
-				layer.doCommand(
-						new RowResizeCommand(
-								layer, 
-								cell.getRowPosition(), 
-								contentHeight + (spacing*2) + contentToCellDiff));
-			}
-			
-			if (numberOfNewLines == 1) {
-				int contentWidth = Math.min(getLengthFromCache(gc, text), rectangle.width);
-				
-				gc.drawText(
-						text,
-						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing,
-						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + spacing,
-						SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
-				);
-			}
-			else {
-				//draw every line by itself because of the alignment, otherwise the whole text
-				//is always aligned right
-				int yStartPos = rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight);
-				String[] lines = text.split("\n"); //$NON-NLS-1$
-				for (String line : lines) {
-					int lineContentWidth = Math.min(getLengthFromCache(gc, line), rectangle.width);
-					
-					gc.drawText(
-							line,
-							rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth) + spacing,
-							yStartPos + spacing,
-							SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
-					);
-					
-					//after every line calculate the y start pos new
-					yStartPos += fontHeight;
-				}
-			}
-	
-			gc.setClipping(originalClipping);
-		}
+	protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
+		return ((contentHeight != rectangle.height) && calculateByTextHeight);
 	}
 
 }
