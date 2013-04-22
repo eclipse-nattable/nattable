@@ -100,11 +100,12 @@ public class CellLayerPainter implements ILayerPainter {
 		Rectangle adjustedCellBounds = layer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
 		if (cellPainter != null) {
 			Rectangle originalClipping = gc.getClipping();
-			Rectangle clipBounds = new Rectangle(
-					getStartXOfColumnPosition(columnPosition),
-					getStartYOfRowPosition(rowPosition),
-					getStartXOfColumnPosition(columnPosition + cell.getColumnSpan()),
-					getStartYOfRowPosition(rowPosition + cell.getRowSpan()));
+			int startX = getStartXOfColumnPosition(columnPosition);
+			int startY = getStartYOfRowPosition(rowPosition);
+			int endX = getStartXOfColumnPosition(columnPosition + cell.getColumnSpan());
+			int endY = getStartYOfRowPosition(rowPosition + cell.getRowSpan());
+			Rectangle clipBounds = new Rectangle(startX, startY, endX - startX, endY - startY);
+			System.out.println(clipBounds);
 			Rectangle adjustedClipBounds = layer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, clipBounds);
 			gc.setClipping(adjustedClipBounds);
 			
