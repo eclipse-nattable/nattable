@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
-import org.eclipse.nebula.widgets.nattable.freeze.event.CompositeFreezeEventHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
@@ -66,8 +65,6 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
 		if (useDefaultConfiguration) {
 			addConfiguration(new DefaultFreezeGridBindings());
 		}
-		
-		registerEventHandler(new CompositeFreezeEventHandler(freezeLayer, viewportLayer));
 	}
 	
 	public boolean isFrozen() {

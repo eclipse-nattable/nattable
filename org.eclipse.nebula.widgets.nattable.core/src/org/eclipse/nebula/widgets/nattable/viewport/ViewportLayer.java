@@ -24,7 +24,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
-import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
@@ -63,6 +62,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	// The viewport origin, in scrollable pixel coordinates.
 	private PixelCoordinate origin = new PixelCoordinate(0, 0);
 	private PixelCoordinate minimumOrigin = new PixelCoordinate(0, 0);
+	private int minimumOriginColumnPosition = 0;
+	private int minimumOriginRowPosition = 0;
 	private boolean viewportOff = false;
 	private PixelCoordinate savedOrigin = new PixelCoordinate(0, 0);
 
@@ -117,14 +118,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @return The minimum origin column position
 	 */
 	public int getMinimumOriginColumnPosition() {
-		return scrollableLayer.getColumnPositionByX(minimumOrigin.getX());
+		return minimumOriginColumnPosition;
 	}
 	
 	/**
 	 * @return The minimum origin row position
 	 */
 	public int getMinimumOriginRowPosition() {
-		return scrollableLayer.getRowPositionByY(minimumOrigin.getY());
+		return minimumOriginRowPosition;
 	}
 	
 	/**
@@ -132,19 +133,15 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param newMinimumOriginX
 	 */
 	public void setMinimumOriginX(int newMinimumOriginX) {
+		PixelCoordinate previousMinimumOrigin = minimumOrigin;
+		
 		if (newMinimumOriginX != minimumOrigin.getX()) {
 			minimumOrigin = new PixelCoordinate(newMinimumOriginX, minimumOrigin.getY());
+			minimumOriginColumnPosition = scrollableLayer.getColumnPositionByX(minimumOrigin.getX());
 		}
-		
-		PixelCoordinate previousOrigin = origin;
-		
-		if (previousOrigin.getX() == newMinimumOriginX || origin.getX() < newMinimumOriginX) {
-			origin = minimumOrigin;
-		}
-		
-		if (origin != previousOrigin) {
-			invalidateHorizontalStructure();
-		}
+
+		int delta = minimumOrigin.getX() - previousMinimumOrigin.getX();
+		setOriginX(origin.getX() + delta);
 		
 		recalculateHorizontalScrollBar();
 	}
@@ -154,19 +151,15 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param newMinimumOriginY
 	 */
 	public void setMinimumOriginY(int newMinimumOriginY) {
+		PixelCoordinate previousMinimumOrigin = minimumOrigin;
+		
 		if (newMinimumOriginY != minimumOrigin.getY()) {
 			minimumOrigin = new PixelCoordinate(minimumOrigin.getX(), newMinimumOriginY);
+			minimumOriginRowPosition = scrollableLayer.getRowPositionByY(minimumOrigin.getY());
 		}
 		
-		PixelCoordinate previousOrigin = origin;
-		
-		if (previousOrigin.getY() == newMinimumOriginY || origin.getY() < newMinimumOriginY) {
-			origin = minimumOrigin;
-		}
-		
-		if (origin != previousOrigin) {
-			invalidateVerticalStructure();
-		}
+		int delta = minimumOrigin.getY() - previousMinimumOrigin.getY();
+		setOriginY(origin.getY() + delta);
 		
 		recalculateVerticalScrollBar();
 	}
@@ -277,6 +270,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		PixelCoordinate previousOrigin = origin;
 		
 		minimumOrigin = new PixelCoordinate(0, 0);
+		minimumOriginColumnPosition = 0;
+		minimumOriginRowPosition = 0;
 		origin = new PixelCoordinate(newOriginX, newOriginY);
 		
 		if (origin.getX() != previousOrigin.getX()) {
