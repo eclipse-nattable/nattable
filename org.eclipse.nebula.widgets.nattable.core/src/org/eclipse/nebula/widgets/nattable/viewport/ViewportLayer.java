@@ -986,9 +986,4 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		
 	}
 	
-	@Override
-	public ILayerPainter getLayerPainter() {
-		return super.getLayerPainter();
-	}
-
 }
