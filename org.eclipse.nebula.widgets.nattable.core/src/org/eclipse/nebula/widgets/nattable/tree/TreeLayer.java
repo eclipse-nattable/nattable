@@ -42,18 +42,67 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
 	public static final int TREE_COLUMN_NUMBER = 0;
 
+	/**
+	 * The ITreeRowModelListener that is used to get information about the tree structure.
+	 */
 	private final ITreeRowModel<?> treeRowModel;
 
 	private final Set<Integer> hiddenRowIndexes;
 
+	/**
+	 * The IndentedTreeImagePainter that paints indentation to the left of the configured base painter
+	 * and icons for expand/collapse if possible, to render tree structure accordingly.
+	 */
 	private IndentedTreeImagePainter indentedTreeImagePainter;
-	private ICellPainter treeImagePainter;
 	
+	/**
+	 * Creates a TreeLayer instance based on the given information. Will use a default IndentedTreeImagePainter
+	 * that uses 10 pixels for indentation and simple + and - icons for expand/collapse icons. It also
+	 * uses the DefaultTreeLayerConfiguration.
+	 * @param underlyingLayer The underlying layer on whose top this layer will be set.
+	 * @param treeRowModel The ITreeRowModelListener that is used to get information about the tree structure.
+	 */
 	public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel) {
-		this(underlyingLayer, treeRowModel, true);
+		this(underlyingLayer, treeRowModel, new IndentedTreeImagePainter(treeRowModel));
 	}
 	
+	/**
+	 * Creates a TreeLayer instance based on the given information. Allows to specify the IndentedTreeImagePainter
+	 * while using the DefaultTreeLayerConfiguration.
+	 * @param underlyingLayer The underlying layer on whose top this layer will be set.
+	 * @param treeRowModel The ITreeRowModelListener that is used to get information about the tree structure.
+	 * @param indentedTreeImagePainter The IndentedTreeImagePainter that paints indentation to the left of the 
+	 * 			configured base painter	and icons for expand/collapse if possible, to render tree structure accordingly.
+	 */
+	public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel, 
+			IndentedTreeImagePainter indentedTreeImagePainter) {
+		this(underlyingLayer, treeRowModel, indentedTreeImagePainter, true);
+	}
+	
+	/**
+	 * Creates a TreeLayer instance based on the given information. Will use a default IndentedTreeImagePainter
+	 * that uses 10 pixels for indentation and simple + and - icons for expand/collapse icons.
+	 * @param underlyingLayer The underlying layer on whose top this layer will be set.
+	 * @param treeRowModel The ITreeRowModelListener that is used to get information about the tree structure.
+	 * @param useDefaultConfiguration <code>true</code> to use the DefaultTreeLayerConfiguration, <code>false</code>
+	 * 			if you want to specify your own configuration.
+	 */
 	public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel, boolean useDefaultConfiguration) {
+		this(underlyingLayer, treeRowModel, new IndentedTreeImagePainter(treeRowModel), useDefaultConfiguration);
+	}
+	
+	/**
+	 * Creates a TreeLayer instance based on the given information.
+	 * @param underlyingLayer The underlying layer on whose top this layer will be set.
+	 * @param treeRowModel The ITreeRowModelListener that is used to get information about the tree structure.
+	 * @param indentedTreeImagePainter The IndentedTreeImagePainter that paints indentation to the left of the 
+	 * 			configured base painter	and icons for expand/collapse if possible, to render tree structure accordingly.
+	 * @param useDefaultConfiguration <code>true</code> to use the DefaultTreeLayerConfiguration, <code>false</code>
+	 * 			if you want to specify your own configuration.
+	 */
+	public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel, 
+			IndentedTreeImagePainter indentedTreeImagePainter, boolean useDefaultConfiguration) {
+		
 		super(underlyingLayer);
 		this.treeRowModel = treeRowModel;
 
@@ -72,23 +121,41 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 			}
 		});
 
-		indentedTreeImagePainter = new IndentedTreeImagePainter(treeRowModel);
-		treeImagePainter = indentedTreeImagePainter.getTreeImagePainter();
+		this.indentedTreeImagePainter = indentedTreeImagePainter;
 
 		registerCommandHandler(new TreeExpandCollapseCommandHandler(this));
 	}
 
+	/**
+	 * @return The ITreeRowModelListener that is used to get information about the tree structure.
+	 */
 	public ITreeRowModel<?> getModel() {
 		return this.treeRowModel;
 	}
 
 	/**
-	 * @return the treeImagePainter
+	 * @return The IndentedTreeImagePainter that paints indentation to the left of the configured base painter
+	 * 			and icons for expand/collapse if possible, to render tree structure accordingly.
+	 */
+	public IndentedTreeImagePainter getIndentedTreeImagePainter() {
+		return this.indentedTreeImagePainter;
+	}
+
+	/**
+	 * @return The ICellPainter that is used to paint the images in the tree by the IndentedTreeImagePainter. 
+	 * 			Usually it is some type	of TreeImagePainter that paints expand/collapse/leaf icons regarding 
+	 * 			the node state.<br/>
+	 * 			Can be <code>null</code> if set explicitly to the IndentedTreeImagePainter!
 	 */
 	public ICellPainter getTreeImagePainter() {
-		return treeImagePainter;
+		return this.indentedTreeImagePainter != null ? this.indentedTreeImagePainter.getTreeImagePainter() : null;
 	}
 	
+	/**
+	 * @param columnPosition The column position to check.
+	 * @return <code>true</code> if the given column position is the tree column, <code>false</code>
+	 * 			if not.
+	 */
 	private boolean isTreeColumn(int columnPosition) {
 		return columnPosition == TREE_COLUMN_NUMBER;
 	}
@@ -98,7 +165,8 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 		ICellPainter cellPainter = super.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 		
 		if (cell.getConfigLabels().hasLabel(TREE_COLUMN_CELL)) {
-			cellPainter = new BackgroundPainter(new CellPainterDecorator(cellPainter, CellEdgeEnum.LEFT, indentedTreeImagePainter));
+			cellPainter = new BackgroundPainter(new CellPainterDecorator(
+					cellPainter, CellEdgeEnum.LEFT, this.indentedTreeImagePainter));
 		}
 		
 		return cellPainter;
