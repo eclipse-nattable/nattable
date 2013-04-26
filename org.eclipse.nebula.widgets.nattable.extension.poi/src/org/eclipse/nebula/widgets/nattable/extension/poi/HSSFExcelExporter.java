@@ -37,6 +37,7 @@ public class HSSFExcelExporter extends PoiExcelExporter {
 	
 	@Override
 	protected Workbook createWorkbook() {
+		colorIndex = new ArrayList<Color>();
 		return new HSSFWorkbook();
 	}
 	
