@@ -67,6 +67,17 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	private ISelection previousSelection;
 
 	/**
+	 * Flag to configure whether <code>setSelection()</code> should add or set the selection.
+	 * <p>
+	 * This was added for convenience because the initial code always added the selection
+	 * on <code>setSelection()</code> by creating a SelectRowsCommand with the withControlMask set to <code>true</code>.
+	 * Looking at the specification, <code>setSelection()</code> is used to set the <b>new</b> selection.
+	 * So the default here is now to set instead of add. But for convenience to older code 
+	 * that relied on the add behaviour it is now possible to change it back to adding.
+	 */
+	private boolean addSelectionOnSet = false;
+	
+	/**
 	 * Create a RowSelectionProvider that only handles fully selected rows and only fires 
 	 * SelectionChangedEvents if the row selection changes.
 	 * @param selectionLayer The SelectionLayer this ISelectionProvider is connected to
@@ -143,7 +154,9 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 					intValue = max.intValue();
 				}
 				if (intValue >= 0) {
-					selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 0, ObjectUtils.asIntArray(rowPositions), false, true, intValue));
+					selectionLayer.doCommand(
+							new SelectRowsCommand(selectionLayer, 0, ObjectUtils.asIntArray(rowPositions), 
+									false, addSelectionOnSet, intValue));
 				}
 			}
 		}
@@ -198,6 +211,22 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 			Object rowObject = rowDataProvider.getRowObject(rowIndex);
 			rows.add(new RowObjectIndexHolder<Object>(rowIndex, rowObject));
 		}
+	}
+
+	/**
+	 * Configure whether <code>setSelection()</code> should add or set the selection.
+	 * <p>
+	 * This was added for convenience because the initial code always added the selection
+	 * on <code>setSelection()</code> by creating a SelectRowsCommand with the withControlMask set to <code>true</code>.
+	 * Looking at the specification, <code>setSelection()</code> is used to set the <b>new</b> selection.
+	 * So the default here is now to set instead of add. But for convenience to older code 
+	 * that relied on the add behaviour it is now possible to change it back to adding.
+	 * 
+	 * @param addSelectionOnSet <code>true</code> to add the selection on calling <code>setSelection()</code>
+	 * 			The default is <code>false</code> to behave like specified in RowSelectionProvider
+	 */
+	public void setAddSelectionOnSet(boolean addSelectionOnSet) {
+		this.addSelectionOnSet = addSelectionOnSet;
 	}
 
 }
