@@ -35,6 +35,7 @@ import org.eclipse.swt.SWT;
 
 public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 
+	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
 		// Move up
 		configureMoveUpBindings(uiBindingRegistry, new MoveSelectionAction(MoveDirectionEnum.UP));
@@ -64,7 +65,7 @@ public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, 'a'), new SelectAllAction());
 
 		// Copy
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, 'c'), new CopyDataAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, 'c'), new CopyDataAction());
 
 		// Mouse bindings - select Cell
 		configureBodyMouseClickBindings(uiBindingRegistry);
