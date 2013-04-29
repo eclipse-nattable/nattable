@@ -327,6 +327,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		return scrollableLayer.getColumnPositionByIndex(columnIndex) - getOriginColumnPosition();
 	}
@@ -422,6 +423,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		return scrollableLayer.getRowPositionByIndex(rowIndex) - getOriginRowPosition();
 	}
@@ -653,10 +655,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			ScrollBar hBar = clientAreaResizeCommand.getScrollable().getHorizontalBar();
 			ScrollBar vBar = clientAreaResizeCommand.getScrollable().getVerticalBar();
 
-			if (hBarListener == null) {
+			if (hBarListener == null && hBar != null) {
 				hBarListener = new HorizontalScrollBarHandler(this, hBar);
 			}
-			if (vBarListener == null) {
+			if (vBarListener == null && vBar != null) {
 				vBarListener = new VerticalScrollBarHandler(this, vBar);
 			}
 
@@ -970,6 +972,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	class MoveViewportRunnable implements Runnable {
 		
+		@Override
 		public void run() {
 			if (edgeHoverScrollOffset.x != 0 || edgeHoverScrollOffset.y != 0) {
 				setOriginX(getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + edgeHoverScrollOffset.x));
