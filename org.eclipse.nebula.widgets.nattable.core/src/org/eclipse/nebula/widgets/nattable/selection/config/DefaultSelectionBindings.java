@@ -35,6 +35,7 @@ import org.eclipse.swt.SWT;
 
 public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 
+	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
 		// Move up
 		configureMoveUpBindings(uiBindingRegistry, new MoveSelectionAction(MoveDirectionEnum.UP));

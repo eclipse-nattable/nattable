@@ -69,3 +69,4 @@ Import-Package: ca.odell.glazedlists,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
  org.eclipse.swt.widgets
+Bundle-Vendor: Eclipse Nebula NatTable

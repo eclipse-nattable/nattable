@@ -16,3 +16,4 @@ Import-Package: org.apache.commons.lang.builder,
  org.eclipse.nebula.widgets.nattable.style,
  org.eclipse.swt.graphics,
  org.eclipse.swt.widgets
+Bundle-Vendor: Eclipse Nebula NatTable

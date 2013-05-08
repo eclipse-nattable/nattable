@@ -156,6 +156,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 		addDisposeListener(new DisposeListener() {
 
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				doCommand(new DisposeResourcesCommand());
 				conflaterChain.stop();
@@ -171,10 +172,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	}
 
 	private void disableScrollBar(ScrollBar scrollBar) {
-		scrollBar.setMinimum(0);
-		scrollBar.setMaximum(1);
-		scrollBar.setThumb(1);
-		scrollBar.setEnabled(false);
+		if (scrollBar != null) {
+			scrollBar.setMinimum(0);
+			scrollBar.setMaximum(1);
+			scrollBar.setThumb(1);
+			scrollBar.setEnabled(false);
+		}
 	}
 
 	public ILayer getLayer() {
@@ -194,10 +197,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			this.underlyingLayer = layer;
 			underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+				@Override
 				public Rectangle getClientArea() {
 					final Rectangle clientArea = new Rectangle(0, 0, 0, 0);
 					if (!isDisposed()) {
 						getDisplay().syncExec(new Runnable() {
+							@Override
 							public void run() {
 								Rectangle natClientArea = NatTable.this.getClientArea();
 								clientArea.x = natClientArea.x;
@@ -288,10 +293,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 		addFocusListener(new FocusListener() {
 
+			@Override
 			public void focusLost(final FocusEvent arg0) {
 				redraw();
 			}
 
+			@Override
 			public void focusGained(final FocusEvent arg0) {
 				redraw();
 			}
@@ -299,6 +306,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		});
 
 		addListener(SWT.Resize, new Listener() {
+			@Override
 			public void handleEvent(final Event e) {
 				doCommand(new ClientAreaResizeCommand(NatTable.this));
 			}
@@ -324,6 +332,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		overlayPainters.remove(overlayPainter);
 	}
 
+	@Override
 	public void paintControl(final PaintEvent event) {
 		paintNatTable(event);
 	}
@@ -332,6 +341,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		getLayerPainter().paintLayer(this, event.gc, 0, 0, new Rectangle(event.x, event.y, event.width, event.height), getConfigRegistry());
 	}
 
+	@Override
 	public ILayerPainter getLayerPainter() {
 		return layerPainter;
 	}
@@ -396,6 +406,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		doCommand(new StructuralRefreshCommand());
 	}
 	
+	@Override
 	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
 		throw new UnsupportedOperationException("Cannot use this method to configure NatTable. Use no-argument configure() instead."); //$NON-NLS-1$
 	}
@@ -427,6 +438,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	// Events /////////////////////////////////////////////////////////////////
 
+	@Override
 	public void handleLayerEvent(ILayerEvent event) {
 		for (ILayerListener layerListener : listeners) {
 			layerListener.handleLayerEvent(event);
@@ -487,24 +499,29 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	/**
 	 * @see ILayer#registerPersistable(IPersistable)
 	 */
+	@Override
 	public void registerPersistable(IPersistable persistable) {
 		persistables.add(persistable);
 	}
 
+	@Override
 	public void unregisterPersistable(IPersistable persistable) {
 		persistables.remove(persistable);
 	}
 
 	// Command
 
+	@Override
 	public boolean doCommand(ILayerCommand command) {
 		return underlyingLayer.doCommand(command);
 	}
 
+	@Override
 	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
 		underlyingLayer.registerCommandHandler(commandHandler);
 	}
 
+	@Override
 	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
 		underlyingLayer.unregisterCommandHandler(commandClass);
 	}
@@ -513,18 +530,22 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	private final List<ILayerListener> listeners = new ArrayList<ILayerListener>();
 
+	@Override
 	public void fireLayerEvent(ILayerEvent event) {
 		underlyingLayer.fireLayerEvent(event);
 	}
 
+	@Override
 	public void addLayerListener(ILayerListener listener) {
 		listeners.add(listener);
 	}
 
+	@Override
 	public void removeLayerListener(ILayerListener listener) {
 		listeners.remove(listener);
 	}
 	
+	@Override
 	public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass) {
 		for (ILayerListener listener : listeners) {
 			if (listener.getClass().equals(layerListenerClass)) {
@@ -536,22 +557,27 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	// Columns
 
+	@Override
 	public int getColumnCount() {
 		return underlyingLayer.getColumnCount();
 	}
 
+	@Override
 	public int getPreferredColumnCount() {
 		return underlyingLayer.getPreferredColumnCount();
 	}
 
+	@Override
 	public int getColumnIndexByPosition(int columnPosition) {
 		return underlyingLayer.getColumnIndexByPosition(columnPosition);
 	}
 
+	@Override
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
 		return localColumnPosition;
 	}
 
+	@Override
 	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
 		if (sourceUnderlyingLayer != underlyingLayer) {
 			return -1;
@@ -560,6 +586,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		return underlyingColumnPosition;
 	}
 
+	@Override
 	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
 		if (sourceUnderlyingLayer != underlyingLayer) {
 			return null;
@@ -570,36 +597,43 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	// Width
 
+	@Override
 	public int getWidth() {
 		return underlyingLayer.getWidth();
 	}
 
+	@Override
 	public int getPreferredWidth() {
 		return underlyingLayer.getPreferredWidth();
 	}
 
+	@Override
 	public int getColumnWidthByPosition(int columnPosition) {
 		return underlyingLayer.getColumnWidthByPosition(columnPosition);
 	}
 
 	// Column resize
 
+	@Override
 	public boolean isColumnPositionResizable(int columnPosition) {
 		return underlyingLayer.isColumnPositionResizable(columnPosition);
 	}
 
 	// X
 
+	@Override
 	public int getColumnPositionByX(int x) {
 		return underlyingLayer.getColumnPositionByX(x);
 	}
 
+	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
 		return underlyingLayer.getStartXOfColumnPosition(columnPosition);
 	}
 
 	// Underlying
 
+	@Override
 	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 		underlyingLayers.add(underlyingLayer);
@@ -608,22 +642,27 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	// Rows
 
+	@Override
 	public int getRowCount() {
 		return underlyingLayer.getRowCount();
 	}
 
+	@Override
 	public int getPreferredRowCount() {
 		return underlyingLayer.getPreferredRowCount();
 	}
 
+	@Override
 	public int getRowIndexByPosition(int rowPosition) {
 		return underlyingLayer.getRowIndexByPosition(rowPosition);
 	}
 
+	@Override
 	public int localToUnderlyingRowPosition(int localRowPosition) {
 		return localRowPosition;
 	}
 
+	@Override
 	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
 		if (sourceUnderlyingLayer != underlyingLayer) {
 			return -1;
@@ -632,6 +671,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		return underlyingRowPosition;
 	}
 
+	@Override
 	public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
 		if (sourceUnderlyingLayer != underlyingLayer) {
 			return null;
@@ -642,36 +682,43 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	// Height
 
+	@Override
 	public int getHeight() {
 		return underlyingLayer.getHeight();
 	}
 
+	@Override
 	public int getPreferredHeight() {
 		return underlyingLayer.getPreferredHeight();
 	}
 
+	@Override
 	public int getRowHeightByPosition(int rowPosition) {
 		return underlyingLayer.getRowHeightByPosition(rowPosition);
 	}
 
 	// Row resize
 
+	@Override
 	public boolean isRowPositionResizable(int rowPosition) {
 		return underlyingLayer.isRowPositionResizable(rowPosition);
 	}
 
 	// Y
 
+	@Override
 	public int getRowPositionByY(int y) {
 		return underlyingLayer.getRowPositionByY(y);
 	}
 
+	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
 		return underlyingLayer.getStartYOfRowPosition(rowPosition);
 	}
 
 	// Underlying
 
+	@Override
 	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 		underlyingLayers.add(underlyingLayer);
@@ -680,44 +727,54 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	// Cell features
 
+	@Override
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer.getCellByPosition(columnPosition, rowPosition);
 	}
 
+	@Override
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer.getBoundsByPosition(columnPosition, rowPosition);
 	}
 
+	@Override
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer.getDisplayModeByPosition(columnPosition, rowPosition);
 	}
 
+	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer.getConfigLabelsByPosition(columnPosition, rowPosition);
 	}
 
+	@Override
 	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer.getDataValueByPosition(columnPosition, rowPosition);
 	}
 	
+	@Override
 	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return underlyingLayer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 	}
 
 	// IRegionResolver
 
+	@Override
 	public LabelStack getRegionLabelsByXY(int x, int y) {
 		return underlyingLayer.getRegionLabelsByXY(x, y);
 	}
 
+	@Override
 	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer;
 	}
 
+	@Override
 	public IClientAreaProvider getClientAreaProvider() {
 		return this;
 	}
 
+	@Override
 	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
 		throw new UnsupportedOperationException("Cannot set an area provider."); //$NON-NLS-1$
 	}

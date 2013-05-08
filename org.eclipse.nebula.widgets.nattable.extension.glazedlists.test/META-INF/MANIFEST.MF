@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NatTable GlazedLists Extensions Test (Incubation)
+Bundle-Name: NatTable GlazedLists Extensions Test
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists.test
 Bundle-Version: 1.0.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
@@ -22,3 +22,4 @@ Import-Package: org.eclipse.nebula.widgets.nattable.filterrow.command,
  org.eclipse.nebula.widgets.nattable.viewport,
  org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow
+Bundle-Vendor: Eclipse Nebula NatTable
