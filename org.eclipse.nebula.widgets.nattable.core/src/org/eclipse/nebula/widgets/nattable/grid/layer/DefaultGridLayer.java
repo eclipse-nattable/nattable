@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.grid.layer;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -120,6 +121,10 @@ public class DefaultGridLayer extends GridLayer {
 		setColumnHeaderLayer(columnHeaderLayer);
 		setRowHeaderLayer(rowHeaderLayer);
 		setCornerLayer(cornerLayer);
+		
+		CopyDataCommandHandler cdch = new CopyDataCommandHandler(selectionLayer, columnHeaderDataLayer, rowHeaderDataLayer);
+		cdch.setCopyFormattedText(true);
+		registerCommandHandler(cdch);
 	}
 	
 	public IUniqueIndexLayer getBodyDataLayer() {

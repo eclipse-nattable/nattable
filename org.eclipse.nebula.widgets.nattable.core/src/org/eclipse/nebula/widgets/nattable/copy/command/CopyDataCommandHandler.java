@@ -41,11 +41,11 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	/**
 	 * The column header layer of the grid, needed to also copy the column header data.
 	 */
-	private final ILayer columnHeaderLayer;
+	private final ILayer columnHeaderDataLayer;
 	/**
 	 * The row header layer of the grid, needed to also copy the row header data.
 	 */
-	private final ILayer rowHeaderLayer;
+	private final ILayer rowHeaderDataLayer;
 	/**
 	 * TODO
 	 */
@@ -63,14 +63,14 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	/**
 	 * Creates an instance that checks the {@link SelectionLayer} and the header layers if they are given.
 	 * @param selectionLayer The {@link SelectionLayer} within the NatTable. Can not be <code>null</code>.
-	 * @param columnHeaderLayer The column header layer within the NatTable grid. Can be <code>null</code>.
-	 * @param rowHeaderLayer The row header layer within the NatTable grid. Can be <code>null</code>.
+	 * @param columnHeaderDataLayer The column header data layer within the NatTable grid. Can be <code>null</code>.
+	 * @param rowHeaderDataLayer The row header data layer within the NatTable grid. Can be <code>null</code>.
 	 */
-	public CopyDataCommandHandler(SelectionLayer selectionLayer, ILayer columnHeaderLayer, ILayer rowHeaderLayer) {
-		assert selectionLayer != null : "The SelectionLayer can not be null on creating a CopyDataCommandHandler"; //$NON-NLS-1$
+	public CopyDataCommandHandler(SelectionLayer selectionLayer, ILayer columnHeaderDataLayer, ILayer rowHeaderDataLayer) {
+ 		assert selectionLayer != null : "The SelectionLayer can not be null on creating a CopyDataCommandHandler"; //$NON-NLS-1$
 		this.selectionLayer = selectionLayer;
-		this.columnHeaderLayer = columnHeaderLayer;
-		this.rowHeaderLayer = rowHeaderLayer;
+		this.columnHeaderDataLayer = columnHeaderDataLayer;
+		this.rowHeaderDataLayer = rowHeaderDataLayer;
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 		//in the same order we copied them.
 		Collections.sort(selectedRowPositions);
 		
-		final int rowOffset = columnHeaderLayer != null ? columnHeaderLayer.getRowCount() : 0;
+		final int rowOffset = columnHeaderDataLayer != null ? columnHeaderDataLayer.getRowCount() : 0;
 		for (int i = 0; i < selectedRowPositions.size(); i++) {
 			Integer rowPos = selectedRowPositions.get(i);
 			copiedCells[i+rowOffset] = assembleBody(rowPos);
@@ -138,19 +138,19 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	 */
 	protected ILayerCell[][] assembleColumnHeaders() {
 		// Add offset to rows, remember they need to include the column header rows
-		final int rowOffset = columnHeaderLayer != null ? columnHeaderLayer.getRowCount() : 0;
-		final int columnOffset = rowHeaderLayer != null ? rowHeaderLayer.getColumnCount() : 0;
+		final int rowOffset = columnHeaderDataLayer != null ? columnHeaderDataLayer.getRowCount() : 0;
+		final int columnOffset = rowHeaderDataLayer != null ? rowHeaderDataLayer.getColumnCount() : 0;
 
 		final ILayerCell[][] copiedCells = new ILayerCell[selectionLayer.getSelectedRowCount() + rowOffset][1];
 		
-		if (columnHeaderLayer != null) {
+		if (columnHeaderDataLayer != null) {
 			int[] selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
 			for (int i = 0; i < rowOffset; i++) {
 				final ILayerCell[] cells = new ILayerCell[selectedColumnPositions.length + columnOffset];
 				for (int columnPosition = 0; columnPosition < selectedColumnPositions.length; columnPosition++) {
 					// Pad the width of the vertical layer
 					cells[columnPosition + columnOffset] = 
-							columnHeaderLayer.getCellByPosition(selectedColumnPositions[columnPosition], i);
+							columnHeaderDataLayer.getCellByPosition(selectedColumnPositions[columnPosition], i);
 				}
 				
 				copiedCells[i] = cells;
@@ -169,12 +169,12 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	 */
 	protected ILayerCell[] assembleBody(int currentRowPosition) {		
 		final int[] selectedColumns = selectionLayer.getSelectedColumnPositions();
-		final int columnOffset = rowHeaderLayer != null ? rowHeaderLayer.getColumnCount() : 0;
+		final int columnOffset = rowHeaderDataLayer != null ? rowHeaderDataLayer.getColumnCount() : 0;
 		final ILayerCell[] bodyCells = new ILayerCell[selectedColumns.length + columnOffset];
 		
-		if (rowHeaderLayer != null) {
-			for (int i = 0; i < rowHeaderLayer.getColumnCount(); i++) {
-				bodyCells[i] = rowHeaderLayer.getCellByPosition(i, currentRowPosition);
+		if (rowHeaderDataLayer != null) {
+			for (int i = 0; i < rowHeaderDataLayer.getColumnCount(); i++) {
+				bodyCells[i] = rowHeaderDataLayer.getCellByPosition(i, currentRowPosition);
 			}
 		}
 		
