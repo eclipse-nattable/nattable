@@ -44,22 +44,27 @@ public class CellPainterMouseEventMatcher extends MouseEventMatcher {
 			int rowPosition = natTable.getRowPositionByY(event.y);
 			
 			ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
-			IConfigRegistry configRegistry = natTable.getConfigRegistry();
-			ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 			
-			GC gc = new GC(natTable.getDisplay());
-			try {
-				Rectangle adjustedCellBounds = natTable.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
+			//Bug 407598: only perform a check if the click in the body region was performed on a cell
+			//cell == null can happen if the viewport is quite large and contains not enough cells to fill it.
+			if (cell != null) {
+				IConfigRegistry configRegistry = natTable.getConfigRegistry();
+				ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 				
-				ICellPainter clickedCellPainter = cellPainter.getCellPainterAt(event.x, event.y, cell, gc, adjustedCellBounds, configRegistry);
-				if (clickedCellPainter != null) {
-					if (	(targetCellPainter != null && targetCellPainter == clickedCellPainter) ||
-							(targetCellPainterClass != null && targetCellPainterClass.isInstance(clickedCellPainter))) {
-						return true;
+				GC gc = new GC(natTable.getDisplay());
+				try {
+					Rectangle adjustedCellBounds = natTable.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
+					
+					ICellPainter clickedCellPainter = cellPainter.getCellPainterAt(event.x, event.y, cell, gc, adjustedCellBounds, configRegistry);
+					if (clickedCellPainter != null) {
+						if (	(targetCellPainter != null && targetCellPainter == clickedCellPainter) ||
+								(targetCellPainterClass != null && targetCellPainterClass.isInstance(clickedCellPainter))) {
+							return true;
+						}
 					}
+				} finally {
+					gc.dispose();
 				}
-			} finally {
-				gc.dispose();
 			}
 		}
 		return false;

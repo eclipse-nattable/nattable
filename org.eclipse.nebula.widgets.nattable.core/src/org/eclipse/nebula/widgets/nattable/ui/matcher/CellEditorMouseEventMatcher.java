@@ -98,12 +98,16 @@ public class CellEditorMouseEventMatcher implements IMouseEventMatcher {
 					natTable.getColumnPositionByX(event.x), 
 					natTable.getRowPositionByY(event.y));
 			
-			ICellEditor cellEditor = natTable.getConfigRegistry().getConfigAttribute(
-					EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, cell.getConfigLabels().getLabels());
-			
-			if (cellEditor != null && cellEditor.activateAtAnyPosition()) {
-				//if there is a cell editor configured for the cell that was clicked on, the match is found
-				return true;
+			//Bug 407598: only perform a check if the click in the body region was performed on a cell
+			//cell == null can happen if the viewport is quite large and contains not enough cells to fill it.
+			if (cell != null) {
+				ICellEditor cellEditor = natTable.getConfigRegistry().getConfigAttribute(
+						EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, cell.getConfigLabels().getLabels());
+				
+				if (cellEditor != null && cellEditor.activateAtAnyPosition()) {
+					//if there is a cell editor configured for the cell that was clicked on, the match is found
+					return true;
+				}
 			}
 		}
 		return false;
