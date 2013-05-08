@@ -59,7 +59,7 @@ public class SelectionIntegrationTest {
 		assertPositionEquals(3, 1, getSelectedCells()[1]);
 		assertSelectionAnchorEquals(3, 1);
 
-		SWTUtils.pressKey(SWT.ARROW_LEFT, SWT.CTRL, natTable);
+		SWTUtils.pressKey(SWT.ARROW_LEFT, SWT.MOD1, natTable);
 		assertSelectCellsCount(1);
 		assertPositionEquals(0, 1, getSelectedCells()[0]);
 		assertSelectionAnchorEquals(0, 1);
@@ -81,7 +81,7 @@ public class SelectionIntegrationTest {
 		assertCellSelected(6, 1);
 		assertSelectionAnchorEquals(5, 1);
 
-		SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.CTRL, natTable);
+		SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.MOD1, natTable);
 		assertSelectCellsCount(1);
 		assertPositionEquals(9, 1, selectionLayer.getSelectedCellPositions()[0]);
 		assertPositionEquals(9, 1, selectionLayer.getLastSelectedCellPosition());
@@ -106,7 +106,7 @@ public class SelectionIntegrationTest {
 		assertCellSelected(4, 4);
 		assertSelectionAnchorEquals(4, 3);
 
-		SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.CTRL, natTable);
+		SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.MOD1, natTable);
 		assertSelectCellsCount(1);
 		int lastRow = selectionLayer.getRowCount() - 1;
 		assertPositionEquals(4, lastRow, selectionLayer.getSelectedCellPositions()[0]);
@@ -135,7 +135,7 @@ public class SelectionIntegrationTest {
 		natTable.doCommand(new SelectCellCommand(natTable, 5, 4, NO_SHIFT, NO_CTRL));
 		assertSelectCellsCount(1);
 
-		SWTUtils.pressKey(SWT.ARROW_UP, SWT.CTRL, natTable);
+		SWTUtils.pressKey(SWT.ARROW_UP, SWT.MOD1, natTable);
 		assertSelectCellsCount(1);
 		int lastRow = 0;
 		assertPositionEquals(4, lastRow, selectionLayer.getSelectedCellPositions()[0]);

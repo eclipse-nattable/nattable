@@ -27,7 +27,7 @@ public class RowOnlySelectionBindings extends DefaultSelectionBindings {
 		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
 		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), action);
 		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.CTRL), action);
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.CONTROL), action);
+		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), action);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class RowOnlySelectionBindings extends DefaultSelectionBindings {
 		IDragMode dragMode = new RowSelectionDragMode();
 		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.NONE), dragMode);
 		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), dragMode);
-		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.CONTROL), dragMode);
-		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.CONTROL), dragMode);
+		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.MOD1), dragMode);
+		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), dragMode);
 	}
 }

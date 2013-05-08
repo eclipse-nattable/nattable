@@ -32,7 +32,7 @@ public class CellSelectionDragMode implements IDragMode {
 		natTable.forceFocus();
 
 		shiftMask = ((event.stateMask & SWT.SHIFT) == SWT.SHIFT);
-		controlMask = ((event.stateMask & SWT.CONTROL) == SWT.CONTROL);
+		controlMask = ((event.stateMask & SWT.MOD1) == SWT.MOD1);
 
 		fireSelectionCommand(natTable, natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y), shiftMask, controlMask);
 	}

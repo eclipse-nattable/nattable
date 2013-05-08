@@ -134,7 +134,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 		listViewer.getControl().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				boolean controlMask = (e.stateMask & SWT.CONTROL) == SWT.CONTROL;
+				boolean controlMask = (e.stateMask & SWT.MOD1) == SWT.MOD1;
 				if (controlMask && e.keyCode == SWT.ARROW_UP) {
 					moveSelectedUp();
 					e.doit = false;

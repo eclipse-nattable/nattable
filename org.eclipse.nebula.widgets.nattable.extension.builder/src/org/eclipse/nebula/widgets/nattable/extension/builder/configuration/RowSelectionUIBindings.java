@@ -27,16 +27,16 @@ public class RowSelectionUIBindings extends RowOnlySelectionBindings {
 	protected void configureMoveDownBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_DOWN), action);
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_DOWN), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.ARROW_DOWN), new MoveToLastRowAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.ARROW_DOWN), new MoveToLastRowAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_DOWN), new MoveToLastRowAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_DOWN), new MoveToLastRowAction());
 	}
 
 	@Override
 	protected void configureMoveUpBindings(UiBindingRegistry uiBindingRegistry,	IKeyAction action) {
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_UP), action);
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_UP), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.ARROW_UP), new MoveToFirstRowAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.ARROW_UP), new MoveToFirstRowAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_UP), new MoveToFirstRowAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_UP), new MoveToFirstRowAction());
 	}
 
 	@Override
@@ -44,8 +44,8 @@ public class RowSelectionUIBindings extends RowOnlySelectionBindings {
 		IDragMode dragMode = new SingleRowSelectionDragMode();
 		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.NONE), dragMode);
 		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), dragMode);
-		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.CONTROL), dragMode);
-		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.CONTROL), dragMode);
+		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.MOD1), dragMode);
+		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), dragMode);
 	}
 
 }
