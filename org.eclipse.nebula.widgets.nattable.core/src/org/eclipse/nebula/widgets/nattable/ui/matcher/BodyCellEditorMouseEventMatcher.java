@@ -37,13 +37,18 @@ public class BodyCellEditorMouseEventMatcher implements IMouseEventMatcher {
 		this.button = button;
 	}
 	
+	@Override
 	public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
 		if (regionLabels != null && regionLabels.hasLabel(GridRegion.BODY) && event.button == button) {
 			ILayerCell cell = natTable.getCellByPosition(natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
 			
-			ICellEditor cellEditor = natTable.getConfigRegistry().getConfigAttribute(EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, cell.getConfigLabels().getLabels());
-			if (cellEditorClass.isInstance(cellEditor)) {
-				return true;
+			//Bug 407598: only perform a check if the click in the body region was performed on a cell
+			//cell == null can happen if the viewport is quite large and contains not enough cells to fill it.
+			if (cell != null) {
+				ICellEditor cellEditor = natTable.getConfigRegistry().getConfigAttribute(EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, cell.getConfigLabels().getLabels());
+				if (cellEditorClass.isInstance(cellEditor)) {
+					return true;
+				}
 			}
 		}
 		return false;
