@@ -23,8 +23,8 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -365,13 +365,13 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
 		});
 
-		combo.addSelectionListener(new SelectionAdapter() {
+		combo.addMouseListener(new MouseAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void mouseUp(MouseEvent e) {
 				commit(MoveDirectionEnum.NONE, (!multiselect && editMode == EditModeEnum.INLINE));
 			}
 		});
-
+		
 		if (editMode == EditModeEnum.INLINE) {
 			combo.addShellListener(new ShellAdapter() {
 				@Override

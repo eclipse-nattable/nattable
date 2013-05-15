@@ -429,7 +429,7 @@ public class NatCombo extends Composite {
 					}
 				}
 
-				updateTextControl(!multiselect);
+				updateTextControl(false);
 			}
 		});
 		
