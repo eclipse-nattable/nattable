@@ -440,6 +440,10 @@ public class NatCombo extends Composite {
 						|| (event.keyCode == SWT.KEYPAD_CR)) {
 					updateTextControl(true);
 				}
+				else if (event.keyCode == SWT.F2 && freeEdit) {
+					text.forceFocus();
+					hideDropdownControl();
+				}
 			}
 		});
 		
