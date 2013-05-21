@@ -25,6 +25,7 @@ public class SWTUtils {
 	public static void leftClickOnCombo(int x, int y, int stateMask, Control control) {
 		Event leftClickEvent = getLeftClickEvent(x, y, stateMask, control);
 		control.notifyListeners(SWT.MouseDown, leftClickEvent);
+		control.notifyListeners(SWT.MouseUp, leftClickEvent);
 	}
 
 	public static void selectInCombo(int x, int y, int stateMask, Control control) {

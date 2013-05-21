@@ -372,7 +372,7 @@ public class EditIntegrationTest {
 
 		// Click - expand select value 'Automatic'
 		combo.select(1);
-		SWTUtils.selectInCombo(startX + 10, startY + 35, SWT.NONE, combo);
+		SWTUtils.leftClickOnCombo(startX + 10, startY + 35, SWT.NONE, combo);
 
 		assertTrue(natTable.getDataValueByPosition(columnPosition, rowPosition) instanceof PricingTypeBean);
 		assertEquals("AT", natTable.getDataValueByPosition(columnPosition, rowPosition).toString());
