@@ -38,9 +38,6 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 		super(layer);
 		this.beforeFromColumnPositionRanges = PositionUtil.getRanges(beforeFromColumnPositions);
 		this.reorderToLeftEdge = reorderToLeftEdge;
-		if (!reorderToLeftEdge) {
-			beforeToColumnPosition--;
-		}
 		this.beforeToColumnPosition = beforeToColumnPosition;
 
 		List<Integer> allColumnPositions = new ArrayList<Integer>(beforeFromColumnPositions);
