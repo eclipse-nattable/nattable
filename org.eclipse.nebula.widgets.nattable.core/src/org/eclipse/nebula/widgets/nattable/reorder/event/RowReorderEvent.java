@@ -58,9 +58,6 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
 		super(layer);
 		this.beforeFromRowPositionRanges = PositionUtil.getRanges(beforeFromRowPositions);
 		this.reorderToTopEdge = reorderToTopEdge;
-		if (!reorderToTopEdge) {
-			beforeToRowPosition--;
-		}
 		this.beforeToRowPosition = beforeToRowPosition;
 
 		List<Integer> allRowPositions = new ArrayList<Integer>(beforeFromRowPositions);
