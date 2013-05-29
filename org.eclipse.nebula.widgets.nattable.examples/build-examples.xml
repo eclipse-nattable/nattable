@@ -22,19 +22,18 @@
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.builder/bin"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.dataset/bin"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/bin"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/ca.dell.glazedlists_1.9.0.v201303080712.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.poi_3.9.0.v201303080712.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.lang_2.4.0.v20081016-1030.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.logging_1.0.4.v200904062259.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.commands_3.5.0.I20090525-2000.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.runtime_3.5.0.v20090525.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.common_3.5.1.R35x_v20090807-1100.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.registry_3.4.100.v20090520-1800.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.200.v20090429-1800/runtime_registry_compatibility.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.jface_3.5.1.M20090826-0800.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
-            <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.junit4_4.5.0.v20090824/junit.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/ca.odell.glazedlists_1.9.0.v201303080712.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.poi_3.9.0.v201303080712.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.lang_2.4.0.v20081016-1030.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.logging_1.0.4.v200904062259.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.commands_3.5.0.I20090525-2000.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.runtime_3.5.0.v20090525.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.common_3.5.1.R35x_v20090807-1100.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.registry_3.4.100.v20090520-1800.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.jface_3.5.1.M20090826-0800.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+            <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.junit4_4.5.0.v20090824/junit.jar"/>
         	<!--
             <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.swt_3.5.1.v3555a.jar"/>
             <zipfileset excludes="META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA" src="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.swt.win32.win32.x86_3.5.1.v3555a.jar"/>
