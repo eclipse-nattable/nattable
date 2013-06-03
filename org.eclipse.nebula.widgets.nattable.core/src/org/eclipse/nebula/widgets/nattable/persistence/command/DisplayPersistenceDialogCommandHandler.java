@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.persistence.command;
 
 import java.util.ArrayList;

@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth - initial API and implementation and/or initial documentation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
 /**
