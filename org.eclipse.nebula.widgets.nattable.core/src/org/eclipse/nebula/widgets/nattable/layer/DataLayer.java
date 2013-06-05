@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+
 package org.eclipse.nebula.widgets.nattable.layer;
 
 import java.util.Collection;
@@ -22,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ResizeStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommandHandler;
@@ -55,7 +57,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	public DataLayer(IDataProvider dataProvider, int defaultColumnWidth, int defaultRowHeight) {
 		this(defaultColumnWidth, defaultRowHeight);
-		this.dataProvider = dataProvider;
+		
+		setDataProvider(dataProvider);
 	}
 
 	protected DataLayer() {
@@ -104,7 +107,15 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	}
 
 	protected void setDataProvider(IDataProvider dataProvider) {
+		if (this.dataProvider instanceof IPersistable) {
+			unregisterPersistable((IPersistable) this.dataProvider);
+		}
+		
 		this.dataProvider = dataProvider;
+		
+		if (dataProvider instanceof IPersistable) {
+			registerPersistable((IPersistable) dataProvider);
+		}
 	}
 
 	// Horizontal features

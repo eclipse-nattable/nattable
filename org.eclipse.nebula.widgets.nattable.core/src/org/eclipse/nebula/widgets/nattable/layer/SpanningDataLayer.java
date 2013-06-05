@@ -8,32 +8,25 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+
 package org.eclipse.nebula.widgets.nattable.layer;
+
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.data.ISpanningDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
-import org.eclipse.swt.graphics.Rectangle;
 
 
 public class SpanningDataLayer extends DataLayer {
 	
 	public SpanningDataLayer(ISpanningDataProvider dataProvider) {
 		super(dataProvider);
-		
-		if (dataProvider instanceof IPersistable) {
-			registerPersistable((IPersistable)dataProvider);
-		}
 	}
 	
 	public SpanningDataLayer(ISpanningDataProvider dataProvider, int defaultColumnWidth, int defaultRowHeight) {
 		super(dataProvider, defaultColumnWidth, defaultRowHeight);
-		
-		if (dataProvider instanceof IPersistable) {
-			registerPersistable((IPersistable)dataProvider);
-		}
 	}
 	
 	protected SpanningDataLayer() {
