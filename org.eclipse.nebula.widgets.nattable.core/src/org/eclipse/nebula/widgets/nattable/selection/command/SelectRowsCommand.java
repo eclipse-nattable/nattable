@@ -46,13 +46,15 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 
 	@Override
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		if (super.convertToTargetLayer(targetLayer)) {
-			ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(columnPositionCoordinate, targetLayer);
-			if (targetColumnPositionCoordinate != null && targetColumnPositionCoordinate.getColumnPosition() >= 0) {
-				this.columnPositionCoordinate = targetColumnPositionCoordinate;
-				this.rowPositionCoordinateToMoveIntoViewport = LayerCommandUtil.convertRowPositionToTargetContext(rowPositionCoordinateToMoveIntoViewport, targetLayer);
-				return true;
-			}
+		ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(
+				columnPositionCoordinate, targetLayer );
+		
+		if (targetColumnPositionCoordinate != null && targetColumnPositionCoordinate.getColumnPosition() >= 0
+				&& super.convertToTargetLayer(targetLayer)) {
+			this.columnPositionCoordinate = targetColumnPositionCoordinate;
+			this.rowPositionCoordinateToMoveIntoViewport = LayerCommandUtil.convertRowPositionToTargetContext(
+					rowPositionCoordinateToMoveIntoViewport, targetLayer );
+			return true;
 		}
 		return false;
 	}
