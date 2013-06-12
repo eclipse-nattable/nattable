@@ -33,60 +33,62 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 	}
 
 	public void handleLayerEvent(IStructuralChangeEvent event) {
+		IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
+		
 		if (event.isHorizontalStructureChanged()) {
 			viewportLayer.invalidateHorizontalStructure();
-		}
-		if (event.isVerticalStructureChanged()) {
-			viewportLayer.invalidateVerticalStructure();
-		}
-		
-		Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
-		IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
-		if (columnDiffs != null) {
-			int columnOffset = 0;
 			
+			int columnOffset = 0;
 			int minimumOriginColumnPosition = viewportLayer.getMinimumOriginColumnPosition();
-			if (minimumOriginColumnPosition < 0) minimumOriginColumnPosition = scrollableLayer.getColumnCount();
-			for (StructuralDiff columnDiff : columnDiffs) {
-				switch (columnDiff.getDiffType()) {
-				case ADD:
-					Range afterPositionRange = columnDiff.getAfterPositionRange();
-					if (afterPositionRange.start < minimumOriginColumnPosition) {
-						columnOffset += afterPositionRange.size();
+			
+			Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
+			if (columnDiffs != null) {
+				if (minimumOriginColumnPosition < 0) minimumOriginColumnPosition = scrollableLayer.getColumnCount();
+				for (StructuralDiff columnDiff : columnDiffs) {
+					switch (columnDiff.getDiffType()) {
+					case ADD:
+						Range afterPositionRange = columnDiff.getAfterPositionRange();
+						if (afterPositionRange.start < minimumOriginColumnPosition) {
+							columnOffset += afterPositionRange.size();
+						}
+						break;
+					case DELETE:
+						Range beforePositionRange = columnDiff.getBeforePositionRange();
+						if (beforePositionRange.start < minimumOriginColumnPosition) {
+							columnOffset -= Math.min(beforePositionRange.end, minimumOriginColumnPosition + 1) - beforePositionRange.start;
+						}
+						break;
 					}
-					break;
-				case DELETE:
-					Range beforePositionRange = columnDiff.getBeforePositionRange();
-					if (beforePositionRange.start < minimumOriginColumnPosition) {
-						columnOffset -= Math.min(beforePositionRange.end, minimumOriginColumnPosition + 1) - beforePositionRange.start;
-					}
-					break;
 				}
 			}
 			
 			viewportLayer.setMinimumOriginX(scrollableLayer.getStartXOfColumnPosition(minimumOriginColumnPosition + columnOffset));
 		}
 		
-		Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
-		if (rowDiffs != null) {
-			int rowOffset = 0;
+		if (event.isVerticalStructureChanged()) {
+			viewportLayer.invalidateVerticalStructure();
 			
+			int rowOffset = 0;
 			int minimumOriginRowPosition = viewportLayer.getMinimumOriginRowPosition();
-			if (minimumOriginRowPosition < 0) minimumOriginRowPosition = scrollableLayer.getColumnCount();
-			for (StructuralDiff rowDiff : rowDiffs) {
-				switch (rowDiff.getDiffType()) {
-				case ADD:
-					Range afterPositionRange = rowDiff.getAfterPositionRange();
-					if (afterPositionRange.start < minimumOriginRowPosition) {
-						rowOffset += afterPositionRange.size();
+			
+			Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
+			if (rowDiffs != null) {
+				if (minimumOriginRowPosition < 0) minimumOriginRowPosition = scrollableLayer.getColumnCount();
+				for (StructuralDiff rowDiff : rowDiffs) {
+					switch (rowDiff.getDiffType()) {
+					case ADD:
+						Range afterPositionRange = rowDiff.getAfterPositionRange();
+						if (afterPositionRange.start < minimumOriginRowPosition) {
+							rowOffset += afterPositionRange.size();
+						}
+						break;
+					case DELETE:
+						Range beforePositionRange = rowDiff.getBeforePositionRange();
+						if (beforePositionRange.start < minimumOriginRowPosition) {
+							rowOffset -= Math.min(beforePositionRange.end, minimumOriginRowPosition + 1) - beforePositionRange.start;
+						}
+						break;
 					}
-					break;
-				case DELETE:
-					Range beforePositionRange = rowDiff.getBeforePositionRange();
-					if (beforePositionRange.start < minimumOriginRowPosition) {
-						rowOffset -= Math.min(beforePositionRange.end, minimumOriginRowPosition + 1) - beforePositionRange.start;
-					}
-					break;
 				}
 			}
 			
