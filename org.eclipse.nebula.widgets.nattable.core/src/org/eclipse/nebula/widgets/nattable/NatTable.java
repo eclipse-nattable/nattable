@@ -776,7 +776,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	@Override
 	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		throw new UnsupportedOperationException("Cannot set an area provider."); //$NON-NLS-1$
+		underlyingLayer.setClientAreaProvider(clientAreaProvider);
 	}
 	
 	
