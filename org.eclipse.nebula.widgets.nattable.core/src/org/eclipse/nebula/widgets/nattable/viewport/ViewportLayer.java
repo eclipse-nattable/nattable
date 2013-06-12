@@ -561,7 +561,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 		int checkedOriginY = boundsCheckOriginY(origin.getY());
 		if (checkedOriginY != origin.getY()) {
-			origin = new PixelCoordinate(origin.getY(), checkedOriginY);
+			origin = new PixelCoordinate(origin.getX(), checkedOriginY);
 		}
 	}
 
