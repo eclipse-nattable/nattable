@@ -63,6 +63,14 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
 	protected final ControlDecorationProvider decorationProvider;
 	
 	/**
+	 * Flag to know whether currently a error styling is applied or not.
+	 * This is necessary because first the error styling will be removed and
+	 * afterwards it will be applied again if the value is still invalid.
+	 * Without this flag the wrong original values would be stored.
+	 */
+	private boolean errorStylingActive = false;
+	
+	/**
 	 * Create a {@link RenderErrorHandling} with no underlying error handler
 	 * and no decoration provider. 
 	 */
@@ -103,21 +111,26 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
 	@Override
 	public void removeError(ICellEditor cellEditor) {
 		super.removeError(cellEditor);
-		Control editorControl = cellEditor.getEditorControl();
-
-		//reset the rendering information to normal
-		editorControl.setBackground(originalBgColor);
-		editorControl.setForeground(originalFgColor);
-		editorControl.setFont(originalFont);
 		
-		//ensure to reset the stored original values so possible
-		//dynamic rendering aspects are also covered
-		originalBgColor = null;
-		originalFgColor = null;
-		originalFont = null;
-		
-		if (decorationProvider != null) {
-			decorationProvider.hideDecoration();
+		if (this.errorStylingActive) {
+			Control editorControl = cellEditor.getEditorControl();
+			
+			//reset the rendering information to normal
+			editorControl.setBackground(originalBgColor);
+			editorControl.setForeground(originalFgColor);
+			editorControl.setFont(originalFont);
+			
+			//ensure to reset the stored original values so possible
+			//dynamic rendering aspects are also covered
+			originalBgColor = null;
+			originalFgColor = null;
+			originalFont = null;
+			
+			if (decorationProvider != null) {
+				decorationProvider.hideDecoration();
+			}
+			
+			this.errorStylingActive = false;
 		}
 	}
 	
@@ -129,20 +142,25 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
 	@Override
 	public void displayError(ICellEditor cellEditor, Exception e) {
 		super.displayError(cellEditor, e);
-		Control editorControl = cellEditor.getEditorControl();
 		
-		//store the current rendering information to be able to reset again
-		originalBgColor = editorControl.getBackground();
-		originalFgColor = editorControl.getForeground();
-		originalFont = editorControl.getFont();
-		
-		//set the rendering information out of the error style
-		editorControl.setBackground(this.errorStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-		editorControl.setForeground(this.errorStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-		editorControl.setFont(this.errorStyle.getAttributeValue(CellStyleAttributes.FONT));
-
-		if (decorationProvider != null) {
-			decorationProvider.showDecoration();
+		if (!this.errorStylingActive) {
+			Control editorControl = cellEditor.getEditorControl();
+			
+			//store the current rendering information to be able to reset again
+			originalBgColor = editorControl.getBackground();
+			originalFgColor = editorControl.getForeground();
+			originalFont = editorControl.getFont();
+			
+			//set the rendering information out of the error style
+			editorControl.setBackground(this.errorStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+			editorControl.setForeground(this.errorStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+			editorControl.setFont(this.errorStyle.getAttributeValue(CellStyleAttributes.FONT));
+			
+			if (decorationProvider != null) {
+				decorationProvider.showDecoration();
+			}
+			
+			this.errorStylingActive = true;
 		}
 	}
 
