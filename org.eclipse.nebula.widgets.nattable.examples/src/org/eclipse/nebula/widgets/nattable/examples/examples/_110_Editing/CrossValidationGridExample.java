@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._110_Editing;
 
 import java.util.ArrayList;

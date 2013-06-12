@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ScrollBar;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PixelCoordinate;
@@ -43,9 +42,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumn
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ScrollEvent;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ViewportEventHandler;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.ScrollBar;
+
 
 /**
  * Viewport - the visible area of NatTable
@@ -54,7 +51,10 @@ import org.eclipse.swt.widgets.ScrollBar;
  * {@link SelectionLayer}.
  */
 public class ViewportLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
-
+	
+	private static final int EDGE_HOVER_REGION_SIZE = 12;
+	
+	
 	private HorizontalScrollBarHandler hBarListener;
 	private VerticalScrollBarHandler vBarListener;
 	private final IUniqueIndexLayer scrollableLayer;
@@ -77,10 +77,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	
 	// Edge hover scrolling
 	
-	private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	private Point edgeHoverScrollOffset = new Point(0, 0);
-	private ScheduledFuture<?> edgeHoverScrollFuture;
-
+	private MoveViewportRunnable edgeHoverRunnable;
+	
+	
 	public ViewportLayer(IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
 		this.scrollableLayer = underlyingLayer;
@@ -102,7 +101,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			vBarListener.dispose();
 		}
 		
-		scheduler.shutdown();
+		cancelEdgeHoverScroll();
 	}
 	
 	// Minimum Origin
@@ -919,36 +918,40 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param y
 	 */
 	public void drag(int x, int y) {
-		edgeHoverScrollOffset.x = 0;
-		edgeHoverScrollOffset.y = 0;
-		
 		if (x < 0 && y < 0) {
 			cancelEdgeHoverScroll();
 			return;
 		}
 		
+		MoveViewportRunnable move = this.edgeHoverRunnable;
+		if (move == null) {
+			move = new MoveViewportRunnable();
+		}
+		
 		Rectangle clientArea = getClientAreaProvider().getClientArea();
-		
-		int minX = clientArea.x;
-		int maxX = clientArea.x + clientArea.width;
-		if (x >= minX && x < minX + 10) {
-			edgeHoverScrollOffset.x = -1;
-		} else if (x > maxX - 10 && x < maxX) {
-			edgeHoverScrollOffset.x = 1;
-		}
-		
-		int minY = clientArea.y;
-		int maxY = clientArea.y + clientArea.height;
-		if (y >= minY && y < minY + 10) {
-			edgeHoverScrollOffset.y = -1;
-		} else if (y > maxY - 10 && y < maxY) {
-			edgeHoverScrollOffset.y = 1;
-		}
-		
-		if (edgeHoverScrollOffset.x != 0 || edgeHoverScrollOffset.y != 0) {
-			if (edgeHoverScrollFuture == null || edgeHoverScrollFuture.isDone()) {
-				edgeHoverScrollFuture = scheduler.schedule(new MoveViewportRunnable(), 500, TimeUnit.MILLISECONDS);
+		{	int change = 0;
+			int minX = clientArea.x;
+			int maxX = clientArea.x + clientArea.width;
+			if (x >= minX && x < minX + EDGE_HOVER_REGION_SIZE) {
+				change = -1;
+			} else if (x >= maxX - EDGE_HOVER_REGION_SIZE && x < maxX) {
+				change = 1;
 			}
+			move.x = change;
+		}
+		{	int change = 0;
+			int minY = clientArea.y;
+			int maxY = clientArea.y + clientArea.height;
+			if (y >= minY && y < minY + EDGE_HOVER_REGION_SIZE) {
+				change = -1;
+			} else if (y >= maxY - EDGE_HOVER_REGION_SIZE && y < maxY) {
+				change = 1;
+			}
+			move.y = change;
+		}
+		
+		if (move.x != 0 || move.y != 0) {
+			move.schedule();
 		} else {
 			cancelEdgeHoverScroll();
 		}
@@ -958,13 +961,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * Cancels an edge hover scroll.
 	 */
 	private void cancelEdgeHoverScroll() {
-		edgeHoverScrollOffset.x = 0;
-		edgeHoverScrollOffset.y = 0;
-		
-		if (edgeHoverScrollFuture != null) {
-			edgeHoverScrollFuture.cancel(false);
-			edgeHoverScrollFuture = null;
-		}
+		edgeHoverRunnable = null;
 	}
 	
 	/**
@@ -972,14 +969,37 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	class MoveViewportRunnable implements Runnable {
 		
+		
+		private int x;
+		private int y;
+		
+		private final Display display = Display.getCurrent();
+		
+		
+		public MoveViewportRunnable() {
+		}
+		
+		public void schedule() {
+			if (ViewportLayer.this.edgeHoverRunnable != this) {
+				ViewportLayer.this.edgeHoverRunnable = this;
+				display.timerExec(500, this);
+			}
+		}
+		
 		@Override
 		public void run() {
-			if (edgeHoverScrollOffset.x != 0 || edgeHoverScrollOffset.y != 0) {
-				setOriginX(getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + edgeHoverScrollOffset.x));
-				setOriginY(getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + edgeHoverScrollOffset.y));
-				
-				edgeHoverScrollFuture = scheduler.schedule(new MoveViewportRunnable(), 100, TimeUnit.MILLISECONDS);
+			if (ViewportLayer.this.edgeHoverRunnable != this) {
+				return;
 			}
+			
+			if (x != 0) {
+				setOriginX(getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition() + x));
+			}
+			if (y != 0) {
+				setOriginY(getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition() + y));
+			}
+			
+			display.timerExec(100, this);
 		}
 		
 	}
