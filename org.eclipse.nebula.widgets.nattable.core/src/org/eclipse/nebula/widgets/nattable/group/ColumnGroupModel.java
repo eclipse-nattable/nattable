@@ -53,6 +53,7 @@ public class ColumnGroupModel implements IPersistable {
 		}
 	}
 
+	@Override
 	public void saveState(String prefix, Properties properties) {
 		StringBuilder strBuilder = new StringBuilder();
 
@@ -83,12 +84,21 @@ public class ColumnGroupModel implements IPersistable {
 				strBuilder.append(',');
 			}
 
+			if (!columnGroup.staticColumnIndexes.isEmpty()) {
+				strBuilder.append(':');
+				for (Integer member : columnGroup.staticColumnIndexes) {
+					strBuilder.append(member);
+					strBuilder.append(',');
+				}
+			}
+			
 			strBuilder.append('|');
 		}
 
 		properties.setProperty(prefix + PERSISTENCE_KEY_COLUMN_GROUPS, strBuilder.toString());
 	}
 
+	@Override
 	public void loadState(String prefix, Properties properties) {
 		String property = properties.getProperty(prefix + PERSISTENCE_KEY_COLUMN_GROUPS);
 		if (property != null) {
@@ -143,6 +153,15 @@ public class ColumnGroupModel implements IPersistable {
 				while (indexTokenizer.hasMoreTokens()) {
 					Integer index = Integer.valueOf(indexTokenizer.nextToken());
 					columnGroup.members.add(index);
+				}
+				
+				if (columnGroupProperties.length == 5) {
+					String statics = columnGroupProperties[4];
+					StringTokenizer staticTokenizer = new StringTokenizer(statics, ","); //$NON-NLS-1$
+					while (staticTokenizer.hasMoreTokens()) {
+						Integer index = Integer.valueOf(staticTokenizer.nextToken());
+						columnGroup.staticColumnIndexes.add(index);
+					}
 				}
 			}
 		}
