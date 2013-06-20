@@ -10,20 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.GroupByColumnIndexCommand;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.UngroupByColumnIndexCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
-import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
 public class GroupByHeaderLayer extends DimensionallyDependentLayer {
@@ -31,14 +27,18 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 	public static final String GROUP_BY_REGION = "GROUP_BY_REGION"; //$NON-NLS-1$
 	
 	private static DataLayer baseLayer = new DataLayer(new IDataProvider() {
+		@Override
 		public Object getDataValue(int columnIndex, int rowIndex) {
 			return null;
 		}
+		@Override
 		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
 		}
+		@Override
 		public int getRowCount() {
 			return 1;
 		}
+		@Override
 		public int getColumnCount() {
 			return 1;
 		}
@@ -67,15 +67,7 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 	
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		
-		List<Integer> rowPositions = new ArrayList<Integer>();
-		rowPositions.add(0);
-		
-		if (visible) {
-			fireLayerEvent(new ShowRowPositionsEvent(this, rowPositions));
-		} else {
-			fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
-		}
+		fireLayerEvent(new RowStructuralRefreshEvent(baseLayer));
 	}
 	
 	public boolean isVisible() {
@@ -86,9 +78,16 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 	public int getHeight() {
 		if (visible) {
 			return super.getHeight();
-		} else {
-			return 0;
 		}
+		return 0;
+	}
+	
+	@Override
+	public int getRowHeightByPosition(int rowPosition) {
+		if (visible) {
+			return super.getRowHeightByPosition(rowPosition);
+		}
+		return 0;
 	}
 	
 	@Override
@@ -98,6 +97,7 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 	
 	class GroupByColumnCommandHandler extends AbstractLayerCommandHandler<GroupByColumnIndexCommand> {
 
+		@Override
 		public Class<GroupByColumnIndexCommand> getCommandClass() {
 			return GroupByColumnIndexCommand.class;
 		}
@@ -115,6 +115,7 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 
 	class UngroupByColumnCommandHandler extends AbstractLayerCommandHandler<UngroupByColumnIndexCommand> {
 
+		@Override
 		public Class<UngroupByColumnIndexCommand> getCommandClass() {
 			return UngroupByColumnIndexCommand.class;
 		}
