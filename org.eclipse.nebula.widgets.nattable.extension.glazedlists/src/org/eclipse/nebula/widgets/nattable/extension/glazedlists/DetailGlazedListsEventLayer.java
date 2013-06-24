@@ -113,49 +113,51 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 	 */
 	@Override
 	public void listChanged(final ListEvent<T> event) {
-		scheduler.submit(new Runnable() {
+		if (lastFiredEvent == null || !lastFiredEvent.equals(event)) {
+			int deletedCount = 0;
 			
-			@Override
-			public void run() {
-				if (lastFiredEvent == null || !lastFiredEvent.equals(event)) {
-					lastFiredEvent = event;
-					
-					int deletedCount = 0;
-					
-					List<Range> deleteRanges = new ArrayList<Range>();
-					List<Range> insertRanges = new ArrayList<Range>();
-					while (event.next()) {
-						int eventType = event.getType();
-						if (eventType == ListEvent.DELETE) {
-							int index = event.getIndex() + deletedCount;
-							deleteRanges.add(new Range(index, index + 1));
-							deletedCount++;
-						}
-						else if (eventType == ListEvent.INSERT) {
-							insertRanges.add(new Range(event.getIndex(), event.getIndex() + 1));
-						}
-					}
-					
-					if (!deleteRanges.isEmpty()) {
-						fireEventFromSWTDisplayThread(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
-					}
-					
-					if (!insertRanges.isEmpty()) {
-						fireEventFromSWTDisplayThread(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
-					}
-					
-					//start cleanup task that will set the last fired event to null after 100 milliseconds
-					if (cleanupFuture == null || cleanupFuture.isDone() || cleanupFuture.isCancelled()) {
-						cleanupFuture = scheduler.schedule(new Runnable() {
-							@Override
-							public void run() {
-								DetailGlazedListsEventLayer.this.lastFiredEvent = null;
-							}
-						}, 100L);
-					}
+			final List<Range> deleteRanges = new ArrayList<Range>();
+			final List<Range> insertRanges = new ArrayList<Range>();
+			while (event.next()) {
+				int eventType = event.getType();
+				if (eventType == ListEvent.DELETE) {
+					int index = event.getIndex() + deletedCount;
+					deleteRanges.add(new Range(index, index + 1));
+					deletedCount++;
+				}
+				else if (eventType == ListEvent.INSERT) {
+					insertRanges.add(new Range(event.getIndex(), event.getIndex() + 1));
 				}
 			}
-		});
+			
+			if (!deleteRanges.isEmpty() || !insertRanges.isEmpty()) {
+				lastFiredEvent = event;
+				
+				scheduler.submit(new Runnable() {
+					
+					@Override
+					public void run() {
+						if (!deleteRanges.isEmpty()) {
+							fireEventFromSWTDisplayThread(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
+						}
+						
+						if (!insertRanges.isEmpty()) {
+							fireEventFromSWTDisplayThread(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
+						}
+						
+						//start cleanup task that will set the last fired event to null after 100 milliseconds
+						if (cleanupFuture == null || cleanupFuture.isDone() || cleanupFuture.isCancelled()) {
+							cleanupFuture = scheduler.schedule(new Runnable() {
+								@Override
+								public void run() {
+									DetailGlazedListsEventLayer.this.lastFiredEvent = null;
+								}
+							}, 100L);
+						}
+					}
+				});
+			}
+		}
 	}
 
 	@Override

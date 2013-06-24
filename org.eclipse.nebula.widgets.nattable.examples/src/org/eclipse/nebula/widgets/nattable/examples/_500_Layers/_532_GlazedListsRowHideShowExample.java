@@ -106,7 +106,7 @@ public class _532_GlazedListsRowHideShowExample extends AbstractNatExample {
 		
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		
-		//add a GlazedLists event layer that is responsible for updating the grid on list changes
+		//add a DetailGlazedListsEventLayer event layer that is responsible for updating the grid on list changes
 		DetailGlazedListsEventLayer<Person> glazedListsEventLayer = 
 				new DetailGlazedListsEventLayer<Person>(bodyDataLayer, filterList);
 
@@ -154,7 +154,7 @@ public class _532_GlazedListsRowHideShowExample extends AbstractNatExample {
 			@Override
 			protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
 				return super.createCornerMenu(natTable)
-							.withHideRowMenuItem()
+							.withShowAllRowsMenuItem()
 							.withStateManagerMenuItemProvider();
 			}
 		});
