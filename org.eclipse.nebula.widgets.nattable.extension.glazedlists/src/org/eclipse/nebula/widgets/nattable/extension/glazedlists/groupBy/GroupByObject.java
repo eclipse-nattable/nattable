@@ -66,7 +66,7 @@ public class GroupByObject implements Comparable<GroupByObject> {
 		
 		if (result == 0) {
 			//if the datatypes are not the same here, comparison is not possible
-			if (this.value.getClass().equals(o.value.getClass())) {
+			if (this.value == null || o.value == null || this.value.getClass().equals(o.value.getClass())) {
 				result = DefaultComparator.getInstance().compare(value, o.value);
 			}
 		}
