@@ -69,7 +69,6 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 /**
  * Simple example showing how to add the filter row to the layer
@@ -116,14 +115,12 @@ public class _562_FilterRowCustomTypesExample extends AbstractNatExample {
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
+		
 		//	Note: The column header layer is wrapped in a filter row composite.
 		//	This plugs in the filter row functionality
-		CompositeMatcherEditor<MyRowObject> autoFilterMatcherEditor = new CompositeMatcherEditor<MyRowObject>();
-		bodyLayerStack.getFilterList().setMatcherEditor(autoFilterMatcherEditor);
-		
 		FilterRowHeaderComposite<MyRowObject> filterRowHeaderLayer =
 			new FilterRowHeaderComposite<MyRowObject>(
-					new DefaultGlazedListsFilterStrategy<MyRowObject>(autoFilterMatcherEditor, columnPropertyAccessor, configRegistry),
+					new DefaultGlazedListsFilterStrategy<MyRowObject>(bodyLayerStack.getFilterList(), columnPropertyAccessor, configRegistry),
 					columnHeaderLayer, columnHeaderDataLayer.getDataProvider(), configRegistry
 			);
 		
