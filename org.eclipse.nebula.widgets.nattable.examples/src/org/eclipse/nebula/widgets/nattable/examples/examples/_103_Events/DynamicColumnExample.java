@@ -24,6 +24,8 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.GlazedListsGridLayer;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
+import org.eclipse.nebula.widgets.nattable.layer.event.ColumnInsertEvent;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.swt.SWT;
@@ -47,6 +49,7 @@ public class DynamicColumnExample extends AbstractNatExample {
 		StandaloneNatExampleRunner.run(600, 650, new DynamicColumnExample());
 	}
 
+	@Override
 	public Control createExampleControl(Composite parent) {
 		//start with 3 columns
 		columns.add("Column_0");
@@ -103,10 +106,13 @@ public class DynamicColumnExample extends AbstractNatExample {
 					value.put(newColumn, prefix + "_" + (columns.size()-1));
 				}
 				
-				natTable.refresh();
+				glazedListsGridLayer.getBodyDataLayer().fireLayerEvent(
+						new ColumnInsertEvent(glazedListsGridLayer.getBodyDataLayer(), columns.size()-1));
 			}
 		});
 
+		natTable.doCommand(new ColumnHideCommand(glazedListsGridLayer.getBodyLayer(), 1));
+		
 		return panel;
 	}
 
@@ -123,22 +129,27 @@ public class DynamicColumnExample extends AbstractNatExample {
 	
 	class MyColumnPropertyAccessor implements IColumnPropertyAccessor<Map<String, String>> {
 		
+		@Override
 		public Object getDataValue(Map<String, String> rowObject, int columnIndex) {
 			return rowObject.get(getColumnProperty(columnIndex));
 		}
 		
+		@Override
 		public void setDataValue(Map<String, String> rowObject, int columnIndex, Object newValue) {
 			rowObject.put(getColumnProperty(columnIndex), newValue.toString());
 		}
 		
+		@Override
 		public int getColumnCount() {
 			return columns.size();
 		}
 		
+		@Override
 		public String getColumnProperty(int columnIndex) {
 			return columns.get(columnIndex);
 		}
 		
+		@Override
 		public int getColumnIndex(String propertyName) {
 			return columns.indexOf(propertyName);
 		}
@@ -146,18 +157,22 @@ public class DynamicColumnExample extends AbstractNatExample {
 
 	class SimpleColumnHeaderDataProvider implements IDataProvider {
 
+		@Override
 		public Object getDataValue(int columnIndex, int rowIndex) {
 			return "Column " + (columnIndex + 1); //$NON-NLS-1$
 		}
 
+		@Override
 		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return columns.size();
 		}
 
+		@Override
 		public int getRowCount() {
 			return 1;
 		}

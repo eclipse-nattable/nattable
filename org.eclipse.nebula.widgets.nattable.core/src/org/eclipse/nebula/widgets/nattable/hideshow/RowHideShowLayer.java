@@ -55,7 +55,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 			IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
 			if (structuralChangeEvent.isVerticalStructureChanged()) {
 				Collection<StructuralDiff> rowDiffs = structuralChangeEvent.getRowDiffs();
-				if (rowDiffs != null && !rowDiffs.isEmpty()) {
+				if (rowDiffs != null && !rowDiffs.isEmpty() && !StructuralChangeEventHelper.isReorder(rowDiffs)) {
 					StructuralChangeEventHelper.handleRowDelete(rowDiffs, underlyingLayer, hiddenRowIndexes, false);
 					StructuralChangeEventHelper.handleRowInsert(rowDiffs, underlyingLayer, hiddenRowIndexes, false);
 				}

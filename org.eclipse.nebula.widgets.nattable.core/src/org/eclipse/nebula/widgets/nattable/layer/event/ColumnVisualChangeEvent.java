@@ -14,44 +14,77 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Rectangle;
 
+/**
+ * An event that indicates a visible change to one ore more columns in the layer.
+ */
 public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
+	/**
+	 * The ILayer to which the given column positions match
+	 */
 	private ILayer layer;
-	
+	/**
+	 * The column position ranges for the columns that have changed.
+	 * They are related to the set ILayer.
+	 */
 	private Collection<Range> columnPositionRanges;
 	
+	/**
+	 * Creates a new ColumnVisualChangeEvent based on the given information.
+	 * @param layer The ILayer to which the given column positions match.
+	 * @param columnPositionRanges The column position ranges for the columns that have changed.
+	 */
 	public ColumnVisualChangeEvent(ILayer layer, Range...columnPositionRanges) {
 		this(layer, Arrays.asList(columnPositionRanges));
 	}
 	
+	/**
+	 * Creates a new ColumnVisualChangeEvent based on the given information.
+	 * @param layer The ILayer to which the given column positions match.
+	 * @param columnPositionRanges The column position ranges for the columns that have changed.
+	 */
 	public ColumnVisualChangeEvent(ILayer layer, Collection<Range> columnPositionRanges) {
 		this.layer = layer;
 		this.columnPositionRanges = columnPositionRanges;
 	}
 	
-	// Copy constructor
+	/**
+	 * Creates a new ColumnVisualChangeEvent based on the given instance.
+	 * Mainly needed for cloning.
+	 * @param event The ColumnVisualChangeEvent out of which the new instance should be created.
+	 */
 	protected ColumnVisualChangeEvent(ColumnVisualChangeEvent event) {
 		this.layer = event.layer;
 		this.columnPositionRanges = event.columnPositionRanges;
 	}
 	
+	@Override
 	public ILayer getLayer() {
 		return layer;
 	}
 	
+	/**
+	 * @return The column position ranges for the columns that have changed.
+	 */
 	public Collection<Range> getColumnPositionRanges() {
 		return columnPositionRanges;
 	}
 	
+	/**
+	 * Sets the column position ranges for the columns that have changed. 
+	 * Only for internal use in cases where the constructor needs to calculate the column
+	 * position ranges within the child constructor.
+	 * @param columnPositionRanges The column position ranges for the columns that have changed.
+	 */
 	protected void setColumnPositionRanges(Collection<Range> columnPositionRanges) {
 		this.columnPositionRanges = columnPositionRanges;
 	}
 	
+	@Override
 	public boolean convertToLocal(ILayer localLayer) {
 		columnPositionRanges = localLayer.underlyingToLocalColumnPositions(layer, columnPositionRanges);
 		layer = localLayer;
@@ -59,6 +92,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 		return columnPositionRanges != null && columnPositionRanges.size() > 0;
 	}
 	
+	@Override
 	public Collection<Rectangle> getChangedPositionRectangles() {
 		Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
 		

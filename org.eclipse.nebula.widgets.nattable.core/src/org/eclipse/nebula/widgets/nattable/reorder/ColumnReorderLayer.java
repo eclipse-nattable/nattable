@@ -28,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommandHandler;
@@ -84,18 +85,9 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 					columnIndexOrder.clear();
 					populateIndexOrder();
 				} else {
-					for (StructuralDiff structuralDiff : structuralDiffs) {
-						switch (structuralDiff.getDiffType()) {
-						case ADD:
-							columnIndexOrder.clear();
-							populateIndexOrder();
-							break;
-						case DELETE:
-							columnIndexOrder.clear();
-							populateIndexOrder();
-							break;
-						}
-					}
+					// only react on ADD or DELETE and not on CHANGE
+					StructuralChangeEventHelper.handleColumnDelete(structuralDiffs, underlyingLayer, columnIndexOrder, true);
+					StructuralChangeEventHelper.handleColumnInsert(structuralDiffs, underlyingLayer, columnIndexOrder, true);
 				}
 				invalidateCache();
 			}

@@ -25,6 +25,10 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsComman
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
@@ -42,6 +46,22 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 		registerCommandHandler(new ColumnHideCommandHandler(this));
 		registerCommandHandler(new ShowAllColumnsCommandHandler(this));
 		registerCommandHandler(new MultiColumnShowCommandHandler(this));
+	}
+	
+	@Override
+	public void handleLayerEvent(ILayerEvent event) {
+		if (event instanceof IStructuralChangeEvent) {
+			IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
+			if (structuralChangeEvent.isHorizontalStructureChanged()) {
+				Collection<StructuralDiff> columnDiffs = structuralChangeEvent.getColumnDiffs();
+				
+				if (columnDiffs != null && !columnDiffs.isEmpty() && !StructuralChangeEventHelper.isReorder(columnDiffs)) {
+					StructuralChangeEventHelper.handleColumnDelete(columnDiffs, underlyingLayer, hiddenColumnIndexes, false);
+					StructuralChangeEventHelper.handleColumnInsert(columnDiffs, underlyingLayer, hiddenColumnIndexes, false);
+				}
+			}
+		}
+		super.handleLayerEvent(event);
 	}
 
 	// Persistence
