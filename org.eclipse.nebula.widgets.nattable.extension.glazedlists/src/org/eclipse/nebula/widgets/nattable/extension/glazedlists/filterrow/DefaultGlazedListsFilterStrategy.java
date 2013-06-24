@@ -35,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.FunctionList.Function;
 import ca.odell.glazedlists.TextFilterator;
@@ -51,7 +52,29 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	protected final IConfigRegistry configRegistry;
 	protected final CompositeMatcherEditor<T> matcherEditor;
 	
-
+	/**
+	 * Create a new DefaultGlazedListsFilterStrategy on top of the given FilterList.
+	 * <p>
+	 * Note: Using this constructor you don't need to create and set the CompositeMatcherEditor as MatcherEditor on 
+	 * 		 the FilterList yourself! The necessary steps to get it working is done within this constructor.
+	 * @param filterList The FilterList that is used within the GlazedLists based NatTable for filtering. 
+	 * @param columnAccessor The IColumnAccessor necessary to access the column data of the row objects in the FilterList.
+	 * @param configRegistry The IConfigRegistry necessary to retrieve filter specific configurations.
+	 */
+	public DefaultGlazedListsFilterStrategy(FilterList<T> filterList, IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
+		this(new CompositeMatcherEditor<T>(), columnAccessor, configRegistry);
+		filterList.setMatcherEditor(this.matcherEditor);
+	}
+	
+	/**
+	 * Create a new DefaultGlazedListsFilterStrategy based on the given CompositeMatcherEditor.
+	 * <p>
+	 * Note: Using this constructor you need to set the CompositeMatcherEditor as MatcherEditor on the FilterList
+	 * 		 yourself!
+	 * @param matcherEditor The CompositeMatcherEditor that should be used by the created DefaultGlazedListsFilterStrategy. 
+	 * @param columnAccessor The IColumnAccessor necessary to access the column data of the row objects in the FilterList.
+	 * @param configRegistry The IConfigRegistry necessary to retrieve filter specific configurations.
+	 */
 	public DefaultGlazedListsFilterStrategy(CompositeMatcherEditor<T> matcherEditor, IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
 		this.columnAccessor = columnAccessor;
 		this.configRegistry = configRegistry;
