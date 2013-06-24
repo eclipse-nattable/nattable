@@ -691,6 +691,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			
 			if (!hBarListener.scrollBar.getEnabled()) {
 				setOriginX(0);
+			} else {
+				setOriginX(origin.getX());
 			}
 		}
 	}
@@ -704,6 +706,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			
 			if (!vBarListener.scrollBar.getEnabled()) {
 				setOriginY(0);
+			} else {
+				setOriginY(origin.getY());
 			}
 		}
 	}
