@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedList
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TreeList;
@@ -87,6 +88,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		updateTree();
+		fireLayerEvent(new RowStructuralRefreshEvent(this));
 	}
 
 	/**
