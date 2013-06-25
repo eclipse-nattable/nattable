@@ -12,15 +12,14 @@ package org.eclipse.nebula.widgets.nattable.columnCategories.gui;
 
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNull;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.nebula.widgets.nattable.columnCategories.ColumnCategoriesModel;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
-import org.eclipse.nebula.widgets.nattable.util.ObjectCloner;
 
 /**
  * Provides data to the tree viewer representation of Column categories.
@@ -29,9 +28,10 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectCloner;
 public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 
 	private final ColumnCategoriesModel model;
+	private List<String> hiddenIndexes = new ArrayList<String>();
 
 	public AvailableColumnCategoriesProvider(ColumnCategoriesModel model) {
-		this.model = (ColumnCategoriesModel) ObjectCloner.deepCopy(model);
+		this.model = model;
 	}
 
 	/**
@@ -40,12 +40,12 @@ public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 	 */
 	public void hideEntries(List<ColumnEntry> entriesToHide) {
 		for (ColumnEntry hiddenColumnEntry : entriesToHide) {
-			model.removeColumnIndex(hiddenColumnEntry.getIndex());
+			hiddenIndexes.add(String.valueOf(hiddenColumnEntry.getIndex()));
 		}
 	}
 
 	public Object[] getChildren(Object parentElement) {
-		return castToNode(parentElement).getChildren().toArray();
+		return getFilteredChildren(castToNode(parentElement).getChildren()).toArray();
 	}
 
 	public Object getParent(Object element) {
@@ -53,13 +53,23 @@ public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 	}
 
 	public boolean hasChildren(Object element) {
-		return castToNode(element).getNumberOfChildren() > 0;
+		return getChildren(element).length > 0;
 	}
 
 	public Object[] getElements(Object inputElement) {
-		return isNull(model.getRootCategory()) 
-					? new Object[]{} 
-					: model.getRootCategory().getChildren().toArray();
+		return isNull(model.getRootCategory())
+				? new Object[]{}
+				: getFilteredChildren(model.getRootCategory().getChildren()).toArray();
+	}
+	
+	private List<Node> getFilteredChildren(List<Node> allChildren) {
+		List<Node> children = new ArrayList<Node>(allChildren);
+		for (Node child : allChildren) {
+			if (hiddenIndexes.contains(child.getData())) {
+				children.remove(child);
+			}
+		}
+		return children;
 	}
 
 	private Node castToNode(Object element) {
