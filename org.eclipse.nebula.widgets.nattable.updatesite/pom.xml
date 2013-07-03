@@ -16,6 +16,7 @@
 
 	<artifactId>org.eclipse.nebula.widgets.nattable.updatesite</artifactId>
 	<packaging>eclipse-repository</packaging>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<name>NatTable Update Site</name>
 
