@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NatTable extension for Apache POI
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.poi
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.nebula.widgets.nattable.extension.poi
 Import-Package: org.apache.commons.lang.builder,

@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"
       label="NatTable GlazedLists Extension Feature"
-      version="1.0.0.qualifier">
+      version="1.0.1.qualifier">
 
    <description url="http://nattable.org">
       NatTable GlazedLists Extension
