@@ -112,7 +112,7 @@ public class GridLayerTest {
 		ViewportLayer viewport = gridLayer.getBodyLayer().getViewportLayer();
 		viewport.setClientAreaProvider(new IClientAreaProvider() {
 			public Rectangle getClientArea() {
-				return new Rectangle(0,0,160,80);
+				return new Rectangle(0, 0, 160, 80);
 			}
 		});
 		
@@ -122,7 +122,7 @@ public class GridLayerTest {
 		Assert.assertEquals(160, viewport.getClientAreaWidth());
 		Assert.assertEquals(80, viewport.getClientAreaHeight());
 
-		Assert.assertEquals(200, viewport.getWidth());
+		Assert.assertEquals(160, viewport.getWidth());
 		Assert.assertEquals(80, viewport.getHeight());
 	}
 

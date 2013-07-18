@@ -29,7 +29,7 @@ public class CellSelectionTest {
 	}
 	
 	@Test
-	public void willSelectBodyCellAndShouldHaveColumnHeaderSelected() {
+	public void willSelectBodyCellAndShouldHaveBodyCellSelected() {
 		// Select body cell
 		// The cell position is a grid layer position
 		gridLayer.doCommand(new SelectCellCommand(gridLayer, 2, 2, false, false));
