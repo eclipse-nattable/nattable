@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.freeze.event;
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
@@ -92,7 +91,7 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 							|| (!deletionBehind && start == bottomRightPosition.rowPosition + 1) ) {
 						rightOffset += diff.getAfterPositionRange().size();
 					}
-					break;
+					continue;
 				case DELETE:
 					if (start < topLeftPosition.rowPosition) {
 						leftOffset -= Math.min(diff.getBeforePositionRange().end, topLeftPosition.rowPosition + 1) - start;
@@ -103,7 +102,9 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 					else {
 						deletionBehind = true;
 					}
-					break;
+					continue;
+				default:
+					continue;
 				}
 			}
 			

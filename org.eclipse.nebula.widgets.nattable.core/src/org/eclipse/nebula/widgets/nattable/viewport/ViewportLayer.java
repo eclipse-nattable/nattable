@@ -72,7 +72,7 @@ public class ViewportLayer extends TransformIndexLayer {
 	private MoveViewportRunnable edgeHoverRunnable;
 	
 	
-	public ViewportLayer(final IUniqueIndexLayer underlyingLayer) {
+	public ViewportLayer(/*@NonNull*/ final IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
 		this.scrollableLayer = underlyingLayer;
 		
@@ -255,7 +255,7 @@ public class ViewportLayer extends TransformIndexLayer {
 	 * @param selectionEvent
 	 */
 	private void processColumnSelection(final ColumnSelectionEvent selectionEvent) {
-		for (Range columnPositionRange : selectionEvent.getColumnPositionRanges()) {
+		for (final Range columnPositionRange : selectionEvent.getColumnPositionRanges()) {
 			get(HORIZONTAL).movePositionIntoViewport(columnPositionRange.end - 1);
 		}
 	}
@@ -277,11 +277,11 @@ public class ViewportLayer extends TransformIndexLayer {
 	 * then trigger an update of the viewport.
 	 * @param scrollSelectionCommand
 	 */
-	public void scrollVerticallyByAPage(ScrollSelectionCommand scrollSelectionCommand) {
+	public void scrollVerticallyByAPage(final ScrollSelectionCommand scrollSelectionCommand) {
 		getUnderlyingLayer().doCommand(scrollVerticallyByAPageCommand(scrollSelectionCommand));
 	}
 	
-	protected MoveSelectionCommand scrollVerticallyByAPageCommand(ScrollSelectionCommand scrollSelectionCommand) {
+	protected MoveSelectionCommand scrollVerticallyByAPageCommand(final ScrollSelectionCommand scrollSelectionCommand) {
 		return new MoveSelectionCommand(scrollSelectionCommand.getDirection(),
 										getRowCount(),
 										scrollSelectionCommand.isShiftMask(),
@@ -353,7 +353,7 @@ public class ViewportLayer extends TransformIndexLayer {
 	 * @deprecated use {@link IViewportDim#setOriginPixel(int)}
 	 */
 	@Deprecated
-	public void setOriginX(int newOriginX) {
+	public void setOriginX(final int newOriginX) {
 		get(HORIZONTAL).setOriginPixel(newOriginX);
 	}
 	
@@ -364,7 +364,7 @@ public class ViewportLayer extends TransformIndexLayer {
 	 * @deprecated use {@link IViewportDim#setOriginPixel(int)}
 	 */
 	@Deprecated
-	public void setOriginY(int newOriginY) {
+	public void setOriginY(final int newOriginY) {
 		get(VERTICAL).setOriginPixel(newOriginY);
 	}
 	
@@ -374,7 +374,7 @@ public class ViewportLayer extends TransformIndexLayer {
 	 * @param scrollableRowPosition
 	 * @param forceEntireCellIntoViewport
 	 */
-	public void moveCellPositionIntoViewport(int scrollableColumnPosition, int scrollableRowPosition) {
+	public void moveCellPositionIntoViewport(final int scrollableColumnPosition, final int scrollableRowPosition) {
 		moveColumnPositionIntoViewport(scrollableColumnPosition);
 		moveRowPositionIntoViewport(scrollableRowPosition);
 	}
@@ -386,7 +386,7 @@ public class ViewportLayer extends TransformIndexLayer {
 	 * @deprecated use {@link IViewportDim#movePositionIntoViewport(int)}
 	 */
 	@Deprecated
-	public void moveColumnPositionIntoViewport(int scrollableColumnPosition) {
+	public void moveColumnPositionIntoViewport(final int scrollableColumnPosition) {
 		get(HORIZONTAL).movePositionIntoViewport(scrollableColumnPosition);
 	}
 	
@@ -396,7 +396,7 @@ public class ViewportLayer extends TransformIndexLayer {
 	 * @deprecated use {@link IViewportDim#movePositionIntoViewport(int)}
 	 */
 	@Deprecated
-	public void moveRowPositionIntoViewport(int scrollableRowPosition) {
+	public void moveRowPositionIntoViewport(final int scrollableRowPosition) {
 		get(VERTICAL).movePositionIntoViewport(scrollableRowPosition);
 	}
 	

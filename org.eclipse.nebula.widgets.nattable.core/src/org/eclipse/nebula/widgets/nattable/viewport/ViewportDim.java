@@ -80,6 +80,7 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 	protected void invalidateStructure() {
 		this.cachedClientAreaSize = 0;
 		this.cachedOriginPosition = -1;
+		this.cachedOriginPositionPixelShift = 0;
 		this.cachedPositionCount = -1;
 		this.cachedSize = -1;
 	}
@@ -129,9 +130,10 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 		this.cachedPositionCount = 0;
 		final int positionBound = this.underlyingDim.getPositionCount();
 		int position = this.cachedOriginPosition;
-		this.cachedOriginPositionPixelShift = (position >= 0 && position < positionBound) ?
-				getOriginPixel() - this.underlyingDim.getPositionStart(position) : 0;
-		availableSize += this.cachedOriginPositionPixelShift;
+		if (position >= 0 && position < positionBound) {
+			this.cachedOriginPositionPixelShift = getOriginPixel() - this.underlyingDim.getPositionStart(position);
+			availableSize += this.cachedOriginPositionPixelShift;
+		}
 		while (position >= 0 && position < positionBound && availableSize > 0) {
 			final int positionSize = this.underlyingDim.getPositionSize(position);
 			availableSize -= positionSize;

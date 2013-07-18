@@ -44,7 +44,7 @@ public abstract class TransformLayer extends DimBasedLayer {
 	private ILayer underlyingLayer;
 	
 	
-	public TransformLayer(final ILayer underlyingLayer) {
+	public TransformLayer(/*@NonNull*/ final ILayer underlyingLayer) {
 		setUnderlyingLayer(underlyingLayer);
 	}
 	
@@ -155,10 +155,10 @@ public abstract class TransformLayer extends DimBasedLayer {
 		
 		if (cell != null) {
 			cell = new TranslatedLayerCell(cell, this,
-					underlyingToLocalColumnPosition(underlyingLayer, cell.getOriginColumnPosition()),
-					underlyingToLocalRowPosition(underlyingLayer, cell.getOriginRowPosition()),
-					underlyingToLocalColumnPosition(underlyingLayer, cell.getColumnPosition()),
-					underlyingToLocalRowPosition(underlyingLayer, cell.getRowPosition())
+					underlyingToLocalColumnPosition(this.underlyingLayer, cell.getOriginColumnPosition()),
+					underlyingToLocalRowPosition(this.underlyingLayer, cell.getOriginRowPosition()),
+					underlyingToLocalColumnPosition(this.underlyingLayer, cell.getColumnPosition()),
+					underlyingToLocalRowPosition(this.underlyingLayer, cell.getRowPosition())
 			);
 		}
 		
@@ -167,7 +167,7 @@ public abstract class TransformLayer extends DimBasedLayer {
 	
 	@Override
 	public String getDisplayModeByPosition(final int columnPosition, final int rowPosition) {
-		return underlyingLayer.getDisplayModeByPosition(
+		return this.underlyingLayer.getDisplayModeByPosition(
 				getDim(HORIZONTAL).localToUnderlyingPosition(columnPosition),
 				getDim(VERTICAL).localToUnderlyingPosition(rowPosition) );
 	}

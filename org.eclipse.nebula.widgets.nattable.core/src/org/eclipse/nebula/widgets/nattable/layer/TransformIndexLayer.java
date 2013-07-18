@@ -18,7 +18,7 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICA
 public class TransformIndexLayer extends TransformLayer implements IUniqueIndexLayer {
 	
 	
-	public TransformIndexLayer(final IUniqueIndexLayer underlyingLayer) {
+	public TransformIndexLayer(/*@NonNull*/ final IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
 	}
 	
@@ -28,7 +28,7 @@ public class TransformIndexLayer extends TransformLayer implements IUniqueIndexL
 	
 	
 	@Override
-	protected void setUnderlyingLayer(final ILayer underlyingLayer) {
+	protected void setUnderlyingLayer(/*@NonNull*/ final ILayer underlyingLayer) {
 		if (!(underlyingLayer instanceof IUniqueIndexLayer)) {
 			throw new IllegalArgumentException("underlyingLayer: !instanceof IUniqueIndexLayer"); //$NON-NLS-1$
 		}

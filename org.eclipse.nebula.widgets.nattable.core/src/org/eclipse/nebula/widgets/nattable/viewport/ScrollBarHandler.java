@@ -79,12 +79,12 @@ public class ScrollBarHandler implements Listener {
 		case SWT.MouseVerticalWheel:
 			if (event.count > 0) {
 				for (; event.count > 0; event.count--) {
-					dim.scrollBackwardByStep();
+					this.dim.scrollBackwardByStep();
 				}
 			}
 			else if (event.count < 0) {
 				for (; event.count < 0; event.count++) {
-					dim.scrollForwardByStep();
+					this.dim.scrollForwardByStep();
 				}
 			}
 			event.doit = false;
@@ -92,27 +92,27 @@ public class ScrollBarHandler implements Listener {
 		case SWT.Selection:
 			switch (event.detail) {
 			case SWT.HOME:
-				dim.scrollBackwardToBound();
+				this.dim.scrollBackwardToBound();
 				return;
 			case SWT.END:
-				dim.scrollForwardToBound();
+				this.dim.scrollForwardToBound();
 				return;
 			case SWT.PAGE_UP:
-				dim.scrollBackwardByPage();
+				this.dim.scrollBackwardByPage();
 				return;
 			case SWT.PAGE_DOWN:
-				dim.scrollForwardByPage();
+				this.dim.scrollForwardByPage();
 				return;
 			case SWT.ARROW_UP:
 			case SWT.ARROW_LEFT:
-				dim.scrollBackwardByStep();
+				this.dim.scrollBackwardByStep();
 				return;
 			case SWT.ARROW_DOWN:
 			case SWT.ARROW_RIGHT:
-				dim.scrollForwardByStep();
+				this.dim.scrollForwardByStep();
 				return;
 			default:
-				dim.setOriginPixel(dim.getMinimumOriginPixel()
+				this.dim.setOriginPixel(this.dim.getMinimumOriginPixel()
 						+ (int) (this.scrollBar.getSelection() / this.factor) );
 				return;
 			}
@@ -127,7 +127,7 @@ public class ScrollBarHandler implements Listener {
 		if (this.scrollBar.isDisposed()) {
 			return;
 		}
-		final long startPixel = dim.getOriginPixel() - dim.getMinimumOriginPixel();
+		final long startPixel = this.dim.getOriginPixel() - this.dim.getMinimumOriginPixel();
 		
 		this.scrollBar.setSelection((int) (this.factor * startPixel));
 	}
@@ -137,15 +137,15 @@ public class ScrollBarHandler implements Listener {
 			return;
 		}
 		
-		final int scrollablePixel = dim.getScrollable().getSize() - dim.getMinimumOriginPixel();
-		final int viewportWindowPixel = dim.getSize();
+		final int scrollablePixel = this.dim.getScrollable().getSize() - this.dim.getMinimumOriginPixel();
+		final int viewportWindowPixel = this.dim.getSize();
 		
 		final int max;
 		final int viewportWindowSpan;
 //		if (scrollablePixel <= 0x3fffffff) {
 			this.factor = 1.0;
-			viewportWindowSpan = (int) viewportWindowPixel;
-			max = (int) scrollablePixel;
+			viewportWindowSpan = viewportWindowPixel;
+			max = scrollablePixel;
 //		}
 //		else {
 //			this.factor = ((double) 0x3fffffff) / scrollablePixel;

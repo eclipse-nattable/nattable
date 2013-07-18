@@ -28,13 +28,15 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	
 	private static int computePreferredPositionCount(final ILayerDim dim) {
 		final int preferredSize = dim.getPreferredSize();
-		final int positionCount = dim.getPositionCount();
-		int count = 0;
+		int position = 0;
 		int size = 0;
-		for (int position = 0; position < positionCount && size < preferredSize; position++) {
-			size += dim.getPositionSize(position);
+		try {
+			while (size < preferredSize) {
+				size += dim.getPositionSize(position++);
+			}
 		}
-		return count;
+		catch (final Exception e) {}
+		return position;
 	}
 	
 	
