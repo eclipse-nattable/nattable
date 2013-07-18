@@ -10,19 +10,29 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
 import java.util.Collection;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import org.junit.Ignore;
+
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.layer.HorizontalLayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.VerticalLayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.TransformedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -31,12 +41,13 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Ignore;
 
 @Ignore
 public class TestLayer implements IUniqueIndexLayer {
-
+	
+	private final ILayerDim hDim;
+	private final ILayerDim vDim;
+	
 	private final int columnCount;
 	private final int preferredColumnCount;
 	private final int preferredWidth;
@@ -63,6 +74,9 @@ public class TestLayer implements IUniqueIndexLayer {
 	}
 
 	public TestLayer(int columnCount, int preferredColumnCount, int preferredWidth, int rowCount, int preferredRowCount, int preferredHeight, String columnsInfo, String rowsInfo, String cellsInfo) {
+		this.hDim = new HorizontalLayerDim(this);
+		this.vDim = new VerticalLayerDim(this);
+		
 		this.columnCount = columnCount;
 		this.preferredColumnCount = preferredColumnCount;
 		this.preferredWidth = preferredWidth;
@@ -88,7 +102,17 @@ public class TestLayer implements IUniqueIndexLayer {
 		parseRowsInfo(rowsInfo);
 		parseCellsInfo(cellsInfo);
 	}
-
+	
+	
+	@Override
+	public ILayerDim getDim(final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		
+		return (orientation == HORIZONTAL) ? this.hDim : this.vDim;
+	}
+	
 	private void parseColumnsInfo(String columnsInfo) {
 		int columnPosition = 0;
 		StringTokenizer columnInfoTokenizer = new StringTokenizer(columnsInfo, "|");

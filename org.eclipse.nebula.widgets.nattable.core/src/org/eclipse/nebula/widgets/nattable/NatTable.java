@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,41 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
-import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
-import org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain;
-import org.eclipse.nebula.widgets.nattable.conflation.IEventConflater;
-import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
-import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
-import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
-import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
-import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
-import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
-import org.eclipse.nebula.widgets.nattable.painter.layer.NatLayerPainter;
-import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
-import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
-import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.ui.mode.ConfigurableModeEventHandler;
-import org.eclipse.nebula.widgets.nattable.ui.mode.Mode;
-import org.eclipse.nebula.widgets.nattable.ui.mode.ModeSupport;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBarsCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.dnd.DragSource;
@@ -72,10 +39,54 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 
+import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain;
+import org.eclipse.nebula.widgets.nattable.conflation.IEventConflater;
+import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
+import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
+import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
+import org.eclipse.nebula.widgets.nattable.layer.HorizontalLayerDim;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.VerticalLayerDim;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
+import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
+import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
+import org.eclipse.nebula.widgets.nattable.painter.layer.NatLayerPainter;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.mode.ConfigurableModeEventHandler;
+import org.eclipse.nebula.widgets.nattable.ui.mode.Mode;
+import org.eclipse.nebula.widgets.nattable.ui.mode.ModeSupport;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
+import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBarsCommand;
+
 public class NatTable extends Canvas implements ILayer, PaintListener, IClientAreaProvider, ILayerListener, IPersistable {
 
 	public static final int DEFAULT_STYLE_OPTIONS = SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED  | SWT.V_SCROLL | SWT.H_SCROLL;
-
+	
+	
+	private final ILayerDim hDim;
+	private final ILayerDim vDim;
+	
 	private UiBindingRegistry uiBindingRegistry;
 
 	private ModeSupport modeSupport;
@@ -136,7 +147,10 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	public NatTable(final Composite parent, final int style, final ILayer layer, boolean autoconfigure) {
 		super(parent, style);
-
+		
+		this.hDim = new HorizontalLayerDim(this);
+		this.vDim = new VerticalLayerDim(this);
+		
 		// Disable scroll bars by default; if a Viewport is available, it will enable the scroll bars
 		disableScrollBar(getHorizontalBar());
 		disableScrollBar(getVerticalBar());
@@ -166,6 +180,17 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 		});
 	}
+	
+	
+	@Override
+	public ILayerDim getDim(final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		
+		return (orientation == HORIZONTAL) ? this.hDim : this.vDim;
+	}
+	
 	
 	protected IEventConflater getVisualChangeEventConflater() {
 		return new VisualChangeEventConflater(this);

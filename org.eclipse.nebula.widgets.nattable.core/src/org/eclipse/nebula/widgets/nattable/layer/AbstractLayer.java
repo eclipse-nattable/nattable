@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
@@ -47,7 +50,11 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
  * Base layer implementation with common methods for managing listeners and caching, etc.
  */
 public abstract class AbstractLayer implements ILayer {
-
+	
+	
+	private ILayerDim hDim;
+	private ILayerDim vDim;
+	
 	private String regionName;
 	protected ILayerPainter layerPainter;
 	private IClientAreaProvider clientAreaProvider = IClientAreaProvider.DEFAULT;
@@ -60,10 +67,59 @@ public abstract class AbstractLayer implements ILayer {
 	private final Set<ILayerListener> listeners = new LinkedHashSet<ILayerListener>();
 	private final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
 	
+	
+	protected AbstractLayer() {
+		updateDims();
+	}
+	
+	
 	// Dispose
-
+	
 	public void dispose() {
 	}
+	
+	
+	// Dims
+	
+	/**
+	 * Updates the layer dimensions.
+	 * 
+	 * Override this method to set custom layer dimension implementations.
+	 */
+	protected void updateDims() {
+		setDim(new HorizontalLayerDim(this));
+		setDim(new VerticalLayerDim(this));
+	}
+	
+	/**
+	 * Sets the layer dimension of this layer for the orientation of the given dimension.
+	 * 
+	 * This method use usually called in {@link #updateDims()}.
+	 * 
+	 * @param dim the layer dimension
+	 */
+	protected void setDim(/*@NonNull*/ final ILayerDim dim) {
+		if (dim == null) {
+			throw new NullPointerException("dim"); //$NON-NLS-1$
+		}
+		
+		if (dim.getOrientation() == HORIZONTAL) {
+			this.hDim = dim;
+		}
+		else {
+			this.vDim = dim;
+		}
+	}
+	
+	@Override
+	public ILayerDim getDim(final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		
+		return (orientation == HORIZONTAL) ? this.hDim : this.vDim;
+	}
+	
 	
 	// Regions
 	

@@ -10,13 +10,18 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
 import java.util.Collection;
 import java.util.Properties;
+
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.InvertedLayerCell;
@@ -26,15 +31,34 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class InvertedLayer implements IUniqueIndexLayer {
 	
+	
+	private final ILayerDim hDim;
+	private final ILayerDim vDim;
+	
 	private IUniqueIndexLayer underlyingLayer;
+	
 	
 	public InvertedLayer(IUniqueIndexLayer underlyingLayer) {
 		this.underlyingLayer = underlyingLayer;
+		
+		this.hDim = new HorizontalLayerDim(this);
+		this.vDim = new VerticalLayerDim(this);
 	}
+	
+	
+	@Override
+	public ILayerDim getDim(final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		
+		return (orientation == HORIZONTAL) ? this.hDim : this.vDim;
+	}
+	
 	
 	// ILayerListener
 	

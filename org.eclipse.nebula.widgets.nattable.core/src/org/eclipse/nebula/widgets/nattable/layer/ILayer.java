@@ -13,11 +13,14 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import java.util.Collection;
 import java.util.Properties;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -29,7 +32,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * <p>
@@ -71,7 +73,7 @@ import org.eclipse.swt.graphics.Rectangle;
  *   <tr><td>corner</td><td>column header</td></tr>
  *   <tr><td>row header</td><td>body</td></tr>
  * </table>
- *
+ * 
  * @see CompositeLayer
  */
 public interface ILayer extends ILayerListener, IPersistable {
@@ -79,7 +81,18 @@ public interface ILayer extends ILayerListener, IPersistable {
 	// Dispose
 	
 	public void dispose();
-
+	
+	
+	/**
+	 * Returns the layer dimension of this layer for the given orientation
+	 * 
+	 * @param orientation the orientation
+	 * 
+	 * @return the layer dimension
+	 */
+	ILayerDim getDim(/*@NonNull*/ Orientation orientation);
+	
+	
 	// Persistence
 
 	/**
@@ -174,6 +187,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 */
 	public int getColumnCount();
 
+	@Deprecated
 	public int getPreferredColumnCount();
 
 	/**
@@ -252,6 +266,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 */
 	public int getRowCount();
 
+	@Deprecated
 	public int getPreferredRowCount();
 
 	/**
