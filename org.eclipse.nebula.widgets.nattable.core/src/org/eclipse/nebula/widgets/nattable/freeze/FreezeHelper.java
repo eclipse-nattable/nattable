@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeColumnCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezePositionCommand;
@@ -18,8 +21,8 @@ import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeSelectionCommand
 import org.eclipse.nebula.widgets.nattable.freeze.command.UnFreezeGridCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.event.FreezeEvent;
 import org.eclipse.nebula.widgets.nattable.freeze.event.UnfreezeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+
 
 /**
  * Helper class to deal with freeze and unfreeze of a NatTable.
@@ -63,11 +66,10 @@ public class FreezeHelper {
 		if (topLeftPosition != null && bottomRightPosition != null) {
 			freezeLayer.setTopLeftPosition(topLeftPosition.columnPosition, topLeftPosition.rowPosition);
 			freezeLayer.setBottomRightPosition(bottomRightPosition.columnPosition, bottomRightPosition.rowPosition);
-	
-			IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
-			int originX = bottomRightPosition.columnPosition == scrollableLayer.getColumnCount() - 1 ? scrollableLayer.getWidth() : scrollableLayer.getStartXOfColumnPosition(bottomRightPosition.columnPosition + 1);
-			int originY = bottomRightPosition.rowPosition == scrollableLayer.getRowCount() - 1 ? scrollableLayer.getHeight() : scrollableLayer.getStartYOfRowPosition(bottomRightPosition.rowPosition + 1);
-			viewportLayer.setMinimumOrigin(originX, originY);
+			
+			viewportLayer.getDim(HORIZONTAL).setMinimumOriginPosition(bottomRightPosition.columnPosition + 1);
+			viewportLayer.getDim(VERTICAL).setMinimumOriginPosition(bottomRightPosition.rowPosition + 1);
+			
 			viewportLayer.fireLayerEvent(new FreezeEvent(viewportLayer));
 		}
 	}
@@ -103,6 +105,8 @@ public class FreezeHelper {
 	 */
 	public static void resetViewport(FreezeLayer freezeLayer, ViewportLayer viewportLayer) {
 		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
-		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(Math.max(0, topLeftPosition.columnPosition)), viewportLayer.getStartYOfRowPosition(Math.max(0,topLeftPosition.rowPosition)));
+		
+		viewportLayer.getDim(HORIZONTAL).reset(Math.max(0, topLeftPosition.columnPosition));
+		viewportLayer.getDim(VERTICAL).reset(Math.max(0,topLeftPosition.rowPosition));
 	}
 }

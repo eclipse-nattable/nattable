@@ -36,31 +36,38 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
 		PositionCoordinate bottomRightPosition = freezeLayer.getBottomRightPosition();
 		
+		// The handling of diffs have to be in sync with ViewportDim#handleStructuralChanges
 		Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
 		if (columnDiffs != null) {
 			int leftOffset = 0;
 			int rightOffset = 0;
+			boolean deletionBehind = false;
 			
-			for (StructuralDiff columnDiff : columnDiffs) {
-				switch (columnDiff.getDiffType()) {
+			for (StructuralDiff diff : columnDiffs) {
+				final int start = diff.getBeforePositionRange().start;
+				switch (diff.getDiffType()) {
 				case ADD:
-					Range afterPositionRange = columnDiff.getAfterPositionRange();
-					if (afterPositionRange.start < topLeftPosition.columnPosition) {
-						leftOffset += afterPositionRange.size();
+					if (start < topLeftPosition.columnPosition) {
+						leftOffset += diff.getAfterPositionRange().size();
 					}
-					if (afterPositionRange.start <= bottomRightPosition.columnPosition) {
-						rightOffset += afterPositionRange.size();
+					if (start <= bottomRightPosition.columnPosition
+							|| (!deletionBehind && start == bottomRightPosition.columnPosition + 1) ) {
+						rightOffset += diff.getAfterPositionRange().size();
 					}
-					break;
+					continue;
 				case DELETE:
-					Range beforePositionRange = columnDiff.getBeforePositionRange();
-					if (beforePositionRange.start < topLeftPosition.columnPosition) {
-						leftOffset -= Math.min(beforePositionRange.end, topLeftPosition.columnPosition + 1) - beforePositionRange.start;
+					if (start < topLeftPosition.columnPosition) {
+						leftOffset -= Math.min(diff.getBeforePositionRange().end, topLeftPosition.columnPosition + 1) - start;
 					}
-					if (beforePositionRange.start <= bottomRightPosition.columnPosition) {
-						rightOffset -= Math.min(beforePositionRange.end, bottomRightPosition.columnPosition + 1) - beforePositionRange.start;
+					if (start <= bottomRightPosition.columnPosition) {
+						rightOffset -= Math.min(diff.getBeforePositionRange().end, bottomRightPosition.columnPosition + 1) - start;
 					}
-					break;
+					else {
+						deletionBehind = true;
+					}
+					continue;
+				default:
+					continue;
 				}
 			}
 			
@@ -72,25 +79,29 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 		if (rowDiffs != null) {
 			int leftOffset = 0;
 			int rightOffset = 0;
+			boolean deletionBehind = false;
 			
-			for (StructuralDiff rowDiff : rowDiffs) {
-				switch (rowDiff.getDiffType()) {
+			for (StructuralDiff diff : rowDiffs) {
+				final int start = diff.getBeforePositionRange().start;
+				switch (diff.getDiffType()) {
 				case ADD:
-					Range afterPositionRange = rowDiff.getAfterPositionRange();
-					if (afterPositionRange.start < topLeftPosition.rowPosition) {
-						leftOffset += afterPositionRange.size();
+					if (start < topLeftPosition.rowPosition) {
+						leftOffset += diff.getAfterPositionRange().size();
 					}
-					if (afterPositionRange.start <= bottomRightPosition.rowPosition) {
-						rightOffset += afterPositionRange.size();
+					if (start <= bottomRightPosition.rowPosition
+							|| (!deletionBehind && start == bottomRightPosition.rowPosition + 1) ) {
+						rightOffset += diff.getAfterPositionRange().size();
 					}
 					break;
 				case DELETE:
-					Range beforePositionRange = rowDiff.getBeforePositionRange();
-					if (beforePositionRange.start < topLeftPosition.rowPosition) {
-						leftOffset -= Math.min(beforePositionRange.end, topLeftPosition.rowPosition + 1) - beforePositionRange.start;
+					if (start < topLeftPosition.rowPosition) {
+						leftOffset -= Math.min(diff.getBeforePositionRange().end, topLeftPosition.rowPosition + 1) - start;
 					}
-					if (beforePositionRange.start <= bottomRightPosition.rowPosition) {
-						rightOffset -= Math.min(beforePositionRange.end, bottomRightPosition.rowPosition + 1) - beforePositionRange.start;
+					if (start <= bottomRightPosition.rowPosition) {
+						rightOffset -= Math.min(diff.getBeforePositionRange().end, bottomRightPosition.rowPosition + 1) - start;
+					}
+					else {
+						deletionBehind = true;
 					}
 					break;
 				}

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -19,8 +21,11 @@ import org.junit.Test;
 
 import org.eclipse.swt.graphics.Rectangle;
 
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
+import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
+import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.ScrollSelectionCommand;
@@ -35,6 +40,14 @@ public class ViewportLayerTest {
 	protected ViewportLayer viewportLayer;
 	protected LayerListenerFixture layerListener;
 
+	private ViewportDim getH() {
+		return (ViewportDim) viewportLayer.getDim(HORIZONTAL);
+	}
+
+	private ViewportDim getV() {
+		return (ViewportDim) viewportLayer.getDim(VERTICAL);
+	}
+	
 	@Before
 	public void setup() {
 		viewportLayer = new ViewportLayerFixture();
@@ -124,7 +137,7 @@ public class ViewportLayerTest {
 	@Test
 	public void moveRowIntoViewportByMovingUpAndDown() throws Exception {
 		viewportLayer = new ViewportLayerFixture(10, 5, 80, 80);
-		assertEquals(100, viewportLayer.getClientAreaHeight());
+		assertEquals(100, getV().getClientAreaSize());
 		assertEquals(3, viewportLayer.getColumnCount());
 
 		viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(3));
@@ -281,42 +294,94 @@ public class ViewportLayerTest {
 	public void setViewportMinOriginColumnPosition() throws Exception {
 		viewportLayer = new ViewportLayerFixture(10, 20, 50, 20);
 		
-		viewportLayer.setMinimumOriginX(100);
+		final IViewportDim dim = viewportLayer.getDim(HORIZONTAL);
+		
+		dim.setMinimumOriginPosition(2);
 		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(100, viewportLayer.getOrigin().getX());
 		assertEquals(2, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(4, viewportLayer.getColumnCount());
 		
-		viewportLayer.setMinimumOriginX(200);
+		dim.setMinimumOriginPosition(4);
 		assertEquals(4, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(200, viewportLayer.getOrigin().getX());
 		assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(4, viewportLayer.getColumnCount());
 		
-		viewportLayer.setMinimumOriginX(100);
+		dim.setMinimumOriginPosition(2);
 		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
-		assertEquals(100, viewportLayer.getOrigin().getX());
-		
-		viewportLayer.setOriginX(150);
-		viewportLayer.setMinimumOriginX(200);
-		assertEquals(4, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(200, viewportLayer.getOrigin().getX());
 		
-		viewportLayer.setMinimumOriginX(100);
-		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
-		assertEquals(150, viewportLayer.getOrigin().getX());
+		viewportLayer.setOriginX(250);
+		dim.setMinimumOriginPosition(4);
+		assertEquals(4, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(250, viewportLayer.getOrigin().getX());
 		
-		viewportLayer.setMinimumOriginX(450);
+		dim.setMinimumOriginPosition(2);
+		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(250, viewportLayer.getOrigin().getX());
+		
+		dim.setMinimumOriginPosition(9);
 		assertEquals(9, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(450, viewportLayer.getOrigin().getX());
 		assertEquals(9, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(1, viewportLayer.getColumnCount());
 		
-		viewportLayer.setMinimumOriginX(500);
-		assertEquals(-1, viewportLayer.getMinimumOriginColumnPosition());
+		dim.setMinimumOriginPosition(10);
+		assertEquals(10, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(500, viewportLayer.getOrigin().getX());
 		assertEquals(-1, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(0, viewportLayer.getColumnCount());
+	}
+	
+	@Test
+	public void handleStructuralChanges() throws Exception {
+		viewportLayer = new ViewportLayerFixture(10, 20, 50, 20);
+		final IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
+		
+		final IViewportDim dim = viewportLayer.getDim(HORIZONTAL);
+		
+		dim.setMinimumOriginPosition(2);
+		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(100, viewportLayer.getOrigin().getX());
+		assertEquals(2, viewportLayer.getColumnIndexByPosition(0));
+		assertEquals(4, viewportLayer.getColumnCount());
+		
+		scrollableLayer.doCommand(new ColumnResizeCommand(scrollableLayer, 1, 60));
+		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(110, viewportLayer.getOrigin().getX());
+		assertEquals(2, viewportLayer.getColumnIndexByPosition(0));
+		assertEquals(4, viewportLayer.getColumnCount());
+		
+		scrollableLayer.doCommand(new ColumnResizeCommand(scrollableLayer, 1, 50));
+		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(100, viewportLayer.getOrigin().getX());
+		assertEquals(2, viewportLayer.getColumnIndexByPosition(0));
+		assertEquals(4, viewportLayer.getColumnCount());
+		
+		viewportLayer.setOriginX(180);
+		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(180, viewportLayer.getOrigin().getX());
+		assertEquals(3, viewportLayer.getColumnIndexByPosition(0));
+		assertEquals(5, viewportLayer.getColumnCount());
+		
+		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 4, 0, false));
+		assertEquals(3, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(230, viewportLayer.getOrigin().getX());
+		assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
+		assertEquals(5, viewportLayer.getColumnCount());
+		
+		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 0, 3, false));
+		assertEquals(3, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(230, viewportLayer.getOrigin().getX());
+		assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
+		assertEquals(5, viewportLayer.getColumnCount());
+		
+		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 0, 5, false));
+		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(180, viewportLayer.getOrigin().getX());
+		assertEquals(3, viewportLayer.getColumnIndexByPosition(0));
+		assertEquals(5, viewportLayer.getColumnCount());
 	}
 	
 	@Test
@@ -340,39 +405,41 @@ public class ViewportLayerTest {
 	public void setViewportMinOriginRowPosition() throws Exception {
 		viewportLayer = new ViewportLayerFixture(10, 20, 50, 20);
 		
-		viewportLayer.setMinimumOriginY(40);
+		final IViewportDim dim = viewportLayer.getDim(VERTICAL);
+		
+		dim.setMinimumOriginPosition(2);
 		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(40, viewportLayer.getOrigin().getY());
 		assertEquals(2, viewportLayer.getRowIndexByPosition(0));
 		assertEquals(5, viewportLayer.getRowCount());
 		
-		viewportLayer.setMinimumOriginY(80);
+		dim.setMinimumOriginPosition(4);
 		assertEquals(4, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(80, viewportLayer.getOrigin().getY());
 		assertEquals(4, viewportLayer.getRowIndexByPosition(0));
 		assertEquals(5, viewportLayer.getRowCount());
 		
-		viewportLayer.setMinimumOriginY(40);
+		dim.setMinimumOriginPosition(2);
 		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
-		assertEquals(40, viewportLayer.getOrigin().getY());
+		assertEquals(80, viewportLayer.getOrigin().getY());
 		
-		viewportLayer.setOriginY(60);
-		viewportLayer.setMinimumOriginY(80);
+		viewportLayer.setOriginY(115);
+		dim.setMinimumOriginPosition(4);
 		assertEquals(4, viewportLayer.getMinimumOriginRowPosition());
-		assertEquals(100, viewportLayer.getOrigin().getY());
+		assertEquals(115, viewportLayer.getOrigin().getY());
 		
-		viewportLayer.setMinimumOriginY(40);
+		dim.setMinimumOriginPosition(2);
 		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
-		assertEquals(60, viewportLayer.getOrigin().getY());
+		assertEquals(115, viewportLayer.getOrigin().getY());
 		
-		viewportLayer.setMinimumOriginY(380);
+		dim.setMinimumOriginPosition(19);
 		assertEquals(19, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(380, viewportLayer.getOrigin().getY());
 		assertEquals(19, viewportLayer.getRowIndexByPosition(0));
 		assertEquals(1, viewportLayer.getRowCount());
 		
-		viewportLayer.setMinimumOriginY(400);
-		assertEquals(-1, viewportLayer.getMinimumOriginRowPosition());
+		dim.setMinimumOriginPosition(20);
+		assertEquals(20, viewportLayer.getMinimumOriginRowPosition());
 		assertEquals(400, viewportLayer.getOrigin().getY());
 		assertEquals(-1, viewportLayer.getRowIndexByPosition(0));
 		assertEquals(0, viewportLayer.getRowCount());
@@ -397,11 +464,11 @@ public class ViewportLayerTest {
 		assertEquals(5, viewportLayer.getRowCount());
 
 		assertEquals(200, viewportLayer.getStartYOfRowPosition(10));
-		assertEquals(200, viewportLayer.adjustOriginY(viewportLayer.getStartYOfRowPosition(10)));
+		assertEquals(200, getV().adjustOrigin(viewportLayer.getStartYOfRowPosition(10)));
 
 		//Increase view port height
 		viewportLayer.getClientAreaProvider().getClientArea().height = 400;
-		assertEquals(0, viewportLayer.adjustOriginY(viewportLayer.getStartYOfRowPosition(10)));
+		assertEquals(0, getV().adjustOrigin(viewportLayer.getStartYOfRowPosition(10)));
 	}
 
 	@Test
@@ -413,18 +480,18 @@ public class ViewportLayerTest {
 		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(4));
 		assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(200, viewportLayer.getStartXOfColumnPosition(4));
-		assertEquals(200, viewportLayer.adjustOriginX(viewportLayer.getStartXOfColumnPosition(4)));
+		assertEquals(200, getH().adjustOrigin(viewportLayer.getStartXOfColumnPosition(4)));
 		
 		// Try to scroll off the end
 		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(9));
 		assertEquals(6, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(450, viewportLayer.getStartXOfColumnPosition(9));
-		assertEquals(300, viewportLayer.adjustOriginX(viewportLayer.getStartXOfColumnPosition(9)));
+		assertEquals(300, getH().adjustOrigin(viewportLayer.getStartXOfColumnPosition(9)));
 
 		//Increase viewport width
 		viewportLayer.getClientAreaProvider().getClientArea().width = 500;
 		assertEquals(450, viewportLayer.getStartXOfColumnPosition(9));
-		assertEquals(0, viewportLayer.adjustOriginX(viewportLayer.getStartXOfColumnPosition(9)));
+		assertEquals(0, getH().adjustOrigin(viewportLayer.getStartXOfColumnPosition(9)));
 	}
 
 	@Test

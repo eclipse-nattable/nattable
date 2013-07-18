@@ -10,15 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixture;
-import org.eclipse.nebula.widgets.nattable.viewport.HorizontalScrollBarHandler;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.ScrollBar;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.ScrollBar;
+
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixture;
 
 /**
  * Test for Horizontal scrolling of the viewport.
@@ -32,24 +34,24 @@ public class HorizontalScrollBarHandlerTest {
 
 	ViewportLayerFixture viewport;
 	private ScrollBar scrollBar;
-	private HorizontalScrollBarHandler scrollHandler;
+	private ScrollBarHandler scrollHandler;
 
 	@Before
 	public void init() {
 		viewport = new ViewportLayerFixture();
 		scrollBar = ViewportLayerFixture.DEFAULT_SCROLLABLE.getHorizontalBar();
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+		scrollHandler = new ScrollBarHandler(viewport.getDim(HORIZONTAL), scrollBar);
 
 		assertEquals(0, viewport.getColumnIndexByPosition(0));
 		assertEquals(1, viewport.getColumnIndexByPosition(1));
 	}
 
 	private void scrollViewportByOffset(int offset) {
-		scrollHandler.setViewportOrigin(viewport.getOrigin().getX() + offset);
+		viewport.getDim(HORIZONTAL).setOriginPixel(viewport.getOrigin().getX() + offset);
 	}
 
 	private void scrollViewportToPixel(int x) {
-		scrollHandler.setViewportOrigin(x);
+		viewport.getDim(HORIZONTAL).setOriginPixel(x);
 	}
 
 	@Test
@@ -109,9 +111,9 @@ public class HorizontalScrollBarHandlerTest {
 	@Test
 	public void issueNTBL99MoveByColumn() throws Exception {
 		viewport = new ViewportLayerFixture(2, 1, 250, 40);
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+		scrollHandler = new ScrollBarHandler(viewport.getDim(HORIZONTAL), scrollBar);
 
-		assertEquals(200, viewport.getClientAreaWidth());
+		assertEquals(200, ((ViewportDim) viewport.getDim(HORIZONTAL)).getClientAreaSize());
 		assertEquals(1, viewport.getColumnCount());
 
 		assertEquals(0, viewport.getColumnIndexByPosition(0));
@@ -130,9 +132,9 @@ public class HorizontalScrollBarHandlerTest {
 	@Test
 	public void issueNTBL99MoveByPage() throws Exception {
 		viewport = new ViewportLayerFixture(2, 1, 250, 40);
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+		scrollHandler = new ScrollBarHandler(viewport.getDim(HORIZONTAL), scrollBar);
 
-		assertEquals(200, viewport.getClientAreaWidth());
+		assertEquals(200,  ((ViewportDim) viewport.getDim(HORIZONTAL)).getClientAreaSize());
 		assertEquals(1, viewport.getColumnCount());
 
 		assertEquals(0, viewport.getColumnIndexByPosition(0));
@@ -141,27 +143,27 @@ public class HorizontalScrollBarHandlerTest {
 	@Test
 	public void horizontalScrollbarThumbSize() throws Exception {
 		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 250, 100));
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+		scrollHandler = new ScrollBarHandler(viewport.getDim(HORIZONTAL), scrollBar);
 
 		assertEquals(250, viewport.getWidth());
 		scrollHandler.recalculateScrollBarSize();
 
 		// Fixture data - viewport (250px), scrollable(465px)
-		assertEquals(250, scrollHandler.scrollBar.getThumb());
+		assertEquals(250, scrollHandler.getScrollBar().getThumb());
 
 		viewport.moveColumnPositionIntoViewport(9);
-		assertEquals(250, scrollHandler.scrollBar.getThumb());
+		assertEquals(250, scrollHandler.getScrollBar().getThumb());
 	}
 
 	@Test
 	public void horizontalScrollbarThumbSizeCalcNoScrollingNeeded() throws Exception {
 		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 500, 500));
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+		scrollHandler = new ScrollBarHandler(viewport.getDim(HORIZONTAL), scrollBar);
 
 		scrollHandler.recalculateScrollBarSize();
 		assertEquals(465, viewport.getWidth());
 
-		assertEquals(465, scrollHandler.scrollBar.getThumb());
+		assertEquals(465, scrollHandler.getScrollBar().getThumb());
 		assertFalse(scrollBar.isEnabled());
 		assertFalse(scrollBar.isVisible());
 	}

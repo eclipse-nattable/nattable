@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze.command;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -35,12 +38,12 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 			return null;
 		}
 			
-		int columnPosition = viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX());
+		int columnPosition = viewportLayer.getDim(HORIZONTAL).getOriginPosition();
 		if (columnPosition >= lastSelectedCellPosition.columnPosition) {
 			columnPosition = lastSelectedCellPosition.columnPosition - 1;
 		}
 		
-		int rowPosition = viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY());
+		int rowPosition = viewportLayer.getDim(VERTICAL).getOriginPosition();
 		if (rowPosition >= lastSelectedCellPosition.rowPosition) {
 			rowPosition = lastSelectedCellPosition.rowPosition - 1;
 		}

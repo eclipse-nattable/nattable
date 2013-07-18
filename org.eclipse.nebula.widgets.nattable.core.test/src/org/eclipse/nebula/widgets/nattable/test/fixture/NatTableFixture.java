@@ -114,14 +114,14 @@ public class NatTableFixture extends NatTable {
 	public void scrollToColumn(int gridColumnPosition) {
 		DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
 		ViewportLayer viewportLayer = gridLayer.getBodyLayer().getViewportLayer();
-		viewportLayer.invalidateHorizontalStructure();
+//		viewportLayer.invalidateHorizontalStructure();
 		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(gridColumnPosition));
 	}
 
 	public void scrollToRow(int gridRowPosition) {
 		DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
 		ViewportLayer viewportLayer = gridLayer.getBodyLayer().getViewportLayer();
-		viewportLayer.invalidateVerticalStructure();
+//		viewportLayer.invalidateVerticalStructure();
 		viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(gridRowPosition));
 	}
 

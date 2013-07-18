@@ -8,8 +8,20 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+
 package org.eclipse.nebula.widgets.nattable.freeze.command;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
@@ -26,13 +38,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
 
 public class FreezeHandlerTest {
 	
@@ -104,7 +110,8 @@ public class FreezeHandlerTest {
 	@Test
 	public void shouldFreezeAfterScrolling() {
 		// Scroll the viewport to the first column
-		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(0), viewportLayer.getStartYOfRowPosition(0));
+		viewportLayer.getDim(HORIZONTAL).reset(0);
+		viewportLayer.getDim(VERTICAL).reset(0);
 		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
 		Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 				
@@ -141,7 +148,8 @@ public class FreezeHandlerTest {
 		viewportLayer.addLayerListener(reorderListener);
 
 		// Scroll the viewport to the first column
-		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(0), viewportLayer.getStartYOfRowPosition(0));
+		viewportLayer.getDim(HORIZONTAL).reset(0);
+		viewportLayer.getDim(VERTICAL).reset(0);
 		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
 		Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
 				
