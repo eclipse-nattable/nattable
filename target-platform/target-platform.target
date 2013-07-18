@@ -2,9 +2,9 @@
 <?pde version="3.8"?><target name="NatTable Target" sequenceNumber="6">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="3.5.1.M20090917-0800"/>
-<unit id="org.apache.commons.lang" version="2.4.0.v20081016-1030"/>
-<repository location="http://download.eclipse.org/releases/galileo"/>
+<unit id="org.eclipse.sdk.feature.group" version="3.6.2.r362_v20100929-7Q7m7HD5cWlFgdCBHllpZMd2M468sbnm2RJvUWIbiJnWC"/>
+<unit id="org.apache.commons.lang" version="2.4.0.v201005080502"/>
+<repository location="http://download.eclipse.org/releases/helios/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.apache.poi" version="3.9.0.v201303080712"/>
