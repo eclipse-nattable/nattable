@@ -40,7 +40,7 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 		if (columnDiffs != null) {
 			int leftOffset = 0;
 			int rightOffset = 0;
-			boolean deletionBehind = false;
+			int freezeMove = 0; // 0 = unset, 1 == true, -1 == false
 			
 			for (StructuralDiff diff : columnDiffs) {
 				final int start = diff.getBeforePositionRange().start;
@@ -50,7 +50,7 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 						leftOffset += diff.getAfterPositionRange().size();
 					}
 					if (start <= bottomRightPosition.columnPosition
-							|| (!deletionBehind && start == bottomRightPosition.columnPosition + 1) ) {
+							|| (freezeMove == 1 && start == bottomRightPosition.columnPosition + 1) ) {
 						rightOffset += diff.getAfterPositionRange().size();
 					}
 					continue;
@@ -60,9 +60,12 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 					}
 					if (start <= bottomRightPosition.columnPosition) {
 						rightOffset -= Math.min(diff.getBeforePositionRange().end, bottomRightPosition.columnPosition + 1) - start;
+						if (freezeMove == 0) {
+							freezeMove = 1;
+						}
 					}
 					else {
-						deletionBehind = true;
+						freezeMove = -1;
 					}
 					continue;
 				default:
@@ -78,7 +81,7 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 		if (rowDiffs != null) {
 			int leftOffset = 0;
 			int rightOffset = 0;
-			boolean deletionBehind = false;
+			int freezeMove = 0; // 0 = unset, 1 == true, -1 == false
 			
 			for (StructuralDiff diff : rowDiffs) {
 				final int start = diff.getBeforePositionRange().start;
@@ -88,7 +91,7 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 						leftOffset += diff.getAfterPositionRange().size();
 					}
 					if (start <= bottomRightPosition.rowPosition
-							|| (!deletionBehind && start == bottomRightPosition.rowPosition + 1) ) {
+							|| (freezeMove == 1 && start == bottomRightPosition.rowPosition + 1) ) {
 						rightOffset += diff.getAfterPositionRange().size();
 					}
 					continue;
@@ -98,9 +101,12 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 					}
 					if (start <= bottomRightPosition.rowPosition) {
 						rightOffset -= Math.min(diff.getBeforePositionRange().end, bottomRightPosition.rowPosition + 1) - start;
+						if (freezeMove == 0) {
+							freezeMove = 1;
+						}
 					}
 					else {
-						deletionBehind = true;
+						freezeMove = -1;
 					}
 					continue;
 				default:

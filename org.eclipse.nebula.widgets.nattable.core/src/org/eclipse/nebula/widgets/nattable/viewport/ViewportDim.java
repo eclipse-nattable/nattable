@@ -548,14 +548,14 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 			// The handling of diffs have to be in sync with FreezeEventHandler
 			int minimumPositionChange = 0;
 			int selectedPositionChange = 0;
-			boolean deletionBehind = false;
+			int freezeMove = 0; // 0 = unset, 1 == true, -1 == false
 			
 			for (final StructuralDiff diff : diffs) {
 				final int start = diff.getBeforePositionRange().start;
 				switch (diff.getDiffType()) {
 				case ADD:
 					if (start < minimumOriginPosition
-							|| (!deletionBehind && start == minimumOriginPosition) ) {
+							|| (freezeMove == 1 && start == minimumOriginPosition) ) {
 						minimumPositionChange += diff.getAfterPositionRange().size();
 					}
 					if (start < selectedOriginPosition) {
@@ -565,9 +565,12 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 				case DELETE:
 					if (start < minimumOriginPosition) {
 						minimumPositionChange -= Math.min(diff.getBeforePositionRange().end, minimumOriginPosition + 1) - start;
+						if (freezeMove == 0) {
+							freezeMove = 1;
+						}
 					}
 					else {
-						deletionBehind = true;
+						freezeMove = -1;
 					}
 					if (start < selectedOriginPosition) {
 						selectedPositionChange -= Math.min(diff.getBeforePositionRange().end, selectedOriginPosition + 1) - start;
