@@ -187,6 +187,9 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 	
 	@Override
 	public void setMinimumOriginPosition(final int scrollablePosition) {
+		if (scrollablePosition < 0 || scrollablePosition > this.underlyingDim.getPositionCount()) {
+			throw new IndexOutOfBoundsException("scrollablePosition: " + scrollablePosition); //$NON-NLS-1$
+		}
 		final int pixel = (scrollablePosition < this.underlyingDim.getPositionCount()) ?
 				this.underlyingDim.getPositionStart(scrollablePosition) :
 				this.underlyingDim.getSize();
@@ -273,19 +276,24 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 	
 	@Override
 	public void setOriginPosition(final int scrollablePosition) {
-		final int pixel = this.underlyingDim.getPositionStart(scrollablePosition);
-		if (pixel >= 0) {
-			setOriginPixel(pixel);
+		if (scrollablePosition < getMinimumOriginPosition()
+				|| (scrollablePosition > getMinimumOriginPosition() && scrollablePosition >= this.underlyingDim.getPositionCount()) ) {
+			throw new IndexOutOfBoundsException("scrollablePosition: " + scrollablePosition); //$NON-NLS-1$
 		}
+		setOriginPixel(this.underlyingDim.getPositionStart(scrollablePosition));
 	}
 	
 	
 	@Override
 	public void reset(final int scrollablePosition) {
+		if (scrollablePosition < 0
+				|| (scrollablePosition > 0 && scrollablePosition >= this.underlyingDim.getPositionCount()) ) {
+			throw new IndexOutOfBoundsException("scrollablePosition: " + scrollablePosition); //$NON-NLS-1$
+		}
 		this.minimumOriginPosition = 0;
 		this.minimumOriginPixel = 0;
 		
-		this.originPixel = 0;
+		this.originPixel = -1; // force to reset origin
 		setOriginPosition(scrollablePosition);
 	}
 	
@@ -391,7 +399,9 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 			setOriginPixel(positionPixel);
 			return;
 		}
-		setOriginPosition(position - 1);
+		if (position - 1 >= getMinimumOriginPosition()) {
+			setOriginPosition(position - 1);
+		}
 	}
 	
 	@Override
@@ -400,7 +410,10 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 			return;
 		}
 		
-		setOriginPosition(getOriginPosition() + 1);
+		final int position = getOriginPosition();
+		if (position + 1 < this.underlyingDim.getPositionCount()) {
+			setOriginPosition(position + 1);
+		}
 	}
 	
 	@Override
