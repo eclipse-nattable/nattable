@@ -22,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 /**
  * Dim implementation for {@link TransformLayer}.
  *
- * @param <T>
+ * @param <T> the type of the layer
  */
 public class TransformLayerDim<T extends ILayer> extends AbstractLayerDim<T> {
 	

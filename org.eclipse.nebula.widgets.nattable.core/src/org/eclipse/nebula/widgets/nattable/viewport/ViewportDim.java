@@ -297,11 +297,6 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 		setOriginPosition(scrollablePosition);
 	}
 	
-	/**
-	 * Scrolls the viewport (if required) so that the given position is visible.
-	 * 
-	 * @param scrollablePosition position in the scrollable layer
-	 */
 	@Override
 	public void movePositionIntoViewport(final int scrollablePosition) {
 		if (this.underlyingDim.getPositionIndex(scrollablePosition) >= 0

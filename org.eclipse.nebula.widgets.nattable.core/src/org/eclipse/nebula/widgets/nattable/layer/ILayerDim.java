@@ -44,7 +44,7 @@ public interface ILayerDim {
 	// Index
 	
 	/**
-	 * Returns the unique index for the given position.
+	 * Returns the unique index for the specified position.
 	 * 
 	 * {@link ILayer#getColumnIndexByPosition(int)} /
 	 * {@link ILayer#getRowIndexByPosition(int)}
@@ -64,13 +64,13 @@ public interface ILayerDim {
 	 * {@link ILayer#getColumnCount()} /
 	 * {@link ILayer#getRowCount()}
 	 * 
-	 * @return the local count of positions
+	 * @return the count of local positions
 	 */
 	int getPositionCount();
 	
 	
 	/**
-	 * Converts the given position in this layer dimension to the position in the underlying
+	 * Converts the specified position in this layer dimension to the position in the underlying
 	 * layer.
 	 * 
 	 * {@link ILayer#localToUnderlyingColumnPosition(int)} /
@@ -83,8 +83,8 @@ public interface ILayerDim {
 	int localToUnderlyingPosition(int position);
 	
 	/**
-	 * Converts the given position in the given underlying layer to the position in this layer
-	 * dimension.
+	 * Converts the specified position in the specified underlying layer to the position in this
+	 * layer dimension.
 	 * 
 	 * {@link ILayer#underlyingToLocalColumnPosition(ILayer, int)} /
 	 * {@link ILayer#underlyingToLocalRowPosition(ILayer, int)}
@@ -97,8 +97,8 @@ public interface ILayerDim {
 	int underlyingToLocalPosition(ILayer sourceUnderlyingLayer, int underlyingPosition);
 	
 	/**
-	 * Converts the given positions in the given underlying layer to the position in this layer
-	 * dimension.
+	 * Converts the specified positions in the specified underlying layer to the position in this
+	 * layer dimension.
 	 * 
 	 * {@link ILayer#underlyingToLocalColumnPositions(ILayer, Collection)} /
 	 * {@link ILayer#underlyingToLocalRowPositions(ILayer, Collection)}
@@ -112,7 +112,7 @@ public interface ILayerDim {
 			Collection<Range> underlyingPositionRanges);
 	
 	/**
-	 * Returns all underlying layer for the given position.
+	 * Returns all underlying layer for the specified position.
 	 * 
 	 * {@link ILayer#getUnderlyingLayersByColumnPosition(int)} /
 	 * {@link ILayer#getUnderlyingLayersByRowPosition(int)}
@@ -147,7 +147,7 @@ public interface ILayerDim {
 	int getPreferredSize();
 	
 	/**
-	 * Returns the position in this layer dimension for the given pixel coordinate.
+	 * Returns the position in this layer dimension for the specified pixel coordinate.
 	 * 
 	 * {@link ILayer#getColumnPositionByX(int)} /
 	 * {@link ILayer#getRowPositionByY(int)}
@@ -159,7 +159,7 @@ public interface ILayerDim {
 	int getPositionByPixel(int pixel);
 	
 	/**
-	 * Returns the pixel coordinate of the start of the given position in this layer dimension.
+	 * Returns the pixel coordinate of the start of the specified position in this layer dimension.
 	 * 
 	 * {@link ILayer#getStartXOfColumnPosition(int)} /
 	 * {@link ILayer#getStartYOfRowPosition(int)}
@@ -171,7 +171,7 @@ public interface ILayerDim {
 	int getPositionStart(int position);
 	
 	/**
-	 * Returns the size in pixel of the given position in this layer dimension.
+	 * Returns the size in pixel of the specified position in this layer dimension.
 	 * 
 	 * {@link ILayer#getColumnWidthByPosition(int)} /
 	 * {@link ILayer#getRowHeightByPosition(int)}
@@ -183,7 +183,7 @@ public interface ILayerDim {
 	int getPositionSize(int position);
 	
 	/**
-	 * Returns if the given position is resizable.
+	 * Returns if the specified position is resizable.
 	 *  
 	 * {@link ILayer#isColumnPositionResizable(int)} /
 	 * {@link ILayer#isRowPositionResizable(int)}

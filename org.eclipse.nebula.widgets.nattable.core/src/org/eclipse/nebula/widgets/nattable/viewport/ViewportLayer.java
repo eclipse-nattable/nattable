@@ -50,6 +50,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.event.ScrollEvent;
 
 /**
  * Viewport - the visible area of NatTable
+ * 
  * Places a 'viewport' over the table. Introduces scroll bars over the table and
  * keeps them in sync with the data being displayed. This is typically placed over the
  * {@link SelectionLayer}.
@@ -68,10 +69,14 @@ public class ViewportLayer extends TransformIndexLayer {
 	private final int[] savedOriginPixel = new int[2];
 	
 	// Edge hover scrolling
-	
 	private MoveViewportRunnable edgeHoverRunnable;
 	
 	
+	/**
+	 * Creates a new viewport layer.
+	 * 
+	 * @param underlyingLayer the underlying scrollable layer
+	 */
 	public ViewportLayer(/*@NonNull*/ final IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
 		this.scrollableLayer = underlyingLayer;
