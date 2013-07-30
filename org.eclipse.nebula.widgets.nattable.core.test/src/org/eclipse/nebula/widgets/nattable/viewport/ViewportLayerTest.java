@@ -365,19 +365,19 @@ public class ViewportLayerTest {
 		assertEquals(3, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(5, viewportLayer.getColumnCount());
 		
-		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 4, 0, false));
+		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 4, 0, true));
 		assertEquals(3, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(230, viewportLayer.getOrigin().getX());
 		assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(5, viewportLayer.getColumnCount());
 		
-		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 0, 3, false));
+		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 0, 3, true));
 		assertEquals(3, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(230, viewportLayer.getOrigin().getX());
 		assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
 		assertEquals(5, viewportLayer.getColumnCount());
 		
-		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 0, 5, false));
+		viewportLayer.handleLayerEvent(new ColumnReorderEvent(scrollableLayer, 0, 5, true));
 		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
 		assertEquals(180, viewportLayer.getOrigin().getX());
 		assertEquals(3, viewportLayer.getColumnIndexByPosition(0));
