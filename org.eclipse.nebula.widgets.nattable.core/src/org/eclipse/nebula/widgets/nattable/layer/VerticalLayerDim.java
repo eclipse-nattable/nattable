@@ -13,7 +13,9 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 
@@ -47,20 +49,25 @@ public class VerticalLayerDim extends AbstractLayerDim<ILayer> {
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+	public int underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 			final int underlyingPosition) {
-		return this.layer.underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingPosition);
+		return this.layer.underlyingToLocalRowPosition(sourceUnderlyingDim.getLayer(), underlyingPosition);
 	}
 	
 	@Override
-	public Collection<Range> underlyingToLocalPositions(final ILayer sourceUnderlyingLayer,
+	public Collection<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
 			final Collection<Range> underlyingPositionRanges) {
-		return this.layer.underlyingToLocalRowPositions(sourceUnderlyingLayer, underlyingPositionRanges);
+		return this.layer.underlyingToLocalRowPositions(sourceUnderlyingDim.getLayer(), underlyingPositionRanges);
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
-		return this.layer.getUnderlyingLayersByRowPosition(position);
+	public Collection<ILayerDim> getUnderlyingDimsByPosition(final int position) {
+		final Collection<ILayer> underlyingLayers = this.layer.getUnderlyingLayersByRowPosition(position);
+		final List<ILayerDim> underlyingDims = new ArrayList<ILayerDim>(underlyingLayers.size());
+		for (final ILayer underlyingLayer : underlyingLayers) {
+			underlyingDims.add(underlyingLayer.getDim(getOrientation()));
+		}
+		return underlyingDims;
 	}
 	
 	

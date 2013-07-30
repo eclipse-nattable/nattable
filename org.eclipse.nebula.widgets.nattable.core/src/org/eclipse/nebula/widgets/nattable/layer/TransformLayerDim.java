@@ -62,9 +62,9 @@ public class TransformLayerDim<T extends ILayer> extends AbstractLayerDim<T> {
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+	public int underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 			final int underlyingPosition) {
-		if (sourceUnderlyingLayer != this.underlyingDim.getLayer()) {
+		if (sourceUnderlyingDim != this.underlyingDim) {
 			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
 		
@@ -72,22 +72,22 @@ public class TransformLayerDim<T extends ILayer> extends AbstractLayerDim<T> {
 	}
 	
 	@Override
-	public Collection<Range> underlyingToLocalPositions(final ILayer sourceUnderlyingLayer,
+	public Collection<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
 			final Collection<Range> underlyingPositionRanges) {
 		final Collection<Range> localPositionRanges = new ArrayList<Range>(underlyingPositionRanges.size());
 		
 		for (final Range underlyingPositionRange : underlyingPositionRanges) {
 			localPositionRanges.add(new Range(
-					underlyingToLocalPosition(sourceUnderlyingLayer, underlyingPositionRange.start),
-					underlyingToLocalPosition(sourceUnderlyingLayer, underlyingPositionRange.end) ));
+					underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.start),
+					underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.end) ));
 		}
 		
 		return localPositionRanges;
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
-		return Collections.singletonList(this.underlyingDim.getLayer());
+	public Collection<ILayerDim> getUnderlyingDimsByPosition(final int position) {
+		return Collections.singletonList(this.underlyingDim);
 	}
 	
 	
@@ -103,7 +103,7 @@ public class TransformLayerDim<T extends ILayer> extends AbstractLayerDim<T> {
 	
 	@Override
 	public int getPositionByPixel(final int pixel) {
-		return underlyingToLocalPosition(this.underlyingDim.getLayer(),
+		return underlyingToLocalPosition(this.underlyingDim,
 				this.underlyingDim.getPositionByPixel(pixel) );
 	}
 	

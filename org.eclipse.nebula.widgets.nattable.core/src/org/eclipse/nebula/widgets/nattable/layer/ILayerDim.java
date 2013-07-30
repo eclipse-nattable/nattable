@@ -89,12 +89,12 @@ public interface ILayerDim {
 	 * {@link ILayer#underlyingToLocalColumnPosition(ILayer, int)} /
 	 * {@link ILayer#underlyingToLocalRowPosition(ILayer, int)}
 	 * 
-	 * @param sourceUnderlyingLayer the underlying layer the position refers to
+	 * @param sourceUnderlyingDim the underlying layer dimension the position refers to
 	 * @param underlyingPosition the position in the underlying layer
 	 * 
 	 * @return the local position
 	 */
-	int underlyingToLocalPosition(ILayer sourceUnderlyingLayer, int underlyingPosition);
+	int underlyingToLocalPosition(ILayerDim sourceUnderlyingDim, int underlyingPosition);
 	
 	/**
 	 * Converts the specified positions in the specified underlying layer to the position in this
@@ -103,25 +103,25 @@ public interface ILayerDim {
 	 * {@link ILayer#underlyingToLocalColumnPositions(ILayer, Collection)} /
 	 * {@link ILayer#underlyingToLocalRowPositions(ILayer, Collection)}
 	 * 
-	 * @param sourceUnderlyingLayer the underlying layer the positions refers to
+	 * @param sourceUnderlyingDim the underlying layer dimension the positions refers to
 	 * @param underlyingPosition the positions in the underlying layer
 	 * 
 	 * @return the local positions
 	 */
-	Collection<Range> underlyingToLocalPositions(ILayer sourceUnderlyingLayer,
+	Collection<Range> underlyingToLocalPositions(ILayerDim sourceUnderlyingDim,
 			Collection<Range> underlyingPositionRanges);
 	
 	/**
-	 * Returns all underlying layer for the specified position.
+	 * Returns all underlying dimensions for the specified position.
 	 * 
 	 * {@link ILayer#getUnderlyingLayersByColumnPosition(int)} /
 	 * {@link ILayer#getUnderlyingLayersByRowPosition(int)}
 	 * 
 	 * @param position the local position
 	 * 
-	 * @return the underlying layers
+	 * @return the underlying layer dimensions
 	 */
-	Collection<ILayer> getUnderlyingLayersByPosition(int position);
+	Collection<ILayerDim> getUnderlyingDimsByPosition(int position);
 	
 	
 	// Pixel = X / Y, Width / Height

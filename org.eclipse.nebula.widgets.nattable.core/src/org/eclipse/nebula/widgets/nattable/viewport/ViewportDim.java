@@ -19,7 +19,6 @@ import java.util.Collection;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Scrollable;
 
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.TransformLayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
@@ -106,9 +105,9 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+	public int underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 			final int underlyingPosition) {
-		if (sourceUnderlyingLayer != this.layer.getScrollableLayer()) {
+		if (sourceUnderlyingDim != this.underlyingDim) {
 			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
 		

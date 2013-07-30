@@ -41,14 +41,14 @@ public class TransformIndexLayer extends TransformLayer implements IUniqueIndexL
 	public int getColumnPositionByIndex(final int columnIndex) {
 		final IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
 		final int underlyingPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
-		return getDim(HORIZONTAL).underlyingToLocalPosition(underlyingLayer, underlyingPosition);
+		return getDim(HORIZONTAL).underlyingToLocalPosition(underlyingLayer.getDim(HORIZONTAL), underlyingPosition);
 	}
 	
 	@Override
 	public int getRowPositionByIndex(final int rowIndex) {
 		final IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
 		final int underlyingPosition = underlyingLayer.getRowPositionByIndex(rowIndex);
-		return getDim(VERTICAL).underlyingToLocalPosition(underlyingLayer, underlyingPosition);
+		return getDim(VERTICAL).underlyingToLocalPosition(underlyingLayer.getDim(VERTICAL), underlyingPosition);
 	}
 	
 }

@@ -14,7 +14,10 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 
@@ -37,6 +40,21 @@ public abstract class DimBasedLayer extends AbstractLayer {
 		}
 		catch (final Exception e) {}
 		return position;
+	}
+	
+	private static List<ILayer> convertDim2LayerList(final Collection<ILayerDim> dims) {
+		switch (dims.size()) {
+		case 0:
+			return Collections.emptyList();
+		case 1:
+			return Collections.singletonList(dims.iterator().next().getLayer());
+		default:
+			final List<ILayer> layers = new ArrayList<ILayer>(dims.size());
+			for (final ILayerDim underlyingDim : dims) {
+				layers.add(underlyingDim.getLayer());
+			}
+			return layers;
+		}
 	}
 	
 	
@@ -72,14 +90,14 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	@Override
 	public final int underlyingToLocalColumnPosition(final ILayer sourceUnderlyingLayer,
 			final int underlyingColumnPosition) {
-		return super.getDim(HORIZONTAL).underlyingToLocalPosition(sourceUnderlyingLayer,
+		return super.getDim(HORIZONTAL).underlyingToLocalPosition(sourceUnderlyingLayer.getDim(HORIZONTAL),
 				underlyingColumnPosition );
 	}
 	
 	@Override
 	public final Collection<Range> underlyingToLocalColumnPositions(final ILayer sourceUnderlyingLayer,
 			final Collection<Range> underlyingColumnPositionRanges) {
-		return super.getDim(HORIZONTAL).underlyingToLocalPositions(sourceUnderlyingLayer,
+		return super.getDim(HORIZONTAL).underlyingToLocalPositions(sourceUnderlyingLayer.getDim(HORIZONTAL),
 				underlyingColumnPositionRanges );
 	}
 	
@@ -116,7 +134,7 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	@Override
 	public final Collection<ILayer> getUnderlyingLayersByColumnPosition(
 			final int columnPosition) {
-		return super.getDim(HORIZONTAL).getUnderlyingLayersByPosition(columnPosition);
+		return convertDim2LayerList(super.getDim(HORIZONTAL).getUnderlyingDimsByPosition(columnPosition));
 	}
 	
 	
@@ -144,14 +162,14 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	@Override
 	public final int underlyingToLocalRowPosition(final ILayer sourceUnderlyingLayer,
 			final int underlyingRowPosition) {
-		return super.getDim(VERTICAL).underlyingToLocalPosition(sourceUnderlyingLayer,
+		return super.getDim(VERTICAL).underlyingToLocalPosition(sourceUnderlyingLayer.getDim(VERTICAL),
 				underlyingRowPosition );
 	}
 	
 	@Override
 	public final Collection<Range> underlyingToLocalRowPositions(final ILayer sourceUnderlyingLayer,
 			final Collection<Range> underlyingRowPositionRanges) {
-		return super.getDim(VERTICAL).underlyingToLocalPositions(sourceUnderlyingLayer,
+		return super.getDim(VERTICAL).underlyingToLocalPositions(sourceUnderlyingLayer.getDim(VERTICAL),
 				underlyingRowPositionRanges );
 	}
 	
@@ -187,7 +205,7 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	
 	@Override
 	public final Collection<ILayer> getUnderlyingLayersByRowPosition(final int rowPosition) {
-		return super.getDim(VERTICAL).getUnderlyingLayersByPosition(rowPosition);
+		return convertDim2LayerList(super.getDim(VERTICAL).getUnderlyingDimsByPosition(rowPosition));
 	}
 	
 }
