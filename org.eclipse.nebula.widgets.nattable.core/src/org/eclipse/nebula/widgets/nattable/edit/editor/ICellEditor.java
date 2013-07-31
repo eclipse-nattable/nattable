@@ -270,6 +270,22 @@ public interface ICellEditor {
 	boolean supportMultiEdit(IConfigRegistry configRegistry, List<String> configLabels);
 	
 	/**
+	 * This is a very special configuration to tell whether an ICellEditor should open a multi
+	 * edit dialog for multi editing or not. Usually for multi editing there should be always a 
+	 * multi edit dialog be opened. There are only special cases where this doesn't make sense.
+	 * The only types of ICellEditors that shouldn't open multi edit dialogs are editors that 
+	 * change their values directly and there is no interactively editor control opened, 
+	 * e.g. checkboxes.
+	 * 
+	 * @return <code>true</code> if for multi editing a multi edit dialog should be opened,
+	 * 			<code>false</code> if the multi editing should be performed directly without
+	 * 			opening a multi edit dialog. Note: <code>true</code> is the default value
+	 * 			and changing it to <code>false</code> for a custom editor might cause issues
+	 * 			if not dealed correctly.
+	 */
+	boolean openMultiEditDialog();
+	
+	/**
 	 * Determines behaviour after committing the value of this editor in combination with selection
 	 * movement. If this method return <code>true</code> and the selection is moved after committing, 
 	 * the editor for the newly selected cell will be activated immediately. If this method returns

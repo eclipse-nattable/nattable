@@ -404,6 +404,11 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	}
 	
 	@Override
+	public boolean openMultiEditDialog() {
+		return true;
+	}
+	
+	@Override
 	public boolean openAdjacentEditor() {
 		return EditConfigHelper.openAdjacentEditor(this.configRegistry, this.labelStack.getLabels());
 	}
