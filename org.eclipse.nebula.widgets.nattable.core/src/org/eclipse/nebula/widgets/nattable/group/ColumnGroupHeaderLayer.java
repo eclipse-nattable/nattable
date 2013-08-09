@@ -140,6 +140,9 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
 	@Override
 	public int localToUnderlyingRowPosition(int localRowPosition) {
+		if (localRowPosition == 0) {
+			return localRowPosition;
+		}
 		return localRowPosition-1;
 	}
 
