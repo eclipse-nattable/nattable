@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 
+import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
@@ -64,23 +65,39 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 	 * 			filters should applied or not. If there are no values specified for filtering of
 	 * 			a column then everything should be filtered, if all possible values are given as
 	 * 			filter then no filter needs to be applied.
-	 * @param matcherEditor The CompositeMatcherEditor that is used for GlazedLists filtering
+	 * @param filterList The CompositeMatcherEditor that is used for GlazedLists filtering
 	 * @param columnAccessor The IColumnAccessor needed to access the row data to perform filtering
 	 * @param configRegistry The IConfigRegistry to retrieve several configurations from
 	 */
 	public ComboBoxGlazedListsFilterStrategy(FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
-			CompositeMatcherEditor<T> matcherEditor,
+			FilterList<T> filterList,
 			IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
-		super(matcherEditor, columnAccessor, configRegistry);
+		super(filterList, columnAccessor, configRegistry);
 		this.comboBoxDataProvider = comboBoxDataProvider;
 	}
 
+	/**
+	 * @param comboBoxDataProvider The FilterRowComboBoxDataProvider needed to determine whether
+	 * 			filters should applied or not. If there are no values specified for filtering of
+	 * 			a column then everything should be filtered, if all possible values are given as
+	 * 			filter then no filter needs to be applied.
+	 * @param filterList The FilterList that is used within the GlazedLists based NatTable for filtering. 
+	 * @param matcherEditor The CompositeMatcherEditor that should be used by this DefaultGlazedListsStaticFilterStrategy. 
+	 * @param columnAccessor The IColumnAccessor necessary to access the column data of the row objects in the FilterList.
+	 * @param configRegistry The IConfigRegistry necessary to retrieve filter specific configurations.
+	 */
+	public ComboBoxGlazedListsFilterStrategy(FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
+			FilterList<T> filterList, CompositeMatcherEditor<T> matcherEditor, 
+			IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
+		super(filterList, matcherEditor, columnAccessor, configRegistry);
+		this.comboBoxDataProvider = comboBoxDataProvider;
+	}
 	
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
 		if (filterIndexToObjectMap.isEmpty()) {
-			this.matcherEditor.getMatcherEditors().add(matchNone);
+			this.getMatcherEditor().getMatcherEditors().add(matchNone);
 			return;
 		}
 		
@@ -94,7 +111,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 			Object filterObject = newIndexToObjectMap.get(index);
 			if (filterObject == null || (filterObject instanceof Collection && ((Collection)filterObject).isEmpty())) {
 				//for one column there are no items selected in the combo, therefore nothing matches
-				this.matcherEditor.getMatcherEditors().add(matchNone);
+				this.getMatcherEditor().getMatcherEditors().add(matchNone);
 				return;
 			} else if (filterObject instanceof Collection 
 					&& ((Collection)filterObject).size() == dataProviderList.size()) {

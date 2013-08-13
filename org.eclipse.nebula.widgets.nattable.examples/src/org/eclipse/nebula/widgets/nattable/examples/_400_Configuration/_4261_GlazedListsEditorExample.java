@@ -91,7 +91,6 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 
 public class _4261_GlazedListsEditorExample extends AbstractNatExample {
@@ -247,12 +246,9 @@ public class _4261_GlazedListsEditorExample extends AbstractNatExample {
 
 			//	Note: The column header layer is wrapped in a filter row composite.
 			//	This plugs in the filter row functionality
-			CompositeMatcherEditor<T> autoFilterMatcherEditor = new CompositeMatcherEditor<T>();
-			bodyLayerStack.filterList.setMatcherEditor(autoFilterMatcherEditor);
-			
 			FilterRowHeaderComposite<T> filterRowHeaderLayer =
 				new FilterRowHeaderComposite<T>(
-						new DefaultGlazedListsFilterStrategy<T>(autoFilterMatcherEditor, columnPropertyAccessor, configRegistry),
+						new DefaultGlazedListsFilterStrategy<T>(bodyLayerStack.filterList, columnPropertyAccessor, configRegistry),
 						sortHeaderLayer, dataProvider, configRegistry
 				);
 

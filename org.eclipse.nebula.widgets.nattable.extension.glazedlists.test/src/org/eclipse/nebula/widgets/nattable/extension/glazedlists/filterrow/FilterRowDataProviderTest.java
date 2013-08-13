@@ -16,12 +16,10 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Properties;
 
-
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
@@ -35,12 +33,10 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 public class FilterRowDataProviderTest {
 
@@ -58,13 +54,10 @@ public class FilterRowDataProviderTest {
 		new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
 
 		filterList = new FilterList<RowDataFixture>(GlazedLists.eventList(RowDataListFixture.getList()));
-		
-		CompositeMatcherEditor<RowDataFixture> autoFilterMatcherEditor = new CompositeMatcherEditor<RowDataFixture>();
-		filterList.setMatcherEditor(autoFilterMatcherEditor);
 
 		dataProvider = new FilterRowDataProvider<RowDataFixture>(
 				new DefaultGlazedListsFilterStrategy<RowDataFixture>(
-					autoFilterMatcherEditor,
+						filterList,
 					new ReflectiveColumnPropertyAccessor<RowDataFixture>(RowDataListFixture.getPropertyNames()),
 					configRegistry
 				),
@@ -97,7 +90,6 @@ public class FilterRowDataProviderTest {
 	}
 
 	@Test
-	@Ignore
 	public void settingThresholdValuesUpdatedFilter() throws Exception {
 		// Since we are triggering object comparison, we must provide the right type
 		configRegistry.registerConfigAttribute(
