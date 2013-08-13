@@ -230,4 +230,16 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 	public void removeCacheUdpateListener(IFilterRowComboUpdateListener listener) {
 		this.cacheUpdateListener.remove(listener);
 	}
+
+	/**
+	 * @return The local cache for the values to show in the filter row combobox.
+	 * 			This is needed because otherwise the calculation of the necessary values
+	 * 			would happen everytime the combobox is opened and if a filter is applied
+	 * 			using GlazedLists for example, the combobox would only contain the value
+	 * 			which is currently used for filtering.
+	 */
+	protected Map<Integer, List<?>> getValueCache() {
+		return this.valueCache;
+	}
+
 }

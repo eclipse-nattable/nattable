@@ -122,7 +122,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 			IConfigRegistry configRegistry,
 			boolean useDefaultConfiguration) {
 		
-		this(filterList, new FilterRowComboBoxDataProvider<T>(bodyLayer, baseCollection, bodyDataColumnAccessor), 
+		this(filterList, new GlazedListsFilterRowComboBoxDataProvider<T>(bodyLayer, baseCollection, bodyDataColumnAccessor), 
 				bodyDataColumnAccessor,	columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
 	}
 	
@@ -160,7 +160,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 			IConfigRegistry configRegistry,
 			boolean useDefaultConfiguration) {
 		
-		this(filterList, matcherEditor, new FilterRowComboBoxDataProvider<T>(bodyLayer, baseCollection, bodyDataColumnAccessor), 
+		this(filterList, matcherEditor, new GlazedListsFilterRowComboBoxDataProvider<T>(bodyLayer, baseCollection, bodyDataColumnAccessor), 
 				bodyDataColumnAccessor,	columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
 	}
 	
