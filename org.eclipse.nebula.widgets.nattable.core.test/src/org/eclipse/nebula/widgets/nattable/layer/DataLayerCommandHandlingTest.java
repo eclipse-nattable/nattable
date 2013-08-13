@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
-import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
@@ -47,4 +46,17 @@ public class DataLayerCommandHandlingTest {
 		Assert.assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
 	}	
 
+	@Test
+	public void handleSameUpdateDataCommandRaisesNoEvents() throws Exception {
+		LayerListenerFixture listener = new LayerListenerFixture();
+		dataLayer.addLayerListener(listener);
+		dataLayer.doCommand(command);
+		Assert.assertTrue(listener.getReceivedEvents().size() == 1);
+		Assert.assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
+
+		//as calling the UpdateCommand with the same value should not trigger any event
+		//the size of the received events will stay 1 (the one event from before which is cached)
+		dataLayer.doCommand(command);
+		Assert.assertTrue(listener.getReceivedEvents().size() == 1);
+	}	
 }
