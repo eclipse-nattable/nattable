@@ -126,10 +126,10 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	
 	/**
 	 * Checks whether the given IMouseAction should be performed exclusive or not.
-	 * If there is a single and a double click action configured, by default either
-	 * the single or the double click should be performed. This behaviour can be
+	 * If there is a single and a double click action configured, by default both
+	 * the single and the double click will be performed. This behaviour can be
 	 * modified if the given action is of type IMouseClickAction and configured to
-	 * be not exclusive. In this case the single and the double click action will
+	 * be exclusive. In this case the single or the double click action will
 	 * be performed.
 	 * @param action The IMouseAction to check
 	 * @return <code>true</code> if the given IMouseAction should be called exclusively, 
@@ -139,7 +139,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 		if (action instanceof IMouseClickAction) {
 			return ((IMouseClickAction)action).isExclusive();
 		}
-		return true;
+		return false;
 	}
 	
 }

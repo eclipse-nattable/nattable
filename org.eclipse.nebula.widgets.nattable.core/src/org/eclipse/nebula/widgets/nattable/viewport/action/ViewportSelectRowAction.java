@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.viewport.action;
 
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.ui.action.IMouseClickAction;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommand;
 import org.eclipse.swt.events.MouseEvent;
 
@@ -20,7 +20,7 @@ import org.eclipse.swt.events.MouseEvent;
  * Event fired when the <i>ctrl</i> key is pressed and the row header is clicked.
  * Note: Fires command in NatTable coordinates.
  */
-public class ViewportSelectRowAction implements IMouseClickAction {
+public class ViewportSelectRowAction implements IMouseAction {
 	
 	private final boolean withShiftMask;
 	private final boolean withControlMask;
@@ -33,11 +33,6 @@ public class ViewportSelectRowAction implements IMouseClickAction {
 	@Override
 	public void run(NatTable natTable, MouseEvent event) {
 		natTable.doCommand(new ViewportSelectRowCommand(natTable, natTable.getRowPositionByY(event.y), withShiftMask, withControlMask));
-	}
-
-	@Override
-	public boolean isExclusive() {
-		return false;
 	}
 	
 }

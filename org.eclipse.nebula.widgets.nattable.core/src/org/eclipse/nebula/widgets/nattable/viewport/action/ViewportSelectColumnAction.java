@@ -12,14 +12,14 @@ package org.eclipse.nebula.widgets.nattable.viewport.action;
 
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.ui.action.IMouseClickAction;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumnCommand;
 import org.eclipse.swt.events.MouseEvent;
 
 /**
  * Action indicating that the user has specifically selected a column header. 
  */
-public class ViewportSelectColumnAction implements IMouseClickAction {
+public class ViewportSelectColumnAction implements IMouseAction {
 	
 	private final boolean withShiftMask;
 	private final boolean withControlMask;
@@ -32,10 +32,5 @@ public class ViewportSelectColumnAction implements IMouseClickAction {
 	@Override
 	public void run(NatTable natTable, MouseEvent event) {
 		natTable.doCommand(new ViewportSelectColumnCommand(natTable, natTable.getColumnPositionByX(event.x), withShiftMask, withControlMask));
-	}
-
-	@Override
-	public boolean isExclusive() {
-		return false;
 	}
 }
