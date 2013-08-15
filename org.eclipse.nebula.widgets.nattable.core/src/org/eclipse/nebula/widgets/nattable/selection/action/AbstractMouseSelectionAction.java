@@ -12,17 +12,18 @@ package org.eclipse.nebula.widgets.nattable.selection.action;
 
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseClickAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 
-public class AbstractMouseSelectionAction implements IMouseAction {
+public class AbstractMouseSelectionAction implements IMouseClickAction {
 
     private boolean withShiftMask;
     private boolean withControlMask;
     private int gridColumnPosition;
     private int gridRowPosition;
 
+	@Override
 	public void run(NatTable natTable, MouseEvent event) {
     	withShiftMask = (event.stateMask & SWT.SHIFT) != 0;
     	withControlMask = (event.stateMask & SWT.CTRL) != 0;
@@ -49,4 +50,8 @@ public class AbstractMouseSelectionAction implements IMouseAction {
 		return gridRowPosition;
 	}
 
+	@Override
+	public boolean isExclusive() {
+		return false;
+	}
 }
