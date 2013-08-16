@@ -11,12 +11,11 @@
 
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.data.ISpanningDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.swt.graphics.Rectangle;
 
 
 public class SpanningDataLayer extends DataLayer {
@@ -60,4 +59,13 @@ public class SpanningDataLayer extends DataLayer {
 		return super.getBoundsByPosition(cell.getOriginColumnPosition(), cell.getOriginRowPosition());
 	}
 	
+	@Override
+	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+		ILayerCell cell = getCellByPosition(columnIndex, rowIndex);
+		for (int i = 0; i < cell.getColumnSpan(); i++) {
+			for (int j = 0; j < cell.getRowSpan(); j++) {
+				super.setDataValue(columnIndex+i, rowIndex+j, newValue);
+			}
+		}
+	}
 }

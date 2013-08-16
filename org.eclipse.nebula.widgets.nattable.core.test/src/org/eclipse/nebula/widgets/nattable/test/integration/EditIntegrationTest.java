@@ -427,6 +427,39 @@ public class EditIntegrationTest {
 		assertTrue("No InlineCellEditEvent fired", inlineFired[0]);
 	}
 
+	@Test
+	public void updateAllUnderlyingCellsIfSpanned() throws Exception {
+		CompositeLayer layer = new CompositeLayer(1, 1);
+		DummySpanningBodyDataProvider dataProvider = new DummySpanningBodyDataProvider(100, 100);
+		SelectionLayer selectionLayer = new SelectionLayer(new SpanningDataLayer(dataProvider));
+		layer.setChildLayer(GridRegion.BODY, new ViewportLayer(selectionLayer), 0, 0);
+		natTable = new NatTableFixture(layer, 1200, 300, false);
+
+		layer.addConfiguration(new DefaultEditBindings());
+		layer.addConfiguration(new DefaultEditConfiguration());
+		
+		natTable.enableEditingOnAllCells();
+
+		natTable.configure();
+		
+		assertEquals("Col: 1, Row: 1", dataProvider.getDataValue(0, 0));
+		assertEquals("Col: 1, Row: 2", dataProvider.getDataValue(0, 1));
+		assertEquals("Col: 2, Row: 1", dataProvider.getDataValue(1, 0));
+		assertEquals("Col: 2, Row: 2", dataProvider.getDataValue(1, 1));
+		
+		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('C'));
+
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+
+		ActiveCellEditorRegistry.getActiveCellEditor().getEditorControl().notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
+
+		assertEquals("C", dataProvider.getDataValue(0, 0));
+		assertEquals("C", dataProvider.getDataValue(0, 1));
+		assertEquals("C", dataProvider.getDataValue(1, 0));
+		assertEquals("C", dataProvider.getDataValue(1, 1));
+	}
+
 	// *** Convenience methods ***.
 	// Mostly code from the EditableGridExample.
 	// The sane fixtures are used to ensure that the example keeps working without fail

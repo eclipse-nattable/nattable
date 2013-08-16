@@ -50,8 +50,8 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
 			int columnPosition = command.getColumnPosition();
 			int rowPosition = command.getRowPosition();
 			if (!ObjectUtils.equals(
-					dataLayer.getDataProvider().getDataValue(columnPosition, rowPosition), command.getNewValue())) {
-				dataLayer.getDataProvider().setDataValue(columnPosition, rowPosition, command.getNewValue());
+					dataLayer.getDataValue(columnPosition, rowPosition), command.getNewValue())) {
+				dataLayer.setDataValue(columnPosition, rowPosition, command.getNewValue());
 				dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer, columnPosition, rowPosition));
 				
 				//TODO implement a new event which is a mix of PropertyUpdateEvent and CellVisualChangeEvent
