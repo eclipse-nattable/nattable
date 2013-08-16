@@ -11,12 +11,11 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -46,6 +45,8 @@ import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.SelectionLayerStructuralChangeEventHandler;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Enables selection of column, rows, cells etc. on the table.
@@ -220,6 +221,22 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	}
 
 	/**
+	 * Retrieves the ILayerCells out of the SelectionLayer that are currently marked as selected in
+	 * the SelectionModel. Takes spanning into account.
+	 * @return The selected ILayerCells
+	 */
+	public Collection<ILayerCell> getSelectedCells() {
+		Set<ILayerCell> selectedCells = new HashSet<ILayerCell>();
+
+		PositionCoordinate[] selectedCoords = getSelectedCellPositions();
+		for (PositionCoordinate coord : selectedCoords) {
+			selectedCells.add(getCellByPosition(coord.columnPosition, coord.rowPosition));
+		}
+
+		return selectedCells;
+	}
+	
+	/**
 	 * Calculates the selected cells - taking into account Shift and Ctrl key presses.
 	 */
 	public void selectCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
@@ -358,6 +375,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
 	// Command handling
 
+	@Override
 	protected void registerCommandHandlers() {
 		// Command handlers also registered by the DefaultSelectionLayerConfiguration
 		registerCommandHandler(selectCellCommandHandler);

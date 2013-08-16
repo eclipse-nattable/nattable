@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,8 +20,8 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -71,10 +72,8 @@ public class EditUtils {
 	 * 			at least one cell is not editable.
 	 */
 	public static boolean allCellsEditable(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
-		ILayerCell layerCell = null;
-		for (PositionCoordinate cell : selectedCells) {
-			layerCell = selectionLayer.getCellByPosition(cell.columnPosition, cell.rowPosition);
+		Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
+		for (ILayerCell layerCell : selectedCells) {
 			LabelStack labelStack = layerCell.getConfigLabels();
 			IEditableRule editableRule = configRegistry.getConfigAttribute(
 					EditConfigAttributes.CELL_EDITABLE_RULE, 
@@ -189,11 +188,9 @@ public class EditUtils {
 	 */
 	public static boolean isValueSame(SelectionLayer selectionLayer) {
 		Object lastSelectedValue = null;
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
-		for (PositionCoordinate selectedCell : selectedCells) {
-			Object cellValue = selectionLayer
-					.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition)
-					.getDataValue();
+		Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
+		for (ILayerCell layerCell : selectedCells) {
+			Object cellValue = layerCell.getDataValue();
 			if (lastSelectedValue == null) {
 				lastSelectedValue = cellValue;
 			}

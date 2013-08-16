@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.edit;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -140,7 +141,7 @@ public class EditController {
 	 * 			activation of editors.
 	 */
 	public static void editCells(
-			final List<ILayerCell> cells, final Composite parent, 
+			final Collection<ILayerCell> cells, final Composite parent, 
 			Object initialCanonicalValue, final IConfigRegistry configRegistry) {
 		
 		if (cells != null && !cells.isEmpty()) {
@@ -152,7 +153,7 @@ public class EditController {
 			ICellEditor cellEditor = configRegistry.getConfigAttribute(
 					EditConfigAttributes.CELL_EDITOR, 
 					DisplayMode.EDIT, 
-					cells.get(0).getConfigLabels().getLabels());
+					cells.iterator().next().getConfigLabels().getLabels());
 
 			if (cells.size() == 1 || 
 					(cells.size() > 1 && supportMultiEdit(cells, cellEditor, configRegistry))) {
@@ -162,7 +163,7 @@ public class EditController {
 					//configuration, we can simply use any cell for multi cell edit handling
 					ICellEditDialog dialog = CellEditDialogFactory.createCellEditDialog(
 							parent != null ? parent.getShell() : null, initialCanonicalValue, 
-									cells.get(0), cellEditor, configRegistry);
+									cells.iterator().next(), cellEditor, configRegistry);
 					
 					int returnValue = dialog.open();
 					
@@ -219,7 +220,7 @@ public class EditController {
 	 * @return <code>true</code> if the editor supports multi edit for all selected cells,
 	 * 			<code>false</code> if at least one cell does specify to not support multi edit.
 	 */
-	private static boolean supportMultiEdit(List<ILayerCell> cells, ICellEditor cellEditor, IConfigRegistry configRegistry) {
+	private static boolean supportMultiEdit(Collection<ILayerCell> cells, ICellEditor cellEditor, IConfigRegistry configRegistry) {
 		for (ILayerCell cell : cells) {
 			if (!cellEditor.supportMultiEdit(configRegistry, cell.getConfigLabels().getLabels())) {
 				return false;

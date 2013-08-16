@@ -10,8 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -36,6 +35,7 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
 		this.selectionLayer = selectionLayer;
 	}
 	
+	@Override
 	public Class<EditSelectionCommand> getCommandClass() {
 		return EditSelectionCommand.class;
 	}
@@ -50,36 +50,29 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
 				&& EditUtils.isEditorSame(this.selectionLayer, configRegistry)
 				&& EditUtils.isConverterSame(this.selectionLayer, configRegistry)) {
 			//check how many cells are selected
-			PositionCoordinate[] selectedCellPositions = this.selectionLayer.getSelectedCellPositions();
-			if (selectedCellPositions.length == 1) {
+			Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
+			if (selectedCells.size() == 1) {
 				//editing is triggered by key for a single cell
 				//we need to fire the InlineCellEditEvent here because we don't know the correct bounds
 				//of the cell to edit inline corresponding to the NatTable. On firing the event, a
 				//translation process is triggered, converting the information to the correct values
 				//needed for inline editing
-				PositionCoordinate selectedCell = selectedCellPositions[0];
-				ILayerCell cell = this.selectionLayer.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition);
+				ILayerCell cell = selectedCells.iterator().next();
 				this.selectionLayer.fireLayerEvent(
 						new InlineCellEditEvent(
 								this.selectionLayer, 
-								new PositionCoordinate(this.selectionLayer, selectedCell.columnPosition, selectedCell.rowPosition), 
+								new PositionCoordinate(this.selectionLayer, cell.getColumnPosition(), cell.getRowPosition()), 
 								parent, 
 								configRegistry, 
 								(initialValue != null ? initialValue : cell.getDataValue())));
 			}
-			else if (selectedCellPositions.length > 1) {
-				
-				//collect the selected ILayerCells for further processing
-				List<ILayerCell> selectedCells = new ArrayList<ILayerCell>();
-				for (PositionCoordinate coord : selectedCellPositions) {
-					selectedCells.add(this.selectionLayer.getCellByPosition(coord.columnPosition, coord.rowPosition));
-				}
-				
+			else if (selectedCells.size() > 1) {
 				//determine the initial value
 				Object initialEditValue = initialValue;
 				if (initialValue == null && EditUtils.isValueSame(this.selectionLayer)) {
+					ILayerCell cell = selectedCells.iterator().next();
 					initialEditValue = this.selectionLayer.getDataValueByPosition(
-							selectedCellPositions[0].columnPosition, selectedCellPositions[0].rowPosition);
+							 cell.getColumnPosition(), cell.getRowPosition());
 				}
 				
 				EditController.editCells(selectedCells, parent, initialEditValue, configRegistry);
