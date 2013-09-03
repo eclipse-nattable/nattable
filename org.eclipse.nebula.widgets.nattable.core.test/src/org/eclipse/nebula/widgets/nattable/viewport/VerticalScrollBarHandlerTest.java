@@ -114,10 +114,10 @@ public class VerticalScrollBarHandlerTest {
 
 		// Fixture data - viewport height (100px), scrollable height (365px)
 		// No overhang
-		assertEquals(100, scrollHandler.scrollBar.getThumb());
+		assertEquals(100, scrollHandler.scroller.getThumb());
 
 		viewport.moveRowPositionIntoViewport(5);
-		assertEquals(100, scrollHandler.scrollBar.getThumb());
+		assertEquals(100, scrollHandler.scroller.getThumb());
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public class VerticalScrollBarHandlerTest {
 
 		scrollHandler.recalculateScrollBarSize();
 
-		assertEquals(365, scrollHandler.scrollBar.getThumb());
+		assertEquals(365, scrollHandler.scroller.getThumb());
 		assertFalse(scrollBar.isEnabled());
 		assertFalse(scrollBar.isVisible());
 	}

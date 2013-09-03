@@ -10,10 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ScrollBar;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PixelCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -42,6 +38,10 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumn
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ScrollEvent;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ViewportEventHandler;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Scrollable;
 
 
 /**
@@ -59,6 +59,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	private VerticalScrollBarHandler vBarListener;
 	private final IUniqueIndexLayer scrollableLayer;
 
+	private IScroller horizontalScroller;
+	private IScroller verticalScroller;
+	
 	// The viewport origin, in scrollable pixel coordinates.
 	private PixelCoordinate origin = new PixelCoordinate(0, 0);
 	private PixelCoordinate minimumOrigin = new PixelCoordinate(0, 0);
@@ -102,6 +105,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 		
 		cancelEdgeHoverScroll();
+	}
+	
+	public void setHorizontalScroller(IScroller scroller) {
+		horizontalScroller = scroller;
+	}
+	
+	public void setVerticalScrollBarEnabled(IScroller scroller) {
+		verticalScroller = scroller;
 	}
 	
 	// Minimum Origin
@@ -641,33 +652,59 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		fireLayerEvent(new ScrollEvent(this));
 	}
 
+	boolean processingClientAreaResizeCommand = false;
+	
 	@Override
 	public boolean doCommand(ILayerCommand command) {
 		if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
+			if (processingClientAreaResizeCommand)
+				return true;
+			
+			processingClientAreaResizeCommand = true;
+			
 			ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
 			
 			//remember the difference from client area to body region area
 			//needed because the scrollbar will be removed and therefore the client area will become bigger
-			int widthDiff = clientAreaResizeCommand.getScrollable().getClientArea().width - clientAreaResizeCommand.getCalcArea().width;
-			int heightDiff = clientAreaResizeCommand.getScrollable().getClientArea().height - clientAreaResizeCommand.getCalcArea().height;
+			Scrollable scrollable = clientAreaResizeCommand.getScrollable();
+			Rectangle clientArea = scrollable.getClientArea();
+			Rectangle calcArea = clientAreaResizeCommand.getCalcArea();
+			int widthDiff = clientArea.width - calcArea.width;
+			int heightDiff = clientArea.height - calcArea.height;
 			
-			ScrollBar hBar = clientAreaResizeCommand.getScrollable().getHorizontalBar();
-			ScrollBar vBar = clientAreaResizeCommand.getScrollable().getVerticalBar();
-
-			if (hBarListener == null && hBar != null) {
-				hBarListener = new HorizontalScrollBarHandler(this, hBar);
+			if (hBarListener == null) {
+				ScrollBar hBar = scrollable.getHorizontalBar();
+				if (horizontalScroller != null && horizontalScroller.getUnderlying() != hBar) {
+					hBar.setEnabled(false);
+					hBar.setVisible(false);
+				} else {
+					horizontalScroller = new ScrollBarScroller(hBar);
+				}
+				
+				hBarListener = new HorizontalScrollBarHandler(this, horizontalScroller);
 			}
-			if (vBarListener == null && vBar != null) {
-				vBarListener = new VerticalScrollBarHandler(this, vBar);
+			if (vBarListener == null) {
+				ScrollBar vBar = scrollable.getVerticalBar();
+				if (verticalScroller != null && verticalScroller.getUnderlying() != vBar) {
+					vBar.setEnabled(false);
+					vBar.setVisible(false);
+				} else {
+					verticalScroller = new ScrollBarScroller(vBar);
+				}
+				
+				vBarListener = new VerticalScrollBarHandler(this, verticalScroller);
 			}
 
 			handleGridResize();
 			
 			//after handling the scrollbars recalculate the area to use for percentage calculation
-			Rectangle possibleArea = clientAreaResizeCommand.getScrollable().getClientArea();
+			Rectangle possibleArea = clientArea;
 			possibleArea.width = possibleArea.width - widthDiff;
 			possibleArea.height = possibleArea.height - heightDiff;
 			clientAreaResizeCommand.setCalcArea(possibleArea);
+			
+			processingClientAreaResizeCommand = false;
+			return true;
 		} else if (command instanceof TurnViewportOffCommand) {
 			savedOrigin = origin;
 			viewportOff = true;
@@ -689,7 +726,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		if (hBarListener != null) {
 			hBarListener.recalculateScrollBarSize();
 			
-			if (!hBarListener.scrollBar.getEnabled()) {
+			if (!hBarListener.scroller.getEnabled()) {
 				setOriginX(0);
 			} else {
 				setOriginX(origin.getX());
@@ -704,7 +741,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		if (vBarListener != null) {
 			vBarListener.recalculateScrollBarSize();
 			
-			if (!vBarListener.scrollBar.getEnabled()) {
+			if (!vBarListener.scroller.getEnabled()) {
 				setOriginY(0);
 			} else {
 				setOriginY(origin.getY());

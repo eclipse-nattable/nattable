@@ -26,7 +26,11 @@ import org.eclipse.swt.widgets.ScrollBar;
 public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 
 	public HorizontalScrollBarHandler(ViewportLayer viewportLayer, ScrollBar scrollBar) {
-		super(viewportLayer, scrollBar);
+		this(viewportLayer, new ScrollBarScroller(scrollBar));
+	}
+	
+	public HorizontalScrollBarHandler(ViewportLayer viewportLayer, IScroller scroller) {
+		super(viewportLayer, scroller);
 		
 	}
 

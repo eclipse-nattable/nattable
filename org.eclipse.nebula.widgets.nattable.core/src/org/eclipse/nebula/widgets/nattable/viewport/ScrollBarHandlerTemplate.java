@@ -10,21 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
-
 import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.ScrollBar;
 
 public abstract class ScrollBarHandlerTemplate implements Listener {
 
 	public static final int DEFAULT_OFFSET = 1;
 	protected final ViewportLayer viewportLayer;
 	protected final IUniqueIndexLayer scrollableLayer;
-	protected final ScrollBar scrollBar;
+	protected final IScroller scroller;
 	
 	/**
 	 * Flag to remember if the scroll bar is moved by dragging.
@@ -36,16 +34,16 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 	 */
 	private boolean dragging = false;
 
-	public ScrollBarHandlerTemplate(ViewportLayer viewportLayer, ScrollBar scrollBar) {
+	public ScrollBarHandlerTemplate(ViewportLayer viewportLayer, IScroller scroller) {
 		this.viewportLayer = viewportLayer;
 		this.scrollableLayer = viewportLayer.getScrollableLayer();
-		this.scrollBar = scrollBar;
-		this.scrollBar.addListener(SWT.Selection, this);
+		this.scroller = scroller;
+		this.scroller.addListener(SWT.Selection, this);
 	}
 	
 	public void dispose() {
-		if (this.scrollBar != null && !this.scrollBar.isDisposed()) {
-			this.scrollBar.removeListener(SWT.Selection, this);
+		if (this.scroller != null && !this.scroller.isDisposed()) {
+			this.scroller.removeListener(SWT.Selection, this);
 		}
 	}
 
@@ -64,10 +62,8 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 			this.dragging = false;
 		}
 			
-		if (handle) {
-			ScrollBar scrollBar = (ScrollBar) event.widget;
-			
-			setViewportOrigin(getViewportMinimumOrigin() + scrollBar.getSelection());
+		if (handle && event.widget == scroller.getUnderlying()) {
+			setViewportOrigin(getViewportMinimumOrigin() + scroller.getSelection());
 			setScrollIncrement();
 		} else {
 			adjustScrollBar();
@@ -76,22 +72,22 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 
 	void adjustScrollBar() {
 		
-		if (scrollBar.isDisposed()) {
+		if (scroller.isDisposed()) {
 			return;
 		}
 		int startPixel = getViewportOrigin() - getViewportMinimumOrigin();
 		
-		scrollBar.setSelection(startPixel);
+		scroller.setSelection(startPixel);
 	}
 
 	void recalculateScrollBarSize() {
-		if (scrollBar.isDisposed()) {
+		if (scroller.isDisposed()) {
 			return;
 		}
 		
 		int max = getScrollableLayerSpan() - getViewportMinimumOrigin();
-		if (! scrollBar.isDisposed()) {
-			scrollBar.setMaximum(max);
+		if (! scroller.isDisposed()) {
+			scroller.setMaximum(max);
 		}
 		
 		int viewportWindowSpan = getViewportWindowSpan();
@@ -99,25 +95,25 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		int thumbSize;
 		if (viewportWindowSpan < max && viewportWindowSpan != 0) {
 			thumbSize = viewportWindowSpan;
-			scrollBar.setEnabled(true);
-			scrollBar.setVisible(true);
+			scroller.setEnabled(true);
+			scroller.setVisible(true);
 			
 			setScrollIncrement();
 			
-			scrollBar.setPageIncrement(viewportWindowSpan);
+			scroller.setPageIncrement(viewportWindowSpan);
 		} else {
 			thumbSize = max;
-			scrollBar.setEnabled(false);
-			scrollBar.setVisible(false);
+			scroller.setEnabled(false);
+			scroller.setVisible(false);
 		}
-		scrollBar.setThumb(thumbSize);
+		scroller.setThumb(thumbSize);
 		
 		adjustScrollBar();
 	}
 
 	void setScrollIncrement() {
 		int scrollIncrement = Math.min(getScrollIncrement(), getViewportWindowSpan() / 4);
-		scrollBar.setIncrement(scrollIncrement);
+		scroller.setIncrement(scrollIncrement);
 	}
 	
 	/**

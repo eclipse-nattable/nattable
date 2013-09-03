@@ -147,10 +147,10 @@ public class HorizontalScrollBarHandlerTest {
 		scrollHandler.recalculateScrollBarSize();
 
 		// Fixture data - viewport (250px), scrollable(465px)
-		assertEquals(250, scrollHandler.scrollBar.getThumb());
+		assertEquals(250, scrollHandler.scroller.getThumb());
 
 		viewport.moveColumnPositionIntoViewport(9);
-		assertEquals(250, scrollHandler.scrollBar.getThumb());
+		assertEquals(250, scrollHandler.scroller.getThumb());
 	}
 
 	@Test
@@ -161,7 +161,7 @@ public class HorizontalScrollBarHandlerTest {
 		scrollHandler.recalculateScrollBarSize();
 		assertEquals(465, viewport.getWidth());
 
-		assertEquals(465, scrollHandler.scrollBar.getThumb());
+		assertEquals(465, scrollHandler.scroller.getThumb());
 		assertFalse(scrollBar.isEnabled());
 		assertFalse(scrollBar.isVisible());
 	}
