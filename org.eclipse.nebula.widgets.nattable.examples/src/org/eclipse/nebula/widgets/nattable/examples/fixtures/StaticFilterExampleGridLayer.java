@@ -13,14 +13,12 @@ package org.eclipse.nebula.widgets.nattable.examples.fixtures;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.data.AbstractFilterListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsStaticFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -46,7 +44,6 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 
 public class StaticFilterExampleGridLayer extends GridLayer {
@@ -103,13 +100,11 @@ public class StaticFilterExampleGridLayer extends GridLayer {
 
 		//	Note: The column header layer is wrapped in a filter row composite.
 		//	This plugs in the filter row functionality
-		CompositeMatcherEditor<RowDataFixture> autoFilterMatcherEditor = new CompositeMatcherEditor<RowDataFixture>();
-		filterList.setMatcherEditor(autoFilterMatcherEditor);
 		
 //		DefaultGlazedListsFilterStrategy<RowDataFixture> filterStrategy = 
 //				new DefaultGlazedListsFilterStrategy<RowDataFixture>(autoFilterMatcherEditor, columnPropertyAccessor, configRegistry);
 		DefaultGlazedListsStaticFilterStrategy<RowDataFixture> filterStrategy = 
-				new DefaultGlazedListsStaticFilterStrategy<RowDataFixture>(autoFilterMatcherEditor, columnPropertyAccessor, configRegistry);
+				new DefaultGlazedListsStaticFilterStrategy<RowDataFixture>(filterList, columnPropertyAccessor, configRegistry);
 		filterStrategy.addStaticFilter(new Matcher<RowDataFixture>() {
 			
 			@Override

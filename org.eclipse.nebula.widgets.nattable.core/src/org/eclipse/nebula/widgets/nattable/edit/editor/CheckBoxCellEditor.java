@@ -10,9 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
-import java.util.List;
-
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
@@ -68,6 +65,7 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
 			// Close editor so will react to subsequent clicks on the cell
 			if (this.canvas != null && !this.canvas.isDisposed()) {
 				this.canvas.getDisplay().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						close();
 					}
@@ -130,7 +128,7 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
 	}
 
 	@Override
-	public boolean supportMultiEdit(IConfigRegistry configRegistry, List<String> configLabels) {
+	public boolean openMultiEditDialog() {
 		//as it doesn't make sense to open a subdialog for checkbox multi editing, this is not supported
 		return false;
 	}

@@ -37,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 public class ColumnHeaderLayerStack<T extends TableRow> extends AbstractLayerTransform {
 
@@ -77,13 +76,10 @@ public class ColumnHeaderLayerStack<T extends TableRow> extends AbstractLayerTra
 		}
 
 		if(tableModel.enableFilterRow){
-			CompositeMatcherEditor<T> autoFilterMatcherEditor = new CompositeMatcherEditor<T>();
-			filterList.setMatcherEditor(autoFilterMatcherEditor);	
-			
 			filterRowHeaderLayer =
 				new FilterRowHeaderComposite<T>(
 						new DefaultGlazedListsFilterStrategy<T>(
-								autoFilterMatcherEditor,
+								filterList,
 								columnAccessor,
 								configRegistry
 						),

@@ -79,6 +79,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		}
 
 		modelChangeListener = new IColumnGroupModelListener() { 
+			@Override
 			public void columnGroupModelChanged() { 
 				fireLayerEvent(new RowStructuralRefreshEvent(columnHeaderLayer)); 
 			} 
@@ -135,6 +136,14 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		} else {
 			return columnHeaderLayer.getRowIndexByPosition(rowPosition - 1);
 		}
+	}
+
+	@Override
+	public int localToUnderlyingRowPosition(int localRowPosition) {
+		if (localRowPosition == 0) {
+			return localRowPosition;
+		}
+		return localRowPosition-1;
 	}
 
 	// Height

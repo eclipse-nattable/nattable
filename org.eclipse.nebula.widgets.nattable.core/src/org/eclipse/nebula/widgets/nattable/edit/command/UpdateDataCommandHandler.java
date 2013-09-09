@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
@@ -38,6 +39,7 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
 		this.dataLayer = dataLayer;
 	}
 	
+	@Override
 	public Class<UpdateDataCommand> getCommandClass() {
 		return UpdateDataCommand.class;
 	}
@@ -47,13 +49,17 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
 		try {
 			int columnPosition = command.getColumnPosition();
 			int rowPosition = command.getRowPosition();
-			dataLayer.getDataProvider().setDataValue(columnPosition, rowPosition, command.getNewValue());
-			dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer, columnPosition, rowPosition));
+			if (!ObjectUtils.equals(
+					dataLayer.getDataValue(columnPosition, rowPosition), command.getNewValue())) {
+				dataLayer.setDataValue(columnPosition, rowPosition, command.getNewValue());
+				dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer, columnPosition, rowPosition));
+				
+				//TODO implement a new event which is a mix of PropertyUpdateEvent and CellVisualChangeEvent
+			}
 			return true;
-		} catch (UnsupportedOperationException e) {
+		} catch(Exception e) {
 			log.error("Failed to update value to: "+command.getNewValue(), e); //$NON-NLS-1$
 			return false;
 		}
 	}
-
 }

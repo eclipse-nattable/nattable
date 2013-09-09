@@ -30,24 +30,35 @@ import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommand;
+import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
+import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.event.InlineCellEditEvent;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.grid.data.DummySpanningBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
+import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.layer.SpanningDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ComboBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.PricingTypeBean;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
@@ -379,6 +390,75 @@ public class EditIntegrationTest {
 		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 	}
 
+	@Test
+	public void openEditorForSpannedCellsShouldOpenInline() throws Exception {
+		CompositeLayer layer = new CompositeLayer(1, 1);
+		SelectionLayer selectionLayer = new SelectionLayer(new SpanningDataLayer(new DummySpanningBodyDataProvider(100, 100)));
+		layer.setChildLayer(GridRegion.BODY, new ViewportLayer(selectionLayer), 0, 0);
+		natTable = new NatTableFixture(layer, 1200, 300, false);
+
+		layer.addConfiguration(new DefaultEditBindings());
+		layer.addConfiguration(new DefaultEditConfiguration());
+		
+		natTable.enableEditingOnAllCells();
+
+		final boolean[] inlineFired = new boolean[1];
+		inlineFired[0] = false;
+		selectionLayer.addLayerListener(new ILayerListener() {
+			
+			@Override
+			public void handleLayerEvent(ILayerEvent event) {
+				if (event instanceof InlineCellEditEvent) {
+					inlineFired[0] = true;
+				}
+			}
+		});
+		
+		natTable.configure();
+		
+		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.F2));
+
+		// Verify edit mode
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+		assertEquals("Col: 1, Row: 1", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
+
+		//verify that inline editing is used and not dialog
+		assertTrue("No InlineCellEditEvent fired", inlineFired[0]);
+	}
+
+	@Test
+	public void updateAllUnderlyingCellsIfSpanned() throws Exception {
+		CompositeLayer layer = new CompositeLayer(1, 1);
+		DummySpanningBodyDataProvider dataProvider = new DummySpanningBodyDataProvider(100, 100);
+		SelectionLayer selectionLayer = new SelectionLayer(new SpanningDataLayer(dataProvider));
+		layer.setChildLayer(GridRegion.BODY, new ViewportLayer(selectionLayer), 0, 0);
+		natTable = new NatTableFixture(layer, 1200, 300, false);
+
+		layer.addConfiguration(new DefaultEditBindings());
+		layer.addConfiguration(new DefaultEditConfiguration());
+		
+		natTable.enableEditingOnAllCells();
+
+		natTable.configure();
+		
+		assertEquals("Col: 1, Row: 1", dataProvider.getDataValue(0, 0));
+		assertEquals("Col: 1, Row: 2", dataProvider.getDataValue(0, 1));
+		assertEquals("Col: 2, Row: 1", dataProvider.getDataValue(1, 0));
+		assertEquals("Col: 2, Row: 2", dataProvider.getDataValue(1, 1));
+		
+		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('C'));
+
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+
+		ActiveCellEditorRegistry.getActiveCellEditor().getEditorControl().notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
+
+		assertEquals("C", dataProvider.getDataValue(0, 0));
+		assertEquals("C", dataProvider.getDataValue(0, 1));
+		assertEquals("C", dataProvider.getDataValue(1, 0));
+		assertEquals("C", dataProvider.getDataValue(1, 1));
+	}
 
 	// *** Convenience methods ***.
 	// Mostly code from the EditableGridExample.

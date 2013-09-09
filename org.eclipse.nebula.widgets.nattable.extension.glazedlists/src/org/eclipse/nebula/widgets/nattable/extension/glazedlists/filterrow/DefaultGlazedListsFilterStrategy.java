@@ -16,7 +16,6 @@ import static org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConf
 import static org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes.TEXT_DELIMITER;
 import static org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes.TEXT_MATCHING_MODE;
 import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.NORMAL;
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
 
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +42,7 @@ import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import ca.odell.glazedlists.matchers.ThresholdMatcherEditor;
+import ca.odell.glazedlists.util.concurrent.ReadWriteLock;
 
 public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
@@ -50,7 +50,10 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 
 	protected final IColumnAccessor<T> columnAccessor;
 	protected final IConfigRegistry configRegistry;
-	protected final CompositeMatcherEditor<T> matcherEditor;
+	private final CompositeMatcherEditor<T> matcherEditor;
+	
+	protected FilterList<T> filterList;
+	protected ReadWriteLock filterLock;
 	
 	/**
 	 * Create a new DefaultGlazedListsFilterStrategy on top of the given FilterList.
@@ -62,23 +65,32 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	 * @param configRegistry The IConfigRegistry necessary to retrieve filter specific configurations.
 	 */
 	public DefaultGlazedListsFilterStrategy(FilterList<T> filterList, IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
-		this(new CompositeMatcherEditor<T>(), columnAccessor, configRegistry);
-		filterList.setMatcherEditor(this.matcherEditor);
+		this(filterList, new CompositeMatcherEditor<T>(), columnAccessor, configRegistry);
+		this.matcherEditor.setMode(CompositeMatcherEditor.AND);		
 	}
 	
 	/**
-	 * Create a new DefaultGlazedListsFilterStrategy based on the given CompositeMatcherEditor.
+	 * Create a new DefaultGlazedListsFilterStrategy on top of the given FilterList using the given CompositeMatcherEditor.
+	 * This is necessary to support connection of multiple filter rows.
 	 * <p>
-	 * Note: Using this constructor you need to set the CompositeMatcherEditor as MatcherEditor on the FilterList
-	 * 		 yourself!
-	 * @param matcherEditor The CompositeMatcherEditor that should be used by the created DefaultGlazedListsFilterStrategy. 
+	 * Note: Using this constructor you need to create the CompositeMatcherEditor yourself. It will be added automatically
+	 * 		 to the given FilterList, so you can skip that step. 
+	 * @param filterList The FilterList that is used within the GlazedLists based NatTable for filtering. 
+	 * @param matcherEditor The CompositeMatcherEditor that should be used by this DefaultGlazedListsFilterStrategy. 
 	 * @param columnAccessor The IColumnAccessor necessary to access the column data of the row objects in the FilterList.
 	 * @param configRegistry The IConfigRegistry necessary to retrieve filter specific configurations.
 	 */
-	public DefaultGlazedListsFilterStrategy(CompositeMatcherEditor<T> matcherEditor, IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
+	public DefaultGlazedListsFilterStrategy(FilterList<T> filterList, CompositeMatcherEditor<T> matcherEditor, 
+			IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
 		this.columnAccessor = columnAccessor;
 		this.configRegistry = configRegistry;
+		
 		this.matcherEditor = matcherEditor;
+
+		this.filterList = filterList;
+		this.filterList.setMatcherEditor(this.matcherEditor);
+		
+		this.filterLock = filterList.getReadWriteLock();
 	}
 
 	/**
@@ -87,13 +99,21 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
+		
+		//wait until all listeners had the chance to handle the clear event
 		try {
-			matcherEditor.getMatcherEditors().clear();
-			
-			if (filterIndexToObjectMap.isEmpty()) {
-				return;
-			}
-			
+			this.filterLock.writeLock().lock();
+			this.matcherEditor.getMatcherEditors().clear();
+		}
+		finally {
+			this.filterLock.writeLock().unlock();
+		}
+		
+		if (filterIndexToObjectMap.isEmpty()) {
+			return;
+		}
+		
+		try {
 			EventList<MatcherEditor<T>> matcherEditors = new BasicEventList<MatcherEditor<T>>();
 
 			for (Entry<Integer, Object> mapEntry : filterIndexToObjectMap.entrySet()) {
@@ -131,8 +151,15 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 				}
 			}
 			
-			matcherEditor.getMatcherEditors().addAll(matcherEditors);
-			matcherEditor.setMode(CompositeMatcherEditor.AND);
+			//wait until all listeners had the chance to handle the clear event
+			try {
+				this.filterLock.writeLock().lock();
+				this.matcherEditor.getMatcherEditors().addAll(matcherEditors);
+			}
+			finally {
+				this.filterLock.writeLock().unlock();
+			}
+
 		} catch (Exception e) {
 			log.error("Error on applying a filter", e); //$NON-NLS-1$
 		}
@@ -199,7 +226,7 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 			public void getFilterStrings(List<String> objectAsListOfStrings, T rowObject) {
 				Object cellData = columnAccessor.getDataValue(rowObject, columnIndex);
 				Object displayValue = converter.canonicalToDisplayValue(cellData);
-				displayValue = isNotNull(displayValue) ? displayValue : ""; //$NON-NLS-1$
+				displayValue = (displayValue != null) ? displayValue : ""; //$NON-NLS-1$
 				objectAsListOfStrings.add(displayValue.toString());
 			}
 		};
@@ -221,4 +248,21 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 		}
 	}
 
+	/**
+	 * Returns the CompositeMatcherEditor that is created and used by this IFilterStrategy.
+	 * In prior versions it was necessary to create the CompositeMatcherEditor outside this
+	 * class and use it as constructor parameter. We changed this to hide that implementation
+	 * from users and to ensure that filter operations and possible listeners are executed
+	 * thread safe. Otherwise there might be concurrency issues while filtering.
+	 * <p> 
+	 * If you want to use additional filtering you should now use this method to work on the 
+	 * created CompositeMatcherEditor instead of creating one outside. For static filtering
+	 * additional to the filter row you might want to consider using the 
+	 * DefaultGlazedListsStaticFilterStrategy.
+	 * 
+	 * @return The CompositeMatcherEditor that is created and used by this IFilterStrategy.
+	 */
+	public CompositeMatcherEditor<T> getMatcherEditor() {
+		return matcherEditor;
+	}
 }

@@ -29,6 +29,7 @@ public class ViewportSelectColumnAction implements IMouseAction {
 		this.withControlMask = withControlMask;
 	}
 	
+	@Override
 	public void run(NatTable natTable, MouseEvent event) {
 		natTable.doCommand(new ViewportSelectColumnCommand(natTable, natTable.getColumnPositionByX(event.x), withShiftMask, withControlMask));
 	}

@@ -23,6 +23,7 @@ public class AbstractMouseSelectionAction implements IMouseAction {
     private int gridColumnPosition;
     private int gridRowPosition;
 
+	@Override
 	public void run(NatTable natTable, MouseEvent event) {
     	withShiftMask = (event.stateMask & SWT.SHIFT) != 0;
     	withControlMask = (event.stateMask & SWT.CTRL) != 0;
@@ -48,5 +49,4 @@ public class AbstractMouseSelectionAction implements IMouseAction {
 	public int getGridRowPosition() {
 		return gridRowPosition;
 	}
-
 }

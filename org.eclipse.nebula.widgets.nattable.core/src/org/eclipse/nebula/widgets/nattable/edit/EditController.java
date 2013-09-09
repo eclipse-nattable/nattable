@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.edit;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -140,7 +141,7 @@ public class EditController {
 	 * 			activation of editors.
 	 */
 	public static void editCells(
-			final List<ILayerCell> cells, final Composite parent, 
+			final Collection<ILayerCell> cells, final Composite parent, 
 			Object initialCanonicalValue, final IConfigRegistry configRegistry) {
 		
 		if (cells != null && !cells.isEmpty()) {
@@ -152,28 +153,53 @@ public class EditController {
 			ICellEditor cellEditor = configRegistry.getConfigAttribute(
 					EditConfigAttributes.CELL_EDITOR, 
 					DisplayMode.EDIT, 
-					cells.get(0).getConfigLabels().getLabels());
-			
+					cells.iterator().next().getConfigLabels().getLabels());
+
 			if (cells.size() == 1 || 
 					(cells.size() > 1 && supportMultiEdit(cells, cellEditor, configRegistry))) {
-				//as the EditSelectionCommandHandler already ensured that all cells have the same
-				//configuration, we can simply use any cell for multi cell edit handling
-				ICellEditDialog dialog = CellEditDialogFactory.createCellEditDialog(
-						parent != null ? parent.getShell() : null, initialCanonicalValue, 
-								cells.get(0), cellEditor, configRegistry);
 				
-				int returnValue = dialog.open();
-				
-				if (returnValue == Window.OK) {
-					for (ILayerCell selectedCell : cells) {
-						Object editorValue = dialog.getCommittedValue();
-						if (!(dialog.getEditType() == EditTypeEnum.SET)) {
-							editorValue = dialog.calculateValue(selectedCell.getDataValue(), editorValue);
+				if (cellEditor.openMultiEditDialog()) {
+					//as the EditSelectionCommandHandler already ensured that all cells have the same
+					//configuration, we can simply use any cell for multi cell edit handling
+					ICellEditDialog dialog = CellEditDialogFactory.createCellEditDialog(
+							parent != null ? parent.getShell() : null, initialCanonicalValue, 
+									cells.iterator().next(), cellEditor, configRegistry);
+					
+					int returnValue = dialog.open();
+					
+					if (returnValue == Window.OK) {
+						for (ILayerCell selectedCell : cells) {
+							Object editorValue = dialog.getCommittedValue();
+							if (!(dialog.getEditType() == EditTypeEnum.SET)) {
+								editorValue = dialog.calculateValue(selectedCell.getDataValue(), editorValue);
+							}
+							ILayer layer = selectedCell.getLayer();
+							
+							layer.doCommand(new UpdateDataCommand(
+									layer, selectedCell.getColumnPosition(), selectedCell.getRowPosition(), editorValue));
 						}
-						ILayer layer = selectedCell.getLayer();
-						
-						layer.doCommand(new UpdateDataCommand(
-								layer, selectedCell.getColumnPosition(), selectedCell.getRowPosition(), editorValue));
+					}
+				}
+				else {
+					//if the editor is configured to do not open a multi edit dialog for 
+					//multi editing, we simply activate all editors for cells that are
+					//selected for multi editing
+					//this only works for editors that have no interactive control for
+					//editing, like for example the CheckBoxCellEditor that directly
+					//changes the value and closes right away.
+					for (ILayerCell cell : cells) {
+						ICellEditHandler editHandler = new InlineEditHandler(
+								cell.getLayer(),
+								cell.getColumnPosition(),
+								cell.getRowPosition());
+
+						cellEditor.activateCell(
+								parent, 
+								initialCanonicalValue, 
+								EditModeEnum.INLINE, 
+								editHandler, 
+								cell, 
+								configRegistry);
 					}
 				}
 			}
@@ -194,7 +220,7 @@ public class EditController {
 	 * @return <code>true</code> if the editor supports multi edit for all selected cells,
 	 * 			<code>false</code> if at least one cell does specify to not support multi edit.
 	 */
-	private static boolean supportMultiEdit(List<ILayerCell> cells, ICellEditor cellEditor, IConfigRegistry configRegistry) {
+	private static boolean supportMultiEdit(Collection<ILayerCell> cells, ICellEditor cellEditor, IConfigRegistry configRegistry) {
 		for (ILayerCell cell : cells) {
 			if (!cellEditor.supportMultiEdit(configRegistry, cell.getConfigLabels().getLabels())) {
 				return false;

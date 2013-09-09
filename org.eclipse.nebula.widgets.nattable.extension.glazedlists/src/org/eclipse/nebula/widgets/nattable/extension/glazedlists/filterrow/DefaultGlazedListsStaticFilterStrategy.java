@@ -49,22 +49,23 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
 			FilterList<T> filterList, IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
 		super(filterList, columnAccessor, configRegistry);
 	}
-
+	
 	/**
-	 * Create a new DefaultGlazedListsStaticFilterStrategy based on the given CompositeMatcherEditor.
+	 * Create a new DefaultGlazedListsStaticFilterStrategy on top of the given FilterList using the given CompositeMatcherEditor.
+	 * This is necessary to support connection of multiple filter rows.
 	 * <p>
-	 * Note: Using this constructor you need to set the CompositeMatcherEditor as MatcherEditor on the FilterList
-	 * 		 yourself!
-	 * @param matcherEditor The CompositeMatcherEditor that should be used by the created DefaultGlazedListsStaticFilterStrategy. 
+	 * Note: Using this constructor you need to create the CompositeMatcherEditor yourself. It will be added automatically
+	 * 		 to the given FilterList, so you can skip that step. 
+	 * @param filterList The FilterList that is used within the GlazedLists based NatTable for filtering. 
+	 * @param matcherEditor The CompositeMatcherEditor that should be used by this DefaultGlazedListsStaticFilterStrategy. 
 	 * @param columnAccessor The IColumnAccessor necessary to access the column data of the row objects in the FilterList.
 	 * @param configRegistry The IConfigRegistry necessary to retrieve filter specific configurations.
 	 */
-	public DefaultGlazedListsStaticFilterStrategy(
-			CompositeMatcherEditor<T> matcherEditor,
+	public DefaultGlazedListsStaticFilterStrategy(FilterList<T> filterList, CompositeMatcherEditor<T> matcherEditor, 
 			IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
-		super(matcherEditor, columnAccessor, configRegistry);
+		super(filterList, matcherEditor, columnAccessor, configRegistry);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * Always adds the static matchers.
@@ -72,7 +73,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
 	@Override
 	public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
 		super.applyFilter(filterIndexToObjectMap);
-		this.matcherEditor.getMatcherEditors().addAll(staticMatcherEditor.values());
+		this.getMatcherEditor().getMatcherEditors().addAll(staticMatcherEditor.values());
 	}
 	
 	/**
@@ -98,7 +99,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
 	 */
 	public void addStaticFilter(final MatcherEditor<T> matcherEditor) {
 		//add the new MatcherEditor to the CompositeMatcherEditor
-		this.matcherEditor.getMatcherEditors().add(matcherEditor);
+		this.getMatcherEditor().getMatcherEditors().add(matcherEditor);
 		
 		//remember the MatcherEditor so it can be restored after new MatcherEditors are added by the FilterRow
 		staticMatcherEditor.put(matcherEditor.getMatcher(), matcherEditor);

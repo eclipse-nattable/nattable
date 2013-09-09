@@ -173,7 +173,8 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 	 * 			where removed by the update.
 	 * @param cacheAfter The value cache for the column after the change. Needed to determine which values
 	 * 			where added by the update.
-	 * @return Event to tell about value cache updates for the given column.
+	 * @return Event to tell about value cache updates for the given column or <code>null</code> if nothing
+	 * 			has changed.
 	 */
 	protected FilterRowComboUpdateEvent buildUpdateEvent(int columnIndex, List<?> cacheBefore, List<?> cacheAfter) {
 		Set<Object> addedValues = new HashSet<Object>();
@@ -193,7 +194,13 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 			}
 		}
 		
-		return new FilterRowComboUpdateEvent(columnIndex, addedValues, removedValues);
+		//only create a new update event if there has something changed
+		if (!addedValues.isEmpty() || !removedValues.isEmpty()) {
+			return new FilterRowComboUpdateEvent(columnIndex, addedValues, removedValues);
+		}
+		
+		//nothing has changed so nothing to update
+		return null;
 	}
 	
 	/**
@@ -201,8 +208,10 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 	 * @param event The event to handle.
 	 */
 	protected void fireCacheUpdateEvent(FilterRowComboUpdateEvent event) {
-		for (IFilterRowComboUpdateListener listener : this.cacheUpdateListener) {
-			listener.handleEvent(event);
+		if (event != null) {
+			for (IFilterRowComboUpdateListener listener : this.cacheUpdateListener) {
+				listener.handleEvent(event);
+			}
 		}
 	}
 	
@@ -221,4 +230,16 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 	public void removeCacheUdpateListener(IFilterRowComboUpdateListener listener) {
 		this.cacheUpdateListener.remove(listener);
 	}
+
+	/**
+	 * @return The local cache for the values to show in the filter row combobox.
+	 * 			This is needed because otherwise the calculation of the necessary values
+	 * 			would happen everytime the combobox is opened and if a filter is applied
+	 * 			using GlazedLists for example, the combobox would only contain the value
+	 * 			which is currently used for filtering.
+	 */
+	protected Map<Integer, List<?>> getValueCache() {
+		return this.valueCache;
+	}
+
 }

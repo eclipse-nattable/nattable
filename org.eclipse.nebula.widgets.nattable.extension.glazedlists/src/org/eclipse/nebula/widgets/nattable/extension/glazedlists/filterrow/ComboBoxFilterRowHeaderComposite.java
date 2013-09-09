@@ -58,10 +58,6 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 	 */
 	protected boolean filterRowVisible = true;
 	/**
-	 * The CompositeMatcherEditor that is used for filtering.
-	 */
-	protected final CompositeMatcherEditor<T> matcherEditor;
-	/**
 	 * The IComboBoxDataProvider that is used to fill the filter row comboboxes.
 	 */
 	protected final FilterRowComboBoxDataProvider<T> comboBoxDataProvider;
@@ -72,8 +68,8 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 	
 	/**
 	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
-	 * Using this constructor will create a new CompositeMatcherEditor and add it to the
-	 * given FilterList directly. Also the default ComboBoxFilterRowConfiguration will be added.
+	 * Using this constructor will create the FilterRowComboBoxDataProvider needed for
+	 * filtering and add the default ComboBoxFilterRowConfiguration.
 	 * @param filterList The FilterList that will be used for filtering.
 	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
 	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
@@ -100,8 +96,77 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 	
 	/**
 	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
-	 * Using this constructor will create a new CompositeMatcherEditor and add it to the
-	 * given FilterList directly. Also the default ComboBoxFilterRowConfiguration will be added.
+	 * Using this constructor will create the FilterRowComboBoxDataProvider needed for
+	 * filtering . 
+	 * @param filterList The FilterList that will be used for filtering.
+	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
+	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
+	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
+	 * 			to show in the filter comboboxes and initially pre-select them.
+	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
+	 * 			to perform filtering.
+	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
+	 * 			Needed for building this CompositeLayer, dimensionally connect the filter row to and
+	 * 			retrieve information and perform actions related to filtering.
+	 * @param columnHeaderDataProvider The {@link IDataProvider} of the column header needed to retrieve the real 
+	 * 			column count of the column header and not a transformed one.
+	 * @param configRegistry The {@link IConfigRegistry} needed to retrieve various configurations.
+	 * @param useDefaultConfiguration Tell whether the default configuration should be used or not.
+	 * 			If not you need to ensure to add a configuration that adds at least the needed configuration
+	 * 			specified in ComboBoxFilterRowConfiguration 
+	 */
+	public ComboBoxFilterRowHeaderComposite(
+			FilterList<T> filterList,
+			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
+			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
+			IConfigRegistry configRegistry,
+			boolean useDefaultConfiguration) {
+		
+		this(filterList, new GlazedListsFilterRowComboBoxDataProvider<T>(bodyLayer, baseCollection, bodyDataColumnAccessor), 
+				bodyDataColumnAccessor,	columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
+	}
+	
+	/**
+	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
+	 * Using this constructor will create the FilterRowComboBoxDataProvider needed for
+	 * filtering . 
+	 * <p><b>Note:</b>This constructor should only be used in cases where it is absolutely 
+	 * necessary to use a custom CompositeMatcherEditor. This could be for example to create
+	 * a complex NatTable instance where several filter rows need to be combined.
+	 * @param filterList The FilterList that will be used for filtering.
+	 * @param matcherEditor The CompositeMatcherEditor that is set to the FilterList and needs to 
+	 * 			be used by the ComboBoxGlazedListsFilterStrategy to apply the filters via filter row.
+	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
+	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
+	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
+	 * 			to show in the filter comboboxes and initially pre-select them.
+	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
+	 * 			to perform filtering.
+	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
+	 * 			Needed for building this CompositeLayer, dimensionally connect the filter row to and
+	 * 			retrieve information and perform actions related to filtering.
+	 * @param columnHeaderDataProvider The {@link IDataProvider} of the column header needed to retrieve the real 
+	 * 			column count of the column header and not a transformed one.
+	 * @param configRegistry The {@link IConfigRegistry} needed to retrieve various configurations.
+	 * @param useDefaultConfiguration Tell whether the default configuration should be used or not.
+	 * 			If not you need to ensure to add a configuration that adds at least the needed configuration
+	 * 			specified in ComboBoxFilterRowConfiguration 
+	 */
+	public ComboBoxFilterRowHeaderComposite(
+			FilterList<T> filterList,
+			CompositeMatcherEditor<T> matcherEditor,
+			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
+			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
+			IConfigRegistry configRegistry,
+			boolean useDefaultConfiguration) {
+		
+		this(filterList, matcherEditor, new GlazedListsFilterRowComboBoxDataProvider<T>(bodyLayer, baseCollection, bodyDataColumnAccessor), 
+				bodyDataColumnAccessor,	columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
+	}
+	
+	/**
+	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
+	 * Using this constructor will add the default ComboBoxFilterRowConfiguration.
 	 * @param filterList The FilterList that will be used for filtering.
 	 * @param comboBoxDataProvider The FilterRowComboBoxDataProvider that should be used to fill the
 	 * 			filter comboboxes.
@@ -127,8 +192,8 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 	
 	/**
 	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
-	 * Using this constructor will create a new CompositeMatcherEditor and add it to the
-	 * given FilterList directly. Also the default ComboBoxFilterRowConfiguration will be added.
+	 * Will use the given FilterList for creating the ComboBoxGlazedListsFilterStrategy
+	 * and the given FilterRowComboBoxDataProvider instead of creating a new one. 
 	 * @param filterList The FilterList that will be used for filtering.
 	 * @param comboBoxDataProvider The FilterRowComboBoxDataProvider that should be used to fill the
 	 * 			filter comboboxes.
@@ -152,21 +217,23 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 			IConfigRegistry configRegistry,
 			boolean useDefaultConfiguration) {
 		
-		this(new CompositeMatcherEditor<T>(), comboBoxDataProvider, bodyDataColumnAccessor, 
-				columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
-		
-		filterList.setMatcherEditor(this.matcherEditor);
+		this(new ComboBoxGlazedListsFilterStrategy<T>(
+				comboBoxDataProvider, filterList, bodyDataColumnAccessor, configRegistry),
+				comboBoxDataProvider, columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
 	}
 	
 	/**
 	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
-	 * Using this constructor will create a new CompositeMatcherEditor and add it to the
-	 * given FilterList directly. 
+	 * Will use the given FilterList and MatcherEditor for creating the ComboBoxGlazedListsFilterStrategy
+	 * and the given FilterRowComboBoxDataProvider instead of creating a new one. 
+	 * <p><b>Note:</b>This constructor should only be used in cases where it is absolutely 
+	 * necessary to use a custom CompositeMatcherEditor. This could be for example to create
+	 * a complex NatTable instance where several filter rows need to be combined.
 	 * @param filterList The FilterList that will be used for filtering.
-	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
-	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
-	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
-	 * 			to show in the filter comboboxes and initially pre-select them.
+	 * @param matcherEditor The CompositeMatcherEditor that is set to the FilterList and needs to 
+	 * 			be used by the ComboBoxGlazedListsFilterStrategy to apply the filters via filter row.
+	 * @param comboBoxDataProvider The FilterRowComboBoxDataProvider that should be used to fill the
+	 * 			filter comboboxes.
 	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
 	 * 			to perform filtering.
 	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
@@ -181,64 +248,24 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 	 */
 	public ComboBoxFilterRowHeaderComposite(
 			FilterList<T> filterList,
-			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
+			CompositeMatcherEditor<T> matcherEditor,
+			FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
+			IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry,
 			boolean useDefaultConfiguration) {
 		
-		this(new CompositeMatcherEditor<T>(), bodyLayer, baseCollection, bodyDataColumnAccessor, 
-				columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
-		
-		filterList.setMatcherEditor(this.matcherEditor);
-	}
-
-	/**
-	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
-	 * Will use the given CompositeMatcherEditor for creating the ComboBoxGlazedListsFilterStrategy
-	 * instead of creating a new one. 
-	 * <p>
-	 * Note: Using this constructor implies that you added the given CompositeMatcherEditor to the
-	 * 		 FilterList this ComboBoxFilterRowHeaderComposite operates on yourself.
-	 * @param matcherEditor The CompositeMatcherEditor that is set to the FilterList and needs to 
-	 * 			be used by the ComboBoxGlazedListsFilterStrategy to apply the filters via filter row.
-	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
-	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
-	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
-	 * 			to show in the filter comboboxes and initially pre-select them.
-	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
-	 * 			to perform filtering.
-	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
-	 * 			Needed for building this CompositeLayer, dimensionally connect the filter row to and
-	 * 			retrieve information and perform actions related to filtering.
-	 * @param columnHeaderDataProvider The {@link IDataProvider} of the column header needed to retrieve the real 
-	 * 			column count of the column header and not a transformed one.
-	 * @param configRegistry The {@link IConfigRegistry} needed to retrieve various configurations.
-	 */
-	public ComboBoxFilterRowHeaderComposite(
-			CompositeMatcherEditor<T> matcherEditor,
-			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
-			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
-			IConfigRegistry configRegistry) {
-		
-		this(matcherEditor, bodyLayer, baseCollection, bodyDataColumnAccessor, 
-				columnHeaderLayer, columnHeaderDataProvider, configRegistry, true);
+		this(new ComboBoxGlazedListsFilterStrategy<T>(
+				comboBoxDataProvider, filterList, matcherEditor, bodyDataColumnAccessor, configRegistry),
+				comboBoxDataProvider, columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
 	}
 	
 	/**
 	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
-	 * Will use the given CompositeMatcherEditor for creating the ComboBoxGlazedListsFilterStrategy
-	 * instead of creating a new one. 
-	 * <p>
-	 * Note: Using this constructor implies that you added the given CompositeMatcherEditor to the
-	 * 		 FilterList this ComboBoxFilterRowHeaderComposite operates on yourself.
-	 * @param matcherEditor The CompositeMatcherEditor that is set to the FilterList and needs to 
-	 * 			be used by the ComboBoxGlazedListsFilterStrategy to apply the filters via filter row.
-	 * @param bodyLayer A layer in the body region. Usually the DataLayer or a layer that is responsible for list 
-	 * 			event handling.	Needed for creation of the FilterRowComboBoxDataProvider.
-	 * @param baseCollection The base collection that is used to fill the body. Needed to determine the values
-	 * 			to show in the filter comboboxes and initially pre-select them.
-	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
-	 * 			to perform filtering.
+	 * Will use the given ComboBoxGlazedListsFilterStrategy instead of creating a new one.
+	 * @param filterStrategy The ComboBoxGlazedListsFilterStrategy that should be used for filtering.
+	 * @param comboBoxDataProvider The FilterRowComboBoxDataProvider that should be used to fill the
+	 * 			filter comboboxes.
 	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
 	 * 			Needed for building this CompositeLayer, dimensionally connect the filter row to and
 	 * 			retrieve information and perform actions related to filtering.
@@ -250,74 +277,8 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 	 * 			specified in ComboBoxFilterRowConfiguration 
 	 */
 	public ComboBoxFilterRowHeaderComposite(
-			CompositeMatcherEditor<T> matcherEditor,
-			ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> bodyDataColumnAccessor,
-			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
-			IConfigRegistry configRegistry,
-			boolean useDefaultConfiguration) {
-		
-		this(matcherEditor, new FilterRowComboBoxDataProvider<T>(bodyLayer, baseCollection, bodyDataColumnAccessor), 
-				bodyDataColumnAccessor,	columnHeaderLayer, columnHeaderDataProvider, configRegistry, useDefaultConfiguration);
-	}
-	
-	/**
-	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
-	 * Will use the given CompositeMatcherEditor for creating the ComboBoxGlazedListsFilterStrategy
-	 * and the given FilterRowComboBoxDataProvider instead of creating a new one. 
-	 * <p>
-	 * Note: Using this constructor implies that you added the given CompositeMatcherEditor to the
-	 * 		 FilterList this ComboBoxFilterRowHeaderComposite operates on yourself.
-	 * @param matcherEditor The CompositeMatcherEditor that is set to the FilterList and needs to 
-	 * 			be used by the ComboBoxGlazedListsFilterStrategy to apply the filters via filter row.
-	 * @param comboBoxDataProvider The FilterRowComboBoxDataProvider that should be used to fill the
-	 * 			filter comboboxes.
-	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
-	 * 			to perform filtering.
-	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
-	 * 			Needed for building this CompositeLayer, dimensionally connect the filter row to and
-	 * 			retrieve information and perform actions related to filtering.
-	 * @param columnHeaderDataProvider The {@link IDataProvider} of the column header needed to retrieve the real 
-	 * 			column count of the column header and not a transformed one.
-	 * @param configRegistry The {@link IConfigRegistry} needed to retrieve various configurations.
-	 */
-	public ComboBoxFilterRowHeaderComposite(
-			CompositeMatcherEditor<T> matcherEditor,
+			ComboBoxGlazedListsFilterStrategy<T> filterStrategy,
 			FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
-			IColumnAccessor<T> bodyDataColumnAccessor,
-			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
-			IConfigRegistry configRegistry) {
-		
-		this(matcherEditor, comboBoxDataProvider, bodyDataColumnAccessor, 
-				columnHeaderLayer, columnHeaderDataProvider, configRegistry, true);
-	}
-	
-	/**
-	 * Creates a new ComboBoxFilterRowHeaderComposite based on the given informations.
-	 * Will use the given CompositeMatcherEditor for creating the ComboBoxGlazedListsFilterStrategy
-	 * and the given FilterRowComboBoxDataProvider instead of creating a new one. 
-	 * <p>
-	 * Note: Using this constructor implies that you added the given CompositeMatcherEditor to the
-	 * 		 FilterList this ComboBoxFilterRowHeaderComposite operates on yourself.
-	 * @param matcherEditor The CompositeMatcherEditor that is set to the FilterList and needs to 
-	 * 			be used by the ComboBoxGlazedListsFilterStrategy to apply the filters via filter row.
-	 * @param comboBoxDataProvider The FilterRowComboBoxDataProvider that should be used to fill the
-	 * 			filter comboboxes.
-	 * @param bodyDataColumnAccessor The IColumnAccessor that is needed by the IFilterStrategy
-	 * 			to perform filtering.
-	 * @param columnHeaderLayer The columnheader layer the filter row layer is related to.
-	 * 			Needed for building this CompositeLayer, dimensionally connect the filter row to and
-	 * 			retrieve information and perform actions related to filtering.
-	 * @param columnHeaderDataProvider The {@link IDataProvider} of the column header needed to retrieve the real 
-	 * 			column count of the column header and not a transformed one.
-	 * @param configRegistry The {@link IConfigRegistry} needed to retrieve various configurations.
-	 * @param useDefaultConfiguration Tell whether the default configuration should be used or not.
-	 * 			If not you need to ensure to add a configuration that adds at least the needed configuration
-	 * 			specified in ComboBoxFilterRowConfiguration 
-	 */
-	public ComboBoxFilterRowHeaderComposite(
-			CompositeMatcherEditor<T> matcherEditor,
-			FilterRowComboBoxDataProvider<T> comboBoxDataProvider, 
-			IColumnAccessor<T> bodyDataColumnAccessor,
 			ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
 			IConfigRegistry configRegistry,
 			boolean useDefaultConfiguration) {
@@ -326,16 +287,13 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 
 		setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
 		
-		this.matcherEditor = matcherEditor;
-
-		this.comboBoxDataProvider = comboBoxDataProvider;
-		this.filterStrategy = new ComboBoxGlazedListsFilterStrategy<T>(
-				this.comboBoxDataProvider, this.matcherEditor, bodyDataColumnAccessor, configRegistry);
+		this.filterStrategy = filterStrategy;
 		
+		this.comboBoxDataProvider = comboBoxDataProvider;
 		this.comboBoxDataProvider.addCacheUpdateListener(this);
 		
 		this.filterRowDataLayer = new FilterRowDataLayer<T>(
-				getFilterStrategy(), columnHeaderLayer, columnHeaderDataProvider, configRegistry);
+				this.filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
 		
 		setAllValuesSelected();
 		
@@ -362,7 +320,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 	 * 			changing cell values in the filter row.
 	 */
 	public CompositeMatcherEditor<T> getMatcherEditor() {
-		return matcherEditor;
+		return filterStrategy.getMatcherEditor();
 	}
 
 	/**

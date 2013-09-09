@@ -38,7 +38,6 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 public class FilterRowExampleGridLayer extends GridLayer {
 
@@ -69,14 +68,12 @@ public class FilterRowExampleGridLayer extends GridLayer {
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+		
 		//	Note: The column header layer is wrapped in a filter row composite.
 		//	This plugs in the filter row functionality
-		CompositeMatcherEditor<RowDataFixture> autoFilterMatcherEditor = new CompositeMatcherEditor<RowDataFixture>();
-		filterList.setMatcherEditor(autoFilterMatcherEditor);
-		
 		FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer =
 			new FilterRowHeaderComposite<RowDataFixture>(
-					new DefaultGlazedListsFilterStrategy<RowDataFixture>(autoFilterMatcherEditor, columnPropertyAccessor, configRegistry),
+					new DefaultGlazedListsFilterStrategy<RowDataFixture>(filterList, columnPropertyAccessor, configRegistry),
 					columnHeaderLayer, columnHeaderDataProvider, configRegistry
 			);
 

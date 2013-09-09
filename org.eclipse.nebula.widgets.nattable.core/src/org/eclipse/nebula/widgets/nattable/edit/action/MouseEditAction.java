@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.edit.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommand;
-import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseClickAction;
 import org.eclipse.swt.events.MouseEvent;
 
 /**
@@ -22,8 +22,9 @@ import org.eclipse.swt.events.MouseEvent;
  * working in NatTables that doesn't have a SelectionLayer in
  * its composition of layers.
  */
-public class MouseEditAction implements IMouseAction {
+public class MouseEditAction implements IMouseClickAction {
 
+	@Override
 	public void run(NatTable natTable, MouseEvent event) {
 		int columnPosition = natTable.getColumnPositionByX(event.x);
 		int rowPosition = natTable.getRowPositionByY(event.y);
@@ -33,5 +34,10 @@ public class MouseEditAction implements IMouseAction {
 						natTable,
 						natTable.getConfigRegistry(),
 						natTable.getCellByPosition(columnPosition, rowPosition)));
+	}
+
+	@Override
+	public boolean isExclusive() {
+		return true;
 	}
 }

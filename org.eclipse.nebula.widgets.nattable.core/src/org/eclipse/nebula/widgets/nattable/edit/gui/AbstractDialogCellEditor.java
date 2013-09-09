@@ -386,6 +386,14 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	}
 
 	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#openMultiEditDialog()
+	 */
+	@Override
+	public boolean openMultiEditDialog() {
+		return true;
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#openAdjacentEditor()
 	 */
 	@Override

@@ -15,7 +15,6 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -60,7 +59,7 @@ public class NatTableFixture extends NatTable {
 	}
 
 
-	public NatTableFixture(DefaultGridLayer underlyingLayer, int width, int height, boolean autoconfigure) {
+	public NatTableFixture(ILayer underlyingLayer, int width, int height, boolean autoconfigure) {
 		super(new Shell(Display.getDefault()), underlyingLayer, autoconfigure);
 		initClientArea(width, height);
 	}

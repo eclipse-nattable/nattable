@@ -30,6 +30,7 @@ public class ViewportSelectRowAction implements IMouseAction {
 		this.withControlMask = withControlMask;
 	}
 	
+	@Override
 	public void run(NatTable natTable, MouseEvent event) {
 		natTable.doCommand(new ViewportSelectRowCommand(natTable, natTable.getRowPositionByY(event.y), withShiftMask, withControlMask));
 	}

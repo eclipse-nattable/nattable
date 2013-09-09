@@ -16,7 +16,6 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
@@ -33,7 +32,6 @@ import org.junit.Test;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 public class FilterRowHeaderCompositeTest {
 
@@ -53,12 +51,9 @@ public class FilterRowHeaderCompositeTest {
 
 		filterList = new FilterList<RowDataFixture>(GlazedLists.eventList(RowDataListFixture.getList()));
 		
-		CompositeMatcherEditor<RowDataFixture> autoFilterMatcherEditor = new CompositeMatcherEditor<RowDataFixture>();
-		filterList.setMatcherEditor(autoFilterMatcherEditor);
-		
 		layerUnderTest = new FilterRowHeaderComposite<RowDataFixture>(
 				new DefaultGlazedListsFilterStrategy<RowDataFixture>(
-					autoFilterMatcherEditor,
+					filterList,
 					new ReflectiveColumnPropertyAccessor<RowDataFixture>(RowDataListFixture.getPropertyNames()),
 					configRegistry
 				),

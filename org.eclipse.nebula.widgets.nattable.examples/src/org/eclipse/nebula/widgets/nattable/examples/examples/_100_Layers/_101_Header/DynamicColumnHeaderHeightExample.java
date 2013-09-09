@@ -72,7 +72,6 @@ import org.eclipse.swt.widgets.Control;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
 
 public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
@@ -96,6 +95,7 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
 	private final ColumnGroupModel columnGroupModel = new ColumnGroupModel();
 	private ColumnHeaderLayer columnHeaderLayer;
 
+	@Override
 	public Control createExampleControl(Composite parent) {
 		IConfigRegistry configRegistry = new ConfigRegistry();
 
@@ -132,12 +132,9 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
 
 		//	Note: The column header layer is wrapped in a filter row composite.
 		//	This plugs in the filter row functionality
-		CompositeMatcherEditor<RowDataFixture> autoFilterMatcherEditor = new CompositeMatcherEditor<RowDataFixture>();
-		filterList.setMatcherEditor(autoFilterMatcherEditor);
-		
 		final FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer =
 			new FilterRowHeaderComposite<RowDataFixture>(
-					new DefaultGlazedListsFilterStrategy<RowDataFixture>(autoFilterMatcherEditor, columnPropertyAccessor, configRegistry),
+					new DefaultGlazedListsFilterStrategy<RowDataFixture>(filterList, columnPropertyAccessor, configRegistry),
 					columnGroupHeaderLayer, columnHeaderDataProvider, configRegistry
 			);
 
@@ -194,6 +191,7 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
 			}
 		});
 		natTable.addConfiguration(new AbstractRegistryConfiguration() {
+			@Override
 			public void configureRegistry(IConfigRegistry configRegistry) {
 				configRegistry.registerConfigAttribute(ILayerExporter.CONFIG_ATTRIBUTE, new HSSFExcelExporter());
 			}
@@ -221,6 +219,7 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
 
 		final DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter();
 
+		@Override
 		public void configureRegistry(IConfigRegistry configRegistry) {
 			// Configure custom comparator on the rating column
 			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.FILTER_COMPARATOR,
@@ -284,6 +283,7 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
 	
 	private static Comparator<?> getIngnorecaseComparator() {
 		return new Comparator<String>() {
+			@Override
 			public int compare(String o1, String o2) {
 				return o1.compareToIgnoreCase(o2);
 			}

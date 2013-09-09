@@ -118,14 +118,39 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		}
 	}
 
+	/**
+	 * Gets the value at the given column and row index.
+	 *
+	 * @param columnIndex
+	 * @param rowIndex
+	 * @return the data value associated with the specified cell
+	 */
+	public Object getDataValue(int columnIndex, int rowIndex) {
+		return this.dataProvider.getDataValue(columnIndex, rowIndex);
+	}
+
+	/**
+	 * Sets the value at the given column and row index. Optional operation. Should throw UnsupportedOperationException
+	 * if this operation is not supported.
+	 *
+	 * @param columnIndex
+	 * @param rowIndex
+	 * @param newValue
+	 */
+	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+		this.dataProvider.setDataValue(columnIndex, rowIndex, newValue);
+	}
+	
 	// Horizontal features
 
 	// Columns
 
+	@Override
 	public int getColumnCount() {
 		return dataProvider.getColumnCount();
 	}
 
+	@Override
 	public int getPreferredColumnCount() {
 		return getColumnCount();
 	}
@@ -133,6 +158,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     /**
 	 * This is the root coordinate system, so the column index is always equal to the column position.
 	 */
+	@Override
 	public int getColumnIndexByPosition(int columnPosition) {
 		if (columnPosition >=0 && columnPosition < getColumnCount()) {
 			return columnPosition;
@@ -144,6 +170,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	/**
 	 * This is the root coordinate system, so the column position is always equal to the column index.
 	 */
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		if (columnIndex >=0 && columnIndex < getColumnCount()) {
 			return columnIndex;
@@ -152,28 +179,34 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		}
 	}
 
+	@Override
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
 		return localColumnPosition;
 	}
 
+	@Override
 	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
 		return underlyingColumnPosition;
 	}
 	
+	@Override
 	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
 		return underlyingColumnPositionRanges;
 	}
 
 	// Width
 
-    public int getWidth() {
+    @Override
+	public int getWidth() {
 		return columnWidthConfig.getAggregateSize(getColumnCount());
 	}
 
+	@Override
 	public int getPreferredWidth() {
 		return getWidth();
 	}
 
+	@Override
 	public int getColumnWidthByPosition(int columnPosition) {
         return columnWidthConfig.getSize(columnPosition);
     }
@@ -198,6 +231,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Column resize
 
+	@Override
 	public boolean isColumnPositionResizable(int columnPosition) {
 		return columnWidthConfig.isPositionResizable(columnPosition);
 	}
@@ -212,6 +246,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Underlying
 
+	@Override
 	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
 		return null;
 	}
@@ -220,10 +255,12 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Rows
 
+	@Override
 	public int getRowCount() {
 		return dataProvider.getRowCount();
 	}
 
+	@Override
 	public int getPreferredRowCount() {
 		return getRowCount();
 	}
@@ -231,6 +268,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	/**
 	 * This is the root coordinate system, so the row index is always equal to the row position.
 	 */
+	@Override
 	public int getRowIndexByPosition(int rowPosition) {
 		if (rowPosition >=0 && rowPosition < getRowCount()) {
 			return rowPosition;
@@ -242,6 +280,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	/**
 	 * This is the root coordinate system, so the row position is always equal to the row index.
 	 */
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		if (rowIndex >= 0 && rowIndex < getRowCount()) {
 			return rowIndex;
@@ -250,28 +289,34 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		}
 	}
 
+	@Override
 	public int localToUnderlyingRowPosition(int localRowPosition) {
 		return localRowPosition;
 	}
 
+	@Override
 	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
 		return underlyingRowPosition;
 	}
 	
+	@Override
 	public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
 		return underlyingRowPositionRanges;
 	}
 
 	// Height
 
-    public int getHeight() {
+    @Override
+	public int getHeight() {
 		return rowHeightConfig.getAggregateSize(getRowCount());
 	}
 
+	@Override
 	public int getPreferredHeight() {
 		return getHeight();
 	}
 
+	@Override
 	public int getRowHeightByPosition(int rowPosition) {
 		return rowHeightConfig.getSize(rowPosition);
 	}
@@ -296,6 +341,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Row resize
 
+	@Override
 	public boolean isRowPositionResizable(int rowPosition) {
 		return rowHeightConfig.isPositionResizable(rowPosition);
 	}
@@ -310,34 +356,41 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Underlying
 
+	@Override
 	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
 		return null;
 	}
 
 	// Cell features
 
+	@Override
 	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
 		int columnIndex = getColumnIndexByPosition(columnPosition);
 		int rowIndex = getRowIndexByPosition(rowPosition);
 		return dataProvider.getDataValue(columnIndex, rowIndex);
 	}
 
+	@Override
 	public int getColumnPositionByX(int x) {
 		return LayerUtil.getColumnPositionByX(this, x);
 	}
 
+	@Override
 	public int getRowPositionByY(int y) {
 		return LayerUtil.getRowPositionByY(this, y);
 	}
 
+	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
 		return columnWidthConfig.getAggregateSize(columnPosition);
 	}
 
+	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
 		return rowHeightConfig.getAggregateSize(rowPosition);
 	}
 
+	@Override
 	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
 		return null;
 	}

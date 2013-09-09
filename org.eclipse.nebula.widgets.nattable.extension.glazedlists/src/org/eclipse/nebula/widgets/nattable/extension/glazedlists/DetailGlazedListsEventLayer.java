@@ -14,19 +14,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
-import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
-import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
-import org.eclipse.nebula.widgets.nattable.util.Scheduler;
 import org.eclipse.swt.widgets.Display;
 
 import ca.odell.glazedlists.EventList;
@@ -54,12 +49,6 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 		implements IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
 
 	/**
-	 * The scheduler needed to add cleanup tasks which are scheduled after handling
-	 * glazedlists events.
-	 */
-	private static final Scheduler scheduler = new Scheduler(DetailGlazedListsEventLayer.class.getSimpleName());
-
-	/**
 	 * The underlying layer of type {@link IUniqueIndexLayer}
 	 * This is necessary because {@link AbstractLayerTransform} only specifies {@link ILayer}
 	 * as the type of the underlying layer. But as this event layer implements {@link IUniqueIndexLayer}
@@ -75,19 +64,6 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 	 * Needed here so it is possible to exchange the list at runtime.
 	 */
 	private EventList<T> eventList;
-	
-	/**
-	 * The {@link ListEvent} that was handled before. Needed to ensure that the same event
-	 * is not processed several times. Will be reset by the cleanup task 100ms after the handling.
-	 */
-	private ListEvent<T> lastFiredEvent;
-	
-	/**
-	 * The current scheduled cleanup task which is stored to ensure that at most only one cleanup
-	 * task is active at any time and it can be stopped if the NatTable itself is disposed to avoid
-	 * still active background tasks that get never be done.
-	 */
-	private ScheduledFuture<?> cleanupFuture;
 	
 	/**
 	 * Create a new {@link DetailGlazedListsEventLayer} which is in fact a {@link ListEventListener}
@@ -110,10 +86,16 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 	 */
 	/**
 	 * GlazedLists event handling.
+	 * Will transform received GlazedLists ListEvents into corresponding NatTable RowStructuralChangeEvents.
+	 * Ensures that no other changes can be made to the GlazedLists instance until the events are processed
+	 * in NatTable itself. This is necessary to avoid concurrent modifications which will lead to asynchronous
+	 * states of NatTable and GlazedLists.
 	 */
 	@Override
 	public void listChanged(final ListEvent<T> event) {
-		if (lastFiredEvent == null || !lastFiredEvent.equals(event)) {
+		try {
+			this.eventList.getReadWriteLock().readLock().lock();
+			
 			int deletedCount = 0;
 			
 			final List<Range> deleteRanges = new ArrayList<Range>();
@@ -130,45 +112,38 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 				}
 			}
 			
-			if (!deleteRanges.isEmpty() || !insertRanges.isEmpty()) {
-				lastFiredEvent = event;
-				
-				scheduler.submit(new Runnable() {
-					
+			//The RowStructuralChangeEvents will cause a repaint of the NatTable.
+			//We need to fire the event from the SWT Display thread, otherwise
+			//there will be an exception because painting can only be triggered
+			//from the SWT Display thread.
+			//As there is a structural change, there need to be some processing for
+			//indexes and positions in layers above this one. Therefore we need to
+			//ensure that the processing is handled synchronous, otherwise we would
+			//get into an asynchronous state were we try to process events based on
+			//a ListEvent, while the list itself has already changed again.
+			//e.g. filtering: clear + apply
+
+			if (!deleteRanges.isEmpty()) {
+				Display.getDefault().syncExec(new Runnable() {
 					@Override
 					public void run() {
-						if (!deleteRanges.isEmpty()) {
-							fireEventFromSWTDisplayThread(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
-						}
-						
-						if (!insertRanges.isEmpty()) {
-							fireEventFromSWTDisplayThread(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
-						}
-						
-						//start cleanup task that will set the last fired event to null after 100 milliseconds
-						if (cleanupFuture == null || cleanupFuture.isDone() || cleanupFuture.isCancelled()) {
-							cleanupFuture = scheduler.schedule(new Runnable() {
-								@Override
-								public void run() {
-									DetailGlazedListsEventLayer.this.lastFiredEvent = null;
-								}
-							}, 100L);
-						}
+						fireLayerEvent(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
+					}
+				});
+			}
+			
+			if (!insertRanges.isEmpty()) {
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						fireLayerEvent(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
 					}
 				});
 			}
 		}
-	}
-
-	@Override
-	public boolean doCommand(ILayerCommand command) {
-		if (command instanceof DisposeResourcesCommand) {
-			//ensure to kill a possible running cleanup task
-			if (cleanupFuture != null) {
-				scheduler.unschedule(cleanupFuture);
-			}
+		finally {
+			this.eventList.getReadWriteLock().readLock().unlock();
 		}
-		return super.doCommand(command);
 	}
 
 	/* (non-Javadoc)
@@ -181,27 +156,22 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		// We can cast since we know that the EventList is of type T
-		PropertyUpdateEvent<T> updateEvent = new PropertyUpdateEvent<T>(this,
+		final PropertyUpdateEvent<T> updateEvent = new PropertyUpdateEvent<T>(this,
 													  (T)event.getSource(),
 	                                                  event.getPropertyName(),
 	                                                  event.getOldValue(),
 	                                                  event.getNewValue());
-		fireEventFromSWTDisplayThread(updateEvent);
-	}
-
-
-	/**
-	 * These update events are likely to cause a repaint on NatTable.
-	 * If these are not thrown from the SWT Display thread, SWT
-	 * will throw an Exception. Painting can only be triggered from the
-	 * SWT Display thread.
-	 * @param event The ILayerEvent to fire from the SWT Display thread.
-	 */
-	protected void fireEventFromSWTDisplayThread(final ILayerEvent event) {
+		
+		//The PropertyUpdateEvent will cause a repaint of the NatTable.
+		//We need to fire the event from the SWT Display thread, otherwise
+		//there will be an exception because painting can only be triggered
+		//from the SWT Display thread.
+		//As a property change doesn't indicate a structural change, the
+		//event can be fired asynchronously.
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				fireLayerEvent(event);
+				fireLayerEvent(updateEvent);
 			}
 		});
 	}

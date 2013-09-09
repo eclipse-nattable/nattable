@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.examples._400_Configuration;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +77,7 @@ public class _4241_CrossValidationGridExample extends AbstractNatExample {
 	/**	
 	 * @Override
 	 */
+	@Override
 	public String getDescription() {
 		return "Demonstrates how to implement an editable grid with cross validation.";
 	}
@@ -83,6 +85,7 @@ public class _4241_CrossValidationGridExample extends AbstractNatExample {
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl(org.eclipse.swt.widgets.Composite)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Control createExampleControl(Composite parent) {
 		Composite panel = new Composite(parent, SWT.NONE);
@@ -154,6 +157,10 @@ public class _4241_CrossValidationGridExample extends AbstractNatExample {
 	public static boolean isEventDataValid(EventData event) {
 		return (event.getFromDate().before(event.getToDate()));
 	}
+	
+	public static boolean isEventDataValid(Date fromDate, Date toDate) {
+		return fromDate.before(toDate);
+	}
 }
 
 /**
@@ -194,6 +201,7 @@ class CrossValidationEditConfiguration extends AbstractRegistryConfiguration  {
 		this.bodyDataProvider = bodyDataProvider;
 	}
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE);
@@ -245,7 +253,18 @@ class EventDataValidator extends DataValidator {
 	public boolean validate(int columnIndex, int rowIndex, Object newValue) {
 		//get the row object out of the dataprovider
 		EventData rowObject = this.bodyDataProvider.getRowObject(rowIndex);
-		if (!_4241_CrossValidationGridExample.isEventDataValid(rowObject)) {
+		
+		//as the object itself is not yet updated, we need to validate against
+		//the given new value
+		Date fromDate = rowObject.getFromDate();
+		Date toDate = rowObject.getToDate();
+		if (columnIndex == 3) {
+			fromDate = (Date) newValue;
+		}
+		else if (columnIndex == 4) {
+			toDate = (Date) newValue;
+		}
+		if (!_4241_CrossValidationGridExample.isEventDataValid(fromDate, toDate)) {
 			throw new ValidationFailedException("fromDate is not before toDate");
 		}
 		return true;
