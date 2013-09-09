@@ -23,8 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 
 /**
- * @author Dirk Fauth
- *
+ * Event indicating that one or multiple rows are moved to a new position.
  */
 public class RowReorderEvent extends RowStructuralChangeEvent {
 
@@ -94,6 +93,8 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
 
 		Collection<Range> beforeFromRowPositionRanges = getBeforeFromRowPositionRanges();
 
+		final int beforeToRowPosition = (this.reorderToTopEdge) ?
+				this.beforeToRowPosition : (this.beforeToRowPosition + 1);
 		int afterAddRowPosition = beforeToRowPosition;
 		for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
 			if (beforeFromRowPositionRange.start < beforeToRowPosition) {
