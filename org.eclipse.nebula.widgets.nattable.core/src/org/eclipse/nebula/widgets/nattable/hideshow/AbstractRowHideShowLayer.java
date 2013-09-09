@@ -130,7 +130,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 			// corresponding startPosition weren't found in the underlying layer.
 			// Without that fix a bunch of ranges of kind Range [-1, 180] which
 			// causes strange behaviour in Freeze- and other Layers were returned.
-			if (startRowPosition > -1) {
+			if (startRowPosition > -1 && startRowPosition < endRowPosition) {
 				localRowPositionRanges.add(new Range(startRowPosition, endRowPosition));
 			}
 		}

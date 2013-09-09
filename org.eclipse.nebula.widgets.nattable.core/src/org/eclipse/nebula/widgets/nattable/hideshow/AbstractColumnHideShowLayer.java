@@ -119,7 +119,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 			// corresponding startPosition weren't found in the underlying layer.
 			// Without that fix a bunch of ranges of kind Range [-1, 180] which
 			// causes strange behaviour in Freeze- and other Layers were returned.
-			if (startColumnPosition > -1) {
+			if (startColumnPosition > -1 && startColumnPosition < endColumnPosition) {
 				localColumnPositionRanges.add(new Range(startColumnPosition, endColumnPosition));
 			}
 		}

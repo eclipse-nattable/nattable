@@ -154,9 +154,13 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
 		Collection<Range> localColumnPositionRanges = new ArrayList<Range>(underlyingColumnPositionRanges.size());
 		for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
-			localColumnPositionRanges.add(new Range(
-					underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start),
-					underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.end) ));
+			final int start = underlyingToLocalColumnPosition(sourceUnderlyingLayer,
+					underlyingColumnPositionRange.start );
+			final int end = underlyingToLocalColumnPosition(sourceUnderlyingLayer,
+					underlyingColumnPositionRange.end - 1 );
+			if (start <= end) {
+				localColumnPositionRanges.add(new Range(start, end + 1));
+			}
 		}
 		return localColumnPositionRanges;
 	}
@@ -237,9 +241,13 @@ public class AbstractIndexLayerTransform extends AbstractLayer implements IUniqu
 	public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
 		Collection<Range> localRowPositionRanges = new ArrayList<Range>(underlyingRowPositionRanges.size());
 		for (Range underlyingRowPositionRange : underlyingRowPositionRanges) {
-			localRowPositionRanges.add(new Range(
-					underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPositionRange.start),
-					underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPositionRange.end) ));
+			final int start = underlyingToLocalRowPosition(sourceUnderlyingLayer,
+					underlyingRowPositionRange.start );
+			final int end = underlyingToLocalRowPosition(sourceUnderlyingLayer,
+					underlyingRowPositionRange.end - 1 );
+			if (start <= end) {
+				localRowPositionRanges.add(new Range(start, end + 1));
+			}
 		}
 		return localRowPositionRanges;
 	}

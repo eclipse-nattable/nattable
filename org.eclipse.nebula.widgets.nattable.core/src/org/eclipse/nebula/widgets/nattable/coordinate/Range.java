@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+
 /**
  * Represents an Range of numbers.
  * Example a Range of selected rows: 1 - 100
@@ -28,11 +29,27 @@ public class Range {
 	public int start = 0;
 	public int end = 0;
 
-	public Range(int start, int end) {
+
+	/**
+	 * Creates a new range with the specified start and end values.
+	 */
+	public Range(final int start, final int end) {
+		if (start > end) {
+			throw new IllegalArgumentException("start: " + start + " > end: " + end); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 		this.start = start;
 		this.end = end;
 	}
-
+	
+	/**
+	 * Creates a new range which contains the specified single value.
+	 */
+	public Range(final int value) {
+		this.start = value;
+		this.end = value + 1;
+	}
+	
+	
 	public int size() {
 		return end - start;
 	}
@@ -60,24 +77,27 @@ public class Range {
 	}
 
 	@Override
-	public String toString() {
-		return "Range[" + start + "," + end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Range)) {
-			return false;
-		}
-
-		Range range2 = (Range) obj;
-		return (start == range2.start) && (end == range2.end);
-	}
-
-	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Range)) {
+			return false;
+		}
+		final Range other = (Range) obj;
+		return (this.start == other.start && this.end == other.end);
+	}
+	
+	@Override
+	public String toString() {
+		return "Range [" + start + ", " + end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
+
 
 	public static void sortByStart(List<Range> ranges) {
 		Collections.sort(ranges, new Comparator<Range>() {
