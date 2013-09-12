@@ -40,7 +40,6 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -49,7 +48,6 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
-import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
@@ -96,27 +94,19 @@ public class _592_SummaryRowGridExample extends AbstractNatExample {
 		propertyToLabelMap.put("columnFourNumber", "Column 4");
 		propertyToLabelMap.put("columnFiveNumber", "Column 5");
 
-		IColumnPropertyAccessor<NumberValues> cpa = new ReflectiveColumnPropertyAccessor<NumberValues>(propertyNames);
-		IDataProvider dataProvider = new ListDataProvider<NumberValues>(createNumberValueList(), cpa);
+		IColumnPropertyAccessor<NumberValues> cpa = 
+				new ReflectiveColumnPropertyAccessor<NumberValues>(propertyNames);
+		IDataProvider dataProvider = 
+				new ListDataProvider<NumberValues>(createNumberValueList(), cpa);
 
 		ConfigRegistry configRegistry = new ConfigRegistry();
 		
 		SummaryRowGridLayer gridLayer = new SummaryRowGridLayer(dataProvider, configRegistry, 
 				propertyNames, propertyToLabelMap);
 
-		//TODO remove
-		ColumnOverrideLabelAccumulator labelAcc = new ColumnOverrideLabelAccumulator(gridLayer.getBodyDataLayer());
-		labelAcc.registerColumnOverrides(0, "null");
-		labelAcc.registerColumnOverrides(1, "eins");
-		labelAcc.registerColumnOverrides(2, "zwei");
-		labelAcc.registerColumnOverrides(3, "drei");
-		labelAcc.registerColumnOverrides(4, "vier");
-		gridLayer.getBodyDataLayer().setConfigLabelAccumulator(labelAcc);
-		
 		NatTable natTable = new NatTable(parent, gridLayer, false);
 		natTable.setConfigRegistry(configRegistry);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new DebugMenuConfiguration(natTable)); //TODO remove
 		natTable.configure();
 
 		return natTable;
@@ -125,45 +115,48 @@ public class _592_SummaryRowGridExample extends AbstractNatExample {
 	private List<NumberValues> createNumberValueList() {
 		List<NumberValues> result = new ArrayList<NumberValues>();
 		
-		NumberValues nv = new NumberValues();
-		nv.setColumnOneNumber(5);
-		nv.setColumnTwoNumber(4);
-		nv.setColumnThreeNumber(3);
-		nv.setColumnFourNumber(1);
-		nv.setColumnFiveNumber(1);
-		result.add(nv);
-		
-		nv = new NumberValues();
-		nv.setColumnOneNumber(1);
-		nv.setColumnTwoNumber(1);
-		nv.setColumnThreeNumber(2);
-		nv.setColumnFourNumber(2);
-		nv.setColumnFiveNumber(3);
-		result.add(nv);
-		
-		nv = new NumberValues();
-		nv.setColumnOneNumber(1);
-		nv.setColumnTwoNumber(2);
-		nv.setColumnThreeNumber(2);
-		nv.setColumnFourNumber(3);
-		nv.setColumnFiveNumber(3);
-		result.add(nv);
-		
-		nv = new NumberValues();
-		nv.setColumnOneNumber(1);
-		nv.setColumnTwoNumber(2);
-		nv.setColumnThreeNumber(4);
-		nv.setColumnFourNumber(4);
-		nv.setColumnFiveNumber(3);
-		result.add(nv);
-		
-		nv = new NumberValues();
-		nv.setColumnOneNumber(5);
-		nv.setColumnTwoNumber(4);
-		nv.setColumnThreeNumber(4);
-		nv.setColumnFourNumber(4);
-		nv.setColumnFiveNumber(7);
-		result.add(nv);
+		for (int i = 0; i < 25; i++) {
+			NumberValues nv = new NumberValues();
+			nv.setColumnOneNumber(5);
+			nv.setColumnTwoNumber(4);
+			nv.setColumnThreeNumber(3);
+			nv.setColumnFourNumber(1);
+			nv.setColumnFiveNumber(1);
+			result.add(nv);
+			
+			nv = new NumberValues();
+			nv.setColumnOneNumber(1);
+			nv.setColumnTwoNumber(1);
+			nv.setColumnThreeNumber(2);
+			nv.setColumnFourNumber(2);
+			nv.setColumnFiveNumber(3);
+			result.add(nv);
+			
+			nv = new NumberValues();
+			nv.setColumnOneNumber(1);
+			nv.setColumnTwoNumber(2);
+			nv.setColumnThreeNumber(2);
+			nv.setColumnFourNumber(3);
+			nv.setColumnFiveNumber(3);
+			result.add(nv);
+			
+			nv = new NumberValues();
+			nv.setColumnOneNumber(1);
+			nv.setColumnTwoNumber(2);
+			nv.setColumnThreeNumber(4);
+			nv.setColumnFourNumber(4);
+			nv.setColumnFiveNumber(3);
+			result.add(nv);
+			
+			nv = new NumberValues();
+			nv.setColumnOneNumber(5);
+			nv.setColumnTwoNumber(4);
+			nv.setColumnThreeNumber(4);
+			nv.setColumnFourNumber(4);
+			nv.setColumnFiveNumber(7);
+			result.add(nv);
+		}
+			
 		return result;
 	}
 }
