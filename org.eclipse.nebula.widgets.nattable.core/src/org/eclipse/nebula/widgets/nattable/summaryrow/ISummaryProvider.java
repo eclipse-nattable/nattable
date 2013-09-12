@@ -20,8 +20,8 @@ public interface ISummaryProvider {
 
 	/**
 	 * @param columnIndex
-	 *            for which the summary is required
-	 * @return the summary value for the column
+	 *            The column index of the column for which the summary should be calculated.
+	 * @return The calculated summary value for the column.
 	 */
 	public Object summarize(int columnIndex);
 
@@ -30,12 +30,18 @@ public interface ISummaryProvider {
 	 * Doing so avoids calls to the {@link ISummaryProvider} and is a performance tweak.
 	 */
 	public static final ISummaryProvider NONE = new ISummaryProvider() {
+		@Override
 		public Object summarize(int columnIndex) {
 			return null;
 		}
 	};
 
+	/**
+	 * This instance will always return {@link ISummaryProvider#DEFAULT_SUMMARY_VALUE}
+	 * and does not perform a calculation.
+	 */
 	public static final ISummaryProvider DEFAULT = new ISummaryProvider() {
+		@Override
 		public Object summarize(int columnIndex) {
 			return DEFAULT_SUMMARY_VALUE;
 		}

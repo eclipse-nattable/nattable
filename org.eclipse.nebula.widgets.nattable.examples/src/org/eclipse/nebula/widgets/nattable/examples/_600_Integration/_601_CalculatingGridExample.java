@@ -8,7 +8,7 @@
  * Contributors:
  *    Dirk Fauth - initial API and implementation
  *******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples._300_Data;
+package org.eclipse.nebula.widgets.nattable.examples._600_Integration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,7 +76,7 @@ import ca.odell.glazedlists.GlazedLists;
  * @author Dirk Fauth
  *
  */
-public class _351_CalculatingGridExample extends AbstractNatExample {
+public class _601_CalculatingGridExample extends AbstractNatExample {
 
 	public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
 	public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
@@ -87,21 +87,25 @@ public class _351_CalculatingGridExample extends AbstractNatExample {
 	private EventList<NumberValues> valuesToShow = GlazedLists.eventList(new ArrayList<NumberValues>());
 	
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _351_CalculatingGridExample());
+		StandaloneNatExampleRunner.run(new _601_CalculatingGridExample());
 	}
 
 	/**	
 	 * @Override
 	 */
+	@Override
 	public String getDescription() {
-		return "Demonstrates how to implement a editable grid with calculated column values.\n" +
-				"Also adds the SummaryRow to demonstrate how the SummaryRow updates on changes " +
-				"within the grid.";
+		return "This example demonstrates how to create a NatTable that contains calculated values.\n"
+				+ "The first three columns are editable, while the last two columns contain the calculated values.\n"
+				+ "The values in column four and five will automatically update when committing the edited values.\n"
+				+ "This example also contains a summary row to show that it is even possible to update the summary "
+				+ "row in a editable grid.";
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl(org.eclipse.swt.widgets.Composite)
 	 */
+	@Override
 	public Control createExampleControl(Composite parent) {
 		Composite panel = new Composite(parent, SWT.NONE);
 		panel.setLayout(new GridLayout());
@@ -134,7 +138,7 @@ public class _351_CalculatingGridExample extends AbstractNatExample {
 		
 		CalculatingGridLayer gridLayer = new CalculatingGridLayer(valuesToShow, configRegistry, 
 				propertyNames, propertyToLabelMap);
-		DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
+		DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 		
 		final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
 		bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
@@ -199,6 +203,7 @@ class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getDataValue(java.lang.Object, int)
 	 */
+	@Override
 	public Object getDataValue(NumberValues rowObject, int columnIndex) {
 		switch(columnIndex) {
 			case 0: return rowObject.getColumnOneNumber();
@@ -215,6 +220,7 @@ class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#setDataValue(java.lang.Object, int, java.lang.Object)
 	 */
+	@Override
 	public void setDataValue(NumberValues rowObject, int columnIndex, Object newValue) {
 		//because of the registered conversion, the new value has to be an Integer
 		switch(columnIndex) {
@@ -230,6 +236,7 @@ class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getColumnCount()
 	 */
+	@Override
 	public int getColumnCount() {
 		//this example will show exactly 5 columns
 		return 5;
@@ -238,7 +245,7 @@ class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
 }
 
 /**
- * The body layer stack for the {@link _351_CalculatingGridExample}.
+ * The body layer stack for the {@link _601_CalculatingGridExample}.
  * Consists of
  * <ol>
  * <li>ViewportLayer</li>
@@ -285,7 +292,7 @@ class CalculatingBodyLayerStack extends AbstractLayerTransform {
 }
 
 /**
- * The {@link GridLayer} used by the {@link _351_CalculatingGridExample}.
+ * The {@link GridLayer} used by the {@link _601_CalculatingGridExample}.
  */
 class CalculatingGridLayer extends GridLayer {
 
@@ -338,15 +345,16 @@ class CalculatingGridLayer extends GridLayer {
  */
 class CalculatingEditConfiguration extends AbstractRegistryConfiguration  {
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE);
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
-				DisplayMode.EDIT, _351_CalculatingGridExample.COLUMN_FOUR_LABEL);
+				DisplayMode.EDIT, _601_CalculatingGridExample.COLUMN_FOUR_LABEL);
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
-				DisplayMode.EDIT, _351_CalculatingGridExample.COLUMN_FIVE_LABEL);
+				DisplayMode.EDIT, _601_CalculatingGridExample.COLUMN_FIVE_LABEL);
 		//configure the summary row to be not editable
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
@@ -359,7 +367,7 @@ class CalculatingEditConfiguration extends AbstractRegistryConfiguration  {
 
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 
-				DisplayMode.NORMAL, _351_CalculatingGridExample.COLUMN_FIVE_LABEL);
+				DisplayMode.NORMAL, _601_CalculatingGridExample.COLUMN_FIVE_LABEL);
 
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 
@@ -402,6 +410,7 @@ class CalculatingSummaryRowConfiguration extends DefaultSummaryRowConfiguration 
 	 * Custom summary provider which averages out the contents of the column
 	 */
 	class AverageSummaryProvider implements ISummaryProvider {
+		@Override
 		public Object summarize(int columnIndex) {
 			double total = 0;
 			int rowCount = dataProvider.getRowCount();
