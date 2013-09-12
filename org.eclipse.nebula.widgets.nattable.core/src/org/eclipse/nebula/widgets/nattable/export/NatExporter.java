@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
@@ -47,6 +48,7 @@ public class NatExporter {
 		}
 		
 		Runnable exportRunnable = new Runnable() {
+			@Override
 			public void run() {
 				try {
 					exporter.exportBegin(outputStream);
@@ -81,6 +83,7 @@ public class NatExporter {
 		}
 		
 		Runnable exportRunnable = new Runnable() {
+			@Override
 			public void run() {
 				try {
 					exporter.exportBegin(outputStream);
@@ -129,6 +132,9 @@ public class NatExporter {
 		// not just the ones visible in the viewport
 		layer.doCommand(new TurnViewportOffCommand());
 		setClientAreaToMaximum(layer);
+		
+		//if a SummaryRowLayer is in the layer stack, we need to ensure that the values are calculated
+		layer.doCommand(new CalculateSummaryRowValuesCommand());
 		
 		ProgressBar progressBar = null;
 		
@@ -190,6 +196,7 @@ public class NatExporter {
 		final Rectangle maxClientArea = new Rectangle(0, 0, layer.getWidth(), layer.getHeight());
 		
 		layer.setClientAreaProvider(new IClientAreaProvider() {
+			@Override
 			public Rectangle getClientArea() {
 				return maxClientArea;
 			}

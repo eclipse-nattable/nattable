@@ -35,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.PricingTypeBean;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
@@ -94,8 +95,14 @@ public class SummaryRowIntegrationTest {
 	}
 
 	@Test
+	public void shouldReturnDefaultValueImmediately() throws Exception {
+		// First invocation triggers the summary calculation in a separate thread
+		Object askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex, 4);
+		assertNull(askPriceSummary);
+	}
+
+	@Test
 	public void shouldSummarizeAskPriceColumn() throws Exception {
-		System.out.println("askPriceColumnIndex: "+askPriceColumnIndex);
 		// First invocation triggers the summary calculation in a separate thread
 		Object askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex, 4);
 		assertNull(askPriceSummary);
@@ -103,6 +110,15 @@ public class SummaryRowIntegrationTest {
 		Thread.sleep(200);
 
 		askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex, 4);
+		assertEquals("110.0", askPriceSummary.toString());
+	}
+
+	@Test
+	public void shouldSummarizeAskPriceColumnImmediatelyOnPreCalculation() throws Exception {
+		//Trigger summary calculation via command
+		natTable.doCommand(new CalculateSummaryRowValuesCommand());
+		
+		Object askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex, 4);
 		assertEquals("110.0", askPriceSummary.toString());
 	}
 
