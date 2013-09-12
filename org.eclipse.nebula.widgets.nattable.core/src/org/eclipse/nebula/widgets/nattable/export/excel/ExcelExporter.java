@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -42,16 +43,20 @@ public class ExcelExporter implements ILayerExporter {
 		this.outputStreamProvider = outputStreamProvider;
 	}
 	
+	@Override
 	public OutputStream getOutputStream(Shell shell) {
 		return outputStreamProvider.getOutputStream(shell);
 	}
 	
+	@Override
 	public void exportBegin(OutputStream outputStream) throws IOException {
 	}
 
+	@Override
 	public void exportEnd(OutputStream outputStream) throws IOException {
 	}
 
+	@Override
 	public void exportLayerBegin(OutputStream outputStream, String layerName) throws IOException {
 		writeHeader(outputStream);
 		outputStream.write(asBytes("<body><table border='1'>")); //$NON-NLS-1$
@@ -74,20 +79,24 @@ public class ExcelExporter implements ILayerExporter {
 		}
 	}
 
+	@Override
 	public void exportLayerEnd(OutputStream outputStream, String layerName) throws IOException {
 		outputStream.write(asBytes("</table></body></html>")); //$NON-NLS-1$
 	}
 
+	@Override
 	public void exportRowBegin(OutputStream outputStream, int rowPosition) throws IOException {
 		outputStream.write(asBytes("<tr>\n")); //$NON-NLS-1$
 	}
 
+	@Override
 	public void exportRowEnd(OutputStream outputStream, int rowPosition) throws IOException {
 		outputStream.write(asBytes("</tr>\n")); //$NON-NLS-1$
 	}
 
+	@Override
 	public void exportCell(OutputStream outputStream, Object exportDisplayValue, ILayerCell cell, IConfigRegistry configRegistry) throws IOException {
-		CellStyleProxy cellStyle = new CellStyleProxy(configRegistry, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
+		CellStyleProxy cellStyle = new CellStyleProxy(configRegistry, DisplayMode.NORMAL, cell.getConfigLabels().getLabels());
 		Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
 		Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 		Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);

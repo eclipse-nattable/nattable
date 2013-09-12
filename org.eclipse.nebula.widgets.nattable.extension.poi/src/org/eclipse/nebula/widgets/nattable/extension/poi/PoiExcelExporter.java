@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Shell;
@@ -54,11 +55,13 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 		return outputStreamProvider.getOutputStream(shell);
 	}
 	
+	@Override
 	public void exportBegin(OutputStream outputStream) throws IOException {
 		xlCellStyles = new HashMap<ExcelCellStyleAttributes, CellStyle>();
 		xlWorkbook = createWorkbook();
 	}
 	
+	@Override
 	public void exportEnd(OutputStream outputStream) throws IOException {
 		xlWorkbook.write(outputStream);
 		
@@ -110,7 +113,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			xlSheet.addMergedRegion(new CellRangeAddress(rowPosition, lastRow, columnPosition, lastColumn));
 		}
 		
-		CellStyleProxy cellStyle = new CellStyleProxy(configRegistry, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
+		CellStyleProxy cellStyle = new CellStyleProxy(configRegistry, DisplayMode.NORMAL, cell.getConfigLabels().getLabels());
 		Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
 		Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 		org.eclipse.swt.graphics.Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
