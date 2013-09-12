@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -29,17 +28,13 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
-import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
-import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
-import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.PricingTypeBean;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
@@ -207,6 +202,21 @@ public class SummaryRowIntegrationTest {
 	}
 
 	@Test
+	public void defaultConfigLabelsAreAdded() throws Exception {
+		ColumnOverrideLabelAccumulator labelAcc = new ColumnOverrideLabelAccumulator(layerStackWithSummary);
+		labelAcc.registerColumnOverrides(0, "myLabel");
+		((ViewportLayer)layerStackWithSummary).setConfigLabelAccumulator(labelAcc);
+
+		LabelStack configLabels = natTable.getConfigLabelsByPosition(0, 4);
+		List<String> labels = configLabels.getLabels();
+
+		assertEquals(3, labels.size());
+		assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, labels.get(0));
+		assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, labels.get(1));
+		assertEquals("myLabel", labels.get(2));
+	}
+
+	@Test
 	public void shouldSumUpAllRowsWithAAARating() throws Exception {
 		// Trigger summary calculation
 		Object lotSizeSummary = natTable.getDataValueByPosition(lotSizeColumnIndex, 4);
@@ -248,6 +258,7 @@ public class SummaryRowIntegrationTest {
 
 		private ISummaryProvider getTestLotSizeSummaryProvider() {
 			return new ISummaryProvider() {
+				@Override
 				public Object summarize(int columnIndex) {
 					int lotSizeSummary = 0;
 					int rowCount = dataProvider.getRowCount();

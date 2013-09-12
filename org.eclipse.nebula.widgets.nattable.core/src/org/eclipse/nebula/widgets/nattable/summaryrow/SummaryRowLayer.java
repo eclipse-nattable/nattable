@@ -179,10 +179,11 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 		if (isSummaryRowPosition(rowPosition)) {
-			return new LabelStack(
-					DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + columnPosition, 
-					DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+			labelStack.addLabelOnTop(DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+			labelStack.addLabelOnTop(DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + columnPosition);
+			return labelStack;
 		}
 		return super.getConfigLabelsByPosition(columnPosition, rowPosition);
 	}
@@ -248,6 +249,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 		return super.getRowHeightByPosition(rowPosition);
 	}
 
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		if (rowIndex >= 0 && rowIndex < getRowCount()) {
 			return rowIndex;
@@ -256,6 +258,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 		}
 	}
 
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		if (columnIndex >= 0 && columnIndex < getColumnCount()) {
 			return columnIndex;
