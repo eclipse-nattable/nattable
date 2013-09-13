@@ -15,13 +15,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
 
 public class CellLayerPainter implements ILayerPainter {
@@ -31,6 +30,7 @@ public class CellLayerPainter implements ILayerPainter {
 	private Map<Integer, Integer> verticalPositionToPixelMap;
 	
 	
+	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle pixelRectangle, IConfigRegistry configRegistry) {
 		if (pixelRectangle.width <= 0 || pixelRectangle.height <= 0) {
 			return;
@@ -45,6 +45,9 @@ public class CellLayerPainter implements ILayerPainter {
 		
 		for (int columnPosition = positionRectangle.x; columnPosition < positionRectangle.x + positionRectangle.width; columnPosition++) {
 			for (int rowPosition = positionRectangle.y; rowPosition < positionRectangle.y + positionRectangle.height; rowPosition++) {
+				if (columnPosition == -1 || rowPosition == -1) {
+					continue;
+				}
 				ILayerCell cell = natLayer.getCellByPosition(columnPosition, rowPosition);
 				if (cell != null) {
 					if (cell.isSpannedCell()) {
@@ -98,6 +101,7 @@ public class CellLayerPainter implements ILayerPainter {
 		}
 	}
 
+	@Override
 	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
 		return cellBounds;
 	}
