@@ -20,11 +20,13 @@ public class ExcelCellStyleAttributes {
 	private final Color fg;
 	private final Color bg;
 	private final FontData fontData;
+	private final String dataFormat;
 
-	public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData) {
+	public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData, String dataFormat) {
 		this.fg = fg;
 		this.bg = bg;
 		this.fontData = fontData;
+		this.dataFormat = dataFormat;
 	}
 
 	@Override
@@ -43,6 +45,7 @@ public class ExcelCellStyleAttributes {
 			.append(this.fg, that.fg)
 			.append(this.bg, that.bg)
 			.append(this.fontData, that.fontData)
+			.append(this.dataFormat, that.dataFormat)
 			.isEquals();
 	}
 	
@@ -52,6 +55,7 @@ public class ExcelCellStyleAttributes {
 			.append(fg)
 			.append(bg)
 			.append(fontData)
+			.append(dataFormat)
 			.toHashCode();
 	}
 	
