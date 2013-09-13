@@ -8,7 +8,7 @@
  * Contributors:
  *    Dirk Fauth - initial API and implementation
  *******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples._600_Integration;
+package org.eclipse.nebula.widgets.nattable.examples._700_Integration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,7 +76,7 @@ import ca.odell.glazedlists.GlazedLists;
  * @author Dirk Fauth
  *
  */
-public class _601_CalculatingGridExample extends AbstractNatExample {
+public class _701_CalculatingGridExample extends AbstractNatExample {
 
 	public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
 	public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
@@ -87,7 +87,7 @@ public class _601_CalculatingGridExample extends AbstractNatExample {
 	private EventList<NumberValues> valuesToShow = GlazedLists.eventList(new ArrayList<NumberValues>());
 	
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _601_CalculatingGridExample());
+		StandaloneNatExampleRunner.run(new _701_CalculatingGridExample());
 	}
 
 	/**	
@@ -245,7 +245,7 @@ class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
 }
 
 /**
- * The body layer stack for the {@link _601_CalculatingGridExample}.
+ * The body layer stack for the {@link _701_CalculatingGridExample}.
  * Consists of
  * <ol>
  * <li>ViewportLayer</li>
@@ -292,7 +292,7 @@ class CalculatingBodyLayerStack extends AbstractLayerTransform {
 }
 
 /**
- * The {@link GridLayer} used by the {@link _601_CalculatingGridExample}.
+ * The {@link GridLayer} used by the {@link _701_CalculatingGridExample}.
  */
 class CalculatingGridLayer extends GridLayer {
 
@@ -351,10 +351,10 @@ class CalculatingEditConfiguration extends AbstractRegistryConfiguration  {
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE);
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
-				DisplayMode.EDIT, _601_CalculatingGridExample.COLUMN_FOUR_LABEL);
+				DisplayMode.EDIT, _701_CalculatingGridExample.COLUMN_FOUR_LABEL);
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
-				DisplayMode.EDIT, _601_CalculatingGridExample.COLUMN_FIVE_LABEL);
+				DisplayMode.EDIT, _701_CalculatingGridExample.COLUMN_FIVE_LABEL);
 		//configure the summary row to be not editable
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
@@ -367,7 +367,7 @@ class CalculatingEditConfiguration extends AbstractRegistryConfiguration  {
 
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 
-				DisplayMode.NORMAL, _601_CalculatingGridExample.COLUMN_FIVE_LABEL);
+				DisplayMode.NORMAL, _701_CalculatingGridExample.COLUMN_FIVE_LABEL);
 
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 
