@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
+import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
@@ -145,7 +145,7 @@ public class _000_Column_groups extends AbstractNatExample {
 		});
 		natTable.addConfiguration(new AbstractRegistryConfiguration() {
 			public void configureRegistry(IConfigRegistry configRegistry) {
-				configRegistry.registerConfigAttribute(ILayerExporter.CONFIG_ATTRIBUTE, new HSSFExcelExporter());
+				configRegistry.registerConfigAttribute(ExportConfigAttributes.EXPORTER, new HSSFExcelExporter());
 			}
 		});
 		

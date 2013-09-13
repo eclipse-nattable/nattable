@@ -16,7 +16,6 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -40,7 +39,7 @@ public class NatExporter {
 	}
 	
 	public void exportSingleLayer(final ILayer layer, final IConfigRegistry configRegistry) {
-		final ILayerExporter exporter = configRegistry.getConfigAttribute(ILayerExporter.CONFIG_ATTRIBUTE, DisplayMode.NORMAL);
+		final ILayerExporter exporter = configRegistry.getConfigAttribute(ExportConfigAttributes.EXPORTER, DisplayMode.NORMAL);
 		
 		final OutputStream outputStream = exporter.getOutputStream(shell);
 		if (outputStream == null) {
@@ -167,7 +166,7 @@ public class NatExporter {
 				for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
 					ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
 					
-					IExportFormatter exportFormatter = configRegistry.getConfigAttribute(CellConfigAttributes.EXPORT_FORMATTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
+					IExportFormatter exportFormatter = configRegistry.getConfigAttribute(ExportConfigAttributes.EXPORT_FORMATTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 					Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
 
 					exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
