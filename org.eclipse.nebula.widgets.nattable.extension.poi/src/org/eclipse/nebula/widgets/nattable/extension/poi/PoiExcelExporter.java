@@ -19,12 +19,14 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -119,21 +121,33 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 		org.eclipse.swt.graphics.Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
 		FontData fontData = font.getFontData()[0];
 		
-		xlCell.setCellStyle(getExcelCellStyle(fg, bg, fontData));
+		CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData);
 		
 		if (exportDisplayValue == null) exportDisplayValue = ""; //$NON-NLS-1$
 		
 		if (exportDisplayValue instanceof Boolean) {
 			xlCell.setCellValue((Boolean) exportDisplayValue);
 		} else if (exportDisplayValue instanceof Calendar) {
+			CreationHelper createHelper = xlWorkbook.getCreationHelper();
+			xlCellStyle.setDataFormat(
+					createHelper.createDataFormat().getFormat(
+							getDataFormatString(cell, configRegistry)));
+			
 			xlCell.setCellValue((Calendar) exportDisplayValue);
 		} else if (exportDisplayValue instanceof Date) {
+			CreationHelper createHelper = xlWorkbook.getCreationHelper();
+			xlCellStyle.setDataFormat(
+					createHelper.createDataFormat().getFormat(
+							getDataFormatString(cell, configRegistry)));
+			
 			xlCell.setCellValue((Date) exportDisplayValue);
 		} else if (exportDisplayValue instanceof Number) {
 			xlCell.setCellValue(((Number) exportDisplayValue).doubleValue());
 		} else {
 			xlCell.setCellValue(exportDisplayValue.toString());
 		}
+
+		xlCell.setCellStyle(xlCellStyle);
 	}
 
 	private CellStyle getExcelCellStyle(Color fg, Color bg, FontData fontData) {
@@ -156,6 +170,22 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 		return xlCellStyle;
 	}
 
+	/**
+	 * 
+	 * @param cell The cell for which the date format needs to be determined.
+	 * @param configRegistry The ConfigRegistry needed to retrieve the configuration.
+	 * @return The date format that should be used to format Date or Calendar values
+	 * 			in the export.
+	 */
+	protected String getDataFormatString(ILayerCell cell, IConfigRegistry configRegistry) {
+		String dataFormat = configRegistry.getConfigAttribute(
+				ExportConfigAttributes.DATE_FORMAT, DisplayMode.NORMAL, cell.getConfigLabels().getLabels());
+		if (dataFormat == null) {
+			dataFormat = "m/d/yy h:mm"; //$NON-NLS-1$
+		}
+		return dataFormat;
+	}
+	
 	protected abstract Workbook createWorkbook();
 	
 	protected abstract void setFillForegroundColor(CellStyle xlCellStyle, Color swtColor);

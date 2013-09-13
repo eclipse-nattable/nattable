@@ -35,6 +35,8 @@ public class DefaultExportBindings implements IConfiguration {
 				ExportConfigAttributes.EXPORTER, new ExcelExporter());
 		configRegistry.registerConfigAttribute(
 				ExportConfigAttributes.EXPORT_FORMATTER, new DefaultExportFormatter());
+		configRegistry.registerConfigAttribute(
+				ExportConfigAttributes.DATE_FORMAT, "m/d/yy h:mm"); //$NON-NLS-1$
 	}
 
 	@Override
