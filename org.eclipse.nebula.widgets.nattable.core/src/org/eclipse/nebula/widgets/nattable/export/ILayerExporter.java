@@ -15,12 +15,9 @@ import java.io.OutputStream;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.swt.widgets.Shell;
 
 public interface ILayerExporter {
-
-	public static final ConfigAttribute<ILayerExporter> CONFIG_ATTRIBUTE = new ConfigAttribute<ILayerExporter>();
 
 	OutputStream getOutputStream(Shell shell);
 	
