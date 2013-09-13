@@ -120,26 +120,19 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 		Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 		org.eclipse.swt.graphics.Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
 		FontData fontData = font.getFontData()[0];
+		String dataFormat = null;
 		
-		CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData);
+		//TODO check alignment
 		
 		if (exportDisplayValue == null) exportDisplayValue = ""; //$NON-NLS-1$
 		
 		if (exportDisplayValue instanceof Boolean) {
 			xlCell.setCellValue((Boolean) exportDisplayValue);
 		} else if (exportDisplayValue instanceof Calendar) {
-			CreationHelper createHelper = xlWorkbook.getCreationHelper();
-			xlCellStyle.setDataFormat(
-					createHelper.createDataFormat().getFormat(
-							getDataFormatString(cell, configRegistry)));
-			
+			dataFormat = getDataFormatString(cell, configRegistry);
 			xlCell.setCellValue((Calendar) exportDisplayValue);
 		} else if (exportDisplayValue instanceof Date) {
-			CreationHelper createHelper = xlWorkbook.getCreationHelper();
-			xlCellStyle.setDataFormat(
-					createHelper.createDataFormat().getFormat(
-							getDataFormatString(cell, configRegistry)));
-			
+			dataFormat = getDataFormatString(cell, configRegistry);
 			xlCell.setCellValue((Date) exportDisplayValue);
 		} else if (exportDisplayValue instanceof Number) {
 			xlCell.setCellValue(((Number) exportDisplayValue).doubleValue());
@@ -147,11 +140,12 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			xlCell.setCellValue(exportDisplayValue.toString());
 		}
 
+		CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat);
 		xlCell.setCellStyle(xlCellStyle);
 	}
 
-	private CellStyle getExcelCellStyle(Color fg, Color bg, FontData fontData) {
-		CellStyle xlCellStyle = xlCellStyles.get(new ExcelCellStyleAttributes(fg, bg, fontData));
+	private CellStyle getExcelCellStyle(Color fg, Color bg, FontData fontData, String dataFormat) {
+		CellStyle xlCellStyle = xlCellStyles.get(new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat));
 		
 		if (xlCellStyle == null) {
 			xlCellStyle = xlWorkbook.createCellStyle();
@@ -164,8 +158,14 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			xlFont.setFontName(fontData.getName());
 			xlFont.setFontHeightInPoints((short) fontData.getHeight());
 			xlCellStyle.setFont(xlFont);
-			
-			xlCellStyles.put(new ExcelCellStyleAttributes(fg, bg, fontData), xlCellStyle);
+
+			if (dataFormat != null) {
+				CreationHelper createHelper = xlWorkbook.getCreationHelper();
+				xlCellStyle.setDataFormat(
+						createHelper.createDataFormat().getFormat(dataFormat));
+			}
+
+			xlCellStyles.put(new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat), xlCellStyle);
 		}
 		return xlCellStyle;
 	}
