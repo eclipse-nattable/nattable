@@ -122,11 +122,11 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	 * 		 columnPosition == columnIndex
 	 */
 	@Override
-	public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
+	public Object getDataValueByPosition(final int columnPosition, final int rowPosition) { 
 		if (isSummaryRowPosition(rowPosition)) {
 			final Object potentiallyStaleSummaryValue = getPotentiallyStaleSummaryFromCache(columnPosition);
 			if (potentiallyStaleSummaryValue == null || !hasNonStaleSummaryFor(columnPosition)) {
-				calculateNewSummaryValue(potentiallyStaleSummaryValue, columnPosition, rowPosition, true);
+				calculateNewSummaryValue(potentiallyStaleSummaryValue, columnPosition, true);
 			}
 			
 			if (potentiallyStaleSummaryValue != null) {
@@ -140,11 +140,11 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 
 	private void calculateNewSummaryValue(
 			final Object potentiallyStaleSummaryValue, 
-			final int columnPosition, final int rowPosition, 
+			final int columnPosition,  
 			boolean calculateInBackground) {
 		
 		// Get the summary provider from the configuration registry
-		LabelStack labelStack = getConfigLabelsByPosition(columnPosition, rowPosition);
+		LabelStack labelStack = getConfigLabelsByPosition(columnPosition, getSummaryRowPosition());
 		String[] configLabels = labelStack.getLabels().toArray(ArrayUtil.STRING_TYPE_ARRAY);
 		
 		final ISummaryProvider summaryProvider = configRegistry.getConfigAttribute(
@@ -163,7 +163,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 					Object summaryValue = calculateColumnSummary(columnPosition, summaryProvider);
 					addToCache(columnPosition, summaryValue);
 					if (!ObjectUtils.equals(potentiallyStaleSummaryValue, summaryValue)) {
-						fireLayerEvent(new RowUpdateEvent(SummaryRowLayer.this, rowPosition));
+						fireLayerEvent(new RowUpdateEvent(SummaryRowLayer.this, getSummaryRowPosition()));
 					}
 				}
 			}.start();
@@ -229,7 +229,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 		}
 		else if (command instanceof CalculateSummaryRowValuesCommand) {
 			for (int i = 0; i < getColumnCount(); i++) {
-				calculateNewSummaryValue(null, i, getSummaryRowPosition(), false);
+				calculateNewSummaryValue(null, i, false);
 			}
 			return true;
 		}
@@ -252,7 +252,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 			labelStack.addLabelOnTop(DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + columnPosition);
 			return labelStack;
 		}
-		return super.getConfigLabelsByPosition(columnPosition, rowPosition);
+		return labelStack;
 	}
 
 	@Override
