@@ -33,6 +33,9 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Shell;
@@ -122,7 +125,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 		FontData fontData = font.getFontData()[0];
 		String dataFormat = null;
 		
-		//TODO check alignment
+		int hAlign = HorizontalAlignmentEnum.getSWTStyle(cellStyle);
+		int vAlign = VerticalAlignmentEnum.getSWTStyle(cellStyle);
 		
 		if (exportDisplayValue == null) exportDisplayValue = ""; //$NON-NLS-1$
 		
@@ -140,12 +144,15 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			xlCell.setCellValue(exportDisplayValue.toString());
 		}
 
-		CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat);
+		CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign);
 		xlCell.setCellStyle(xlCellStyle);
 	}
 
-	private CellStyle getExcelCellStyle(Color fg, Color bg, FontData fontData, String dataFormat) {
-		CellStyle xlCellStyle = xlCellStyles.get(new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat));
+	private CellStyle getExcelCellStyle(
+			Color fg, Color bg, FontData fontData, String dataFormat, int hAlign, int vAlign) {
+		
+		CellStyle xlCellStyle = xlCellStyles.get(
+				new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign));
 		
 		if (xlCellStyle == null) {
 			xlCellStyle = xlWorkbook.createCellStyle();
@@ -159,13 +166,31 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			xlFont.setFontHeightInPoints((short) fontData.getHeight());
 			xlCellStyle.setFont(xlFont);
 
+			switch (hAlign) {
+				case SWT.CENTER:	xlCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
+								 	break;
+				case SWT.LEFT: 		xlCellStyle.setAlignment(CellStyle.ALIGN_LEFT);
+									break;
+				case SWT.RIGHT: 	xlCellStyle.setAlignment(CellStyle.ALIGN_RIGHT);
+									break;
+			}
+			switch (vAlign) {
+				case SWT.TOP:		xlCellStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+								 	break;
+				case SWT.CENTER: 	xlCellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+									break;
+				case SWT.BOTTOM: 	xlCellStyle.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
+									break;
+			}
+			
 			if (dataFormat != null) {
 				CreationHelper createHelper = xlWorkbook.getCreationHelper();
 				xlCellStyle.setDataFormat(
 						createHelper.createDataFormat().getFormat(dataFormat));
 			}
 
-			xlCellStyles.put(new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat), xlCellStyle);
+			xlCellStyles.put(
+					new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign), xlCellStyle);
 		}
 		return xlCellStyle;
 	}
