@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.print.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
@@ -19,6 +18,10 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRo
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
+/**
+ * IKeyAction that is used to print a NatTable.
+ * Ensures that the whole NatTable is printed.
+ */
 public class PrintAction implements IKeyAction {
 
 	@Override

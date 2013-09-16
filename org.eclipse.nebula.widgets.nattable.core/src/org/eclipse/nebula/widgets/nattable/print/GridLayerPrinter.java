@@ -13,10 +13,8 @@ package org.eclipse.nebula.widgets.nattable.print;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
@@ -42,7 +40,7 @@ public class GridLayerPrinter {
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm a"); //$NON-NLS-1$
 	private final String footerDate;
 
-	public GridLayerPrinter(GridLayer gridLayer, IConfigRegistry configRegistry) {
+	public GridLayerPrinter(ILayer gridLayer, IConfigRegistry configRegistry) {
 		this.gridLayer = gridLayer;
 		this.configRegistry = configRegistry;
 		this.originalClientAreaProvider = gridLayer.getClientAreaProvider();
@@ -94,6 +92,7 @@ public class GridLayerPrinter {
 
 		Display.getDefault().asyncExec(new Runnable() {
 
+			@Override
 			public void run() {
 				if (printer.startJob("NatTable")) { //$NON-NLS-1$
 					final Rectangle printerClientArea = computePrintArea(printer);
@@ -218,6 +217,7 @@ public class GridLayerPrinter {
 		final Rectangle fullGridSize = getTotalGridArea();
 
 		gridLayer.setClientAreaProvider(new IClientAreaProvider(){
+			@Override
 			public Rectangle getClientArea() {
 				return fullGridSize;
 			}

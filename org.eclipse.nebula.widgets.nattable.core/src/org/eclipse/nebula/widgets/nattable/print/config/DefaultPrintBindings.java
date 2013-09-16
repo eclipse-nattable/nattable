@@ -10,15 +10,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.print.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.print.action.PrintAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.swt.SWT;
 
+/**
+ * Simple UI binding configuration that adds the binding for [Ctrl] + [P] to trigger
+ * the PrintAction.
+ * 
+ * @see PrintAction
+ */
 public class DefaultPrintBindings extends AbstractUiBindingConfiguration {
 
+	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL, 'p'), new PrintAction());
 	}
