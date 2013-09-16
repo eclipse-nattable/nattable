@@ -38,6 +38,12 @@ public class NatExporter {
 		this.shell = shell;
 	}
 	
+	/**
+	 * Exports a single ILayer using the ILayerExporter registered in the ConfigRegistry.
+	 * @param layer The ILayer to export, usually a NatTable instance.
+	 * @param configRegistry The ConfigRegistry of the NatTable instance to export,
+	 * 			that contains the necessary export configurations.
+	 */
 	public void exportSingleLayer(final ILayer layer, final IConfigRegistry configRegistry) {
 		final ILayerExporter exporter = configRegistry.getConfigAttribute(ExportConfigAttributes.EXPORTER, DisplayMode.NORMAL);
 		
@@ -75,6 +81,12 @@ public class NatExporter {
 		}
 	}
 	
+	/**
+	 * Export multiple NatTable instances to one file by using the given ILayerExporter.
+	 * @param exporter The ILayerExporter to use for exporting.
+	 * @param natTablesMap The NatTable instances to export. They keys in the map will be
+	 * 			used as sheet titles while the values are the instances to export.
+	 */
 	public void exportMultipleNatTables(final ILayerExporter exporter, final Map<String, NatTable> natTablesMap) {
 		final OutputStream outputStream = exporter.getOutputStream(shell);
 		if (outputStream == null) {
