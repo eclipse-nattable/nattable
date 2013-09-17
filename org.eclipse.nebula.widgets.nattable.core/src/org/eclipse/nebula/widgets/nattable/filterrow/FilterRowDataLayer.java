@@ -41,8 +41,6 @@ public class FilterRowDataLayer<T> extends DataLayer {
 	public FilterRowDataLayer(IFilterStrategy<T> filterStrategy, ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider, IConfigRegistry configRegistry) {
 		super(new FilterRowDataProvider<T>(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry));
 		
-		registerPersistable(getFilterRowDataProvider());
-
 		addConfiguration(new DefaultFilterRowConfiguration());
 	}
 	
