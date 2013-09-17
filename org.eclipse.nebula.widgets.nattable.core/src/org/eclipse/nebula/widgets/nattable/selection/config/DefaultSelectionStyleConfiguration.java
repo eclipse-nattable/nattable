@@ -16,11 +16,11 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -48,7 +48,10 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
 	public Color selectedHeaderFgColor = GUIHelper.COLOR_WHITE;
 	public Font selectedHeaderFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
 	public BorderStyle selectedHeaderBorderStyle = new BorderStyle(-1, selectedHeaderFgColor, LineStyleEnum.SOLID);
+	
+	public Color fullySelectedHeaderBgColor = GUIHelper.COLOR_WIDGET_NORMAL_SHADOW;
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configureSelectionStyle(configRegistry);
 		configureSelectionAnchorStyle(configRegistry);
@@ -93,9 +96,9 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
 
 	protected void configureHeaderFullySelectedStyle(IConfigRegistry configRegistry) {
 		// Header fully selected
-		Style cellStyle = new Style() {{
-			setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,  GUIHelper.COLOR_WIDGET_NORMAL_SHADOW);
-		}};
+		Style cellStyle = new Style();	
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, fullySelectedHeaderBgColor);
+
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
 	}
