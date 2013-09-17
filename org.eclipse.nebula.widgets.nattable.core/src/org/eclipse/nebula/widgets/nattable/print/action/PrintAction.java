@@ -12,28 +12,17 @@ package org.eclipse.nebula.widgets.nattable.print.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommand;
-import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
-import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
-import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
 /**
  * IKeyAction that is used to print a NatTable.
- * Ensures that the whole NatTable is printed.
  */
 public class PrintAction implements IKeyAction {
 
 	@Override
 	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new TurnViewportOffCommand());
-		
-		//if a SummaryRowLayer is in the layer stack, we need to ensure that the values are calculated
-		natTable.doCommand(new CalculateSummaryRowValuesCommand());
-		
 		natTable.doCommand(new PrintCommand(natTable.getConfigRegistry(), natTable.getShell()));
-		
-		natTable.doCommand(new TurnViewportOnCommand());
 	}
 
 }
