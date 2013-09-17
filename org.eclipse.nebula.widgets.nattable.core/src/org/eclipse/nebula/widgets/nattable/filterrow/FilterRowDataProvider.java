@@ -42,6 +42,19 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 	private static final Log log = LogFactory.getLog(FilterRowDataProvider.class);
 
 	/**
+	 * Replacement for the pipe character | that is used for persistence.
+	 * If regular expressions are used for filtering, the pipe character can be used
+	 * in the regular expression to specify alternations. As the persistence
+	 * mechanism in NatTable uses the pipe character for separation of values,
+	 * the persistence breaks for such cases.
+	 * By replacing the pipe in the regular expression with some silly uncommon
+	 * value specified here, we ensure to be able to also persist pipes in the
+	 * regular expressions, aswell as being backwards compatible with already
+	 * saved filter row states.
+	 */
+	public static final String PIPE_REPLACEMENT = "°~°"; //$NON-NLS-1$
+	
+	/**
 	 * The {@link IFilterStrategy} to which the set filter value should be applied.
 	 */
 	private final IFilterStrategy<T> filterStrategy;
@@ -159,7 +172,10 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 					CellConfigAttributes.DISPLAY_CONVERTER, 
 					DisplayMode.NORMAL, 
 					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
-			filterTextByIndex.put(columnIndex, (String) converter.canonicalToDisplayValue(filterIndexToObjectMap.get(columnIndex)));
+			
+			String filterText = (String) converter.canonicalToDisplayValue(filterIndexToObjectMap.get(columnIndex));
+			filterText = filterText.replace("|", PIPE_REPLACEMENT); //$NON-NLS-1$
+			filterTextByIndex.put(columnIndex, filterText);
 		}
 		
 		String string = PersistenceUtils.mapAsString(filterTextByIndex);
@@ -181,7 +197,10 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 						CellConfigAttributes.DISPLAY_CONVERTER, 
 						DisplayMode.NORMAL, 
 						FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
-				filterIndexToObjectMap.put(columnIndex, converter.displayToCanonicalValue(filterTextByIndex.get(columnIndex)));
+				
+				String filterText = filterTextByIndex.get(columnIndex);
+				filterText = filterText.replace(PIPE_REPLACEMENT, "|"); //$NON-NLS-1$
+				filterIndexToObjectMap.put(columnIndex, converter.displayToCanonicalValue(filterText));
 			}
 		} catch (Exception e) {
 			log.error("Error while restoring filter row text!", e); //$NON-NLS-1$
