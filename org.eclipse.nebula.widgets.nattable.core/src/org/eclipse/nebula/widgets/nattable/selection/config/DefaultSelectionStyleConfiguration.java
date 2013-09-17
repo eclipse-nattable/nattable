@@ -51,10 +51,15 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
 	
 	public Color fullySelectedHeaderBgColor = GUIHelper.COLOR_WIDGET_NORMAL_SHADOW;
 
+	// Anchor grid line style
+	public Color anchorGridBorderColor = GUIHelper.COLOR_BLACK;
+	public BorderStyle anchorGridBorderStyle = new BorderStyle(1, anchorGridBorderColor, LineStyleEnum.DOTTED);
+
 	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configureSelectionStyle(configRegistry);
 		configureSelectionAnchorStyle(configRegistry);
+		configureSelectionAnchorGridLineStyle(configRegistry);
 		configureHeaderHasSelectionStyle(configRegistry);
 		configureHeaderFullySelectedStyle(configRegistry);
 	}
@@ -64,23 +69,45 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
 		cellStyle.setAttributeValue(CellStyleAttributes.FONT, selectionFont);
 		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, selectionBgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, selectionFgColor);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT);
+		
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.SELECT);
 	}
 
 	protected void configureSelectionAnchorStyle(IConfigRegistry configRegistry) {
 		// Selection anchor style for normal display mode
 		Style cellStyle = new Style();
 		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, anchorBorderStyle);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.NORMAL, 
+				SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
 
 		// Selection anchor style for select display mode
 		cellStyle = new Style();
 		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, anchorBgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, anchorFgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, anchorBorderStyle);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.SELECT, 
+				SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
 	}
 
+	protected void configureSelectionAnchorGridLineStyle(IConfigRegistry configRegistry) {
+		Style cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, anchorGridBorderStyle);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.SELECT, 
+				SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE);
+	}
+	
 	protected void configureHeaderHasSelectionStyle(IConfigRegistry configRegistry) {
 		Style cellStyle = new Style();
 
@@ -89,9 +116,21 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
 		cellStyle.setAttributeValue(CellStyleAttributes.FONT, selectedHeaderFont);
 		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, selectedHeaderBorderStyle);
 
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, GridRegion.COLUMN_HEADER);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, GridRegion.CORNER);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, GridRegion.ROW_HEADER);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.SELECT, 
+				GridRegion.COLUMN_HEADER);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.SELECT, 
+				GridRegion.CORNER);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.SELECT, 
+				GridRegion.ROW_HEADER);
 	}
 
 	protected void configureHeaderFullySelectedStyle(IConfigRegistry configRegistry) {
@@ -99,7 +138,15 @@ public class DefaultSelectionStyleConfiguration extends AbstractRegistryConfigur
 		Style cellStyle = new Style();	
 		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, fullySelectedHeaderBgColor);
 
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.SELECT, 
+				SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.SELECT, 
+				SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
 	}
 }
