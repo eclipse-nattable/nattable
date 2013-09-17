@@ -31,7 +31,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,7 +65,7 @@ public class FilterRowDataProviderTest {
 
 	@Test
 	public void setDataValue() throws Exception {
-		Assert.assertNull(dataProvider.getDataValue(1, 1));
+		assertNull(dataProvider.getDataValue(1, 1));
 
 		dataProvider.setDataValue(1, 1, "testValue");
 		assertEquals("testValue", dataProvider.getDataValue(1, 1));
@@ -133,9 +132,9 @@ public class FilterRowDataProviderTest {
 
 		// save state
 		dataProvider.saveState("prefix", properties);
-		String persistedProperty = properties.getProperty("prefix.filterTokens");
+		String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
 
-		assertEquals("1:testValue|3:testValue|", persistedProperty.toString());
+		assertEquals("1:testValue|3:testValue|", persistedProperty);
 
 		// reset state
 		setup();
