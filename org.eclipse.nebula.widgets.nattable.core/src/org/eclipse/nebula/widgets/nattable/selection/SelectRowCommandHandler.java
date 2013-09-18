@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -35,6 +34,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 		this.selectionLayer = selectionLayer;
 	}
 
+	@Override
 	public boolean doCommand(ILayer targetLayer, SelectRowsCommand command) {
 		if (command.convertToTargetLayer(selectionLayer)) {
 			selectRows(command.getColumnPosition(), command.getRowPositions(), command.isWithShiftMask(), command.isWithControlMask(), command.getRowPositionToMoveIntoViewport());
@@ -111,6 +111,12 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 		int numOfRowsToIncludeInRegion = 1;
 		int startRowPosition = rowPosition;
 
+		//if multiple selection is disabled, we need to ensure to only select the current rowPosition
+		//modifying the selection anchor here ensures that the anchor also moves
+		if (!selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
+			selectionLayer.selectionAnchor.rowPosition = rowPosition;
+		}
+		
 		if (selectionLayer.lastSelectedRegion != null) {
 			numOfRowsToIncludeInRegion = Math.abs(selectionLayer.selectionAnchor.rowPosition - rowPosition) + 1;
 			if (startRowPosition < selectionLayer.selectionAnchor.rowPosition) {
@@ -126,6 +132,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 		return new Range(startRowPosition, startRowPosition + numOfRowsToIncludeInRegion);
 	}
 
+	@Override
 	public Class<SelectRowsCommand> getCommandClass() {
 		return SelectRowsCommand.class;
 	}

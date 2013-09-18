@@ -52,14 +52,17 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		selectionsLock = new ReentrantReadWriteLock();
 	}
 	
+	@Override
 	public boolean isMultipleSelectionAllowed() {
 		return multipleSelectionAllowed;
 	}
 	
+	@Override
 	public void setMultipleSelectionAllowed(boolean multipleSelectionAllowed) {
 		this.multipleSelectionAllowed = multipleSelectionAllowed;
 	}
 
+	@Override
 	public void addSelection(int columnPosition, int rowPosition) {
 		selectionsLock.writeLock().lock();
 		
@@ -78,6 +81,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public void addSelection(Rectangle range) {
 		selectionsLock.writeLock().lock();
 		
@@ -93,6 +97,9 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 				}
 			} else {
 				selectedRows.clear();
+				//as no multiple selection is allowed, ensure that only one row 
+				//will be selected
+				range.height = 1;
 			}
 			
 			Map<Serializable, R> rowsToSelect = new HashMap<Serializable, R>();
@@ -120,6 +127,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 	
+	@Override
 	public void clearSelection() {
 		selectionsLock.writeLock().lock();
 		try {
@@ -129,6 +137,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public void clearSelection(int columnPosition, int rowPosition) {
 		selectionsLock.writeLock().lock();
 		
@@ -140,6 +149,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public void clearSelection(Rectangle removedSelection) {
 		selectionsLock.writeLock().lock();
 		
@@ -153,6 +163,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public void clearSelection(R rowObject) {
 		selectionsLock.writeLock().lock();
 		
@@ -163,6 +174,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	};
 	
+	@Override
 	public boolean isEmpty() {
 		selectionsLock.readLock().lock();
 		
@@ -173,6 +185,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public List<Rectangle> getSelections() {
 		List<Rectangle> selectionRectangles = new ArrayList<Rectangle>();
 		
@@ -193,6 +206,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	
 	// Cell features
 
+	@Override
 	public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
 		ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
 		int cellOriginRowPosition = cell.getOriginRowPosition();
@@ -206,6 +220,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	
 	// Column features
 
+	@Override
 	public int[] getSelectedColumnPositions() {
 		if (!isEmpty()) {
 			selectionsLock.readLock().lock();
@@ -227,6 +242,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		return new int[] {};
 	}
 	
+	@Override
 	public boolean isColumnPositionSelected(int columnPosition) {
 		selectionsLock.readLock().lock();
 
@@ -237,6 +253,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public int[] getFullySelectedColumnPositions(int fullySelectedColumnRowCount) {
 		selectionsLock.readLock().lock();
 		
@@ -251,6 +268,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		return new int[] {};
 	}
 
+	@Override
 	public boolean isColumnPositionFullySelected(int columnPosition, int fullySelectedColumnRowCount) {
 		selectionsLock.readLock().lock();
 		
@@ -269,6 +287,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	
 	// Row features
 	
+	@Override
 	public List<R> getSelectedRowObjects() {
 		final List<R> rowObjects = new ArrayList<R>();
 
@@ -282,6 +301,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		return rowObjects;
 	}
 
+	@Override
 	public int getSelectedRowCount() {
 		selectionsLock.readLock().lock();
 		
@@ -292,6 +312,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public Set<Range> getSelectedRowPositions() {
 		Set<Range> selectedRowRanges = new HashSet<Range>();
 		
@@ -309,6 +330,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		return selectedRowRanges;
 	}
 
+	@Override
 	public boolean isRowPositionSelected(int rowPosition) {
 		selectionsLock.readLock().lock();
 		
@@ -320,6 +342,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public int[] getFullySelectedRowPositions(int rowWidth) {
 		selectionsLock.readLock().lock();
 		
@@ -337,6 +360,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
+	@Override
 	public boolean isRowPositionFullySelected(int rowPosition, int rowWidth) {
 		return isRowPositionSelected(rowPosition);
 	}

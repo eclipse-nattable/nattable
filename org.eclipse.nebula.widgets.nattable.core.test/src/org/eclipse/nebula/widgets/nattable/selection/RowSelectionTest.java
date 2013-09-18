@@ -10,16 +10,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import java.util.Collection;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RowSelecitonTest {
+public class RowSelectionTest {
 // Tests for column selection NTBL-225
 
 	private SelectionLayer selectionLayer;
@@ -162,4 +167,35 @@ public class RowSelecitonTest {
 		Assert.assertTrue(selectionLayer.isCellPositionSelected(1, 3));
 		Assert.assertTrue(selectionLayer.isCellPositionSelected(3, 3));
 	}
+	
+	
+	@Test
+	public void onlyOneCellSelectedAtAnyTime() {
+		selectionLayer.getSelectionModel().setMultipleSelectionAllowed(false);
+
+		selectionLayer.clear();
+		selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 0, false, true));
+
+		Collection<PositionCoordinate> cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		assertEquals(1, cells.size());
+		assertEquals(1, selectionLayer.getSelectedRowPositions().size());
+		assertEquals(1, selectionLayer.getSelectedRowCount());
+
+		//select another row with control mask
+		selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 2, false, true));
+
+		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		assertEquals(1, cells.size());
+		assertEquals(1, selectionLayer.getSelectedRowPositions().size());
+		assertEquals(1, selectionLayer.getSelectedRowCount());
+
+		//select additional rows with shift mask
+		selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 5, true, false));
+
+		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		assertEquals(1, cells.size());
+		assertEquals(1, selectionLayer.getSelectedRowPositions().size());
+		assertEquals(1, selectionLayer.getSelectedRowCount());
+	}
+
 }

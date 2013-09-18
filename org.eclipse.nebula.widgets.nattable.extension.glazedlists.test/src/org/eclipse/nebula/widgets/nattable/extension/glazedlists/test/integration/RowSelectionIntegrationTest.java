@@ -13,23 +13,27 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.integrati
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
-
+import java.util.Collection;
 
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,6 +72,7 @@ public class RowSelectionIntegrationTest {
 		// Enable preserve selection on data update
 		selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(selectionLayer, bodyDataProvider, new IRowIdAccessor<RowDataFixture>() {
 
+			@Override
 			public Serializable getRowId(RowDataFixture rowObject) {
 				return rowObject.getSecurity_id();
 			}
@@ -124,6 +129,40 @@ public class RowSelectionIntegrationTest {
 
 		// Ford motor still selected
 		assertEquals("B Ford Motor", getSelected().getSecurity_description());
+	}
+
+	
+	@Test
+	public void onlyOneRowSelectedAtAnyTime() {
+		selectionLayer.getSelectionModel().setMultipleSelectionAllowed(false);
+
+		selectionLayer.clear();
+		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0, false, true));
+
+		Collection<PositionCoordinate> cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
+		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
+
+		//select another cell with control mask
+		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 1, false, true));
+
+		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
+		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
+
+		//select additional cells with shift mask
+		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 10, true, false));
+
+		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
+		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
+
+		//select additional cells with shift mask
+		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 10, 0, true, false));
+
+		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
+		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
 	}
 
 	private RowDataFixture getSelected() {
