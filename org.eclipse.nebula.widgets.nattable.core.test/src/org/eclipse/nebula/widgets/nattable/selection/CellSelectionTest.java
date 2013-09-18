@@ -15,11 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 
-
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
-import org.eclipse.nebula.widgets.nattable.selection.SelectColumnCommandHandler;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
@@ -422,5 +418,40 @@ public class CellSelectionTest {
 		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 2, 1)));
 		// (2, 2)
 		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 2, 2)));
+	}
+	
+	@Test
+	public void onlyOneCellSelectedAtAnyTime() {
+		selectionLayer.getSelectionModel().setMultipleSelectionAllowed(false);
+
+		selectionLayer.clear();
+		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0, false, true));
+
+		Collection<PositionCoordinate> cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Assert.assertEquals(1, cells.size());
+		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 1, 0)));
+
+		//select another cell with control mask
+		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 0, false, true));
+
+		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Assert.assertEquals(1, cells.size());
+		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 2, 0)));
+
+		//select additional cells with shift mask
+		//only the first cell should be selected afterwards
+		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 10, true, false));
+
+		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Assert.assertEquals(1, cells.size());
+		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 2, 0)));
+
+		//select additional cells with shift mask
+		//only the first cell should be selected afterwards
+		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 10, 0, true, false));
+
+		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Assert.assertEquals(1, cells.size());
+		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 2, 0)));
 	}
 }

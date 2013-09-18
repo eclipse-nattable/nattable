@@ -58,18 +58,22 @@ public class SelectionModel implements ISelectionModel {
 		selectionsLock = new ReentrantReadWriteLock();
 	}
 
+	@Override
 	public boolean isMultipleSelectionAllowed() {
 		return multipleSelectionAllowed;
 	}
 	
+	@Override
 	public void setMultipleSelectionAllowed(boolean multipleSelectionAllowed) {
 		this.multipleSelectionAllowed = multipleSelectionAllowed;
 	}
 	
+	@Override
 	public void addSelection(int columnPosition, int rowPosition) {
 		addSelectionIntoList(new Rectangle(columnPosition, rowPosition, 1, 1));
 	}
 
+	@Override
 	public void addSelection(final Rectangle range) {
 		if (range != null) {
 			addSelectionIntoList(range);
@@ -107,6 +111,10 @@ public class SelectionModel implements ISelectionModel {
 				}
 			} else {
 				selections.clear();
+				//as no multiple selection is allowed, ensure that only one column 
+				//and one row will be selected
+				selection.height = 1;
+				selection.width = 1;
 			}
 
 			selections.add(selection);
@@ -116,6 +124,7 @@ public class SelectionModel implements ISelectionModel {
 
 	}
 
+	@Override
 	public void clearSelection() {
 		selectionsLock.writeLock().lock();
 		try {
@@ -125,10 +134,12 @@ public class SelectionModel implements ISelectionModel {
 		}
 	}
 
+	@Override
 	public void clearSelection(int columnPosition, int rowPosition) {
 		clearSelection(new Rectangle(columnPosition, rowPosition, 1, 1));
 	}
 
+	@Override
 	public void clearSelection(Rectangle removedSelection) {
 
 		List<Rectangle> removedItems = new LinkedList<Rectangle>();
@@ -188,6 +199,7 @@ public class SelectionModel implements ISelectionModel {
 
 	}
 
+	@Override
 	public boolean isEmpty() {
 		selectionsLock.readLock().lock();
 		try {
@@ -197,12 +209,14 @@ public class SelectionModel implements ISelectionModel {
 		}
 	}
 
+	@Override
 	public List<Rectangle> getSelections() {
 		return selections;
 	}
 	
 	// Cell features
 
+	@Override
 	public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
 		selectionsLock.readLock().lock();
 
@@ -228,6 +242,7 @@ public class SelectionModel implements ISelectionModel {
 	
 	// Column features
 
+	@Override
 	public int[] getSelectedColumnPositions() {
 		TreeSet<Integer> selectedColumns = new TreeSet<Integer>();
 
@@ -254,6 +269,7 @@ public class SelectionModel implements ISelectionModel {
 		return ObjectUtils.asIntArray(selectedColumns);
 	}
 	
+	@Override
 	public boolean isColumnPositionSelected(int columnPosition) {
 		selectionsLock.readLock().lock();
 
@@ -270,6 +286,7 @@ public class SelectionModel implements ISelectionModel {
 		return false;
 	}
 
+	@Override
 	public int[] getFullySelectedColumnPositions(int columnHeight) {
 		final int[] selectedColumns = getSelectedColumnPositions();
 		int[] columnsToHide = new int[selectedColumns.length];
@@ -291,6 +308,7 @@ public class SelectionModel implements ISelectionModel {
 	 * 
 	 * See the related tests for a better understanding.
 	 */
+	@Override
 	public boolean isColumnPositionFullySelected(int columnPosition, int columnHeight) {
 		selectionsLock.readLock().lock();
 
@@ -335,6 +353,7 @@ public class SelectionModel implements ISelectionModel {
 	
 	// Row features
 
+	@Override
 	public int getSelectedRowCount() {
 		Set<Range> selectedRows = getSelectedRowPositions();
 		int count = 0;
@@ -344,6 +363,7 @@ public class SelectionModel implements ISelectionModel {
 		return count;
 	}
 
+	@Override
 	public Set<Range> getSelectedRowPositions() {
 		Set<Range> selectedRowsRange = new HashSet<Range>();
 
@@ -384,6 +404,7 @@ public class SelectionModel implements ISelectionModel {
 		return new HashSet<Range>(uniqueRanges);
 	}
 
+	@Override
 	public boolean isRowPositionSelected(int rowPosition) {
 		selectionsLock.readLock().lock();
 
@@ -400,6 +421,7 @@ public class SelectionModel implements ISelectionModel {
 		return false;
 	}
 
+	@Override
 	public int[] getFullySelectedRowPositions(int rowWidth) {
 		final Set<Range> selectedRows = getSelectedRowPositions();
 		int[] fullySelectedRows = new int[getSelectedRowCount()];
@@ -416,6 +438,7 @@ public class SelectionModel implements ISelectionModel {
 		return index > 0 ? ArrayUtils.subarray(fullySelectedRows, 0, index) : new int[0];
 	}
 
+	@Override
 	public boolean isRowPositionFullySelected(int rowPosition, int rowWidth) {
 		selectionsLock.readLock().lock();
 
@@ -465,6 +488,7 @@ public class SelectionModel implements ISelectionModel {
 
 	protected void sortByX(List<Rectangle> selectionRectanglesInRow) {
 		Collections.sort(selectionRectanglesInRow, new Comparator<Rectangle>(){
+			@Override
 			public int compare(Rectangle rectangle1, Rectangle rectangle2) {
 				return new Integer(rectangle1.x).compareTo(new Integer(rectangle2.x)) ;
 			}
@@ -473,6 +497,7 @@ public class SelectionModel implements ISelectionModel {
 
 	protected void sortByY(List<Rectangle> selectionRectanglesInColumn) {
 		Collections.sort(selectionRectanglesInColumn, new Comparator<Rectangle>(){
+			@Override
 			public int compare(Rectangle rectangle1, Rectangle rectangle2) {
 				return new Integer(rectangle1.y).compareTo(new Integer(rectangle2.y)) ;
 			}

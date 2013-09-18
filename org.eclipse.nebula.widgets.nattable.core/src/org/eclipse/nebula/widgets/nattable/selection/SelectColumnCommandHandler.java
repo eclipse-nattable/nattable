@@ -30,6 +30,7 @@ public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectCo
 		this.selectionLayer = selectionLayer;
 	}
 
+	@Override
 	public boolean doCommand(ILayer targetLayer, SelectColumnCommand command) {
 		if (command.convertToTargetLayer(selectionLayer)) {
 			selectColumn(command.getColumnPosition(), command.getRowPosition(), command.isWithShiftMask(), command.isWithControlMask());
@@ -83,6 +84,12 @@ public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectCo
 	private void selectColumnWithShiftKey(int columnPosition) {
 		int numOfColumnsToIncludeInRegion = 1;
 		int startColumnPosition = columnPosition;
+
+		//if multiple selection is disabled, we need to ensure to only select the current columnPosition
+		//modifying the selection anchor here ensures that the anchor also moves
+		if (!selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
+			selectionLayer.selectionAnchor.columnPosition = columnPosition;
+		}
 		 
 		if (selectionLayer.lastSelectedRegion != null) {
 			
@@ -99,6 +106,7 @@ public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectCo
 		selectionLayer.selectRegion(startColumnPosition, 0, numOfColumnsToIncludeInRegion, Integer.MAX_VALUE);
 	}
 	
+	@Override
 	public Class<SelectColumnCommand> getCommandClass() {
 		return SelectColumnCommand.class;
 	}
