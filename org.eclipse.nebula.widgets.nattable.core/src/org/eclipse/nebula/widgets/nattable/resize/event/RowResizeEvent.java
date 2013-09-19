@@ -34,10 +34,12 @@ public class RowResizeEvent extends RowStructuralChangeEvent {
 		super(event);
 	}
 	
+	@Override
 	public RowResizeEvent cloneEvent() {
 		return new RowResizeEvent(this);
 	}
 	
+	@Override
 	public Collection<StructuralDiff> getRowDiffs() {
 		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 		
