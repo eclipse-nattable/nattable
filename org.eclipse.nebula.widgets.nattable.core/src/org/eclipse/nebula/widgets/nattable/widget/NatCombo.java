@@ -48,6 +48,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -564,9 +565,17 @@ public class NatCombo extends Composite {
 			
 			Point textPosition = text.toDisplay(text.getLocation());
 			
+			//by default the dropdown shell will be created below the cell in the table
+			int dropdownShellStartingY = textPosition.y + text.getBounds().height;
+			int shellBottomY = textPosition.y + text.getBounds().height + listHeight;
+			//if the bottom of the drowdown is below the display, render it above the cell
+			if (shellBottomY > Display.getCurrent().getBounds().height) {
+				dropdownShellStartingY = textPosition.y - listHeight;
+			}
+			
 			dropdownShell.setBounds(
 					textPosition.x, 
-					textPosition.y + text.getBounds().height, 
+					dropdownShellStartingY, 
 					listWidth, 
 					listHeight);
 		}
