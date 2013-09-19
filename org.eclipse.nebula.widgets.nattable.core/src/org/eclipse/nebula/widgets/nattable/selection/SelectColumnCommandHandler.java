@@ -41,7 +41,7 @@ public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectCo
 
 	protected void selectColumn(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
 		if (noShiftOrControl(withShiftMask, withControlMask)) {
-			selectionLayer.clear();
+			selectionLayer.clear(false);
 			selectionLayer.selectCell(columnPosition, 0, false, false);
 			selectionLayer.selectRegion(columnPosition, 0, 1, Integer.MAX_VALUE);
 			selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
