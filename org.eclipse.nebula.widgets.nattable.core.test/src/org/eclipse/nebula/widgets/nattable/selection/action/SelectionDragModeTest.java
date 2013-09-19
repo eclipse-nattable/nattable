@@ -12,12 +12,9 @@ package org.eclipse.nebula.widgets.nattable.selection.action;
 
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
-import org.eclipse.nebula.widgets.nattable.selection.action.CellSelectionDragMode;
-import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.InitializeClientAreaCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.swt.events.MouseEvent;
@@ -54,14 +51,13 @@ public class SelectionDragModeTest {
 	}
 	
 	@Test
-	public void mouseDownFiresCommand() throws Exception {
+	public void mouseDownShouldNotFireCommand() throws Exception {
 		dragMode.mouseDown(natTable, mouseEvent);
 		
 		List<ILayerEvent> receivedEvents = listener.getReceivedEvents();
 		Assert.assertNotNull(receivedEvents);
 
-		Assert.assertEquals(1, receivedEvents.size());
-		Assert.assertTrue(listener.containsInstanceOf(CellSelectionEvent.class));
+		Assert.assertEquals(0, receivedEvents.size());
 	}
 
 }

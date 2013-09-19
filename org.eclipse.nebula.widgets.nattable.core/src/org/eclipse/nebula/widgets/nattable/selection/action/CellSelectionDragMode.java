@@ -10,33 +10,28 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Point;
+
 
 /**
  * Fires commands to select a range of cells when the mouse is dragged in the viewport.
  */
 public class CellSelectionDragMode implements IDragMode {
 
-	private boolean shiftMask;
-	private boolean controlMask;
-
 	private Point lastDragInCellPosition = null;
 
+	@Override
 	public void mouseDown(NatTable natTable, MouseEvent event) {
 		natTable.forceFocus();
-
-		shiftMask = ((event.stateMask & SWT.SHIFT) == SWT.SHIFT);
-		controlMask = ((event.stateMask & SWT.MOD1) == SWT.MOD1);
-
-		fireSelectionCommand(natTable, natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y), shiftMask, controlMask);
+		lastDragInCellPosition = new Point(natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
 	}
 
+	@Override
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		if (event.x > natTable.getWidth()) {
 			return;
@@ -46,7 +41,7 @@ public class CellSelectionDragMode implements IDragMode {
 
 		if (selectedColumnPosition > -1 && selectedRowPosition > -1) {
 			Point dragInCellPosition = new Point(selectedColumnPosition, selectedRowPosition);
-			if(lastDragInCellPosition == null || !dragInCellPosition.equals(lastDragInCellPosition)){
+			if (lastDragInCellPosition == null || !dragInCellPosition.equals(lastDragInCellPosition)){
 				lastDragInCellPosition = dragInCellPosition;
 
 				fireSelectionCommand(natTable, selectedColumnPosition, selectedRowPosition, true, false);
@@ -58,6 +53,7 @@ public class CellSelectionDragMode implements IDragMode {
 		natTable.doCommand(new SelectCellCommand(natTable, columnPosition, rowPosition, shiftMask, controlMask));
 	}
 
+	@Override
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		endDrag();
 	}

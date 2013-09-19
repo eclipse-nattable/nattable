@@ -71,7 +71,9 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 			if (selectionLayer.getSelectionModel().isMultipleSelectionAllowed() 
 					&& withShiftMask 
 					&& selectionLayer.lastSelectedRegion != null 
-					&& selectionLayer.hasRowSelection()) {
+					&& selectionLayer.hasRowSelection()
+					&& (selectionLayer.selectionAnchor.rowPosition != SelectionLayer.NO_SELECTION)
+					&& (selectionLayer.selectionAnchor.columnPosition != SelectionLayer.NO_SELECTION)) {
 				// if cell.rowPosition > selectionAnchor.rowPositon, then use cell.rowPosition + span - 1 (maxRowPosition)
 				// else use cell.originRowPosition (minRowPosition)
 				// and compare with selectionAnchor.rowPosition
