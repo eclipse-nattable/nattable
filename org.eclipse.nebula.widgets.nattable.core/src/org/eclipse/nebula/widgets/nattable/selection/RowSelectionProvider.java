@@ -139,7 +139,9 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	@Override
 	public void setSelection(ISelection selection) {
 		if (selectionLayer != null && selection instanceof IStructuredSelection) {
-			selectionLayer.clear();
+			if (!addSelectionOnSet) {
+				selectionLayer.clear();
+			}
 			if (!selection.isEmpty()) {
     			List<T> rowObjects = ((IStructuredSelection) selection).toList();
     			Set<Integer> rowPositions = new HashSet<Integer>();
@@ -156,7 +158,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 				if (intValue >= 0) {
 					selectionLayer.doCommand(
 							new SelectRowsCommand(selectionLayer, 0, ObjectUtils.asIntArray(rowPositions), 
-									false, addSelectionOnSet, intValue));
+									false, true, intValue));
 				}
 			}
 		}

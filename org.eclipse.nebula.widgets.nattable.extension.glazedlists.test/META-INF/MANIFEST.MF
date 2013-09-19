@@ -6,7 +6,9 @@ Bundle-Version: 1.0.1.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4
-Import-Package: org.eclipse.nebula.widgets.nattable.filterrow.command,
+Import-Package: org.eclipse.jface.viewers,
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow,
+ org.eclipse.nebula.widgets.nattable.filterrow.command,
  org.eclipse.nebula.widgets.nattable.filterrow.event,
  org.eclipse.nebula.widgets.nattable.group,
  org.eclipse.nebula.widgets.nattable.hideshow,
@@ -15,11 +17,11 @@ Import-Package: org.eclipse.nebula.widgets.nattable.filterrow.command,
  org.eclipse.nebula.widgets.nattable.reorder,
  org.eclipse.nebula.widgets.nattable.selection,
  org.eclipse.nebula.widgets.nattable.selection.command,
+ org.eclipse.nebula.widgets.nattable.selection.config,
+ org.eclipse.nebula.widgets.nattable.selection.event,
  org.eclipse.nebula.widgets.nattable.test.fixture,
  org.eclipse.nebula.widgets.nattable.test.fixture.data,
  org.eclipse.nebula.widgets.nattable.test.fixture.layer,
  org.eclipse.nebula.widgets.nattable.test.integration,
- org.eclipse.nebula.widgets.nattable.viewport,
- org.eclipse.jface.viewers,
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow
+ org.eclipse.nebula.widgets.nattable.viewport
 Bundle-Vendor: Eclipse Nebula NatTable
