@@ -15,12 +15,13 @@ import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardCommand;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -48,17 +49,15 @@ import org.eclipse.swt.widgets.Control;
  * @author Dirk Fauth
  *
  */
-public class _642_GridExcelExportExample extends AbstractNatExample {
+public class _641_CopyExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _642_GridExcelExportExample());
+		StandaloneNatExampleRunner.run(new _641_CopyExample());
 	}
 
 	@Override
 	public String getDescription() {
-		return "This example shows how to trigger an export for a NatTable grid.\n"
-				+ "You can also use the [Ctrl] + [E] to trigger the export via key bindings.\n"
-				+ "This example does not add any further export configuration.";
+		return "This example shows how to register a different copy handling for a NatTable grid.";
 	}
 	
 	@Override
@@ -94,7 +93,7 @@ public class _642_GridExcelExportExample extends AbstractNatExample {
 		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
 		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
 		//directly as body layer is also working.
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
+		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(100), propertyNames);
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
@@ -117,15 +116,24 @@ public class _642_GridExcelExportExample extends AbstractNatExample {
 		//build the grid layer
 		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 		
+		//register a CopyDataCommandHandler that also copies the headers and uses 
+		//the configured IDisplayConverters
+		CopyDataCommandHandler copyHandler = new CopyDataCommandHandler(selectionLayer, columnHeaderDataLayer, rowHeaderDataLayer);
+		copyHandler.setCopyFormattedText(true);
+		gridLayer.registerCommandHandler(copyHandler);
+		
 		final NatTable natTable = new NatTable(gridPanel, gridLayer);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 		
 		Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
-		addColumnButton.setText("Export");
+		addColumnButton.setText("Copy");
 		addColumnButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(), natTable.getShell()));
+				natTable.doCommand(
+						new CopyDataToClipboardCommand(
+								"\t", System.getProperty("line.separator"), //$NON-NLS-1$ //$NON-NLS-2$
+								natTable.getConfigRegistry())); 
 			}
 		});
 
