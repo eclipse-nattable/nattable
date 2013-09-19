@@ -47,7 +47,11 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	 */
 	private final ILayer rowHeaderDataLayer;
 	/**
-	 * TODO
+	 * Flag to specify which serializer should be used for copying the data.
+	 * <code>false</code> will use the CopyDataToClipboardSerializer which simply calls
+	 * <code>toString()</code> to serialize the data to copy, <code>true</code> will
+	 * use the CopyFormattedTextToClipboardSerializer which will use the configured
+	 * IDisplayConverter to get the String representation of the value to copy.
 	 */
 	private boolean copyFormattedText;
 
@@ -74,8 +78,12 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	}
 	
 	/**
-	 * TODO
-	 * @param copyFormattedText
+	 * Specify which serializer to use for copying.
+	 * @param copyFormattedText <code>false</code> will use the CopyDataToClipboardSerializer 
+	 * 			which simply calls <code>toString()</code> to serialize the data to copy, 
+	 * 			<code>true</code> will use the CopyFormattedTextToClipboardSerializer which 
+	 * 			will use the configured IDisplayConverter to get the String representation of 
+	 * 			the value to copy
 	 */
 	public void setCopyFormattedText(boolean copyFormattedText) {
 		this.copyFormattedText = copyFormattedText;
@@ -90,6 +98,7 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 		return true;
 	}
 
+	@Override
 	public Class<CopyDataToClipboardCommand> getCommandClass() {
 		return CopyDataToClipboardCommand.class;
 	}
