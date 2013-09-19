@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.Listener;
 /**
  * Interface to abstract control of either an SWT ScrollBar or Slider.
  */
-public interface IScroller {
+public interface IScroller<T> {
 
-	Object getUnderlying();
+	T getUnderlying();
 	
 	boolean isDisposed();
 

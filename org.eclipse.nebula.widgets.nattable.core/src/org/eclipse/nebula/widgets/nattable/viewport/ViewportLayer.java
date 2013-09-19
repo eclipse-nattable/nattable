@@ -61,8 +61,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	private VerticalScrollBarHandler vBarListener;
 	private final IUniqueIndexLayer scrollableLayer;
 
-	private IScroller horizontalScroller;
-	private IScroller verticalScroller;
+	private IScroller<?> horizontalScroller;
+	private IScroller<?> verticalScroller;
 	
 	// The viewport origin, in scrollable pixel coordinates.
 	private PixelCoordinate origin = new PixelCoordinate(0, 0);
@@ -110,11 +110,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		cancelEdgeHoverScroll();
 	}
 	
-	public void setHorizontalScroller(IScroller scroller) {
+	public void setHorizontalScroller(IScroller<?> scroller) {
 		horizontalScroller = scroller;
 	}
 	
-	public void setVerticalScrollBarEnabled(IScroller scroller) {
+	public void setVerticalScrollBarEnabled(IScroller<?> scroller) {
 		verticalScroller = scroller;
 	}
 	

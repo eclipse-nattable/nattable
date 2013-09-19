@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 
-public class ScrollBarScroller implements IScroller {
+public class ScrollBarScroller implements IScroller<ScrollBar> {
 
 	private ScrollBar scrollBar;
 
@@ -22,7 +22,7 @@ public class ScrollBarScroller implements IScroller {
 	}
 	
 	@Override
-	public Object getUnderlying() {
+	public ScrollBar getUnderlying() {
 		return scrollBar;
 	}
 	

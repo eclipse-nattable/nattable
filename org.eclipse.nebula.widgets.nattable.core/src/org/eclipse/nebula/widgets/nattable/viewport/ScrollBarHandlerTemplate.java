@@ -22,7 +22,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 	public static final int DEFAULT_OFFSET = 1;
 	protected final ViewportLayer viewportLayer;
 	protected final IUniqueIndexLayer scrollableLayer;
-	protected final IScroller scroller;
+	protected final IScroller<?> scroller;
 	
 	/**
 	 * Flag to remember if the scroll bar is moved by dragging.
@@ -34,7 +34,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 	 */
 	private boolean dragging = false;
 
-	public ScrollBarHandlerTemplate(ViewportLayer viewportLayer, IScroller scroller) {
+	public ScrollBarHandlerTemplate(ViewportLayer viewportLayer, IScroller<?> scroller) {
 		this.viewportLayer = viewportLayer;
 		this.scrollableLayer = viewportLayer.getScrollableLayer();
 		this.scroller = scroller;
@@ -47,6 +47,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		}
 	}
 
+	@Override
 	public void handleEvent(Event event) {
 		boolean handle = true;
 		

@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
 
-public class SliderScroller implements IScroller {
+public class SliderScroller implements IScroller<Slider> {
 
 	private Slider slider;
 
@@ -22,7 +22,7 @@ public class SliderScroller implements IScroller {
 	}
 	
 	@Override
-	public Object getUnderlying() {
+	public Slider getUnderlying() {
 		return slider;
 	}
 	
