@@ -28,10 +28,12 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 		this.viewportLayer = viewportLayer;
 	}
 	
+	@Override
 	public Class<IStructuralChangeEvent> getLayerEventClass() {
 		return IStructuralChangeEvent.class;
 	}
 
+	@Override
 	public void handleLayerEvent(IStructuralChangeEvent event) {
 		IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
 		
@@ -73,7 +75,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 			
 			Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
 			if (rowDiffs != null) {
-				if (minimumOriginRowPosition < 0) minimumOriginRowPosition = scrollableLayer.getColumnCount();
+				if (minimumOriginRowPosition < 0) minimumOriginRowPosition = scrollableLayer.getRowCount();
 				for (StructuralDiff rowDiff : rowDiffs) {
 					switch (rowDiff.getDiffType()) {
 					case ADD:

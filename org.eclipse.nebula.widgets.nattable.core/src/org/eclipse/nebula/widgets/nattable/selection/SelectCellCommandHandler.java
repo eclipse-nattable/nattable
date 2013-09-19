@@ -26,6 +26,7 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 		this.selectionLayer = selectionLayer;
 	}
 
+	@Override
 	public boolean doCommand(ILayer targetLayer, SelectCellCommand command) {
 		if (command.convertToTargetLayer(selectionLayer)) {
 			toggleCell(command.getColumnPosition(), command.getRowPosition(), command.isShiftMask(), command.isControlMask(), command.isForcingEntireCellIntoViewport());
@@ -67,7 +68,12 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 			selectionLayer.setLastSelectedCell(cell.getOriginColumnPosition(), cell.getOriginRowPosition());
 			
 			// Shift pressed + row selected
-			if (withShiftMask && selectionLayer.lastSelectedRegion != null && selectionLayer.hasRowSelection()) {
+			if (selectionLayer.getSelectionModel().isMultipleSelectionAllowed() 
+					&& withShiftMask 
+					&& selectionLayer.lastSelectedRegion != null 
+					&& selectionLayer.hasRowSelection()
+					&& (selectionLayer.selectionAnchor.rowPosition != SelectionLayer.NO_SELECTION)
+					&& (selectionLayer.selectionAnchor.columnPosition != SelectionLayer.NO_SELECTION)) {
 				// if cell.rowPosition > selectionAnchor.rowPositon, then use cell.rowPosition + span - 1 (maxRowPosition)
 				// else use cell.originRowPosition (minRowPosition)
 				// and compare with selectionAnchor.rowPosition
@@ -99,6 +105,7 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 		}
 	}
 
+	@Override
 	public Class<SelectCellCommand> getCommandClass() {
 		return SelectCellCommand.class;
 	}

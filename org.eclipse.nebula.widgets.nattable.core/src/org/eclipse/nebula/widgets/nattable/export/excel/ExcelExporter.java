@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.FileOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
@@ -23,40 +25,70 @@ import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * This class is used to export a NatTable to an Excel spreadsheet by using a 
+ * XML format.
+ */
 public class ExcelExporter implements ILayerExporter {
 
+	private static final Log log = LogFactory.getLog(ExcelExporter.class);
+	
 	private static final String EXCEL_HEADER_FILE = "excelExportHeader.txt"; //$NON-NLS-1$
 	
+	/**
+	 * The IOutputStreamProvider that is used to create new OutputStreams on
+	 * beginning new export operations.
+	 */
 	private final IOutputStreamProvider outputStreamProvider;
 
+	/**
+	 * Creates a new ExcelExporter using a FileOutputStreamProvider with default values.
+	 */
 	public ExcelExporter() {
 		this(new FileOutputStreamProvider("table_export.xls", new String[] { "Excel Workbok (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	
+	/**
+	 * Creates a new ExcelExporter that uses the given IOutputStreamProvider for retrieving
+	 * the OutputStream to write the export to.
+	 * @param outputStreamProvider The IOutputStreamProvider that is used to retrieve the 
+	 * 			OutputStream to write the export to.
+	 */
 	public ExcelExporter(IOutputStreamProvider outputStreamProvider) {
 		this.outputStreamProvider = outputStreamProvider;
 	}
 	
+	@Override
 	public OutputStream getOutputStream(Shell shell) {
 		return outputStreamProvider.getOutputStream(shell);
 	}
 	
+	@Override
 	public void exportBegin(OutputStream outputStream) throws IOException {
 	}
 
+	@Override
 	public void exportEnd(OutputStream outputStream) throws IOException {
 	}
 
+	@Override
 	public void exportLayerBegin(OutputStream outputStream, String layerName) throws IOException {
 		writeHeader(outputStream);
 		outputStream.write(asBytes("<body><table border='1'>")); //$NON-NLS-1$
 	}
 
+	/**
+	 * Writes the Excel header informations that are stored locally in the package
+	 * structure.
+	 * @throws IOException if an I/O error occurs on closing the stream to
+	 * 			the header content file
+	 */
 	private void writeHeader(OutputStream outputStream) throws IOException {
 		InputStream headerStream = null;
 		try {
@@ -66,7 +98,7 @@ public class ExcelExporter implements ILayerExporter {
 				outputStream.write(c);
 			}
 		} catch (Exception e) {
-			logError(e);
+			log.error("Excel Exporter failed: " + e.getMessage(), e); //$NON-NLS-1$
 		} finally {
 			if (isNotNull(headerStream)) {
 				headerStream.close();
@@ -74,20 +106,24 @@ public class ExcelExporter implements ILayerExporter {
 		}
 	}
 
+	@Override
 	public void exportLayerEnd(OutputStream outputStream, String layerName) throws IOException {
 		outputStream.write(asBytes("</table></body></html>")); //$NON-NLS-1$
 	}
 
+	@Override
 	public void exportRowBegin(OutputStream outputStream, int rowPosition) throws IOException {
 		outputStream.write(asBytes("<tr>\n")); //$NON-NLS-1$
 	}
 
+	@Override
 	public void exportRowEnd(OutputStream outputStream, int rowPosition) throws IOException {
 		outputStream.write(asBytes("</tr>\n")); //$NON-NLS-1$
 	}
 
+	@Override
 	public void exportCell(OutputStream outputStream, Object exportDisplayValue, ILayerCell cell, IConfigRegistry configRegistry) throws IOException {
-		CellStyleProxy cellStyle = new CellStyleProxy(configRegistry, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
+		CellStyleProxy cellStyle = new CellStyleProxy(configRegistry, DisplayMode.NORMAL, cell.getConfigLabels().getLabels());
 		Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
 		Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 		Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
@@ -109,11 +145,6 @@ public class ExcelExporter implements ILayerExporter {
 
 	private byte[] asBytes(String string) {
 		return string.getBytes();
-	}
-
-	private void logError(Exception e) {
-		System.err.println("Excel Exporter failed: " + e.getMessage()); //$NON-NLS-1$
-		e.printStackTrace(System.err);
 	}
 	
 	private String getFontInCSSFormat(Font font) {

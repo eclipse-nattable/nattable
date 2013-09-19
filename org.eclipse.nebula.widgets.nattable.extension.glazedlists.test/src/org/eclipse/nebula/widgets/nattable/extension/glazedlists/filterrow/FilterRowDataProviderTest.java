@@ -31,7 +31,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -65,15 +64,15 @@ public class FilterRowDataProviderTest {
 	}
 
 	@Test
-	public void setDataValue() throws Exception {
-		Assert.assertNull(dataProvider.getDataValue(1, 1));
+	public void setDataValue() {
+		assertNull(dataProvider.getDataValue(1, 1));
 
 		dataProvider.setDataValue(1, 1, "testValue");
 		assertEquals("testValue", dataProvider.getDataValue(1, 1));
 	}
 
 	@Test
-	public void settingTextValueAppliesTextFilter() throws Exception {
+	public void settingTextValueAppliesTextFilter() {
 		// original size
 		assertEquals(13, filterList.size());
 
@@ -90,7 +89,7 @@ public class FilterRowDataProviderTest {
 	}
 
 	@Test
-	public void settingThresholdValuesUpdatedFilter() throws Exception {
+	public void settingThresholdValuesUpdatedFilter() {
 		// Since we are triggering object comparison, we must provide the right type
 		configRegistry.registerConfigAttribute(
 				FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
@@ -113,7 +112,7 @@ public class FilterRowDataProviderTest {
 	}
 	
 	@Test
-	public void settingAValueFiresUpdateEvent() throws Exception {
+	public void settingAValueFiresUpdateEvent() {
 		final LayerListenerFixture listener = new LayerListenerFixture();
 		columnHeaderLayer.addLayerListener(listener);
 		dataProvider.setDataValue(3, 1, "testValue");
@@ -123,7 +122,7 @@ public class FilterRowDataProviderTest {
 	}
 
 	@Test
-	public void persistence() throws Exception {
+	public void persistence() {
 		dataProvider.setDataValue(1, 1, "testValue");
 		dataProvider.setDataValue(2, 1, "testValue");
 		dataProvider.setDataValue(3, 1, "testValue");
@@ -133,9 +132,9 @@ public class FilterRowDataProviderTest {
 
 		// save state
 		dataProvider.saveState("prefix", properties);
-		String persistedProperty = properties.getProperty("prefix.filterTokens");
+		String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
 
-		assertEquals("1:testValue|3:testValue|", persistedProperty.toString());
+		assertEquals("1:testValue|3:testValue|", persistedProperty);
 
 		// reset state
 		setup();
@@ -149,7 +148,7 @@ public class FilterRowDataProviderTest {
 	}
 
 	@Test
-	public void shouldRecoverFromCorruptPerssitedState() throws Exception {
+	public void shouldRecoverFromCorruptPersistedState() {
 		Properties properties = new Properties();
 
 		properties.put("prefix.filterTokens", "XX");
@@ -160,7 +159,8 @@ public class FilterRowDataProviderTest {
 		assertEquals(null, dataProvider.getDataValue(3, 1));
 	}
 	
-	@Test public void shouldRemoveNonFilteredColumnsWhenLoadingState() throws Exception {
+	@Test 
+	public void shouldRemoveNonFilteredColumnsWhenLoadingState() {
 		dataProvider.setDataValue(1, 1, "testValue");
 		dataProvider.setDataValue(2, 1, "testValue");
 		
@@ -180,4 +180,54 @@ public class FilterRowDataProviderTest {
 		assertEquals("newTestValue", dataProvider.getDataValue(3, 1));
 	}
 
+	@Test
+	public void testRegularExpressionWithPipes() {
+		configRegistry.registerConfigAttribute(
+				FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+				TextMatchingMode.REGULAR_EXPRESSION,
+				DisplayMode.NORMAL,
+				FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
+
+		assertEquals(13, filterList.size());
+
+		dataProvider.setDataValue(1, 1, "(D|E|F){1}.*");
+
+		assertEquals(3, filterList.size());
+	}
+
+	@Test
+	public void testPersistenceRegularExpressionWithPipes() {
+		configRegistry.registerConfigAttribute(
+				FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+				TextMatchingMode.REGULAR_EXPRESSION,
+				DisplayMode.NORMAL,
+				FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
+
+		assertEquals(13, filterList.size());
+
+		dataProvider.setDataValue(1, 1, "(D|E|F){1}.*");
+
+		assertEquals(3, filterList.size());
+		
+		Properties properties = new Properties();
+
+		// save state
+		dataProvider.saveState("prefix", properties);
+		String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+		//check that the pipe character in the regular expression was replaced for persistence
+		assertEquals("1:(D" 
+				+ FilterRowDataProvider.PIPE_REPLACEMENT + "E" 
+				+ FilterRowDataProvider.PIPE_REPLACEMENT + "F){1}.*|", persistedProperty);
+
+		// reset state
+		setup();
+		assertEquals(13, filterList.size());
+
+		// load state
+		dataProvider.loadState("prefix", properties);
+
+		//after loading the state, the pipes in the regular expression need to be restored correctly
+		assertEquals("(D|E|F){1}.*", dataProvider.getDataValue(1, 1));
+	}
 }

@@ -30,7 +30,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
+import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
@@ -193,7 +193,7 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
 		natTable.addConfiguration(new AbstractRegistryConfiguration() {
 			@Override
 			public void configureRegistry(IConfigRegistry configRegistry) {
-				configRegistry.registerConfigAttribute(ILayerExporter.CONFIG_ATTRIBUTE, new HSSFExcelExporter());
+				configRegistry.registerConfigAttribute(ExportConfigAttributes.EXPORTER, new HSSFExcelExporter());
 			}
 		});
 		natTable.addConfiguration(new FilterRowCustomConfiguration());

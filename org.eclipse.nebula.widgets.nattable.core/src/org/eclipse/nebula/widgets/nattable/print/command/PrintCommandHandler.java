@@ -11,22 +11,32 @@
 package org.eclipse.nebula.widgets.nattable.print.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
-import org.eclipse.nebula.widgets.nattable.print.GridLayerPrinter;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.print.LayerPrinter;
 
+/**
+ * ILayerCommandHandler for handling the PrintCommand.
+ * Simply delegates to the 
+ */
 public class PrintCommandHandler extends AbstractLayerCommandHandler<PrintCommand> {
 
-	private final GridLayer gridLayer;
+	private final ILayer layer;
 
-	public PrintCommandHandler(GridLayer defaultGridLayer) {
-		this.gridLayer = defaultGridLayer;
+	/**
+	 * @param layer The layer that should be printed. 
+	 * 			Usually the top most layer to print, e.g. the GridLayer.
+	 */
+	public PrintCommandHandler(ILayer layer) {
+		this.layer = layer;
 	}
 
+	@Override
 	public boolean doCommand(PrintCommand command) {
-		new GridLayerPrinter(gridLayer, command.getConfigRegistry()).print(command.getShell());
+		new LayerPrinter(layer, command.getConfigRegistry()).print(command.getShell());
 		return true;
 	}
 
+	@Override
 	public Class<PrintCommand> getCommandClass() {
 		return PrintCommand.class;
 	}

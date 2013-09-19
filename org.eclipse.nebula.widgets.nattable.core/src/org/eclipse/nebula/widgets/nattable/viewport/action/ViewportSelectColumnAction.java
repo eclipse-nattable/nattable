@@ -31,6 +31,8 @@ public class ViewportSelectColumnAction implements IMouseAction {
 	
 	@Override
 	public void run(NatTable natTable, MouseEvent event) {
-		natTable.doCommand(new ViewportSelectColumnCommand(natTable, natTable.getColumnPositionByX(event.x), withShiftMask, withControlMask));
+		//only perform the selection if the cursor is null
+		if (natTable.getCursor() == null)
+			natTable.doCommand(new ViewportSelectColumnCommand(natTable, natTable.getColumnPositionByX(event.x), withShiftMask, withControlMask));
 	}
 }

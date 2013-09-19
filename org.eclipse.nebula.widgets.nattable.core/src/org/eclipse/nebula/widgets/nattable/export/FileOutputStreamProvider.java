@@ -15,11 +15,19 @@ import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * Implementation of IOutputStreamProvider that will open a {@link FileDialog} on requesting
+ * an OutputStream, to let a user specify the location to write a file.
+ */
 public class FileOutputStreamProvider implements IOutputStreamProvider {
+
+	private static final Log log = LogFactory.getLog(FileOutputStreamProvider.class);
 
 	protected String defaultFileName;
 	protected String[] defaultFilterNames;
@@ -31,8 +39,13 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
 		this.defaultFilterExtensions = defaultFilterExtensions;
 	}
 	
+	/**
+	 * Opens a {@link FileDialog} to let a user choose the location to write the export to,
+	 * and returns the corresponding {@link PrintStream} to that file.
+	 */
+	@Override
 	public OutputStream getOutputStream(Shell shell) {
-		FileDialog dialog = new FileDialog (shell, SWT.SAVE);
+		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		
 		String filterPath;
 		String relativeFileName;
@@ -60,7 +73,7 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
 		try {
 			return new PrintStream(fileName);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			log.error("Failed to open or create the file: " + fileName, e); //$NON-NLS-1$
 			return null;
 		}
 	}

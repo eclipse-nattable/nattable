@@ -23,6 +23,9 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 
 
+/**
+ * Event indicating that one or multiple columns are moved to a new position.
+ */
 public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
 	private Collection<Range> beforeFromColumnPositionRanges;
@@ -74,6 +77,8 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
 		Collection<Range> beforeFromColumnPositionRanges = getBeforeFromColumnPositionRanges();
 
+		final int beforeToColumnPosition = (this.reorderToLeftEdge) ?
+				this.beforeToColumnPosition : (this.beforeToColumnPosition + 1);
 		int afterAddColumnPosition = beforeToColumnPosition;
 		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
 			if (beforeFromColumnPositionRange.start < beforeToColumnPosition) {

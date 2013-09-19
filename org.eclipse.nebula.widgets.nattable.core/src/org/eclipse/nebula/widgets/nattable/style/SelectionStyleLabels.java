@@ -16,6 +16,8 @@ public interface SelectionStyleLabels {
     
     public static final String SELECTION_ANCHOR_STYLE = "selectionAnchor"; //$NON-NLS-1$
     
+    public static final String SELECTION_ANCHOR_GRID_LINE_STYLE = "selectionAnchorGridLine"; //$NON-NLS-1$
+
     public static final String COLUMN_FULLY_SELECTED_STYLE = GridRegion.COLUMN_HEADER + "_FULL"; //$NON-NLS-1$
     
     public static final String ROW_FULLY_SELECTED_STYLE = GridRegion.ROW_HEADER + "_FULL"; //$NON-NLS-1$

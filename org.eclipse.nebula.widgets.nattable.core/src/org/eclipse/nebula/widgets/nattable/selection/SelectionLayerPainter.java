@@ -13,11 +13,17 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -47,9 +53,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 		Color originalForeground = gc.getForeground();
 		
 		// Apply border settings
-		gc.setLineStyle(SWT.LINE_CUSTOM);
-		gc.setLineDash(new int[] { 1, 1 });
-		gc.setForeground(GUIHelper.COLOR_BLACK);
+		applyBorderStyle(gc, configRegistry);
 		
 		// Draw horizontal borders
 		boolean selectedMode = false;
@@ -156,4 +160,30 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 		return cell.getDisplayMode() == DisplayMode.SELECT;
 	}
 	
+	private void applyBorderStyle(GC gc, IConfigRegistry configRegistry) {
+		//Note: If there is no style configured for the SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE
+		//		label, the style configured for DisplayMode.SELECT will be retrieved by this call.
+		//		Ensure that the selection style configuration does not contain a border style configuration
+		//		to avoid strange rendering behaviour. By default there is no border configuration added,
+		//		so there shouldn't be issues with backwards compatibility. And if there are some, they can
+		//		be solved easily by adding the necessary border style configuration.
+		IStyle cellStyle = configRegistry.getConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				DisplayMode.SELECT, 
+				SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE);
+		BorderStyle borderStyle = cellStyle != null ? cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE) : null;
+		
+		//if there is no border style configured, use the default one for backwards compatibility
+		if (borderStyle == null) {
+			gc.setLineStyle(SWT.LINE_CUSTOM);
+			gc.setLineDash(new int[] { 1, 1 });
+			gc.setForeground(GUIHelper.COLOR_BLACK);
+		}
+		else {
+			gc.setLineStyle(LineStyleEnum.toSWT(borderStyle.getLineStyle()));
+			gc.setLineWidth(borderStyle.getThickness());
+			gc.setForeground(borderStyle.getColor());
+		}
+	}
+
 }

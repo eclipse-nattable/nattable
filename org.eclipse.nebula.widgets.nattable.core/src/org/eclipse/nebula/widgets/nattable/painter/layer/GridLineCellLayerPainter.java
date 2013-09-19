@@ -10,13 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
 
 public class GridLineCellLayerPainter extends CellLayerPainter {
@@ -35,6 +34,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 		return gridColor;
 	}
 	
+	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
 		//Draw GridLines
 		drawGridLines(natLayer, gc, rectangle);
@@ -57,6 +57,10 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	private void drawHorizontalLines(ILayer natLayer, GC gc, Rectangle rectangle) {
 		int endX = rectangle.x + Math.min(natLayer.getWidth() - 1, rectangle.width);
 		
+		//this can happen on resizing if there is no CompositeLayer involved
+		//without this check grid line fragments may be rendered below the last column
+		if (endX > natLayer.getWidth()) return;
+		
 		int rowPositionByY = natLayer.getRowPositionByY(rectangle.y + rectangle.height);
 		int maxRowPosition = rowPositionByY > 0 ? Math.min(natLayer.getRowCount(), rowPositionByY) : natLayer.getRowCount();
 		for (int rowPosition = natLayer.getRowPositionByY(rectangle.y); rowPosition < maxRowPosition; rowPosition++) {
@@ -71,6 +75,10 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	private void drawVerticalLines(ILayer natLayer, GC gc, Rectangle rectangle) {
 		int endY = rectangle.y + Math.min(natLayer.getHeight() - 1, rectangle.height);
 		
+		//this can happen on resizing if there is no CompositeLayer involved
+		//without this check grid line fragments may be rendered below the last row
+		if (endY > natLayer.getHeight()) return;
+
 		int columnPositionByX = natLayer.getColumnPositionByX(rectangle.x + rectangle.width);
 		int maxColumnPosition = columnPositionByX > 0 ? Math.min(natLayer.getColumnCount(), columnPositionByX) : natLayer.getColumnCount();
 		for (int columnPosition = natLayer.getColumnPositionByX(rectangle.x); columnPosition < maxColumnPosition; columnPosition++) {

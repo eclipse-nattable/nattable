@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -41,6 +39,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
+import org.eclipse.swt.graphics.Rectangle;
 
 
 /**
@@ -62,11 +61,13 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Dispose
 
+	@Override
 	public void dispose() {
 	}
 	
 	// Regions
 	
+	@Override
 	public LabelStack getRegionLabelsByXY(int x, int y) {
 		LabelStack regionLabels = new LabelStack();
 		if (regionName != null) {
@@ -85,6 +86,7 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Config lables
 	
+	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		LabelStack configLabels = new LabelStack();
 		if (configLabelAccumulator != null) {
@@ -106,22 +108,26 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Persistence
 	
+	@Override
 	public void saveState(String prefix, Properties properties) {
 		for (IPersistable persistable : persistables) {
 			persistable.saveState(prefix, properties);
 		}
 	}
 	
+	@Override
 	public void loadState(String prefix, Properties properties) {
 		for (IPersistable persistable : persistables) {
 			persistable.loadState(prefix, properties);
 		}
 	}
 	  
+	@Override
 	public void registerPersistable(IPersistable persistable){
 		persistables.add(persistable);
 	}
 
+	@Override
 	public void unregisterPersistable(IPersistable persistable){
 		persistables.remove(persistable);
 	}
@@ -136,6 +142,7 @@ public abstract class AbstractLayer implements ILayer {
 		configurations.clear();
 	}
 	
+	@Override
 	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
 		for (IConfiguration configuration : configurations) {
 			configuration.configureLayer(this);
@@ -146,7 +153,8 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Commands
 	
-	@SuppressWarnings("unchecked")
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public boolean doCommand(ILayerCommand command) {
 		for (Class<? extends ILayerCommand> commandClass : commandHandlers.keySet()) {
 			if (commandClass.isInstance(command)) {
@@ -171,24 +179,29 @@ public abstract class AbstractLayer implements ILayer {
 		// No op
 	}
 	
+	@Override
 	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
 		commandHandlers.put(commandHandler.getCommandClass(), commandHandler);
 	}
 
+	@Override
 	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
 		commandHandlers.remove(commandClass);
 	}
 	
 	// Events
 
+	@Override
 	public void addLayerListener(ILayerListener listener) {
 		listeners.add(listener);
 	}
 	
+	@Override
 	public void removeLayerListener(ILayerListener listener) {
 		listeners.remove(listener);
 	}
 	
+	@Override
 	public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass) {
 		for (ILayerListener listener : listeners) {
 			if (listener.getClass().equals(layerListenerClass)) {
@@ -206,7 +219,8 @@ public abstract class AbstractLayer implements ILayer {
 	 * the event up the layer stack by calling <code>super.fireLayerEvent(event)</code>
 	 * - unless you plan to eat the event yourself.
 	 **/
-	@SuppressWarnings("unchecked")
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void handleLayerEvent(ILayerEvent event) {
 		for (Class<? extends ILayerEvent> eventClass : eventHandlers.keySet()) {
 			if (eventClass.isInstance(event)) {
@@ -225,10 +239,15 @@ public abstract class AbstractLayer implements ILayer {
 		eventHandlers.put(eventHandler.getLayerEventClass(), eventHandler);
 	}
 	
+	public void unregisterEventHandler(ILayerEventHandler<?> eventHandler) {
+		eventHandlers.remove(eventHandler.getLayerEventClass());
+	}
+	
 	/**
 	 * Pass the event to all the {@link ILayerListener} registered on this layer.
 	 * A cloned copy is passed to each listener.
 	 */
+	@Override
 	public void fireLayerEvent(ILayerEvent event) {
 		if (listeners.size() > 0) {
 			Iterator<ILayerListener> it = listeners.iterator();
@@ -247,6 +266,7 @@ public abstract class AbstractLayer implements ILayer {
 	/**
 	 * @return {@link ILayerPainter}. Defaults to {@link GridLineCellLayerPainter}
 	 */
+	@Override
 	public ILayerPainter getLayerPainter() {
 		if (layerPainter == null) {
 			layerPainter = new GridLineCellLayerPainter();
@@ -260,10 +280,12 @@ public abstract class AbstractLayer implements ILayer {
 
 	// Client area
 	
+	@Override
 	public IClientAreaProvider getClientAreaProvider() {
 		return clientAreaProvider;
 	}
 	
+	@Override
 	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
 		this.clientAreaProvider = clientAreaProvider;
 	}
@@ -273,6 +295,7 @@ public abstract class AbstractLayer implements ILayer {
 		return getClass().getSimpleName();
 	}
 	
+	@Override
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()
 				|| rowPosition < 0 || rowPosition >= getRowCount()) {
@@ -282,6 +305,7 @@ public abstract class AbstractLayer implements ILayer {
 		return new LayerCell(this, columnPosition, rowPosition);
 	}
 	
+	@Override
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		ILayer cellLayer = cell.getLayer();
@@ -320,10 +344,12 @@ public abstract class AbstractLayer implements ILayer {
 		return new Rectangle(xOffset, yOffset, width, height);
 	}
 	
+	@Override
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
 		return DisplayMode.NORMAL;
 	}
 	
+	@Override
 	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return configRegistry.getConfigAttribute(CellConfigAttributes.CELL_PAINTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 	}

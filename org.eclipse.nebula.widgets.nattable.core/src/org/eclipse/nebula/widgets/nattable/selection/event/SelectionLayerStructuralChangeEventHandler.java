@@ -13,10 +13,11 @@ package org.eclipse.nebula.widgets.nattable.selection.event;
 import java.util.Collection;
 import java.util.Set;
 
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.selection.ISelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.swt.graphics.Rectangle;
@@ -31,22 +32,39 @@ public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHa
 		this.selectionModel = selectionModel;
 	}
 
+	@Override
 	public Class<IStructuralChangeEvent> getLayerEventClass() {
 		return IStructuralChangeEvent.class;
 	}
 
+	@Override
 	public void handleLayerEvent(IStructuralChangeEvent event) {
 		if (event.isHorizontalStructureChanged()) {
 			// TODO handle column deletion
 		}
 		
 		if (event.isVerticalStructureChanged()) {
-			Collection<Rectangle> rectangles = event.getChangedPositionRectangles();
-			for (Rectangle rectangle : rectangles) {
-				Range changedRange = new Range(rectangle.y, rectangle.y + rectangle.height);
-				if (selectedRowModified(changedRange)) {
-					selectionLayer.clear();
-					break;
+			//if there are no row diffs, it seems to be a complete refresh
+			if (event.getRowDiffs() == null) {
+				Collection<Rectangle> rectangles = event.getChangedPositionRectangles();
+				for (Rectangle rectangle : rectangles) {
+					Range changedRange = new Range(rectangle.y, rectangle.y + rectangle.height);
+					if (selectedRowModified(changedRange)) {
+						selectionLayer.clear();
+						break;
+					}
+				}
+			}
+			else {
+				//there are row diffs so we try to determine the diffs to process
+				for (StructuralDiff diff : event.getRowDiffs()) {
+					//DiffTypeEnum.CHANGE is used for resizing and shouldn't result in clearing the selection
+					if (diff.getDiffType() != DiffTypeEnum.CHANGE) {
+						if (selectedRowModified(diff.getBeforePositionRange())) {
+							selectionLayer.clear();
+							break;
+						}
+					}
 				}
 			}
 		}

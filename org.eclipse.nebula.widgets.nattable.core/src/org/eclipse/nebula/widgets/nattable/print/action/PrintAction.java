@@ -10,22 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.print.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommand;
-import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
-import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
+/**
+ * IKeyAction that is used to print a NatTable.
+ */
 public class PrintAction implements IKeyAction {
 
+	@Override
 	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new TurnViewportOffCommand());
-		
 		natTable.doCommand(new PrintCommand(natTable.getConfigRegistry(), natTable.getShell()));
-		
-		natTable.doCommand(new TurnViewportOnCommand());
 	}
 
 }

@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.config;
 
 
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.export.excel.DefaultExportFormatter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.LineBorderDecorator;
@@ -38,6 +37,7 @@ public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfigura
 
 	public ICellPainter cellPainter = new LineBorderDecorator(new TextPainter());
 	
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, cellPainter);
 
@@ -54,7 +54,5 @@ public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfigura
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle);
 	
 		configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new DefaultDisplayConverter());
-		
-		configRegistry.registerConfigAttribute(CellConfigAttributes.EXPORT_FORMATTER, new DefaultExportFormatter());
 	}
 }

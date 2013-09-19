@@ -16,7 +16,6 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -24,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
@@ -38,8 +38,14 @@ public class NatExporter {
 		this.shell = shell;
 	}
 	
+	/**
+	 * Exports a single ILayer using the ILayerExporter registered in the ConfigRegistry.
+	 * @param layer The ILayer to export, usually a NatTable instance.
+	 * @param configRegistry The ConfigRegistry of the NatTable instance to export,
+	 * 			that contains the necessary export configurations.
+	 */
 	public void exportSingleLayer(final ILayer layer, final IConfigRegistry configRegistry) {
-		final ILayerExporter exporter = configRegistry.getConfigAttribute(ILayerExporter.CONFIG_ATTRIBUTE, DisplayMode.NORMAL);
+		final ILayerExporter exporter = configRegistry.getConfigAttribute(ExportConfigAttributes.EXPORTER, DisplayMode.NORMAL);
 		
 		final OutputStream outputStream = exporter.getOutputStream(shell);
 		if (outputStream == null) {
@@ -47,6 +53,7 @@ public class NatExporter {
 		}
 		
 		Runnable exportRunnable = new Runnable() {
+			@Override
 			public void run() {
 				try {
 					exporter.exportBegin(outputStream);
@@ -74,6 +81,12 @@ public class NatExporter {
 		}
 	}
 	
+	/**
+	 * Export multiple NatTable instances to one file by using the given ILayerExporter.
+	 * @param exporter The ILayerExporter to use for exporting.
+	 * @param natTablesMap The NatTable instances to export. They keys in the map will be
+	 * 			used as sheet titles while the values are the instances to export.
+	 */
 	public void exportMultipleNatTables(final ILayerExporter exporter, final Map<String, NatTable> natTablesMap) {
 		final OutputStream outputStream = exporter.getOutputStream(shell);
 		if (outputStream == null) {
@@ -81,6 +94,7 @@ public class NatExporter {
 		}
 		
 		Runnable exportRunnable = new Runnable() {
+			@Override
 			public void run() {
 				try {
 					exporter.exportBegin(outputStream);
@@ -130,6 +144,9 @@ public class NatExporter {
 		layer.doCommand(new TurnViewportOffCommand());
 		setClientAreaToMaximum(layer);
 		
+		//if a SummaryRowLayer is in the layer stack, we need to ensure that the values are calculated
+		layer.doCommand(new CalculateSummaryRowValuesCommand());
+		
 		ProgressBar progressBar = null;
 		
 		if (shell != null) {
@@ -161,7 +178,7 @@ public class NatExporter {
 				for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
 					ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
 					
-					IExportFormatter exportFormatter = configRegistry.getConfigAttribute(CellConfigAttributes.EXPORT_FORMATTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
+					IExportFormatter exportFormatter = configRegistry.getConfigAttribute(ExportConfigAttributes.EXPORT_FORMATTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 					Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
 
 					exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
@@ -190,6 +207,7 @@ public class NatExporter {
 		final Rectangle maxClientArea = new Rectangle(0, 0, layer.getWidth(), layer.getHeight());
 		
 		layer.setClientAreaProvider(new IClientAreaProvider() {
+			@Override
 			public Rectangle getClientArea() {
 				return maxClientArea;
 			}
