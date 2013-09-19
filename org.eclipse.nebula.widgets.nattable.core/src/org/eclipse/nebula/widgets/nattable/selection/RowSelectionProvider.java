@@ -140,7 +140,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	public void setSelection(ISelection selection) {
 		if (selectionLayer != null && selection instanceof IStructuredSelection) {
 			if (!addSelectionOnSet) {
-				selectionLayer.clear();
+				selectionLayer.clear(false);
 			}
 			if (!selection.isEmpty()) {
     			List<T> rowObjects = ((IStructuredSelection) selection).toList();

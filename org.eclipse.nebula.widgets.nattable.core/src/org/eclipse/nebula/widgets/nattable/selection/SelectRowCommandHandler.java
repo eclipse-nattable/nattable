@@ -64,7 +64,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 		
 		if (noShiftOrControl(withShiftMask, withControlMask)) {
 			changedRowRanges.addAll(selectionLayer.getSelectedRowPositions());
-			selectionLayer.clear();
+			selectionLayer.clear(false);
 			selectionLayer.selectCell(0, rowPosition, withShiftMask, withControlMask);
 			selectionLayer.selectRegion(0, rowPosition, Integer.MAX_VALUE, 1);
 			selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);

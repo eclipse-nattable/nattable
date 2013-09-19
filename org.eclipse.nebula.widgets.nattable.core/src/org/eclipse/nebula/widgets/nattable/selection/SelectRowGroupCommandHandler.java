@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupHeaderLayer;
@@ -43,6 +42,7 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 		this.rowGroupHeaderLayer = rowGroupHeaderLayer;
 	}
 	
+	@Override
 	public Class<SelectRowGroupsCommand> getCommandClass() {
 		return SelectRowGroupsCommand.class;
 	}
@@ -76,12 +76,9 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 		
 		if (noShiftOrControl(withShiftMask, withControlMask)) {
 			changedRowRanges.addAll(selectionLayer.getSelectedRowPositions());
-			selectionLayer.clear();
+			selectionLayer.clear(false);
 			selectionLayer.selectCell(0, rowPosition, withShiftMask, withControlMask);
 			selectionLayer.selectRegion(0, rowPosition, selectionLayer.getColumnCount(), rowCount);
-			
-					
-			
 			changedRowRanges.add(new Range(rowPosition, rowPosition + rowCount));
 		} else if (isControlOnly(withShiftMask, withControlMask)) {
 			changedRowRanges.add(selectRowWithCtrlKey(columnPosition, rowPosition, rowCount));
