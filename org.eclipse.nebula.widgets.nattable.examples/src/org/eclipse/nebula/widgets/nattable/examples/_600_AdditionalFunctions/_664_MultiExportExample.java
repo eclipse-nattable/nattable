@@ -68,13 +68,13 @@ import org.eclipse.swt.widgets.Display;
  * @author Dirk Fauth
  *
  */
-public class _644_MultiExportExample extends AbstractNatExample {
+public class _664_MultiExportExample extends AbstractNatExample {
 
 	public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
 	public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 480, new _644_MultiExportExample());
+		StandaloneNatExampleRunner.run(600, 480, new _664_MultiExportExample());
 	}
 
 	@Override

@@ -41,10 +41,10 @@ import org.eclipse.swt.widgets.Control;
  * @author Dirk Fauth
  *
  */
-public class _641_ExcelExportExample extends AbstractNatExample {
+public class _661_ExcelExportExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _641_ExcelExportExample());
+		StandaloneNatExampleRunner.run(new _661_ExcelExportExample());
 	}
 
 	@Override
