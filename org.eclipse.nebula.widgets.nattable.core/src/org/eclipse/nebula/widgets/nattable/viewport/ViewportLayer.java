@@ -10,10 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ScrollBar;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PixelCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -22,10 +18,12 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
+import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.ScrollSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
@@ -42,6 +40,9 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectColumn
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ScrollEvent;
 import org.eclipse.nebula.widgets.nattable.viewport.event.ViewportEventHandler;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ScrollBar;
 
 
 /**
@@ -79,7 +80,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	
 	private MoveViewportRunnable edgeHoverRunnable;
 	
-	
+	private ILayerEventHandler<RowResizeEvent> resizeEventHandler;
+
 	public ViewportLayer(IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
 		this.scrollableLayer = underlyingLayer;
@@ -633,6 +635,20 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 				
 				// TEE: at least adjust scrollbar to reflect new position
 				adjustVerticalScrollBar();
+				
+				//add a listener that is ensuring to keep the selection in the viewport for 100ms
+				//this is necessary for keeping the cell in the viewport if automatically resize events are generated (see Bug 411670)
+				if (resizeEventHandler == null) {
+					resizeEventHandler = new KeepRowInsideViewportEventHandler(scrollableRowPosition);
+					registerEventHandler(resizeEventHandler);
+					Display.getCurrent().timerExec(100, new Runnable() {
+						@Override
+						public void run() {
+							unregisterEventHandler(resizeEventHandler);
+							resizeEventHandler = null;
+						}
+					});
+				}
 			}
 		}
 	}
@@ -824,7 +840,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 		super.handleLayerEvent(event);
 	}
-
+	
 	/**
 	 * Handle {@link CellSelectionEvent}
 	 * @param selectionEvent
@@ -1008,4 +1024,28 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		
 	}
 	
+	/**
+	 * Event handler that ensures to keep a row inside the viewport.
+	 * Necessary for dynamic row height calculations that occur after a row
+	 * got moved into the viewport and is therefore moved out of it afterwards.
+	 */
+	class KeepRowInsideViewportEventHandler implements ILayerEventHandler<RowResizeEvent> {
+		
+		private final int rowPosition;
+		
+		public KeepRowInsideViewportEventHandler(int rowPosition) {
+			this.rowPosition = rowPosition;
+		}
+		
+		@Override
+		public void handleLayerEvent(RowResizeEvent event) {
+			moveRowPositionIntoViewport(rowPosition);
+		}
+		
+		@Override
+		public Class<RowResizeEvent> getLayerEventClass() {
+			return RowResizeEvent.class;
+		}
+	}
+
 }
