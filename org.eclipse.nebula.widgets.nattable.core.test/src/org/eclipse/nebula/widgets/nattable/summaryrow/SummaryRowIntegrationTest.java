@@ -28,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowUpdateEvent;
@@ -230,6 +231,31 @@ public class SummaryRowIntegrationTest {
 		assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, labels.get(0));
 		assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, labels.get(1));
 		assertEquals("myLabel", labels.get(2));
+	}
+
+	@Test
+	public void defaultConfigLabelsNotAddedForLayersBelow() throws Exception {
+		//the AbstractOverrider is set on the DataLayer. So on retrieving the 
+		dataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
+			@Override
+			public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+				RowDataFixture rowObject = dataProvider.getRowObject(rowPosition);
+				configLabels.addLabel("myLabel " + rowObject.security_id);
+			}
+		});
+
+		LabelStack configLabels = natTable.getConfigLabelsByPosition(0, 4);
+		List<String> labels = configLabels.getLabels();
+
+		assertEquals(2, labels.size());
+		assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 0, labels.get(0));
+		assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL, labels.get(1));
+
+		configLabels = natTable.getConfigLabelsByPosition(0, 3);
+		labels = configLabels.getLabels();
+
+		assertEquals(1, labels.size());
+		assertTrue("Label in default body does not start with myLabel", labels.get(0).startsWith("myLabel"));
 	}
 
 	@Test
