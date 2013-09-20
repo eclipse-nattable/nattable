@@ -246,13 +246,17 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 		if (isSummaryRowPosition(rowPosition)) {
+			//create a new LabelStack that takes the config labels into account
+			LabelStack labelStack = new LabelStack();
+			if (getConfigLabelAccumulator() != null) {
+				getConfigLabelAccumulator().accumulateConfigLabels(labelStack, columnPosition, rowPosition);
+			}
 			labelStack.addLabelOnTop(DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 			labelStack.addLabelOnTop(DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + columnPosition);
 			return labelStack;
 		}
-		return labelStack;
+		return super.getConfigLabelsByPosition(columnPosition, rowPosition);
 	}
 
 	@Override
