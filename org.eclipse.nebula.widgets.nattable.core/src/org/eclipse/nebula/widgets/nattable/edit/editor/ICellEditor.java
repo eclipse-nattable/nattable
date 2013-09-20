@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.IMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -353,4 +354,19 @@ public interface ICellEditor {
 	 * by the framework if you are not using the abstract implementation of {@link ICellEditor}.
 	 */
 	void removeEditorControlListeners();
+	
+	/**
+	 * This method is used to calculate the bounds of the edit control when opened inline.
+	 * By default it should return the given cell bounds to match the cell structure in NatTable.
+	 * For several cases it might be useful to return the preferred size to show all content
+	 * rather than trimming the control to the cell size.
+	 * <p>
+	 * Note: By changing the bounds you should ensure to only modify width and height attributes
+	 * 			and not x and y coordinate, otherwise the editor control will show up somewhere else
+	 * 			and not in place of the cell that is edited.
+	 * @param cellBounds The bounds of the cell for which the editor is opened.
+	 * @return The bounds of the editor control that should be applied. By default the cell bounds
+	 * 			for several cases bigger.
+	 */
+	Rectangle calculateControlBounds(Rectangle cellBounds);
 }

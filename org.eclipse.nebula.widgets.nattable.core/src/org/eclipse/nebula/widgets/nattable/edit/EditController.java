@@ -83,7 +83,7 @@ public class EditController {
 						columnPosition,
 						rowPosition);
 				
-				final Rectangle editorBounds = layer.getLayerPainter().adjustCellBounds(
+				Rectangle editorBounds = layer.getLayerPainter().adjustCellBounds(
 						columnPosition, rowPosition, 
 						new Rectangle(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height));
 				
@@ -96,6 +96,8 @@ public class EditController {
 						configRegistry);
 				
 				final Control editorControl = cellEditor.getEditorControl();
+				
+				editorBounds = cellEditor.calculateControlBounds(editorBounds);
 				
 				if (editorControl != null && !editorControl.isDisposed()) {
 					editorControl.setBounds(editorBounds);
