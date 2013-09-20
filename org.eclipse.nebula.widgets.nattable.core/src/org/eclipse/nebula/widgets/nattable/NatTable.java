@@ -53,6 +53,7 @@ import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.HorizontalLayerDim;
@@ -333,6 +334,14 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		addListener(SWT.Resize, new Listener() {
 			@Override
 			public void handleEvent(final Event e) {
+				//as resizing doesn't cause the current active editor to loose focus
+				//we are closing the current active editor manually
+				if (!EditUtils.commitAndCloseActiveEditor()) {
+					//if committing didn't work out we need to perform a hard close
+					//otherwise the state of the table would be unstale
+					ActiveCellEditorRegistry.getActiveCellEditor().close();
+				}
+				
 				doCommand(new ClientAreaResizeCommand(NatTable.this));
 			}
 		});
