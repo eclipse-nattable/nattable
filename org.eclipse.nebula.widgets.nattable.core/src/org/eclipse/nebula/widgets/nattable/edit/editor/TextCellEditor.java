@@ -230,6 +230,7 @@ public class TextCellEditor extends AbstractCellEditor {
 						(event.keyCode == SWT.CR
 							|| event.keyCode == SWT.KEYPAD_CR)) {
 					
+					boolean commit = (event.stateMask == SWT.ALT) ? false : true;
 					MoveDirectionEnum move = MoveDirectionEnum.NONE;
 					if (moveSelectionOnEnter && editMode == EditModeEnum.INLINE) {
 						if (event.stateMask == 0) {
@@ -239,7 +240,8 @@ public class TextCellEditor extends AbstractCellEditor {
 						}
 					}
 					
-					commit(move);
+					if (commit)
+						commit(move);
 					
 					if (editMode == EditModeEnum.DIALOG) {
 						parent.forceFocus();

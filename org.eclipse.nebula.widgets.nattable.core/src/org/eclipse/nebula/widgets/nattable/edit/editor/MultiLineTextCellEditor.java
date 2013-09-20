@@ -14,6 +14,12 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
@@ -63,20 +69,72 @@ public class MultiLineTextCellEditor extends TextCellEditor {
 	
 	@Override
 	public Text createEditorControl(Composite parent) {
-		int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;
+		boolean openInline = openInline(this.configRegistry, this.labelStack.getLabels());
+		
+		int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.MULTI | SWT.BORDER;
+		if (!openInline) {
+			//if the editor control is opened in a dialog, we add scrolling as the size of the
+			//control is dependent on the dialog size
+			style = style | SWT.V_SCROLL;
+		}
 		if (lineWrap) {
 			style = style | SWT.WRAP;
-		} else {
+		} 
+		else if (!openInline) {
+			//if the editor control is opened in a dialog, we add scrolling as the size of the
+			//control is dependent on the dialog size
 			style = style | SWT.H_SCROLL;
 		}
 		final Text textControl = super.createEditorControl(parent, style);
 		
-		if (!openInline(this.configRegistry, this.labelStack.getLabels())) {
+		if (!openInline) {
 			//add the layout data directly so it will not be layouted by the CellEditDialog
 			GridDataFactory.fillDefaults().grab(true, true).hint(100, 50).applyTo(textControl);
 		}
 		
+		//on inline editing there need to be a different handling of the return key
+		//as the Text control is performing a new line on return, it is not possible to
+		//commit a value by pressing enter. So for inline editing we catch enter to 
+		//perform the commit, while pressing Alt/Shift + enter will add a new line
+		if (openInline) {
+			commitOnEnter = true;
+			textControl.addKeyListener(new KeyListener() {
+				
+				@Override
+				public void keyReleased(KeyEvent event) {
+					if (event.keyCode == SWT.CR	|| event.keyCode == SWT.KEYPAD_CR) {
+						if (event.stateMask == SWT.ALT) {
+							textControl.insert(textControl.getLineDelimiter());
+						}
+					}
+				}
+				
+				@Override
+				public void keyPressed(KeyEvent e) {
+				}
+			});
+		}
+		
 		return textControl;
+	}
+	
+	@Override
+	public Rectangle calculateControlBounds(final Rectangle cellBounds) {
+		Point size = getEditorControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		
+		//add a listener that increases/decreases the size of the control if the text is modified
+		//as the calculateControlBounds method is only called in case of inline editing, this 
+		//listener shouldn't hurt anybody else
+		getEditorControl().addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Point p = getEditorControl().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+				Point loc = getEditorControl().getLocation();
+				getEditorControl().setBounds(loc.x, loc.y, Math.max(p.x, cellBounds.width), Math.max(p.y, cellBounds.height));
+			}
+		});
+
+		return new Rectangle(cellBounds.x, cellBounds.y, Math.max(size.x, cellBounds.width), Math.max(size.y, cellBounds.height));
 	}
 	
 	/**

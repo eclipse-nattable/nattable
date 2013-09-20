@@ -39,6 +39,7 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -435,6 +436,11 @@ public abstract class AbstractCellEditor implements ICellEditor {
 			editorControl.removeFocusListener(this.focusListener);
 			editorControl.removeTraverseListener(this.traverseListener);
 		}
+	}
+	
+	@Override
+	public Rectangle calculateControlBounds(Rectangle cellBounds) {
+		return cellBounds;
 	}
 	
 	/**
