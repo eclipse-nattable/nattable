@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.widget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
@@ -23,8 +24,8 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -172,14 +173,31 @@ public class NatCombo extends Composite {
 	 * multiselection to the user. 
 	 */
 	protected String multiselectTextSuffix = DEFAULT_MULTI_SELECT_SUFFIX;
-	
+
 	/**
-	 * Flag to determine whether the dropdown was hidden on focus lost.
-	 * Is only interpreted by the dropdown icon mouse listener, as it shouldn't
-	 * show the dropdown again when it is clicked with an open dropdown.
+	 * Flag that tells whether the NatCombo has focus or not.
+	 * The flag is set by the FocusListenerWrapper that is set as focus listener
+	 * on both, the Text control and the dropdown table control.
+	 * This flag is necessary as the NatCombo has focus if either of both
+	 * controls have focus.
 	 */
-	private boolean hideByFocusLost = false;
-	
+	private boolean hasFocus = false;
+	/**
+	 * Flag to determine whether the focus lost runnable is currently active or not.
+	 * Necessary in case the FocusListener is removing itself on focusLost().
+	 * Quite unusual in normal cases, but for NatTable editing this appears because
+	 * if the control looses focus it gets destroyed in AbstractCellEditor.close()
+	 * Introducing and handling this flag ensures concurrency safety.
+	 */
+	private boolean focusLostRunnableActive = false;
+	/**
+	 * The list of FocusListener that contains the listeners that will be informed
+	 * if the NatCombo control gains or looses focus. We keep our own list of
+	 * listeners because the two controls that are combined in this control share
+	 * the same focus.
+	 */
+	private List<FocusListener> focusListener = new ArrayList<FocusListener>();
+
 	/**
 	 * Creates a new NatCombo using the given IStyle for rendering, showing the default number
 	 * of items at once in the dropdown. Creating the NatCombo with this constructor, there is
@@ -343,6 +361,8 @@ public class NatCombo extends Composite {
 			}
 		});
 		
+		text.addFocusListener(new FocusListenerWrapper());
+
 		final Canvas iconCanvas = new Canvas(this, SWT.NONE) {
 
 			@Override
@@ -380,13 +400,16 @@ public class NatCombo extends Composite {
 
 			@Override
 			public void mouseDown(MouseEvent e) {
-				if (!hideByFocusLost) {
-					showDropdownControl();
-				} else {
-					hideByFocusLost = false;
+				if (dropdownShell != null && !dropdownShell.isDisposed()) {
+					if (dropdownShell.isVisible()) {
+						text.forceFocus();
+						hideDropdownControl();
+					}
+					else {
+						showDropdownControl();
+					}
 				}
 			}
-
 		});
 	}
 	
@@ -447,18 +470,8 @@ public class NatCombo extends Composite {
 				}
 			}
 		});
-		
-		dropdownTable.addFocusListener(new FocusAdapter() {
-			
-			@Override
-			public void focusLost(FocusEvent e) {
-				hideDropdownControl();
-				hideByFocusLost = true;
-				if (freeEdit) {
-					text.forceFocus();
-				}
-			}
-		});
+
+		dropdownTable.addFocusListener(new FocusListenerWrapper());
 		
 		if (this.itemList != null) {
 			setItems(this.itemList.toArray(new String[] {}));
@@ -735,9 +748,21 @@ public class NatCombo extends Composite {
 	}
 
 	@Override
+	public void removeKeyListener(KeyListener listener) {
+		this.text.removeKeyListener(listener);
+		this.dropdownTable.removeKeyListener(listener);
+	}
+
+	@Override
 	public void addTraverseListener(TraverseListener listener) {
 		this.text.addTraverseListener(listener);
 		this.dropdownTable.addTraverseListener(listener);
+	}
+
+	@Override
+	public void removeTraverseListener(TraverseListener listener) {
+		this.text.removeTraverseListener(listener);
+		this.dropdownTable.removeTraverseListener(listener);
 	}
 
 	@Override
@@ -745,6 +770,11 @@ public class NatCombo extends Composite {
 		//only add the mouse listener to the dropdown, as clicking in the text control
 		//should not trigger anything else than it is handled by the text control itself.
 		this.dropdownTable.addMouseListener(listener);
+	}
+
+	@Override
+	public void removeMouseListener(MouseListener listener) {
+		this.dropdownTable.removeMouseListener(listener);
 	}
 	
 	@Override
@@ -756,8 +786,58 @@ public class NatCombo extends Composite {
 		this.dropdownTable.addSelectionListener(listener);
 	}
 	
+	public void removeSelectionListener(SelectionListener listener) {
+		this.dropdownTable.removeSelectionListener(listener);
+	}
+	
 	public void addShellListener(ShellListener listener) {
 		this.dropdownShell.addShellListener(listener);
+	}
+	
+	public void removeShellListener(ShellListener listener) {
+		this.dropdownShell.removeShellListener(listener);
+	}
+	
+	@Override
+	public boolean isFocusControl() {
+		return hasFocus;
+	}
+	
+	@Override
+	public boolean forceFocus() {
+		return text.forceFocus();
+	}
+	
+	@Override
+	public void addFocusListener(FocusListener listener) {
+		this.focusListener.add(listener);
+	}
+	
+	@Override
+	public void removeFocusListener(final FocusListener listener) {
+		//The FocusListenerWrapper is executing the focusLost event
+		//in a separate thread with 100ms delay to ensure that the NatComboe
+		//lost focus. This is necessary because the NatCombo is a combination
+		//of a text field and a table as dropdown which do not share the
+		//same focus by default.
+		//To avoid concurrent modifications, in case the focus lost runnable
+		//is active, the removal of the focus listener is processed in a
+		//new thread after the focus lost runnable is done.
+		if (focusLostRunnableActive) {
+			try {
+				new Thread() {
+					@Override
+					public void run() {
+						focusListener.remove(listener);
+					};
+				}.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			focusListener.remove(listener);
+		}
 	}
 	
 	/**
@@ -933,6 +1013,46 @@ public class NatCombo extends Composite {
 		}
 		else {
 			this.multiselectTextSuffix = multiselectTextSuffix;
+		}
+	}
+
+	
+	/**
+	 * FocusListener that is used to ensure that the Text control and the dropdown
+	 * table control are sharing the same focus. If either of both controls looses
+	 * focus, the local focus flag is set to false and a delayed background thread 
+	 * for focus lost is started. If the other control gains focus, the local focus
+	 * flag is set to true which skips the execution of the delayed background thread.
+	 * This means the NatCombo hasn't lost focus.
+	 *  
+	 * @author Dirk Fauth
+	 *
+	 */
+	class FocusListenerWrapper implements FocusListener {
+		
+		@Override
+		public void focusLost(final FocusEvent e) {
+			hasFocus = false;
+			Display.getCurrent().timerExec(100, new Runnable() {
+				@Override
+				public void run() {
+					if (!hasFocus) {
+						focusLostRunnableActive = true;
+						for (FocusListener f : focusListener) {
+							f.focusLost(e);
+						}
+						focusLostRunnableActive = false;
+					}
+				}
+			});
+		}
+		
+		@Override
+		public void focusGained(FocusEvent e) {
+			hasFocus = true;
+			for (FocusListener f : focusListener) {
+				f.focusGained(e);
+			}
 		}
 	}
 
