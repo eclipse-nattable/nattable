@@ -51,6 +51,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 	protected Sheet xlSheet;
 	protected Row xlRow;
 
+	private boolean applyBackgroundColor = true;
+	
 	public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
 		this.outputStreamProvider = outputStreamProvider;
 	}
@@ -156,9 +158,12 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 		
 		if (xlCellStyle == null) {
 			xlCellStyle = xlWorkbook.createCellStyle();
-			// Note: xl fill foreground = background
-			setFillForegroundColor(xlCellStyle, bg);
-			xlCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+			
+			if (applyBackgroundColor) {
+				// Note: xl fill foreground = background
+				setFillForegroundColor(xlCellStyle, bg);
+				xlCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+			}
 			
 			Font xlFont = xlWorkbook.createFont();
 			setFontColor(xlFont, fg);
@@ -209,6 +214,16 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			dataFormat = "m/d/yy h:mm"; //$NON-NLS-1$
 		}
 		return dataFormat;
+	}
+	
+	/**
+	 * 
+	 * @param applyBackgroundColor <code>true</code> to apply the background color set in the NatTable
+	 * 			to the exported Excel. This also includes white background and header background color.
+	 * 			<code>false</code> if the background color should not be set on export.
+	 */
+	public void setApplyBackgroundColor(boolean applyBackgroundColor) {
+		this.applyBackgroundColor = applyBackgroundColor;
 	}
 	
 	protected abstract Workbook createWorkbook();
