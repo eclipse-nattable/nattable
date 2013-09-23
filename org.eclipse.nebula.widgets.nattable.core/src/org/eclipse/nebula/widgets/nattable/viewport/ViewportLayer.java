@@ -186,8 +186,10 @@ public class ViewportLayer extends TransformIndexLayer {
 			possibleArea.width -= widthDiff;
 			possibleArea.height -= heightDiff;
 			clientAreaResizeCommand.setCalcArea(possibleArea);
-			
-			return true;
+			//we don't return true here because the ClientAreaResizeCommand needs to be handled
+			//by the DataLayer in case percentage sizing is enabled
+			//if we would return true, the DataLayer wouldn't be able to calculate the column/row
+			//sizes regarding the client area
 		} else if (command instanceof TurnViewportOffCommand) {
 			if (!isViewportOff()) {
 				for (final Orientation orientation : Orientation.values()) {
