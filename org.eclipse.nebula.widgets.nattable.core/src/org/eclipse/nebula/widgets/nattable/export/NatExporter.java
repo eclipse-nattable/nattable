@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRo
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
@@ -70,6 +72,8 @@ public class NatExporter {
 						e.printStackTrace(System.err);
 					}
 				}
+				
+				openExport(exporter);
 			}
 		};
 		
@@ -114,6 +118,8 @@ public class NatExporter {
 						e.printStackTrace(System.err);
 					}
 				}
+				
+				openExport(exporter);
 			}
 		};
 		
@@ -214,6 +220,12 @@ public class NatExporter {
 		});
 		
 		layer.doCommand(new PrintEntireGridCommand());
+	}
+	
+	private void openExport(ILayerExporter exporter) {
+		if (exporter.getResult() != null && exporter.getResult() instanceof File) {
+			Program.launch(((File)exporter.getResult()).getAbsolutePath());
+		}
 	}
 	
 }

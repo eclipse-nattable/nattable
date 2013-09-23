@@ -231,5 +231,10 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 	protected abstract void setFillForegroundColor(CellStyle xlCellStyle, Color swtColor);
 	
 	protected abstract void setFontColor(Font xlFont, Color swtColor);
+
+	@Override
+	public Object getResult() {
+		return outputStreamProvider.getResult();
+	}
 	
 }

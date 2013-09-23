@@ -33,6 +33,8 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
 	protected String[] defaultFilterNames;
 	protected String[] defaultFilterExtensions;
 
+	protected String currentFileName;
+	
 	public FileOutputStreamProvider(String defaultFileName, String[] defaultFilterNames, String[] defaultFilterExtensions) {
 		this.defaultFileName = defaultFileName;
 		this.defaultFilterNames = defaultFilterNames;
@@ -65,17 +67,22 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
 		dialog.setFileName(relativeFileName);
 		dialog.setFilterNames(defaultFilterNames);
 		dialog.setFilterExtensions(defaultFilterExtensions);
-		String fileName = dialog.open();
-		if (fileName == null) {
+		currentFileName = dialog.open();
+		if (currentFileName == null) {
 			return null;
 		}
 		
 		try {
-			return new PrintStream(fileName);
+			return new PrintStream(currentFileName);
 		} catch (FileNotFoundException e) {
-			log.error("Failed to open or create the file: " + fileName, e); //$NON-NLS-1$
+			log.error("Failed to open or create the file: " + currentFileName, e); //$NON-NLS-1$
+			currentFileName = null;
 			return null;
 		}
 	}
 	
+	@Override
+	public File getResult() {
+		return (currentFileName != null) ? new File(currentFileName) : null;
+	}
 }
