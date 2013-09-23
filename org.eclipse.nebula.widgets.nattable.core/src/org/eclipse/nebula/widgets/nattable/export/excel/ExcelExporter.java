@@ -164,5 +164,10 @@ public class ExcelExporter implements ILayerExporter {
 		                     Integer.valueOf(color.getGreen()),
 		                     Integer.valueOf(color.getBlue()));
 	}
+
+	@Override
+	public Object getResult() {
+		return outputStreamProvider.getResult();
+	}
 	
 }

@@ -30,4 +30,11 @@ public interface IOutputStreamProvider {
 	 */
 	OutputStream getOutputStream(Shell shell);
 	
+	/**
+	 * @return The result that is produced by this IOutputStreamProvider.
+	 * 			Usually this is the place where the OutputStream that is
+	 * 			produced by this provider is pointing to (e.g. the file 
+	 * 			to which the OutputStream points to).
+	 */
+	Object getResult();
 }

@@ -40,6 +40,12 @@ public interface ILayerExporter {
 	OutputStream getOutputStream(Shell shell);
 	
 	/**
+	 * @return The result that is produced by this ILayerExporter.
+	 * 			Usually the file that is created or written by this exporter.
+	 */
+	Object getResult();
+	
+	/**
 	 * Need to be called only once at the beginning of an export operation.
 	 * It is used to initialize the export operation like e.g. letting a user
 	 * specify the export location via file selection dialog or creating a workbook.
