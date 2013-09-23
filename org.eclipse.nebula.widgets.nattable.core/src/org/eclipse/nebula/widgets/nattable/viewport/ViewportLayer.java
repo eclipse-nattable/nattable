@@ -721,7 +721,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			clientAreaResizeCommand.setCalcArea(possibleArea);
 			
 			processingClientAreaResizeCommand = false;
-			return true;
+			//we don't return true here because the ClientAreaResizeCommand needs to be handled
+			//by the DataLayer in case percentage sizing is enabled
+			//if we would return true, the DataLayer wouldn't be able to calculate the column/row
+			//sizes regarding the client area
 		} else if (command instanceof TurnViewportOffCommand) {
 			savedOrigin = origin;
 			viewportOff = true;
