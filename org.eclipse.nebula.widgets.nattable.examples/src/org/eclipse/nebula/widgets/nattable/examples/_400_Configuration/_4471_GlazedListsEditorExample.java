@@ -18,12 +18,14 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
@@ -43,14 +45,33 @@ import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWi
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
-import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ComboBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.PasswordTextPainter;
+import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
@@ -58,17 +79,24 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tooltip.NatTableContentTooltip;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TransformedList;
 
-public class _426_EditorExample extends AbstractNatExample {
+
+public class _4471_GlazedListsEditorExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(1024, 400, new _426_EditorExample());
+		StandaloneNatExampleRunner.run(1024, 400, new _4471_GlazedListsEditorExample());
 	}
 	
 	@Override
@@ -114,22 +142,23 @@ public class _426_EditorExample extends AbstractNatExample {
 		propertyToLabelMap.put("favouriteDrinks", "Drinks");
 		propertyToLabelMap.put("filename", "Filename");
 		
-		IDataProvider bodyDataProvider = new ListDataProvider<ExtendedPersonWithAddress>(
-				PersonService.getExtendedPersonsWithAddress(10), 
-				new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames));
+		ConfigRegistry configRegistry = new ConfigRegistry();
 		
-		DefaultGridLayer gridLayer = new DefaultGridLayer(
-				bodyDataProvider, new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap));
+		GlazedListsGridEditorGridLayer<ExtendedPersonWithAddress> gridLayer = 
+				new GlazedListsGridEditorGridLayer<ExtendedPersonWithAddress>(
+						PersonService.getExtendedPersonsWithAddress(10), configRegistry, propertyNames, propertyToLabelMap);
 		
-		final DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
+		final DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 
 		final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
 		bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
 		registerColumnLabels(columnLabelAccumulator);
 		
 		final NatTable natTable = new NatTable(parent, gridLayer, false);
+		natTable.setConfigRegistry(configRegistry);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new EditorConfiguration());
+		natTable.addConfiguration(new SingleClickSortConfiguration());
 		natTable.configure();
 		
 		new NatTableContentTooltip(natTable, GridRegion.BODY);
@@ -152,6 +181,130 @@ public class _426_EditorExample extends AbstractNatExample {
 		columnLabelAccumulator.registerColumnOverrides(10, COLUMN_ELEVEN_LABEL);
 		columnLabelAccumulator.registerColumnOverrides(11, COLUMN_TWELVE_LABEL);
 		columnLabelAccumulator.registerColumnOverrides(12, COLUMN_THIRTEEN_LABEL);
+	}
+	
+	class GlazedListsEditorBodyLayerStack<T> extends AbstractLayerTransform {
+
+		private final DataLayer bodyDataLayer;
+		private final GlazedListsEventLayer<T> glazedListsEventLayer;
+		private final ColumnReorderLayer columnReorderLayer;
+		private final ColumnHideShowLayer columnHideShowLayer;
+		private final SelectionLayer selectionLayer;
+		private final ViewportLayer viewportLayer;
+
+		private final EventList<T> eventList;
+		private final TransformedList<T, T> rowObjectsGlazedList;
+		private final SortedList<T> sortedList;
+		private final FilterList<T> filterList;
+		
+		public GlazedListsEditorBodyLayerStack(Collection<T> valuesToShow, IColumnPropertyAccessor<T> cpa, ConfigRegistry configRegistry) {
+			this.eventList = GlazedLists.eventList(valuesToShow);
+			this.rowObjectsGlazedList = GlazedLists.threadSafeList(this.eventList);
+			//NOTE: Remember to use the SortedList constructor with 'null' for the Comparator
+			this.sortedList = new SortedList<T>(this.rowObjectsGlazedList, null);
+			this.filterList = new FilterList<T>(this.sortedList);
+			
+			IDataProvider dataProvider = new GlazedListsDataProvider<T>(this.filterList, cpa);
+			bodyDataLayer = new DataLayer(dataProvider);
+			glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
+			columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
+			columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
+			selectionLayer = new SelectionLayer(columnHideShowLayer);
+			viewportLayer = new ViewportLayer(selectionLayer);
+			setUnderlyingLayer(viewportLayer);
+
+			registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+		}
+
+		public DataLayer getDataLayer() {
+			return this.bodyDataLayer;
+		}
+		
+		public SelectionLayer getSelectionLayer() {
+			return selectionLayer;
+		}
+	}
+	
+	public class GlazedListsEditorColumnHeaderLayerStack<T> extends AbstractLayerTransform {
+		
+		public GlazedListsEditorColumnHeaderLayerStack(IDataProvider dataProvider, 
+				GlazedListsEditorBodyLayerStack<T> bodyLayerStack,
+				IColumnPropertyAccessor<T> columnPropertyAccessor, 
+				IConfigRegistry configRegistry) {
+			
+			DefaultColumnHeaderDataLayer dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
+			ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
+
+			SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
+													columnHeaderLayer, 
+													new GlazedListsSortModel<T>(
+															bodyLayerStack.sortedList, 
+															columnPropertyAccessor,
+															configRegistry, 
+															dataLayer), 
+													false);
+
+			//	Note: The column header layer is wrapped in a filter row composite.
+			//	This plugs in the filter row functionality
+			FilterRowHeaderComposite<T> filterRowHeaderLayer =
+				new FilterRowHeaderComposite<T>(
+						new DefaultGlazedListsFilterStrategy<T>(bodyLayerStack.filterList, columnPropertyAccessor, configRegistry),
+						sortHeaderLayer, dataProvider, configRegistry
+				);
+
+			
+			setUnderlyingLayer(filterRowHeaderLayer);
+		}
+	}
+
+	
+	class GlazedListsGridEditorGridLayer<T> extends GridLayer {
+		
+		public GlazedListsGridEditorGridLayer(Collection<T> valuesToShow, ConfigRegistry configRegistry,
+				final String[] propertyNames, Map<String, String> propertyToLabelMap) {
+			super(true);
+			init(valuesToShow, configRegistry, propertyNames, propertyToLabelMap);
+		}
+
+
+		private void init(Collection<T> valuesToShow, ConfigRegistry configRegistry,
+				final String[] propertyNames, Map<String, String> propertyToLabelMap) {
+			
+			// Body
+			IColumnPropertyAccessor<T> columnAccessor = new ExtendedReflectiveColumnPropertyAccessor<T>(propertyNames);
+			GlazedListsEditorBodyLayerStack<T> bodyLayer = 
+				new GlazedListsEditorBodyLayerStack<T>(valuesToShow, 
+						columnAccessor, configRegistry);
+			
+			SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
+
+			// Column header
+			IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+			GlazedListsEditorColumnHeaderLayerStack<T> columnHeaderLayer = 
+					new GlazedListsEditorColumnHeaderLayerStack<T>(columnHeaderDataProvider, bodyLayer, columnAccessor, configRegistry);
+			
+			// Row header
+			IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+					bodyLayer.getDataLayer().getDataProvider());
+			ILayer rowHeaderLayer = new RowHeaderLayer(
+					new DefaultRowHeaderDataLayer(rowHeaderDataProvider), 
+					bodyLayer, selectionLayer);
+			
+			// Corner
+			ILayer cornerLayer = new CornerLayer(
+					new DataLayer(new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), 
+					rowHeaderLayer, columnHeaderLayer);
+			
+			setBodyLayer(bodyLayer);
+			setColumnHeaderLayer(columnHeaderLayer);
+			setRowHeaderLayer(rowHeaderLayer);
+			setCornerLayer(cornerLayer);
+		}
+		
+		@SuppressWarnings("unchecked")
+		public DataLayer getBodyDataLayer() {
+			return ((GlazedListsEditorBodyLayerStack<T>)getBodyLayer()).getDataLayer();
+		}
 	}
 	
 	
@@ -188,14 +341,14 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					new TextCellEditor(true, true), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_TWO_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_TWO_LABEL);
 			
 			//configure to open the adjacent editor after commit
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.OPEN_ADJACENT_EDITOR,
 					Boolean.TRUE,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_TWO_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_TWO_LABEL);
 			
 			//configure a custom message for the multi edit dialog
 			Map<String, Object> editDialogSettings = new HashMap<String, Object>();
@@ -205,7 +358,7 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.EDIT_DIALOG_SETTINGS, 
 					editDialogSettings,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_TWO_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_TWO_LABEL);
 		}
 		
 		private void registerColumnThreePasswordEditor(IConfigRegistry configRegistry) {
@@ -214,14 +367,14 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					new PasswordCellEditor(), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_THREE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_THREE_LABEL);
 			
 			//configure the password editor to not support multi editing
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.SUPPORT_MULTI_EDIT, 
 					Boolean.FALSE, 
 					DisplayMode.EDIT, 
-					_426_EditorExample.COLUMN_THREE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_THREE_LABEL);
 			
 			//note that you should also register the corresponding PasswordTextPainter
 			//to ensure that the password is not rendered in clear text
@@ -229,7 +382,7 @@ public class _426_EditorExample extends AbstractNatExample {
 					CellConfigAttributes.CELL_PAINTER, 
 					new PasswordTextPainter(), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_THREE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_THREE_LABEL);
 		}
 		
 		private void registerColumnFourMultiLineEditor(IConfigRegistry configRegistry) {
@@ -238,14 +391,14 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					new MultiLineTextCellEditor(false), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_FOUR_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
 			
 			//configure the multi line text editor to always open in a subdialog
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.OPEN_IN_DIALOG,
 					Boolean.TRUE,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_FOUR_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
 			
 			Style cellStyle = new Style();
 			cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
@@ -253,12 +406,12 @@ public class _426_EditorExample extends AbstractNatExample {
 					CellConfigAttributes.CELL_STYLE, 
 					cellStyle,
 					DisplayMode.NORMAL,
-					_426_EditorExample.COLUMN_FOUR_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.CELL_STYLE, 
 					cellStyle,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_FOUR_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
 			
 			//configure custom dialog settings
 			Display display = Display.getCurrent();
@@ -282,7 +435,7 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.EDIT_DIALOG_SETTINGS, 
 					editDialogSettings,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_FOUR_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
 		}
 		
 		private void registerColumnFiveIntegerEditor(IConfigRegistry configRegistry) {
@@ -291,28 +444,28 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					new TextCellEditor(false, true), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_FIVE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FIVE_LABEL);
 			
 			//configure to open the adjacent editor after commit
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.OPEN_ADJACENT_EDITOR,
 					Boolean.TRUE,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_FIVE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FIVE_LABEL);
 			
 			//configure to open always in dialog to show the tick update in normal mode
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.OPEN_IN_DIALOG,
 					Boolean.TRUE,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_FIVE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FIVE_LABEL);
 			
 			//don't forget to register the Integer converter!
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER, 
 					new DefaultIntegerDisplayConverter(), 
 					DisplayMode.NORMAL,
-					_426_EditorExample.COLUMN_FIVE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_FIVE_LABEL);
 		}
 		
 		private void registerColumnSixDoubleEditor(IConfigRegistry configRegistry) {
@@ -321,35 +474,35 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					new TextCellEditor(false, true), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_SIX_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 			
 			//configure to open the adjacent editor after commit
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.OPEN_ADJACENT_EDITOR,
 					Boolean.TRUE,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_SIX_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 			
 			//configure to open always in dialog to show the tick update in normal mode
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.OPEN_IN_DIALOG,
 					Boolean.TRUE,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_SIX_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 			
 			//configure the tick update dialog to use the adjust mode
 			configRegistry.registerConfigAttribute(
 					TickUpdateConfigAttributes.USE_ADJUST_BY,
 					Boolean.TRUE,
 					DisplayMode.EDIT,
-					_426_EditorExample.COLUMN_SIX_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 			
 			//don't forget to register the Double converter!
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER, 
 					new DefaultDoubleDisplayConverter(), 
 					DisplayMode.NORMAL,
-					_426_EditorExample.COLUMN_SIX_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 		}
 		
 		/**
@@ -370,7 +523,7 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					new CheckBoxCellEditor(), 
 					DisplayMode.EDIT, 
-					_426_EditorExample.COLUMN_SEVEN_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_SEVEN_LABEL);
 			
 			//if you want to use the CheckBoxCellEditor, you should also consider
 			//using the corresponding CheckBoxPainter to show the content like a
@@ -379,14 +532,14 @@ public class _426_EditorExample extends AbstractNatExample {
 					CellConfigAttributes.CELL_PAINTER, 
 					new CheckBoxPainter(), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_SEVEN_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_SEVEN_LABEL);
 			
 			//using a CheckBoxCellEditor also needs a Boolean conversion to work correctly
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER, 
 					new DefaultBooleanDisplayConverter(), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_SEVEN_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_SEVEN_LABEL);
 		}
 		
 		/**
@@ -409,7 +562,7 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					new CheckBoxCellEditor(), 
 					DisplayMode.EDIT, 
-					_426_EditorExample.COLUMN_EIGHT_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_EIGHT_LABEL);
 			
 			//if you want to use the CheckBoxCellEditor, you should also consider
 			//using the corresponding CheckBoxPainter to show the content like a
@@ -419,14 +572,14 @@ public class _426_EditorExample extends AbstractNatExample {
 					CellConfigAttributes.CELL_PAINTER, 
 					new CheckBoxPainter(GUIHelper.getImage("arrow_up"), GUIHelper.getImage("arrow_down")), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_EIGHT_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_EIGHT_LABEL);
 			
 			//using a CheckBoxCellEditor also needs a Boolean conversion to work correctly
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER, 
 					getGenderBooleanConverter(), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_EIGHT_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_EIGHT_LABEL);
 		}
 		
 		/**
@@ -448,7 +601,7 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					comboBoxCellEditor, 
 					DisplayMode.EDIT, 
-					_426_EditorExample.COLUMN_NINE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_NINE_LABEL);
 		}
 		
 		/**
@@ -467,13 +620,13 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					comboBoxCellEditor, 
 					DisplayMode.EDIT, 
-					_426_EditorExample.COLUMN_TEN_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_TEN_LABEL);
 			
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.CELL_PAINTER, 
 					new ComboBoxPainter(), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_TEN_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_TEN_LABEL);
 		}
 		
 		/**
@@ -513,14 +666,14 @@ public class _426_EditorExample extends AbstractNatExample {
 						}
 					}, 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_ELEVEN_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_ELEVEN_LABEL);
 			
 			comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.CELL_EDITOR, 
 					comboBoxCellEditor, 
 					DisplayMode.EDIT, 
-					_426_EditorExample.COLUMN_ELEVEN_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_ELEVEN_LABEL);
 		}
 		
 		/**
@@ -542,14 +695,14 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					comboBoxCellEditor, 
 					DisplayMode.EDIT, 
-					_426_EditorExample.COLUMN_TWELVE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_TWELVE_LABEL);
 			
 			
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.CELL_PAINTER, 
 					new ComboBoxPainter(GUIHelper.getImage("plus")), 
 					DisplayMode.NORMAL, 
-					_426_EditorExample.COLUMN_TWELVE_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_TWELVE_LABEL);
 		}
 		
 		/**
@@ -563,7 +716,7 @@ public class _426_EditorExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITOR, 
 					new FileDialogCellEditor(), 
 					DisplayMode.EDIT, 
-					_426_EditorExample.COLUMN_THIRTEEN_LABEL);
+					_4471_GlazedListsEditorExample.COLUMN_THIRTEEN_LABEL);
 		}
 		
 		/**
@@ -590,7 +743,7 @@ public class _426_EditorExample extends AbstractNatExample {
 				
 			};
 		}
-	}
+}
 }
 
 
