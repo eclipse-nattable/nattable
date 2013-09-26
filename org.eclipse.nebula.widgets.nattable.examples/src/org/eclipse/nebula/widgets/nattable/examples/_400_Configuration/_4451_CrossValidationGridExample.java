@@ -62,7 +62,7 @@ import ca.odell.glazedlists.GlazedLists;
  * @author Dirk Fauth
  *
  */
-public class _4241_CrossValidationGridExample extends AbstractNatExample {
+public class _4451_CrossValidationGridExample extends AbstractNatExample {
 
 	public static String DATE_LABEL 	= "DateLabel";
 	public static String INVALID_LABEL 	= "InvalidLabel";
@@ -71,7 +71,7 @@ public class _4241_CrossValidationGridExample extends AbstractNatExample {
 	
 	public static void main(String[] args) throws Exception {
 		Locale.setDefault(Locale.ENGLISH);
-		StandaloneNatExampleRunner.run(new _4241_CrossValidationGridExample());
+		StandaloneNatExampleRunner.run(new _4451_CrossValidationGridExample());
 	}
 
 	/**	
@@ -182,10 +182,10 @@ class CrossValidationLabelAccumulator extends AbstractOverrider {
 		
 		//in column 3 and 4 there are the values that are cross validated
 		if (columnPosition == 3 || columnPosition == 4) {
-			configLabels.addLabel(_4241_CrossValidationGridExample.DATE_LABEL);
+			configLabels.addLabel(_4451_CrossValidationGridExample.DATE_LABEL);
 			
-			if (!_4241_CrossValidationGridExample.isEventDataValid(rowObject)) {
-				configLabels.addLabel(_4241_CrossValidationGridExample.INVALID_LABEL);
+			if (!_4451_CrossValidationGridExample.isEventDataValid(rowObject)) {
+				configLabels.addLabel(_4451_CrossValidationGridExample.INVALID_LABEL);
 			}
 		}
 	}
@@ -208,10 +208,10 @@ class CrossValidationEditConfiguration extends AbstractRegistryConfiguration  {
 
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.DISPLAY_CONVERTER, new DefaultDateDisplayConverter(), 
-				DisplayMode.NORMAL, _4241_CrossValidationGridExample.DATE_LABEL);
+				DisplayMode.NORMAL, _4451_CrossValidationGridExample.DATE_LABEL);
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.DISPLAY_CONVERTER, new DefaultDateDisplayConverter(), 
-				DisplayMode.EDIT, _4241_CrossValidationGridExample.DATE_LABEL);
+				DisplayMode.EDIT, _4451_CrossValidationGridExample.DATE_LABEL);
 		
 		//configure the validation error style
 		IStyle validationErrorStyle = new Style();
@@ -226,19 +226,19 @@ class CrossValidationEditConfiguration extends AbstractRegistryConfiguration  {
 				CellConfigAttributes.CELL_STYLE, 
 				validationErrorStyle,
 				DisplayMode.NORMAL,
-				_4241_CrossValidationGridExample.INVALID_LABEL);
+				_4451_CrossValidationGridExample.INVALID_LABEL);
 		
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.DATA_VALIDATOR, 
 				new EventDataValidator(bodyDataProvider),
 				DisplayMode.EDIT,
-				_4241_CrossValidationGridExample.DATE_LABEL);
+				_4451_CrossValidationGridExample.DATE_LABEL);
 
 		configRegistry.registerConfigAttribute(
 				EditConfigAttributes.VALIDATION_ERROR_HANDLER, 
 				new DialogErrorHandling(true),
 				DisplayMode.EDIT,
-				_4241_CrossValidationGridExample.DATE_LABEL);
+				_4451_CrossValidationGridExample.DATE_LABEL);
 	}
 }
 
@@ -264,7 +264,7 @@ class EventDataValidator extends DataValidator {
 		else if (columnIndex == 4) {
 			toDate = (Date) newValue;
 		}
-		if (!_4241_CrossValidationGridExample.isEventDataValid(fromDate, toDate)) {
+		if (!_4451_CrossValidationGridExample.isEventDataValid(fromDate, toDate)) {
 			throw new ValidationFailedException("fromDate is not before toDate");
 		}
 		return true;
