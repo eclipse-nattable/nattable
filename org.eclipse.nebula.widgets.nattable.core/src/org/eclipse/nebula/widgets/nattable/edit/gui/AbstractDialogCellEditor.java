@@ -157,6 +157,8 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 
 		this.dialog = createDialogInstance();
 		
+		setCanonicalValue(originalCanonicalValue);
+		
 		//this method is only needed to initialize the dialog editor, there will be no control to return
 		return null;
 	}

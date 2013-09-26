@@ -11,14 +11,8 @@
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
 import org.eclipse.jface.window.Window;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
-import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 
 /**
@@ -40,24 +34,6 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 	 * Flag to determine whether the dialog was closed or if it is still open.
 	 */
 	private boolean closed = false;
-	
-	
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.gui.AbstractDialogCellEditor#activateCell(org.eclipse.swt.widgets.Composite, java.lang.Object, org.eclipse.nebula.widgets.nattable.widget.EditModeEnum, org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler, org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell, org.eclipse.nebula.widgets.nattable.config.IConfigRegistry)
-	 */
-	@Override
-	public Control activateCell(Composite parent,
-			Object originalCanonicalValue, EditModeEnum editMode,
-			ICellEditHandler editHandler, ILayerCell cell,
-			IConfigRegistry configRegistry) {
-
-		Control result = super.activateCell(parent, originalCanonicalValue, editMode,
-				editHandler, cell, configRegistry);
-		
-		((FileDialog)this.dialog).setFileName(originalCanonicalValue != null ? originalCanonicalValue.toString() : null);
-		
-		return result;
-	}
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor#open()
@@ -106,7 +82,7 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 	 */
 	@Override
 	public void setEditorValue(Object value) {
-		//do nothing ... usually it should set the selection
+		getDialogInstance().setFileName(value != null ? value.toString() : null);
 	}
 
 	/* (non-Javadoc)
@@ -114,7 +90,7 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 	 */
 	@Override
 	public void close() {
-		//as the FileDialog does not support a programmatical way of closing, this method is forced to do nothing
+		//as the FileDialog does not support a programmatically way of closing, this method is forced to do nothing
 	}
 
 	/* (non-Javadoc)
