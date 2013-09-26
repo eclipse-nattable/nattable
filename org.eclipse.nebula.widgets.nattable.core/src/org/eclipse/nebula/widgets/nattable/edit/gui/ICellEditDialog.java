@@ -15,7 +15,7 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
-import org.eclipse.swt.graphics.Point;
+
 
 /**
  * Interface for dialogs that can be used as editing dialogs in NatTable.
