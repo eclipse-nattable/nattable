@@ -124,13 +124,13 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	 * The {@link FocusListener} that will be added to the created editor control
 	 * for {@link EditModeEnum#INLINE} to close it if it loses focus.
 	 */
-	private FocusListener focusListener = new InlineFocusListener();
+	protected FocusListener focusListener = new InlineFocusListener();
 	
 	/**
 	 * The {@link TraverseListener} that will be added to the created editor control
 	 * for {@link EditModeEnum#INLINE} trying to commit the editor prior to traversal.
 	 */
-	private TraverseListener traverseListener = new InlineTraverseListener();
+	protected TraverseListener traverseListener = new InlineTraverseListener();
 	
 	@Override
 	public final Control activateCell(Composite parent, Object originalCanonicalValue, EditModeEnum editMode, 
