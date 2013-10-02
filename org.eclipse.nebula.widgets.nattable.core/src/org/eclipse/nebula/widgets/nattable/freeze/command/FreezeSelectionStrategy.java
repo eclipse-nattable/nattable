@@ -29,6 +29,7 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 		this.selectionLayer = selectionLayer;
 	}
 
+	@Override
 	public PositionCoordinate getTopLeftPosition() {
 		PositionCoordinate lastSelectedCellPosition = selectionLayer.getLastSelectedCellPosition();
 		if (lastSelectedCellPosition == null) {
@@ -36,24 +37,70 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 		}
 			
 		int columnPosition = viewportLayer.getColumnPositionByX(viewportLayer.getOrigin().getX());
-		if (columnPosition >= lastSelectedCellPosition.columnPosition) {
+		if (columnPosition > 0 && columnPosition >= lastSelectedCellPosition.columnPosition) {
 			columnPosition = lastSelectedCellPosition.columnPosition - 1;
 		}
 		
 		int rowPosition = viewportLayer.getRowPositionByY(viewportLayer.getOrigin().getY());
-		if (rowPosition >= lastSelectedCellPosition.rowPosition) {
+		if (rowPosition > 0 && rowPosition >= lastSelectedCellPosition.rowPosition) {
 			rowPosition = lastSelectedCellPosition.rowPosition - 1;
 		}
 		
 		return new PositionCoordinate(freezeLayer, columnPosition, rowPosition);
 	}
 	
+	@Override
 	public PositionCoordinate getBottomRightPosition() {
-		PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
-		if (selectionAnchor == null) {
-			return null;
+		if (selectionLayer.getSelectedCells().size() > 1) {
+			if (selectionLayer.getFullySelectedColumnPositions().length > 0) {
+				//if columns are fully selected we will freeze the columns to the left
+				//including the selected column with the greatest index
+				int columnPosition = 0;
+				int[] selColPos = selectionLayer.getFullySelectedColumnPositions();
+				for (int col : selColPos) {
+					columnPosition = Math.max(columnPosition, col);
+				}
+				return new PositionCoordinate(freezeLayer, columnPosition, -1);
+			}
+			else if (selectionLayer.getFullySelectedRowPositions().length > 0) {
+				//if rows are fully selected we will freeze the rows to the top
+				//including the selected row with the greatest index
+				int rowPosition = 0;
+				int[] selRowPos = selectionLayer.getFullySelectedRowPositions();
+				for (int row : selRowPos) {
+					rowPosition = Math.max(rowPosition, row);
+				}
+				return new PositionCoordinate(freezeLayer, -1, rowPosition);
+			}
+			else {
+				//find the selected cell that is most to the left and to the top of the selection
+				int columnPosition = -1;
+				int rowPosition = -1;
+				PositionCoordinate[] coords = selectionLayer.getSelectedCellPositions(); 
+				for (PositionCoordinate coord : coords) {
+					if (columnPosition < 0) {
+						columnPosition = coord.columnPosition;
+					}
+					else {
+						columnPosition = Math.min(columnPosition, coord.columnPosition);
+					}
+					if (rowPosition < 0) {
+						rowPosition = coord.rowPosition;
+					}
+					else {
+						rowPosition = Math.min(rowPosition, coord.rowPosition);
+					}
+				}
+				return new PositionCoordinate(freezeLayer, columnPosition - 1, rowPosition - 1);
+			}
 		}
-		return new PositionCoordinate(freezeLayer, selectionAnchor.columnPosition - 1, selectionAnchor.rowPosition - 1);
+		else {
+			PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
+			if (selectionAnchor != null) {
+				return new PositionCoordinate(freezeLayer, selectionAnchor.columnPosition - 1, selectionAnchor.rowPosition - 1);
+			}
+		}
+		return null;
 	}
 
 }
