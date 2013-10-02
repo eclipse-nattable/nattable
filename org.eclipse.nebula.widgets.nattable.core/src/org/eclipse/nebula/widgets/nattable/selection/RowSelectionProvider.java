@@ -38,13 +38,13 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListener {
 	
 	/**
-	 * The SelectionLayer this ISelectionProvider is connected to
+	 * The SelectionLayer this ISelectionProvider is connected to.
 	 */
 	private SelectionLayer selectionLayer;
 	/**
-	 * The IRowDataProvider needed to access the selected row data
+	 * The IRowDataProvider to access the selected row data.
 	 */
-	private final IRowDataProvider<T> rowDataProvider;
+	private IRowDataProvider<T> rowDataProvider;
 	/**
 	 * Flag to determine if only fully selected rows should be used to populate the selection
 	 * or if any selection should be populated. Default is to only populate fully selected rows.
@@ -80,8 +80,8 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	/**
 	 * Create a RowSelectionProvider that only handles fully selected rows and only fires 
 	 * SelectionChangedEvents if the row selection changes.
-	 * @param selectionLayer The SelectionLayer this ISelectionProvider is connected to
-	 * @param rowDataProvider The IRowDataProvider needed to access the selected row data
+	 * @param selectionLayer The SelectionLayer this ISelectionProvider should be connected to.
+	 * @param rowDataProvider The IRowDataProvider that should be used to access the selected row data.
 	 */
 	public RowSelectionProvider(SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider) {
 		this(selectionLayer, rowDataProvider, true);
@@ -89,8 +89,8 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	
 	/**
 	 * Create a RowSelectionProvider that only fires SelectionChangedEvents if the row selection changes.
-	 * @param selectionLayer The SelectionLayer this ISelectionProvider is connected to
-	 * @param rowDataProvider The IRowDataProvider needed to access the selected row data
+	 * @param selectionLayer The SelectionLayer this ISelectionProvider should be connected to.
+	 * @param rowDataProvider The IRowDataProvider that should be used to access the selected row data.
 	 * @param fullySelectedRowsOnly Flag to determine if only fully selected rows should be used 
 	 * 			to populate the selection or if any selection should be populated.
 	 */
@@ -102,8 +102,8 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	
 	/**
 	 * Create a RowSelectionProvider configured with the given parameters.
-	 * @param selectionLayer The SelectionLayer this ISelectionProvider is connected to
-	 * @param rowDataProvider The IRowDataProvider needed to access the selected row data
+	 * @param selectionLayer The SelectionLayer this ISelectionProvider should be connected to.
+	 * @param rowDataProvider The IRowDataProvider that should be used to access the selected row data.
 	 * @param fullySelectedRowsOnly Flag to determine if only fully selected rows should be used 
 	 * 			to populate the selection or if any selection should be populated.
 	 * @param handleSameRowSelection Flag to configure whether only SelectionChangedEvents should be 
@@ -117,7 +117,31 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 		this.fullySelectedRowsOnly = fullySelectedRowsOnly;
 		this.handleSameRowSelection = handleSameRowSelection;
 		
-		selectionLayer.addLayerListener(this);
+		this.selectionLayer.addLayerListener(this);
+	}
+	
+	/**
+	 * Updates this RowSelectionProvider so it handles the selection of another SelectionLayer and
+	 * IRowDataProvider.
+	 * <p>
+	 * This method was introduced to add support for multiple selection provider within one part.
+	 * As replacing the selection provider during the lifetime of a part is not properly supported
+	 * by the workbench, this implementation adds the possibility to exchange the control that 
+	 * serves as selection provider by exchanging the references in the selection provider itself.
+	 * 
+	 * @param selectionLayer The SelectionLayer this ISelectionProvider should be connected to.
+	 * @param rowDataProvider The IRowDataProvider that should be used to access the selected row data.
+	 */
+	public void updateSelectionProvider(SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider) {
+		//unregister as listener from the current set SelectionLayer
+		this.selectionLayer.removeLayerListener(this);
+		
+		//update the references on which this RowSelectionProvider should operate
+		this.selectionLayer = selectionLayer;
+		this.rowDataProvider = rowDataProvider;
+		
+		//register on the new set SelectionLayer as listener
+		this.selectionLayer.addLayerListener(this);
 	}
 	
 	@Override
