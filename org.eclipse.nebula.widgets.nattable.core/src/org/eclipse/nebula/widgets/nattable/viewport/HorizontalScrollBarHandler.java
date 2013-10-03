@@ -66,7 +66,11 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 
 	@Override
 	int getScrollableLayerSpan() {
-		return scrollableLayer.getWidth();
+		if (viewportLayer.getMaxWidth() >= 0 && viewportLayer.getMaxWidth() < scrollableLayer.getWidth()) {
+			return viewportLayer.getMaxWidth();
+		} else {
+			return scrollableLayer.getWidth();
+		}
 	}
 	
 	@Override
