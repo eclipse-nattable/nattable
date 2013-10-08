@@ -717,7 +717,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public boolean doCommand(ILayerCommand command) {
 		if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
 			if (processingClientAreaResizeCommand)
-				return true;
+				return false;
 			
 			processingClientAreaResizeCommand = true;
 			
