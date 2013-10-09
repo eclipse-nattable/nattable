@@ -27,15 +27,15 @@ import org.eclipse.swt.graphics.Rectangle;
 public class CellPainterDecorator implements ICellPainter {
 
 	/**
-	 * The base {@link ICellPainter} that should be decorated
+	 * The base {@link ICellPainter} that is decorated.
 	 */
 	private final ICellPainter baseCellPainter;
 	/**
-	 * The edge of the cell at which the decoration should be applied
+	 * The edge of the cell at which the decoration is applied.
 	 */
 	private final CellEdgeEnum cellEdge;
 	/**
-	 * The {@link ICellPainter} that should be used to render the decoration.
+	 * The {@link ICellPainter} that is used to render the decoration.
 	 */
 	private final ICellPainter decoratorCellPainter;
 	/**
@@ -122,7 +122,8 @@ public class CellPainterDecorator implements ICellPainter {
 	 * 
 	 * @deprecated use setPaintDecorationDependent() instead, note that the semantic is different
 	 */
-    public void setBaseCellPainterSpansWholeCell(boolean interiorPainterToSpanFullWidth) {
+    @Deprecated
+	public void setBaseCellPainterSpansWholeCell(boolean interiorPainterToSpanFullWidth) {
         this.paintDecorationDependent = !interiorPainterToSpanFullWidth;
     }
 	
@@ -341,5 +342,19 @@ public class CellPainterDecorator implements ICellPainter {
 			}
 		}
 		return this;
+	}
+
+	/**
+	 * @return The base {@link ICellPainter} that is decorated.
+	 */
+	public ICellPainter getBaseCellPainter() {
+		return baseCellPainter;
+	}
+
+	/**
+	 * @return The {@link ICellPainter} that is used to render the decoration.
+	 */
+	public ICellPainter getDecoratorCellPainter() {
+		return decoratorCellPainter;
 	}
 }
