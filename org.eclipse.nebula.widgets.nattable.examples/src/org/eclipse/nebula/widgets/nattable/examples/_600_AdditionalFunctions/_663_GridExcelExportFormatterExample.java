@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -28,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
 import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
+import org.eclipse.nebula.widgets.nattable.extension.poi.PoiExcelExporter;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -42,6 +44,8 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.VerticalTextPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -134,8 +138,11 @@ public class _663_GridExcelExportFormatterExample extends AbstractNatExample {
 		natTable.addConfiguration(new AbstractRegistryConfiguration() {
 			@Override
 			public void configureRegistry(IConfigRegistry configRegistry) {
+				PoiExcelExporter exporter = new HSSFExcelExporter();
+				exporter.setApplyVerticalTextConfiguration(true);
+				exporter.setApplyBackgroundColor(false);
 				configRegistry.registerConfigAttribute(
-						ExportConfigAttributes.EXPORTER, new HSSFExcelExporter());
+						ExportConfigAttributes.EXPORTER, exporter);
 
 				configRegistry.registerConfigAttribute(
 						ExportConfigAttributes.DATE_FORMAT, "dd.MM.yyyy");
@@ -160,6 +167,13 @@ public class _663_GridExcelExportFormatterExample extends AbstractNatExample {
 						},
 						DisplayMode.NORMAL,
 						GridRegion.ROW_HEADER);
+				
+				configRegistry.registerConfigAttribute(
+						CellConfigAttributes.CELL_PAINTER, 
+						new BeveledBorderDecorator(new VerticalTextPainter(false, true, true)),
+						DisplayMode.NORMAL,
+						GridRegion.COLUMN_HEADER);
+				
 			}
 		});
 		

@@ -25,11 +25,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.VerticalTextPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleProxy;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -52,6 +57,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 	protected Row xlRow;
 
 	private boolean applyBackgroundColor = true;
+	private boolean applyVerticalTextConfiguration = false;
 	
 	public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
 		this.outputStreamProvider = outputStreamProvider;
@@ -130,6 +136,11 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 		int hAlign = HorizontalAlignmentEnum.getSWTStyle(cellStyle);
 		int vAlign = VerticalAlignmentEnum.getSWTStyle(cellStyle);
 		
+		boolean vertical = this.applyVerticalTextConfiguration ? 
+				isVertical(configRegistry.getConfigAttribute(
+						CellConfigAttributes.CELL_PAINTER, DisplayMode.NORMAL, cell.getConfigLabels().getLabels()))
+				: false;
+		
 		if (exportDisplayValue == null) exportDisplayValue = ""; //$NON-NLS-1$
 		
 		if (exportDisplayValue instanceof Boolean) {
@@ -146,15 +157,29 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			xlCell.setCellValue(exportDisplayValue.toString());
 		}
 
-		CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign);
+		CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical);
 		xlCell.setCellStyle(xlCellStyle);
 	}
 
+	private boolean isVertical(ICellPainter cellPainter) {
+		if (cellPainter instanceof VerticalTextPainter) {
+			return true;
+		}
+		else if (cellPainter instanceof CellPainterWrapper) {
+			return isVertical(((CellPainterWrapper)cellPainter).getWrappedPainter());
+		}
+		else if (cellPainter instanceof CellPainterDecorator) {
+			return (isVertical(((CellPainterDecorator)cellPainter).getBaseCellPainter()) 
+					|| isVertical(((CellPainterDecorator)cellPainter).getDecoratorCellPainter()));
+		}
+		return false;
+	}
+	
 	private CellStyle getExcelCellStyle(
-			Color fg, Color bg, FontData fontData, String dataFormat, int hAlign, int vAlign) {
+			Color fg, Color bg, FontData fontData, String dataFormat, int hAlign, int vAlign, boolean vertical) {
 		
 		CellStyle xlCellStyle = xlCellStyles.get(
-				new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign));
+				new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical));
 		
 		if (xlCellStyle == null) {
 			xlCellStyle = xlWorkbook.createCellStyle();
@@ -171,6 +196,9 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			xlFont.setFontHeightInPoints((short) fontData.getHeight());
 			xlCellStyle.setFont(xlFont);
 
+			if (vertical)
+				xlCellStyle.setRotation((short)90);
+			
 			switch (hAlign) {
 				case SWT.CENTER:	xlCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
 								 	break;
@@ -195,7 +223,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 			}
 
 			xlCellStyles.put(
-					new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign), xlCellStyle);
+					new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical), xlCellStyle);
 		}
 		return xlCellStyle;
 	}
@@ -224,6 +252,24 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 	 */
 	public void setApplyBackgroundColor(boolean applyBackgroundColor) {
 		this.applyBackgroundColor = applyBackgroundColor;
+	}
+	
+	/**
+	 * Configure this exporter whether it should check for vertical text configuration in NatTable and 
+	 * apply the corresponding rotation style attribute in the export, or not.
+	 * <p>
+	 * Note: As showing text vertically in NatTable is not a style information but a configured via
+	 * 		 painter implementation, the check whether text is showed vertically needs to be done via
+	 * 		 reflection. Therefore setting this value to <code>true</code> could cause performance issues.
+	 * 		 As vertical text is not the default case and the effect on performance might be negative,
+	 * 		 the default value for this configuration is <code>false</code>. If vertical text (e.g. column
+	 * 		 headers) should also be exported vertically, you need to set this value to <code>true</code>.
+	 * @param inspectVertical <code>true</code> to configure this exporter to check for vertical text
+	 * 			configuration and apply the rotation style for the export, <code>false</code> to 
+	 * 			always use the regular text direction, regardless of vertical rendered text in NatTable.
+	 */
+	public void setApplyVerticalTextConfiguration(boolean inspectVertical) {
+		this.applyVerticalTextConfiguration = inspectVertical;
 	}
 	
 	protected abstract Workbook createWorkbook();

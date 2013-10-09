@@ -23,14 +23,16 @@ public class ExcelCellStyleAttributes {
 	private final String dataFormat;
 	private final int hAlign;
 	private final int vAlign;
+	private final boolean vertical;
 
-	public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData, String dataFormat, int hAlign, int vAlign) {
+	public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData, String dataFormat, int hAlign, int vAlign, boolean vertical) {
 		this.fg = fg;
 		this.bg = bg;
 		this.fontData = fontData;
 		this.dataFormat = dataFormat;
 		this.hAlign = hAlign;
 		this.vAlign = vAlign;
+		this.vertical = vertical;
 	}
 
 	@Override
@@ -52,6 +54,7 @@ public class ExcelCellStyleAttributes {
 			.append(this.dataFormat, that.dataFormat)
 			.append(this.hAlign, that.hAlign)
 			.append(this.vAlign, that.vAlign)
+			.append(this.vertical, that.vertical)
 			.isEquals();
 	}
 	
@@ -64,6 +67,7 @@ public class ExcelCellStyleAttributes {
 			.append(dataFormat)
 			.append(hAlign)
 			.append(vAlign)
+			.append(vertical)
 			.toHashCode();
 	}
 	
