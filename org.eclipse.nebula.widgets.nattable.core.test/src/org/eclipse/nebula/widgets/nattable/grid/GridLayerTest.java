@@ -122,7 +122,7 @@ public class GridLayerTest {
 		Assert.assertEquals(160, viewport.getClientAreaWidth());
 		Assert.assertEquals(80, viewport.getClientAreaHeight());
 
-		Assert.assertEquals(200, viewport.getWidth());
+		Assert.assertEquals(160, viewport.getWidth());
 		Assert.assertEquals(80, viewport.getHeight());
 	}
 

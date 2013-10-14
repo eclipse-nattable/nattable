@@ -69,7 +69,11 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 
 	@Override
 	int getScrollableLayerSpan() {
-		return scrollableLayer.getHeight();
+		if (viewportLayer.getMaxHeight() >= 0 && viewportLayer.getMaxHeight() < scrollableLayer.getHeight()) {
+			return viewportLayer.getMaxHeight();
+		} else {
+			return scrollableLayer.getHeight();
+		}
 	}
 	
 	@Override

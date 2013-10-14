@@ -61,6 +61,8 @@ public class CompositeLayer extends AbstractLayer {
 		this.layoutXCount = layoutXCount;
 		this.layoutYCount = layoutYCount;
 		childLayerLayout = new ILayer[layoutXCount][layoutYCount];
+		
+		setLayerPainter(compositeLayerPainter);
 	}
 
 	// Dispose
@@ -118,11 +120,6 @@ public class CompositeLayer extends AbstractLayer {
 		}
 
 		super.configure(configRegistry, uiBindingRegistry);
-	}
-
-	@Override
-	public ILayerPainter getLayerPainter() {
-		return compositeLayerPainter;
 	}
 
 	/**
