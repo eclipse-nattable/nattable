@@ -402,11 +402,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		if (cachedWidth < 0) {
 			recalculateAvailableWidthAndColumnCount();
 		}
-		if (maxWidth >= 0 && maxWidth < cachedWidth) {
-			return maxWidth;
-		} else {
-			return cachedWidth;
-		}
+		return cachedWidth;
 	}
 	
 	@Override
@@ -504,11 +500,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		if (cachedHeight < 0) {
 			recalculateAvailableHeightAndRowCount();
 		}
-		if (maxHeight >= 0 && maxHeight < cachedHeight) {
-			return maxHeight;
-		} else {
-			return cachedHeight;
-		}
+		return cachedHeight;
 	}
 	
 	@Override
