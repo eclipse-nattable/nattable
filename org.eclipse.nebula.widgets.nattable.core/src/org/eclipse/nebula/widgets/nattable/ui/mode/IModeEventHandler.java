@@ -14,8 +14,10 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 
-public interface IModeEventHandler extends KeyListener, MouseListener, MouseMoveListener, FocusListener {
+public interface IModeEventHandler 
+	extends KeyListener, MouseListener, MouseMoveListener, MouseTrackListener, FocusListener {
 
 	public void cleanup();
 	

@@ -24,9 +24,12 @@ public class DefaultDisplayModeOrdering implements IDisplayModeOrdering {
 	
 	private static final List<String> EMPTY_ORDERING = Collections.emptyList();
 	
+	private static final List<String> HOVER_ORDERING = Arrays.asList(DisplayMode.HOVER, DisplayMode.NORMAL);
+	
 	/**
 	 * See DefaultDisplayModeOrderingTest
 	 */
+	@Override
 	public List<String> getDisplayModeOrdering(String targetDisplayMode) {
 		if (DisplayMode.NORMAL.equals(targetDisplayMode)) {
 			return NORMAL_ORDERING;
@@ -34,6 +37,8 @@ public class DefaultDisplayModeOrdering implements IDisplayModeOrdering {
 			return SELECT_ORDERING;
 		} else if (DisplayMode.EDIT.equals(targetDisplayMode)) {
 			return EDIT_ORDERING;
+		} else if (DisplayMode.HOVER.equals(targetDisplayMode)) {
+			return HOVER_ORDERING;
 		} else {
 			return EMPTY_ORDERING;
 		}

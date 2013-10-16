@@ -35,30 +35,51 @@ public class AbstractModeEventHandler implements IModeEventHandler {
 		modeSupport.switchMode(modeEventHandler);
 	}
 	
+	@Override
 	public void cleanup() {
 	}
 	
+	@Override
 	public void keyPressed(KeyEvent event) {
 	}
 
+	@Override
 	public void keyReleased(KeyEvent event) {
 	}
 
+	@Override
 	public void mouseDoubleClick(MouseEvent event) {
 	}
 
+	@Override
 	public void mouseDown(MouseEvent event) {
 	}
 
+	@Override
 	public void mouseUp(MouseEvent event) {
 	}
 
+	@Override
 	public void mouseMove(MouseEvent event) {
 	}
+	
+	@Override
+	public void mouseEnter(MouseEvent e) {
+	}
+	
+	@Override
+	public void mouseExit(MouseEvent e) {
+	}
+	
+	@Override
+	public void mouseHover(MouseEvent e) {
+	}
 
+	@Override
 	public void focusGained(FocusEvent event) {
 	}
 
+	@Override
 	public void focusLost(FocusEvent event) {
 		switchMode(Mode.NORMAL_MODE);
 	}

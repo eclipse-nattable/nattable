@@ -73,6 +73,43 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 			}
 		}
 	}
+
+	@Override
+	public synchronized void mouseHover(MouseEvent event) {
+		if (event.x >= 0 && event.y >= 0) {
+			IMouseAction mouseHoverAction = getUiBindingRegistry().getMouseHoverAction(event);
+			if (mouseHoverAction != null) {
+				event.data = NatEventData.createInstanceFromEvent(event);
+				mouseHoverAction.run(natTable, event);
+			}
+		}
+	}
+
+	@Override
+	public synchronized void mouseEnter(MouseEvent event) {
+		if (event.x >= 0 && event.y >= 0) {
+			IMouseAction mouseEnterAction = getUiBindingRegistry().getMouseEnterAction(event);
+			if (mouseEnterAction != null) {
+				event.data = NatEventData.createInstanceFromEvent(event);
+				mouseEnterAction.run(natTable, event);
+			} else {
+				natTable.setCursor(null);
+			}
+		}
+	}
+
+	@Override
+	public synchronized void mouseExit(MouseEvent event) {
+		if (event.x >= 0 && event.y >= 0) {
+			IMouseAction mouseExitAction = getUiBindingRegistry().getMouseExitAction(event);
+			if (mouseExitAction != null) {
+				event.data = NatEventData.createInstanceFromEvent(event);
+				mouseExitAction.run(natTable, event);
+			} else {
+				natTable.setCursor(null);
+			}
+		}
+	}
 	
 	private UiBindingRegistry getUiBindingRegistry() {
 		return natTable.getUiBindingRegistry();
