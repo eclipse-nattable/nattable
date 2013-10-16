@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
+
 /**
  * The various modes the table can be under.
  * <ol>
@@ -24,9 +25,10 @@ package org.eclipse.nebula.widgets.nattable.style;
  *
  */
 public interface DisplayMode {
-
-	public static final String NORMAL = "NORMAL"; //$NON-NLS-1$
-	public static final String SELECT = "SELECT"; //$NON-NLS-1$
-	public static final String EDIT = "EDIT"; //$NON-NLS-1$
+	
+	String NORMAL = "NORMAL"; //$NON-NLS-1$
+	String SELECT = "SELECT"; //$NON-NLS-1$
+	String EDIT = "EDIT"; //$NON-NLS-1$
+	String HOVER = "HOVER"; //$NON-NLS-1$
 	
 }

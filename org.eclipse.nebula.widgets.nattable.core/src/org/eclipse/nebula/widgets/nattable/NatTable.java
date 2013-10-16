@@ -63,6 +63,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.VerticalLayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
@@ -412,6 +413,20 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		redraw(0, yOffset, getWidth(), getRowHeightByPosition(rowPosition), true);
 	}
 
+	/**
+	 * Repaint only a specific cell in the grid. This method is optimized so that only the specific cell is repainted and
+	 * nothing else.
+	 *
+	 * @param columnPosition column position of the cell to repaint
+	 * @param rowPosition row position of the cell to repaint
+	 */
+	public void repaintCell(int columnPosition, int rowPosition) {
+		int xOffset = getStartXOfColumnPosition(columnPosition);
+		int yOffset = getStartYOfRowPosition(rowPosition);
+		
+		redraw(xOffset, yOffset, getColumnWidthByPosition(columnPosition), getRowHeightByPosition(rowPosition), true);
+	}
+	
 	public void updateResize() {
 		updateResize(true);
 	}
@@ -478,6 +493,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			layerListener.handleLayerEvent(event);
 		}
 
+		if (event instanceof CellVisualUpdateEvent) {
+			CellVisualUpdateEvent update = (CellVisualUpdateEvent)event;
+			repaintCell(update.getColumnPosition(), update.getRowPosition());
+			return;
+		}
+		
 	    if (event instanceof IVisualChangeEvent) {
 	    	conflaterChain.addEvent(event);
 	    }
@@ -775,7 +796,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer.getDisplayModeByPosition(columnPosition, rowPosition);
 	}
-
+	
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer.getConfigLabelsByPosition(columnPosition, rowPosition);

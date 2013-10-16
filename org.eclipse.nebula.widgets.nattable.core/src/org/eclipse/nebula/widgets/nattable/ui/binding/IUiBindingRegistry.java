@@ -30,5 +30,11 @@ public interface IUiBindingRegistry {
 	public IMouseAction getSingleClickAction(MouseEvent event);
 	
 	public IMouseAction getDoubleClickAction(MouseEvent event);
+	
+	public IMouseAction getMouseHoverAction(MouseEvent event);
+	
+	public IMouseAction getMouseEnterAction(MouseEvent event);
+	
+	public IMouseAction getMouseExitAction(MouseEvent event);
 
 }
