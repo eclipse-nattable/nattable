@@ -66,6 +66,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 		baseLayer.addLayerListener(this);
 		horizontalLayerDependency.addLayerListener(new ILayerListener() {
 
+			@Override
 			public void handleLayerEvent(ILayerEvent event) {
 				if (event instanceof IStructuralChangeEvent) {
 					// TODO refresh horizontal structure
@@ -75,6 +76,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 		});
 		verticalLayerDependency.addLayerListener(new ILayerListener() {
 
+			@Override
 			public void handleLayerEvent(ILayerEvent event) {
 				if (event instanceof IStructuralChangeEvent) {
 					// TODO refresh vertical structure
@@ -162,62 +164,81 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 
 	// Columns
 
+	@Override
 	public int getColumnCount() {
 		return horizontalLayerDependency.getColumnCount();
 	}
 
+	@Override
 	public int getPreferredColumnCount() {
 		return horizontalLayerDependency.getPreferredColumnCount();
 	}
 
+	@Override
 	public int getColumnIndexByPosition(int columnPosition) {
 		return horizontalLayerDependency.getColumnIndexByPosition(columnPosition);
 	}
 
+	@Override
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
 		return horizontalLayerDependency.localToUnderlyingColumnPosition(localColumnPosition);
 	}
 
+	@Override
 	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
+		if (sourceUnderlyingLayer == horizontalLayerDependency) {
+			return underlyingColumnPosition;
+		}
 		return horizontalLayerDependency.underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPosition);
 	}
 	
+	@Override
 	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
+		if (sourceUnderlyingLayer == horizontalLayerDependency) {
+			return underlyingColumnPositionRanges;
+		}
 		return horizontalLayerDependency.underlyingToLocalColumnPositions(sourceUnderlyingLayer, underlyingColumnPositionRanges);
 	}
 
 	// Width
 
+	@Override
 	public int getWidth() {
 		return horizontalLayerDependency.getWidth();
 	}
 
+	@Override
 	public int getPreferredWidth() {
 		return horizontalLayerDependency.getPreferredWidth();
 	}
 
+	@Override
 	public int getColumnWidthByPosition(int columnPosition) {
 		return horizontalLayerDependency.getColumnWidthByPosition(columnPosition);
 	}
 
 	// Column resize
 
+	@Override
 	public boolean isColumnPositionResizable(int columnPosition) {
 		return horizontalLayerDependency.isColumnPositionResizable(columnPosition);
 	}
 
 	// X
 
+	@Override
 	public int getColumnPositionByX(int x) {
 		return horizontalLayerDependency.getColumnPositionByX(x);
 	}
 
+	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
 		return horizontalLayerDependency.getStartXOfColumnPosition(columnPosition);
 	}
 	
 	// Underlying
 
+	@Override
 	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 		underlyingLayers.add(baseLayer);
@@ -228,62 +249,81 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 
 	// Rows
 
+	@Override
 	public int getRowCount() {
 		return verticalLayerDependency.getRowCount();
 	}
 
+	@Override
 	public int getPreferredRowCount() {
 		return verticalLayerDependency.getPreferredRowCount();
 	}
 
+	@Override
 	public int getRowIndexByPosition(int rowPosition) {
 		return verticalLayerDependency.getRowIndexByPosition(rowPosition);
 	}
 
+	@Override
 	public int localToUnderlyingRowPosition(int localRowPosition) {
 		return verticalLayerDependency.localToUnderlyingRowPosition(localRowPosition);
 	}
 
+	@Override
 	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
+		if (sourceUnderlyingLayer == verticalLayerDependency) {
+			return underlyingRowPosition;
+		}
 		return verticalLayerDependency.underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPosition);
 	}
 	
+	@Override
 	public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
+		if (sourceUnderlyingLayer == verticalLayerDependency) {
+			return underlyingRowPositionRanges;
+		}
 		return verticalLayerDependency.underlyingToLocalRowPositions(sourceUnderlyingLayer, underlyingRowPositionRanges);
 	}
 
 	// Height
 
+	@Override
 	public int getHeight() {
 		return verticalLayerDependency.getHeight();
 	}
 
+	@Override
 	public int getPreferredHeight() {
 		return verticalLayerDependency.getPreferredHeight();
 	}
 
+	@Override
 	public int getRowHeightByPosition(int rowPosition) {
 		return verticalLayerDependency.getRowHeightByPosition(rowPosition);
 	}
 
 	// Row resize
 
+	@Override
 	public boolean isRowPositionResizable(int rowPosition) {
 		return verticalLayerDependency.isRowPositionResizable(rowPosition);
 	}
 
 	// Y
 
+	@Override
 	public int getRowPositionByY(int y) {
 		return verticalLayerDependency.getRowPositionByY(y);
 	}
 
+	@Override
 	public int getStartYOfRowPosition(int rowPosition) {
 		return verticalLayerDependency.getStartYOfRowPosition(rowPosition);
 	}
 	
 	// Underlying
 
+	@Override
 	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 		underlyingLayers.add(baseLayer);
@@ -306,6 +346,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 		return baseLayer.getConfigLabelsByPosition(baseColumnPosition, baseRowPosition);
 	}
 
+	@Override
 	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
 		int baseColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, baseLayer);
 		int baseRowPosition = LayerUtil.convertRowPosition(this, rowPosition, baseLayer);
@@ -329,6 +370,7 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 		this.clientAreaProvider = clientAreaProvider;
 	}
 
+	@Override
 	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
 		return baseLayer;
 	}
