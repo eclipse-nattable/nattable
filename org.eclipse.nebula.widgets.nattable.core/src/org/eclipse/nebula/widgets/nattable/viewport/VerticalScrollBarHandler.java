@@ -28,7 +28,7 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate implement
 		this(viewportLayer, new ScrollBarScroller(scrollBar));
 	}
 	
-	public VerticalScrollBarHandler(ViewportLayer viewportLayer, IScroller scroller) {
+	public VerticalScrollBarHandler(ViewportLayer viewportLayer, IScroller<?> scroller) {
 		super(viewportLayer, scroller);
 	}
 

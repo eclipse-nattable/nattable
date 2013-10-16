@@ -29,7 +29,7 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 		this(viewportLayer, new ScrollBarScroller(scrollBar));
 	}
 	
-	public HorizontalScrollBarHandler(ViewportLayer viewportLayer, IScroller scroller) {
+	public HorizontalScrollBarHandler(ViewportLayer viewportLayer, IScroller<?> scroller) {
 		super(viewportLayer, scroller);
 		
 	}
