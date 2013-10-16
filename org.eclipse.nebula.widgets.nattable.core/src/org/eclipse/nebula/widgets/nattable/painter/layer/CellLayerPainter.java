@@ -130,9 +130,8 @@ public class CellLayerPainter implements ILayerPainter {
 			int endX = getStartXOfColumnPosition(cell.getOriginColumnPosition() + cell.getColumnSpan());
 			int endY = getStartYOfRowPosition(cell.getOriginRowPosition() + cell.getRowSpan());
 			
-			Rectangle bounds = new Rectangle(startX, startY, endX - startX, endY - startY);
-			Rectangle adjustedBounds = layer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, bounds);
-			gc.setClipping(originalClipping.intersection(adjustedBounds));
+			Rectangle cellClipBounds = originalClipping.intersection(new Rectangle(startX, startY, endX - startX, endY - startY));
+			gc.setClipping(cellClipBounds.intersection(adjustedCellBounds));
 			
 			cellPainter.paintCell(cell, gc, adjustedCellBounds, configRegistry);
 			

@@ -308,7 +308,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		int bodyColumnIndex = getColumnIndexByPosition(columnPosition);
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(bodyColumnIndex);
 
-		int leastPossibleStartPositionOfGroup = columnPosition - columnGroup.getSize();
+		int leastPossibleStartPositionOfGroup = columnPosition - (columnGroup.getSize() - 1);
 		int i = 0;
 		for (i = leastPossibleStartPositionOfGroup; i < columnPosition; i++) {
 			if (ColumnGroupUtils.isInTheSameGroup(getColumnIndexByPosition(i), bodyColumnIndex, model)) {
