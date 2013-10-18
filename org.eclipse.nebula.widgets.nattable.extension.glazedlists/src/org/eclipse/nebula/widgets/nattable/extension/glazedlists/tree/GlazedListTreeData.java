@@ -73,10 +73,13 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 	}
 
 	public List<T> getChildren(int index) {
-		List<Node<T>> childrenNodes = this.treeList.getTreeNode(index).getChildren();
 		List <T> children = new ArrayList<T>();
-		for(Node<T> node : childrenNodes){
-			children.add(node.getElement());
+		Node<T> treeNode = this.treeList.getTreeNode(index);
+		if (treeNode != null) {
+			List<Node<T>> childrenNodes = treeNode.getChildren();
+			for(Node<T> node : childrenNodes){
+				children.add(node.getElement());
+			}
 		}
 		return children;
 	}
@@ -109,4 +112,12 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 		return this.treeList.isExpanded(index);
 	}
 	
+	public List<T> getRoots() {
+		List<T> roots = new ArrayList<T>();
+		List<Node<T>> rootNodes = this.treeList.getRoots();
+		for (Node<T> root : rootNodes) {
+			roots.add(root.getElement());
+		}
+		return roots;
+	}
 }

@@ -45,6 +45,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
+import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
+import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -105,7 +107,7 @@ public class _5831_GroupByExample extends AbstractNatExample {
 				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 		
 		BodyLayerStack<PersonWithAddress> bodyLayerStack = 
-				new BodyLayerStack<PersonWithAddress>(PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
+				new BodyLayerStack<PersonWithAddress>(PersonService.getPersonsWithAddress(10), columnPropertyAccessor);
 
 		//build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
@@ -159,6 +161,38 @@ public class _5831_GroupByExample extends AbstractNatExample {
 									@Override
 									public void widgetSelected(SelectionEvent event) {
 										groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
+									}
+								});
+							}
+						})
+						.withMenuItemProvider(new IMenuItemProvider() {
+							
+							@Override
+							public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+								MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+								menuItem.setText("Collapse All"); //$NON-NLS-1$
+								menuItem.setEnabled(true);
+		
+								menuItem.addSelectionListener(new SelectionAdapter() {
+									@Override
+									public void widgetSelected(SelectionEvent event) {
+										natTable.doCommand(new TreeCollapseAllCommand());
+									}
+								});
+							}
+						})
+						.withMenuItemProvider(new IMenuItemProvider() {
+							
+							@Override
+							public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+								MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+								menuItem.setText("Expand All"); //$NON-NLS-1$
+								menuItem.setEnabled(true);
+		
+								menuItem.addSelectionListener(new SelectionAdapter() {
+									@Override
+									public void widgetSelected(SelectionEvent event) {
+										natTable.doCommand(new TreeExpandAllCommand());
 									}
 								});
 							}

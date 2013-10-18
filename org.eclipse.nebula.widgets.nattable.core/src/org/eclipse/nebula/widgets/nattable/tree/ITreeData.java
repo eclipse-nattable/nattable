@@ -28,4 +28,5 @@ public interface ITreeData <T> {
 	
 	public List <T> getChildren(T object);
 	
+	public List<T> getRoots();
 }

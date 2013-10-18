@@ -39,23 +39,28 @@ public class GlazedListTreeRowModel<T> implements ITreeRowModel<T>{
 		}
 	}
 
+	@Override
 	public int depth(int index) {
 		return this.treeData
 				.getDepthOfData(this.treeData.getDataAtIndex(index));
 	}
 
+	@Override
 	public boolean isLeaf(int index) {
 		return !hasChildren(index);
 	}
 
+	@Override
 	public String getObjectAtIndexAndDepth(int index, int depth) {
 		return this.treeData.formatDataForDepth(depth, index);
 	}
 
+	@Override
 	public boolean hasChildren(int index) {
 		return this.treeData.hasChildren(index);
 	}
 
+	@Override
 	public boolean isCollapsed(int index) {
 		return !this.treeData.isExpanded(index);
 	}
@@ -67,30 +72,63 @@ public class GlazedListTreeRowModel<T> implements ITreeRowModel<T>{
 	/**
 	 * @return TRUE if the row group this index is collapseable
 	 */
+	@Override
 	public boolean isCollapseable(int index) {
 		return hasChildren(index);
 	}
 
+	@Override
 	public List<Integer> collapse(int index) {
-			this.treeData.collapse(index);
-			notifyListeners();
-			return new ArrayList<Integer>();
+		this.treeData.collapse(index);
+		notifyListeners();
+		return new ArrayList<Integer>();
 	}
 
+	@Override
 	public List<Integer> expand(int index) {
-		
-			this.treeData.expand(index);
-			notifyListeners();
-			return new ArrayList<Integer>();
+		this.treeData.expand(index);
+		notifyListeners();
+		return new ArrayList<Integer>();
 	}
 
+	@Override
 	public List<Integer> getChildIndexes(int parentIndex) {
 		List<Integer> result = new ArrayList<Integer>();
 		List<T> children = this.treeData.getChildren(parentIndex);
 		for (T child : children) {
 			int index = this.treeData.indexOf(child);
+			//if the index is -1 the element is not found
+			//this means it is not visible and therefore can not be handled
+			if (index >= 0) {
+				result.add(index);
+				result.addAll(getChildIndexes(index));
+			}
+		}
+		return result;
+	}
+	
+	@Override
+	public List<Integer> getDirectChildIndexes(int parentIndex) {
+		List<Integer> result = new ArrayList<Integer>();
+		List<T> children = this.treeData.getChildren(parentIndex);
+		for (T child : children) {
+			int index = this.treeData.indexOf(child);
+			//if the index is -1 the element is not found
+			//this means it is not visible and therefore can not be handled
+			if (index >= 0) {
+				result.add(index);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<Integer> getRootIndexes() {
+		List<Integer> result = new ArrayList<Integer>();
+		List<T> roots = this.treeData.getRoots();
+		for (T root : roots) {
+			int index = this.treeData.indexOf(root);
 			result.add(index);
-			result.addAll(getChildIndexes(index));
 		}
 		return result;
 	}
