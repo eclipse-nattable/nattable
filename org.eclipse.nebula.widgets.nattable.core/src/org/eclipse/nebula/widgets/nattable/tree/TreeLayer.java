@@ -30,6 +30,8 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
+import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommandHandler;
+import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
@@ -124,6 +126,8 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 		this.indentedTreeImagePainter = indentedTreeImagePainter;
 
 		registerCommandHandler(new TreeExpandCollapseCommandHandler(this));
+		registerCommandHandler(new TreeCollapseAllCommandHandler(this));
+		registerCommandHandler(new TreeExpandAllCommandHandler(this));
 	}
 
 	/**

@@ -24,9 +24,37 @@ public interface ITreeRowModel<T> {
 
 	boolean isCollapsed(int index);
 
+	boolean isCollapseable(int index);
+	
 	List<Integer> collapse(int parentIndex);
 
 	List<Integer> expand(int parentIndex);
 
+	/**
+	 * This method returns <b>all</b> children below the node at the given index.
+	 * It search all the way down the tree structure to find every child, even the
+	 * sub children, sub sub children and so on.
+	 * <p>
+	 * If you only need to get the direct children of the node at the given index
+	 * you need to use {@link ITreeRowModel#getDirectChildIndexes(int)} instead.
+	 * @param parentIndex The index for which the child indexes are requested.
+	 * @return The list of all children for the node at the given index.
+	 */
 	List<Integer> getChildIndexes(int parentIndex);
+	
+	/**
+	 * This method returns only the direct children of the node at the given index.
+	 * It does not search all the way down for further sub children.
+	 * <p>
+	 * If you need to get all children of the node at the given index
+	 * you need to use {@link ITreeRowModel#getChildIndexes(int)} instead.
+	 * @param parentIndex The index for which the direct child indexes are requested.
+	 * @return The list of the direct children for the node at the given index.
+	 */
+	List<Integer> getDirectChildIndexes(int parentIndex);
+	
+	/**
+	 * @return The indexes of the root nodes in the tree.
+	 */
+	List<Integer> getRootIndexes();
 }
