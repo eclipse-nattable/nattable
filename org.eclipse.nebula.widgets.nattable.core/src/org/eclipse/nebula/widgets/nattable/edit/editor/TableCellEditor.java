@@ -588,19 +588,13 @@ public class TableCellEditor extends AbstractCellEditor {
 		@Override
 		protected void setValue(Object element, Object value) {
 			if (editor.isValueValid()) {
-				int selectionIndex = viewer.getTable().getSelectionIndex();
 				((ValueWrapper)element).setValue(value);
 				((ValueWrapper)element).setValid(true);
-				viewer.refresh();
-				
-				//ensure that the selection stays after value change
-				//otherwise it could jump if another row contains the previous value
-				viewer.getTable().setSelection(selectionIndex);
 			}
 			else {
 				((ValueWrapper)element).setValid(false);
-				viewer.refresh();
 			}
+			viewer.refresh();
 		}
 	}
 	
