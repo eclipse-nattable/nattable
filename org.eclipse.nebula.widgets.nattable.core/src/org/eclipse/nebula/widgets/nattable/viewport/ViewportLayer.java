@@ -631,7 +631,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public void moveColumnPositionIntoViewport(int scrollableColumnPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
 		if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0) {
-			if (scrollableColumnPosition >= getMinimumOriginColumnPosition() && (maxWidth < 0 || maxWidth >= 0 && scrollableColumnPosition < getColumnCount())) {
+			if (scrollableColumnPosition >= getMinimumOriginColumnPosition()) {
 				int originColumnPosition = getOriginColumnPosition();
 
 				if (scrollableColumnPosition <= originColumnPosition) {
@@ -643,9 +643,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 					int clientAreaWidth = getClientAreaWidth();
 					int viewportEndX = underlyingLayer.getStartXOfColumnPosition(getOriginColumnPosition()) + clientAreaWidth;
 
-					if (viewportEndX < scrollableColumnEndX) {
+					int maxX = maxWidth >= 0 ? maxWidth : scrollableColumnEndX;
+					
+					if (viewportEndX < maxX) {
 						// Move right
-						setOriginX(Math.min(scrollableColumnEndX - clientAreaWidth, scrollableColumnStartX));
+						setOriginX(Math.min(maxX - clientAreaWidth, maxX));
 					}
 				}
 				
@@ -661,7 +663,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public void moveRowPositionIntoViewport(int scrollableRowPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
 		if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0) {
-			if (scrollableRowPosition >= getMinimumOriginRowPosition() && (maxHeight < 0 || maxHeight >= 0 && scrollableRowPosition < getRowCount())) {
+			if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
 				int originRowPosition = getOriginRowPosition();
 
 				if (scrollableRowPosition <= originRowPosition) {
@@ -673,9 +675,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 					int clientAreaHeight = getClientAreaHeight();
 					int viewportEndY = underlyingLayer.getStartYOfRowPosition(getOriginRowPosition()) + clientAreaHeight;
 
-					if (viewportEndY < scrollableRowEndY) {
+					int maxY = maxHeight >= 0 ? maxHeight : scrollableRowEndY;
+
+					if (viewportEndY < maxY) {
 						// Move down
-						setOriginY(Math.min(scrollableRowEndY - clientAreaHeight, scrollableRowStartY));
+						setOriginY(Math.min(maxY - clientAreaHeight, maxY));
 					}
 				}
 				
