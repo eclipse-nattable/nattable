@@ -33,9 +33,10 @@ import org.eclipse.swt.widgets.Control;
 public class PercentageSizingDataLayerExample extends AbstractNatExample {
 	
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 650, new PercentageSizingDataLayerExample());
+		StandaloneNatExampleRunner.run(600, 850, new PercentageSizingDataLayerExample());
 	}
 
+	@Override
 	public Control createExampleControl(Composite parent) {
 		Composite panel = new Composite(parent, SWT.NONE);
 		panel.setLayout(new GridLayout());
@@ -56,7 +57,7 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 		final DummyModifiableBodyDataProvider dataProvider = new DummyModifiableBodyDataProvider(3, 2);
 		
 		//example for percentage calculation with default sizing
-		//all columns will be same size while the nattable itself will have 100%
+		//all columns will be same size while the NatTable itself will have 100%
 		final DataLayer n1DataLayer = new DataLayer(dataProvider);
 		n1DataLayer.setColumnPercentageSizing(true);
 		n1DataLayer.setRowPercentageSizing(true);
@@ -66,34 +67,44 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(n1);
 		
 		//example for fixed percentage sizing
-		//ensure that the sum of column sizes is not greater than 100 and that
-		//the percentage sizing flag is set to true after the sizes are set
-		//otherwise the set values will be ignored
+		//ensure that the sum of column sizes is not greater than 100
 		final DataLayer n2DataLayer = new DataLayer(dataProvider);
-		n2DataLayer.setColumnWidthByPosition(0, 25);
-		n2DataLayer.setColumnWidthByPosition(1, 25);
-		n2DataLayer.setColumnWidthByPosition(2, 50);
-		n2DataLayer.setColumnPercentageSizing(true);
+		n2DataLayer.setColumnWidthPercentageByPosition(0, 25);
+		n2DataLayer.setColumnWidthPercentageByPosition(1, 25);
+		n2DataLayer.setColumnWidthPercentageByPosition(2, 50);
 		layer = new ViewportLayer(new SelectionLayer(n2DataLayer));
 		layer.setRegionName(GridRegion.BODY);
 		final NatTable n2 = new NatTable(simplePanel, layer);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(n2);
 
 		//example for mixed percentage sizing
-		//telling not all of the columns which percentaged size they have but only some of them
-		//ensure that the sum of the percentage values for the columns are below 100 otherwise there 
-		//is no space left for the columns have not been defined
+		//configure not every column with the exact percentage value, this way the columns for which
+		//no exact values are set will use the remaining space
 		final DataLayer n3DataLayer = new DataLayer(dataProvider);
-		n3DataLayer.setColumnWidthByPosition(0, 40);
-		n3DataLayer.setColumnWidthByPosition(2, 40);
 		n3DataLayer.setColumnPercentageSizing(true);
+		n3DataLayer.setColumnWidthPercentageByPosition(0, 40);
+		n3DataLayer.setColumnWidthPercentageByPosition(2, 40);
 		layer = new ViewportLayer(new SelectionLayer(n3DataLayer));
 		layer.setRegionName(GridRegion.BODY);
 		final NatTable n3 = new NatTable(simplePanel, layer);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(n3);
+
+		//example for mixed fixed/percentage sizing
+		//configure not every column with the exact percentage value, this way the columns for which
+		//no exact values are set will use the remaining space
+		final DataLayer mixDataLayer = new DataLayer(dataProvider);
+		mixDataLayer.setColumnPercentageSizing(true);
+		mixDataLayer.setColumnPercentageSizing(0, false);
+		mixDataLayer.setColumnPercentageSizing(1, false);
+		mixDataLayer.setColumnWidthByPosition(0, 100);
+		mixDataLayer.setColumnWidthByPosition(1, 100);
+		layer = new ViewportLayer(new SelectionLayer(mixDataLayer));
+		layer.setRegionName(GridRegion.BODY);
+		final NatTable mix = new NatTable(simplePanel, layer);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(mix);
 		
-		//example for percentage calculation with default sizing
-		//all columns will be same size while the nattable itself will have 100%
+		//example for percentage calculation with default sizing in a grid
+		//all columns will be same size while the NatTable itself will have 100%
 		DummyGridLayerStack gridLayer = new DummyGridLayerStack(dataProvider);
 		final DataLayer n4DataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 		n4DataLayer.setColumnPercentageSizing(true);
@@ -104,10 +115,8 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 		n4.configure();
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(n4);
 
-		//example for fixed percentage sizing
-		//ensure that the sum of column sizes is not greater than 100 and that
-		//the percentage sizing flag is set to true after the sizes are set
-		//otherwise the set values will be ignored
+		//example for fixed percentage sizing in a grid
+		//ensure that the sum of column sizes is not greater than 100
 		gridLayer = new DummyGridLayerStack(dataProvider);
 		final DataLayer n5DataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 		n5DataLayer.setColumnWidthByPosition(0, 25);
@@ -120,10 +129,9 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 		n5.configure();
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(n5);
 		
-		//example for mixed percentage sizing
-		//telling not all of the columns which percentaged size they have but only some of them
-		//ensure that the sum of the percentage values for the columns are below 100 otherwise there 
-		//is no space left for the columns have not been defined
+		//example for mixed percentage sizing in a grid
+		//configure not every column with the exact percentage value, this way the columns for which
+		//no exact values are set will use the remaining space
 		gridLayer = new DummyGridLayerStack(dataProvider);
 		final DataLayer n6DataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 		n6DataLayer.setColumnWidthByPosition(0, 20);
@@ -135,6 +143,22 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 		n6.configure();
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(n6);
 
+		//example for mixed fixed/percentage sizing in a grid
+		//configure not every column with the exact percentage value, this way the columns for which
+		//no exact values are set will use the remaining space
+		gridLayer = new DummyGridLayerStack(dataProvider);
+		final DataLayer mixGridDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
+		mixGridDataLayer.setColumnPercentageSizing(true);
+		mixGridDataLayer.setColumnPercentageSizing(0, false);
+		mixGridDataLayer.setColumnPercentageSizing(1, false);
+		mixGridDataLayer.setColumnWidthByPosition(0, 100);
+		mixGridDataLayer.setColumnWidthByPosition(1, 100);
+		final NatTable mixGrid = new NatTable(gridPanel, gridLayer, false);
+		mixGrid.addConfiguration(new DefaultNatTableStyleConfiguration());
+		mixGrid.addConfiguration(new HeaderMenuConfiguration(mixGrid));
+		mixGrid.configure();
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(mixGrid);
+		
 		
 		Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
 		addColumnButton.setText("add column - no width");
@@ -145,9 +169,11 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 				n1.refresh();
 				n2.refresh();
 				n3.refresh();
+				mix.refresh();
 				n4.refresh();
 				n5.refresh();
 				n6.refresh();
+				mixGrid.refresh();
 			}
 		});
 		
@@ -161,16 +187,20 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 				n1DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n2DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n3DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
+				mixDataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n4DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n5DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n6DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
+				mixGridDataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				
 				n1.refresh();
 				n2.refresh();
 				n3.refresh();
+				mix.refresh();
 				n4.refresh();
 				n5.refresh();
 				n6.refresh();
+				mixGrid.refresh();
 			}
 		});
 		

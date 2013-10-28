@@ -420,7 +420,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	}
 	
 	/**
-	 * @return <code>true</code> if the column sizing is done percentaged,
+	 * @return <code>true</code> if the column sizing is done by percentage calculation,
 	 * 			<code>false</code> if the column sizing is done by pixel (default)
 	 */
 	public boolean isColumnPercentageSizing() {
@@ -432,15 +432,37 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	 * Default is pixel sizing.
 	 * If percentage sizing should be used you have to ensure that the size value for every 
 	 * column is set explicitly and that the sum of the column sizes doesn't exceed 100.
-	 * @param percentageSizing <code>true</code> if the column sizing should be done percentaged,
-	 * 			<code>false</code> if the column sizing should be done by pixel (default)
+	 * @param percentageSizing <code>true</code> if the column sizing should be done by percentage 
+	 * 			calculation, <code>false</code> if the column sizing should be done by pixel (default)
 	 */
 	public void setColumnPercentageSizing(boolean percentageSizing) {
 		this.columnWidthConfig.setPercentageSizing(percentageSizing);
 	}
 	
 	/**
-	 * @return <code>true</code> if the row sizing is done percentaged,
+	 * @param position The position which is asked for the percentage sizing configuration.
+	 * @return <code>true</code> if the column sizing for the given position is done by percentage 
+	 * 			calculation, <code>false</code> if the column sizing is done by pixel (default)
+	 */
+	public boolean isColumnPercentageSizing(int position) {
+		return this.columnWidthConfig.isPercentageSizing(position);
+	}
+	
+	/**
+	 * Configures how the column sizing of this {@link DataLayer} is handled.
+	 * Default is pixel sizing.
+	 * If percentage sizing should be used you have to ensure that the size value for every 
+	 * column is set explicitly and that the sum of the column sizes doesn't exceed 100.
+	 * @param position The position for which the sizing configuration should be set.
+	 * @param percentageSizing <code>true</code> if the column sizing should be done by percentage 
+	 * 			calculation, <code>false</code> if the column sizing should be done by pixel (default)
+	 */
+	public void setColumnPercentageSizing(int position, boolean percentageSizing) {
+		this.columnWidthConfig.setPercentageSizing(position, percentageSizing);
+	}
+	
+	/**
+	 * @return <code>true</code> if the row sizing is done by percentage calculation, 
 	 * 			<code>false</code> if the row sizing is done by pixel (default)
 	 */
 	public boolean isRowPercentageSizing() {
@@ -452,10 +474,32 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	 * Default is pixel sizing.
 	 * If percentage sizing should be used you have to ensure that the size value for every 
 	 * row is set explicitly and that the sum of the row sizes doesn't exceed 100.
-	 * @param percentageSizing <code>true</code> if the row sizing should be done percentaged,
-	 * 			<code>false</code> if the row sizing should be done by pixel (default)
+	 * @param percentageSizing <code>true</code> if the row sizing should be done by percentage 
+	 * 			calculation, <code>false</code> if the row sizing should be done by pixel (default)
 	 */
 	public void setRowPercentageSizing(boolean percentageSizing) {
 		this.rowHeightConfig.setPercentageSizing(percentageSizing);
+	}
+	
+	/**
+	 * @param position The position which is asked for the percentage sizing configuration.
+	 * @return <code>true</code> if the row sizing for the given position is done by percentage 
+	 * 			calculation, <code>false</code> if the row sizing is done by pixel (default)
+	 */
+	public boolean isRowPercentageSizing(int position) {
+		return this.rowHeightConfig.isPercentageSizing(position);
+	}
+	
+	/**
+	 * Configures how the row sizing of this {@link DataLayer} is handled.
+	 * Default is pixel sizing.
+	 * If percentage sizing should be used you have to ensure that the size value for every 
+	 * row is set explicitly and that the sum of the row sizes doesn't exceed 100.
+	 * @param position The row position for which the sizing configuration should be set.
+	 * @param percentageSizing <code>true</code> if the row sizing should be done by percentage 
+	 * 			calculation, <code>false</code> if the row sizing should be done by pixel (default)
+	 */
+	public void setRowPercentageSizing(int position, boolean percentageSizing) {
+		this.rowHeightConfig.setPercentageSizing(position, percentageSizing);
 	}
 }
