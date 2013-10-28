@@ -18,12 +18,15 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
 /**
  * This class stores the size configuration of rows/columns within the NatTable.
+ * 
+ * Mixed mode (fixed/percentage sizing):<br>
+ * The mixed mode is only working if percentage sizing is enabled globally, and 
+ * the fixed sized positions are marked separately.
  */
 public class SizeConfig implements IPersistable {
 
@@ -33,6 +36,7 @@ public class SizeConfig implements IPersistable {
 	public static final String PERSISTENCE_KEY_RESIZABLE_BY_DEFAULT = ".resizableByDefault"; //$NON-NLS-1$
 	public static final String PERSISTENCE_KEY_RESIZABLE_INDEXES = ".resizableIndexes"; //$NON-NLS-1$
 	public static final String PERSISTENCE_KEY_PERCENTAGE_SIZING = ".percentageSizing"; //$NON-NLS-1$
+	public static final String PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES = ".percentageSizingIndexes"; //$NON-NLS-1$
 
 	/**
 	 * The global default size of this {@link SizeConfig}.
@@ -54,6 +58,10 @@ public class SizeConfig implements IPersistable {
 	 * The global resizable information of this {@link SizeConfig}.
 	 */
 	private boolean resizableByDefault = true;
+	/**
+	 * Map that contains the percentage sizing information per row/column.
+	 */
+	private final Map<Integer, Boolean> percentageSizingMap = new TreeMap<Integer, Boolean>();
 	/**
 	 * Flag to tell whether the sizing is done for pixel or percentage values.
 	 */
@@ -86,6 +94,7 @@ public class SizeConfig implements IPersistable {
 		properties.put(prefix + PERSISTENCE_KEY_RESIZABLE_BY_DEFAULT, String.valueOf(resizableByDefault));
 		saveMap(resizablesMap, prefix + PERSISTENCE_KEY_RESIZABLE_INDEXES, properties);
 		properties.put(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING, String.valueOf(percentageSizing));
+		saveMap(percentageSizingMap, prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES, properties);
 	}
 
 	private void saveMap(Map<Integer, ?> map, String key, Properties properties) {
@@ -126,6 +135,7 @@ public class SizeConfig implements IPersistable {
 		loadBooleanMap(prefix + PERSISTENCE_KEY_RESIZABLE_INDEXES, properties, resizablesMap);
 		loadIntegerMap(prefix + PERSISTENCE_KEY_DEFAULT_SIZES, properties, defaultSizeMap);
 		loadIntegerMap(prefix + PERSISTENCE_KEY_SIZES, properties, sizeMap);
+		loadBooleanMap(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES, properties, percentageSizingMap);
 	}
 
 	private void loadIntegerMap(String key, Properties properties, Map<Integer, Integer> map) {
@@ -167,11 +177,11 @@ public class SizeConfig implements IPersistable {
 		if (defaultSize < 0) {
 			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
 		}
-		defaultSizeMap.put(Integer.valueOf(position), Integer.valueOf(size));
+		defaultSizeMap.put(position, size);
 	}
 
 	private int getDefaultSize(int position) {
-		Integer size = defaultSizeMap.get(Integer.valueOf(position));
+		Integer size = defaultSizeMap.get(position);
 		if (size != null) {
 			return size.intValue();
 		} else {
@@ -186,14 +196,15 @@ public class SizeConfig implements IPersistable {
 			return -1;
 		} else if (position == 0) {
 			return 0;
-		} else if (isAllPositionsSameSize() && !percentageSizing) {
+		} else if (isAllPositionsSameSize() && !isPercentageSizing()) {
+			//if percentage sizing is used, the sizes in defaultSize are used as percentage values
+			//and not as pixel values, therefore another value needs to be considered
 			return position * defaultSize;
 		} else {
 			int resizeAggregate = 0;
-
 			int resizedColumns = 0;
 			
-			Map<Integer, Integer> mapToUse = percentageSizing ? realSizeMap : sizeMap;
+			Map<Integer, Integer> mapToUse = isPercentageSizing() ? realSizeMap : sizeMap;
 			
 			for (Integer resizedPosition : mapToUse.keySet()) {
 				if (resizedPosition.intValue() < position) {
@@ -210,10 +221,10 @@ public class SizeConfig implements IPersistable {
 
 	public int getSize(int position) {
 		Integer size;
-		if (percentageSizing) {
-			size = realSizeMap.get(Integer.valueOf(position));
+		if (isPercentageSizing()) {
+			size = realSizeMap.get(position);
 		} else {
-			size = sizeMap.get(Integer.valueOf(position));
+			size = sizeMap.get(position);
 		}
 		if (size != null) {
 			return size.intValue();
@@ -228,7 +239,7 @@ public class SizeConfig implements IPersistable {
 	 * is a check for percentage configuration. If this {@link SizeConfig} is configured to not use
 	 * percentage sizing, the size is taken as is. If percentage sizing is enabled, the given size
 	 * will be calculated to percentage value based on the already known pixel values.
-	 * 
+	 * <p>
 	 * If you want to use percentage sizing you should use {@link SizeConfig#setPercentage(int, int)}
 	 * for manual size configuration to avoid unnecessary calculations.
 	 * 
@@ -241,31 +252,36 @@ public class SizeConfig implements IPersistable {
 		}
 		if (isPositionResizable(position)) {
 			//check whether the given value should be remembered as is or if it needs to be calculated
-			if (!isPercentageSizing()) {
-				sizeMap.put(Integer.valueOf(position), Integer.valueOf(size));
+			if (!isPercentageSizing(position)) {
+				sizeMap.put(position, size);
 			} else {
 				if (availableSpace > 0) {
 					Double percentage = ((double) size * 100)/ availableSpace;
 					sizeMap.put(position, percentage.intValue());
-					calculatePercentages(availableSpace, realSizeMap.size());
 				}
 			}
 			
+			if (isPercentageSizing())
+				calculatePercentages(availableSpace, realSizeMap.size());
 		}
 	}
 
 	/**
-	 * Will set the given percentage for the given position if this {@link SizeConfig}
-	 * is configured for percentage sizing.
-	 * @param position
-	 * @param percentage
+	 * Will set the given percentage size information for the given position and will set the
+	 * given position to be sized via percentage value.
+	 * @param position The positions whose percentage sizing information should be set.
+	 * @param percentage The percentage value to set, always dependent on the available space
+	 * 			for percentage sizing, which can be less than the real available space in case
+	 * 			there are also positions that are configured for fixed size.
 	 */
 	public void setPercentage(int position, int percentage) {
 		if (percentage < 0) {
 			throw new IllegalArgumentException("percentage < 0"); //$NON-NLS-1$
 		}
-		if (isPositionResizable(position) && isPercentageSizing()) {
-			sizeMap.put(Integer.valueOf(position), Integer.valueOf(percentage));
+		if (isPositionResizable(position)) {
+			//FIXME ensure that the percentage value does never exceed 100
+			percentageSizingMap.put(position, Boolean.TRUE);
+			sizeMap.put(position, percentage);
 			realSizeMap.put(position, calculatePercentageValue(percentage, availableSpace));
 			calculatePercentages(availableSpace, realSizeMap.size());
 		}
@@ -288,7 +304,7 @@ public class SizeConfig implements IPersistable {
 	 * 			<code>false</code> if not.
 	 */
 	public boolean isPositionResizable(int position) {
-		Boolean resizable = resizablesMap.get(Integer.valueOf(position));
+		Boolean resizable = resizablesMap.get(position);
 		if (resizable != null) {
 			return resizable.booleanValue();
 		}
@@ -302,10 +318,7 @@ public class SizeConfig implements IPersistable {
 	 * 			<code>false</code> if not.
 	 */
 	public void setPositionResizable(int position, boolean resizable) {
-		if (percentageSizing && resizable) {
-			throw new IllegalStateException("Resizable columns are not allowed when using percentaged sizing."); //$NON-NLS-1$
-		}
-		resizablesMap.put(Integer.valueOf(position), Boolean.valueOf(resizable));
+		resizablesMap.put(position, resizable);
 	}
 
 	/**
@@ -315,10 +328,7 @@ public class SizeConfig implements IPersistable {
 	 * 			<code>false</code> if no row/column should be resizable.
 	 */
 	public void setResizableByDefault(boolean resizableByDefault) {
-		if (percentageSizing && resizableByDefault) {
-			throw new IllegalStateException("Resizable columns are not allowed when using percentaged sizing."); //$NON-NLS-1$
-		}
-		resizablesMap.clear();
+		this.resizablesMap.clear();
 		this.resizableByDefault = resizableByDefault;
 	}
 
@@ -329,10 +339,16 @@ public class SizeConfig implements IPersistable {
 	}
 
 	/**
-	 * @return <code>true</code> if the size of the positions is interpreted percentaged,
-	 * 			<code>false</code> if the size of the positions is interpreted by pixel.
+	 * @return <code>true</code> if the size of at least one position is interpreted in percentage,
+	 * 			<code>false</code> if the size of all positions is interpreted by pixel.
 	 */
 	public boolean isPercentageSizing() {
+		if (!this.percentageSizingMap.isEmpty()) {
+			for (Boolean pSize : this.percentageSizingMap.values()) {
+				if (pSize)
+					return true;
+			}
+		}
 		return this.percentageSizing;
 	}
 	
@@ -345,12 +361,37 @@ public class SizeConfig implements IPersistable {
 	}
 
 	/**
+	 * Checks if there is a special percentage sizing configuration for the given position. If not the
+	 * global percentage sizing information is returned.
+	 * @param position The position of the row/column for which the percentage sizing information is requested.
+	 * @return <code>true</code> if the given row/column position is sized by percentage value,
+	 * 			<code>false</code> if not.
+	 */
+	public boolean isPercentageSizing(int position) {
+		Boolean percentageSizing = percentageSizingMap.get(position);
+		if (percentageSizing != null) {
+			return percentageSizing;
+		}
+		return this.percentageSizing;
+	}
+
+	/**
+	 * Sets the resizable configuration for the given row/column position.
+	 * @param position The position of the row/column for which the resizable configuration should be set.
+	 * @param resizable <code>true</code> if the given row/column position should be resizable,
+	 * 			<code>false</code> if not.
+	 */
+	public void setPercentageSizing(int position, boolean resizable) {
+		percentageSizingMap.put(position, resizable);
+	}
+
+	/**
 	 * Will calculate the real pixel values for the positions if percentage sizing is enabled.
 	 * @param space The space that is available for rendering.
 	 * @param positionCount The number of positions that should be handled by this {@link SizeConfig}
 	 */
 	public void calculatePercentages(int space, int positionCount) {
-		if (this.percentageSizing) {
+		if (isPercentageSizing()) {
 			this.availableSpace = space;
 			int sum = 0;
 			int real = 0;
@@ -361,7 +402,7 @@ public class SizeConfig implements IPersistable {
 				positionValue = this.sizeMap.get(i);
 				if (positionValue != null) {
 					sum += positionValue;
-					real = calculatePercentageValue(positionValue, space);
+					real = isPercentageSizing(i) ? calculatePercentageValue(positionValue, space) : positionValue;
 					realSum += real;
 					this.realSizeMap.put(i, real);
 				} else {
@@ -401,18 +442,16 @@ public class SizeConfig implements IPersistable {
 					this.realSizeMap.put(lastPos, lastPosValue + (space - valueSum));
 				}
 			}
-			
 		}
 	}
 	
 	/**
 	 * @param percentage The percentage value.
 	 * @param space The available space
-	 * @return The percentaged value of the given space.
+	 * @return The percentage value of the given space.
 	 */
 	private int calculatePercentageValue(int percentage, int space) {
 		double factor = (double) percentage / 100;
 		return new Double(space * factor).intValue();
 	}
-
 }
