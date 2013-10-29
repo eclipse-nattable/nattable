@@ -340,6 +340,17 @@ public class TableCellEditor extends AbstractCellEditor {
 		return getEditorControl();
 	}
 
+	@Override
+	public void close() {
+		//this check is added to ensure that an open cell editor is also committed if
+		//the user clicks in another cell after editing within the table cell editor
+		//otherwise the framework performs a commit and close BEFORE the cell editor
+		//of the table viewer commits the value
+		if (!viewer.isCellEditorActive()) {
+			super.close();
+		}
+	}
+	
 	/**
 	 * Checks if the given data object is of type Collection or Array.
 	 * Will return the Collection or Array as Object[] or <code>null</code> if
