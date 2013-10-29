@@ -169,9 +169,11 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 				n1.refresh();
 				n2.refresh();
 				n3.refresh();
+				mix.refresh();
 				n4.refresh();
 				n5.refresh();
 				n6.refresh();
+				mixGrid.refresh();
 			}
 		});
 		
@@ -185,16 +187,20 @@ public class PercentageSizingDataLayerExample extends AbstractNatExample {
 				n1DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n2DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n3DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
+				mixDataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n4DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n5DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				n6DataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
+				mixGridDataLayer.setColumnWidthPercentageByPosition(dataProvider.getColumnCount()-1, 20);
 				
 				n1.refresh();
 				n2.refresh();
 				n3.refresh();
+				mix.refresh();
 				n4.refresh();
 				n5.refresh();
 				n6.refresh();
+				mixGrid.refresh();
 			}
 		});
 		

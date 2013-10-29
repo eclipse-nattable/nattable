@@ -19,6 +19,7 @@ public class SizeConfigPercentageTest {
 	private static final int DEFAULT_SIZE = 100;
 	private SizeConfig sizeConfigCalculationMode;
 	private SizeConfig sizeConfigFixedMode;
+	private SizeConfig sizeConfigMixedPercentageMode;
 	private SizeConfig sizeConfigMixedMode;
 
 	@Before
@@ -33,11 +34,19 @@ public class SizeConfigPercentageTest {
 		sizeConfigFixedMode.setPercentage(1, 50);
 		sizeConfigFixedMode.calculatePercentages(255, 2);
 
+		sizeConfigMixedPercentageMode = new SizeConfig(DEFAULT_SIZE);
+		sizeConfigMixedPercentageMode.setPercentageSizing(true);
+		sizeConfigMixedPercentageMode.setPercentage(0, 30);
+		sizeConfigMixedPercentageMode.setPercentage(2, 30);
+		sizeConfigMixedPercentageMode.calculatePercentages(1000, 3);
+
 		sizeConfigMixedMode = new SizeConfig(DEFAULT_SIZE);
 		sizeConfigMixedMode.setPercentageSizing(true);
-		sizeConfigMixedMode.setPercentage(0, 30);
-		sizeConfigMixedMode.setPercentage(2, 30);
-		sizeConfigMixedMode.calculatePercentages(1000, 3);
+		sizeConfigMixedMode.setPercentageSizing(0, false);
+		sizeConfigMixedMode.setPercentageSizing(1, false);
+		sizeConfigMixedMode.setSize(0, 100);
+		sizeConfigMixedMode.setSize(1, 100);
+		sizeConfigMixedMode.calculatePercentages(500, 3);
 	}
 
 	@Test
@@ -156,12 +165,28 @@ public class SizeConfigPercentageTest {
 
 	@Test
 	public void getSizeFixedModeAfterAdding() throws Exception {
-		sizeConfigFixedMode.calculatePercentages(255, 3);
+		sizeConfigFixedMode.calculatePercentages(510, 4);
 		sizeConfigFixedMode.setPercentage(2, 50);
+		sizeConfigFixedMode.setPercentage(3, 50);
 
+		//the correct double value would be 127.5 - because of the rounding as there are no 
+		//double pixels, the values for the first 3 positions will be 127
 		Assert.assertEquals(127, sizeConfigFixedMode.getSize(0));
 		Assert.assertEquals(127, sizeConfigFixedMode.getSize(1));
 		Assert.assertEquals(127, sizeConfigFixedMode.getSize(2));
+		//to correct the rounding issues in rendering, the last position will have the increased
+		//size to fill the available space 100%
+		Assert.assertEquals(129, sizeConfigFixedMode.getSize(3));
+	}
+
+	@Test
+	public void getSizeFixedModeAfterAddingTooMuch() throws Exception {
+		sizeConfigFixedMode.calculatePercentages(255, 3);
+		sizeConfigFixedMode.setPercentage(2, 50);
+
+		Assert.assertEquals(84, sizeConfigFixedMode.getSize(0));
+		Assert.assertEquals(84, sizeConfigFixedMode.getSize(1));
+		Assert.assertEquals(87, sizeConfigFixedMode.getSize(2));
 	}
 
 	@Test
@@ -175,72 +200,207 @@ public class SizeConfigPercentageTest {
 
 	@Test
 	public void getAggregateSizeFixedModeAfterAdding() throws Exception {
-		sizeConfigFixedMode.calculatePercentages(255, 3);
+		sizeConfigFixedMode.calculatePercentages(510, 4);
 		sizeConfigFixedMode.setPercentage(2, 50);
+		sizeConfigFixedMode.setPercentage(3, 50);
 
 		Assert.assertEquals(127, sizeConfigFixedMode.getAggregateSize(1));
 		Assert.assertEquals(254, sizeConfigFixedMode.getAggregateSize(2));
 		Assert.assertEquals(381, sizeConfigFixedMode.getAggregateSize(3));
+		Assert.assertEquals(510, sizeConfigFixedMode.getAggregateSize(4));
 	}
 
 
 	@Test
+	public void getAggregateSizeFixedModeAfterAddingTooMuch() throws Exception {
+		sizeConfigFixedMode.calculatePercentages(255, 3);
+		sizeConfigFixedMode.setPercentage(2, 50);
+
+		Assert.assertEquals(84, sizeConfigFixedMode.getAggregateSize(1));
+		Assert.assertEquals(168, sizeConfigFixedMode.getAggregateSize(2));
+		Assert.assertEquals(255, sizeConfigFixedMode.getAggregateSize(3));
+	}
+
+	@Test
+	public void getSizeConfigMixedPercentageMode() throws Exception {
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(400, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(2));
+	}
+
+	@Test
+	public void getAggregateSizeConfigMixedPercentageMode() throws Exception {
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getAggregateSize(1));
+		Assert.assertEquals(700, sizeConfigMixedPercentageMode.getAggregateSize(2));
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(3));
+	}
+
+	@Test
+	public void sizeOverrideMixedMode() throws Exception {
+		sizeConfigMixedPercentageMode.setSize(2, 400);
+
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(400, sizeConfigMixedPercentageMode.getSize(2));
+	}
+
+	@Test
+	public void percentageOverrideMixedMode() throws Exception {
+		sizeConfigMixedPercentageMode.setPercentage(2, 40);
+
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(400, sizeConfigMixedPercentageMode.getSize(2));
+	}
+
+	@Test
+	public void getAggregateSizeWithSizeOverridesMixedMode() throws Exception {
+		sizeConfigMixedPercentageMode.setPercentage(2, 40);
+
+		Assert.assertEquals(600, sizeConfigMixedPercentageMode.getAggregateSize(2));
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(3));
+	}
+
+	@Test
+	public void getSizeMixedPercentageModeAfterAdding() throws Exception {
+		sizeConfigMixedPercentageMode.calculatePercentages(1000, 4);
+
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(200, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(2));
+		Assert.assertEquals(200, sizeConfigMixedPercentageMode.getSize(3));
+	}
+
+	@Test
+	public void getSizeMixedPercentageModeAfterAddingExactly100() throws Exception {
+		sizeConfigMixedPercentageMode.setPercentage(3, 40);
+
+		sizeConfigMixedPercentageMode.calculatePercentages(1000, 4);
+
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(0, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(2));
+		Assert.assertEquals(400, sizeConfigMixedPercentageMode.getSize(3));
+	}
+
+	@Test
+	public void getSizeMixedPercentageModeAfterAddingTooMuch() throws Exception {
+		sizeConfigMixedPercentageMode.setPercentage(0, 20);
+		sizeConfigMixedPercentageMode.setPercentage(2, 20);
+		sizeConfigMixedPercentageMode.setPercentage(3, 20);
+		sizeConfigMixedPercentageMode.setPercentage(4, 20);
+		sizeConfigMixedPercentageMode.setPercentage(5, 20);
+		sizeConfigMixedPercentageMode.setPercentage(6, 20);
+		sizeConfigMixedPercentageMode.setPercentage(7, 20);
+		sizeConfigMixedPercentageMode.setPercentage(8, 20);
+		sizeConfigMixedPercentageMode.setPercentage(9, 20);
+		sizeConfigMixedPercentageMode.setPercentage(10, 20);
+
+		sizeConfigMixedPercentageMode.calculatePercentages(1000, 11);
+
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(0, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(2));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(3));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(4));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(5));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(6));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(7));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(8));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(9));
+		Assert.assertEquals(100, sizeConfigMixedPercentageMode.getSize(10));
+	}
+
+	@Test
+	public void getAggregateSizeMixedModeAfterAdding() throws Exception {
+		sizeConfigMixedPercentageMode.calculatePercentages(1000, 4);
+
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getAggregateSize(1));
+		Assert.assertEquals(500, sizeConfigMixedPercentageMode.getAggregateSize(2));
+		Assert.assertEquals(800, sizeConfigMixedPercentageMode.getAggregateSize(3));
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(4));
+	}
+
+	@Test
 	public void getSizeConfigMixedMode() throws Exception {
-		Assert.assertEquals(300, sizeConfigMixedMode.getSize(0));
-		Assert.assertEquals(400, sizeConfigMixedMode.getSize(1));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
 		Assert.assertEquals(300, sizeConfigMixedMode.getSize(2));
 	}
 
 	@Test
 	public void getAggregateSizeConfigMixedMode() throws Exception {
-		Assert.assertEquals(300, sizeConfigMixedMode.getAggregateSize(1));
-		Assert.assertEquals(700, sizeConfigMixedMode.getAggregateSize(2));
-		Assert.assertEquals(1000, sizeConfigMixedMode.getAggregateSize(3));
-	}
-
-	@Test
-	public void sizeOverrideMixedMode() throws Exception {
-		sizeConfigMixedMode.setSize(2, 400);
-
-		Assert.assertEquals(300, sizeConfigMixedMode.getSize(0));
-		Assert.assertEquals(300, sizeConfigMixedMode.getSize(1));
-		Assert.assertEquals(400, sizeConfigMixedMode.getSize(2));
-	}
-
-	@Test
-	public void percentageOverrideMixedMode() throws Exception {
-		sizeConfigMixedMode.setPercentage(2, 40);
-
-		Assert.assertEquals(300, sizeConfigMixedMode.getSize(0));
-		Assert.assertEquals(300, sizeConfigMixedMode.getSize(1));
-		Assert.assertEquals(400, sizeConfigMixedMode.getSize(2));
-	}
-
-	@Test
-	public void getAggregateSizeWithSizeOverridesMixedMode() throws Exception {
-		sizeConfigMixedMode.setPercentage(2, 40);
-
-		Assert.assertEquals(600, sizeConfigMixedMode.getAggregateSize(2));
-		Assert.assertEquals(1000, sizeConfigMixedMode.getAggregateSize(3));
+		Assert.assertEquals(100, sizeConfigMixedMode.getAggregateSize(1));
+		Assert.assertEquals(200, sizeConfigMixedMode.getAggregateSize(2));
+		Assert.assertEquals(500, sizeConfigMixedMode.getAggregateSize(3));
 	}
 
 	@Test
 	public void getSizeMixedModeAfterAdding() throws Exception {
-		sizeConfigMixedMode.calculatePercentages(1000, 4);
+		sizeConfigMixedMode.calculatePercentages(500, 4);
 
-		Assert.assertEquals(300, sizeConfigMixedMode.getSize(0));
-		Assert.assertEquals(200, sizeConfigMixedMode.getSize(1));
-		Assert.assertEquals(300, sizeConfigMixedMode.getSize(2));
-		Assert.assertEquals(200, sizeConfigMixedMode.getSize(3));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
+		Assert.assertEquals(150, sizeConfigMixedMode.getSize(2));
+		Assert.assertEquals(150, sizeConfigMixedMode.getSize(3));
 	}
 
 	@Test
-	public void getAggregateSizeMixedModeAfterAdding() throws Exception {
-		sizeConfigMixedMode.calculatePercentages(1000, 4);
+	public void getSizeMixedModeAfterAddingExactly100() throws Exception {
+		sizeConfigMixedMode.setPercentage(2, 25);
+		sizeConfigMixedMode.setPercentage(3, 25);
+		sizeConfigMixedMode.setPercentage(4, 25);
+		sizeConfigMixedMode.setPercentage(5, 25);
 
-		Assert.assertEquals(300, sizeConfigMixedMode.getAggregateSize(1));
-		Assert.assertEquals(500, sizeConfigMixedMode.getAggregateSize(2));
-		Assert.assertEquals(800, sizeConfigMixedMode.getAggregateSize(3));
-		Assert.assertEquals(1000, sizeConfigMixedMode.getAggregateSize(4));
+		sizeConfigMixedMode.calculatePercentages(1000, 6);
+
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(2));
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(3));
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(4));
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(5));
 	}
+
+	@Test
+	public void getSizeMixedModeAfterAddingTooMuch() throws Exception {
+		sizeConfigMixedMode.setPercentage(2, 40);
+		sizeConfigMixedMode.setPercentage(3, 40);
+		sizeConfigMixedMode.setPercentage(4, 40);
+		sizeConfigMixedMode.setPercentage(5, 40);
+
+		sizeConfigMixedMode.calculatePercentages(600, 6);
+
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
+		//4 additional percentage sized positions that have the same percentage size
+		//as 400 pixels remain after the fixed sized positions, all positions should have 100 pixels
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(2));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(3));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(4));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(5));
+	}
+
+	@Test
+	public void getSizeMixedMixedModeAfterAddingTooMuch() throws Exception {
+		sizeConfigMixedMode.setPercentage(3, 40);
+		sizeConfigMixedMode.setPercentage(4, 40);
+		sizeConfigMixedMode.setPercentage(5, 40);
+		sizeConfigMixedMode.setPercentage(6, 40);
+
+		sizeConfigMixedMode.calculatePercentages(600, 7);
+
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
+		//this column does not have a percentage width set, so it will be 0 if 
+		//other columns with fixed percentage widths are added
+		Assert.assertEquals(0, sizeConfigMixedMode.getSize(2));
+		//4 additional percentage sized positions that have the same percentage size
+		//as 400 pixels remain after the fixed sized positions, all positions should have 100 pixels
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(3));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(4));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(5));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(6));
+	}
+
 }
