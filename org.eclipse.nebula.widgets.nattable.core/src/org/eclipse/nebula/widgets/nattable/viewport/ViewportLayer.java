@@ -164,17 +164,19 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param newMinimumOriginX
 	 */
 	public void setMinimumOriginX(int newMinimumOriginX) {
-		PixelCoordinate previousMinimumOrigin = minimumOrigin;
-		
-		if (newMinimumOriginX != minimumOrigin.getX()) {
-			minimumOrigin = new PixelCoordinate(newMinimumOriginX, minimumOrigin.getY());
-			minimumOriginColumnPosition = scrollableLayer.getColumnPositionByX(minimumOrigin.getX());
+		if (newMinimumOriginX >= 0) {
+			PixelCoordinate previousMinimumOrigin = minimumOrigin;
+			
+			if (newMinimumOriginX != minimumOrigin.getX()) {
+				minimumOrigin = new PixelCoordinate(newMinimumOriginX, minimumOrigin.getY());
+				minimumOriginColumnPosition = scrollableLayer.getColumnPositionByX(minimumOrigin.getX());
+			}
+	
+			int delta = minimumOrigin.getX() - previousMinimumOrigin.getX();
+			setOriginX(origin.getX() + delta);
+			
+			recalculateHorizontalScrollBar();
 		}
-
-		int delta = minimumOrigin.getX() - previousMinimumOrigin.getX();
-		setOriginX(origin.getX() + delta);
-		
-		recalculateHorizontalScrollBar();
 	}
 	
 	/**
@@ -182,17 +184,19 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param newMinimumOriginY
 	 */
 	public void setMinimumOriginY(int newMinimumOriginY) {
-		PixelCoordinate previousMinimumOrigin = minimumOrigin;
-		
-		if (newMinimumOriginY != minimumOrigin.getY()) {
-			minimumOrigin = new PixelCoordinate(minimumOrigin.getX(), newMinimumOriginY);
-			minimumOriginRowPosition = scrollableLayer.getRowPositionByY(minimumOrigin.getY());
+		if (newMinimumOriginY >= 0) {
+			PixelCoordinate previousMinimumOrigin = minimumOrigin;
+			
+			if (newMinimumOriginY != minimumOrigin.getY()) {
+				minimumOrigin = new PixelCoordinate(minimumOrigin.getX(), newMinimumOriginY);
+				minimumOriginRowPosition = scrollableLayer.getRowPositionByY(minimumOrigin.getY());
+			}
+			
+			int delta = minimumOrigin.getY() - previousMinimumOrigin.getY();
+			setOriginY(origin.getY() + delta);
+			
+			recalculateVerticalScrollBar();
 		}
-		
-		int delta = minimumOrigin.getY() - previousMinimumOrigin.getY();
-		setOriginY(origin.getY() + delta);
-		
-		recalculateVerticalScrollBar();
 	}
 	
 	/**

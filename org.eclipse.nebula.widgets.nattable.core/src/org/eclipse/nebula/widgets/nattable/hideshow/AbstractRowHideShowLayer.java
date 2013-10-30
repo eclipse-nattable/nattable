@@ -180,6 +180,9 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 		
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
 		int underlyingPosition = localToUnderlyingRowPosition(localRowPosition);
+		if (underlyingPosition < 0) {
+			return -1;
+		}
 		int underlyingStartY = underlyingLayer.getStartYOfRowPosition(underlyingPosition);
 		if (underlyingStartY < 0) {
 			return -1;
