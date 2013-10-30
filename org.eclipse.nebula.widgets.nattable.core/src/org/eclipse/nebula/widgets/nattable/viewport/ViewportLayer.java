@@ -634,7 +634,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	public void moveColumnPositionIntoViewport(int scrollableColumnPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
-		if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0) {
+		if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0
+				&& (maxWidth < 0 || (maxWidth >= 0 && underlyingLayer.getStartXOfColumnPosition(scrollableColumnPosition) < maxWidth))) {
 			if (scrollableColumnPosition >= getMinimumOriginColumnPosition()) {
 				int originColumnPosition = getOriginColumnPosition();
 
@@ -666,7 +667,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	public void moveRowPositionIntoViewport(int scrollableRowPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
-		if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0) {
+		if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0
+				&& (maxHeight < 0 || (maxHeight >= 0 && underlyingLayer.getStartYOfRowPosition(scrollableRowPosition) < maxHeight))) {
 			if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
 				int originRowPosition = getOriginRowPosition();
 
