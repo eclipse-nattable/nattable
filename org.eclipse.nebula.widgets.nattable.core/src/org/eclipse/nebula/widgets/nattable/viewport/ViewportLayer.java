@@ -643,7 +643,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 					int clientAreaWidth = getClientAreaWidth();
 					int viewportEndX = underlyingLayer.getStartXOfColumnPosition(getOriginColumnPosition()) + clientAreaWidth;
 
-					int maxX = maxWidth >= 0 ? maxWidth : scrollableColumnEndX;
+					int maxX = maxWidth >= 0 ? Math.min(maxWidth, scrollableColumnEndX) : scrollableColumnEndX;
 					
 					if (viewportEndX < maxX) {
 						// Move right
@@ -675,7 +675,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 					int clientAreaHeight = getClientAreaHeight();
 					int viewportEndY = underlyingLayer.getStartYOfRowPosition(getOriginRowPosition()) + clientAreaHeight;
 
-					int maxY = maxHeight >= 0 ? maxHeight : scrollableRowEndY;
+					int maxY = maxHeight >= 0 ? Math.min(maxHeight, scrollableRowEndY) : scrollableRowEndY;
 
 					if (viewportEndY < maxY) {
 						// Move down
