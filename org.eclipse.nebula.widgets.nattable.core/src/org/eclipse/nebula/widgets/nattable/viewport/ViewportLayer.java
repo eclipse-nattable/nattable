@@ -164,17 +164,19 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param newMinimumOriginX
 	 */
 	public void setMinimumOriginX(int newMinimumOriginX) {
-		PixelCoordinate previousMinimumOrigin = minimumOrigin;
-		
-		if (newMinimumOriginX != minimumOrigin.getX()) {
-			minimumOrigin = new PixelCoordinate(newMinimumOriginX, minimumOrigin.getY());
-			minimumOriginColumnPosition = scrollableLayer.getColumnPositionByX(minimumOrigin.getX());
+		if (newMinimumOriginX >= 0) {
+			PixelCoordinate previousMinimumOrigin = minimumOrigin;
+			
+			if (newMinimumOriginX != minimumOrigin.getX()) {
+				minimumOrigin = new PixelCoordinate(newMinimumOriginX, minimumOrigin.getY());
+				minimumOriginColumnPosition = scrollableLayer.getColumnPositionByX(minimumOrigin.getX());
+			}
+	
+			int delta = minimumOrigin.getX() - previousMinimumOrigin.getX();
+			setOriginX(origin.getX() + delta);
+			
+			recalculateHorizontalScrollBar();
 		}
-
-		int delta = minimumOrigin.getX() - previousMinimumOrigin.getX();
-		setOriginX(origin.getX() + delta);
-		
-		recalculateHorizontalScrollBar();
 	}
 	
 	/**
@@ -182,17 +184,19 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * @param newMinimumOriginY
 	 */
 	public void setMinimumOriginY(int newMinimumOriginY) {
-		PixelCoordinate previousMinimumOrigin = minimumOrigin;
-		
-		if (newMinimumOriginY != minimumOrigin.getY()) {
-			minimumOrigin = new PixelCoordinate(minimumOrigin.getX(), newMinimumOriginY);
-			minimumOriginRowPosition = scrollableLayer.getRowPositionByY(minimumOrigin.getY());
+		if (newMinimumOriginY >= 0) {
+			PixelCoordinate previousMinimumOrigin = minimumOrigin;
+			
+			if (newMinimumOriginY != minimumOrigin.getY()) {
+				minimumOrigin = new PixelCoordinate(minimumOrigin.getX(), newMinimumOriginY);
+				minimumOriginRowPosition = scrollableLayer.getRowPositionByY(minimumOrigin.getY());
+			}
+			
+			int delta = minimumOrigin.getY() - previousMinimumOrigin.getY();
+			setOriginY(origin.getY() + delta);
+			
+			recalculateVerticalScrollBar();
 		}
-		
-		int delta = minimumOrigin.getY() - previousMinimumOrigin.getY();
-		setOriginY(origin.getY() + delta);
-		
-		recalculateVerticalScrollBar();
 	}
 	
 	/**
@@ -630,7 +634,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	public void moveColumnPositionIntoViewport(int scrollableColumnPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
-		if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0) {
+		if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0
+				&& (maxWidth < 0 || (maxWidth >= 0 && underlyingLayer.getStartXOfColumnPosition(scrollableColumnPosition) < maxWidth))) {
 			if (scrollableColumnPosition >= getMinimumOriginColumnPosition()) {
 				int originColumnPosition = getOriginColumnPosition();
 
@@ -643,7 +648,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 					int clientAreaWidth = getClientAreaWidth();
 					int viewportEndX = underlyingLayer.getStartXOfColumnPosition(getOriginColumnPosition()) + clientAreaWidth;
 
-					int maxX = maxWidth >= 0 ? maxWidth : scrollableColumnEndX;
+					int maxX = maxWidth >= 0 ? Math.min(maxWidth, scrollableColumnEndX) : scrollableColumnEndX;
 					
 					if (viewportEndX < maxX) {
 						// Move right
@@ -662,7 +667,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	public void moveRowPositionIntoViewport(int scrollableRowPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
-		if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0) {
+		if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0
+				&& (maxHeight < 0 || (maxHeight >= 0 && underlyingLayer.getStartYOfRowPosition(scrollableRowPosition) < maxHeight))) {
 			if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
 				int originRowPosition = getOriginRowPosition();
 
@@ -675,7 +681,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 					int clientAreaHeight = getClientAreaHeight();
 					int viewportEndY = underlyingLayer.getStartYOfRowPosition(getOriginRowPosition()) + clientAreaHeight;
 
-					int maxY = maxHeight >= 0 ? maxHeight : scrollableRowEndY;
+					int maxY = maxHeight >= 0 ? Math.min(maxHeight, scrollableRowEndY) : scrollableRowEndY;
 
 					if (viewportEndY < maxY) {
 						// Move down
