@@ -18,6 +18,11 @@ import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
 import ca.odell.glazedlists.TreeList;
 import ca.odell.glazedlists.TreeList.Node;
 
+/**
+ * Implementation of ITreeData that operates on a GlazedLists TreeList.
+ * 
+ * @param <T> The type of objects that are contained in the TreeList.
+ */
 public class GlazedListTreeData<T> implements ITreeData<T> {
 
 	private final TreeList<T> treeList;
@@ -26,8 +31,9 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 		this.treeList = treeList;
 	}
 	
+	@Override
 	public String formatDataForDepth(int depth, int index){
-		return formatDataForDepth(depth, this.treeList.get(index));
+		return formatDataForDepth(depth, getDataAtIndex(index));
 	}
 
 	@Override
@@ -49,6 +55,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 		return getDepthOfData(indexOf(object));
 	}
 
+	@Override
 	public int getDepthOfData(int index) {
 		return this.treeList.depth(index);
 	}
@@ -63,6 +70,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 		return hasChildren(indexOf(object));
 	}
 	
+	@Override
 	public boolean hasChildren(int index) {
 		return this.treeList.hasChildren(index);
 	}
@@ -72,13 +80,16 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 		return getChildren(indexOf(object));
 	}
 
+	@Override
 	public List<T> getChildren(int index) {
 		List <T> children = new ArrayList<T>();
-		Node<T> treeNode = this.treeList.getTreeNode(index);
-		if (treeNode != null) {
-			List<Node<T>> childrenNodes = treeNode.getChildren();
-			for(Node<T> node : childrenNodes){
-				children.add(node.getElement());
+		if (index >= 0) {
+			Node<T> treeNode = this.treeList.getTreeNode(index);
+			if (treeNode != null) {
+				List<Node<T>> childrenNodes = treeNode.getChildren();
+				for(Node<T> node : childrenNodes){
+					children.add(node.getElement());
+				}
 			}
 		}
 		return children;
@@ -112,6 +123,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 		return this.treeList.isExpanded(index);
 	}
 	
+	@Override
 	public List<T> getRoots() {
 		List<T> roots = new ArrayList<T>();
 		List<Node<T>> rootNodes = this.treeList.getRoots();
