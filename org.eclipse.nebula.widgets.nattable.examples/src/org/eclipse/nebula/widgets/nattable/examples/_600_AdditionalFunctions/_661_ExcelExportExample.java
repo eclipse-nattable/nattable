@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleR
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
 import org.eclipse.nebula.widgets.nattable.export.config.DefaultExportBindings;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -57,8 +58,8 @@ public class _661_ExcelExportExample extends AbstractNatExample {
 	public Control createExampleControl(Composite parent) {
 		Composite panel = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
+		layout.marginHeight = 5;
+		layout.marginWidth = 5;
 		panel.setLayout(layout);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 		
@@ -86,6 +87,8 @@ public class _661_ExcelExportExample extends AbstractNatExample {
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+		
+		viewportLayer.setRegionName(GridRegion.BODY);
 		
 		//add the ExportCommandHandler to the ViewportLayer in order to make exporting work
 		viewportLayer.registerCommandHandler(new ExportCommandHandler(viewportLayer));
