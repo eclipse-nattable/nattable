@@ -899,8 +899,11 @@ public class CompositeLayer extends AbstractLayer {
 		@Override
 		public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
 			Point layoutCoordinate = getLayoutXYByPosition(columnPosition, rowPosition);
-			ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
+			if (layoutCoordinate == null) {
+				return null;
+			}
 			
+			ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
 			if (childLayer == null) {
 				return null;
 			}
@@ -908,7 +911,6 @@ public class CompositeLayer extends AbstractLayer {
 			int widthOffset = getWidthOffset(layoutCoordinate.x);
 			int heightOffset = getHeightOffset(layoutCoordinate.y);
 
-//			Rectangle bounds = new Rectangle(cellBounds.x - widthOffset, cellBounds.y - heightOffset, cellBounds.width, cellBounds.height);
 			cellBounds.x -= widthOffset;
 			cellBounds.y -= heightOffset;
 			
@@ -916,7 +918,6 @@ public class CompositeLayer extends AbstractLayer {
 			int childColumnPosition = columnPosition - getColumnPositionOffset(layoutCoordinate.x);
 			int childRowPosition = rowPosition - getRowPositionOffset(layoutCoordinate.y);
 			Rectangle adjustedChildCellBounds = childLayerPainter.adjustCellBounds(childColumnPosition, childRowPosition, cellBounds);
-//			Rectangle adjustedChildCellBounds = childLayerPainter.adjustCellBounds(childColumnPosition, childRowPosition, bounds);
 
 			adjustedChildCellBounds.x += widthOffset;
 			adjustedChildCellBounds.y += heightOffset;
