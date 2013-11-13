@@ -41,6 +41,7 @@ public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration
 	public TextMatchingMode textMatchingMode = CONTAINS;
 	public int showHideKeyConstant = SWT.F3;
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		// Plug in custom painter
 		configRegistry.registerConfigAttribute(CELL_PAINTER, cellPainter, NORMAL, FILTER_ROW);
@@ -60,7 +61,9 @@ public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration
 
 	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerFirstSingleClickBinding(new FilterRowMouseEventMatcher(), new MouseEditAction());
+		//using the SelectionLayer by default the column is selected on mouseDown on a column header cell
+		//therefore we register the edit action against mouseDown to override the selection behaviour
+		uiBindingRegistry.registerFirstMouseDownBinding(new FilterRowMouseEventMatcher(), new MouseEditAction());
 		uiBindingRegistry.registerFirstSingleClickBinding(new ClearFilterIconMouseEventMatcher(cellPainter), new ClearFilterAction());
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(showHideKeyConstant), new ToggleFilterRowAction());
 	}
