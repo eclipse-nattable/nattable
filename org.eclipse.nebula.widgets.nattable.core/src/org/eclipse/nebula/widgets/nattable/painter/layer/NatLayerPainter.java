@@ -10,13 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class NatLayerPainter implements ILayerPainter {
 
@@ -26,15 +27,20 @@ public class NatLayerPainter implements ILayerPainter {
 		this.natTable = natTable;
 	}
 	
-	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+	@Override
+	public void paintLayer(final ILayer natLayer, final GC gc, final int xOffset, final int yOffset,
+			final Rectangle rectangle, final IConfigRegistry configRegistry) {
 		try {
 			paintBackground(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 			
 			gc.setForeground(natTable.getForeground());
-
+			
 			ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
-			layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
-
+			final Rectangle natTableArea = new Rectangle(xOffset, yOffset, natLayer.getWidth(), natLayer.getHeight());
+			if (rectangle.intersects(natTableArea)) {
+				layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle.intersection(natTableArea),
+						configRegistry );
+			}
 			paintOverlays(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -55,6 +61,7 @@ public class NatLayerPainter implements ILayerPainter {
 		}
 	}
 
+	@Override
 	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
 		ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
 		return layerPainter.adjustCellBounds(columnPosition, rowPosition, cellBounds);

@@ -31,6 +31,7 @@ public class CellLayerPainter implements ILayerPainter {
 	private Map<Integer, Integer> verticalPositionToPixelMap;
 	
 	
+	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle pixelRectangle, IConfigRegistry configRegistry) {
 		if (pixelRectangle.width <= 0 || pixelRectangle.height <= 0) {
 			return;
@@ -98,6 +99,7 @@ public class CellLayerPainter implements ILayerPainter {
 		}
 	}
 
+	@Override
 	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
 		return cellBounds;
 	}
