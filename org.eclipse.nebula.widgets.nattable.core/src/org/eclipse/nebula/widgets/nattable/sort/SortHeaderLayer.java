@@ -79,7 +79,10 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersi
 		return configLabels;
 	}
 	
-	protected ISortModel getSortModel() {
+	/**
+	 * @return The ISortModel that is used to handle the sorting of the underlying data.
+	 */
+	public ISortModel getSortModel() {
 		return sortModel;
 	}
 }
