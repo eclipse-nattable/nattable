@@ -61,9 +61,7 @@ public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration
 
 	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		//using the SelectionLayer by default the column is selected on mouseDown on a column header cell
-		//therefore we register the edit action against mouseDown to override the selection behaviour
-		uiBindingRegistry.registerFirstMouseDownBinding(new FilterRowMouseEventMatcher(), new MouseEditAction());
+		uiBindingRegistry.registerFirstSingleClickBinding(new FilterRowMouseEventMatcher(), new MouseEditAction());
 		uiBindingRegistry.registerFirstSingleClickBinding(new ClearFilterIconMouseEventMatcher(cellPainter), new ClearFilterAction());
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(showHideKeyConstant), new ToggleFilterRowAction());
 	}
