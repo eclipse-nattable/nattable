@@ -64,11 +64,11 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 	 *     information if the size has changed.
 	 */
 	protected int getClientAreaSize() {
-		final int clientAreaWidth = SWTUtil.getRange(this.layer.getClientAreaProvider().getClientArea(),
+		final int clientAreaSize = SWTUtil.getRange(this.layer.getClientAreaProvider().getClientArea(),
 				this.orientation).size();
-		if (clientAreaWidth != this.cachedClientAreaSize) {
+		if (clientAreaSize != this.cachedClientAreaSize) {
 			invalidateStructure();
-			this.cachedClientAreaSize = clientAreaWidth;
+			this.cachedClientAreaSize = clientAreaSize;
 		}
 		return this.cachedClientAreaSize;
 	}
@@ -230,11 +230,11 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 			return 0;
 		}
 		
-		final int availableWidth = getClientAreaSize() - (this.underlyingDim.getSize() - pixel);
-		if (availableWidth <= 0) {
+		final int availableSize = getClientAreaSize() - (this.underlyingDim.getSize() - pixel);
+		if (availableSize <= 0) {
 			return pixel;
 		}
-		return pixel - availableWidth;
+		return pixel - availableSize;
 	}
 	
 	/**
@@ -307,12 +307,12 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 				// Move forward
 				final int scrollableStart = this.underlyingDim.getPositionStart(scrollablePosition);
 				final int scrollableEnd = scrollableStart + this.underlyingDim.getPositionSize(scrollablePosition);
-				final int clientAreaHeight = getClientAreaSize();
+				final int clientAreaSize = getClientAreaSize();
 				final int originPosition = getOriginPosition();
-				final int viewportEnd = this.underlyingDim.getPositionStart(originPosition) + clientAreaHeight;
+				final int viewportEnd = this.underlyingDim.getPositionStart(originPosition) + clientAreaSize;
 				
 				if (viewportEnd < scrollableEnd) {
-					setOriginPixel(Math.min(scrollableEnd - clientAreaHeight, scrollableStart));
+					setOriginPixel(Math.min(scrollableEnd - clientAreaSize, scrollableStart));
 				}
 			}
 			
