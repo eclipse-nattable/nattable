@@ -14,6 +14,8 @@ package org.eclipse.nebula.widgets.nattable.coordinate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -28,17 +30,94 @@ import java.util.Iterator;
  * The class provides additional methods to
  * {@link #addValue(int) add},
  * {@link #removeValue(int) remove},
- * {@link #containsValue(int) check for containment} and
- * {@link #getValueCount() count}
- * of single values directly.</p>
+ * {@link #containsValue(int) check for containment}
+ * of single values directly, as well as
+ * {@link #getValueCount() count} and
+ * {@link #valuesIterator() iterate} over that values.</p> 
  */
-public class RangeList extends ArrayList<Range> {
+public class RangeList extends ArrayList<Range> implements Set<Range> {
 	
 	
 	private static final long serialVersionUID = 1L;
 	
 	
+	/**
+	 * Iterator which allows to iterate over the values of a collection with {@link Range} elements.
+	 * 
+	 * @see RangeList#valuesIterator()
+	 */
+	public static final class ValueIterator implements IValueIterator {
+		
+		
+		private final Iterator<Range> rangeIter;
+		
+		private int nextValue;
+		private int rangeEnd = -1;
+		
+		
+		/**
+		 * Creates a new iterator.
+		 * 
+		 * @param c the collection to iterate over
+		 */
+		public ValueIterator(/*@NonNull*/ final Collection<Range> c) {
+			this.rangeIter = c.iterator();
+		}
+		
+		
+		@Override
+		public boolean hasNext() {
+			while (this.nextValue >= this.rangeEnd) {
+				if (!this.rangeIter.hasNext()) {
+					return false;
+				}
+				final Range range = this.rangeIter.next();
+				this.nextValue = range.start;
+				this.rangeEnd = range.end;
+			}
+			return true;
+		}
+		
+		@Override
+		public Integer next() {
+			return Integer.valueOf(nextValue());
+		}
+		
+		@Override
+		public int nextValue() {
+			while (this.nextValue >= this.rangeEnd) {
+				final Range range = this.rangeIter.next();
+				this.nextValue = range.start;
+				this.rangeEnd = range.end;
+			}
+			return this.nextValue++;
+		}
+		
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+		
+	}
+	
+	
+	/**
+	 * Creates a new empty list
+	 */
 	public RangeList() {
+	}
+	
+	/**
+	 * Creates a new list initially filled with the specified ranges.
+	 * 
+	 * @param initialRanges the ranges initially added to the list
+	 */
+	public RangeList(final Range... initialRanges) {
+		this();
+		
+		for (int i = 0; i < initialRanges.length; i++) {
+			add(initialRanges[i]);
+		}
 	}
 	
 	
@@ -312,9 +391,13 @@ public class RangeList extends ArrayList<Range> {
 		return count;
 	}
 	
+	public IValueIterator valuesIterator() {
+		return new ValueIterator(this);
+	}
+	
 	
 	@Deprecated // not recommend
-	public static Collection<Integer> listRanges(final Collection<Range> positions) {
+	public static List<Integer> listValues(final Collection<Range> positions) {
 		final ArrayList<Integer> list = new ArrayList<Integer>();
 		for (final Iterator<Range> iter = positions.iterator(); iter.hasNext(); ) {
 			final Range range = iter.next();
