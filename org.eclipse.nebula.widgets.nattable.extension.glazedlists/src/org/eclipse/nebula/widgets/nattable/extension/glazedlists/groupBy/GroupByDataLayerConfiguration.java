@@ -28,7 +28,7 @@ public class GroupByDataLayerConfiguration extends AbstractRegistryConfiguration
 				new BackgroundPainter(new TextPainter() {
 					@Override
 					protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
-						if (cell.getConfigLabels().getLabels().contains(TreeLayer.TREE_COLUMN_CELL)) {
+						if (cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL) || cell.getConfigLabels().hasLabel(GroupByDataLayer.SUMMARIZE)) {
 							return super.getTextToDisplay(cell, gc, availableLength, text);
 						} else {
 							return ""; //$NON-NLS-1$

@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
@@ -21,18 +22,19 @@ import ca.odell.glazedlists.TreeList.Node;
 /**
  * Implementation of ITreeData that operates on a GlazedLists TreeList.
  * 
- * @param <T> The type of objects that are contained in the TreeList.
+ * @param <T>
+ *            The type of objects that are contained in the TreeList.
  */
 public class GlazedListTreeData<T> implements ITreeData<T> {
 
 	private final TreeList<T> treeList;
-	
+
 	public GlazedListTreeData(TreeList<T> treeList) {
 		this.treeList = treeList;
 	}
-	
+
 	@Override
-	public String formatDataForDepth(int depth, int index){
+	public String formatDataForDepth(int depth, int index) {
 		return formatDataForDepth(depth, getDataAtIndex(index));
 	}
 
@@ -44,7 +46,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 			return ""; //$NON-NLS-1$
 		}
 	}
-	
+
 	@Override
 	public T getDataAtIndex(int index) {
 		return this.treeList.get(index);
@@ -59,7 +61,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 	public int getDepthOfData(int index) {
 		return this.treeList.depth(index);
 	}
-	
+
 	@Override
 	public int indexOf(T object) {
 		return this.treeList.indexOf(object);
@@ -69,7 +71,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 	public boolean hasChildren(T object) {
 		return hasChildren(indexOf(object));
 	}
-	
+
 	@Override
 	public boolean hasChildren(int index) {
 		return this.treeList.hasChildren(index);
@@ -80,49 +82,71 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 		return getChildren(indexOf(object));
 	}
 
+	private List<T> getNodeChildren(Node<T> treeNode) {
+		List<T> children = new ArrayList<T>();
+		for (Node<T> child : treeNode.getChildren()) {
+			children.add(child.getElement());
+			children.addAll(getNodeChildren(child));
+		}
+		return children;
+	}
+
+	@Override
+	public List<T> getChildren(T object, boolean fullDepth) {
+		if (fullDepth == false) {
+			return getChildren(object);
+		}
+		int index = indexOf(object);
+		if (index >= 0) {
+			Node<T> treeNode = this.treeList.getTreeNode(index);
+			return getNodeChildren(treeNode);
+		}
+		return Collections.emptyList();
+	}
+
 	@Override
 	public List<T> getChildren(int index) {
-		List <T> children = new ArrayList<T>();
+		List<T> children = new ArrayList<T>();
 		if (index >= 0) {
 			Node<T> treeNode = this.treeList.getTreeNode(index);
 			if (treeNode != null) {
 				List<Node<T>> childrenNodes = treeNode.getChildren();
-				for(Node<T> node : childrenNodes){
+				for (Node<T> node : childrenNodes) {
 					children.add(node.getElement());
 				}
 			}
 		}
 		return children;
 	}
-	
+
 	public void collapse(T object) {
 		collapse(indexOf(object));
 	};
-	
+
 	public void expand(T object) {
 		expand(indexOf(object));
 	};
-	
+
 	public void collapse(int index) {
 		toggleExpanded(index, false);
 	};
-	
+
 	public void expand(int index) {
 		toggleExpanded(index, true);
 	};
-	
-	private void toggleExpanded(int index, boolean expanded){
+
+	private void toggleExpanded(int index, boolean expanded) {
 		this.treeList.setExpanded(index, expanded);
 	}
-	
-	public boolean isExpanded(T object){
+
+	public boolean isExpanded(T object) {
 		return isExpanded(indexOf(object));
 	}
-	
-	public boolean isExpanded(int index){
+
+	public boolean isExpanded(int index) {
 		return this.treeList.isExpanded(index);
 	}
-	
+
 	@Override
 	public List<T> getRoots() {
 		List<T> roots = new ArrayList<T>();

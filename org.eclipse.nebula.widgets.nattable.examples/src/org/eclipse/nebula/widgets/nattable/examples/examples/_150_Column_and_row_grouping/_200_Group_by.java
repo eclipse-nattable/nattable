@@ -12,8 +12,8 @@ package org.eclipse.nebula.widgets.nattable.examples.examples._150_Column_and_ro
 
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -24,6 +24,8 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.GroupBySummaryConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -41,6 +43,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
@@ -64,7 +67,7 @@ public class _200_Group_by extends AbstractNatExample {
 	public static void main(String[] args) {
 		StandaloneNatExampleRunner.run(800, 400, new _200_Group_by());
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return
@@ -72,36 +75,41 @@ public class _200_Group_by extends AbstractNatExample {
 				"If you drag a column header into this region, rows in the grid will be grouped by this column.\n" +
 				"If you right-click on the names in the Group By region, you can ungroup by the clicked column.";
 	}
-	
+
 	public Control createExampleControl(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
 		comp.setLayout(new GridLayout(1, false));
-		
+
 		// Underlying data source
 		EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList(200));
 		String[] propertyNames = RowDataListFixture.getPropertyNames();
 		Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 		IColumnPropertyAccessor<RowDataFixture> reflectiveColumnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
-		
+
 		GroupByModel groupByModel = new GroupByModel();
+
+		// Summary
+		ConfigRegistry configRegistry = new ConfigRegistry();
+		configRegistry.registerConfigAttribute(GroupBySummaryConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
+				new SummationGroupBySummaryProvider<RowDataFixture>(reflectiveColumnPropertyAccessor),
+				DisplayMode.NORMAL, GroupByDataLayer.SUMMARIZE);
 		
-		GroupByDataLayer<RowDataFixture> bodyDataLayer = new GroupByDataLayer<RowDataFixture>(groupByModel, eventList, reflectiveColumnPropertyAccessor);
-		
+		GroupByDataLayer<RowDataFixture> bodyDataLayer = new GroupByDataLayer<RowDataFixture>(groupByModel, eventList,
+				reflectiveColumnPropertyAccessor, configRegistry);	
+
 		// Body layer
 		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
 		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
 		SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
-		
+
 		TreeLayer treeLayer = new TreeLayer(selectionLayer, bodyDataLayer.getTreeRowModel());
-		
-		
+
 		FreezeLayer freeze = new FreezeLayer(treeLayer);
-		
+
 		ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
-		
+
 		CompositeFreezeLayer compFreeze = new CompositeFreezeLayer(freeze, viewportLayer, selectionLayer);
-		
-		
+
 		// Column header layer
 		final IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		final DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
@@ -111,11 +119,15 @@ public class _200_Group_by extends AbstractNatExample {
 
 		ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
 		columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
+		bodyDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
 		// Register labels
 		labelAccumulator.registerColumnOverrides(
-           RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
-           "CUSTOM_COMPARATOR_LABEL");
+						RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
+						"CUSTOM_COMPARATOR_LABEL");
+		labelAccumulator.registerColumnOverrides(
+						RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME),
+						GroupByDataLayer.SUMMARIZE);	
 
 		// Row header layer
 		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataLayer.getDataProvider());
@@ -133,22 +145,24 @@ public class _200_Group_by extends AbstractNatExample {
 				columnHeaderLayer,
 				rowHeaderLayer,
 				cornerLayer, false);
-		
+
 		CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
 		final GroupByHeaderLayer groupByHeaderLayer = new GroupByHeaderLayer(groupByModel, gridLayer, columnHeaderDataProvider);
 		compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
 		compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
-		
+
 		NatTable natTable = new NatTable(comp, compositeGridLayer, false);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
 		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
 		natTable.addConfiguration(new DebugMenuConfiguration(natTable));
-		
+
+		natTable.setConfigRegistry(configRegistry);
+
 		natTable.configure();
-		
+
 		natTable.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
+
 		Button button = new Button(comp, SWT.NONE);
 		button.setText("Toggle Group By Header");
 		button.addMouseListener(new MouseAdapter() {
@@ -156,7 +170,7 @@ public class _200_Group_by extends AbstractNatExample {
 				groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
 			}
 		});
-		
+
 		return comp;
 	}
 }

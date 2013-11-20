@@ -61,6 +61,15 @@ public interface ITreeData <T> {
 	List<T> getChildren(T object);
 	
 	/**
+	 * Return the child objects below the given object if the object
+	 * is a tree node.
+	 * @param object The object whose children are requested.
+	 * @param fullDepth to return only direct children or search for sub children 
+	 * @return The children of the given object.
+	 */
+	List<T> getChildren(T object, boolean fullDepth);
+	
+	/**
 	 * Return the child objects below the object at the given index if the object
 	 * is a tree node. It will only return the direct children and will
 	 * not search for sub children.

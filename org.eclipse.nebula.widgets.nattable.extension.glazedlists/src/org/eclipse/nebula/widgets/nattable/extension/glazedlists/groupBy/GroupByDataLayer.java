@@ -10,17 +10,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.GroupBySummaryColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TreeList;
@@ -31,6 +35,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	 * Label that indicates the shown tree item object as GroupByObject
 	 */
 	public static final String GROUP_BY_OBJECT = "GROUP_BY_OBJECT"; //$NON-NLS-1$
+	/**
+	 * Label that indicates the shown tree item object should summarize its children
+	 */
+	public static final String SUMMARIZE = "SUMMARIZE"; //$NON-NLS-1$
 	/**
 	 * The underlying base EventList.
 	 */
@@ -47,25 +55,44 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	 * The TreeList that is created internally by this GroupByDataLayer to enable groupBy.
 	 */
 	private final TreeList<Object> treeList;
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+
+	private final GroupByTreeFormat<T> treeFormat;
+
+	/** Map the group to a dynamic list of group elements */
+
 	public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor) {
+		this(groupByModel, eventList, columnAccessor, null);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+			IConfigRegistry configRegistry) {
 		this.eventList = eventList;
-		
+
 		groupByModel.addObserver(this);
-		
-		TreeList.Format<Object> treeFormat = new GroupByTreeFormat<T>(groupByModel, columnAccessor);
+
+		IColumnAccessor<T> groupByColumnAccessor = null;
+		if (configRegistry != null) {
+			groupByColumnAccessor = new GroupBySummaryColumnAccessor(columnAccessor, configRegistry, this);
+		} else {
+			groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor);
+		}
+
+		treeFormat = new GroupByTreeFormat<T>(groupByModel, groupByColumnAccessor);
 		this.treeList = new TreeList(eventList, treeFormat, new GroupByExpansionModel());
-		
+
 		treeData = new GlazedListTreeData<Object>(getTreeList());
 		treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
-		
-		IColumnAccessor<Object> groupByColumnAccessor = new GroupByColumnAccessor<T>(columnAccessor);
-		setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(), groupByColumnAccessor));
-		
+
+		setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(), (IColumnAccessor<Object>) groupByColumnAccessor));
+
 		addConfiguration(new GroupByDataLayerConfiguration());
 	}
-	
+
+	public void setSortModel(ISortModel model) {
+		treeFormat.setSortModel(model);
+	}
+
 	/**
 	 * Method to update the tree list after filter or TreeList.Format changed.
 	 * Need this workaround to update the tree list for presentation because of
@@ -97,14 +124,14 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	public GlazedListTreeRowModel<Object> getTreeRowModel() {
 		return treeRowModel;
 	}
-	
+
 	/**
 	 * @return The TreeList that is created internally by this GroupByDataLayer to enable groupBy.
 	 */
 	public TreeList<Object> getTreeList() {
 		return treeList;
 	}
-	
+
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
@@ -123,7 +150,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	 * internally.
 	 * 
 	 * @see http://publicobject.com/glazedlists/glazedlists-1.8.0/api/ca/odell/
-	 *      glazedlists/TreeList.ExpansionModel.html
+	 * glazedlists/TreeList.ExpansionModel.html
 	 */
 	private class GroupByExpansionModel implements TreeList.ExpansionModel<Object> {
 		/**
@@ -142,6 +169,19 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		public void setExpanded(final Object element, final List<Object> path, final boolean expanded) {
 			//do nothing
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<T> getElementsInGroup(GroupByObject groupDescriptor) {
+		List<T> children = new ArrayList<T>();
+		for (Object o : treeData.getChildren(groupDescriptor, true)) {
+			if (o instanceof GroupByObject) {
+				// do nothing
+			} else {
+				children.add((T) o);
+			}
+		}
+		return children;
 	}
 
 }

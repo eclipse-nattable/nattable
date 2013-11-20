@@ -9,6 +9,7 @@ Export-Package: org.eclipse.nebula.widgets.nattable.extension.glazedlists,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.action,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command,
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.hideshow,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree
 Import-Package: ca.odell.glazedlists,

@@ -14,7 +14,7 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 
 public class GroupByColumnAccessor<T> implements IColumnAccessor<Object> {
 
-	private final IColumnAccessor<T> columnAccessor;
+	protected final IColumnAccessor<T> columnAccessor;
 
 	public GroupByColumnAccessor(IColumnAccessor<T> columnAccessor) {
 		this.columnAccessor = columnAccessor;
