@@ -22,13 +22,17 @@ import org.eclipse.swt.graphics.GC;
 
 public class GroupByDataLayerConfiguration extends AbstractRegistryConfiguration {
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
+		//register a TextPainter to ensure that the GroupBy objects are rendered as text
+		//even if in the first column by default another painter is registered
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_PAINTER,
 				new BackgroundPainter(new TextPainter() {
 					@Override
 					protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
-						if (cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL) || cell.getConfigLabels().hasLabel(GroupByDataLayer.SUMMARIZE)) {
+						if (cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL) 
+								|| cell.getConfigLabels().hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY)) {
 							return super.getTextToDisplay(cell, gc, availableLength, text);
 						} else {
 							return ""; //$NON-NLS-1$

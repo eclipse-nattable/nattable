@@ -76,6 +76,7 @@ public class _200_Group_by extends AbstractNatExample {
 				"If you right-click on the names in the Group By region, you can ungroup by the clicked column.";
 	}
 
+	@Override
 	public Control createExampleControl(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
 		comp.setLayout(new GridLayout(1, false));
@@ -92,7 +93,8 @@ public class _200_Group_by extends AbstractNatExample {
 		ConfigRegistry configRegistry = new ConfigRegistry();
 		configRegistry.registerConfigAttribute(GroupBySummaryConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
 				new SummationGroupBySummaryProvider<RowDataFixture>(reflectiveColumnPropertyAccessor),
-				DisplayMode.NORMAL, GroupByDataLayer.SUMMARIZE);
+				DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 
+				RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME));
 		
 		GroupByDataLayer<RowDataFixture> bodyDataLayer = new GroupByDataLayer<RowDataFixture>(groupByModel, eventList,
 				reflectiveColumnPropertyAccessor, configRegistry);	
@@ -125,9 +127,6 @@ public class _200_Group_by extends AbstractNatExample {
 		labelAccumulator.registerColumnOverrides(
 						RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
 						"CUSTOM_COMPARATOR_LABEL");
-		labelAccumulator.registerColumnOverrides(
-						RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME),
-						GroupByDataLayer.SUMMARIZE);	
 
 		// Row header layer
 		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataLayer.getDataProvider());
@@ -166,6 +165,7 @@ public class _200_Group_by extends AbstractNatExample {
 		Button button = new Button(comp, SWT.NONE);
 		button.setText("Toggle Group By Header");
 		button.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseUp(MouseEvent e) {
 				groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
 			}

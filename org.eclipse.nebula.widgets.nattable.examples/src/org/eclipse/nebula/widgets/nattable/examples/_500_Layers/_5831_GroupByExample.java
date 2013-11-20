@@ -107,7 +107,7 @@ public class _5831_GroupByExample extends AbstractNatExample {
 				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 		
 		BodyLayerStack<PersonWithAddress> bodyLayerStack = 
-				new BodyLayerStack<PersonWithAddress>(PersonService.getPersonsWithAddress(10), columnPropertyAccessor);
+				new BodyLayerStack<PersonWithAddress>(PersonService.getPersonsWithAddress(100), columnPropertyAccessor);
 
 		//build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
