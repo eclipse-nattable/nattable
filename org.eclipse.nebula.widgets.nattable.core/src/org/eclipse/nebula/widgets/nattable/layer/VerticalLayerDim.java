@@ -51,21 +51,27 @@ public class VerticalLayerDim extends AbstractLayerDim<ILayer> {
 	@Override
 	public int underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 			final int underlyingPosition) {
-		return this.layer.underlyingToLocalRowPosition(sourceUnderlyingDim.getLayer(), underlyingPosition);
+		return this.layer.underlyingToLocalRowPosition(sourceUnderlyingDim.getLayer(),
+				underlyingPosition );
 	}
 	
 	@Override
-	public Collection<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
-			final Collection<Range> underlyingPositionRanges) {
-		return this.layer.underlyingToLocalRowPositions(sourceUnderlyingDim.getLayer(), underlyingPositionRanges);
+	public List<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
+			final Collection<Range> underlyingPositions) {
+		final Collection<Range> localPositions = this.layer.underlyingToLocalRowPositions(
+				sourceUnderlyingDim.getLayer(), underlyingPositions );
+		return (localPositions instanceof List) ?
+				(List<Range>) localPositions :
+				new ArrayList<Range>(localPositions);
 	}
 	
 	@Override
-	public Collection<ILayerDim> getUnderlyingDimsByPosition(final int position) {
-		final Collection<ILayer> underlyingLayers = this.layer.getUnderlyingLayersByRowPosition(position);
+	public List<ILayerDim> getUnderlyingDimsByPosition(final int position) {
+		final Collection<ILayer> underlyingLayers = this.layer.getUnderlyingLayersByRowPosition(
+				position );
 		final List<ILayerDim> underlyingDims = new ArrayList<ILayerDim>(underlyingLayers.size());
 		for (final ILayer underlyingLayer : underlyingLayers) {
-			underlyingDims.add(underlyingLayer.getDim(getOrientation()));
+			underlyingDims.add(underlyingLayer.getDim(this.orientation));
 		}
 		return underlyingDims;
 	}

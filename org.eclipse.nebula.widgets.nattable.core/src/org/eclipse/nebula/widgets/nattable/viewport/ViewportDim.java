@@ -508,7 +508,7 @@ public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IVi
 		if (this.scrollBarHandler != null) {
 			return;
 		}
-		final ScrollBar scrollBar = SWTUtil.getScrollBar(control, getOrientation());
+		final ScrollBar scrollBar = SWTUtil.getScrollBar(control, this.orientation);
 		if (scrollBar != null) {
 			this.scrollBarHandler = new ScrollBarHandler(this, scrollBar);
 		}

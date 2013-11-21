@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -72,21 +73,27 @@ public class TransformLayerDim<T extends ILayer> extends AbstractLayerDim<T> {
 	}
 	
 	@Override
-	public Collection<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
-			final Collection<Range> underlyingPositionRanges) {
-		final Collection<Range> localPositionRanges = new ArrayList<Range>(underlyingPositionRanges.size());
-		
-		for (final Range underlyingPositionRange : underlyingPositionRanges) {
-			localPositionRanges.add(new Range(
-					underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.start),
-					underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.end) ));
+	public List<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
+			final Collection<Range> underlyingPositions) {
+		final List<Range> localPositions = new ArrayList<Range>(underlyingPositions.size());
+		for (final Range underlyingPositionRange : underlyingPositions) {
+			if (underlyingPositionRange.start == underlyingPositionRange.end) {
+				final int position = underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.start);
+				localPositions.add(new Range(position, position));
+			}
+			else {
+				final int first = underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.start);
+				final int last = underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.end - 1);
+				if (first <= last) {
+					localPositions.add(new Range(first, last + 1));
+				}
+			}
 		}
-		
-		return localPositionRanges;
+		return localPositions;
 	}
 	
 	@Override
-	public Collection<ILayerDim> getUnderlyingDimsByPosition(final int position) {
+	public List<ILayerDim> getUnderlyingDimsByPosition(final int position) {
 		return Collections.singletonList(this.underlyingDim);
 	}
 	

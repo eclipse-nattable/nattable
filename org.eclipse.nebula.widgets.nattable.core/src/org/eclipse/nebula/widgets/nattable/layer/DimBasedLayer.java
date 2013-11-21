@@ -90,15 +90,15 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	@Override
 	public final int underlyingToLocalColumnPosition(final ILayer sourceUnderlyingLayer,
 			final int underlyingColumnPosition) {
-		return super.getDim(HORIZONTAL).underlyingToLocalPosition(sourceUnderlyingLayer.getDim(HORIZONTAL),
-				underlyingColumnPosition );
+		return super.getDim(HORIZONTAL).underlyingToLocalPosition(
+				sourceUnderlyingLayer.getDim(HORIZONTAL), underlyingColumnPosition );
 	}
 	
 	@Override
 	public final Collection<Range> underlyingToLocalColumnPositions(final ILayer sourceUnderlyingLayer,
-			final Collection<Range> underlyingColumnPositionRanges) {
+			final Collection<Range> underlyingColumnPositions) {
 		return super.getDim(HORIZONTAL).underlyingToLocalPositions(sourceUnderlyingLayer.getDim(HORIZONTAL),
-				underlyingColumnPositionRanges );
+				underlyingColumnPositions );
 	}
 	
 	@Override
@@ -162,15 +162,15 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	@Override
 	public final int underlyingToLocalRowPosition(final ILayer sourceUnderlyingLayer,
 			final int underlyingRowPosition) {
-		return super.getDim(VERTICAL).underlyingToLocalPosition(sourceUnderlyingLayer.getDim(VERTICAL),
-				underlyingRowPosition );
+		return super.getDim(VERTICAL).underlyingToLocalPosition(
+				sourceUnderlyingLayer.getDim(VERTICAL), underlyingRowPosition );
 	}
 	
 	@Override
-	public final Collection<Range> underlyingToLocalRowPositions(final ILayer sourceUnderlyingLayer,
-			final Collection<Range> underlyingRowPositionRanges) {
-		return super.getDim(VERTICAL).underlyingToLocalPositions(sourceUnderlyingLayer.getDim(VERTICAL),
-				underlyingRowPositionRanges );
+	public final List<Range> underlyingToLocalRowPositions(final ILayer sourceUnderlyingLayer,
+			final Collection<Range> underlyingRowPositions) {
+		return super.getDim(VERTICAL).underlyingToLocalPositions(
+				sourceUnderlyingLayer.getDim(VERTICAL), underlyingRowPositions );
 	}
 	
 	@Override

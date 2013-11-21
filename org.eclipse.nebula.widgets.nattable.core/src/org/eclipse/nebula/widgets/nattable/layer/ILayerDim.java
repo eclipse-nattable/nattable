@@ -12,6 +12,7 @@
 package org.eclipse.nebula.widgets.nattable.layer;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -104,12 +105,12 @@ public interface ILayerDim {
 	 * {@link ILayer#underlyingToLocalRowPositions(ILayer, Collection)}
 	 * 
 	 * @param sourceUnderlyingDim the underlying layer dimension the positions refers to
-	 * @param underlyingPosition the positions in the underlying layer
+	 * @param underlyingPositions the positions in the underlying layer
 	 * 
 	 * @return the local positions
 	 */
-	Collection<Range> underlyingToLocalPositions(ILayerDim sourceUnderlyingDim,
-			Collection<Range> underlyingPositionRanges);
+	List<Range> underlyingToLocalPositions(ILayerDim sourceUnderlyingDim,
+			Collection<Range> underlyingPositions);
 	
 	/**
 	 * Returns all underlying dimensions for the specified position.
@@ -121,7 +122,7 @@ public interface ILayerDim {
 	 * 
 	 * @return the underlying layer dimensions
 	 */
-	Collection<ILayerDim> getUnderlyingDimsByPosition(int position);
+	List<ILayerDim> getUnderlyingDimsByPosition(int position);
 	
 	
 	// Pixel = X / Y, Width / Height
