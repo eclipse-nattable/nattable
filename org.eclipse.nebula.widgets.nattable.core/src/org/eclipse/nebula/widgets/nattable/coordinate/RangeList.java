@@ -27,15 +27,10 @@ import java.util.Set;
  * The add and remove methods of RangeList guarantees that the ranges in a list object are never 
  * empty, do not intersect and touch and are always sorted.</p>
  * <p>
- * The class provides additional methods to
- * {@link #addValue(int) add},
- * {@link #removeValue(int) remove},
- * {@link #containsValue(int) check for containment}
- * of single values directly, as well as
- * {@link #getValueCount() count} and
- * {@link #valuesIterator() iterate} over that values.</p> 
+ * The class provides additionally direct {@link #values() access} to the single values described by
+ * the ranges. 
  */
-public class RangeList extends ArrayList<Range> implements Set<Range> {
+public final class RangeList extends ArrayList<Range> implements Set<Range> {
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -101,6 +96,9 @@ public class RangeList extends ArrayList<Range> implements Set<Range> {
 	}
 	
 	
+	private final Values values = new Values();
+	
+	
 	/**
 	 * Creates a new empty list
 	 */
@@ -117,6 +115,19 @@ public class RangeList extends ArrayList<Range> implements Set<Range> {
 		
 		for (int i = 0; i < initialRanges.length; i++) {
 			add(initialRanges[i]);
+		}
+	}
+	
+	/**
+	 * Creates a new list initially filled with the specified values.
+	 * 
+	 * @param initialValues the values initially added to the list
+	 */
+	public RangeList(final int... initialValues) {
+		this();
+		
+		for (int i = 0; i < initialValues.length; i++) {
+			this.values.add(initialValues[i]);
 		}
 	}
 	
@@ -140,34 +151,6 @@ public class RangeList extends ArrayList<Range> implements Set<Range> {
 		return -(low + 1);
 	}
 	
-	
-	public boolean addValue(final int value) {
-		int idx = indexOfStart(value);
-		if (idx >= 0) { // value == range1.start
-			return false;
-		}
-		idx = -(idx + 1); // value > range1.start && value < range2.start
-		if (idx > 0) {
-			final Range range1 = get(idx - 1);
-			if (value < range1.end) {
-				return false;
-			}
-			if (value == range1.end) {
-				range1.end = value + 1;
-				checkMergeNext(range1, idx);
-				return true;
-			}
-		}
-		if (idx < size()) {
-			final Range range2 = get(idx);
-			if (value == range2.start - 1) {
-				range2.start = value;
-				return true;
-			}
-		}
-		super.add(idx, new Range(value));
-		return true;
-	}
 	
 	@Override
 	public boolean add(final Range range) {
@@ -250,35 +233,6 @@ public class RangeList extends ArrayList<Range> implements Set<Range> {
 		}
 	}
 	
-	
-	public boolean removeValue(final int value) {
-		int idx = indexOfStart(value);
-		if (idx >= 0) { // value == range1.start
-			final Range range1 = get(idx);
-			if (value == range1.end - 1) { // single value
-				super.remove(idx);
-				return true;
-			}
-			range1.start++;
-			return true;
-		}
-		idx = -(idx + 1); // value > range1.start && value < range2.start
-		if (idx > 0) {
-			final Range range1 = get(idx - 1);
-			if (value >= range1.end) {
-				return false;
-			}
-			if (value == range1.end - 1) {
-				range1.end--;
-				return true;
-			}
-			super.add(idx, new Range(value + 1, range1.end));
-			range1.end = value;
-			return true;
-		}
-		return false;
-	}
-	
 	public boolean remove(final Range range) {
 		if (range.size() == 0) {
 			return false;
@@ -353,46 +307,156 @@ public class RangeList extends ArrayList<Range> implements Set<Range> {
 	}
 	
 	
-	public boolean containsValue(final int value) {
-		int idx = indexOfStart(value);
-		if (idx >= 0) { // value == range1.start
+	/**
+	 * Ordered set of single values described by the range list.
+	 * 
+	 * The class provides a similar interface like other Java collections to add, remove and
+	 * check for containment and access of values. But the set works on primitive values and allows
+	 * to support larger sizes in future.
+	 */
+	public final class Values implements /*OrderedSet<int>*/ Iterable<Integer> {
+		
+		
+		public boolean isEmpty() {
+			return RangeList.this.isEmpty();
+		}
+		
+		public int size() {
+			int count = 0;
+			final int size = RangeList.super.size();
+			for (int i = 0; i < size; i++) {
+				count += RangeList.super.get(i).size();
+			}
+			return count;
+		}
+		
+		public boolean contains(final int value) {
+			int idx = indexOfStart(value);
+			if (idx >= 0) { // value == range1.start
+				return true;
+			}
+			idx = -(idx + 1); // value > range1.start && value < range2.start
+			if (idx > 0) {
+				final Range range1 = RangeList.super.get(idx - 1);
+				return (value < range1.end);
+			}
+			return false;
+		}
+		
+		@Override
+		public IValueIterator iterator() {
+			return new ValueIterator(RangeList.this);
+		}
+		
+		public boolean add(final int value) {
+			int idx = indexOfStart(value);
+			if (idx >= 0) { // value == range1.start
+				return false;
+			}
+			idx = -(idx + 1); // value > range1.start && value < range2.start
+			if (idx > 0) {
+				final Range range1 = RangeList.super.get(idx - 1);
+				if (value < range1.end) {
+					return false;
+				}
+				if (value == range1.end) {
+					range1.end = value + 1;
+					checkMergeNext(range1, idx);
+					return true;
+				}
+			}
+			if (idx < RangeList.super.size()) {
+				final Range range2 = RangeList.super.get(idx);
+				if (value == range2.start - 1) {
+					range2.start = value;
+					return true;
+				}
+			}
+			RangeList.super.add(idx, new Range(value));
 			return true;
 		}
-		idx = -(idx + 1); // value > range1.start && value < range2.start
-		if (idx > 0) {
-			final Range range1 = get(idx - 1);
-			return (value < range1.end);
-		}
-		return false;
-	}
-	
-	
-	public Range getRange(final int value) {
-		int idx = indexOfStart(value);
-		if (idx >= 0) { // value == range1.start
-			return get(idx);
-		}
-		idx = -(idx + 1); // value > range1.start && value < range2.start
-		if (idx > 0) {
-			final Range range1 = get(idx - 1);
-			if (value < range1.end) {
-				return range1;
+		
+		public boolean remove(final int value) {
+			int idx = indexOfStart(value);
+			if (idx >= 0) { // value == range1.start
+				final Range range1 = RangeList.super.get(idx);
+				if (value == range1.end - 1) { // single value
+					RangeList.super.remove(idx);
+					return true;
+				}
+				range1.start++;
+				return true;
 			}
+			idx = -(idx + 1); // value > range1.start && value < range2.start
+			if (idx > 0) {
+				final Range range1 = RangeList.super.get(idx - 1);
+				if (value >= range1.end) {
+					return false;
+				}
+				if (value == range1.end - 1) {
+					range1.end--;
+					return true;
+				}
+				RangeList.super.add(idx, new Range(value + 1, range1.end));
+				range1.end = value;
+				return true;
+			}
+			return false;
 		}
-		return null;
+		
+		public void clear() {
+			RangeList.this.clear();
+		}
+		
+		public int first() {
+			return RangeList.super.get(0).start;
+		}
+		
+		public int last() {
+			return RangeList.super.get(RangeList.super.size() - 1).end - 1;
+		}
+		
+		public Range getRangeOf(final int value) {
+			int idx = indexOfStart(value);
+			if (idx >= 0) { // value == range1.start
+				return RangeList.super.get(idx);
+			}
+			idx = -(idx + 1); // value > range1.start && value < range2.start
+			if (idx > 0) {
+				final Range range1 = RangeList.super.get(idx - 1);
+				if (value < range1.end) {
+					return range1;
+				}
+			}
+			return null;
+		}
+		
+		
+		private List<Range> getRangeList() {
+			return RangeList.this;
+		}
+		
+		@Override
+		public int hashCode() {
+			return RangeList.this.hashCode() ^ 345;
+		}
+		
+		@Override
+		public boolean equals(final Object obj) {
+			return ((this == obj
+					|| (obj instanceof Values 
+							&& RangeList.this.equals(((Values) obj).getRangeList())) ));
+		}
+		
 	}
 	
-	public int getValueCount() {
-		int count = 0;
-		final int size = size();
-		for (int i = 0; i < size; i++) {
-			count += get(i).size();
-		}
-		return count;
-	}
-	
-	public IValueIterator valuesIterator() {
-		return new ValueIterator(this);
+	/**
+	 * Provides direct access to the single values of this list.
+	 * 
+	 * @return the values of the list
+	 */
+	public Values values() {
+		return this.values;
 	}
 	
 	

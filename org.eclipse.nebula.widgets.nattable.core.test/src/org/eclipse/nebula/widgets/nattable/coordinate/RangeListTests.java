@@ -12,9 +12,11 @@
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -45,7 +47,7 @@ public class RangeListTests {
 	public void addValueBefore() {
 		RangeList list = create();
 		
-		list.addValue(8);
+		list.values().add(8);
 		
 		assertArrayEquals(new Object[] {
 				new Range(8, 9),
@@ -57,7 +59,7 @@ public class RangeListTests {
 	public void addValueBetweenRanges() {
 		RangeList list = create();
 		
-		list.addValue(21);
+		list.values().add(21);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 20),
@@ -70,7 +72,7 @@ public class RangeListTests {
 	public void addValueBeforeBegin() {
 		RangeList list = create();
 		
-		list.addValue(9);
+		list.values().add(9);
 		
 		assertArrayEquals(new Object[] {
 				new Range(9, 20),
@@ -82,7 +84,7 @@ public class RangeListTests {
 	public void addValueInRange1() {
 		RangeList list = create();
 		
-		list.addValue(10);
+		list.values().add(10);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 20), new Range(30, 40), new Range(50, 60), new Range(70, 80), new Range(81, 100)
@@ -93,7 +95,7 @@ public class RangeListTests {
 	public void addValueInRange2() {
 		RangeList list = create();
 		
-		list.addValue(11);
+		list.values().add(11);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 20), new Range(30, 40), new Range(50, 60), new Range(70, 80), new Range(81, 100)
@@ -104,7 +106,7 @@ public class RangeListTests {
 	public void addValueInRange3() {
 		RangeList list = create();
 		
-		list.addValue(19);
+		list.values().add(19);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 20), new Range(30, 40), new Range(50, 60), new Range(70, 80), new Range(81, 100)
@@ -115,7 +117,7 @@ public class RangeListTests {
 	public void addValueAtEnd() {
 		RangeList list = create();
 		
-		list.addValue(20);
+		list.values().add(20);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 21),
@@ -127,7 +129,7 @@ public class RangeListTests {
 	public void addValueMergeRanges() {
 		RangeList list = create();
 		
-		list.addValue(80);
+		list.values().add(80);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 20), new Range(30, 40), new Range(50, 60),
@@ -293,7 +295,7 @@ public class RangeListTests {
 	public void removeValueBefore() {
 		RangeList list = create();
 		
-		list.removeValue(8);
+		list.values().remove(8);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 20), new Range(30, 40), new Range(50, 60), new Range(70, 80), new Range(81, 100)
@@ -304,7 +306,7 @@ public class RangeListTests {
 	public void removeValueBeforeBegin() {
 		RangeList list = create();
 		
-		list.removeValue(9);
+		list.values().remove(9);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 20), new Range(30, 40), new Range(50, 60), new Range(70, 80), new Range(81, 100)
@@ -315,7 +317,7 @@ public class RangeListTests {
 	public void removeValueInRange1() {
 		RangeList list = create();
 		
-		list.removeValue(10);
+		list.values().remove(10);
 		
 		assertArrayEquals(new Object[] {
 				new Range(11, 20), new Range(30, 40), new Range(50, 60), new Range(70, 80), new Range(81, 100)
@@ -326,7 +328,7 @@ public class RangeListTests {
 	public void removeValueInRange2() {
 		RangeList list = create();
 		
-		list.removeValue(11);
+		list.values().remove(11);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 11),
@@ -339,7 +341,7 @@ public class RangeListTests {
 	public void removeValueInRange3() {
 		RangeList list = create();
 		
-		list.removeValue(19);
+		list.values().remove(19);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 19),
@@ -351,7 +353,7 @@ public class RangeListTests {
 	public void removeValueAtEnd() {
 		RangeList list = create();
 		
-		list.removeValue(20);
+		list.values().remove(20);
 		
 		assertArrayEquals(new Object[] {
 				new Range(10, 20), new Range(30, 40), new Range(50, 60), new Range(70, 80), new Range(81, 100)
@@ -541,6 +543,72 @@ public class RangeListTests {
 		assertArrayEquals(new Object[] {
 				new Range(70, 80), new Range(81, 100)
 		}, list.toArray() );
+	}
+	
+	
+	@Test
+	public void clear() {
+		RangeList list = create();
+		
+		list.clear();
+		
+		assertTrue(list.isEmpty());
+	}
+	
+	
+	@Test
+	public void checkEmpty1() {
+		RangeList list = new RangeList();
+		
+		assertTrue(list.isEmpty());
+		assertTrue(list.values().isEmpty());
+		assertEquals(0, list.size());
+		assertEquals(0, list.values().size());
+		
+		IValueIterator iterator = list.values().iterator();
+		Assert.assertFalse(iterator.hasNext());
+	}
+	
+	@Test
+	public void checkSingle1() {
+		RangeList list = new RangeList(5);
+		
+		assertFalse(list.isEmpty());
+		assertFalse(list.values().isEmpty());
+		assertEquals(1, list.size());
+		assertEquals(1, list.values().size());
+		
+		IValueIterator iterator = list.values().iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(5, iterator.nextValue());
+		assertFalse(iterator.hasNext());
+		
+		assertEquals(5, list.values().first());
+		assertEquals(5, list.values().last());
+	}
+	
+	@Test
+	public void checkMulti1() {
+		RangeList list = create();
+		
+		assertFalse(list.isEmpty());
+		assertFalse(list.values().isEmpty());
+		assertEquals(5, list.size());
+		assertEquals(59, list.values().size());
+		
+		IValueIterator iterator = list.values().iterator();
+		for (Range range : new Range[] {
+				new Range(10, 20), new Range(30, 40), new Range(50, 60), new Range(70, 80), new Range(81, 100)
+		}) {
+			for (int value = range.start; value < range.end; value++) {
+				assertTrue(iterator.hasNext());
+				assertEquals(value, iterator.nextValue());
+			}
+		}
+		assertFalse(iterator.hasNext());
+		
+		assertEquals(10, list.values().first());
+		assertEquals(99, list.values().last());
 	}
 	
 }

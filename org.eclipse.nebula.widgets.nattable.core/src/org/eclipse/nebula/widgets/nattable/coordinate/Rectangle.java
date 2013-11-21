@@ -11,6 +11,8 @@
 
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
 
 /**
  * Instances of this class represent rectangular areas in an (x, y) coordinate system. The top left
@@ -66,11 +68,13 @@ public final class Rectangle {
 	}
 	
 	
+	//-- Checks --//
+	
 	/**
-	 * Returns <code>true</code> if the receiver does not cover any area in the (x, y) coordinate 
+	 * Returns <code>true</code> if the receiver does not cover any area in the (x, y) coordinate
 	 * plane, and <code>false</code> if the receiver does cover some area in the plane.
 	 * <p>
-	 * A rectangle is considered to <em>cover area</em> in the (x, y) coordinate plane if both its 
+	 * A rectangle is considered to <em>cover area</em> in the (x, y) coordinate plane if both its
 	 * width and height are non-zero.
 	 * </p>
 	 * 
@@ -93,6 +97,23 @@ public final class Rectangle {
 				&& x < (this.x + this.width) && y < (this.y + this.height) );
 	}
 	
+//	/**
+//	 * Returns <code>true</code> if the given point is inside the area specified by the receiver,
+//	 * and <code>false</code> otherwise.
+//	 * 
+//	 * @param pt the point to test for containment
+//	 * @return <code>true</code> if the rectangle contains the point and <code>false</code>
+//	 *     otherwise
+//	 * 
+//	 * @exception NullPointerException if the argument is <code>null</code>
+//	 */
+//	public boolean contains(/*@NonNull*/ final Point pt) {
+//		if (pt == null) {
+//			throw new NullPointerException("pt"); //$NON-NLS-1$
+//		}
+//		return contains(pt.x, pt.y);
+//	}
+	
 	/**
 	 * Returns <code>true</code> if the rectangle specified by the arguments is completely inside
 	 * the area specified by the receiver, and <code>false</code> otherwise.
@@ -112,24 +133,6 @@ public final class Rectangle {
 				&& (rect.x + rect.width <= this.x + this.width) && (rect.y + rect.height <= this.y + this.height) );
 	}
 	
-	
-//	/**
-//	 * Returns <code>true</code> if the given point is inside the area specified by the receiver, 
-//	 * and <code>false</code> otherwise.
-//	 * 
-//	 * @param pt the point to test for containment
-//	 * @return <code>true</code> if the rectangle contains the point and <code>false</code> 
-//	 *     otherwise
-//	 * 
-//	 * @exception NullPointerException if the argument is <code>null</code>
-//	 */
-//	public boolean contains(/*@NonNull*/ final Point pt) {
-//		if (pt == null) {
-//			throw new NullPointerException("pt"); //$NON-NLS-1$
-//		}
-//		return contains(pt.x, pt.y);
-//	}
-	
 	/**
 	 * Returns <code>true</code> if the rectangle described by the arguments intersects with the
 	 * receiver and <code>false</code> otherwise.
@@ -142,7 +145,7 @@ public final class Rectangle {
 	 * @param y the y coordinate of the origin of the rectangle
 	 * @param width the width of the rectangle
 	 * @param height the height of the rectangle
-	 * @return <code>true</code> if the rectangle intersects with the receiver, and 
+	 * @return <code>true</code> if the rectangle intersects with the receiver, and
 	 *     <code>false</code> otherwise
 	 * 
 	 * @see #intersection(Rectangle)
@@ -177,6 +180,8 @@ public final class Rectangle {
 		return (rect == this || intersects(rect.x, rect.y, rect.width, rect.height));
 	}
 	
+	
+	//-- Destructive Methods --//
 	
 	/**
 	 * Destructively replaces the x, y, width and height values in the receiver with ones which 
@@ -238,6 +243,8 @@ public final class Rectangle {
 		this.height = (bottom < top) ? 0 : bottom - top;
 	}
 	
+	
+	//-- Methods Creating New Coordinate Objects --//
 	
 	/**
 	 * Returns a new rectangle which represents the intersection of the receiver and the given
@@ -303,6 +310,27 @@ public final class Rectangle {
 		return new Rectangle(left, top, right - left, bottom - top);
 	}
 	
+	/**
+	 * Returns a the range in the specified orientation of the receiver.
+	 * 
+	 * @param orientation the orientation
+	 * @return the range of the rectangle
+	 */
+	public Range getRange(/*@NonNull*/ final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		return (orientation == HORIZONTAL) ?
+				new Range(this.x, this.x + this.width) :
+				new Range(this.y, this.y + this.height);
+	}
+	
+	public Rectangle switchOrientation() {
+		return new Rectangle(this.y, this.y, this.height, this.width);
+	}
+	
+	
+	//-- Object Methods --//
 	
 	/**
 	 * Returns an integer hash code for the receiver. Any two objects that return <code>true</code>
@@ -336,8 +364,8 @@ public final class Rectangle {
 			return false;
 		}
 		final Rectangle other = (Rectangle) object;
-		return ((other.x == this.x) && (other.y == this.y)
-				&& (other.width == this.width) && (other.height == this.height) );
+		return ((this.x == other.x) && (this.y == other.y)
+				&& (this.width == other.width) && (this.height == other.height) );
 	}
 	
 	/**

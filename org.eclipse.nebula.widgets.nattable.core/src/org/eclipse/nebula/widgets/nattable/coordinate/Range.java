@@ -55,17 +55,16 @@ public class Range {
 	}
 	
 	/**
-	 * @return TRUE if the range contains the given row position
+	 * @return <code>true</code> if the range contains the given row position
 	 */
 	public boolean contains(int position) {
-		return position >= start && position < end;
+		return ((position >= start) && (position < end));
 	}
 
 	public boolean overlap(Range range) {
-		return
-				(start < end) &&  // this is a non-empty range
+		return (this.start < this.end) &&  // this is a non-empty range
 				(range.start < range.end) &&  // range parameter is non-empty
-				(this.contains(range.start) || this.contains(range.end - 1) || range.contains(start) || range.contains(end - 1));
+				(contains(range.start) || contains(range.end - 1) || range.contains(this.start) || range.contains(this.end - 1) );
 	}
 
 	public Set<Integer> getMembers() {
@@ -90,12 +89,12 @@ public class Range {
 			return false;
 		}
 		final Range other = (Range) obj;
-		return (this.start == other.start && this.end == other.end);
+		return ((this.start == other.start) && (this.end == other.end));
 	}
 	
 	@Override
 	public String toString() {
-		return "Range [" + start + ", " + end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return "Range {" + this.start + ", " + this.end + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 
