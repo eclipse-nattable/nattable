@@ -43,6 +43,9 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	}
 	
 	private static List<ILayer> convertDim2LayerList(final Collection<ILayerDim> dims) {
+		if (dims == null) {
+			return null;
+		}
 		switch (dims.size()) {
 		case 0:
 			return Collections.emptyList();

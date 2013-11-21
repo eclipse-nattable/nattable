@@ -69,6 +69,10 @@ public class VerticalLayerDim extends AbstractLayerDim<ILayer> {
 	public List<ILayerDim> getUnderlyingDimsByPosition(final int position) {
 		final Collection<ILayer> underlyingLayers = this.layer.getUnderlyingLayersByRowPosition(
 				position );
+		if (underlyingLayers == null) {
+			return null;
+		}
+		
 		final List<ILayerDim> underlyingDims = new ArrayList<ILayerDim>(underlyingLayers.size());
 		for (final ILayer underlyingLayer : underlyingLayers) {
 			underlyingDims.add(underlyingLayer.getDim(this.orientation));
