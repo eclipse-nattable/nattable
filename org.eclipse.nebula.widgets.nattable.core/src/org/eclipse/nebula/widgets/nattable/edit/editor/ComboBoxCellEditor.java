@@ -19,6 +19,8 @@ import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -175,19 +177,33 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 	}
 	
 	@Override
-	protected Control activateCell(Composite parent, Object originalCanonicalValue) {
+	protected Control activateCell(Composite parent, final Object originalCanonicalValue) {
 		this.combo = createEditorControl(parent);
 		
 		fillCombo();
 
 		setCanonicalValue(originalCanonicalValue);
 		
-		//open the dropdown immediately
-		this.combo.showDropdownControl(originalCanonicalValue instanceof Character);
+		//open the dropdown immediately after the Text control of the NatCombo is positioned
+		if (this.editMode == EditModeEnum.INLINE) {
+			this.combo.addTextControlListener(new ControlAdapter() {
+				@Override
+				public void controlResized(ControlEvent e) {
+					combo.showDropdownControl(originalCanonicalValue instanceof Character);
+					combo.removeTextControlListener(this);
+				}
+				
+				@Override
+				public void controlMoved(ControlEvent e) {
+					combo.showDropdownControl(originalCanonicalValue instanceof Character);
+					combo.removeTextControlListener(this);
+				}
+			});
+		}
 		
 		return this.combo;
 	}
-
+	
 	/**
 	 * This implementation overrides the default implementation because we can work on the
 	 * list of canonical items in the combo directly. Only for multiselect in combination with
@@ -369,6 +385,10 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				commit(MoveDirectionEnum.NONE, (!multiselect && editMode == EditModeEnum.INLINE));
+				if (!multiselect && editMode == EditModeEnum.DIALOG) {
+					//hide the dropdown after a value was selected in the combo in a dialog
+					combo.hideDropdownControl();
+				}
 			}
 		});
 		

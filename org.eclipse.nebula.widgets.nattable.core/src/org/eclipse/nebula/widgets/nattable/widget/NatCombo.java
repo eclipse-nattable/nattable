@@ -267,12 +267,10 @@ public class NatCombo extends Composite {
 		createDropdownControl(style);
 		
 		addDisposeListener(new DisposeListener() {
-			
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				dropdownShell.dispose();
 				text.dispose();
-				
 			}
 		});
 	}
@@ -748,59 +746,84 @@ public class NatCombo extends Composite {
 
 	@Override
 	public void addKeyListener(KeyListener listener) {
-		this.text.addKeyListener(listener);
-		this.dropdownTable.addKeyListener(listener);
+		if (this.text != null && !this.text.isDisposed())
+			this.text.addKeyListener(listener);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.addKeyListener(listener);
 	}
 
 	@Override
 	public void removeKeyListener(KeyListener listener) {
-		this.text.removeKeyListener(listener);
-		this.dropdownTable.removeKeyListener(listener);
+		if (this.text != null && !this.text.isDisposed())
+			this.text.removeKeyListener(listener);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.removeKeyListener(listener);
 	}
 
 	@Override
 	public void addTraverseListener(TraverseListener listener) {
-		this.text.addTraverseListener(listener);
-		this.dropdownTable.addTraverseListener(listener);
+		if (this.text != null && !this.text.isDisposed())
+			this.text.addTraverseListener(listener);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.addTraverseListener(listener);
 	}
 
 	@Override
 	public void removeTraverseListener(TraverseListener listener) {
-		this.text.removeTraverseListener(listener);
-		this.dropdownTable.removeTraverseListener(listener);
+		if (this.text != null && !this.text.isDisposed())
+			this.text.removeTraverseListener(listener);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.removeTraverseListener(listener);
 	}
 
 	@Override
 	public void addMouseListener(MouseListener listener) {
 		//only add the mouse listener to the dropdown, as clicking in the text control
 		//should not trigger anything else than it is handled by the text control itself.
-		this.dropdownTable.addMouseListener(listener);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.addMouseListener(listener);
 	}
 
 	@Override
 	public void removeMouseListener(MouseListener listener) {
-		this.dropdownTable.removeMouseListener(listener);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.removeMouseListener(listener);
 	}
 	
 	@Override
 	public void notifyListeners(int eventType, Event event) {
-		this.dropdownTable.notifyListeners(eventType, event);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.notifyListeners(eventType, event);
 	}
 	
 	public void addSelectionListener(SelectionListener listener) {
-		this.dropdownTable.addSelectionListener(listener);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.addSelectionListener(listener);
 	}
 	
 	public void removeSelectionListener(SelectionListener listener) {
-		this.dropdownTable.removeSelectionListener(listener);
+		if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
+			this.dropdownTable.removeSelectionListener(listener);
 	}
 	
 	public void addShellListener(ShellListener listener) {
-		this.dropdownShell.addShellListener(listener);
+		if (this.dropdownShell != null && !this.dropdownShell.isDisposed())
+			this.dropdownShell.addShellListener(listener);
 	}
 	
 	public void removeShellListener(ShellListener listener) {
-		this.dropdownShell.removeShellListener(listener);
+		if (this.dropdownShell != null && !this.dropdownShell.isDisposed())
+			this.dropdownShell.removeShellListener(listener);
+	}
+	
+	public void addTextControlListener(ControlListener listener) {
+		if (this.text != null && !this.text.isDisposed())
+			this.text.addControlListener(listener);
+	}
+	
+	public void removeTextControlListener(ControlListener listener) {
+		if (this.text != null && !this.text.isDisposed())
+			this.text.removeControlListener(listener);
 	}
 	
 	@Override
