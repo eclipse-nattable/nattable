@@ -24,6 +24,8 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
@@ -263,13 +265,16 @@ public class NatCombo extends Composite {
 
 		createTextControl(style);
 		createDropdownControl(style);
-	}
-	
-	@Override
-	public void dispose() {
-		super.dispose();
-		dropdownShell.dispose();
-		text.dispose();
+		
+		addDisposeListener(new DisposeListener() {
+			
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				dropdownShell.dispose();
+				text.dispose();
+				
+			}
+		});
 	}
 	
 	/**

@@ -468,7 +468,8 @@ public abstract class AbstractCellEditor implements ICellEditor {
 				}
 			}
 			else {
-				parent.forceFocus();
+				if (!parent.isDisposed())
+					parent.forceFocus();
 			}
 		}
 	}
