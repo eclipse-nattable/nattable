@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.AutomaticSpanningDataProvider;
@@ -185,7 +185,7 @@ public class _342_AutomaticDataSpanningExample extends AbstractNatExample {
 									else {
 										dataProvider.setAutoColumnSpan(true);
 									}
-									natTable.doCommand(new StructuralRefreshCommand());
+									natTable.doCommand(new VisualRefreshCommand());
 								}
 							});
 						}
