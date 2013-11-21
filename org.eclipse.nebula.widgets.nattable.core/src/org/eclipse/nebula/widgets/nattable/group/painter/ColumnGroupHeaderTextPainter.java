@@ -26,23 +26,102 @@ import org.eclipse.swt.graphics.Image;
 
 public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
 
-	/** Needed to query column group cell expand/collapse state */
-	private final ColumnGroupModel columnGroupModel;
-
+	/**
+	 * Creates the default {@link ColumnGroupHeaderTextPainter} that uses a {@link TextPainter}
+	 * as base {@link ICellPainter} and decorate it with the {@link ExpandCollapseImagePainter} on the right
+	 * edge of the cell.
+	 * @param columnGroupModel the column group model that is used by the grid
+	 */
 	public ColumnGroupHeaderTextPainter(ColumnGroupModel columnGroupModel) {
-		this.columnGroupModel = columnGroupModel;
-
-		setWrappedPainter(new CellPainterDecorator( new TextPainter(), CellEdgeEnum.RIGHT, new ExpandCollapseImagePainter()));
+		this(columnGroupModel, new TextPainter());
 	}
 
 	/**
-	 * @param columnGroupModel Column group model used by the grid
-	 * @param interiorPainter for painting the text portion
+	 * Creates a {@link ColumnGroupHeaderTextPainter} that uses the given {@link ICellPainter}
+	 * as base {@link ICellPainter} and decorate it with the {@link ExpandCollapseImagePainter} on the right
+	 * edge of the cell.
+	 * @param columnGroupModel the column group model that is used by the grid
+	 * @param interiorPainter the base {@link ICellPainter} to use
 	 */
 	public ColumnGroupHeaderTextPainter(ColumnGroupModel columnGroupModel, ICellPainter interiorPainter) {
-		this.columnGroupModel = columnGroupModel;
+		this(columnGroupModel, interiorPainter, CellEdgeEnum.RIGHT);
+	}
 
-		setWrappedPainter(new CellPainterDecorator(interiorPainter, CellEdgeEnum.RIGHT, new ExpandCollapseImagePainter()));
+	/**
+	 * Creates a {@link ColumnGroupHeaderTextPainter} that uses the given {@link ICellPainter}
+	 * as base {@link ICellPainter} and decorate it with the {@link ExpandCollapseImagePainter} on the specified
+	 * edge of the cell.
+	 * @param columnGroupModel the column group model that is used by the grid
+	 * @param interiorPainter the base {@link ICellPainter} to use
+	 * @param cellEdge the edge of the cell on which the sort indicator decoration should be applied
+	 */
+	public ColumnGroupHeaderTextPainter(ColumnGroupModel columnGroupModel, 
+			ICellPainter interiorPainter, CellEdgeEnum cellEdge) {
+		this(interiorPainter, cellEdge, new ExpandCollapseImagePainter(columnGroupModel, true));
+	}
+
+	/**
+	 * Creates a {@link ColumnGroupHeaderTextPainter} that uses the given {@link ICellPainter}
+	 * as base {@link ICellPainter} and decorate it with the given {@link ICellPainter} to use for sort
+	 * related decoration on the specified edge of the cell.
+	 * @param interiorPainter the base {@link ICellPainter} to use
+	 * @param cellEdge the edge of the cell on which the sort indicator decoration should be applied
+	 * @param decoratorPainter the {@link ICellPainter} that should be used to paint the sort related
+	 * 			decoration (by default the {@link ExpandCollapseImagePainter} will be used)
+	 */
+	public ColumnGroupHeaderTextPainter(ICellPainter interiorPainter, CellEdgeEnum cellEdge, ICellPainter decoratorPainter) {
+		setWrappedPainter(new CellPainterDecorator(interiorPainter, cellEdge, decoratorPainter));
+	}
+	
+	//the following constructors are intended to configure the CellPainterDecorator that is created as
+	//the wrapped painter of this ColumnGroupHeaderTextPainter
+
+    /**
+     * Creates a {@link ColumnGroupHeaderTextPainter} that uses the given {@link ICellPainter} as base
+	 * {@link ICellPainter}. It will use the {@link ExpandCollapseImagePainter} as decorator for sort related 
+	 * decorations at the specified cell edge, which can be configured to render the background or 
+	 * not via method parameter. With the additional parameters, the behaviour of the created 
+	 * {@link CellPainterDecorator} can be configured in terms of rendering.
+	 * @param columnGroupModel the column group model that is used by the grid
+	 * @param interiorPainter the base {@link ICellPainter} to use
+	 * @param cellEdge the edge of the cell on which the sort indicator decoration should be applied
+	 * @param paintBg flag to configure whether the {@link ExpandCollapseImagePainter} should paint the background 
+	 * 			or not
+     * @param spacing the number of pixels that should be used as spacing between cell edge and decoration
+     * @param paintDecorationDependent flag to configure if the base {@link ICellPainter} should render
+     * 			decoration dependent or not. If it is set to <code>false</code>, the base painter will
+     * 			always paint at the same coordinates, using the whole cell bounds, <code>true</code>
+     * 			will cause the bounds of the cell to shrink for the base painter.
+     */
+    public ColumnGroupHeaderTextPainter(ColumnGroupModel columnGroupModel, 
+			ICellPainter interiorPainter, CellEdgeEnum cellEdge,
+    		boolean paintBg, int spacing, boolean paintDecorationDependent) {
+    	
+	    ICellPainter sortPainter = new ExpandCollapseImagePainter(columnGroupModel, paintBg);
+	    CellPainterDecorator painter = new CellPainterDecorator(interiorPainter, cellEdge, 
+	    		spacing, sortPainter, paintDecorationDependent);
+        setWrappedPainter(painter);
+    }
+	
+	/**
+	 * Creates a {@link ColumnGroupHeaderTextPainter} that uses the given {@link ICellPainter} as base
+	 * {@link ICellPainter} and decorate it with the {@link ExpandCollapseImagePainter} on the right
+	 * edge of the cell. This constructor gives the opportunity to configure the behaviour of the
+	 * {@link ExpandCollapseImagePainter} and the {@link CellPainterDecorator} for some attributes.
+	 * Remains because of downwards compatibility.
+	 * @param columnGroupModel the column group model that is used by the grid
+	 * @param interiorPainter the base {@link ICellPainter} to use
+	 * @param paintBg flag to configure whether the {@link ExpandCollapseImagePainter} should paint the background 
+	 * 			or not
+	 * @param interiorPainterToSpanFullWidth flag to configure how the bounds of the base painter should be
+	 * 			calculated 
+	 */
+    public ColumnGroupHeaderTextPainter(ColumnGroupModel columnGroupModel, 
+			ICellPainter interiorPainter, boolean paintBg, boolean interiorPainterToSpanFullWidth) {
+	    ICellPainter sortPainter = new ExpandCollapseImagePainter(columnGroupModel, paintBg);
+	    CellPainterDecorator painter = new CellPainterDecorator(interiorPainter, CellEdgeEnum.RIGHT, 0, sortPainter);
+	    painter.setPaintDecorationDependent(!interiorPainterToSpanFullWidth);
+        setWrappedPainter(painter);
 	}
 
 	/**
@@ -60,10 +139,22 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
 		return 25;
 	}
 	
-	private class ExpandCollapseImagePainter extends ImagePainter {
+	/**
+	 * Paints the triangular expand/collapse column header images.
+	 */
+	protected static class ExpandCollapseImagePainter extends ImagePainter {
+		
+		/** Needed to query column group cell expand/collapse state */
+		private final ColumnGroupModel columnGroupModel;
+		
 		final Image rightImg = GUIHelper.getImage("right"); //$NON-NLS-1$
 		final Image leftImg = GUIHelper.getImage("left"); //$NON-NLS-1$
 
+		public ExpandCollapseImagePainter(ColumnGroupModel columnGroupModel, boolean paintBg) {
+			super(null, paintBg);
+			this.columnGroupModel = columnGroupModel;
+		}
+		
 		@Override
 		protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
 			Object dataValue = cell.getDataValue();
