@@ -24,7 +24,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.GroupBySummaryConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
@@ -91,7 +91,7 @@ public class _200_Group_by extends AbstractNatExample {
 
 		// Summary
 		ConfigRegistry configRegistry = new ConfigRegistry();
-		configRegistry.registerConfigAttribute(GroupBySummaryConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
+		configRegistry.registerConfigAttribute(GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
 				new SummationGroupBySummaryProvider<RowDataFixture>(reflectiveColumnPropertyAccessor),
 				DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 
 				RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME));

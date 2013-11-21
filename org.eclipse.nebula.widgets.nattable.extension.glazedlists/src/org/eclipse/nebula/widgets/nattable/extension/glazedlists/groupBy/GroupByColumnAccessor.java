@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.GroupBySummaryConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -53,9 +53,18 @@ public class GroupByColumnAccessor<T> implements IColumnAccessor<Object> {
 				
 				IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
 				
+				List<T> children = groupByDataLayer.getElementsInGroup(groupByObject);
 				if (summaryProvider != null) {
-					List<T> children = groupByDataLayer.getElementsInGroup(groupByObject);
 					return summaryProvider.summarize(columnIndex, children);
+				}
+				
+				String childCountPattern = this.configRegistry.getConfigAttribute(
+						GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN, 
+						DisplayMode.NORMAL, 
+						labelStack.getLabels());
+				
+				if (childCountPattern != null && childCountPattern.length() > 0) {
+					return groupByObject.getValue() + " " + MessageFormat.format(childCountPattern, children.size()); //$NON-NLS-1$
 				}
 			}
 			
@@ -84,8 +93,8 @@ public class GroupByColumnAccessor<T> implements IColumnAccessor<Object> {
 	@SuppressWarnings("unchecked")
 	public IGroupBySummaryProvider<T> getGroupBySummaryProvider(LabelStack labelStack) {
 		if (this.configRegistry != null) {
-			return configRegistry.getConfigAttribute(
-					GroupBySummaryConfigAttributes.GROUP_BY_SUMMARY_PROVIDER, 
+			return this.configRegistry.getConfigAttribute(
+					GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER, 
 					DisplayMode.NORMAL, 
 					labelStack.getLabels());
 		}
