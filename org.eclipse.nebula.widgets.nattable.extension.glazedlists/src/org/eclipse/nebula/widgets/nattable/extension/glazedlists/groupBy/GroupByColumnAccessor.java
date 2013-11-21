@@ -58,13 +58,15 @@ public class GroupByColumnAccessor<T> implements IColumnAccessor<Object> {
 					return summaryProvider.summarize(columnIndex, children);
 				}
 				
-				String childCountPattern = this.configRegistry.getConfigAttribute(
-						GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN, 
-						DisplayMode.NORMAL, 
-						labelStack.getLabels());
-				
-				if (childCountPattern != null && childCountPattern.length() > 0) {
-					return groupByObject.getValue() + " " + MessageFormat.format(childCountPattern, children.size()); //$NON-NLS-1$
+				if (this.configRegistry != null) {
+					String childCountPattern = this.configRegistry.getConfigAttribute(
+							GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN, 
+							DisplayMode.NORMAL, 
+							labelStack.getLabels());
+					
+					if (childCountPattern != null && childCountPattern.length() > 0) {
+						return groupByObject.getValue() + " " + MessageFormat.format(childCountPattern, children.size()); //$NON-NLS-1$
+					}
 				}
 			}
 			
