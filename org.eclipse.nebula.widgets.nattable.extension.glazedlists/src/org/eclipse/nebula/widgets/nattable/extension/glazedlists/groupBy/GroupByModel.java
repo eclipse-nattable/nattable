@@ -11,18 +11,19 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
-import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
-public class GroupByModel extends Observable {
+public class GroupByModel extends Observable implements IPersistable {
 
+	public static final String PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES = ".groupByColumnIndexes"; //$NON-NLS-1$
+	
 	private List<Integer> groupByColumnIndexes = new ArrayList<Integer>();
-	private Map<Integer, SortDirectionEnum> sortDirectionMap = new HashMap<Integer, SortDirectionEnum>();
 	
 	public boolean addGroupByColumnIndex(int columnIndex) {
 		if (!groupByColumnIndexes.contains(columnIndex)) {
@@ -39,7 +40,6 @@ public class GroupByModel extends Observable {
 	public boolean removeGroupByColumnIndex(int columnIndex) {
 		if (groupByColumnIndexes.contains(columnIndex)) {
 			groupByColumnIndexes.remove(Integer.valueOf(columnIndex));
-			sortDirectionMap.remove(columnIndex);
 			setChanged();
 			notifyObservers();
 			return true;
@@ -51,7 +51,6 @@ public class GroupByModel extends Observable {
 	
 	public void clearGroupByColumnIndexes() {
 		groupByColumnIndexes.clear();
-		sortDirectionMap.clear();
 		setChanged();
 		notifyObservers();
 	}
@@ -60,8 +59,32 @@ public class GroupByModel extends Observable {
 		return groupByColumnIndexes;
 	}
 	
-	public SortDirectionEnum getSortDirection(int columnIndex) {
-		return sortDirectionMap.get(columnIndex);
+	@Override
+	public void saveState(String prefix, Properties properties) {
+		if (groupByColumnIndexes.size() > 0) {
+			StringBuilder strBuilder = new StringBuilder();
+			for (Integer index : groupByColumnIndexes) {
+				strBuilder.append(index);
+				strBuilder.append(IPersistable.VALUE_SEPARATOR);
+			}
+			properties.setProperty(prefix + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES, strBuilder.toString());
+		}
+	}
+
+	@Override
+	public void loadState(String prefix, Properties properties) {
+		groupByColumnIndexes.clear();
+		String property = properties.getProperty(prefix + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES);
+		if (property != null) {
+			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
+			while (tok.hasMoreTokens()) {
+				String index = tok.nextToken();
+				groupByColumnIndexes.add(Integer.valueOf(index));
+			}
+		}
+
+		setChanged();
+		notifyObservers();
 	}
 	
 }

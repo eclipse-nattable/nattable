@@ -63,6 +63,8 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -221,6 +223,24 @@ public class _5833_GroupBySummaryExample extends AbstractNatExample {
 		
 		//add group by header configuration
 		natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
+
+		natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
+			
+			@Override
+			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+				return super.createColumnHeaderMenu(natTable)
+							.withHideColumnMenuItem()
+							.withShowAllColumnsMenuItem()
+							.withStateManagerMenuItemProvider();
+			}
+			
+			@Override
+			protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
+				return super.createCornerMenu(natTable)
+							.withShowAllColumnsMenuItem()
+							.withStateManagerMenuItemProvider();
+			}
+		});
 		
 		natTable.configure();
 		

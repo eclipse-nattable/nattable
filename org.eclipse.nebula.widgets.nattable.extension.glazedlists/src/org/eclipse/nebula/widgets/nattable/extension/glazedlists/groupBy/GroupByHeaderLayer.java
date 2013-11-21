@@ -54,6 +54,7 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 		super(baseLayer, gridLayer, baseLayer);
 		
 		this.groupByModel = groupByModel;
+		registerPersistable(this.groupByModel);
 		
 		registerCommandHandler(new GroupByColumnCommandHandler());
 		registerCommandHandler(new UngroupByColumnCommandHandler());
@@ -94,6 +95,7 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		return new LayerCell(this, 0, 0, 0, 0, getColumnCount(), 1);
 	}
+	
 	
 	class GroupByColumnCommandHandler extends AbstractLayerCommandHandler<GroupByColumnIndexCommand> {
 
