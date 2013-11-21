@@ -10,16 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.Arrays;
-
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
 
 public class HideSelectedRowsTest {
 	private SelectionLayer selectionLayer;
@@ -53,7 +53,7 @@ public class HideSelectedRowsTest {
 	@Test
 	public void shouldHideSelectedRow() {
 		// Select row to hide
-		new SelectRowCommandHandler(selectionLayer).selectRows(0, Arrays.asList(Integer.valueOf(2)), false, false, 2);
+		new SelectRowCommandHandler(selectionLayer).selectRows(0, new RangeList(2), false, false, 2);
 		
 		// Hide row
 		selectionLayer.doCommand(new MultiRowHideCommand(selectionLayer, 2));
@@ -66,12 +66,12 @@ public class HideSelectedRowsTest {
 	@Test
 	public void shouldHideAllSelectedRows() {
 		// Select cells and rows 
-		new SelectRowCommandHandler(selectionLayer).selectRows(0, Arrays.asList(Integer.valueOf(2)), false, false, 2);
+		new SelectRowCommandHandler(selectionLayer).selectRows(0, new RangeList(2), false, false, 2);
 		selectionLayer.selectCell(0, 1, false, true);
 		selectionLayer.selectCell(4, 4, false, true);
 		
 		// Hide selection
-		selectionLayer.doCommand(new MultiRowHideCommand(selectionLayer, new int[]{2, 0, 4}));
+		selectionLayer.doCommand(new MultiRowHideCommand(selectionLayer, new RangeList(2, 0, 4)));
 		
 		// Previously selected rows should be hidden
 		Assert.assertTrue(rowHideShowLayer.isRowIndexHidden(2));

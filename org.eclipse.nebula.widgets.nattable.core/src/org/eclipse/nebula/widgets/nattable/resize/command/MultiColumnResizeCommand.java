@@ -10,33 +10,39 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractMultiColumnCommand;
+import org.eclipse.nebula.widgets.nattable.command.AbstractDimPositionsCommand;
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 
-public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
+public class MultiColumnResizeCommand extends AbstractDimPositionsCommand {
 
 	private int commonColumnWidth = -1;
 	protected Map<ColumnPositionCoordinate, Integer> colPositionToWidth = new HashMap<ColumnPositionCoordinate, Integer>();
-
+	
+	
 	/**
-	 * All columns are being resized to the same size e.g. during a drag resize
+	 * All columns are being resized to the same width e.g. during a drag resize
 	 */
-	public MultiColumnResizeCommand(ILayer layer, int[] columnPositions, int commonColumnWidth) {
-		super(layer, columnPositions);
+	public MultiColumnResizeCommand(ILayer layer, Collection<Range> columnPositions, int commonColumnWidth) {
+		super(layer.getDim(HORIZONTAL), columnPositions);
 		this.commonColumnWidth = commonColumnWidth;
 	}
-
+	
 	/**
 	 * Each column is being resized to a different size e.g. during auto resize
 	 */
 	public MultiColumnResizeCommand(ILayer layer, int[] columnPositions, int[] columnWidths) {
-		super(layer, columnPositions);
+		super(layer.getDim(HORIZONTAL), new RangeList(columnPositions));
 		for (int i = 0; i < columnPositions.length; i++) {
 			colPositionToWidth.put(new ColumnPositionCoordinate(layer, columnPositions[i]), Integer.valueOf(columnWidths[i]));
 		}
@@ -47,7 +53,13 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
 		this.commonColumnWidth = command.commonColumnWidth;
 		this.colPositionToWidth = new HashMap<ColumnPositionCoordinate, Integer>(command.colPositionToWidth);
 	}
-
+	
+	@Override
+	public MultiColumnResizeCommand cloneCommand() {
+		return new MultiColumnResizeCommand(this);
+	}
+	
+	
 	public int getCommonColumnWidth() {
 		return commonColumnWidth;
 	}
@@ -61,13 +73,10 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
 		return commonColumnWidth;
 	}
 	
-	/**
-	 * Convert the column positions to the target layer.
-	 * Ensure that the width associated with the column is now associated with the
-	 * converted column position.
-	 */
 	@Override
 	public boolean convertToTargetLayer(ILayer targetLayer) {
+		// Ensure that the width associated with the column is now associated with the converted 
+		// column position.
 		Map<ColumnPositionCoordinate, Integer> newColPositionToWidth = new HashMap<ColumnPositionCoordinate, Integer>();
 		
 		for (ColumnPositionCoordinate columnPositionCoordinate : colPositionToWidth.keySet()) {
@@ -85,7 +94,4 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
 		}
 	}
 	
-	public MultiColumnResizeCommand cloneCommand() {
-		return new MultiColumnResizeCommand(this);
-	}
 }

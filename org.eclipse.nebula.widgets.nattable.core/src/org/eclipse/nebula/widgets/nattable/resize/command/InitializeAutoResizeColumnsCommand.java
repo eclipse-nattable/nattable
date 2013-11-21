@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractColumnCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
+
 
 /**
  * This command triggers the AutoResizeColumms command. It collects the selected
@@ -28,9 +34,11 @@ public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
 
 	private final IConfigRegistry configRegistry;
 	private final GCFactory gcFactory;
+	
 	private final ILayer sourceLayer;
-	private int[] selectedColumnPositions = new int[0];
-
+	private Collection<Range> selectedColumnPositions = Collections.emptyList();
+	
+	
 	public InitializeAutoResizeColumnsCommand(ILayer layer, int columnPosition, IConfigRegistry configRegistry, GCFactory gcFactory) {
 		super(layer, columnPosition);
 		this.configRegistry = configRegistry;
@@ -63,11 +71,17 @@ public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
 		return sourceLayer;
 	}
 
-	public void setSelectedColumnPositions(int[] selectedColumnPositions) {
+	@Deprecated
+	public void setSelectedColumnPositions(final int[] selectedColumnPositions) {
+		setSelectedColumnPositions(new RangeList(selectedColumnPositions));
+	}
+
+	public void setSelectedColumnPositions(final Collection<Range> selectedColumnPositions) {
 		this.selectedColumnPositions = selectedColumnPositions;
 	}
 
-	public int[] getColumnPositions() {
+	public Collection<Range> getColumnPositions() {
 		return selectedColumnPositions;
 	}
+
 }

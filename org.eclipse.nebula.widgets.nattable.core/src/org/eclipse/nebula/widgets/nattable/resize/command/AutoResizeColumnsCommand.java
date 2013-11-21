@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractMultiColumnCommand;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
+import org.eclipse.nebula.widgets.nattable.command.AbstractDimPositionsCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
+
 
 /**
  * Command indicating that all selected columns have to be auto resized i.e made
@@ -23,24 +26,25 @@ import org.eclipse.nebula.widgets.nattable.util.GCFactory;
  * Note: The {@link InitializeAutoResizeColumnsCommand} has to be fired first
  * when autoresizing columns.
  */
-
-public class AutoResizeColumnsCommand extends AbstractMultiColumnCommand {
-
+public class AutoResizeColumnsCommand extends AbstractDimPositionsCommand {
+	
 	private final IConfigRegistry configRegistry;
 	private final GCFactory gcFactory;
-
+	
+	
 	public AutoResizeColumnsCommand(InitializeAutoResizeColumnsCommand initCommand) {
-		super(initCommand.getSourceLayer(), initCommand.getColumnPositions());
+		super(initCommand.getSourceLayer().getDim(HORIZONTAL), initCommand.getColumnPositions());
 		this.configRegistry = initCommand.getConfigRegistry();
 		this.gcFactory = initCommand.getGCFactory();
 	}
-
+	
 	protected AutoResizeColumnsCommand(AutoResizeColumnsCommand command) {
 		super(command);
 		this.configRegistry = command.configRegistry;
 		this.gcFactory = command.gcFactory;
 	}
-
+	
+	@Override
 	public ILayerCommand cloneCommand() {
 		return new AutoResizeColumnsCommand(this);
 	}

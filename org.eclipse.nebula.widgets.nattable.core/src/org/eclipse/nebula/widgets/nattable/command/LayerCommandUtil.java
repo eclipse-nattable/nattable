@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 
 
 public class LayerCommandUtil {
@@ -103,6 +104,32 @@ public class LayerCommandUtil {
 			}
 		}
 		return null;
+	}
+	
+	public static int convertPositionToTargetContext(/*@NonNull*/ final ILayerDim dim,
+			final int position, /*@NonNull*/ final ILayerDim targetDim) {
+		if (dim == targetDim) {
+			return position;
+		}
+		
+		int underlyingPosition = dim.localToUnderlyingPosition(position);
+		if (underlyingPosition == Integer.MIN_VALUE) {
+			return Integer.MIN_VALUE;
+		}
+		
+		final Collection<ILayerDim> underlyingDims = dim.getUnderlyingDimsByPosition(position);
+		if (underlyingDims != null) {
+			for (ILayerDim underlyingDim : underlyingDims) {
+				if (underlyingDim != null) {
+					int targetPosition = convertPositionToTargetContext(underlyingDim,
+							underlyingPosition, targetDim );
+					if (targetPosition != Integer.MIN_VALUE) {
+						return targetPosition;
+					}
+				}
+			}
+		}
+		return Integer.MIN_VALUE;
 	}
 	
 }

@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.grid.command;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
@@ -77,7 +78,7 @@ public class AutoResizeColumnCommandHandler implements ILayerCommandHandler<Auto
 		// NatTable itself
 		targetLayer.doCommand(new TurnViewportOffCommand());
 
-		int[] columnPositions = ObjectUtils.asIntArray(command.getColumnPositions());
+		int[] columnPositions = ObjectUtils.asIntArray(RangeList.listValues(command.getPositions()));
 		int[] gridColumnPositions = convertFromPositionToCommandLayer(columnPositions);
 
 		int[] gridColumnWidths = MaxCellBoundsHelper.getPreferredColumnWidths(

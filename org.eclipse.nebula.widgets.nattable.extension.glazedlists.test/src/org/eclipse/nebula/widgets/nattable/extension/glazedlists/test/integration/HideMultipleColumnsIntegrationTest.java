@@ -10,8 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.integration;
 
+import ca.odell.glazedlists.GlazedLists;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
@@ -20,10 +25,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
-import org.junit.Assert;
-import org.junit.Test;
-
-import ca.odell.glazedlists.GlazedLists;
 
 public class HideMultipleColumnsIntegrationTest {
 
@@ -46,8 +47,8 @@ public class HideMultipleColumnsIntegrationTest {
 		Assert.assertEquals(6, natTableFixture.getColumnCount());
 
 		MultiColumnHideCommand hideAllCommand = new MultiColumnHideCommand(natTableFixture,
-				new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-							21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,	32, 33, 34, 35, 36});
+				new RangeList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+						20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36));
 
 		natTableFixture.doCommand(hideAllCommand);
 		Assert.assertEquals(1, listenerFixture.getEventsCount());

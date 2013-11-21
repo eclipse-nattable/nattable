@@ -10,14 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-
-import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
-import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
-import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommand;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 
 public class ColumnResizeCommandTest {
 
@@ -45,7 +44,7 @@ public class ColumnResizeCommandTest {
 	public void shouldResizeAllSelectedColumns() {		
 		int columnPositions[] = new int[]{3, 2, 4};
 		int newWidth = 250;
-		MultiColumnResizeCommand columnResizeCommand = new MultiColumnResizeCommand(dataLayer, columnPositions, newWidth);
+		MultiColumnResizeCommand columnResizeCommand = new MultiColumnResizeCommand(dataLayer, new RangeList(columnPositions), newWidth);
 		
 		dataLayer.doCommand(columnResizeCommand);
 		

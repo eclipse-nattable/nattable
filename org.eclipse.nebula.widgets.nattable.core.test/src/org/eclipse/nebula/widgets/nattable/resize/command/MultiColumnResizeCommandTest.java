@@ -10,13 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-
-import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
-import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommand;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnReorderLayerFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.junit.Assert;
 import org.junit.Test;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnReorderLayerFixture;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
+
 
 public class MultiColumnResizeCommandTest {
 
@@ -34,7 +35,7 @@ public class MultiColumnResizeCommandTest {
 	@Test
 	public void getCommonColumnWidth() throws Exception {
 		MultiColumnResizeCommand resizeCommand = new MultiColumnResizeCommand(new DataLayerFixture(),
-				new int[] { 1, 2 }, 100);
+				new RangeList(1, 2), 100);
 
 		Assert.assertEquals(100, resizeCommand.getCommonColumnWidth());
 		Assert.assertEquals(100, resizeCommand.getColumnWidth(1));

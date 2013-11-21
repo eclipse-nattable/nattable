@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
@@ -28,16 +29,18 @@ public class ColumnChooserUtils {
 	public static final String RENAMED_COLUMN_INDICATOR = "*"; //$NON-NLS-1$
 
 	public static void hideColumnEntries(List<ColumnEntry> removedItems, ColumnHideShowLayer hideShowLayer) {
-		MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(
-				hideShowLayer, asIntArray(getColumnEntryPositions(removedItems)));
+		MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(hideShowLayer,
+				new RangeList(asIntArray(getColumnEntryPositions(removedItems))));
 		hideShowLayer.doCommand(hideCommand);
 	}
 
 	public static void hideColumnPositions(List<Integer> removedPositions, ColumnHideShowLayer hideShowLayer) {
-		MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(hideShowLayer, asIntArray(removedPositions));
+		MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(hideShowLayer,
+				new RangeList(asIntArray(removedPositions)));
 		hideShowLayer.doCommand(hideCommand);
 	}
-
+	
+	
 	public static void showColumnEntries(List<ColumnEntry> addedItems, ColumnHideShowLayer hideShowLayer) {
 		hideShowLayer.doCommand(new MultiColumnShowCommand(getColumnEntryIndexes(addedItems)));
 	}

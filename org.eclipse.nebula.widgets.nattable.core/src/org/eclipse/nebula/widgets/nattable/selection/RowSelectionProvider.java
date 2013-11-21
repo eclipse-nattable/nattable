@@ -22,13 +22,15 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.ISelectionEvent;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
+
 
 /**
  * Implementation of ISelectionProvider to add support for JFace selection handling.
@@ -159,30 +161,27 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 		listeners.remove(listener);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public void setSelection(ISelection selection) {
 		if (selectionLayer != null && selection instanceof IStructuredSelection) {
 			if (!addSelectionOnSet) {
 				selectionLayer.clear(false);
 			}
 			if (!selection.isEmpty()) {
-    			List<T> rowObjects = ((IStructuredSelection) selection).toList();
-    			Set<Integer> rowPositions = new HashSet<Integer>();
-    			for (T rowObject : rowObjects) {
-    				int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
-    				int rowPosition = selectionLayer.getRowPositionByIndex(rowIndex);
-    				rowPositions.add(Integer.valueOf(rowPosition));
-    			}
-				int intValue = -1;
-				if (!rowPositions.isEmpty()) {
-					Integer max = Collections.max(rowPositions);
-					intValue = max.intValue();
+				List<T> rowObjects = ((IStructuredSelection) selection).toList();
+				final RangeList rowPositions = new RangeList();
+				for (T rowObject : rowObjects) {
+					int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
+					int rowPosition = selectionLayer.getRowPositionByIndex(rowIndex);
+					rowPositions.values().add(rowPosition);
 				}
-				if (intValue >= 0) {
-					selectionLayer.doCommand(
-							new SelectRowsCommand(selectionLayer, 0, ObjectUtils.asIntArray(rowPositions), 
-									false, true, intValue));
+				if (!rowPositions.isEmpty()) {
+					final int max = rowPositions.values().last();
+					if (max >= 0) {
+						selectionLayer.doCommand(new SelectRowsCommand(selectionLayer,
+								0, rowPositions, false, true, max ));
+					}
 				}
 			}
 		}

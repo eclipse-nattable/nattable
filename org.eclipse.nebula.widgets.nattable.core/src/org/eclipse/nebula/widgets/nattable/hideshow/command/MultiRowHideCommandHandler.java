@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowCommandLayer;
 
 public class MultiRowHideCommandHandler extends AbstractLayerCommandHandler<MultiRowHideCommand>{
@@ -27,7 +28,7 @@ public class MultiRowHideCommandHandler extends AbstractLayerCommandHandler<Mult
 
 	@Override
 	protected boolean doCommand(MultiRowHideCommand command) {
-		rowHideShowLayer.hideRowPositions(command.getRowPositions());
+		rowHideShowLayer.hideRowPositions(RangeList.listValues(command.getPositions()));
 		return true;
 	}
 	

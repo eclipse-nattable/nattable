@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,12 +19,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList.ValueIterator;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsCommand> {
 
@@ -37,17 +42,18 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 	@Override
 	public boolean doCommand(ILayer targetLayer, SelectRowsCommand command) {
 		if (command.convertToTargetLayer(selectionLayer)) {
-			selectRows(command.getColumnPosition(), command.getRowPositions(), command.isWithShiftMask(), command.isWithControlMask(), command.getRowPositionToMoveIntoViewport());
+			selectRows(command.getColumnPosition(), command.getPositions(), command.isWithShiftMask(), command.isWithControlMask(), command.getRowPositionToMoveIntoViewport());
 			return true;
 		}
 		return false;
 	}
 
-	protected void selectRows(int columnPosition, Collection<Integer> rowPositions, boolean withShiftMask, boolean withControlMask, int rowPositionToMoveIntoViewport) {
-		Set<Range> changedRowRanges = new HashSet<Range>();
+	protected void selectRows(int columnPosition, Collection<Range> rowPositions, boolean withShiftMask, boolean withControlMask, int rowPositionToMoveIntoViewport) {
+		final RangeList changedRowRanges = new RangeList();
 		
-		for (int rowPosition : rowPositions) {
-			changedRowRanges.addAll(internalSelectRow(columnPosition, rowPosition, withShiftMask, withControlMask));
+		for (final IValueIterator rowIter = new ValueIterator(rowPositions); rowIter.hasNext(); ) {
+			changedRowRanges.addAll(internalSelectRow(columnPosition, rowIter.nextValue(),
+					withShiftMask, withControlMask ));
 		}
 
 		Set<Integer> changedRows = new HashSet<Integer>();
@@ -68,7 +74,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 			selectionLayer.selectCell(0, rowPosition, withShiftMask, withControlMask);
 			selectionLayer.selectRegion(0, rowPosition, Integer.MAX_VALUE, 1);
 			selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
-			changedRowRanges.add(new Range(rowPosition, rowPosition + 1));
+			changedRowRanges.add(new Range(rowPosition));
 		} else if (bothShiftAndControl(withShiftMask, withControlMask)) {
 			changedRowRanges.add(selectRowWithShiftKey(rowPosition));
 		} else if (isShiftOnly(withShiftMask, withControlMask)) {
@@ -104,7 +110,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 			selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
 		}
 		
-		return new Range(rowPosition, rowPosition + 1);
+		return new Range(rowPosition);
 	}
 
 	private Range selectRowWithShiftKey(int rowPosition) {

@@ -10,32 +10,42 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.command;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractMultiRowCommand;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
+import java.util.Collection;
+
+import org.eclipse.nebula.widgets.nattable.command.AbstractDimPositionsCommand;
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
-public class SelectRowsCommand extends AbstractMultiRowCommand {
 
+public class SelectRowsCommand extends AbstractDimPositionsCommand {
+	
 	private ColumnPositionCoordinate columnPositionCoordinate;
+	
 	private final boolean withShiftMask;
 	private final boolean withControlMask;
+	
 	private RowPositionCoordinate rowPositionCoordinateToMoveIntoViewport;
-
+	
+	
 	public SelectRowsCommand(ILayer layer, int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
-		this(layer, columnPosition, ArrayUtil.asIntArray(rowPosition), withShiftMask, withControlMask, rowPosition);
+		this(layer, columnPosition, new RangeList(rowPosition), withShiftMask, withControlMask, rowPosition);
 	}
-
-	public SelectRowsCommand(ILayer layer, int columnPosition, int[] rowPositions, boolean withShiftMask, boolean withControlMask, int rowPositionToMoveIntoViewport) {
-		super(layer, rowPositions);
+	
+	public SelectRowsCommand(ILayer layer, int columnPosition, Collection<Range> rowPositions,
+			boolean withShiftMask, boolean withControlMask, int rowPositionToMoveIntoViewport) {
+		super(layer.getDim(VERTICAL), rowPositions);
 		this.columnPositionCoordinate = new ColumnPositionCoordinate(layer, columnPosition);
 		this.withControlMask = withControlMask;
 		this.withShiftMask = withShiftMask;
 		this.rowPositionCoordinateToMoveIntoViewport = new RowPositionCoordinate(layer, rowPositionToMoveIntoViewport);
 	}
-
+	
 	protected SelectRowsCommand(SelectRowsCommand command) {
 		super(command);
 		this.columnPositionCoordinate = command.columnPositionCoordinate;
@@ -43,7 +53,13 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 		this.withControlMask = command.withControlMask;
 		this.rowPositionCoordinateToMoveIntoViewport = command.rowPositionCoordinateToMoveIntoViewport;
 	}
-
+	
+	@Override
+	public SelectRowsCommand cloneCommand() {
+		return new SelectRowsCommand(this);
+	}
+	
+	
 	@Override
 	public boolean convertToTargetLayer(ILayer targetLayer) {
 		ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(
@@ -78,8 +94,5 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 			return -1;
 		}
 	}
-
-	public SelectRowsCommand cloneCommand() {
-		return new SelectRowsCommand(this);
-	}
+	
 }

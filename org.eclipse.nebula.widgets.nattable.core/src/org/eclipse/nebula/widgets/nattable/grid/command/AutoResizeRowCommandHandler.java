@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.grid.command;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
@@ -75,7 +76,7 @@ public class AutoResizeRowCommandHandler implements ILayerCommandHandler<AutoRes
 		// Need to resize selected rows even if they are outside the viewport
 		targetLayer.doCommand(new TurnViewportOffCommand());
 
-		int[] rowPositions = ObjectUtils.asIntArray(command.getRowPositions());
+		int[] rowPositions = ObjectUtils.asIntArray(RangeList.listValues(command.getPositions()));
 		int[] gridRowPositions = convertFromPositionToCommandLayer(rowPositions);
 		
 		int[] gridRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(

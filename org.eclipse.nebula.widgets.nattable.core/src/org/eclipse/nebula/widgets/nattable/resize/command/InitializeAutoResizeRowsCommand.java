@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,23 +10,30 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractRowCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
+
 
 /**
  * @see InitializeAutoResizeColumnsCommand
  */
-
 public class InitializeAutoResizeRowsCommand extends AbstractRowCommand {
 
 	private final IConfigRegistry configRegistry;
 	private final GCFactory gcFactory;
+	
 	private final ILayer sourceLayer;
-	private int[] selectedRowPositions = new int[0];
-
+	private Collection<Range> selectedRowPositions = Collections.emptyList();
+	
+	
 	public InitializeAutoResizeRowsCommand(ILayer layer, int rowPosition, IConfigRegistry configRegistry, GCFactory gcFactory) {
 		super(layer, rowPosition);
 		this.configRegistry = configRegistry;
@@ -59,11 +66,17 @@ public class InitializeAutoResizeRowsCommand extends AbstractRowCommand {
 		return sourceLayer;
 	}
 
-	public void setSelectedRowPositions(int[] selectedRowPositions) {
+	@Deprecated
+	public void setSelectedRowPositions(final int[] selectedRowPositions) {
+		setSelectedRowPositions(new RangeList(selectedRowPositions));
+	}
+
+	public void setSelectedRowPositions(final Collection<Range> selectedRowPositions) {
 		this.selectedRowPositions = selectedRowPositions;
 	}
 
-	public int[] getRowPositions() {
+	public Collection<Range> getRowPositions() {
 		return selectedRowPositions;
 	}
+
 }

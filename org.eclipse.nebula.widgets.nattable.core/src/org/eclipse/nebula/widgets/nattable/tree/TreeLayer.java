@@ -18,6 +18,9 @@ import java.util.TreeSet;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList.ValueIterator;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
@@ -264,13 +267,12 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 			int rowIndex = getRowIndexByPosition(command.getRowPosition());
 			if (this.treeRowModel.hasChildren(rowIndex) && !this.treeRowModel.isCollapsed(rowIndex)) {
 				List<Integer> childIndexes = this.treeRowModel.getChildIndexes(rowIndex);
-				int[] childPositions = new int[childIndexes.size()+1];
-				childPositions[0] = command.getRowPosition();
+				final RangeList rowPositionsToHide = new RangeList();
+				rowPositionsToHide.values().add(command.getRowPosition());
 				for (int i = 1; i < childIndexes.size()+1; i++) {
-					int childPos = getRowPositionByIndex(childIndexes.get(i-1));
-					childPositions[i] = childPos;
+					rowPositionsToHide.values().add(getRowPositionByIndex(childIndexes.get(i-1)));
 				}
-				return super.doCommand(new MultiRowHideCommand(this, childPositions));
+				return super.doCommand(new MultiRowHideCommand(this, rowPositionsToHide));
 			}
 		}
 		return super.doCommand(command);
@@ -285,23 +287,20 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	protected boolean handleMultiRowHideCommand(MultiRowHideCommand command) {
 		//transform position to index
 		if (command.convertToTargetLayer(this)) {
-			List<Integer> rowPositionsToHide = new ArrayList<Integer>();
-			for (Integer rowPos : command.getRowPositions()) {
-				rowPositionsToHide.add(rowPos);
+			final RangeList rowPositionsToHide = new RangeList();
+			for (final IValueIterator rowIter = new ValueIterator(command.getPositions()); rowIter.hasNext(); ) {
+				final int rowPos = rowIter.nextValue();
+				rowPositionsToHide.values().add(rowPos);
 				int rowIndex = getRowIndexByPosition(rowPos);
 				if (this.treeRowModel.hasChildren(rowIndex) && !this.treeRowModel.isCollapsed(rowIndex)) {
 					List<Integer> childIndexes = this.treeRowModel.getChildIndexes(rowIndex);
 					for (Integer childIndex : childIndexes) {
-						rowPositionsToHide.add(getRowPositionByIndex(childIndex));
+						rowPositionsToHide.values().add(getRowPositionByIndex(childIndex));
 					}
 				}
 			}
 			
-			int[] childPositions = new int[rowPositionsToHide.size()];
-			for (int i = 0; i < rowPositionsToHide.size(); i++) {
-				childPositions[i] = rowPositionsToHide.get(i);
-			}
-			return super.doCommand(new MultiRowHideCommand(this, childPositions));
+			return super.doCommand(new MultiRowHideCommand(this, rowPositionsToHide));
 		}
 		return super.doCommand(command);
 	}
