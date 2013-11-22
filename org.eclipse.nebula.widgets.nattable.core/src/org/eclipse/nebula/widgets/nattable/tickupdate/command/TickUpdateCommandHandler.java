@@ -10,8 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tickupdate.command;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
@@ -49,11 +52,11 @@ public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUp
 
 	@Override
 	public boolean doCommand(TickUpdateCommand command) {
-		PositionCoordinate[] selectedPositions = selectionLayer.getSelectedCellPositions();
+		List<PositionCoordinate> selectedPositions = selectionLayer.getSelectedCellPositions();
 		IConfigRegistry configRegistry = command.getConfigRegistry();
 		
 		// Tick update for multiple cells in selection 
-		if (selectedPositions.length > 1) {
+		if (selectedPositions.size() > 1) {
 			// Can all cells be updated ?
 			if (EditUtils.allCellsEditable(selectionLayer, configRegistry)
 					&& EditUtils.isEditorSame(selectionLayer, configRegistry) 

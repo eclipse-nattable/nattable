@@ -40,7 +40,7 @@ public class RowSearchStrategy extends AbstractSearchStrategy {
 		return CellDisplayValueSearchUtil.findCell(getContextLayer(), configRegistry, getRowCellsToSearch(getContextLayer()), valueToMatch, getComparator(), isCaseSensitive());
 	}
 
-	protected PositionCoordinate[] getRowCellsToSearch(ILayer contextLayer) {
+	protected List<PositionCoordinate> getRowCellsToSearch(ILayer contextLayer) {
 		List<PositionCoordinate> cellsToSearch = new ArrayList<PositionCoordinate>();
 		for (int rowPosition : rowPositions) {
 			cellsToSearch.addAll(CellDisplayValueSearchUtil.getCellCoordinates(getContextLayer(), 0, rowPosition, contextLayer.getColumnCount(), 1));
@@ -48,6 +48,7 @@ public class RowSearchStrategy extends AbstractSearchStrategy {
 		if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
 			Collections.reverse(cellsToSearch);
 		}
-		return cellsToSearch.toArray(new PositionCoordinate[0]);
+		return cellsToSearch;
 	}
+	
 }

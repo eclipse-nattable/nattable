@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,10 +16,11 @@ import static org.eclipse.nebula.widgets.nattable.selection.SelectionUtils.isShi
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionUtils.noShiftOrControl;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
 
 
 public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectColumnCommand> {
@@ -57,7 +58,8 @@ public class SelectColumnCommandHandler implements ILayerCommandHandler<SelectCo
 		selectionLayer.lastSelectedCell.columnPosition = columnPosition;
 		selectionLayer.lastSelectedCell.rowPosition = rowPosition;
 
-		selectionLayer.fireLayerEvent(new ColumnSelectionEvent(selectionLayer, columnPosition));
+		selectionLayer.fireLayerEvent(new ColumnSelectionEvent(selectionLayer,
+				new RangeList(columnPosition) ));
 	}
 
 	private void selectColumnWithCtrlKey(int columnPosition, int rowPosition) {

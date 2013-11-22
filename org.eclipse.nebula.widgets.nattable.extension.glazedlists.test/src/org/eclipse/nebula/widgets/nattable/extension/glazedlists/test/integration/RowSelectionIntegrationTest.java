@@ -12,11 +12,18 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.test.integrati
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
 
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import org.eclipse.jface.viewers.StructuredSelection;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -36,13 +43,7 @@ import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
 
 public class RowSelectionIntegrationTest {
 
@@ -91,10 +92,10 @@ public class RowSelectionIntegrationTest {
 
 	@Test
 	public void shouldPreserveRowSelectionOnDataUpdates() throws Exception {
-		assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
+		assertEquals(0, selectionLayer.getFullySelectedRowPositions().values().size());
 
 		nattable.doCommand(new SelectRowsCommand(nattable, 1, 1, false, false));
-		assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
+		assertEquals(1, selectionLayer.getFullySelectedRowPositions().values().size());
 
 		// Ford motor at top and selected
 		assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1).toString());
@@ -112,7 +113,7 @@ public class RowSelectionIntegrationTest {
 
 	@Test
 	public void shouldPreserveRowSelectionOnSort() throws Exception {
-		assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
+		assertEquals(0, selectionLayer.getFullySelectedRowPositions().values().size());
 
 		// Unsorted order - Ford motor at top
 		assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1).toString());
@@ -142,28 +143,28 @@ public class RowSelectionIntegrationTest {
 		selectionLayer.clear();
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0, false, true));
 
-		Collection<PositionCoordinate> cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Collection<PositionCoordinate> cells = selectionLayer.getSelectedCellPositions();
 		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
 		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
 
 		//select another cell with control mask
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 1, false, true));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		cells = selectionLayer.getSelectedCellPositions();
 		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
 		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
 
 		//select additional cells with shift mask
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 10, true, false));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		cells = selectionLayer.getSelectedCellPositions();
 		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
 		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
 
 		//select additional cells with shift mask
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 10, 0, true, false));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		cells = selectionLayer.getSelectedCellPositions();
 		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
 		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
 	}
@@ -190,7 +191,7 @@ public class RowSelectionIntegrationTest {
 		selectionProvider.setSelection(new StructuredSelection(
 				new RowDataFixture[] { eventListFixture.get(1) }));
 		
-		assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
+		assertEquals(1, selectionLayer.getFullySelectedRowPositions().values().size());
 	}
 	
 	@Test
@@ -198,12 +199,12 @@ public class RowSelectionIntegrationTest {
 		selectionProvider.setSelection(new StructuredSelection(
 				new RowDataFixture[] { eventListFixture.get(1), eventListFixture.get(3) }));
 		
-		assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
+		assertEquals(2, selectionLayer.getFullySelectedRowPositions().values().size());
 
 		selectionProvider.setSelection(new StructuredSelection(
 				new RowDataFixture[] { eventListFixture.get(5), eventListFixture.get(7) }));
 		
-		assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
+		assertEquals(2, selectionLayer.getFullySelectedRowPositions().values().size());
 	}
 	
 	@Test
@@ -213,12 +214,12 @@ public class RowSelectionIntegrationTest {
 		selectionProvider.setSelection(new StructuredSelection(
 				new RowDataFixture[] { eventListFixture.get(1), eventListFixture.get(3) }));
 		
-		assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
+		assertEquals(2, selectionLayer.getFullySelectedRowPositions().values().size());
 
 		selectionProvider.setSelection(new StructuredSelection(
 				new RowDataFixture[] { eventListFixture.get(5), eventListFixture.get(7) }));
 		
-		assertEquals(4, selectionLayer.getFullySelectedRowPositions().length);
+		assertEquals(4, selectionLayer.getFullySelectedRowPositions().values().size());
 	}
 	
 	private RowDataFixture getSelected() {

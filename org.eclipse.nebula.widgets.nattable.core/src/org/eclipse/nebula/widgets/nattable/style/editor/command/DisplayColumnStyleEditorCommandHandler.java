@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,9 +18,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eclipse.swt.widgets.Display;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
@@ -29,7 +32,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.editor.ColumnStyleEditorDialog;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * 
@@ -73,26 +75,18 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 			return true;
 		}
 		
-		applySelectedStyleToColumns(command, getSelectedColumnIndeces());
+		applySelectedStyleToColumns(command, selectionLayer.getSelectedColumnPositions());
 		return true;
-	}
-
-	private int[] getSelectedColumnIndeces() {
-		int[] selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
-		int[] selectedColumnIndeces = new int[selectedColumnPositions.length];
-		for (int i=0; i<selectedColumnPositions.length; i++) {
-			selectedColumnIndeces[i] = selectionLayer.getColumnIndexByPosition(selectedColumnPositions[i]);
-		}
-		return selectedColumnIndeces;
 	}
 
 	public Class<DisplayColumnStyleEditorCommand> getCommandClass() {
 		return DisplayColumnStyleEditorCommand.class;
 	}
 
-	protected void applySelectedStyleToColumns(DisplayColumnStyleEditorCommand command, int[] columnIndeces) {
-		for (int i=0; i<columnIndeces.length; i++) {
-			final int columnIndex = columnIndeces[i];
+	protected void applySelectedStyleToColumns(DisplayColumnStyleEditorCommand command,
+			final RangeList columnPositions) {
+		for (final IValueIterator columnIter = columnPositions.values().iterator(); columnIter.hasNext(); ) {
+			final int columnIndex = selectionLayer.getColumnIndexByPosition(columnIter.nextValue());
 			// Read the edited styles
 			Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
 			

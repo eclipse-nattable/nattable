@@ -19,13 +19,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.coordinate.RangeList.ValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
@@ -49,19 +48,13 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 	}
 
 	protected void selectRows(int columnPosition, Collection<Range> rowPositions, boolean withShiftMask, boolean withControlMask, int rowPositionToMoveIntoViewport) {
-		final RangeList changedRowRanges = new RangeList();
+		final RangeList changedRows = new RangeList();
 		
 		for (final IValueIterator rowIter = new ValueIterator(rowPositions); rowIter.hasNext(); ) {
-			changedRowRanges.addAll(internalSelectRow(columnPosition, rowIter.nextValue(),
+			changedRows.addAll(internalSelectRow(columnPosition, rowIter.nextValue(),
 					withShiftMask, withControlMask ));
 		}
-
-		Set<Integer> changedRows = new HashSet<Integer>();
-		for (Range range : changedRowRanges) {
-			for (int i = range.start; i < range.end; i++) {
-				changedRows.add(Integer.valueOf(i));
-			}
-		}
+		
 		selectionLayer.fireLayerEvent(new RowSelectionEvent(selectionLayer, changedRows, rowPositionToMoveIntoViewport));
 	}
 

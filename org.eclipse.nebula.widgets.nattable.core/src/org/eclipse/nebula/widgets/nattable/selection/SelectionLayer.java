@@ -16,15 +16,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.coordinate.RangeList.ValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeColumnsCommandHandler;
@@ -33,9 +30,9 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.TransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
@@ -59,7 +56,7 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
  * @see DefaultSelectionLayerConfiguration
  * @see MoveDirectionEnum
  */
-public class SelectionLayer extends AbstractIndexLayerTransform {
+public class SelectionLayer extends TransformIndexLayer {
 
 	public static final int MOVE_ALL = -1;
 	public static final int NO_SELECTION = -1;
@@ -168,8 +165,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		
 		//if the selection anchor is within the selection that is removed
 		//it needs to be cleared also
-		Point anchorPoint = new Point(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
-		if (selection.contains(anchorPoint)) {
+		if (selection.contains(selectionAnchor.columnPosition, selectionAnchor.rowPosition)) {
 			selectionAnchor.columnPosition = -1;
 			selectionAnchor.rowPosition = -1;
 		}
@@ -202,27 +198,27 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	protected PositionCoordinate getCellPositionToMoveFrom(boolean withShiftMask, boolean withControlMask) {
 		return (!withShiftMask && !withControlMask)	? getSelectionAnchor() : getLastSelectedCellPosition();
 	}
-
-	public PositionCoordinate[] getSelectedCellPositions() {
-		int[] selectedColumnPositions = getSelectedColumnPositions();
-		Set<Range> selectedRowPositions = getSelectedRowPositions();
-
-		List<PositionCoordinate> selectedCells = new LinkedList<PositionCoordinate>();
-
-		for (int columnPositionIndex = 0; columnPositionIndex < selectedColumnPositions.length; columnPositionIndex++) {
-			final int columnPosition = selectedColumnPositions[columnPositionIndex];
-
-			for (Range rowIndexRange : selectedRowPositions) {
-				for (int rowPositionIndex = rowIndexRange.start; rowPositionIndex < rowIndexRange.end; rowPositionIndex++) {
-					if (selectionModel.isCellPositionSelected(columnPosition, rowPositionIndex)) {
-						selectedCells.add(new PositionCoordinate(this, columnPosition, rowPositionIndex));
-					}
+	
+	public List<PositionCoordinate> getSelectedCellPositions() {
+		final RangeList selectedColumnPositions = getSelectedColumnPositions();
+		final RangeList selectedRowPositions = getSelectedRowPositions();
+		
+		final List<PositionCoordinate> selectedCells = new LinkedList<PositionCoordinate>();
+		
+		for (final IValueIterator columnIter = selectedColumnPositions.values().iterator(); columnIter.hasNext(); ) {
+			final int columnPosition = columnIter.nextValue();
+			for (final IValueIterator rowIter = selectedRowPositions.values().iterator(); rowIter.hasNext(); ) {
+				final int rowPosition = rowIter.nextValue();
+				
+				if (selectionModel.isCellPositionSelected(columnPosition, rowPosition)) {
+					selectedCells.add(new PositionCoordinate(this, columnPosition, rowPosition));
 				}
 			}
 		}
-		return selectedCells.toArray(new PositionCoordinate[0]);
+		
+		return selectedCells;
 	}
-
+	
 	/**
 	 * Retrieves the ILayerCells out of the SelectionLayer that are currently marked as selected in
 	 * the SelectionModel. Takes spanning into account.
@@ -231,7 +227,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	public Collection<ILayerCell> getSelectedCells() {
 		Set<ILayerCell> selectedCells = new HashSet<ILayerCell>();
 
-		PositionCoordinate[] selectedCoords = getSelectedCellPositions();
+		List<PositionCoordinate> selectedCoords = getSelectedCellPositions();
 		for (PositionCoordinate coord : selectedCoords) {
 			selectedCells.add(getCellByPosition(coord.columnPosition, coord.rowPosition));
 		}
@@ -294,7 +290,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		return lastSelectedCell.columnPosition != NO_SELECTION;
 	}
 
-	public int[] getSelectedColumnPositions() {
+	public RangeList getSelectedColumnPositions() {
 		return selectionModel.getSelectedColumnPositions();
 	}
 
@@ -302,12 +298,12 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		return selectionModel.isColumnPositionSelected(columnPosition);
 	}
 
-	public int[] getFullySelectedColumnPositions() {
-		return selectionModel.getFullySelectedColumnPositions(getRowCount());
+	public RangeList getFullySelectedColumnPositions() {
+		return selectionModel.getFullySelectedColumnPositions();
 	}
 
 	public boolean isColumnPositionFullySelected(int columnPosition) {
-		return selectionModel.isColumnPositionFullySelected(columnPosition, getRowCount());
+		return selectionModel.isColumnPositionFullySelected(columnPosition);
 	}
 
 	public void selectColumn(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
@@ -324,7 +320,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		return selectionModel.getSelectedRowCount();
 	}
 
-	public Set<Range> getSelectedRowPositions() {
+	public RangeList getSelectedRowPositions() {
 		return selectionModel.getSelectedRowPositions();
 	}
 
@@ -332,12 +328,12 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		return selectionModel.isRowPositionSelected(rowPosition);
 	}
 
-	public int[] getFullySelectedRowPositions() {
-		return selectionModel.getFullySelectedRowPositions(getColumnCount());
+	public RangeList getFullySelectedRowPositions() {
+		return selectionModel.getFullySelectedRowPositions();
 	}
 
 	public boolean isRowPositionFullySelected(int rowPosition) {
-		return selectionModel.isRowPositionFullySelected(rowPosition, getColumnCount());
+		return selectionModel.isRowPositionFullySelected(rowPosition);
 	}
 
 	public void selectRow(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
@@ -361,8 +357,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		if (cell != null) {
-			Rectangle cellRectangle =
-					new Rectangle(
+			Rectangle cellRectangle = new Rectangle(
 							cell.getOriginColumnPosition(),
 							cell.getOriginRowPosition(),
 							cell.getColumnSpan(),
@@ -418,10 +413,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
 	public void fireCellSelectionEvent(int columnPosition, int rowPosition,
 			boolean forcingEntireCellIntoViewport, boolean withShiftMask, boolean withControlMask) {
-
-		final CellSelectionEvent selectionEvent = new CellSelectionEvent(this, columnPosition, rowPosition,
-				withShiftMask, withControlMask);
-		fireLayerEvent(selectionEvent);
+		fireLayerEvent(new CellSelectionEvent(this, columnPosition, rowPosition,
+				withShiftMask, withControlMask ));
 	}
 	
 	// command transformations
@@ -443,8 +436,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	 */
 	protected boolean handleColumnHideCommand(ColumnHideCommand command) {
 		if (isColumnPositionFullySelected(command.getColumnPosition())) {
-			return handleMultiColumnHideCommand(
-					new MultiColumnHideCommand(this, new RangeList(getFullySelectedColumnPositions())));
+			return handleMultiColumnHideCommand(new MultiColumnHideCommand(this,
+					getFullySelectedColumnPositions()) );
 		} else {
 			return super.doCommand(command);
 		}
@@ -487,8 +480,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	 */
 	protected boolean handleRowHideCommand(RowHideCommand command) {
 		if (isRowPositionFullySelected(command.getRowPosition())) {
-			return handleMultiRowHideCommand(
-					new MultiRowHideCommand(this, new RangeList(getFullySelectedRowPositions())));
+			return handleMultiRowHideCommand(new MultiRowHideCommand(this,
+					getFullySelectedRowPositions()) );
 		} else {
 			return super.doCommand(command);
 		}
@@ -530,8 +523,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	 */
 	protected boolean handleColumnResizeCommand(ColumnResizeCommand command) {
 		if (isColumnPositionFullySelected(command.getColumnPosition())) {
-			return super.doCommand(
-					new MultiColumnResizeCommand(this, new RangeList(selectionModel.getFullySelectedColumnPositions(getRowCount())), command.getNewColumnWidth()));
+			return super.doCommand(new MultiColumnResizeCommand(this,
+					selectionModel.getFullySelectedColumnPositions(), command.getNewColumnWidth()));
 		} else {
 			return super.doCommand(command);
 		}
@@ -553,8 +546,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	 */
 	protected boolean handleRowResizeCommand(RowResizeCommand command) {
 		if (isRowPositionFullySelected(command.getRowPosition())) {
-			return super.doCommand(
-					new MultiRowResizeCommand(this, new RangeList(selectionModel.getFullySelectedRowPositions(getColumnCount())), command.getNewHeight()));
+			return super.doCommand(new MultiRowResizeCommand(this,
+					selectionModel.getFullySelectedRowPositions(), command.getNewHeight()) );
 		} else {
 			return super.doCommand(command);
 		}

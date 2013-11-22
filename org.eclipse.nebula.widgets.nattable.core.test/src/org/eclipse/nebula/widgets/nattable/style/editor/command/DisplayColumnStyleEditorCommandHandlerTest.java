@@ -18,10 +18,15 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.Properties;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import org.eclipse.swt.widgets.Shell;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -31,15 +36,11 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.editor.ColumnStyleEditorDialog;
-import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommand;
-import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommandHandler;
 import org.eclipse.nebula.widgets.nattable.test.fixture.CellStyleFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.PropertiesFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Test;
+
 
 public class DisplayColumnStyleEditorCommandHandlerTest {
 
@@ -63,7 +64,7 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
 	@Test
 	public void doCommand() throws Exception {
 		handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(), new CellStyleFixture());
-		handlerUnderTest.applySelectedStyleToColumns(commandFixture, new int[]{0});
+		handlerUnderTest.applySelectedStyleToColumns(commandFixture, new RangeList(0));
 
 		Style selectedStyle = (Style) configRegistryFixture.getConfigAttribute(CELL_STYLE, NORMAL, handlerUnderTest.getConfigLabel(0));
 
@@ -102,7 +103,7 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
 	@Test
 	public void shouldRemoveLabelFromPersistenceIfStyleIsCleared() throws Exception {
 		handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(), null);
-		handlerUnderTest.applySelectedStyleToColumns(commandFixture, new int[]{0});
+		handlerUnderTest.applySelectedStyleToColumns(commandFixture, new RangeList(0));
 
 		Style selectedStyle = (Style) configRegistryFixture.getConfigAttribute(CELL_STYLE, NORMAL, handlerUnderTest.getConfigLabel(0));
 

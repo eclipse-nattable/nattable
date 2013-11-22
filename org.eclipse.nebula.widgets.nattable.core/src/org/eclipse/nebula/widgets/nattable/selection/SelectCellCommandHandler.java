@@ -13,10 +13,11 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionUtils.isControlOnly;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCellCommand> {
 
@@ -68,7 +69,7 @@ public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCell
 			selectionLayer.setLastSelectedCell(cell.getOriginColumnPosition(), cell.getOriginRowPosition());
 			
 			// Shift pressed + row selected
-			if (selectionLayer.getSelectionModel().isMultipleSelectionAllowed() 
+			if (selectionLayer.getSelectionModel().isMultipleSelectionAllowed()
 					&& withShiftMask 
 					&& selectionLayer.lastSelectedRegion != null 
 					&& selectionLayer.hasRowSelection()

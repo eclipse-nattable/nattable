@@ -13,6 +13,18 @@ package org.eclipse.nebula.widgets.nattable.resize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -35,16 +47,7 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
 
 public class AutoResizeColumnsTest {
 
@@ -135,7 +138,7 @@ public class AutoResizeColumnsTest {
 		SelectionLayer selectionLayer = ((DefaultBodyLayerStack) gridLayer.getBodyLayer()).getSelectionLayer();
 		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 0, 0, false, false));
 		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0, true, false));
-		assertEquals(2, selectionLayer.getFullySelectedColumnPositions().length);
+		assertEquals(2, selectionLayer.getFullySelectedColumnPositions().values().size());
 
 		// Resize grid column 5
 		gridLayer.doCommand(new ColumnResizeCommand(gridLayer, 5, 10));

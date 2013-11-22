@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,13 +22,15 @@ import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowGroupsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler<SelectRowGroupsCommand> {
 
@@ -56,18 +58,12 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 	}
 	
 	protected void selectRows(int columnPosition, List<Integer> rowPositions, boolean withShiftMask, boolean withControlMask, int rowPositionToMoveIntoViewport, boolean moveAnchorToTopOfGroup) {
-		Set<Range> changedRowRanges = new HashSet<Range>();
+		RangeList changedRows = new RangeList();
 		
-		if( rowPositions.size() > 0 ) {
-			changedRowRanges.addAll(internalSelectRow(columnPosition, rowPositions.get(0), rowPositions.size(), withShiftMask, withControlMask, moveAnchorToTopOfGroup));
+		if (rowPositions.size() > 0) {
+			changedRows.addAll(internalSelectRow(columnPosition, rowPositions.get(0), rowPositions.size(), withShiftMask, withControlMask, moveAnchorToTopOfGroup));
 		}
-
-		Set<Integer> changedRows = new HashSet<Integer>();
-		for (Range range : changedRowRanges) {
-			for (int i = range.start; i < range.end; i++) {
-				changedRows.add(Integer.valueOf(i));
-			}
-		}
+		
 		selectionLayer.fireLayerEvent(new RowSelectionEvent(selectionLayer, changedRows, rowPositionToMoveIntoViewport));
 	}
 	
@@ -114,28 +110,25 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 			selectionLayer.selectRegion(0, rowPosition, selectionLayer.getColumnCount(), rowCount);
 		}
 		
-		return new Range(rowPosition, rowPosition + 1);
+		return new Range(rowPosition);
 	}
 
 	private Range selectRowWithShiftKey(int columnPosition, int rowPosition, int rowCount) {
 		if (selectionLayer.lastSelectedRegion != null) {
 			int start = Math.min(selectionLayer.lastSelectedRegion.y, rowPosition);
 			int end = Math.max(selectionLayer.lastSelectedRegion.y, rowPosition);
-		
-		
-		for(int i = start; i <= end; i++){
-			int index = selectionLayer.getRowIndexByPosition(i);
-			if(RowGroupUtils.isPartOfAGroup(model, index) && !selectionLayer.isRowPositionFullySelected(i)){
-				List <Integer> rowPositions = new ArrayList<Integer>(RowGroupUtils.getRowPositionsInGroup(selectionLayer, RowGroupUtils.getRowIndexesInGroup(model, index)));
-				Collections.sort(rowPositions);
-				selectionLayer.selectRegion(0, rowPositions.get(0), selectionLayer.getColumnCount(), rowPositions.size());
-				i=ObjectUtils.getLastElement(rowPositions);
+			
+			for (int i = start; i <= end; i++){
+				int index = selectionLayer.getRowIndexByPosition(i);
+				if (RowGroupUtils.isPartOfAGroup(model, index) && !selectionLayer.isRowPositionFullySelected(i)){
+					List<Integer> rowPositions = new ArrayList<Integer>(RowGroupUtils.getRowPositionsInGroup(selectionLayer, RowGroupUtils.getRowIndexesInGroup(model, index)));
+					Collections.sort(rowPositions);
+					selectionLayer.selectRegion(0, rowPositions.get(0), selectionLayer.getColumnCount(), rowPositions.size());
+					i=ObjectUtils.getLastElement(rowPositions);
+				}
 			}
 		}
-		
-		
-		}
-		return new Range(rowPosition, rowPosition + 1);
+		return new Range(rowPosition);
 	}
-		
+	
 }

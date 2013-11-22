@@ -10,6 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -17,11 +22,8 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
-import org.eclipse.nebula.widgets.nattable.search.strategy.RowSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
 
 public class RowSearchStrategyTest {
 	
@@ -41,14 +43,14 @@ public class RowSearchStrategyTest {
 	public void shouldAccessCellInSelectedRow() {
 		// Select three rows for searching
 		RowSearchStrategy rowStrategy = new RowSearchStrategy(new int[]{0,2,4}, configRegistry);
-		PositionCoordinate[] cellsToSearch = rowStrategy.getRowCellsToSearch(layer);
-		PositionCoordinate cell = cellsToSearch[0];
+		List<PositionCoordinate> cellsToSearch = rowStrategy.getRowCellsToSearch(layer);
+		PositionCoordinate cell = cellsToSearch.get(0);
 		Assert.assertEquals(0, cell.getRowPosition());
-		cell = cellsToSearch[10];
+		cell = cellsToSearch.get(10);
 		Assert.assertEquals(2, cell.getRowPosition());
-		cell = cellsToSearch[20];
+		cell = cellsToSearch.get(20);
 		Assert.assertEquals(4, cell.getRowPosition());
-		Assert.assertEquals(30, cellsToSearch.length);
+		Assert.assertEquals(30, cellsToSearch.size());
 	}
 	@Test
 	public void shouldSearchAllBodyCellsForRowInSelection() {

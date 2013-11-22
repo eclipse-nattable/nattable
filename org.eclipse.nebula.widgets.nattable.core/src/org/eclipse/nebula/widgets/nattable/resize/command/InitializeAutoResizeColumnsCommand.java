@@ -71,11 +71,6 @@ public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
 		return sourceLayer;
 	}
 
-	@Deprecated
-	public void setSelectedColumnPositions(final int[] selectedColumnPositions) {
-		setSelectedColumnPositions(new RangeList(selectedColumnPositions));
-	}
-
 	public void setSelectedColumnPositions(final Collection<Range> selectedColumnPositions) {
 		this.selectedColumnPositions = selectedColumnPositions;
 	}

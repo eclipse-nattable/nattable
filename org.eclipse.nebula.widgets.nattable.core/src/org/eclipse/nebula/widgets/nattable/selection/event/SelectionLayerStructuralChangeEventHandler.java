@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,16 +11,18 @@
 package org.eclipse.nebula.widgets.nattable.selection.event;
 
 import java.util.Collection;
-import java.util.Set;
+
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.selection.ISelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHandler<IStructuralChangeEvent> {
 
@@ -71,8 +73,8 @@ public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHa
 	}
 	
 	private boolean selectedRowModified(Range changedRange){
-		Set<Range> selectedRows = selectionModel.getSelectedRowPositions();
-		for (Range rowRange : selectedRows) {
+		final RangeList selectedRows = selectionModel.getSelectedRowPositions();
+		for (final Range rowRange : selectedRows) {
 			if (rowRange.overlap(changedRange)){
 				return true;
 			}

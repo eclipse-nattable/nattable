@@ -49,7 +49,7 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
 		this.columnPositions = columnPositions;
 	}
 	
-	protected PositionCoordinate[] getColumnCellsToSearch(ILayer contextLayer) {
+	protected List<PositionCoordinate> getColumnCellsToSearch(ILayer contextLayer) {
 		List<PositionCoordinate> cellsToSearch = new ArrayList<PositionCoordinate>();
 		int rowPosition = startingRowPosition;
 		// See how many rows we can add, depends on where the search is starting from
@@ -72,6 +72,7 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
 			height = rowCount;
 			// After first column is set, start the next column from the top
 		}
-		return cellsToSearch.toArray(new PositionCoordinate[0]);
+		return cellsToSearch;
 	}
+	
 }

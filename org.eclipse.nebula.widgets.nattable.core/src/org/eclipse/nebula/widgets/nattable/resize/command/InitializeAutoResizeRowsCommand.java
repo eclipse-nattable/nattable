@@ -66,11 +66,6 @@ public class InitializeAutoResizeRowsCommand extends AbstractRowCommand {
 		return sourceLayer;
 	}
 
-	@Deprecated
-	public void setSelectedRowPositions(final int[] selectedRowPositions) {
-		setSelectedRowPositions(new RangeList(selectedRowPositions));
-	}
-
 	public void setSelectedRowPositions(final Collection<Range> selectedRowPositions) {
 		this.selectedRowPositions = selectedRowPositions;
 	}

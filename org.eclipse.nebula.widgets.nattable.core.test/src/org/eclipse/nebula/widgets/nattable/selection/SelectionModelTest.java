@@ -8,26 +8,25 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionModel;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
-import org.eclipse.swt.graphics.Rectangle;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
+import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 
 public class SelectionModelTest {
@@ -54,38 +53,37 @@ public class SelectionModelTest {
 
 	@Test
 	public void isColumnFullySelected() throws Exception {
-		model.addSelection(new Rectangle(3, 0, 10, 10));
+		model.addSelection(new Rectangle(3, 0, 10, 100));
 
-		assertFalse(model.isColumnPositionFullySelected(3, 11));
-		assertTrue(model.isColumnPositionFullySelected(3, 10));
+		assertTrue(model.isColumnPositionFullySelected(3));
 
 		model.clearSelection(3, 1);
-		assertFalse(model.isColumnPositionFullySelected(3, 10));
+		assertFalse(model.isColumnPositionFullySelected(3));
 	}
 
 	@Test
 	public void isColumnFullySelectedForContiguousRectangles() throws Exception {
 		model.addSelection(new Rectangle(0, 0, 10, 10));
-		model.addSelection(new Rectangle(5, 10, 10, 10));
+		model.addSelection(new Rectangle(5, 10, 10, 90));
 
-		assertTrue(model.isColumnPositionFullySelected(5, 20));
+		assertTrue(model.isColumnPositionFullySelected(5));
 	}
 
 	@Test
 	public void isColumnFullySelectedForNonContiguousRectangles() throws Exception {
 		model.addSelection(new Rectangle(0, 0, 10, 10));
 		model.addSelection(new Rectangle(5, 5, 10, 8));
-		model.addSelection(new Rectangle(5, 15, 10, 5));
+		model.addSelection(new Rectangle(5, 15, 10, 90));
 
-		assertFalse(model.isColumnPositionFullySelected(5, 20));
+		assertFalse(model.isColumnPositionFullySelected(5));
 	}
 
 	@Test
 	public void isColumnFullySelectedForOverlapingRectangles() throws Exception {
 		model.addSelection(new Rectangle(0, 0, 10, 10));
-		model.addSelection(new Rectangle(5, 5, 10, 8));
+		model.addSelection(new Rectangle(5, 5, 10, 95));
 
-		assertTrue(model.isColumnPositionFullySelected(5, 13));
+		assertTrue(model.isColumnPositionFullySelected(5));
 	}
 
 	@Test
@@ -93,97 +91,101 @@ public class SelectionModelTest {
 		model.addSelection(new Rectangle(1, 5, 1, 1));
 		model.addSelection(new Rectangle(1, 10, 1, 1));
 
-		assertFalse(model.isColumnPositionFullySelected(1, 10));
+		assertFalse(model.isColumnPositionFullySelected(1));
 	}
 
 	@Test
 	public void isColumnFullySelectedWhenLastCellSelected() throws Exception {
 		model.addSelection(new Rectangle(1, 5, 1, 1));
 
-		assertFalse(model.isColumnPositionFullySelected(1, 6));
-		assertFalse(model.isColumnPositionFullySelected(1, 1000000));
+		assertFalse(model.isColumnPositionFullySelected(1));
 	}
 	
 	@Test
 	public void isRowFullySelected() throws Exception {
-		model.addSelection(new Rectangle(0,3,10,10));
-		assertTrue(model.isRowPositionFullySelected(3, 10));
+		model.addSelection(new Rectangle(0, 3, 100, 10));
+		
+		assertTrue(model.isRowPositionFullySelected(3));
 	}
 
 	@Test
 	public void isRowFullySelectedWhenMultipleRowsAndColumnsAreSelected() throws Exception {
 		//Rows 3, 6 fully selected
-		model.addSelection(new Rectangle(0,3,10,1));
-		model.addSelection(new Rectangle(0,6,10,1));
+		model.addSelection(new Rectangle(0, 3, 100, 1));
+		model.addSelection(new Rectangle(0, 6, 100, 1));
 		
 		//Column 2, 5 fully selected
-		model.addSelection(new Rectangle(2, 0,1,10));
-		model.addSelection(new Rectangle(5, 0,1,10));
+		model.addSelection(new Rectangle(2, 0, 1, 100));
+		model.addSelection(new Rectangle(5, 0, 1, 100));
 		
-		assertTrue(model.isRowPositionFullySelected(6, 10));
-		assertTrue(model.isRowPositionFullySelected(3, 10));
+		assertTrue(model.isRowPositionFullySelected(6));
+		assertTrue(model.isRowPositionFullySelected(3));
 		
 		// Remove Column 2
-		model.clearSelection(new Rectangle(2, 0,1,10));
-		assertFalse(model.isRowPositionFullySelected(6, 10));
-		assertFalse(model.isRowPositionFullySelected(3, 10));
+		model.clearSelection(new Rectangle(2, 0, 1, 100));
+		assertFalse(model.isRowPositionFullySelected(6));
+		assertFalse(model.isRowPositionFullySelected(3));
 		
 		//Add column 2 again
-		model.addSelection(new Rectangle(2, 0,1,10));
-		assertTrue(model.isRowPositionFullySelected(6, 10));
-		assertTrue(model.isRowPositionFullySelected(3, 10));
+		model.addSelection(new Rectangle(2, 0, 1, 100));
+		assertTrue(model.isRowPositionFullySelected(6));
+		assertTrue(model.isRowPositionFullySelected(3));
 	}
 
 	@Test
 	public void isRowNotFullySelected() throws Exception {
-		model.addSelection(new Rectangle(0,3,10,10));
+		model.addSelection(new Rectangle(0, 3, 10, 10));
 		
-		assertFalse(model.isRowPositionFullySelected(3, 11));
+		assertFalse(model.isRowPositionFullySelected(3));
 	}
 	
 	@Test
 	public void contains() throws Exception {
-		assertTrue(model.contains(new Rectangle(0, 0, 10, 10), new Rectangle(1, 1, 5, 5)));
-		assertTrue(model.contains(new Rectangle(0, 0, 10, 1), new Rectangle(5, 0, 1, 1)));
+		assertTrue(new Rectangle(0, 0, 10, 10).contains(new Rectangle(1, 1, 5, 5)));
+		assertTrue(new Rectangle(0, 0, 10, 1).contains(new Rectangle(5, 0, 1, 1)));
 		
-		assertFalse(model.contains(new Rectangle(0, 6, 0, 0), new Rectangle(2, 6, 1, 1)));
+		assertFalse(new Rectangle(0, 6, 0, 0).contains(new Rectangle(2, 6, 1, 1)));
 	}
 	
 	@Test
 	public void isMltipleCol() throws Exception {
-		model.addSelection(new Rectangle(1,0,1,20));
-		model.addSelection(new Rectangle(2,0,1,20));
-		model.addSelection(new Rectangle(3,0,1,20));
+		model.addSelection(new Rectangle(1, 0, 1, 100));
+		model.addSelection(new Rectangle(2, 0, 1, 100));
+		model.addSelection(new Rectangle(3, 0, 1, 100));
 		
-		assertFalse(model.isColumnPositionFullySelected(1, 21));
-		assertTrue(model.isColumnPositionFullySelected(2, 20));
+		assertTrue(model.isColumnPositionFullySelected(1));
+		assertTrue(model.isColumnPositionFullySelected(2));
+		assertFalse(model.isColumnPositionFullySelected(4));
 	}
 	
 	@Test
 	public void shouldReturnListOfFullySelectedColumns() throws Exception {
-		model.addSelection(new Rectangle(1,0,1,20));
-		model.addSelection(new Rectangle(2,10,1,4));
-		model.addSelection(new Rectangle(3,0,1,20));
+		RangeList fullySelectedColumns = model.getFullySelectedColumnPositions();
+		Assert.assertEquals(0, fullySelectedColumns.size());
 		
-		int[] fullySelectedColumns = model.getFullySelectedColumnPositions(20);
-		Assert.assertEquals(2, fullySelectedColumns.length);
-		Assert.assertEquals(1, fullySelectedColumns[0]);
-		Assert.assertEquals(3, fullySelectedColumns[1]);
+		model.addSelection(new Rectangle(1, 0, 1, 100));
+		model.addSelection(new Rectangle(2, 10, 1, 4));
+		model.addSelection(new Rectangle(3, 0, 1, 100));
+		
+		fullySelectedColumns = model.getFullySelectedColumnPositions();
+		Assert.assertEquals(2, fullySelectedColumns.size());
+		Assert.assertEquals(new Range(1), fullySelectedColumns.get(0));
+		Assert.assertEquals(new Range(3), fullySelectedColumns.get(1));
 	}
 	
 	@Test 
 	public void shouldReturnListOfFullySelectedRows() throws Exception {
-		int[] fullySelectedRows = model.getFullySelectedRowPositions(20);
-		Assert.assertEquals(0, fullySelectedRows.length);
+		RangeList fullySelectedRows = model.getFullySelectedRowPositions();
+		Assert.assertEquals(0, fullySelectedRows.size());
 
-		model.addSelection(new Rectangle(0,1,20,1));
-		model.addSelection(new Rectangle(3,2,4,1));
-		model.addSelection(new Rectangle(0,3,20,1));
+		model.addSelection(new Rectangle(0, 1, 100, 1));
+		model.addSelection(new Rectangle(3, 2, 4, 1));
+		model.addSelection(new Rectangle(0, 3, 100, 1));
 		
-		fullySelectedRows = model.getFullySelectedRowPositions(20);
-		Assert.assertEquals(2, fullySelectedRows.length);
-		Assert.assertEquals(1, fullySelectedRows[0]);
-		Assert.assertEquals(3, fullySelectedRows[1]);
+		fullySelectedRows = model.getFullySelectedRowPositions();
+		Assert.assertEquals(2, fullySelectedRows.size());
+		Assert.assertEquals(new Range(1), fullySelectedRows.get(0));
+		Assert.assertEquals(new Range(3), fullySelectedRows.get(1));
 	}
 	
 	@Test
@@ -587,11 +589,11 @@ public class SelectionModelTest {
 			model.addSelection(column, column % 3);
 		}
 		
-		int [] selectedColumns = model.getSelectedColumnPositions();
+		RangeList selectedColumns = model.getSelectedColumnPositions();
 		
 		Arrays.sort(columns);
 		
-		assertEquals(Arrays.toString(columns), Arrays.toString(selectedColumns));
+		assertEquals(Arrays.toString(columns), RangeList.listValues(selectedColumns).toString());
 	}
 	
 	@Test
@@ -715,19 +717,4 @@ public class SelectionModelTest {
 		removeRangeFromRange(col, row, numCols, numRows, removedRow, removedColumn, removedNumCols, removedNumRows);
 	}
 	
-	@Test
-	public void sortByY() throws Exception {
-		List<Rectangle> rectangles = new ArrayList<Rectangle>();
-		rectangles.add(new Rectangle(0, 3, 1, 1));
-		rectangles.add(new Rectangle(0, 5, 1, 1));
-		rectangles.add(new Rectangle(0, 1, 1, 1));
-		rectangles.add(new Rectangle(0, 13, 1, 1));
-
-		model.sortByY(rectangles);
-		
-		Assert.assertEquals(1, rectangles.get(0).y);
-		Assert.assertEquals(3, rectangles.get(1).y);
-		Assert.assertEquals(5, rectangles.get(2).y);
-		Assert.assertEquals(13, rectangles.get(3).y);
-	}
 }

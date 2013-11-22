@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,14 +44,10 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
 		return coordinate;
 	}
 
-	protected PositionCoordinate[] getSelectedCells(SelectionLayer selectionLayer) {
-		PositionCoordinate[] selectedCells = null;
+	protected List<PositionCoordinate> getSelectedCells(SelectionLayer selectionLayer) {
+		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
 		if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
-			List<PositionCoordinate> coordinates = Arrays.asList(selectionLayer.getSelectedCellPositions());
-			Collections.reverse(coordinates);
-			selectedCells = coordinates.toArray(new PositionCoordinate[0]);
-		} else {
-			selectedCells = selectionLayer.getSelectedCellPositions();
+			Collections.reverse(selectedCells);
 		}
 		return selectedCells;
 	}

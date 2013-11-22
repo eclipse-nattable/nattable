@@ -10,6 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -19,19 +29,12 @@ import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
 import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
-import org.eclipse.nebula.widgets.nattable.search.strategy.SelectionSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectAllCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
 
 public class SelectionSearchStrategyTest {
 
@@ -98,8 +101,8 @@ public class SelectionSearchStrategyTest {
 		
 		// We should get 20 Cells from the body		
 		SelectionSearchStrategy selectionStrategy = new SelectionSearchStrategy(configRegistry);
-		PositionCoordinate[] cellsToSearch = selectionStrategy.getSelectedCells(gridLayer.getBodyLayer().getSelectionLayer());
-		Assert.assertEquals(20, cellsToSearch.length);
+		List<PositionCoordinate> cellsToSearch = selectionStrategy.getSelectedCells(gridLayer.getBodyLayer().getSelectionLayer());
+		Assert.assertEquals(20, cellsToSearch.size());
 	}
 
 	@Test
@@ -110,7 +113,7 @@ public class SelectionSearchStrategyTest {
 		gridLayer.doCommand(new SelectCellCommand(gridLayer, 5, 4, false, true));
 		gridLayer.doCommand(new SelectCellCommand(gridLayer, 6, 2, false, true));
 		
-		Assert.assertEquals(5, gridLayer.getBodyLayer().getSelectionLayer().getSelectedCellPositions().length);
+		Assert.assertEquals(5, gridLayer.getBodyLayer().getSelectionLayer().getSelectedCellPositions().size());
 		
 		final SelectionLayer selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
 		SelectionSearchStrategy selectionStrategy = new SelectionSearchStrategy(configRegistry);

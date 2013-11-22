@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -22,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+
 
 public class CellDisplayValueSearchUtil {
 	
@@ -51,14 +51,13 @@ public class CellDisplayValueSearchUtil {
 	
 	
 	@SuppressWarnings("unchecked")
-	static PositionCoordinate findCell(final ILayer layer, final IConfigRegistry configRegistry, final PositionCoordinate[] cellsToSearch, final Object valueToMatch, final Comparator comparator, final boolean caseSensitive) {	
-		final List<PositionCoordinate> cellCoordinates = Arrays.asList(cellsToSearch);		
+	static PositionCoordinate findCell(final ILayer layer, final IConfigRegistry configRegistry, List<PositionCoordinate> cellsToSearch, final Object valueToMatch, final Comparator comparator, final boolean caseSensitive) {	
 		// Find cell
 		PositionCoordinate targetCoordinate = null;
 		
 		String stringValue = caseSensitive ? valueToMatch.toString() : valueToMatch.toString().toLowerCase();
-		for (int cellIndex = 0; cellIndex < cellCoordinates.size(); cellIndex++) {
-			final PositionCoordinate cellCoordinate = cellCoordinates.get(cellIndex);
+		for (int cellIndex = 0; cellIndex < cellsToSearch.size(); cellIndex++) {
+			final PositionCoordinate cellCoordinate = cellsToSearch.get(cellIndex);
 			final int columnPosition = cellCoordinate.columnPosition;
 			final int rowPosition = cellCoordinate.rowPosition;
 			
@@ -84,4 +83,5 @@ public class CellDisplayValueSearchUtil {
 		
 		return targetCoordinate;
 	}
+	
 }

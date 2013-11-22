@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,14 +20,18 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class RowSelectionModel<R> implements IRowSelectionModel<R> {
-
-	protected final SelectionLayer selectionLayer;
+	
+	protected final IUniqueIndexLayer selectionLayer;
+	
 	protected final IRowDataProvider<R> rowDataProvider;
 	protected final IRowIdAccessor<R> rowIdAccessor;
 	private boolean multipleSelectionAllowed;
@@ -37,179 +40,183 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	protected Rectangle lastSelectedRange;  // *live* reference to last range parameter used in addSelection(range)
 	protected Set<Serializable> lastSelectedRowIds;
 	protected final ReadWriteLock selectionsLock;
-
-	public RowSelectionModel(SelectionLayer selectionLayer, IRowDataProvider<R> rowDataProvider, IRowIdAccessor<R> rowIdAccessor) {
+	
+	
+	public RowSelectionModel(/*@NotNull*/ final IUniqueIndexLayer selectionLayer,
+			final IRowDataProvider<R> rowDataProvider, final IRowIdAccessor<R> rowIdAccessor) {
 		this(selectionLayer, rowDataProvider, rowIdAccessor, true);
 	}
 	
-	public RowSelectionModel(SelectionLayer selectionLayer, IRowDataProvider<R> rowDataProvider, IRowIdAccessor<R> rowIdAccessor, boolean multipleSelectionAllowed) {
+	public RowSelectionModel(/*@NotNull*/ final IUniqueIndexLayer selectionLayer,
+			final IRowDataProvider<R> rowDataProvider, final IRowIdAccessor<R> rowIdAccessor,
+			final boolean multipleSelectionAllowed) {
+		if (selectionLayer == null) {
+			throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
+		}
 		this.selectionLayer = selectionLayer;
 		this.rowDataProvider = rowDataProvider;
 		this.rowIdAccessor = rowIdAccessor;
 		this.multipleSelectionAllowed = multipleSelectionAllowed;
 		
-		selectedRows = new HashMap<Serializable, R>();
-		selectionsLock = new ReentrantReadWriteLock();
+		this.selectedRows = new HashMap<Serializable, R>();
+		this.selectionsLock = new ReentrantReadWriteLock();
 	}
+	
 	
 	@Override
 	public boolean isMultipleSelectionAllowed() {
-		return multipleSelectionAllowed;
+		return this.multipleSelectionAllowed;
 	}
 	
 	@Override
-	public void setMultipleSelectionAllowed(boolean multipleSelectionAllowed) {
+	public void setMultipleSelectionAllowed(final boolean multipleSelectionAllowed) {
 		this.multipleSelectionAllowed = multipleSelectionAllowed;
 	}
-
+	
+	
 	@Override
-	public void addSelection(int columnPosition, int rowPosition) {
-		selectionsLock.writeLock().lock();
-		
+	public void addSelection(final int columnPosition, final int rowPosition) {
+		this.selectionsLock.writeLock().lock();
 		try {
-			if (!multipleSelectionAllowed) {
-				selectedRows.clear();
+			if (!this.multipleSelectionAllowed) {
+				this.selectedRows.clear();
 			}
 			
-			R rowObject = getRowObjectByPosition(rowPosition);
+			final R rowObject = getRowObjectByPosition(rowPosition);
 			if (rowObject != null) {
-				Serializable rowId = rowIdAccessor.getRowId(rowObject);
-				selectedRows.put(rowId, rowObject);
+				final Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+				this.selectedRows.put(rowId, rowObject);
 			}
 		} finally {
-			selectionsLock.writeLock().unlock();
+			this.selectionsLock.writeLock().unlock();
 		}
 	}
-
+	
 	@Override
-	public void addSelection(Rectangle range) {
-		selectionsLock.writeLock().lock();
-		
+	public void addSelection(final Rectangle positions) {
+		this.selectionsLock.writeLock().lock();
 		try {
-			if (multipleSelectionAllowed) {
-				if (range.equals(lastSelectedRange)) {
+			if (this.multipleSelectionAllowed) {
+				if (positions.equals(this.lastSelectedRange)) {
 					// Unselect all previously selected rowIds
-					if (lastSelectedRowIds != null) {
-						for (Serializable rowId : lastSelectedRowIds) {
-							selectedRows.remove(rowId);
+					if (this.lastSelectedRowIds != null) {
+						for (final Serializable rowId : this.lastSelectedRowIds) {
+							this.selectedRows.remove(rowId);
 						}
 					}
 				}
 			} else {
-				selectedRows.clear();
+				this.selectedRows.clear();
 				//as no multiple selection is allowed, ensure that only one row 
 				//will be selected
-				range.height = 1;
+				positions.height = 1;
 			}
 			
-			Map<Serializable, R> rowsToSelect = new HashMap<Serializable, R>();
+			final Map<Serializable, R> rowsToSelect = new HashMap<Serializable, R>();
 			
-			int maxY = Math.min(range.y + range.height, selectionLayer.getRowCount());
-			for (int rowPosition = range.y; rowPosition < maxY; rowPosition++) {
-				R rowObject = getRowObjectByPosition(rowPosition);
+			final int maxY = Math.min(positions.y + positions.height, this.selectionLayer.getRowCount());
+			for (int rowPosition = positions.y; rowPosition < maxY; rowPosition++) {
+				final R rowObject = getRowObjectByPosition(rowPosition);
 				if (rowObject != null) {
-					Serializable rowId = rowIdAccessor.getRowId(rowObject);
+					final Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
 					rowsToSelect.put(rowId, rowObject);
 				}
 			}
 			
-			selectedRows.putAll(rowsToSelect);
+			this.selectedRows.putAll(rowsToSelect);
 			
-			if (range.equals(lastSelectedRange)) {
-				lastSelectedRowIds = rowsToSelect.keySet();
+			if (positions.equals(this.lastSelectedRange)) {
+				this.lastSelectedRowIds = rowsToSelect.keySet();
 			} else {
-				lastSelectedRowIds = null;
+				this.lastSelectedRowIds = null;
 			}
 			
-			lastSelectedRange = range;
+			this.lastSelectedRange = positions;
 		} finally {
-			selectionsLock.writeLock().unlock();
+			this.selectionsLock.writeLock().unlock();
 		}
 	}
 	
 	@Override
 	public void clearSelection() {
-		selectionsLock.writeLock().lock();
+		this.selectionsLock.writeLock().lock();
 		try {
-			selectedRows.clear();
+			this.selectedRows.clear();
 		} finally {
-			selectionsLock.writeLock().unlock();
+			this.selectionsLock.writeLock().unlock();
 		}
 	}
-
+	
 	@Override
-	public void clearSelection(int columnPosition, int rowPosition) {
-		selectionsLock.writeLock().lock();
-		
+	public void clearSelection(final int columnPosition, final int rowPosition) {
+		this.selectionsLock.writeLock().lock();
 		try {
-			Serializable rowId = getRowIdByPosition(rowPosition);
-			selectedRows.remove(rowId);
+			final Serializable rowId = getRowIdByPosition(rowPosition);
+			this.selectedRows.remove(rowId);
 		} finally {
-			selectionsLock.writeLock().unlock();
+			this.selectionsLock.writeLock().unlock();
 		}
 	}
-
+	
 	@Override
-	public void clearSelection(Rectangle removedSelection) {
-		selectionsLock.writeLock().lock();
-		
+	public void clearSelection(final Rectangle positions) {
+		this.selectionsLock.writeLock().lock();
 		try {
-			int maxY = Math.min(removedSelection.y + removedSelection.height, selectionLayer.getRowCount());
-			for (int rowPosition = removedSelection.y; rowPosition < maxY; rowPosition++) {
+			final int maxY = Math.min(positions.y + positions.height, this.selectionLayer.getRowCount());
+			for (int rowPosition = positions.y; rowPosition < maxY; rowPosition++) {
 				clearSelection(0, rowPosition);
 			}
 		} finally {
-			selectionsLock.writeLock().unlock();
+			this.selectionsLock.writeLock().unlock();
 		}
 	}
-
+	
 	@Override
-	public void clearSelection(R rowObject) {
-		selectionsLock.writeLock().lock();
+	public void clearSelection(final R rowObject) {
+		this.selectionsLock.writeLock().lock();
 		
 		try {
-			selectedRows.values().remove(rowObject);
+			this.selectedRows.values().remove(rowObject);
 		} finally {
-			selectionsLock.writeLock().unlock();
+			this.selectionsLock.writeLock().unlock();
 		}
-	};
+	}
+	
 	
 	@Override
 	public boolean isEmpty() {
-		selectionsLock.readLock().lock();
-		
+		this.selectionsLock.readLock().lock();
 		try {
-			return selectedRows.isEmpty();
+			return this.selectedRows.isEmpty();
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
+	
 	@Override
 	public List<Rectangle> getSelections() {
-		List<Rectangle> selectionRectangles = new ArrayList<Rectangle>();
-		
-		selectionsLock.readLock().lock();
-		
+		this.selectionsLock.readLock().lock();
 		try {
-			int width = selectionLayer.getColumnCount();
-			for (Serializable rowId : selectedRows.keySet()) {
-				int rowPosition = getRowPositionById(rowId);
+			final List<Rectangle> selectionRectangles = new ArrayList<Rectangle>();
+			final int width = this.selectionLayer.getColumnCount();
+			
+			for (final Serializable rowId : this.selectedRows.keySet()) {
+				final int rowPosition = getRowPositionById(rowId);
 				selectionRectangles.add(new Rectangle(0, rowPosition, width, 1));
 			}
+			
+			return selectionRectangles;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
-		
-		return selectionRectangles;
 	}
 	
 	// Cell features
-
+	
 	@Override
-	public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
-		ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
-		int cellOriginRowPosition = cell.getOriginRowPosition();
+	public boolean isCellPositionSelected(final int columnPosition, final int rowPosition) {
+		final ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition, rowPosition);
+		final int cellOriginRowPosition = cell.getOriginRowPosition();
 		for (int testRowPosition = cellOriginRowPosition; testRowPosition < cellOriginRowPosition + cell.getRowSpan(); testRowPosition++) {
 			if (isRowPositionSelected(testRowPosition)) {
 				return true;
@@ -219,194 +226,178 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	}
 	
 	// Column features
-
+	
 	@Override
-	public int[] getSelectedColumnPositions() {
-		if (!isEmpty()) {
-			selectionsLock.readLock().lock();
+	public RangeList getSelectedColumnPositions() {
+		this.selectionsLock.readLock().lock();
+		try {
+			final RangeList selected = new RangeList();
 			
-			int columnCount;
-			
-			try {
-				columnCount = selectionLayer.getColumnCount();
-			} finally {
-				selectionsLock.readLock().unlock();
+			if (!this.selectedRows.isEmpty()) {
+				selected.add(new Range(0, this.selectionLayer.getColumnCount()));
 			}
 			
-			int[] columns = new int[columnCount];
-			for (int i = 0; i < columnCount; i++) {
-				columns[i] = i;
-			}
-			return columns;
+			return selected;
+		} finally {
+			this.selectionsLock.readLock().unlock();
 		}
-		return new int[] {};
 	}
 	
 	@Override
-	public boolean isColumnPositionSelected(int columnPosition) {
-		selectionsLock.readLock().lock();
-
+	public boolean isColumnPositionSelected(final int columnPosition) {
+		this.selectionsLock.readLock().lock();
 		try {
-			return !selectedRows.isEmpty();
+			return !this.selectedRows.isEmpty();
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
+	
 	@Override
-	public int[] getFullySelectedColumnPositions(int fullySelectedColumnRowCount) {
-		selectionsLock.readLock().lock();
-		
+	public RangeList getFullySelectedColumnPositions() {
+		this.selectionsLock.readLock().lock();
 		try {
-			if (isColumnPositionFullySelected(0, fullySelectedColumnRowCount)) {
-				return getSelectedColumnPositions();
+			final RangeList selected = new RangeList();
+			
+			if (isFullySelected()) {
+				selected.add(new Range(0, this.selectionLayer.getColumnCount()));
 			}
+			
+			return selected;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
-		
-		return new int[] {};
 	}
-
+	
 	@Override
-	public boolean isColumnPositionFullySelected(int columnPosition, int fullySelectedColumnRowCount) {
-		selectionsLock.readLock().lock();
-		
+	public boolean isColumnPositionFullySelected(final int columnPosition) {
+		this.selectionsLock.readLock().lock();
 		try {
-			int selectedRowCount = selectedRows.size();
-			
-			if (selectedRowCount == 0) {
-				return false;
-			}
-			
-			return selectedRowCount == fullySelectedColumnRowCount;
+			return isFullySelected();
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
+	}
+	
+	private boolean isFullySelected() {
+		final int rowCount = this.selectionLayer.getRowCount();
+		final int selectedRowCount = this.selectedRows.size();
+		
+		return (rowCount > 0 && selectedRowCount == rowCount);
 	}
 	
 	// Row features
 	
 	@Override
 	public List<R> getSelectedRowObjects() {
-		final List<R> rowObjects = new ArrayList<R>();
-
 		this.selectionsLock.readLock().lock();
 		try {
-			rowObjects.addAll(this.selectedRows.values());
+			return new ArrayList<R>(this.selectedRows.values());
 		} finally {
 			this.selectionsLock.readLock().unlock();
 		}
-
-		return rowObjects;
 	}
-
+	
 	@Override
 	public int getSelectedRowCount() {
-		selectionsLock.readLock().lock();
-		
+		this.selectionsLock.readLock().lock();
 		try {
-			return selectedRows.size();
+			return this.selectedRows.size();
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
+	
 	@Override
-	public Set<Range> getSelectedRowPositions() {
-		Set<Range> selectedRowRanges = new HashSet<Range>();
-		
-		selectionsLock.readLock().lock();
-		
+	public RangeList getSelectedRowPositions() {
+		this.selectionsLock.readLock().lock();
 		try {
-			for (Serializable rowId : selectedRows.keySet()) {
-				int rowPosition = getRowPositionById(rowId);
-				selectedRowRanges.add(new Range(rowPosition, rowPosition + 1));
+			final RangeList selected = new RangeList();
+			
+			for (final Serializable rowId : this.selectedRows.keySet()) {
+				selected.values().add(getRowPositionById(rowId));
 			}
+			
+			return selected;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
-		
-		return selectedRowRanges;
 	}
-
+	
 	@Override
-	public boolean isRowPositionSelected(int rowPosition) {
-		selectionsLock.readLock().lock();
-		
+	public boolean isRowPositionSelected(final int rowPosition) {
+		this.selectionsLock.readLock().lock();
 		try {
-			Serializable rowId = getRowIdByPosition(rowPosition);
-			return selectedRows.containsKey(rowId);
+			final Serializable rowId = getRowIdByPosition(rowPosition);
+			
+			return this.selectedRows.containsKey(rowId);
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
+	
 	@Override
-	public int[] getFullySelectedRowPositions(int rowWidth) {
-		selectionsLock.readLock().lock();
-		
-		try {
-			int selectedRowCount = selectedRows.size();
-			int[] selectedRowPositions = new int[selectedRowCount];
-			int i = 0;
-			for (Serializable rowId : selectedRows.keySet()) {
-				selectedRowPositions[i] = getRowPositionById(rowId);
-				i++;
-			}
-			return selectedRowPositions;
-		} finally {
-			selectionsLock.readLock().unlock();
-		}
+	public RangeList getFullySelectedRowPositions() {
+		return getSelectedRowPositions();
 	}
-
+	
 	@Override
-	public boolean isRowPositionFullySelected(int rowPosition, int rowWidth) {
+	public boolean isRowPositionFullySelected(final int rowPosition) {
 		return isRowPositionSelected(rowPosition);
 	}
-
-	private Serializable getRowIdByPosition(int rowPosition) {
-		R rowObject = getRowObjectByPosition(rowPosition);
+	
+	private Serializable getRowIdByPosition(final int rowPosition) {
+		final R rowObject = getRowObjectByPosition(rowPosition);
 		if (rowObject != null) {
-			Serializable rowId = rowIdAccessor.getRowId(rowObject);
+			final Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
 			return rowId;
 		}
 		return null;
 	}
-
-	private R getRowObjectByPosition(int rowPosition) {
-		selectionsLock.readLock().lock();
-		
+	
+	private R getRowObjectByPosition(final int rowPosition) {
+		this.selectionsLock.readLock().lock();
 		try {
-			int rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
+			final int rowIndex = this.selectionLayer.getRowIndexByPosition(rowPosition);
 			if (rowIndex >= 0) {
 				try {
-					R rowObject = rowDataProvider.getRowObject(rowIndex);
+					final R rowObject = this.rowDataProvider.getRowObject(rowIndex);
 					return rowObject;
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					// row index is invalid for the data provider
 				}
 			}
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 		
 		return null;
 	}
 	
-	private int getRowPositionById(Serializable rowId) {
-		selectionsLock.readLock().lock();
-		
+	private int getRowPositionById(final Serializable rowId) {
+		this.selectionsLock.readLock().lock();
 		try {
-			R rowObject = selectedRows.get(rowId);
-			int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
-			if(rowIndex == -1){
+			final R rowObject = this.selectedRows.get(rowId);
+			final int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
+			if (rowIndex < 0) {
 				return -1;
 			}
-			int rowPosition = selectionLayer.getRowPositionByIndex(rowIndex);
-			return rowPosition;
+			
+			return this.selectionLayer.getRowPositionByIndex(rowIndex);
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
+		}
+	}
+	
+	//-- Object methods --//
+	
+	@Override
+	public String toString() {
+		this.selectionsLock.readLock().lock();
+		try {
+			return this.selectedRows.toString();
+		} finally {
+			this.selectionsLock.readLock().unlock();
 		}
 	}
 	

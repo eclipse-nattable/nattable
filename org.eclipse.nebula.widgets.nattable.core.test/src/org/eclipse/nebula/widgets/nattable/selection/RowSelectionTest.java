@@ -15,14 +15,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
+import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
+
 
 public class RowSelectionTest {
 // Tests for column selection NTBL-225
@@ -56,7 +58,7 @@ public class RowSelectionTest {
 		Assert.assertEquals(2, selectionLayer.getLastSelectedCellPosition().getRowPosition());
 
 		// Cells in between should have been selected
-		Assert.assertEquals(columnCount, selectionLayer.getSelectedColumnPositions().length);
+		Assert.assertEquals(columnCount, selectionLayer.getSelectedColumnPositions().values().size());
 	}
 
 	@Test
@@ -151,8 +153,8 @@ public class RowSelectionTest {
 		Assert.assertEquals(1, lastColumnPosition);
 
 		// Cells in row should have been selected
-		final int[] selectedColumns = selectionLayer.getSelectedColumnPositions();
-		Assert.assertEquals(columnCount, selectedColumns.length);
+		final RangeList selectedColumns = selectionLayer.getSelectedColumnPositions();
+		Assert.assertEquals(columnCount, selectedColumns.values().size());
 		Assert.assertTrue(selectionLayer.isCellPositionSelected(4, 1));
 
 		// Test extending column selection to the right of previous column selection
@@ -176,7 +178,7 @@ public class RowSelectionTest {
 		selectionLayer.clear();
 		selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 0, false, true));
 
-		Collection<PositionCoordinate> cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Collection<PositionCoordinate> cells = selectionLayer.getSelectedCellPositions();
 		assertEquals(1, cells.size());
 		assertEquals(1, selectionLayer.getSelectedRowPositions().size());
 		assertEquals(1, selectionLayer.getSelectedRowCount());
@@ -184,7 +186,7 @@ public class RowSelectionTest {
 		//select another row with control mask
 		selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 2, false, true));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		cells = selectionLayer.getSelectedCellPositions();
 		assertEquals(1, cells.size());
 		assertEquals(1, selectionLayer.getSelectedRowPositions().size());
 		assertEquals(1, selectionLayer.getSelectedRowCount());
@@ -192,7 +194,7 @@ public class RowSelectionTest {
 		//select additional rows with shift mask
 		selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 5, true, false));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		cells = selectionLayer.getSelectedCellPositions();
 		assertEquals(1, cells.size());
 		assertEquals(1, selectionLayer.getSelectedRowPositions().size());
 		assertEquals(1, selectionLayer.getSelectedRowCount());

@@ -17,13 +17,14 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 public class SortColumnEvent extends ColumnVisualChangeEvent {
 
 	public SortColumnEvent(ILayer layer, int columnPosition) {
-		super(layer, new Range(columnPosition, columnPosition + 1));
+		super(layer, new Range(columnPosition));
 	}
 	
 	protected SortColumnEvent(SortColumnEvent event) {
 		super(event);
 	}
 	
+	@Override
 	public SortColumnEvent cloneEvent() {
 		return new SortColumnEvent(this);
 	}

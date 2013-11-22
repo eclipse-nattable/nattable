@@ -14,16 +14,18 @@ import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveD
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
 
 public class CellSelectionTest {
 
@@ -58,12 +60,13 @@ public class CellSelectionTest {
 
 	private boolean wasPreviousSelectionCleared() {
 		// Make sure previous selection was cleared
-		return (selectionLayer.getSelectedColumnPositions().length == 1 && selectionLayer.getSelectedRowCount() == 1);
+		return (selectionLayer.getSelectedColumnPositions().values().size() == 1
+				&& selectionLayer.getSelectedRowCount() == 1);
 	}
 
 	private boolean wasPreviousColumnSelectionAppended() {
 		// Make sure previous column selection was not cleared
-		return selectionLayer.getSelectedColumnPositions().length > 1;
+		return selectionLayer.getSelectedColumnPositions().values().size() > 1;
 	}
 
 	private boolean wasPreviousRowSelectionAppended() {
@@ -377,20 +380,20 @@ public class CellSelectionTest {
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0, false, true));
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 9, 9, false, true));
 
-		PositionCoordinate[] cells = selectionLayer.getSelectedCellPositions();
-		Assert.assertEquals(4, cells.length);
+		List<PositionCoordinate> cells = selectionLayer.getSelectedCellPositions();
+		Assert.assertEquals(4, cells.size());
 		// (1, 0)
-		Assert.assertEquals(1, cells[0].columnPosition);
-		Assert.assertEquals(0, cells[0].rowPosition);
+		Assert.assertEquals(1, cells.get(0).columnPosition);
+		Assert.assertEquals(0, cells.get(0).rowPosition);
 		// (2, 3)
-		Assert.assertEquals(2, cells[1].columnPosition);
-		Assert.assertEquals(3, cells[1].rowPosition);
+		Assert.assertEquals(2, cells.get(1).columnPosition);
+		Assert.assertEquals(3, cells.get(1).rowPosition);
 		// (4, 1)
-		Assert.assertEquals(4, cells[2].columnPosition);
-		Assert.assertEquals(1, cells[2].rowPosition);
+		Assert.assertEquals(4, cells.get(2).columnPosition);
+		Assert.assertEquals(1, cells.get(2).rowPosition);
 		// (9, 9)
-		Assert.assertEquals(9, cells[3].columnPosition);
-		Assert.assertEquals(9, cells[3].rowPosition);
+		Assert.assertEquals(9, cells.get(3).columnPosition);
+		Assert.assertEquals(9, cells.get(3).rowPosition);
 	}
 
 	@Test
@@ -403,7 +406,7 @@ public class CellSelectionTest {
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 2, false, true));
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 2, false, true));
 
-		Collection<PositionCoordinate> cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Collection<PositionCoordinate> cells = selectionLayer.getSelectedCellPositions();
 
 		Assert.assertEquals(6, cells.size());
 		// (1, 0)
@@ -427,14 +430,14 @@ public class CellSelectionTest {
 		selectionLayer.clear();
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0, false, true));
 
-		Collection<PositionCoordinate> cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		Collection<PositionCoordinate> cells = selectionLayer.getSelectedCellPositions();
 		Assert.assertEquals(1, cells.size());
 		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 1, 0)));
 
 		//select another cell with control mask
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 0, false, true));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		cells = selectionLayer.getSelectedCellPositions();
 		Assert.assertEquals(1, cells.size());
 		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 2, 0)));
 
@@ -442,7 +445,7 @@ public class CellSelectionTest {
 		//only the first cell should be selected afterwards
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 10, true, false));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		cells = selectionLayer.getSelectedCellPositions();
 		Assert.assertEquals(1, cells.size());
 		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 2, 0)));
 
@@ -450,7 +453,7 @@ public class CellSelectionTest {
 		//only the first cell should be selected afterwards
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 10, 0, true, false));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
+		cells = selectionLayer.getSelectedCellPositions();
 		Assert.assertEquals(1, cells.size());
 		Assert.assertTrue(cells.contains(new PositionCoordinate(selectionLayer, 2, 0)));
 	}

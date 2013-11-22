@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,16 +10,20 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.event;
 
+import java.util.Collection;
+
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+
 
 public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISelectionEvent {
 
 	private final SelectionLayer selectionLayer;
 	
-	public ColumnSelectionEvent(SelectionLayer selectionLayer, int columnPosition) {
-		super(selectionLayer, new Range(columnPosition, columnPosition + 1));
+	
+	public ColumnSelectionEvent(SelectionLayer selectionLayer, Collection<Range> columnPositions) {
+		super(selectionLayer, columnPositions);
 		this.selectionLayer = selectionLayer;
 	}
 	
@@ -28,12 +32,15 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISe
 		this.selectionLayer = event.selectionLayer;
 	}
 	
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
-	
+	@Override
 	public ColumnSelectionEvent cloneEvent() {
 		return new ColumnSelectionEvent(this);
+	}
+	
+	
+	@Override
+	public SelectionLayer getSelectionLayer() {
+		return selectionLayer;
 	}
 	
 }

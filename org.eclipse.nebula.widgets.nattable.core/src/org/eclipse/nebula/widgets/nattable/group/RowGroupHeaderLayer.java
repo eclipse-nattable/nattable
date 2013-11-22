@@ -10,11 +10,12 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.group.config.DefaultRowGroupHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroup;
@@ -269,23 +270,18 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		int rowIndex = getRowIndexByPosition(rowPosition);
-		if( columnPosition == 0 && RowGroupUtils.isPartOfAGroup(model, rowIndex) ) {
-			List<Integer> selectedRowIndexes = convertToRowIndexes(selectionLayer.getFullySelectedRowPositions());
-			if (selectedRowIndexes.contains(rowIndex)) {
-				return new LabelStack(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE, GridRegion.ROW_GROUP_HEADER);
+		if (columnPosition == 0 && RowGroupUtils.isPartOfAGroup(model, rowIndex) ) {
+			final RangeList fullySelectedRowPositions = selectionLayer.getFullySelectedRowPositions();
+			for (final IValueIterator rowIter = fullySelectedRowPositions.values().iterator(); rowIter.hasNext(); ) {
+				int index = this.selectionLayer.getRowIndexByPosition(rowIter.nextValue());
+				if (rowIndex == index) {
+					return new LabelStack(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE, GridRegion.ROW_GROUP_HEADER);
+				}
 			}
 			return new LabelStack(GridRegion.ROW_GROUP_HEADER);
 		} else {
 			return rowHeaderLayer.getConfigLabelsByPosition(columnPosition - 1, rowPosition);
 		}
-	}
-	
-	private List<Integer> convertToRowIndexes(final int[] rowPositions) {
-		final List <Integer> rowIndexes = new ArrayList<Integer>();
-		for(final Integer rowPosition : rowPositions){
-			rowIndexes.add(this.selectionLayer.getRowIndexByPosition(rowPosition));
-		}
-		return rowIndexes;
 	}
 	
 	@Override

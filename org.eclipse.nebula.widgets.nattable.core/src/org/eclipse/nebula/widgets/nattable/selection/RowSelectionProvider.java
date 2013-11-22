@@ -23,7 +23,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
 import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
@@ -208,17 +208,10 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 		List<RowObjectIndexHolder<Object>> rows = new ArrayList<RowObjectIndexHolder<Object>>();
 
 		if (selectionLayer != null) {
-			if (fullySelectedRowsOnly) {
-				for (int rowPosition : selectionLayer.getFullySelectedRowPositions()) {
-					addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
-				}
-			} else {
-				Set<Range> rowRanges = selectionLayer.getSelectedRowPositions();
-				for (Range rowRange : rowRanges) {
-					for (int rowPosition = rowRange.start; rowPosition < rowRange.end; rowPosition++) {
-						addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
-					}
-				}
+			final RangeList selectedRows = (fullySelectedRowsOnly) ?
+					selectionLayer.getFullySelectedRowPositions() : selectionLayer.getSelectedRowPositions();
+			for (final IValueIterator rowIter = selectedRows.values().iterator(); rowIter.hasNext(); ) {
+				addToSelection(rows, rowIter.nextValue(), selectionLayer, rowDataProvider);
 			}
 		}
 		Collections.sort(rows);

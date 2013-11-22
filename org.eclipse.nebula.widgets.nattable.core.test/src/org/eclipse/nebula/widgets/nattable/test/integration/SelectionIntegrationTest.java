@@ -12,16 +12,20 @@ package org.eclipse.nebula.widgets.nattable.test.integration;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.eclipse.swt.SWT;
+
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
-import org.eclipse.swt.SWT;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Integration test for all default selection behavior.
@@ -45,23 +49,28 @@ public class SelectionIntegrationTest {
 
 	@Test
 	public void movingSelectionWithLeftArrow() throws Exception {
+		List<PositionCoordinate> selectedCells;
+		
 		natTable.doCommand(new SelectCellCommand(natTable, 5, 2, NO_SHIFT, NO_CTRL));
 
 		// Note: the co-ordinates from this point on are in selection later co-ordinates
 
 		SWTUtils.pressKey(SWT.ARROW_LEFT, natTable);
-		assertPositionEquals(3, 1, getSelectedCells()[0]);
+		selectedCells = selectionLayer.getSelectedCellPositions();
+		assertPositionEquals(3, 1, selectedCells.get(0));
 		assertSelectionAnchorEquals(3, 1);
 
 		SWTUtils.pressKey(SWT.ARROW_LEFT, SWT.SHIFT, natTable);
+		selectedCells = selectionLayer.getSelectedCellPositions();
 		assertSelectCellsCount(2);
-		assertPositionEquals(2, 1, getSelectedCells()[0]);
-		assertPositionEquals(3, 1, getSelectedCells()[1]);
+		assertPositionEquals(2, 1, selectedCells.get(0));
+		assertPositionEquals(3, 1, selectedCells.get(1));
 		assertSelectionAnchorEquals(3, 1);
 
 		SWTUtils.pressKey(SWT.ARROW_LEFT, SWT.MOD1, natTable);
+		selectedCells = selectionLayer.getSelectedCellPositions();
 		assertSelectCellsCount(1);
-		assertPositionEquals(0, 1, getSelectedCells()[0]);
+		assertPositionEquals(0, 1, selectedCells.get(0));
 		assertSelectionAnchorEquals(0, 1);
 	}
 
@@ -83,7 +92,7 @@ public class SelectionIntegrationTest {
 
 		SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.MOD1, natTable);
 		assertSelectCellsCount(1);
-		assertPositionEquals(9, 1, selectionLayer.getSelectedCellPositions()[0]);
+		assertPositionEquals(9, 1, selectionLayer.getSelectedCellPositions().get(0));
 		assertPositionEquals(9, 1, selectionLayer.getLastSelectedCellPosition());
 		assertSelectionAnchorEquals(9, 1);
 	}
@@ -109,7 +118,7 @@ public class SelectionIntegrationTest {
 		SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.MOD1, natTable);
 		assertSelectCellsCount(1);
 		int lastRow = selectionLayer.getRowCount() - 1;
-		assertPositionEquals(4, lastRow, selectionLayer.getSelectedCellPositions()[0]);
+		assertPositionEquals(4, lastRow, selectionLayer.getSelectedCellPositions().get(0));
 		assertPositionEquals(4, lastRow, selectionLayer.getLastSelectedCellPosition());
 		assertSelectionAnchorEquals(4, lastRow);
 	}
@@ -121,7 +130,7 @@ public class SelectionIntegrationTest {
 		// Note: the co-ordinates from this point on are in selection later co-ordinates
 
 		SWTUtils.pressKey(SWT.ARROW_UP, natTable);
-		assertPositionEquals(4, 2, selectionLayer.getSelectedCellPositions()[0]);
+		assertPositionEquals(4, 2, selectionLayer.getSelectedCellPositions().get(0));
 		assertSelectionAnchorEquals(4, 2);
 
 		SWTUtils.pressKey(SWT.ARROW_UP, SWT.SHIFT, natTable);
@@ -138,7 +147,7 @@ public class SelectionIntegrationTest {
 		SWTUtils.pressKey(SWT.ARROW_UP, SWT.MOD1, natTable);
 		assertSelectCellsCount(1);
 		int lastRow = 0;
-		assertPositionEquals(4, lastRow, selectionLayer.getSelectedCellPositions()[0]);
+		assertPositionEquals(4, lastRow, selectionLayer.getSelectedCellPositions().get(0));
 		assertPositionEquals(4, lastRow, selectionLayer.getLastSelectedCellPosition());
 		assertSelectionAnchorEquals(4, lastRow);
 	}
@@ -178,7 +187,7 @@ public class SelectionIntegrationTest {
 	// Convenience asserts
 
 	private void assertCellSelected(int column, int row){
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
 		boolean selected  = false;
 
 		for (PositionCoordinate positionCoordinate : selectedCells) {
@@ -191,12 +200,8 @@ public class SelectionIntegrationTest {
 		Assert.assertTrue(selected);
 	}
 
-	private PositionCoordinate[] getSelectedCells(){
-		return selectionLayer.getSelectedCellPositions();
-	}
-
 	private void assertSelectCellsCount(int count) {
-		assertEquals(count, selectionLayer.getSelectedCellPositions().length);
+		assertEquals(count, selectionLayer.getSelectedCellPositions().size());
 	}
 
 	private void assertSelectionAnchorEquals(int column, int row) {

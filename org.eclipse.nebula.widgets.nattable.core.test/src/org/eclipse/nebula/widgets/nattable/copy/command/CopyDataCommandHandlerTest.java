@@ -18,7 +18,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
@@ -30,13 +41,7 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.DataProviderFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+
 
 public class CopyDataCommandHandlerTest {
 
@@ -112,13 +117,14 @@ public class CopyDataCommandHandlerTest {
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 9, 9, false, true));
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0, false, true));
 
-		ILayerCell[][] columns = commandHandler.assembleColumnHeaders();
+		RangeList selectedColumns = selectionLayer.getSelectedColumnPositions();
+		ILayerCell[] columns = commandHandler.assembleColumnHeader(selectedColumns, 1, 0);
 
 		assertEquals(5, columns.length);
-		assertEquals("Column 2", columns[0][1].getDataValue());
-		assertEquals("Column 3", columns[0][2].getDataValue());
-		assertEquals("Column 5", columns[0][3].getDataValue());
-		assertEquals("Column 10", columns[0][4].getDataValue());
+		assertEquals("Column 2", columns[1].getDataValue());
+		assertEquals("Column 3", columns[2].getDataValue());
+		assertEquals("Column 5", columns[3].getDataValue());
+		assertEquals("Column 10", columns[4].getDataValue());
 	}
 
 	@Test
@@ -131,12 +137,13 @@ public class CopyDataCommandHandlerTest {
 		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 9, 9, false, true));
 		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 5, 0, false, true));
 
-		ILayerCell[] bodyCells = commandHandler.assembleBody(0);
+		RangeList selectedColumns = selectionLayer.getSelectedColumnPositions();
+		ILayerCell[] bodyCells = commandHandler.assembleBody(selectedColumns, 1, 0);
 		assertEquals(8, bodyCells.length);
 		assertEquals("[5,0]", bodyCells[4].getDataValue());
 		assertEquals("[8,0]", bodyCells[6].getDataValue());
 
-		bodyCells = commandHandler.assembleBody(9);
+		bodyCells = commandHandler.assembleBody(selectedColumns, 1, 9);
 		assertEquals("[9,9]", bodyCells[7].getDataValue());
 	}
 
@@ -199,18 +206,20 @@ public class CopyDataCommandHandlerTest {
 		// First cell should be blank, this is the corner
 		assertNull(cells[0]);
 		// Should only have Column headers
-		int[] selectedColumns = gridLayer.getBodyLayer().getSelectionLayer().getSelectedColumnPositions();
+		final RangeList selectedColumns = selectionLayer.getSelectedColumnPositions();
+		
+		IValueIterator columnsIter = selectedColumns.values().iterator();
 		for (int columnPosition = 1; columnPosition < cells.length; columnPosition++) {
 			ILayerCell cell = cells[columnPosition];
 			// Remember to substract offset from columnPosition
-			assertEquals(columnHeaderLayer.getDataValueByPosition(selectedColumns[columnPosition - 1], 0), cell.getDataValue());
+			assertEquals(columnHeaderLayer.getDataValueByPosition(columnsIter.nextValue(), 0), cell.getDataValue());
 		}
 	}
 
 	private void checkBodyCells(ILayerCell[][] copiedGrid) {
 		int cellWithDataCounter = 0;
-		int[] selectedColumns = selectionLayer.getSelectedColumnPositions();
-		Set<Range> selectedRowRanges = selectionLayer.getSelectedRowPositions();
+		RangeList selectedColumns = selectionLayer.getSelectedColumnPositions();
+		RangeList selectedRowRanges = selectionLayer.getSelectedRowPositions();
 
 		Set<Integer> selectedRows = new HashSet<Integer>();
 		for (Range range : selectedRowRanges) {
@@ -219,6 +228,7 @@ public class CopyDataCommandHandlerTest {
 		Iterator<Integer> rowsIterator = selectedRows.iterator();
 
 		// Row zero is for column headers
+		IValueIterator columnsIter = selectedColumns.values().iterator();
 		for (int rowPosition = 1; rowPosition < copiedGrid.length; rowPosition ++) {
 			ILayerCell[] cells = copiedGrid[rowPosition];
 
@@ -231,11 +241,11 @@ public class CopyDataCommandHandlerTest {
 				final ILayerCell cell = cells[columnPosition];
 				if (cell != null) {
 					cellWithDataCounter++;
-					assertEquals(selectionLayer.getDataValueByPosition(selectedColumns[columnPosition - 1], selectedRowPosition), cell
+					assertEquals(selectionLayer.getDataValueByPosition(columnsIter.nextValue(), selectedRowPosition), cell
 							.getDataValue());
 				}
 			}
 		}
-		assertEquals(selectionLayer.getSelectedCellPositions().length, cellWithDataCounter);
+		assertEquals(selectionLayer.getSelectedCellPositions().size(), cellWithDataCounter);
 	}
 }

@@ -124,7 +124,7 @@ public class EditUtils {
 	 * 			configured.
 	 */
 	public static boolean isEditorSame(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
 		ICellEditor lastSelectedCellEditor = null;
 		for (PositionCoordinate selectedCell : selectedCells) {
 			LabelStack labelStack = selectionLayer.getConfigLabelsByPosition(
@@ -162,7 +162,7 @@ public class EditUtils {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static boolean isConverterSame(SelectionLayer selectionLayer, IConfigRegistry configRegistry){
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
 		Set<Class> converterSet = new HashSet<Class>();
 		
 		for (PositionCoordinate selectedCell : selectedCells) {

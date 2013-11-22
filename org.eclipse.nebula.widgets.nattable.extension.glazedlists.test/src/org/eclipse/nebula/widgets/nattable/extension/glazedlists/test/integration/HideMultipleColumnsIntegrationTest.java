@@ -15,6 +15,11 @@ import ca.odell.glazedlists.GlazedLists;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ca.odell.glazedlists.GlazedLists;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;

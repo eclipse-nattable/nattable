@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,16 +11,20 @@
 package org.eclipse.nebula.widgets.nattable.group.command;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.columnRename.ColumnRenameDialog;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
@@ -29,9 +33,6 @@ import org.eclipse.nebula.widgets.nattable.group.event.GroupColumnsEvent;
 import org.eclipse.nebula.widgets.nattable.group.event.UngroupColumnsEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
 
 
 public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<IColumnGroupCommand>  {
@@ -57,7 +58,7 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 		} else if (command instanceof OpenCreateColumnGroupDialog) {
 			OpenCreateColumnGroupDialog openDialogCommand = (OpenCreateColumnGroupDialog) command;
 			loadSelectedColumnsIndexesWithPositions();
-			if (selectionLayer.getFullySelectedColumnPositions().length > 0 && columnIndexesToPositionsMap.size() > 0) {
+			if (!selectionLayer.getFullySelectedColumnPositions().isEmpty() && columnIndexesToPositionsMap.size() > 0) {
 				openDialogCommand.openDialog(contextLayer);
 			} else {				
 				openDialogCommand.openErrorBox(Messages.getString("ColumnGroups.selectNonGroupedColumns"));				 //$NON-NLS-1$
@@ -101,24 +102,20 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 	
 	protected void loadSelectedColumnsIndexesWithPositions() {
 		columnIndexesToPositionsMap = new LinkedHashMap<Integer, Integer>();
-		int[] fullySelectedColumns = selectionLayer.getFullySelectedColumnPositions();
+		final RangeList fullySelectedColumns = selectionLayer.getFullySelectedColumnPositions();
 		
-		if (fullySelectedColumns.length > 0) {
-			for (int index = 0; index < fullySelectedColumns.length; index++) {
-				final int columnPosition = fullySelectedColumns[index];
-				int columnIndex = selectionLayer.getColumnIndexByPosition(columnPosition);
-				if (model.isPartOfAGroup(columnIndex)){
-					columnIndexesToPositionsMap.clear();
-					break;
-				}
-				columnIndexesToPositionsMap.put(Integer.valueOf(columnIndex), Integer.valueOf(columnPosition));
+		for (final IValueIterator columnIter = fullySelectedColumns.values().iterator(); columnIter.hasNext(); ) {
+			final int position = columnIter.nextValue();
+			int index = selectionLayer.getColumnIndexByPosition(position);
+			if (model.isPartOfAGroup(index)) {
+				columnIndexesToPositionsMap.clear();
+				break;
 			}
-			
+			columnIndexesToPositionsMap.put(Integer.valueOf(index), Integer.valueOf(position));
 		}
 	}
 
 	public void handleGroupColumnsCommand(String columnGroupName) {
-			
 		try {
 			List<Integer> selectedPositions = new ArrayList<Integer>();
 			int[] fullySelectedColumns = new int[columnIndexesToPositionsMap.size()];
@@ -137,27 +134,24 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 
 	public void handleUngroupCommand() {
 		// Grab fully selected column positions
-		int[] fullySelectedColumns = selectionLayer.getFullySelectedColumnPositions();
+		final RangeList fullySelectedColumns = selectionLayer.getFullySelectedColumnPositions();
 		Map<String, Integer> toColumnPositions = new HashMap<String, Integer>();
-		if (fullySelectedColumns.length > 0) {
 		
-		// Pick the ones which belong to a group and remove them from the group
-			for (int index = 0; index < fullySelectedColumns.length; index++) {
-				final int columnPosition = fullySelectedColumns[index];
-				int columnIndex = selectionLayer.getColumnIndexByPosition(columnPosition);
-				if (model.isPartOfAGroup(columnIndex) && !model.isPartOfAnUnbreakableGroup(columnIndex)){
-					handleRemovalFromGroup(toColumnPositions, columnIndex);
-				}
+		for (final IValueIterator columnIter = fullySelectedColumns.values().iterator(); columnIter.hasNext(); ) {
+			// Pick the ones which belong to a group and remove them from the group
+			final int position = columnIter.nextValue();
+			int index = selectionLayer.getColumnIndexByPosition(position);
+			if (model.isPartOfAGroup(index) && !model.isPartOfAnUnbreakableGroup(index)) {
+				handleRemovalFromGroup(toColumnPositions, index);
 			}
-		// The groups which were affected should be reordered to the start position, this should group all columns together
-			Collection<Integer> values = toColumnPositions.values();
-			final Iterator<Integer> toColumnPositionsIterator = values.iterator();
-			while(toColumnPositionsIterator.hasNext()) {
-				Integer toColumnPosition = toColumnPositionsIterator.next();
-				selectionLayer.doCommand(new ReorderColumnGroupCommand(selectionLayer, toColumnPosition.intValue(), toColumnPosition.intValue()));
+		}
+		if (!toColumnPositions.isEmpty()) {
+			// The groups which were affected should be reordered to the start position, this should group all columns together
+			for (final Integer position : toColumnPositions.values()) {
+				selectionLayer.doCommand(new ReorderColumnGroupCommand(selectionLayer, position, position));
 			}
 			selectionLayer.clear();
-		} 
+		}
 		
 		contextLayer.fireLayerEvent(new UngroupColumnsEvent(contextLayer));
 	}
