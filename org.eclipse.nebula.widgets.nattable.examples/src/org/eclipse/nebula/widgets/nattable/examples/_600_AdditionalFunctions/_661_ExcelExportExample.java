@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.export.config.DefaultExportBindings;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -98,6 +99,8 @@ public class _661_ExcelExportExample extends AbstractNatExample {
 		//adding this configuration adds the styles and the painters to use
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new DefaultExportBindings());
+		
+		natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
 		
 		natTable.configure();
 		

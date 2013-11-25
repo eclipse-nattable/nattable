@@ -319,6 +319,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 				}
 				
 				doCommand(new ClientAreaResizeCommand(NatTable.this));
+				
+				redraw();
 			}
 		});
 	}
