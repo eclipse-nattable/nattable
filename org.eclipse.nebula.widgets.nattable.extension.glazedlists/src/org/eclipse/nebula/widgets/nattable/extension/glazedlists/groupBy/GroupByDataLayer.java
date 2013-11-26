@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,12 +21,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -69,6 +72,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	
 	private final GroupByTreeFormat<T> treeFormat;
 	
+	private final IConfigRegistry configRegistry;
+	
 	/** Map the group to a dynamic list of group elements */
 	private final Map<GroupByObject, FilterList<T>> filtersByGroup = new ConcurrentHashMap<GroupByObject, FilterList<T>>();
 
@@ -94,7 +99,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
 		groupByModel.addObserver(this);
 
-		this.groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor, this, configRegistry);
+		this.groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor);
 
 		this.treeFormat = new GroupByTreeFormat<T>(groupByModel, (IColumnAccessor<T>) groupByColumnAccessor);
 		this.treeList = new TreeList(eventList, treeFormat, new GroupByExpansionModel());
@@ -102,6 +107,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		this.treeData = new GlazedListTreeData<Object>(getTreeList());
 		this.treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
 
+		this.configRegistry = configRegistry;
+		
 		setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(), groupByColumnAccessor));
 
 		if (useDefaultConfiguration) {
@@ -158,13 +165,62 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		if (this.treeData.getDataAtIndex(getRowIndexByPosition(rowPosition)) instanceof GroupByObject) {
 			configLabels.addLabelOnTop(GROUP_BY_OBJECT);
 			configLabels.addLabelOnTop(GROUP_BY_COLUMN_PREFIX + columnPosition);
-			if (this.groupByColumnAccessor.getGroupBySummaryProvider(configLabels) != null) {
+			if (getGroupBySummaryProvider(configLabels) != null) {
 				configLabels.addLabel(GROUP_BY_SUMMARY);
 			}
 		}
 		return configLabels;
 	}
 
+	@Override
+	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
+		LabelStack labelStack = getConfigLabelsByPosition(columnPosition, rowPosition);
+		if (labelStack.hasLabel(GROUP_BY_OBJECT)) {
+			IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
+			
+			GroupByObject groupByObject = (GroupByObject) this.treeData.getDataAtIndex(rowPosition);
+			//ensure to only load the children if they are needed
+			List<T> children = null;
+			if (summaryProvider != null) {
+				children = getElementsInGroup(groupByObject);
+				return summaryProvider.summarize(columnPosition, children);
+			}
+			
+			if (this.configRegistry != null) {
+				String childCountPattern = this.configRegistry.getConfigAttribute(
+						GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN, 
+						DisplayMode.NORMAL, 
+						labelStack.getLabels());
+				
+				if (childCountPattern != null && childCountPattern.length() > 0) {
+					if (children == null) {
+						children = getElementsInGroup(groupByObject);
+					}
+					
+					int directChildCount = this.treeRowModel.getDirectChildren(rowPosition).size();
+					
+					return groupByObject.getValue() + " " +  //$NON-NLS-1$
+						MessageFormat.format(childCountPattern, children.size(), directChildCount);
+				}
+			}
+		}
+		return super.getDataValueByPosition(columnPosition, rowPosition);
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public IGroupBySummaryProvider<T> getGroupBySummaryProvider(LabelStack labelStack) {
+		if (this.configRegistry != null) {
+			return this.configRegistry.getConfigAttribute(
+					GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER, 
+					DisplayMode.NORMAL, 
+					labelStack.getLabels());
+		}
+		
+		return null;
+	}
+
+	
 	/**
 	 * Simple {@link ExpansionModel} that shows every node expanded initially
 	 * and doesn't react on expand/collapse state changes.
@@ -228,7 +284,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 			for (Entry<Integer, Object> desc : group.getDescriptor()) {
 				int columnIndex = desc.getKey();
 				Object groupName = desc.getValue();
-				if (!groupName.equals(columnAccessor.getDataValue((T) element, columnIndex))) {
+				if (!groupName.equals(columnAccessor.getDataValue(element, columnIndex))) {
 					return false;
 				}
 			}

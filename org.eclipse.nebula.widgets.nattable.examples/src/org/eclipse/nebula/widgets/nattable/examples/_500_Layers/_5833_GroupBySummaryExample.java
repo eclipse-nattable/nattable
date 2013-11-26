@@ -131,7 +131,7 @@ public class _5833_GroupBySummaryExample extends AbstractNatExample {
 		//to enable the group by summary feature, the GroupByDataLayer needs to know the ConfigRegistry
 		final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack = 
 				new BodyLayerStack<ExtendedPersonWithAddress>(
-						PersonService.getExtendedPersonsWithAddress(100), columnPropertyAccessor, configRegistry);
+						PersonService.getExtendedPersonsWithAddress(10000), columnPropertyAccessor, configRegistry);
 
 		bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 		
@@ -217,7 +217,7 @@ public class _5833_GroupBySummaryExample extends AbstractNatExample {
 
 				configRegistry.registerConfigAttribute(
 						GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
-						"[{0}]");
+						"[{0}] - ({1})");
 			}
 		});
 		

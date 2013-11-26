@@ -14,6 +14,9 @@ public interface GroupByConfigAttributes {
 	/**
 	 * Configuration attribute to specify a pattern that is used to render the number of children
 	 * for a group. Use the typical Java placeholders for correct usage, e.g. "[{0}]"
+	 * <p>
+	 * 0 = The number of base list entities in the group
+	 * 1 = The number of direct child items in the group (without subchilds)
 	 */
 	ConfigAttribute<String> GROUP_BY_CHILD_COUNT_PATTERN = new ConfigAttribute<String>();
 }
