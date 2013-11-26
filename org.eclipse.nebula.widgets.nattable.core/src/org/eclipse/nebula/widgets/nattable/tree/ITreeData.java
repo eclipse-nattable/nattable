@@ -14,7 +14,7 @@ import java.util.List;
 
 
 
-public interface ITreeData <T> {
+public interface ITreeData<T> {
 	
 	String formatDataForDepth(int depth, T object);
 	
@@ -79,7 +79,7 @@ public interface ITreeData <T> {
 	List<T> getChildren(int index);
 	
 	/**
-	 * @return The root elements of the tree structure.
+	 * @return The number of elements handled by this ITreeData.
 	 */
-	List<T> getRoots();
+	int getElementCount();
 }

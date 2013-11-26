@@ -10,12 +10,8 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.tree.command;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 
 /**
@@ -47,48 +43,8 @@ public class TreeExpandAllCommandHandler implements ILayerCommandHandler<TreeExp
 	
 	@Override
 	public boolean doCommand(ILayer targetLayer, TreeExpandAllCommand command) {
-		ITreeRowModel<?> treeModel = this.treeLayer.getModel();
-		
-		List<Integer> rootIndexes = treeModel.getRootIndexes();
-		Collections.reverse(rootIndexes);
-		
-		for (int root : rootIndexes) {
-			expandChild(root, treeModel);
-		}
-		
+		this.treeLayer.expandAll();
 		return true;
-	}
-
-	/**
-	 * Expands the child at the given visible index and tries to expand the child nodes 
-	 * immediately after that.
-	 * @param index The visible index of the node to expand.
-	 * @param treeModel The ITreeRowModel which is necessary to check the collapsed
-	 * 			state and children.
-	 */
-	private void expandChild(int index, ITreeRowModel<?> treeModel) {
-		if (treeModel.hasChildren(index)) {
-			if (treeModel.isCollapsed(index)) {
-				treeLayer.expandTreeRow(index);
-			}
-			
-			expandChilds(treeModel.getChildIndexes(index), treeModel);
-		}
-	}
-	
-	/**
-	 * Will iterate over the given indexes and try to expand if the node at the given index
-	 * has children and can be expanded. This will be done in backwards order so the found
-	 * indexes in parent nodes don't need to be adjusted.
-	 * @param childIndexes The indexes of the child nodes to expand.
-	 * @param treeModel The ITreeRowModel which is necessary to check the collapsed
-	 * 			state and children.
-	 */
-	private void expandChilds(List<Integer> childIndexes, ITreeRowModel<?> treeModel) {
-		Collections.reverse(childIndexes);
-		for (int index : childIndexes) {
-			expandChild(index, treeModel);
-		}
 	}
 
 	@Override

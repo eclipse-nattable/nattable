@@ -28,6 +28,62 @@ import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
  */
 public class PersonService {
 
+	static String[] maleNames = {
+		"Bart", 
+		"Homer", 
+		"Lenny", 
+		"Carl", 
+		"Waylon", 
+		"Ned", 
+		"Timothy"};
+	static String[] femaleNames = {
+		"Marge", 
+		"Lisa", 
+		"Maggie", 
+		"Edna", 
+		"Helen", 
+		"Jessica"};
+	static String[] lastNames = {
+		"Simpson", 
+		"Leonard", 
+		"Carlson", 
+		"Smithers", 
+		"Flanders", 
+		"Krabappel", 
+		"Lovejoy"};
+	static String[] streetNames = new String[] {
+		"Evergreen Terrace", 
+		"Main Street", 
+		"South Street", 
+		"Plympton Street", 
+		"Highland Avenue", 
+		"Elm Street", 
+		"Oak Grove Street"};
+	static String[] cityNames = new String[] {
+		"Springfield", 
+		"Shelbyville", 
+		"Ogdenville", 
+		"Waverly Hills", 
+		"North Haverbrook", 
+		"Capital City"};
+	static String[] foodList = new String[] {
+		"Donut",
+		"Bacon",
+		"Fish",
+		"Vegetables",
+		"Ham",
+		"Prezels"};
+	static String[] drinkList = new String[] {
+		"Beer",
+		"Water",
+		"Soda",
+		"Milk",
+		"Coke",
+		"Fizzy Bubblech"};
+	static String baseText = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, " + 
+			"sed diam nonumy eirmod tempor invidunt ut labore et dolore " + 
+			"magna aliquyam erat, sed diam voluptua.";
+
 	/**
 	 * Creates a list of {@link Person}s. 
 	 * @param numberOfPersons The number of {@link Person}s that should be generated.
@@ -81,10 +137,6 @@ public class PersonService {
 	 * @return
 	 */
 	private static Person createPerson(int id) {
-		String[] maleNames = {"Bart", "Homer", "Lenny", "Carl", "Waylon", "Ned", "Timothy"};
-		String[] femaleNames = {"Marge", "Lisa", "Maggie", "Edna", "Helen", "Jessica"};
-		String[] lastNames = {"Simpson", "Leonard", "Carlson", "Smithers", "Flanders", "Krabappel", "Lovejoy"};
-		
 		Random randomGenerator = new Random();
 		
 		Person result = new Person(id);
@@ -192,60 +244,35 @@ public class PersonService {
 	 * @return An array of street names that are also used to create random addresses.
 	 */
 	public static String[] getStreetNames() {
-		return new String[] {"Evergreen Terrace", 
-							 "Main Street", 
-							 "South Street", 
-							 "Plympton Street", 
-							 "Highland Avenue", 
-							 "Elm Street", 
-							 "Oak Grove Street"};
+		return streetNames;
 	}
 	
 	/**
 	 * @return An array of city names that are also used to create random addresses.
 	 */
 	public static String[] getCityNames() {
-		return new String[] {"Springfield", 
-							 "Shelbyville", 
-							 "Ogdenville", 
-							 "Waverly Hills", 
-							 "North Haverbrook", 
-							 "Capital City"};
+		return cityNames;
 	}
 	
 	/**
 	 * @return An array of food names.
 	 */
 	public static String[] getFoodList() {
-		return new String[] {"Donut",
-							 "Bacon",
-							 "Fish",
-							 "Vegetables",
-							 "Ham",
-							 "Prezels"};
+		return foodList;
 	}
 	
 	/**
 	 * @return An array of drink names.
 	 */
 	public static String[] getDrinkList() {
-		return new String[] {"Beer",
-							 "Water",
-							 "Soda",
-							 "Milk",
-							 "Coke",
-							 "Fizzy Bubblech"};
+		return drinkList;
 	}
 	
 	/**
 	 * @return A custom length text containing line breaks
 	 */
 	public static String createRandomLengthText() {
-		String text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, " + 
-				"sed diam nonumy eirmod tempor invidunt ut labore et dolore " + 
-				"magna aliquyam erat, sed diam voluptua.";
-		
-		String[] words = text.split(" ");
+		String[] words = baseText.split(" ");
 		
 		Random wordRandom = new Random();
 		String msg = "";

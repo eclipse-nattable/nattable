@@ -95,17 +95,6 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T>{
 	}
 
 	@Override
-	public List<Integer> getRootIndexes() {
-		List<Integer> result = new ArrayList<Integer>();
-		List<T> roots = this.treeData.getRoots();
-		for (T root : roots) {
-			int index = this.treeData.indexOf(root);
-			result.add(index);
-		}
-		return result;
-	}
-
-	@Override
 	public List<T> getChildren(int parentIndex) {
 		return getChildren(this.treeData.getDataAtIndex(parentIndex));
 	}

@@ -220,11 +220,39 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	}
 
 	/**
+	 * Collapses all tree nodes in the tree.
+	 */
+	public void collapseAll() {
+		List<Integer> rowIndexes = this.treeRowModel.collapseAll();
+		List<Integer> rowPositions = new ArrayList<Integer>();
+		for (Integer rowIndex : rowIndexes) {
+			int rowPos = getRowPositionByIndex(rowIndex);
+			//if the rowPos is negative, it is not visible because of hidden state in an underlying layer
+			if (rowPos >= 0) {
+				rowPositions.add(rowPos);
+			}
+		}
+		this.hiddenRowIndexes.addAll(rowIndexes);
+		invalidateCache();
+		fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+	}
+	
+	/**
 	 * Expands the tree node for the given row index.
 	 * @param parentIndex The index of the row that shows the node that should be expanded
 	 */
 	public void expandTreeRow(int parentIndex) {
 		List<Integer> rowIndexes = 	this.treeRowModel.expand(parentIndex);
+		this.hiddenRowIndexes.removeAll(rowIndexes);
+		invalidateCache();
+		fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
+	}
+	
+	/**
+	 * Expands all tree nodes in the tree.
+	 */
+	public void expandAll() {
+		List<Integer> rowIndexes = this.treeRowModel.expandAll();
 		this.hiddenRowIndexes.removeAll(rowIndexes);
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));

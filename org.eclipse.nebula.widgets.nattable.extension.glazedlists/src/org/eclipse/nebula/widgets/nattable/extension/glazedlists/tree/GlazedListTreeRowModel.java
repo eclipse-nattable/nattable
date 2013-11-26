@@ -33,6 +33,13 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T>{
 		notifyListeners();
 		return new ArrayList<Integer>();
 	}
+	
+	@Override
+	public List<Integer> collapseAll() {
+		this.getTreeData().collapseAll();
+		notifyListeners();
+		return new ArrayList<Integer>();
+	}
 
 	@Override
 	public List<Integer> expand(int index) {
@@ -41,6 +48,13 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T>{
 		return new ArrayList<Integer>();
 	}
 
+	@Override
+	public List<Integer> expandAll() {
+		this.getTreeData().expandAll();
+		notifyListeners();
+		return new ArrayList<Integer>();
+	}
+	
 	@Override
 	protected GlazedListTreeData<T> getTreeData() {
 		return (GlazedListTreeData<T>) super.getTreeData();

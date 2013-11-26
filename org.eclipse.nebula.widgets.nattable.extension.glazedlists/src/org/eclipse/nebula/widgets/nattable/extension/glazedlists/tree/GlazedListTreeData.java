@@ -119,41 +119,123 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 		return children;
 	}
 
+	@Override
+	public int getElementCount() {
+		return this.treeList.size();
+	}
+	
+	/**
+	 * Collapse the tree node that represent the given object.
+	 * @param object The object that represents the tree node to collapse.
+	 */
 	public void collapse(T object) {
 		collapse(indexOf(object));
 	};
 
+	/**
+	 * Expand the tree node that represent the given object.
+	 * @param object The object that represents the tree node to expand.
+	 */
 	public void expand(T object) {
 		expand(indexOf(object));
 	};
 
+	/**
+	 * Collapse the tree node at the given visible index.
+	 * @param index The index of the tree node to collapse.
+	 */
 	public void collapse(int index) {
-		toggleExpanded(index, false);
+		this.treeList.setExpanded(index, false);
 	};
 
+	/**
+	 * Expand the tree node at the given visible index.
+	 * @param index The index of the tree node to expand.
+	 */
 	public void expand(int index) {
-		toggleExpanded(index, true);
+		this.treeList.setExpanded(index, true);
 	};
 
-	private void toggleExpanded(int index, boolean expanded) {
-		this.treeList.setExpanded(index, expanded);
+	/**
+	 * Will check the whole TreeList for its nodes and collapses them if they are expanded.
+	 * After executing this method, all nodes in the TreeList will be collapsed.
+	 */
+	public void collapseAll() {
+		this.treeList.getReadWriteLock().writeLock().lock();
+		try {
+			//iterating directly over the TreeList is a lot faster than checking the nodes
+			//which is related that on collapsing we only need to iterate once from bottom to top
+			for (int i = (this.treeList.size()-1); i >= 0; i--) {
+				/*
+				 * Checks if the node at the given visible index has children and is collapsible.
+				 * If it is it will be collapsed otherwise skipped.
+				 * This backwards searching and collapsing mechanism is necessary to ensure to
+				 * really get every collapsible node in the whole tree structure.
+				 */
+				if (hasChildren(i) && isExpanded(i)) {
+					this.treeList.setExpanded(i, false);
+				}
+			}
+		}
+		finally {
+			this.treeList.getReadWriteLock().writeLock().unlock();
+		}
 	}
-
+	
+	/**
+	 * Will check the whole TreeList for its nodes and expands them if they are collapsed.
+	 * After executing this method, all nodes in the TreeList will be expanded.
+	 */
+	public void expandAll() {
+		boolean expandPerformed = false;
+		this.treeList.getReadWriteLock().writeLock().lock();
+		try {
+			//iterating directly over the TreeList is a lot faster than checking the nodes
+			//which is related that on collapsing we only need to iterate once from bottom to top
+			for (int i = (this.treeList.size()-1); i >= 0; i--) {
+				/*
+				 * Checks if the node at the given visible index has children and is expandable.
+				 * If it is it will be expanded otherwise skipped.
+				 * This backwards searching and expanding mechanism is necessary to ensure to
+				 * really get every expandable node in the whole tree structure.
+				 */
+				if (hasChildren(i) && !isExpanded(i)) {
+					this.treeList.setExpanded(i, true);
+					expandPerformed = true;
+				}
+			}
+		}
+		finally {
+			this.treeList.getReadWriteLock().writeLock().unlock();
+		}
+		
+		//if at least one element was expanded we need to perform the step again
+		//as we are only able to retrieve the visible nodes
+		if (expandPerformed) {
+			expandAll();
+		}
+	}
+	
+	/**
+	 * Checks if the given element is expanded or not.
+	 * <p>
+	 * Note: The check only works for visible elements, therefore a check
+	 * for an element that is below an collapsed element does not work.
+	 * @param object The element that should be checked.
+	 * @return <code>true</code> if the children of the given element
+	 * 			are visible, <code>false</code> if not
+	 */
 	public boolean isExpanded(T object) {
 		return isExpanded(indexOf(object));
 	}
 
+	/**
+	 * Checks if the element at the given visual index is expanded or not.
+	 * @param index The visual index of the element to check.
+	 * @return <code>true</code> if the children of the element at given index
+	 * 			are visible, <code>false</code> if not
+	 */
 	public boolean isExpanded(int index) {
 		return this.treeList.isExpanded(index);
-	}
-
-	@Override
-	public List<T> getRoots() {
-		List<T> roots = new ArrayList<T>();
-		List<Node<T>> rootNodes = this.treeList.getRoots();
-		for (Node<T> root : rootNodes) {
-			roots.add(root.getElement());
-		}
-		return roots;
 	}
 }

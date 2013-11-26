@@ -120,7 +120,8 @@ public class _572_TreeGridExample extends AbstractNatExample {
 		final BodyLayerStack bodyLayerStack = 
 				new BodyLayerStack(
 						PersonService.getPersonsWithAddress(50), columnPropertyAccessor, 
-						new PersonWithAddressTreeFormat());
+						new PersonWithAddressTwoLevelTreeFormat());
+//						new PersonWithAddressTreeFormat());
 
 		//build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
@@ -343,6 +344,7 @@ public class _572_TreeGridExample extends AbstractNatExample {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private class PersonWithAddressTreeFormat implements TreeList.Format<Object> {
 		
 		@Override
@@ -367,6 +369,42 @@ public class _572_TreeGridExample extends AbstractNatExample {
 				public int compare(Object o1, Object o2) {
 					String e1 = (o1 instanceof PersonWithAddress) ? ((PersonWithAddress)o1).getLastName() : o1.toString();
 					String e2 = (o2 instanceof PersonWithAddress) ? ((PersonWithAddress)o2).getLastName() : o2.toString();
+					return e1.compareTo(e2);
+				}
+				
+			};
+		}
+	}
+	
+	private class PersonWithAddressTwoLevelTreeFormat implements TreeList.Format<Object> {
+		
+		@Override
+		public void getPath(List<Object> path, Object element) {
+			if (element instanceof PersonWithAddress) {
+				PersonWithAddress ele = (PersonWithAddress) element;
+				path.add(ele.getLastName());
+				path.add(ele.getFirstName());
+			}
+			path.add(element);
+		}
+		
+		@Override
+		public boolean allowsChildren(Object element) {
+			return true;
+		}
+
+		@Override
+		public Comparator<? super Object> getComparator(final int depth) {
+			return new Comparator<Object>() {
+
+				@Override
+				public int compare(Object o1, Object o2) {
+					String e1 = (o1 instanceof PersonWithAddress) ? 
+							(depth == 0 ? ((PersonWithAddress)o1).getLastName() : ((PersonWithAddress)o1).getFirstName()) 
+								: o1.toString();
+					String e2 = (o2 instanceof PersonWithAddress) ? 
+							(depth == 0 ? ((PersonWithAddress)o2).getLastName() : ((PersonWithAddress)o2).getFirstName()) 
+								: o2.toString();
 					return e1.compareTo(e2);
 				}
 				

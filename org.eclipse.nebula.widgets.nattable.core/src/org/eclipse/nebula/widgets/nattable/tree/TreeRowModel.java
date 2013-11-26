@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -38,11 +39,36 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T>{
 	}
 
 	@Override
+	public List<Integer> collapseAll() {
+		List<Integer> collapsedChildren = new ArrayList<Integer>();
+		
+		for (int i = (getTreeData().getElementCount()-1); i >= 0; i--) {
+			if (hasChildren(i) && !isCollapsed(i)) {
+				collapse(i);
+			}
+		}
+		
+		notifyListeners();
+		return collapsedChildren;
+	}
+
+	@Override
 	public List<Integer> expand(int index) {
 		this.parentIndexes.remove(index);
 		notifyListeners();
 		List<Integer> children = getChildIndexes(index);
 		this.parentIndexes.removeAll(children);
+		return children;
+	}
+
+	@Override
+	public List<Integer> expandAll() {
+		List<Integer> children = new ArrayList<Integer>();
+		for (int index : this.parentIndexes) {
+			children.addAll(getChildIndexes(index));
+		}
+		this.parentIndexes.clear();
+		notifyListeners();
 		return children;
 	}
 

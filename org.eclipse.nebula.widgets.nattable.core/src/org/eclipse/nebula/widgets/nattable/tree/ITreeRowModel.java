@@ -28,8 +28,12 @@ public interface ITreeRowModel<T> {
 	
 	List<Integer> collapse(int parentIndex);
 
+	List<Integer> collapseAll();
+
 	List<Integer> expand(int parentIndex);
 
+	List<Integer> expandAll();
+	
 	/**
 	 * This method returns <b>all visible</b> child indexes below the node at the given index.
 	 * It search all the way down the tree structure to find every child, even the
@@ -52,11 +56,6 @@ public interface ITreeRowModel<T> {
 	 * @return The list of the direct child indexes for the node at the given index.
 	 */
 	List<Integer> getDirectChildIndexes(int parentIndex);
-	
-	/**
-	 * @return The indexes of the root nodes in the tree.
-	 */
-	List<Integer> getRootIndexes();
 	
 	/**
 	 * This method returns <b>all</b> children below the node at the given index.

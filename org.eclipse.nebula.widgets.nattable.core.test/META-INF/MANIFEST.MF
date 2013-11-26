@@ -8,7 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.commons.lang.math,
  org.eclipse.core.commands.common,
  org.osgi.framework
-Export-Package: org.eclipse.nebula.widgets.nattable.test.fixture,
+Export-Package: org.eclipse.nebula.widgets.nattable.test.data,
+ org.eclipse.nebula.widgets.nattable.test.fixture,
  org.eclipse.nebula.widgets.nattable.test.fixture.command,
  org.eclipse.nebula.widgets.nattable.test.fixture.data,
  org.eclipse.nebula.widgets.nattable.test.fixture.group,

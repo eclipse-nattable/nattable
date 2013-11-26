@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.tree.command;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 
 /**
@@ -43,19 +42,7 @@ public class TreeCollapseAllCommandHandler implements ILayerCommandHandler<TreeC
 	
 	@Override
 	public boolean doCommand(ILayer targetLayer, TreeCollapseAllCommand command) {
-		ITreeRowModel<?> treeModel = this.treeLayer.getModel();
-		for (int i = (treeLayer.getRowCount()-1); i >= 0; i--) {
-			/*
-			 * Checks if the node at the given visible index has children and is collapsible.
-			 * If it is it will be collapsed otherwise skipped.
-			 * This backwards searching and collapsing mechanism is necessary to ensure to
-			 * really get every collapsible node in the whole tree structure.
-			 */
-			if (treeModel.hasChildren(i) && !treeModel.isCollapsed(i)) {
-				treeLayer.collapseTreeRow(i);
-			}
-		}
-		
+		this.treeLayer.collapseAll();
 		return true;
 	}
 	

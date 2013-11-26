@@ -280,6 +280,13 @@ public class _571_TreeGridExample extends AbstractNatExample {
 		}
 	}
 	
+	/**
+	 * Simple TreeList.Format implementation that uses the lastname of the PersonWithAddress
+	 * object as tree item.
+	 * <p>
+	 * Using a String directly as the tree item has the possible disadvantage of haven non-unique
+	 * items in the tree within subtrees. 
+	 */
 	private class PersonWithAddressTreeFormat implements TreeList.Format<PersonWithAddress> {
 		
 		private Map<String, PersonWithAddress> parentMapping = new HashMap<String, PersonWithAddress>();
