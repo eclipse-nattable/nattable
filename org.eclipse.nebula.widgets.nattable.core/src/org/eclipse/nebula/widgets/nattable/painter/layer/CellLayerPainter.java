@@ -64,6 +64,20 @@ public class CellLayerPainter implements ILayerPainter {
 		}
 	}
 	
+	/**
+	 * Determinies the rendering behavior when two cells overlap. If true, the left cell will be clipped. If false, the right cell will be clipped.
+	 */
+	protected boolean isClipLeft() {
+		return false;
+	}
+	
+	/**
+	 * Determinies the rendering behavior when two cells overlap. If true, the top cell will be clipped. If false, the bottom cell will be clipped.
+	 */
+	protected boolean isClipTop() {
+		return false;
+	}
+	
 	private void calculateDimensionInfo(Rectangle positionRectangle) {
 		{	horizontalPositionToPixelMap = new HashMap<Integer, Integer>();
 			final int startPosition = positionRectangle.x;
@@ -74,7 +88,7 @@ public class CellLayerPainter implements ILayerPainter {
 					Integer.MIN_VALUE;
 			for (int position = startPosition; position < endPosition; position++) {
 				int startX = natLayer.getStartXOfColumnPosition(position);
-				horizontalPositionToPixelMap.put(position, startX);
+				horizontalPositionToPixelMap.put(position, isClipLeft() ? startX : Math.max(startX, previousEndX));
 				previousEndX = startX + natLayer.getColumnWidthByPosition(position);
 			}
 			if (endPosition < natLayer.getColumnCount()) {
@@ -91,7 +105,7 @@ public class CellLayerPainter implements ILayerPainter {
 					Integer.MIN_VALUE;
 			for (int position = startPosition; position < endPosition; position++) {
 				int startY = natLayer.getStartYOfRowPosition(position);
-				verticalPositionToPixelMap.put(position, startY);
+				verticalPositionToPixelMap.put(position, isClipTop() ? startY : Math.max(startY, previousEndY));
 				previousEndY = startY + natLayer.getRowHeightByPosition(position);
 			}
 			if (endPosition < natLayer.getRowCount()) {
