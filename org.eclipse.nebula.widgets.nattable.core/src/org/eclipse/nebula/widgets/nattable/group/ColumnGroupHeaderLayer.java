@@ -46,7 +46,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	private final SizeConfig rowHeightConfig = new SizeConfig(DataLayer.DEFAULT_ROW_HEIGHT);
 	private final ColumnGroupModel model;
 	private final ILayer columnHeaderLayer;
-	private final ILayerPainter layerPainter = new CellLayerPainter();
+	private ILayerPainter layerPainter = new CellLayerPainter();
 	
 	/**
 	 * Flag which is used to tell the ColumnGroupHeaderLayer whether to calculate the height of the layer
@@ -108,6 +108,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	@Override
 	public ILayerPainter getLayerPainter() {
 		return layerPainter;
+	}
+	
+	@Override
+	public void setLayerPainter(ILayerPainter layerPainter) {
+		this.layerPainter = layerPainter;
 	}
 
 	// Vertical features

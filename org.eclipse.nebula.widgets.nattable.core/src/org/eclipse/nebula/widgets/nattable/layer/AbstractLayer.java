@@ -274,7 +274,7 @@ public abstract class AbstractLayer implements ILayer {
 		return layerPainter;
 	}
 	
-	protected void setLayerPainter(ILayerPainter layerPainter) {
+	public void setLayerPainter(ILayerPainter layerPainter) {
 		this.layerPainter = layerPainter;
 	}
 
