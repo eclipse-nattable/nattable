@@ -22,6 +22,8 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.nebula.widgets.nattable.Messages;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -207,10 +209,14 @@ public class FilterNatCombo extends NatCombo {
 			}
 		});
 
-		final String selectAllLabel = "Select All"; //$NON-NLS-1$
+		final String selectAllLabel = Messages.getString("FilterNatCombo.selectAll"); //$NON-NLS-1$
 		List<String> input = new ArrayList<String>();
 		input.add(selectAllLabel);
 		this.selectAllItemViewer.setInput(input);
+
+		this.selectAllItemViewer.getTable().setBackground(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+		this.selectAllItemViewer.getTable().setForeground(cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+		this.selectAllItemViewer.getTable().setFont(cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 		
 		this.selectAllItemViewer.getTable().addFocusListener(new FocusAdapter() {
 			@Override
