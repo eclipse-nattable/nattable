@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import java.util.Collection;
 import java.util.Properties;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommandHandler;
@@ -86,7 +87,9 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		super.loadState(prefix, properties);
 		columnWidthConfig.loadState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH, properties);
 		rowHeightConfig.loadState(prefix + PERSISTENCE_KEY_ROW_HEIGHT, properties);
-		fireLayerEvent(new StructuralRefreshEvent(this));
+		
+		if (!properties.containsKey(NatTable.INITIAL_PAINT_COMPLETE_FLAG))
+			fireLayerEvent(new StructuralRefreshEvent(this));
 	}
 
 	// Configuration

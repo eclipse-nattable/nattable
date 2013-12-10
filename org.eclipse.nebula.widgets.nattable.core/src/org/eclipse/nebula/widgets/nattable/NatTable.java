@@ -78,6 +78,13 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	public static final int DEFAULT_STYLE_OPTIONS = SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED  | SWT.V_SCROLL | SWT.H_SCROLL;
 
+	/**
+	 * Key that is used for loading NatTable states.
+	 * Is set to <code>true</code> in case the initial painting is not finished yet.
+	 * In this case there is no need to call refresh commands on loading.
+	 */
+	public static final String INITIAL_PAINT_COMPLETE_FLAG = "NatTable.initialPaintComplete"; //$NON-NLS-1$
+	
 	private UiBindingRegistry uiBindingRegistry;
 
 	private ModeSupport modeSupport;
@@ -100,6 +107,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 
 	private final boolean autoconfigure;
 
+	/**
+	 * This flag is used to deal with runtime issues on loading states while the initial
+	 * rendering is not finished yet.
+	 */
+	private boolean initialPaintComplete = false;
+	
 	public NatTable(Composite parent) {
 		this(parent, DEFAULT_STYLE_OPTIONS);
 	}
@@ -347,6 +360,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	@Override
 	public void paintControl(final PaintEvent event) {
 		paintNatTable(event);
+		initialPaintComplete = true;
 	}
 
 	private void paintNatTable(final PaintEvent event) {
@@ -523,6 +537,11 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			
 			@Override
 			public void run() {
+				//if the initial painting is not finished yet, tell this the underlying 
+				//mechanisms so there will be no refresh events fired
+				if (!initialPaintComplete)
+					properties.setProperty(INITIAL_PAINT_COMPLETE_FLAG, "true");  //$NON-NLS-1$
+					
 				underlyingLayer.loadState(prefix, properties);
 			}
 		});
