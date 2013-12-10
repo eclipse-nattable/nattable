@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -426,13 +428,18 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 		Map<Integer, Object> filterIndexToObjectMap = this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap();
 		Object filterObject = filterIndexToObjectMap.get(event.getColumnIndex());
 		if (filterObject != null && filterObject instanceof Collection) {
+			Collection filterCollection = (Collection) filterObject;
 			//if a new value was added than ensure it is also added to the filter
 			if (event.getAddedItems() != null && !event.getAddedItems().isEmpty()) {
-				((Collection)filterObject).addAll(event.getAddedItems());
+				//as the filter collection is a list, we need to ensure that no double values are added
+				List itemsToAdd = new ArrayList(event.getAddedItems());
+				itemsToAdd.removeAll(filterCollection);
+				
+				filterCollection.addAll(itemsToAdd);
 			}
 			//if a value was removed than ensure it is also removed from the filter
 			if (event.getRemovedItems() != null && !event.getRemovedItems().isEmpty()) {
-				((Collection)filterObject).removeAll(event.getRemovedItems());
+				filterCollection.removeAll(event.getRemovedItems());
 			}
 		}
 		

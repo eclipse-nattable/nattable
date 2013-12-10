@@ -109,12 +109,13 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 		for (Integer index : this.comboBoxDataProvider.getCachedColumnIndexes()) {
 			List<?> dataProviderList = this.comboBoxDataProvider.getValues(index, 0);
 			Object filterObject = newIndexToObjectMap.get(index);
-			if (filterObject == null || (filterObject instanceof Collection && ((Collection)filterObject).isEmpty())) {
+			Collection filterCollection = 
+					(filterObject != null && filterObject instanceof Collection) ? (Collection)filterObject : null;
+			if (filterCollection == null || filterCollection.isEmpty()) {
 				//for one column there are no items selected in the combo, therefore nothing matches
 				this.getMatcherEditor().getMatcherEditors().add(matchNone);
 				return;
-			} else if (filterObject instanceof Collection 
-					&& ((Collection)filterObject).size() == dataProviderList.size()) {
+			} else if (filterCollectionsEqual(filterCollection, dataProviderList)) {
 				newIndexToObjectMap.remove(index);
 			}
 		}
@@ -155,4 +156,32 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
 		return displayConverter.canonicalToDisplayValue(object).toString();
 	}
 
+	
+	@SuppressWarnings("rawtypes")
+	protected boolean filterCollectionsEqual(Collection filter1, Collection filter2) {
+		if ((filter1 != null && filter2 != null)
+				&& filter1.size() == filter2.size()) {
+			
+			if (!filter1.equals(filter2)) {
+				//as equality for collections take into account the order and the elements
+				//we perform an additional check if the same items regardless the order
+				//are contained in both lists
+				for (Object f1 : filter1) {
+					if (!filter2.contains(f1)) {
+						return false;
+					}
+				}
+				//as lists can contain the same element twice, we also perform a counter check
+				for (Object f2 : filter2) {
+					if (!filter1.contains(f2)) {
+						return false;
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
 }
