@@ -26,7 +26,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectRowGroupCommandHandler;
@@ -74,14 +74,14 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	// Persistence
 	
 	@Override
-	public void saveState(String prefix, Properties properties) {
+	public void loadState(String prefix, Properties properties) {
 		super.loadState(prefix, properties);
 		model.loadState(prefix, properties);
-		fireLayerEvent(new ColumnStructuralRefreshEvent(this));
+		fireLayerEvent(new RowStructuralRefreshEvent(this));
 	}
 	
 	@Override
-	public void loadState(String prefix, Properties properties) {
+	public void saveState(String prefix, Properties properties) {
 		super.saveState(prefix, properties);
 		model.saveState(prefix, properties);
 	}
