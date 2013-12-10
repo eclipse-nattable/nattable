@@ -75,7 +75,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 				}
 			}
 		} 
-		else if (doubleClickAction != null) {
+		else if (doubleClickAction == null) {
 			//No single or double click action registered when mouseUp detected. Switch back to normal mode.
 			switchMode(Mode.NORMAL_MODE);
 		}
