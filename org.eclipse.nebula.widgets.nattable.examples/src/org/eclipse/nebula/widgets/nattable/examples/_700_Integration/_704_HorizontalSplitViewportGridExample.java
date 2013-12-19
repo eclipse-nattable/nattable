@@ -42,7 +42,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
-import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
+import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
@@ -126,7 +126,7 @@ public class _704_HorizontalSplitViewportGridExample extends AbstractNatExample 
 		// this ensures that the rendering works correctly for split viewports
 		// as the column header is not split we need the following dynamically
 		// calculation of the clipping behaviour to support correct clipping
-		columnHeaderLayer.setLayerPainter(new GridLineCellLayerPainter() {
+		columnHeaderLayer.setLayerPainter(new CellLayerPainter() {
 			@Override
 			protected boolean isClipLeft(int position) {
 				return (position >= SPLIT_COLUMN_POSITION-1);
