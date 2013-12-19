@@ -31,6 +31,13 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
+/**
+ * Specialized GridLineCellLayerPainter that renders an additional border around selected cells.
+ * By default the additional selection anchor border style is black dotted one pixel sized line.
+ * This style can be configured via ConfigRegistry.
+ * 
+ * @see SelectionStyleLabels#SELECTION_ANCHOR_GRID_LINE_STYLE
+ */
 public class SelectionLayerPainter extends GridLineCellLayerPainter {
 
 	private int columnPositionOffset;
@@ -38,7 +45,56 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 	private int rowPositionOffset;
 	
 	private Map<Point, ILayerCell> cells;
+	/**
+	 * Create a SelectionLayerPainter that renders grid lines in the specified color 
+	 * and uses the default clipping behaviour.
+	 * @param gridColor The color that should be used to render the grid lines.
+	 */
+	public SelectionLayerPainter(final Color gridColor) {
+		super(gridColor);
+	}
 	
+	/**
+	 * Create a SelectionLayerPainter that renders gray grid lines and uses the default 
+	 * clipping behaviour.
+	 */
+	public SelectionLayerPainter() {
+		super();
+	}
+	
+	/**
+	 * Create a SelectionLayerPainter that renders grid lines in the specified color 
+	 * and uses the specified clipping behaviour.
+	 * @param gridColor The color that should be used to render the grid lines.
+	 * @param clipLeft Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the left cell will be clipped, 
+	 * 			if set to <code>false</code> the right cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 * @param clipTop Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the top cell will be clipped, 
+	 * 			if set to <code>false</code> the bottom cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 */
+	public SelectionLayerPainter(final Color gridColor, boolean clipLeft, boolean clipRight) {
+		super(gridColor, clipLeft, clipRight);
+	}
+	
+	/**
+	 * Create a SelectionLayerPainter that renders gray grid lines and uses the specified 
+	 * clipping behaviour.
+	 * @param clipLeft Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the left cell will be clipped, 
+	 * 			if set to <code>false</code> the right cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 * @param clipTop Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the top cell will be clipped, 
+	 * 			if set to <code>false</code> the bottom cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 */
+	public SelectionLayerPainter(boolean clipLeft, boolean clipRight) {
+		this(GUIHelper.COLOR_GRAY, clipLeft, clipRight);
+	}
+
 	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle pixelRectangle, IConfigRegistry configRegistry) {
 		Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);

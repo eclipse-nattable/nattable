@@ -69,11 +69,36 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	private PixelCoordinate minimumOrigin = new PixelCoordinate(0, 0);
 	private int minimumOriginColumnPosition = 0;
 	private int minimumOriginRowPosition = 0;
-	private int maxWidth = -1;
-	private int maxHeight = -1;
 	private boolean viewportOff = false;
 	private PixelCoordinate savedOrigin = new PixelCoordinate(0, 0);
 
+	//split viewport support
+	/**
+	 * Only used for split viewport support to configure the 
+	 * maximum column position this viewport instance should handle.
+	 * If set to a positive value, column positions to the right will not be handled.
+	 */
+	private int maxColumnPosition = -1;
+	/**
+	 * Only used for split viewport support to configure the 
+	 * minimum column position this viewport instance should handle.
+	 * If set to a positive value, column positions to the left will not be handled.
+	 */
+	private int minColumnPosition = -1;
+	/**
+	 * Only used for split viewport support to configure the 
+	 * maximum row position this viewport instance should handle.
+	 * If set to a positive value, row positions to the bottom will not be handled.
+	 */
+	private int maxRowPosition = -1;
+	/**
+	 * Only used for split viewport support to configure the 
+	 * minimum row position this viewport instance should handle.
+	 * If set to a positive value, row positions to the top will not be handled.
+	 */
+	private int minRowPosition = -1;
+
+	
 	// Cache
 	private int cachedColumnCount = -1;
 	private int cachedRowCount = -1;
@@ -116,24 +141,60 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		horizontalScroller = scroller;
 	}
 	
-	public void setVerticalScrollBarEnabled(IScroller<?> scroller) {
+	public void setVerticalScroller(IScroller<?> scroller) {
 		verticalScroller = scroller;
 	}
 	
 	public int getMaxWidth() {
-		return maxWidth;
+		if (getMaxColumnPosition() < 0) {
+			return -1;
+		}
+		else {
+			int maxWidth = 0;
+			for (int i = 0; i < getMaxColumnPosition(); i++) {
+				maxWidth += scrollableLayer.getColumnWidthByPosition(i);
+			}
+			return maxWidth;
+		}
 	}
 	
-	public void setMaxWidth(int maxWidth) {
-		this.maxWidth = maxWidth;
+	public int getMinVerticalStart() {
+		if (getMinColumnPosition() < 0) {
+			return -1;
+		}
+		else {
+			int minStart = 0;
+			for (int i = 0; i < getMinColumnPosition(); i++) {
+				minStart += scrollableLayer.getColumnWidthByPosition(i);
+			}
+			return minStart;
+		}
 	}
 	
 	public int getMaxHeight() {
-		return maxHeight;
+		if (getMaxRowPosition() < 0) {
+			return -1;
+		}
+		else {
+			int maxHeight = 0;
+			for (int i = 0; i < getMaxRowPosition(); i++) {
+				maxHeight += getRowHeightByPosition(i);
+			}
+			return maxHeight;
+		}
 	}
 	
-	public void setMaxHeight(int maxHeight) {
-		this.maxHeight = maxHeight;
+	public int getMinHorizontalStart() {
+		if (getMinRowPosition() < 0) {
+			return -1;
+		}
+		else {
+			int minStart = 0;
+			for (int i = 0; i < getMinRowPosition(); i++) {
+				minStart += getRowHeightByPosition(i);
+			}
+			return minStart;
+		}
 	}
 	
 	// Minimum Origin
@@ -165,6 +226,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	public void setMinimumOriginX(int newMinimumOriginX) {
 		if (newMinimumOriginX >= 0) {
+			
+			int minStart = getMinVerticalStart();
+			if (newMinimumOriginX < minStart) {
+				newMinimumOriginX = minStart;
+			}
+			
 			PixelCoordinate previousMinimumOrigin = minimumOrigin;
 			
 			if (newMinimumOriginX != minimumOrigin.getX()) {
@@ -185,6 +252,12 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	public void setMinimumOriginY(int newMinimumOriginY) {
 		if (newMinimumOriginY >= 0) {
+			
+			int minStart = getMinHorizontalStart();
+			if (newMinimumOriginY < minStart) {
+				newMinimumOriginY = minStart;
+			}
+			
 			PixelCoordinate previousMinimumOrigin = minimumOrigin;
 			
 			if (newMinimumOriginY != minimumOrigin.getY()) {
@@ -318,6 +391,82 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 	}
 	
+	// Split viewport support
+	
+	/**
+	 * @return The maximum column position of a split viewport or -1 in case there
+	 * 			are no multiple viewports configured. 
+	 */
+	public int getMaxColumnPosition() {
+		return this.maxColumnPosition;
+	}
+	
+	/**
+	 * @param maxColumnPosition The right most column position in case split viewports
+	 * 			need to be configured.
+	 */
+	public void setMaxColumnPosition(int maxColumnPosition) {
+		this.maxColumnPosition = maxColumnPosition;
+	}
+	
+	/**
+	 * @return The minimum column position of a split viewport or -1 in case there are no
+	 * 			multiple viewports configured.
+	 */
+	public int getMinColumnPosition() {
+		return this.minColumnPosition;
+	}
+	
+	/**
+	 * Sets the minimum column position for a split viewport and directly sets the minimum
+	 * origin x value dependent on the configuration.
+	 * @param minColumnPosition The left most column position in case split viewport need
+	 * 			to be configured.
+	 */
+	public void setMinColumnPosition(int minColumnPosition) {
+		this.minColumnPosition = minColumnPosition;
+		//set the minimum origin x dependent to the min column position
+		int newMinOriginX = scrollableLayer.getStartXOfColumnPosition(this.minColumnPosition);
+		setMinimumOriginX(newMinOriginX);
+	}
+	
+	/**
+	 * @return The maximum row position of a split viewport or -1 in case there
+	 * 			are no multiple viewports configured. 
+	 */
+	public int getMaxRowPosition() {
+		return this.maxRowPosition;
+	}
+	
+	/**
+	 * @param maxRowPosition The right most row position in case split viewports
+	 * 			need to be configured.
+	 */
+	public void setMaxRowPosition(int maxRowPosition) {
+		this.maxRowPosition = maxRowPosition;
+	}
+	
+	/**
+	 * @return The minimum row position of a split viewport or -1 in case there are no
+	 * 			multiple viewports configured.
+	 */
+	public int getMinRowPosition() {
+		return this.minRowPosition;
+	}
+	
+	/**
+	 * Sets the minimum row position for a split viewport and directly sets the minimum
+	 * origin y value dependent on the configuration.
+	 * @param minRowPosition The left most row position in case split viewport need
+	 * 			to be configured.
+	 */
+	public void setMinRowPosition(int minRowPosition) {
+		this.minRowPosition = minRowPosition;
+		//set the minimum origin y dependent to the min row position
+		int newMinOriginY = scrollableLayer.getStartYOfRowPosition(this.minRowPosition);
+		setMinimumOriginY(newMinOriginY);
+	}
+	
 	// Configuration
 	
 	@Override
@@ -343,6 +492,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getColumnCount() {
 		if (viewportOff) {
+			//in case of split viewports we only return the number of columns in the split
+			if (getMaxColumnPosition() >= 0) {
+				return getMaxColumnPosition();
+			}
+			else if (getMinColumnPosition() >= 0) {
+				return Math.max(scrollableLayer.getColumnCount() - getMinColumnPosition(), 0);
+			}
+			
 			return Math.max(scrollableLayer.getColumnCount() - getMinimumOriginColumnPosition(), 0);
 		} else {
 			if (cachedColumnCount < 0) {
@@ -397,8 +554,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public int getWidth() {
 		if (viewportOff) {
 			int width = scrollableLayer.getWidth() - scrollableLayer.getStartXOfColumnPosition(getMinimumOriginColumnPosition());
-			if (maxWidth >= 0 && maxWidth < width) {
-				return maxWidth;
+			if (getMaxColumnPosition() >= 0) {
+				int maxWidth = getMaxWidth();
+				if (maxWidth < width) {
+					return maxWidth;
+				}
 			} else {
 				return width;
 			}
@@ -444,6 +604,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	@Override
 	public int getRowCount() {
 		if (viewportOff) {
+			//in case of split viewports we only return the number of rows in the split
+			if (getMaxRowPosition() >= 0) {
+				return getMaxRowPosition();
+			}
+			else if (getMinRowPosition() >= 0) {
+				return Math.max(scrollableLayer.getRowCount() - getMinRowPosition(), 0);
+			}
+			
 			return Math.max(scrollableLayer.getRowCount() - getMinimumOriginRowPosition(), 0);
 		} else {
 			if (cachedRowCount < 0) {
@@ -495,8 +663,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	public int getHeight() {
 		if (viewportOff) {
 			int height = scrollableLayer.getHeight() - scrollableLayer.getStartYOfRowPosition(getMinimumOriginRowPosition());
-			if (maxHeight >= 0 && maxHeight < height) {
-				return maxHeight;
+			if (getMaxRowPosition() >= 0) {
+				int maxHeight = getMaxHeight();
+				if (maxHeight < height) {
+					return maxHeight;
+				}
 			} else {
 				return height;
 			}
@@ -556,24 +727,28 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		cachedClientAreaHeight = 0;
 		cachedHeight = -1;
 	}
-
+	
 	/**
 	 * Recalculate horizontal dimension properties.
 	 */
 	protected void recalculateAvailableWidthAndColumnCount() {
-		int clientAreaWidth = maxWidth >= 0 ? Math.min(maxWidth, getClientAreaWidth()) : getClientAreaWidth();
+		int clientAreaWidth = getMaxColumnPosition() >= 0 ? Math.min(getMaxWidth(), getClientAreaWidth()) : getClientAreaWidth();
 		int availableWidth = clientAreaWidth;
 		int originColumnPosition = getOriginColumnPosition();
 		if (originColumnPosition >= 0) {
-			availableWidth += getOrigin().getX() - underlyingLayer.getStartXOfColumnPosition(originColumnPosition);
+			availableWidth += getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(originColumnPosition);
 		}
-		ILayer underlyingLayer = getUnderlyingLayer();
 
+		int maxColumnCount = getMaxColumnPosition() < 0 ? getUnderlyingLayer().getColumnCount() : getMaxColumnPosition();
+		
 		cachedWidth = 0;
 		cachedColumnCount = 0;
 
-		for (int columnPosition = originColumnPosition; columnPosition >= 0 && columnPosition < underlyingLayer.getColumnCount() && availableWidth > 0; columnPosition++) {
-			int width = underlyingLayer.getColumnWidthByPosition(columnPosition);
+		for (int columnPosition = originColumnPosition; 
+				columnPosition >= 0 && columnPosition < maxColumnCount && availableWidth > 0; 
+				columnPosition++) {
+			
+			int width = getUnderlyingLayer().getColumnWidthByPosition(columnPosition);
 			availableWidth -= width;
 			cachedWidth += width;
 			cachedColumnCount++;
@@ -591,19 +766,22 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * Recalculate vertical dimension properties.
 	 */
 	protected void recalculateAvailableHeightAndRowCount() {
-		int clientAreaHeight = maxHeight >= 0 ? Math.min(maxHeight, getClientAreaHeight()) : getClientAreaHeight();
+		int clientAreaHeight = getMaxRowPosition() >= 0 ? Math.min(getMaxHeight(), getClientAreaHeight()) : getClientAreaHeight();
 		int availableHeight = clientAreaHeight;
 		int originRowPosition = getOriginRowPosition();
 		if (originRowPosition >= 0) {
-			availableHeight += getOrigin().getY() - underlyingLayer.getStartYOfRowPosition(originRowPosition);
+			availableHeight += getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(originRowPosition);
 		}
-		ILayer underlyingLayer = getUnderlyingLayer();
 
+		int maxRowCount = getMaxRowPosition() < 0 ? getUnderlyingLayer().getRowCount() : getMaxRowPosition();
+		
 		cachedHeight = 0;
 		cachedRowCount = 0;
 
-		for (int rowPosition = getOriginRowPosition(); rowPosition >= 0 && rowPosition < underlyingLayer.getRowCount() && availableHeight > 0; rowPosition++) {
-			int height = underlyingLayer.getRowHeightByPosition(rowPosition);
+		for (int rowPosition = originRowPosition; 
+				rowPosition >= 0 && rowPosition < maxRowCount && availableHeight > 0; 
+				rowPosition++) {
+			int height = getUnderlyingLayer().getRowHeightByPosition(rowPosition);
 			availableHeight -= height;
 			cachedHeight += height;
 			cachedRowCount++;
@@ -634,6 +812,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	public void moveColumnPositionIntoViewport(int scrollableColumnPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
+		int maxWidth = getMaxWidth();
 		if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0
 				&& (maxWidth < 0 || (maxWidth >= 0 && underlyingLayer.getStartXOfColumnPosition(scrollableColumnPosition) < maxWidth))) {
 			if (scrollableColumnPosition >= getMinimumOriginColumnPosition()) {
@@ -667,6 +846,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	public void moveRowPositionIntoViewport(int scrollableRowPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();
+		int maxHeight = getMaxHeight();
 		if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0
 				&& (maxHeight < 0 || (maxHeight >= 0 && underlyingLayer.getStartYOfRowPosition(scrollableRowPosition) < maxHeight))) {
 			if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
@@ -772,11 +952,25 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		} else if (command instanceof TurnViewportOffCommand) {
 			savedOrigin = origin;
 			viewportOff = true;
-			return true;
+			
+			//in case of split viewports we need to ensure that the other viewports
+			//also got the chance to turn the viewport off, otherwise there is no need
+			//to propagate the TurnViewportOffCommand further
+			if (getMaxColumnPosition() < 0 && getMinColumnPosition() < 0
+					&& getMaxRowPosition() < 0 && getMinRowPosition() < 0) {
+				return true;
+			}
 		} else if (command instanceof TurnViewportOnCommand) {
 			viewportOff = false;
 			origin = savedOrigin;
-			return true;
+			
+			//in case of split viewports we need to ensure that the other viewports
+			//also got the chance to turn the viewport on, otherwise there is no need
+			//to propagate the TurnViewportOnCommand further
+			if (getMaxColumnPosition() < 0 && getMinColumnPosition() < 0
+					&& getMaxRowPosition() < 0 && getMinRowPosition() < 0) {
+				return true;
+			}
 		} else if (command instanceof PrintEntireGridCommand) {
 			moveCellPositionIntoViewport(0, 0);
 		}
@@ -841,12 +1035,41 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 		int availableWidth = getClientAreaWidth() - (scrollableLayer.getWidth() - originX);
 		if (availableWidth <= 0) {
+			//in case there is a maximum number of columns configured for multiple viewports
+			//we need to ensure that there is no gap
+			int clientAreaWidth = getClientAreaWidth();
+			
+			if (getMaxColumnPosition() >= 0 && clientAreaWidth >= getWidth()) {
+				int visibleWidth = calculateVisibleWidth(originX);
+				if (visibleWidth < clientAreaWidth) {
+					originX -= clientAreaWidth - visibleWidth;
+				}
+			}
+			
 			return originX;
 		} else {
 			return boundsCheckOriginX(originX - availableWidth);
 		}
 	}
 
+	/**
+	 * This method will be called in case of split viewports. It is used to calculate the
+	 * width of the visible columns, taking into account the origin and a possible not completely
+	 * rendered column. The result will be interpreted by adjusting the originX in case there is
+	 * less visible rendering for the set origin compared to the client area width. In this case
+	 * the originX needs to be adjusted to fill a gap that would exist otherwise.
+	 * @param originX The originX that is currently set.
+	 * @return The width of the visible columns for the current set origin.
+	 */
+	private int calculateVisibleWidth(int originX) {
+		int partialVisibleColumnWidth = getUnderlyingLayer().getStartXOfColumnPosition(getOriginColumnPosition()+1) - originX;
+		int visibleWidth = partialVisibleColumnWidth;
+		for (int i = getOriginColumnPosition()+1; i < getMaxColumnPosition(); i++) {
+			visibleWidth += getUnderlyingLayer().getColumnWidthByPosition(i);
+		}
+		return visibleWidth;
+	}
+	
 	/**
 	 * If the client area size is greater than the content size, move origin to fill as much content as possible.
 	 */
@@ -857,10 +1080,38 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
 		int availableHeight = getClientAreaHeight() - (scrollableLayer.getHeight() - originY);
 		if (availableHeight <= 0) {
+			//in case there is a maximum number of rows configured for multiple viewports
+			//we need to ensure that there is no gap
+			int clientAreaHeight = getClientAreaHeight();
+			if (getMaxRowPosition() >= 0 && clientAreaHeight >= getHeight()) {
+				int visibleHeight = calculateVisibleHeight(originY);
+				if (visibleHeight < clientAreaHeight) {
+					originY -= clientAreaHeight - visibleHeight;
+				}
+			}
+			
 			return originY;
 		} else {
 			return boundsCheckOriginY(originY - availableHeight);
 		}
+	}
+
+	/**
+	 * This method will be called in case of split viewports. It is used to calculate the
+	 * height of the visible rows, taking into account the origin and a possible not completely
+	 * rendered row. The result will be interpreted by adjusting the originY in case there is
+	 * less visible rendering for the set origin compared to the client area height. In this case
+	 * the originY needs to be adjusted to fill a gap that would exist otherwise.
+	 * @param originY The originY that is currently set.
+	 * @return The height of the visible rows for the current set origin.
+	 */
+	private int calculateVisibleHeight(int originY) {
+		int partialVisibleRowHeight = getUnderlyingLayer().getStartYOfRowPosition(getOriginRowPosition()+1) - originY;
+		int visibleHeight = partialVisibleRowHeight;
+		for (int i = getOriginRowPosition()+1; i < getMaxRowPosition(); i++) {
+			visibleHeight += getUnderlyingLayer().getRowHeightByPosition(i);
+		}
+		return visibleHeight;
 	}
 
 	/**

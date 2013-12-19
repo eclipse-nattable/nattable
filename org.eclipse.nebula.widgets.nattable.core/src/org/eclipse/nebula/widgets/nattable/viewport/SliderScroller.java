@@ -59,6 +59,7 @@ public class SliderScroller implements IScroller<Slider> {
 	@Override
 	public void setMaximum(int value) {
 		slider.setMaximum(value);
+		slider.update();
 	}
 
 	@Override

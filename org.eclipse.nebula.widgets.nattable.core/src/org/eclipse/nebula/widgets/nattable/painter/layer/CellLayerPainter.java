@@ -29,6 +29,31 @@ public class CellLayerPainter implements ILayerPainter {
 	private Map<Integer, Integer> horizontalPositionToPixelMap;
 	private Map<Integer, Integer> verticalPositionToPixelMap;
 	
+	private final boolean clipLeft;
+	private final boolean clipTop;
+	
+	/**
+	 * Create a default CellLayerPainter with default clipping behaviour.
+	 */
+	public CellLayerPainter() {
+		this(false, false);
+	}
+	
+	/**
+	 * Create a CellLayerPainter with specified clipping behaviour.
+	 * @param clipLeft Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the left cell will be clipped, 
+	 * 			if set to <code>false</code> the right cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 * @param clipTop Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the top cell will be clipped, 
+	 * 			if set to <code>false</code> the bottom cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 */
+	public CellLayerPainter(boolean clipLeft, boolean clipTop) {
+		this.clipLeft = clipLeft;
+		this.clipTop = clipTop;
+	}
 	
 	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle pixelRectangle, IConfigRegistry configRegistry) {
@@ -65,17 +90,27 @@ public class CellLayerPainter implements ILayerPainter {
 	}
 	
 	/**
-	 * Determinies the rendering behavior when two cells overlap. If true, the left cell will be clipped. If false, the right cell will be clipped.
+	 * Determines the rendering behavior when two cells overlap. 
+	 * If <code>true</code>, the left cell will be clipped. If <code>false</code>, the right cell will be clipped.
+	 * Typically this value is changed in conjunction with split viewports.
+	 * @param position The column position for which the clipping behaviour is requested.
+	 * 			By default for all columns the same clipping behaviour is used. Only for special cases like split
+	 * 			viewports with one header, per position a different behaviour may be needed.
 	 */
-	protected boolean isClipLeft() {
-		return false;
+	protected boolean isClipLeft(int position) {
+		return this.clipLeft;
 	}
 	
 	/**
-	 * Determinies the rendering behavior when two cells overlap. If true, the top cell will be clipped. If false, the bottom cell will be clipped.
+	 * Determines the rendering behavior when two cells overlap. 
+	 * If <code>true</code>, the top cell will be clipped. If <code>false</code>, the bottom cell will be clipped.
+	 * Typically this value is changed in conjunction with split viewports.
+	 * @param position The row position for which the clipping behaviour is requested.
+	 * 			By default for all rows the same clipping behaviour is used. Only for special cases like split
+	 * 			viewports with one header, per position a different behaviour may be needed.
 	 */
-	protected boolean isClipTop() {
-		return false;
+	protected boolean isClipTop(int position) {
+		return this.clipTop;
 	}
 	
 	private void calculateDimensionInfo(Rectangle positionRectangle) {
@@ -88,7 +123,7 @@ public class CellLayerPainter implements ILayerPainter {
 					Integer.MIN_VALUE;
 			for (int position = startPosition; position < endPosition; position++) {
 				int startX = natLayer.getStartXOfColumnPosition(position);
-				horizontalPositionToPixelMap.put(position, isClipLeft() ? startX : Math.max(startX, previousEndX));
+				horizontalPositionToPixelMap.put(position, isClipLeft(position) ? startX : Math.max(startX, previousEndX));
 				previousEndX = startX + natLayer.getColumnWidthByPosition(position);
 			}
 			if (endPosition < natLayer.getColumnCount()) {
@@ -105,7 +140,7 @@ public class CellLayerPainter implements ILayerPainter {
 					Integer.MIN_VALUE;
 			for (int position = startPosition; position < endPosition; position++) {
 				int startY = natLayer.getStartYOfRowPosition(position);
-				verticalPositionToPixelMap.put(position, isClipTop() ? startY : Math.max(startY, previousEndY));
+				verticalPositionToPixelMap.put(position, isClipTop(position) ? startY : Math.max(startY, previousEndY));
 				previousEndY = startY + natLayer.getRowHeightByPosition(position);
 			}
 			if (endPosition < natLayer.getRowCount()) {

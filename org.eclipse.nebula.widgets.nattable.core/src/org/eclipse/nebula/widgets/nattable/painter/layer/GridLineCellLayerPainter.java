@@ -22,14 +22,60 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	
 	private final Color gridColor;
 	
+	/**
+	 * Create a GridLineCellLayerPainter that renders grid lines in the specified color 
+	 * and uses the default clipping behaviour.
+	 * @param gridColor The color that should be used to render the grid lines.
+	 */
 	public GridLineCellLayerPainter(final Color gridColor) {
 		this.gridColor = gridColor;
 	}
 	
+	/**
+	 * Create a GridLineCellLayerPainter that renders gray grid lines and uses the default 
+	 * clipping behaviour.
+	 */
 	public GridLineCellLayerPainter() {
 		this.gridColor = GUIHelper.COLOR_GRAY;
 	}
 	
+	/**
+	 * Create a GridLineCellLayerPainter that renders grid lines in the specified color 
+	 * and uses the specified clipping behaviour.
+	 * @param gridColor The color that should be used to render the grid lines.
+	 * @param clipLeft Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the left cell will be clipped, 
+	 * 			if set to <code>false</code> the right cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 * @param clipTop Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the top cell will be clipped, 
+	 * 			if set to <code>false</code> the bottom cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 */
+	public GridLineCellLayerPainter(final Color gridColor, boolean clipLeft, boolean clipRight) {
+		super(clipLeft, clipRight);
+		this.gridColor = gridColor;
+	}
+	
+	/**
+	 * Create a GridLineCellLayerPainter that renders gray grid lines and uses the specified 
+	 * clipping behaviour.
+	 * @param clipLeft Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the left cell will be clipped, 
+	 * 			if set to <code>false</code> the right cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 * @param clipTop Configure the rendering behaviour when cells overlap.
+	 * 			If set to <code>true</code> the top cell will be clipped, 
+	 * 			if set to <code>false</code> the bottom cell will be clipped.
+	 * 			The default value is <code>false</code>.
+	 */
+	public GridLineCellLayerPainter(boolean clipLeft, boolean clipRight) {
+		this(GUIHelper.COLOR_GRAY, clipLeft, clipRight);
+	}
+	
+	/**
+	 * @return The color that is used to render the grid lines.
+	 */
 	public Color getGridColor() {
 		return gridColor;
 	}
