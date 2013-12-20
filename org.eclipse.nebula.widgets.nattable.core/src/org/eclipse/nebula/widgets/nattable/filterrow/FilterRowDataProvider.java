@@ -12,7 +12,9 @@ package org.eclipse.nebula.widgets.nattable.filterrow;
 
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isEmpty;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -53,6 +55,12 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 	 * saved filter row states.
 	 */
 	public static final String PIPE_REPLACEMENT = "°~°"; //$NON-NLS-1$
+	
+	/**
+	 * The prefix String that will be used to mark that the following filter
+	 * value in the persisted state is a collection.
+	 */
+	public static final String FILTER_COLLECTION_PREFIX = "°coll("; //$NON-NLS-1$
 	
 	/**
 	 * The {@link IFilterStrategy} to which the set filter value should be applied.
@@ -173,7 +181,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 					DisplayMode.NORMAL, 
 					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
 			
-			String filterText = (String) converter.canonicalToDisplayValue(filterIndexToObjectMap.get(columnIndex));
+			String filterText = getFilterStringRepresentation(filterIndexToObjectMap.get(columnIndex), converter);
 			filterText = filterText.replace("|", PIPE_REPLACEMENT); //$NON-NLS-1$
 			filterTextByIndex.put(columnIndex, filterText);
 		}
@@ -200,7 +208,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 				
 				String filterText = filterTextByIndex.get(columnIndex);
 				filterText = filterText.replace(PIPE_REPLACEMENT, "|"); //$NON-NLS-1$
-				filterIndexToObjectMap.put(columnIndex, converter.displayToCanonicalValue(filterText));
+				filterIndexToObjectMap.put(columnIndex, getFilterFromString(filterText, converter));
 			}
 		} catch (Exception e) {
 			log.error("Error while restoring filter row text!", e); //$NON-NLS-1$
@@ -208,7 +216,74 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 		
 		filterStrategy.applyFilter(filterIndexToObjectMap);
 	}
+	
+	/**
+	 * This method is used to support saving of a filter collection, e.g. in the context of the
+	 * Excel like filter row. In such cases the filter value is not a simple String but a 
+	 * Collection of filter values that need to be converted to a String representation.
+	 * As the state persistence is encapsulated to be handled here, we need to take care
+	 * of such states here also.
+	 * @param filterValue The filter value object that is used for filtering.
+	 * @param converter The converter that is used to convert the filter value, which is necessary
+	 * 			to support filtering of custom types.
+	 * @return The String representation of the filter value.
+	 */
+	private String getFilterStringRepresentation(Object filterValue, IDisplayConverter converter) {
+		//in case the filter value is a collection of values, we need to create a special 
+		//string representation
+		if (filterValue instanceof Collection) {
+			String collectionSpec = FILTER_COLLECTION_PREFIX + filterValue.getClass().getName() + ")";  //$NON-NLS-1$
+			StringBuilder builder = new StringBuilder(collectionSpec);
+			builder.append("["); //$NON-NLS-1$
+			Collection<?> filterCollection = (Collection<?>)filterValue;
+			for (Iterator<?> iterator = filterCollection.iterator(); iterator.hasNext();) {
+				Object filterObject = iterator.next();
+				builder.append(converter.canonicalToDisplayValue(filterObject));
+				if (iterator.hasNext())
+					builder.append(IPersistable.VALUE_SEPARATOR);
+			}
+			
+			builder.append("]"); //$NON-NLS-1$
+			return builder.toString();
+		}
+		return (String) converter.canonicalToDisplayValue(filterValue);
+	}
 
+	/**
+	 * This method is used to support loading of a filter collection, e.g. in the context of the
+	 * Excel like filter row. In such cases the saved filter value is not a simple String but  
+	 * represents a Collection of filter values that need to be converted to the corresponding values.
+	 * As the state persistence is encapsulated to be handled here, we need to take care
+	 * of such states here also.
+	 * @param filterText The String representation of the applied saved filter.
+	 * @param converter The converter that is used to convert the filter value, which is necessary
+	 * 			to support filtering of custom types.
+	 * @return The filter value that will be used to apply a filter to the IFilterStrategy
+	 * 
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Object getFilterFromString(String filterText, IDisplayConverter converter) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		if (filterText.startsWith(FILTER_COLLECTION_PREFIX)) {
+			//the filter text represents a collection
+			int indexEndCollSpec = filterText.indexOf(")"); //$NON-NLS-1$
+			String collectionSpec = filterText.substring(filterText.indexOf("(")+1, indexEndCollSpec); //$NON-NLS-1$
+			Collection filterCollection = (Collection) Class.forName(collectionSpec).newInstance();
+			
+			//also get rid of the collection marks
+			filterText = filterText.substring(indexEndCollSpec+2, filterText.length()-1);
+			String[] filterSplit = filterText.split(IPersistable.VALUE_SEPARATOR);
+			for (String filterString : filterSplit) {
+				filterCollection.add(converter.displayToCanonicalValue(filterString));
+			}
+			
+			return filterCollection;
+		}
+		return converter.displayToCanonicalValue(filterText);
+	}
+	
 	/**
 	 * Clear all filters that are currently applied.
 	 */

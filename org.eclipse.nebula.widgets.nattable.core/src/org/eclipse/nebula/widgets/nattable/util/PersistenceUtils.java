@@ -11,11 +11,17 @@
 package org.eclipse.nebula.widgets.nattable.util;
 
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class PersistenceUtils {
 
+	/**
+	 * The character that is used to separate the column and the value that should
+	 * be stored for the column.
+	 */
+	public static final String COLUMN_VALUE_SEPARATOR = ":"; //$NON-NLS-1$
+	
 	/**
 	 * Parse the persisted property and create a TreeMap&lt;Integer, String&gt; from it.
 	 * Works in conjunction with the {@link PersistenceUtils#mapAsString(Map)}.
@@ -30,9 +36,21 @@ public class PersistenceUtils {
 			String[] renamedColumns = value.split("\\|"); //$NON-NLS-1$
 	
 			for (String token : renamedColumns) {
-				String[] split = token.split(":"); //$NON-NLS-1$
+				String[] split = token.split(COLUMN_VALUE_SEPARATOR);
 				String index = split[0];
 				String label = split[1];
+				
+				//if the value also contains colons, the split before will not return the
+				//correct results, this is for example true for date/time values
+				//we use this kind of workaround here for backwards compatibility, in
+				//case there are already stored states. Usually we should use different
+				//characters or regular expressions
+				if (split.length > 2) {
+					for (int i = 2; i < split.length; i++) {
+						label += COLUMN_VALUE_SEPARATOR + split[i];
+					}
+				}
+				
 				map.put(Integer.valueOf(index), label);
 			}
 		}
@@ -46,7 +64,7 @@ public class PersistenceUtils {
 	public static String mapAsString(Map<Integer, String> map) {
 		StringBuffer buffer = new StringBuffer();
 		for (Entry<Integer, String> entry : map.entrySet()) {
-			buffer.append(entry.getKey() + ":" + entry.getValue() + "|"); //$NON-NLS-1$ //$NON-NLS-2$
+			buffer.append(entry.getKey() + COLUMN_VALUE_SEPARATOR + entry.getValue() + "|"); //$NON-NLS-1$
 		}
 		return buffer.toString();
 	}
