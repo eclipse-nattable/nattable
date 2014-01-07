@@ -43,21 +43,21 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Slider;
 
 /**
- * Example showing how to implement NatTable that contains two vertical split viewports.
+ * Example showing how to implement NatTable that contains two horizontal split viewports.
  * 
  * @author Dirk Fauth
  *
  */
-public class _703_VerticalSplitViewportExample extends AbstractNatExample {
+public class _703_HorizontalSplitViewportExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _703_VerticalSplitViewportExample());
+		StandaloneNatExampleRunner.run(600, 400, new _703_HorizontalSplitViewportExample());
 	}
 
 	@Override
 	public String getDescription() {
 		return "This example shows a NatTable that contains two separately scrollable "
-				+ "vertical split viewports.";
+				+ "horzizontal split viewports.";
 	}
 	
 	@Override
@@ -87,36 +87,36 @@ public class _703_VerticalSplitViewportExample extends AbstractNatExample {
 		
 		//use a cell layer painter that is configured for left clipping
 		//this ensures that the rendering works correctly for split viewports
-		bodyDataLayer.setLayerPainter(new GridLineCellLayerPainter(false, true));
+		bodyDataLayer.setLayerPainter(new GridLineCellLayerPainter(true, false));
 
-		//create a ViewportLayer for the top part of the table and configure it to only contain 
-		//the first 10 rows
-		final ViewportLayer viewportLayerTop = new ViewportLayer(bodyDataLayer);
-		viewportLayerTop.setMaxRowPosition(10);
+		//create a ViewportLayer for the left part of the table and configure it to only contain 
+		//the first 5 columns
+		final ViewportLayer viewportLayerLeft = new ViewportLayer(bodyDataLayer);
+		viewportLayerLeft.setMaxColumnPosition(5);
 		
-		//create a ViewportLayer for the bottom part of the table and configure it to only contain 
-		//the last rows
-		ViewportLayer viewportLayerBottom = new ViewportLayer(bodyDataLayer);
-		viewportLayerBottom.setMinRowPosition(10);
+		//create a ViewportLayer for the right part of the table and configure it to only contain 
+		//the last 4 columns
+		ViewportLayer viewportLayerRight = new ViewportLayer(bodyDataLayer);
+		viewportLayerRight.setMinColumnPosition(5);
 
 		//create a CompositeLayer that contains both ViewportLayers
-		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-		compositeLayer.setChildLayer("REGION_A", viewportLayerTop, 0, 0);
-		compositeLayer.setChildLayer("REGION_B", viewportLayerBottom, 0, 1);
+		CompositeLayer compositeLayer = new CompositeLayer(2, 1);
+		compositeLayer.setChildLayer("REGION_A", viewportLayerLeft, 0, 0);
+		compositeLayer.setChildLayer("REGION_B", viewportLayerRight, 1, 0);
 
-		//set the height of the top viewport to only showing 2 rows at the same time
-		int topHeight = bodyDataLayer.getStartYOfRowPosition(2);
+		//set the width of the left viewport to only showing 2 columns at the same time
+		int leftWidth = bodyDataLayer.getStartXOfColumnPosition(2);
 		
 		//as the CompositeLayer is setting a IClientAreaProvider for the composition
 		//we need to set a special ClientAreaAdapter after the creation of the CompositeLayer 
 		//to support split viewports
-		ClientAreaAdapter topClientAreaAdapter = new ClientAreaAdapter(viewportLayerTop.getClientAreaProvider());
-		topClientAreaAdapter.setHeight(topHeight);
-		viewportLayerTop.setClientAreaProvider(topClientAreaAdapter);
+		ClientAreaAdapter leftClientAreaAdapter = new ClientAreaAdapter(viewportLayerLeft.getClientAreaProvider());
+		leftClientAreaAdapter.setWidth(leftWidth);
+		viewportLayerLeft.setClientAreaProvider(leftClientAreaAdapter);
 		
-		// Wrap NatTable in composite so we can slap on the external vertical sliders
+		// Wrap NatTable in composite so we can slap on the external horizontal sliders
 		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
+		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginHeight = 0;
 		gridLayout.marginWidth = 0;
 		gridLayout.horizontalSpacing = 0;
@@ -131,7 +131,7 @@ public class _703_VerticalSplitViewportExample extends AbstractNatExample {
 		gridData.grabExcessVerticalSpace = true;
 		natTable.setLayoutData(gridData);
 
-		createSplitSliders(composite, viewportLayerTop, viewportLayerBottom);
+		createSplitSliders(composite, viewportLayerLeft, viewportLayerRight);
 		
 		//add an IOverlayPainter to ensure the right border of the left viewport always
 		//this is necessary because the left border of layer stacks is not rendered by default
@@ -141,8 +141,8 @@ public class _703_VerticalSplitViewportExample extends AbstractNatExample {
 			public void paintOverlay(GC gc, ILayer layer) {
 				Color beforeColor = gc.getForeground();
 				gc.setForeground(GUIHelper.COLOR_GRAY);
-				int viewportBorderY = viewportLayerTop.getHeight() - 1;
-				gc.drawLine(0, viewportBorderY, layer.getWidth()-1, viewportBorderY);
+				int viewportBorderX = viewportLayerLeft.getWidth() - 1;
+				gc.drawLine(viewportBorderX, 0, viewportBorderX, layer.getHeight()-1);
 				gc.setForeground(beforeColor);
 			}
 		});
@@ -151,16 +151,16 @@ public class _703_VerticalSplitViewportExample extends AbstractNatExample {
 	}
 
 	
-	private void createSplitSliders(Composite natTableParent, final ViewportLayer top, final ViewportLayer bottom) {
+	private void createSplitSliders(Composite natTableParent, final ViewportLayer left, final ViewportLayer right) {
 		Composite sliderComposite = new Composite(natTableParent, SWT.NONE);
 		GridData gridData = new GridData();
-		gridData.verticalAlignment = GridData.FILL;
-		gridData.grabExcessHorizontalSpace = false;
-		gridData.grabExcessVerticalSpace = true;
-		gridData.widthHint = 15;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = false;
+		gridData.heightHint = 15;
 		sliderComposite.setLayoutData(gridData);
 		
-		GridLayout gridLayout = new GridLayout(1, false);
+		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginHeight = 0;
 		gridLayout.marginWidth = 0;
 		gridLayout.horizontalSpacing = 0;
@@ -169,36 +169,36 @@ public class _703_VerticalSplitViewportExample extends AbstractNatExample {
 		
 		// Slider Left
 		// Need a composite here to set preferred size because Slider can't be subclassed.
-		Composite sliderTopComposite = new Composite(sliderComposite, SWT.NONE) {
+		Composite sliderLeftComposite = new Composite(sliderComposite, SWT.NONE) {
 			@Override
 			public Point computeSize(int wHint, int hHint, boolean changed) {
-				int height = ((ClientAreaAdapter)top.getClientAreaProvider()).getHeight();
-				return new Point(15, height);
+				int width = ((ClientAreaAdapter)left.getClientAreaProvider()).getWidth();
+				return new Point(width, 15);
 			}
 		};
-		sliderTopComposite.setLayout(new FillLayout());
+		sliderLeftComposite.setLayout(new FillLayout());
 		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.BEGINNING;
 		gridData.verticalAlignment = GridData.BEGINNING;
-		sliderTopComposite.setLayoutData(gridData);
+		sliderLeftComposite.setLayoutData(gridData);
 		
-		Slider sliderTop = new Slider(sliderTopComposite, SWT.VERTICAL);
+		Slider sliderLeft = new Slider(sliderLeftComposite, SWT.HORIZONTAL);
 		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.verticalAlignment = GridData.FILL;
-		sliderTop.setLayoutData(gridData);
+		sliderLeft.setLayoutData(gridData);
 		
-		top.setVerticalScroller(new SliderScroller(sliderTop));
+		left.setHorizontalScroller(new SliderScroller(sliderLeft));
 		
 		// Slider Right
-		Slider sliderBottom = new Slider(sliderComposite, SWT.VERTICAL);
+		Slider sliderRight = new Slider(sliderComposite, SWT.HORIZONTAL);
 		gridData = new GridData();
-		gridData.horizontalAlignment = GridData.BEGINNING;
-		gridData.verticalAlignment = GridData.FILL;
-		gridData.grabExcessHorizontalSpace = false;
-		gridData.grabExcessVerticalSpace = true;
-		sliderBottom.setLayoutData(gridData);
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.BEGINNING;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = false;
+		sliderRight.setLayoutData(gridData);
 		
-		bottom.setVerticalScroller(new SliderScroller(sliderBottom));
+		right.setHorizontalScroller(new SliderScroller(sliderRight));
 	}
 }

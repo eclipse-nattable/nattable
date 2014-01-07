@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -46,7 +48,10 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -55,7 +60,9 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
+import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -70,13 +77,13 @@ import ca.odell.glazedlists.GlazedLists;
 
 /**
  * Example that demonstrates how to implement a NatTable instance that shows
- * calculated values.
+ * calculated values by using the CalculatedValueCache.
  * Also demonstrates the usage of the SummaryRow on updating the NatTable.
  * 
  * @author Dirk Fauth
  *
  */
-public class _701_CalculatingGridExample extends AbstractNatExample {
+public class _702_CachedCalculatingGridExample extends AbstractNatExample {
 
 	public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
 	public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
@@ -87,7 +94,7 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 	private EventList<NumberValues> valuesToShow = GlazedLists.eventList(new ArrayList<NumberValues>());
 	
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _701_CalculatingGridExample());
+		StandaloneNatExampleRunner.run(new _702_CachedCalculatingGridExample());
 	}
 
 	/**	
@@ -99,7 +106,8 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 				+ "The first three columns are editable, while the last two columns contain the calculated values.\n"
 				+ "The values in column four and five will automatically update when committing the edited values.\n"
 				+ "This example also contains a summary row to show that it is even possible to update the summary "
-				+ "row in a editable grid.";
+				+ "row in a editable grid. The value calculation is processed in background threads by using the "
+				+ "CalculatedValueCache in a specialised ListDataProvider.";
 	}
 
 	/* (non-Javadoc)
@@ -193,11 +201,12 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 
 	
 	/**
-	 * The column accessor which is used for retrieving the data out of the model.
-	 * While the values for the first three columns are returned directly, the values for
-	 * column four and five are calculated.
+	 * The column accessor which is used for retrieving the basic data out of the model.
+	 * The values for the first three columns are returned directly. The values for column
+	 * four and five are calculated in the CachedValueCalculatingDataProvider by using the
+	 * CalculatedValueCache.
 	 */
-	class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
+	class BasicDataColumnAccessor implements IColumnAccessor<NumberValues> {
 		
 		/* (non-Javadoc)
 		 * @see org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getDataValue(java.lang.Object, int)
@@ -205,13 +214,9 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 		@Override
 		public Object getDataValue(NumberValues rowObject, int columnIndex) {
 			switch(columnIndex) {
-			case 0: return rowObject.getColumnOneNumber();
-			case 1: return rowObject.getColumnTwoNumber();
-			case 2: return rowObject.getColumnThreeNumber();
-			case 3: //calculate the sum
-				return rowObject.getColumnTwoNumber() + rowObject.getColumnThreeNumber();
-			case 4: //calculate the percentage
-				return new Double(rowObject.getColumnTwoNumber() + rowObject.getColumnThreeNumber()) / rowObject.getColumnOneNumber();
+				case 0: return rowObject.getColumnOneNumber();
+				case 1: return rowObject.getColumnTwoNumber();
+				case 2: return rowObject.getColumnThreeNumber();
 			}
 			return null;
 		}
@@ -223,12 +228,12 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 		public void setDataValue(NumberValues rowObject, int columnIndex, Object newValue) {
 			//because of the registered conversion, the new value has to be an Integer
 			switch(columnIndex) {
-			case 0: rowObject.setColumnOneNumber((Integer)newValue);
-			break;
-			case 1: rowObject.setColumnTwoNumber((Integer)newValue);
-			break;
-			case 2: rowObject.setColumnThreeNumber((Integer)newValue);
-			break;
+				case 0: rowObject.setColumnOneNumber((Integer)newValue);
+						break;
+				case 1: rowObject.setColumnTwoNumber((Integer)newValue);
+						break;
+				case 2: rowObject.setColumnThreeNumber((Integer)newValue);
+						break;
 			}		
 		}
 		
@@ -244,7 +249,72 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 	}
 	
 	/**
-	 * The body layer stack for the {@link _701_CalculatingGridExample}.
+	 * Specialised ListDataProvider that is using the CalculatedValueCache for background processing
+	 * of calculated column values.
+	 * <p>
+	 * As the updates after the calculation processing need to be fired via ILayer, the CalculatedValueCache
+	 * is created with no ILayer at construction time. But the DataLayer e.g. needs to be set in order to
+	 * make the automatic updates on data modifications work.
+	 */
+	class CachedValueCalculatingDataProvider<T> extends GlazedListsDataProvider<T> {
+
+		private CalculatedValueCache valueCache;
+		
+		public CachedValueCalculatingDataProvider(EventList<T> list, IColumnAccessor<T> columnAccessor) {
+			super(list, columnAccessor);
+			//create the CalculatedValueCache without layer reference, as the data provider is no layer
+			this.valueCache = new CalculatedValueCache(null, true, true);
+		}
+		
+		@Override
+		public Object getDataValue(final int colIndex, final int rowIndex) {
+			if (colIndex == 3) {
+				Object result = this.valueCache.getCalculatedValue(colIndex, rowIndex, true, new ICalculator() {
+					@Override
+					public Object executeCalculation() {
+						//calculate the sum
+						int colTwo = (Integer) getDataValue(1, rowIndex);
+						int colThree = (Integer) getDataValue(2, rowIndex);
+						//add some delay 
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {}
+						return colTwo + colThree;
+					}
+				});
+				
+				return result == null ? 0 : result;
+			}
+			else if (colIndex == 4) {
+				Object result = this.valueCache.getCalculatedValue(colIndex, rowIndex, true, new ICalculator() {
+					@Override
+					public Object executeCalculation() {
+						//calculate the percentage
+						int colOne = (Integer) getDataValue(0, rowIndex);
+						int colTwo = (Integer) getDataValue(1, rowIndex);
+						int colThree = (Integer) getDataValue(2, rowIndex);
+						//add some delay 
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {}
+						return new Double(colTwo + colThree) / colOne;
+					}
+				});
+				
+				return result == null ? new Double(0) : result;
+			}
+			
+			return super.getDataValue(colIndex, rowIndex);
+		}
+		
+		public void setCacheEventLayer(ILayer layer) {
+			this.valueCache.setLayer(layer);
+		}
+	}
+	
+	
+	/**
+	 * The body layer stack for the {@link _702_CachedCalculatingGridExample}.
 	 * Consists of
 	 * <ol>
 	 * <li>ViewportLayer</li>
@@ -267,8 +337,36 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 		private final ViewportLayer viewportLayer;
 		
 		public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry) {
-			IDataProvider dataProvider = new GlazedListsDataProvider<NumberValues>(valuesToShow, new CalculatingDataProvider());
+			final CachedValueCalculatingDataProvider<NumberValues> dataProvider = 
+					new CachedValueCalculatingDataProvider<NumberValues>(valuesToShow, new BasicDataColumnAccessor());
 			bodyDataLayer = new DataLayer(dataProvider);
+			//adding this listener will trigger updates on data changes
+			bodyDataLayer.addLayerListener(new ILayerListener() {
+				@Override
+				public void handleLayerEvent(ILayerEvent event) {
+					if (event instanceof IVisualChangeEvent) {
+						dataProvider.valueCache.clearCache();
+					}
+				}
+			});
+			//register a layer listener to ensure the value cache gets disposed
+			bodyDataLayer.registerCommandHandler(new ILayerCommandHandler<DisposeResourcesCommand>() {
+
+				@Override
+				public boolean doCommand(ILayer targetLayer, DisposeResourcesCommand command) {
+					dataProvider.valueCache.dispose();
+					return false;
+				}
+				
+				@Override
+				public Class<DisposeResourcesCommand> getCommandClass() {
+					return DisposeResourcesCommand.class;
+				}
+			});
+			
+			//connect the DataLayer with the data provider so the value cache knows how to fire updates
+			dataProvider.setCacheEventLayer(bodyDataLayer);
+			
 			glazedListsEventLayer = new GlazedListsEventLayer<NumberValues>(bodyDataLayer, valuesToShow);
 			summaryRowLayer = new SummaryRowLayer(glazedListsEventLayer, configRegistry, false);
 			summaryRowLayer.addConfiguration(new CalculatingSummaryRowConfiguration(bodyDataLayer.getDataProvider()));
@@ -291,7 +389,7 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 	}
 	
 	/**
-	 * The {@link GridLayer} used by the {@link _701_CalculatingGridExample}.
+	 * The {@link GridLayer} used by the {@link _702_CachedCalculatingGridExample}.
 	 */
 	class CalculatingGridLayer extends GridLayer {
 		
@@ -350,10 +448,10 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 					EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE);
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
-					DisplayMode.EDIT, _701_CalculatingGridExample.COLUMN_FOUR_LABEL);
+					DisplayMode.EDIT, _702_CachedCalculatingGridExample.COLUMN_FOUR_LABEL);
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
-					DisplayMode.EDIT, _701_CalculatingGridExample.COLUMN_FIVE_LABEL);
+					DisplayMode.EDIT, _702_CachedCalculatingGridExample.COLUMN_FIVE_LABEL);
 			//configure the summary row to be not editable
 			configRegistry.registerConfigAttribute(
 					EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
@@ -366,7 +464,7 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 			
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 
-					DisplayMode.NORMAL, _701_CalculatingGridExample.COLUMN_FIVE_LABEL);
+					DisplayMode.NORMAL, _702_CachedCalculatingGridExample.COLUMN_FIVE_LABEL);
 			
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 

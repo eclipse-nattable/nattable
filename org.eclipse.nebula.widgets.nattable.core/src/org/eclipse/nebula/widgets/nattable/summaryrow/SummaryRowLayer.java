@@ -10,10 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.summaryrow;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -25,11 +22,12 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
+import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
+import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 
 /**
  * Adds a summary row at the end. Uses {@link ISummaryProvider} to calculate the summaries for all columns.
@@ -57,23 +55,24 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	 * label mechanism.
 	 */
 	public static final String DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX = "SummaryColumn_"; //$NON-NLS-1$
-
+	/**
+	 * The ConfigRegistry for retrieving the ISummaryProvider per column.
+	 */
 	private final IConfigRegistry configRegistry;
+	/**
+	 * The row height of the summary row. As the summary row itself is not connected to a
+	 * DataLayer, this layer needs to store the height for itself.
+	 */
 	private int summaryRowHeight = DataLayer.DEFAULT_ROW_HEIGHT;
-
-	/** 
-	 * Cache that contains the calculated summary value.
-	 * Introduced for performance reasons since the calculation could be CPU intensive. 
+	/**
+	 * The value cache that contains the summary values and performs summary calculation in 
+	 * background processes if necessary.
 	 */
-	protected Map<Integer, Object> summaryCache = new HashMap<Integer, Object>();
-	/** 
-	 * Use a cache-copy which does not get cleared, as using an Entry type object with stale flag per 
-	 * instance would require traversal of full set of entries in <code>clearSummaryCache()</code>
-	 */
-	protected Map<Integer, Object> summaryCacheIncludingStaleValues = new HashMap<Integer, Object>();
+	private CalculatedValueCache valueCache;
 	
 	/**
-	 * Creates a SummaryRowLayer on top of the given underlying layer.
+	 * Creates a SummaryRowLayer on top of the given underlying layer. It uses smooth value updates
+	 * as default.
 	 * <p>
 	 * Note: This constructor will create the SummaryRowLayer by using the default configuration.
 	 * 		 The default configuration doesn't fit the needs so you usually will use your custom
@@ -85,11 +84,12 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	 * @see DefaultSummaryRowConfiguration
 	 */
 	public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer, IConfigRegistry configRegistry) {
-		this(underlyingDataLayer, configRegistry, true);
+		this(underlyingDataLayer, configRegistry, true, true);
 	}
 
 	/**
-	 * Creates a SummaryRowLayer on top of the given underlying layer.
+	 * Creates a SummaryRowLayer on top of the given underlying layer. It uses smooth value updates
+	 * as default.
 	 * <p>
 	 * Note: This constructor will create the SummaryRowLayer by using the default configuration
 	 * 		 if the autoConfig parameter is set to <code>true</code>.
@@ -106,9 +106,37 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	 * @see DefaultSummaryRowConfiguration
 	 */
 	public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer, IConfigRegistry configRegistry, boolean autoConfigure) {
+		this(underlyingDataLayer, configRegistry, true, autoConfigure);
+	}
+
+	/**
+	 * Creates a SummaryRowLayer on top of the given underlying layer.
+	 * <p>
+	 * Note: This constructor will create the SummaryRowLayer by using the default configuration
+	 * 		 if the autoConfig parameter is set to <code>true</code>.
+	 * 		 The default configuration doesn't fit the needs so you usually will use your custom
+	 * 		 summary row configuration. When using a custom configuration you should use this
+	 * 		 constructor setting autoConfig to <code>false</code>. Otherwise you might get strange
+	 * 		 behaviour as the default configuration will be set additionally to your configuration.
+	 * 
+	 * @param underlyingDataLayer The underlying layer on which the SummaryRowLayer should be build.
+	 * @param configRegistry The ConfigRegistry for retrieving the ISummaryProvider per column.
+	 * @param smoothUpdates <code>true</code> if the summary value updates should be performed smoothly,
+	 * 			<code>false</code> if on re-calculation the value should be immediately shown as not calculated.
+	 * @param autoConfigure <code>true</code> to use the DefaultSummaryRowConfiguration,
+	 * 			<code>false</code> if a custom configuration will be set after the creation.
+	 * 
+	 * @see DefaultSummaryRowConfiguration
+	 */
+	public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer, IConfigRegistry configRegistry, 
+			boolean smoothUpdates, boolean autoConfigure) {
+		
 		super(underlyingDataLayer);
 		this.configRegistry = configRegistry;
-		if(autoConfigure){
+		
+		this.valueCache = new CalculatedValueCache(this, true, false, smoothUpdates);
+		
+		if (autoConfigure){
 			addConfiguration(new DefaultSummaryRowConfiguration());
 		}
 	}
@@ -124,88 +152,52 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	@Override
 	public Object getDataValueByPosition(final int columnPosition, final int rowPosition) { 
 		if (isSummaryRowPosition(rowPosition)) {
-			final Object potentiallyStaleSummaryValue = getPotentiallyStaleSummaryFromCache(columnPosition);
-			if (potentiallyStaleSummaryValue == null || !hasNonStaleSummaryFor(columnPosition)) {
-				calculateNewSummaryValue(potentiallyStaleSummaryValue, columnPosition, true);
-			}
-			
-			if (potentiallyStaleSummaryValue != null) {
-				return potentiallyStaleSummaryValue;
-			}
-			
-			return null;
+			return calculateNewSummaryValue(columnPosition, true);
 		}
 		return super.getDataValueByPosition(columnPosition, rowPosition);
 	}
 
-	private void calculateNewSummaryValue(
-			final Object potentiallyStaleSummaryValue, 
-			final int columnPosition,  
-			boolean calculateInBackground) {
+	/**
+	 * Asks the local CalculatedValueCache for summary value. Is also used to trigger calculation
+	 * prior printing or exporting to ensure that the values are calculated. This is necessary because
+	 * usually the calculation will be done when the data value is requested the first time.
+	 * @param columnPosition The column position of the requested summary value.
+	 * @param calculateInBackground <code>true</code> if the summary value calculation should be
+	 * 			processed in a background thread, <code>false</code> if the calculation should be
+	 * 			processed in the current thread.
+	 * @return The value that is calculated in the CalculatedValueCache or a temporary value
+	 * 			if the calculation process is started in a background thread.
+	 */
+	private Object calculateNewSummaryValue(final int columnPosition, boolean calculateInBackground) {
 		
-		// Get the summary provider from the configuration registry
-		LabelStack labelStack = getConfigLabelsByPosition(columnPosition, getSummaryRowPosition());
-		String[] configLabels = labelStack.getLabels().toArray(ArrayUtil.STRING_TYPE_ARRAY);
-		
-		final ISummaryProvider summaryProvider = configRegistry.getConfigAttribute(
-				SummaryRowConfigAttributes.SUMMARY_PROVIDER, DisplayMode.NORMAL, configLabels);
-		
-		// If there is no Summary provider - skip processing
-		if(summaryProvider == ISummaryProvider.NONE){
-			return;
-		}
-
-		if (calculateInBackground) {
-			// Start thread to calculate summary
-			new Thread() {
-				@Override
-				public void run() {
-					Object summaryValue = calculateColumnSummary(columnPosition, summaryProvider);
-					addToCache(columnPosition, summaryValue);
-					if (!ObjectUtils.equals(potentiallyStaleSummaryValue, summaryValue)) {
-						fireLayerEvent(new RowUpdateEvent(SummaryRowLayer.this, getSummaryRowPosition()));
-					}
+		//as we only care about one row in the value cache, the real row position doesn't matter
+		//in fact using the real summary row position would cause issues if rows are added or
+		//removed because the value cache takes into account column and row position for caching.
+		return this.valueCache.getCalculatedValue(columnPosition, getSummaryRowPosition(), calculateInBackground, 
+				new ICalculator() {
+			
+			@Override
+			public Object executeCalculation() {
+				LabelStack labelStack = getConfigLabelsByPosition(columnPosition, getSummaryRowPosition());
+				String[] configLabels = labelStack.getLabels().toArray(ArrayUtil.STRING_TYPE_ARRAY);
+				
+				final ISummaryProvider summaryProvider = configRegistry.getConfigAttribute(
+						SummaryRowConfigAttributes.SUMMARY_PROVIDER, DisplayMode.NORMAL, configLabels);
+				
+				// If there is no Summary provider - skip processing
+				if(summaryProvider == ISummaryProvider.NONE || summaryProvider == null){
+					return null;
 				}
-			}.start();
-		}
-		else {
-			//calculate in same thread to make printing and exporting work
-			//Note: this could cause a performance leak and should be used carefully
-			Object summaryValue = calculateColumnSummary(columnPosition, summaryProvider);
-			addToCache(columnPosition, summaryValue);
-		}
-	}
 
-	private Object calculateColumnSummary(int columnIndex, ISummaryProvider summaryProvider) {
-		Object summaryValue = null;
-		if (summaryProvider != null) {
-			summaryValue = summaryProvider.summarize(columnIndex);
-		}
-		return summaryValue;
+				return summaryProvider.summarize(columnPosition);
+			}
+		});
 	}
 	
-	public Object getSummaryFromCache(Integer columnIndex) {
-		return summaryCache.get(columnIndex);
-	}
-
-	public Object getPotentiallyStaleSummaryFromCache(Integer columnIndex) {
-		return summaryCacheIncludingStaleValues.get(columnIndex);
-	}
-	
-	public boolean hasNonStaleSummaryFor(Integer columnIndex) {
-		return summaryCache.containsKey(columnIndex);
-	}
-	
-	protected boolean addToCache(Integer columnIndex, Object summaryValue) {
-		Object oldSummaryValue = summaryCache.put(columnIndex, summaryValue);
-		summaryCacheIncludingStaleValues.put(columnIndex,summaryValue);
-		return !ObjectUtils.equals(oldSummaryValue, summaryValue);
-	}
-
-	protected void clearSummaryCache() {
-		summaryCache.clear();
-	}
-
+	/**
+	 * @param rowPosition The row position to check.
+	 * @return <code>true</code> if the given row position is the summary row position.
+	 */
 	private boolean isSummaryRowPosition(int rowPosition) {
 		return rowPosition == getSummaryRowPosition();
 	}
@@ -229,9 +221,13 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 		}
 		else if (command instanceof CalculateSummaryRowValuesCommand) {
 			for (int i = 0; i < getColumnCount(); i++) {
-				calculateNewSummaryValue(null, i, false);
+				calculateNewSummaryValue(i, false);
 			}
-			return true;
+			//we do not return true here, as there might be other layers involved in 
+			//the composition that also need to calculate the summary values immediately
+		}
+		else if (command instanceof DisposeResourcesCommand) {
+			this.valueCache.dispose();
 		}
 		return super.doCommand(command);
 	}
@@ -239,7 +235,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	@Override
 	public void handleLayerEvent(ILayerEvent event) {
 		if (event instanceof IVisualChangeEvent) {
-			clearSummaryCache();
+			this.valueCache.clearCache();
 		}
 		super.handleLayerEvent(event);
 	}

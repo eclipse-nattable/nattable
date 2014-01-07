@@ -18,6 +18,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
@@ -26,9 +28,15 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedList
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
+import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
+import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCacheKey;
+import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -73,6 +81,11 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	private final GroupByTreeFormat<T> treeFormat;
 	
 	private final IConfigRegistry configRegistry;
+	/**
+	 * The value cache that contains the summary values and performs summary calculation in 
+	 * background processes if necessary.
+	 */
+	private CalculatedValueCache valueCache;
 	
 	/** Map the group to a dynamic list of group elements */
 	private final Map<GroupByObject, FilterList<T>> filtersByGroup = new ConcurrentHashMap<GroupByObject, FilterList<T>>();
@@ -91,9 +104,14 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		this(groupByModel, eventList, columnAccessor, configRegistry, true);
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
 			IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
+		this(groupByModel, eventList, columnAccessor, configRegistry, true, true);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+			IConfigRegistry configRegistry, boolean smoothUpdates, boolean useDefaultConfiguration) {
 		this.eventList = eventList;
 		this.columnAccessor = columnAccessor;
 
@@ -108,6 +126,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		this.treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
 
 		this.configRegistry = configRegistry;
+		
+		this.valueCache = new CalculatedValueCache(this, true, false, smoothUpdates);
 		
 		setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(), groupByColumnAccessor));
 
@@ -171,19 +191,28 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		}
 		return configLabels;
 	}
-
+	
 	@Override
-	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
+	public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
 		LabelStack labelStack = getConfigLabelsByPosition(columnPosition, rowPosition);
 		if (labelStack.hasLabel(GROUP_BY_OBJECT)) {
-			IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
-			
 			GroupByObject groupByObject = (GroupByObject) this.treeData.getDataAtIndex(rowPosition);
+			
 			//ensure to only load the children if they are needed
 			List<T> children = null;
+			
+			final IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
 			if (summaryProvider != null) {
 				children = getElementsInGroup(groupByObject);
-				return summaryProvider.summarize(columnPosition, children);
+				final List<T> c = children; 
+				return this.valueCache.getCalculatedValue(columnPosition, rowPosition, 
+						new GroupByValueCacheKey(columnPosition, rowPosition, groupByObject), true, 
+						new ICalculator() {
+							@Override
+							public Object executeCalculation() {
+								return summaryProvider.summarize(columnPosition, c);
+							}
+						});
 			}
 			
 			if (this.configRegistry != null) {
@@ -220,6 +249,49 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		return null;
 	}
 
+	@Override
+	public void handleLayerEvent(ILayerEvent event) {
+		if (event instanceof IVisualChangeEvent) {
+			this.valueCache.clearCache();
+		}
+
+		super.handleLayerEvent(event);
+	}
+	
+	@Override
+	public boolean doCommand(ILayerCommand command) {
+		if (command instanceof CalculateSummaryRowValuesCommand) {
+			//iterate over the whole tree structure and pre-calculate the summary values
+			for (int i = 0; i < getRowCount(); i++) {
+				if (this.treeData.getDataAtIndex(i) instanceof GroupByObject) {
+					for (int j = 0; j < getColumnCount(); j++) {
+						LabelStack labelStack = getConfigLabelsByPosition(j, i);
+						final IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
+						if (summaryProvider != null) {
+							GroupByObject groupByObject = (GroupByObject) this.treeData.getDataAtIndex(i);
+							final List<T> children = getElementsInGroup(groupByObject);
+							final int col = j;
+							this.valueCache.getCalculatedValue(j, i, 
+								new GroupByValueCacheKey(j, i, groupByObject), false, 
+								new ICalculator() {
+									@Override
+									public Object executeCalculation() {
+										return summaryProvider.summarize(col, children);
+									}
+								});
+						}
+					}
+				}
+			}
+			//we do not return true here, as there might be other layers involved in 
+			//the composition that also need to calculate the summary values immediately
+		}
+		else if (command instanceof DisposeResourcesCommand) {
+			this.valueCache.dispose();
+		}
+		
+		return super.doCommand(command);
+	}
 	
 	/**
 	 * Simple {@link ExpansionModel} that shows every node expanded initially
@@ -292,4 +364,62 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 		}
 	}
 
+	/**
+	 * The ICalculatedValueCacheKey that is used for groupBy summary values.
+	 * Need to be a combination of column position, row position and the GroupByObject
+	 * because only using the cell coordinates could raise caching issues if the
+	 * grouping is changed.
+	 */
+	class GroupByValueCacheKey implements ICalculatedValueCacheKey {
+
+		private final int columnPosition;
+		private final int rowPosition;
+		private final GroupByObject groupBy;
+		
+		public GroupByValueCacheKey(int columnPosition, int rowPosition, GroupByObject groupBy) {
+			this.columnPosition = columnPosition;
+			this.rowPosition = rowPosition;
+			this.groupBy = groupBy;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + columnPosition;
+			result = prime * result
+					+ ((groupBy == null) ? 0 : groupBy.hashCode());
+			result = prime * result + rowPosition;
+			return result;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			GroupByValueCacheKey other = (GroupByValueCacheKey) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (columnPosition != other.columnPosition)
+				return false;
+			if (groupBy == null) {
+				if (other.groupBy != null)
+					return false;
+			} else if (!groupBy.equals(other.groupBy))
+				return false;
+			if (rowPosition != other.rowPosition)
+				return false;
+			return true;
+		}
+
+		private GroupByDataLayer<T> getOuterType() {
+			return GroupByDataLayer.this;
+		}
+	}
 }

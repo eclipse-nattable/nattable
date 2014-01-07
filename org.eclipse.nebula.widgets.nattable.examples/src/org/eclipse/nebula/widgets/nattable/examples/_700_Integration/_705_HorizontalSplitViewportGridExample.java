@@ -75,13 +75,13 @@ import org.eclipse.swt.widgets.Slider;
  * @author Dirk Fauth
  * 
  */
-public class _704_HorizontalSplitViewportGridExample extends AbstractNatExample {
+public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample {
 
 	public static final int SPLIT_COLUMN_POSITION = 5;
 
 	public static void main(String[] args) throws Exception {
 		StandaloneNatExampleRunner.run(600, 400,
-				new _704_HorizontalSplitViewportGridExample());
+				new _705_HorizontalSplitViewportGridExample());
 	}
 
 	@Override

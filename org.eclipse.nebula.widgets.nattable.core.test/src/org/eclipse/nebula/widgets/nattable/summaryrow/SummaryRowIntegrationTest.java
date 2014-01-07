@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
@@ -30,8 +29,8 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -44,7 +43,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Rectangle;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -81,7 +79,7 @@ public class SummaryRowIntegrationTest {
 		IUniqueIndexLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
 		IUniqueIndexLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
 		layerStackWithSummary = new ViewportLayer(selectionLayer);
-
+		
 		// NatTableFixture initializes the client area
 		natTable = new NatTableFixture(layerStackWithSummary, false);
 		natTable.setConfigRegistry(configRegistry);
@@ -135,7 +133,10 @@ public class SummaryRowIntegrationTest {
 	}
 
 	@Test
-	public void shouldFireRowUpdateEventOnceSummaryIsCalculated() throws Exception {
+	public void shouldFireCellVisualChangeEventOnceSummaryIsCalculated() throws Exception {
+		//need to resize because otherwise the ViewportLayer would not process the CellVisualChangeEvent any further
+		natTable.setSize(800, 400);
+		
 		LayerListenerFixture listener = new LayerListenerFixture();
 		natTable.addLayerListener(listener);
 
@@ -144,29 +145,26 @@ public class SummaryRowIntegrationTest {
 
 		Thread.sleep(500);
 
-		assertTrue(listener.containsInstanceOf(RowUpdateEvent.class));
-		RowUpdateEvent event = (RowUpdateEvent) listener.getReceivedEvents().get(0);
+		assertTrue(listener.containsInstanceOf(CellVisualChangeEvent.class));
+		CellVisualChangeEvent event = (CellVisualChangeEvent) listener.getReceivedEvents().get(0);
 
-		Collection<Range> rowPositionRanges = event.getRowPositionRanges();
-		assertEquals(1, rowPositionRanges.size());
-		assertEquals(4, rowPositionRanges.iterator().next().start);
-		assertEquals(5, rowPositionRanges.iterator().next().end);
-
+		assertEquals(askPriceColumnIndex, event.getColumnPosition());
+		assertEquals(4, event.getRowPosition());
+		
+		
 		Collection<Rectangle> changedPositionRectangles = event.getChangedPositionRectangles();
 		assertEquals(1, changedPositionRectangles.size());
 
+		//only the cell gets updated
 		Rectangle rectangle = changedPositionRectangles.iterator().next();
-		assertEquals(0, rectangle.x);
+		assertEquals(6, rectangle.x);
 		assertEquals(4, rectangle.y);
-		assertEquals(6, rectangle.width);
+		assertEquals(1, rectangle.width);
 		assertEquals(1, rectangle.height);
 	}
 
 	@Test
 	public void rowAddShouldClearCacheAndCalculateNewSummary() throws Exception {
-		LayerListenerFixture listener = new LayerListenerFixture();
-		natTable.addLayerListener(listener);
-
 		// Trigger summary calculation
 		Object askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex, 4);
 		assertNull(askPriceSummary);
@@ -180,11 +178,6 @@ public class SummaryRowIntegrationTest {
 		// Add data and fire event
 		dataList.add(new RowDataFixture("SID", "SDesc", "A", new Date(), new PricingTypeBean("MN"), 2.0, 2.1, 100, true, 3.0, 1.0, 1.0, 1000, 100000, 50000));
 		dataLayer.fireLayerEvent(new RowInsertEvent(dataLayer, 4));
-
-		// Verify cache cleared
-		Assert.assertTrue(listener.containsInstanceOf(RowInsertEvent.class));
-		Object summaryVal = summaryRowLayer.getSummaryFromCache(askPriceColumnIndex);
-		Assert.assertNull(summaryVal);
 
 		// Trigger summary calculation - on the new summary row
 		askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex, 5);
