@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,4 +71,25 @@ public class SizeConfigTest {
 		Assert.assertFalse(sizeConfig.isAllPositionsSameSize());
 	}
 
+	@Test
+	public void testAggregateSize() {
+		final SizeConfig sc = new SizeConfig(50); // Global default of 50
+		sc.setSize(0, 20);
+		sc.setSize(1, 20);
+		// use global default for 3rd and 4th position
+
+		Assert.assertEquals(140, sc.getAggregateSize(4));
+	}
+
+	@Test
+	public void testAggregateSizeWithPositionDefaults() {
+		final SizeConfig sc = new SizeConfig(50); // Global default of 50
+		sc.setSize(0, 20);
+		sc.setSize(1, 20);
+		sc.setDefaultSize(0, 10); // must not be considered as there is a size set on 1st position
+		sc.setDefaultSize(2, 10); // must be considered as there is no size setting on 3rd position
+		// use global default for 4th position
+
+		Assert.assertEquals(100, sc.getAggregateSize(4));
+	}
 }

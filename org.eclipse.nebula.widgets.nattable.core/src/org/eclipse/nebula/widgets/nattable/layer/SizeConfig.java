@@ -215,6 +215,17 @@ public class SizeConfig implements IPersistable {
 				}
 			}
 
+			//also take into account the default size configuration per position
+			for (Integer defaultPosition : defaultSizeMap.keySet()) {
+			    if (defaultPosition.intValue() < position) {
+			        if (!mapToUse.containsKey(defaultPosition)) {
+			            resizedColumns++;
+			            resizeAggregate += defaultSizeMap.get(defaultPosition).intValue();
+			        }
+			    } else {
+			        break;
+			    }
+			}
 			return (position * defaultSize) + (resizeAggregate - (resizedColumns * defaultSize));
 		}
 	}
