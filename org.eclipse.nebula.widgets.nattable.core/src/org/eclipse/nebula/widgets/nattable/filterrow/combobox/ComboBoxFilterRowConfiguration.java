@@ -19,12 +19,14 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
+import org.eclipse.swt.graphics.GC;
 
 /**
  * Special filter row configuration that configures the FilterRowComboBoxCellEditor as editor
@@ -82,6 +84,22 @@ public class ComboBoxFilterRowConfiguration extends AbstractRegistryConfiguratio
 				new TextPainter() {
 					{
 						this.paintFg = false;
+					}
+					
+					//override the preferred width and height to be 0, as otherwise
+					//the String that is generated in the background for multiple 
+					//selection will be taken into account for auto resizing
+					
+					@Override
+					public int getPreferredWidth(ILayerCell cell, GC gc, 
+							IConfigRegistry configRegistry) {
+						return 0;
+					}
+					
+					@Override
+					public int getPreferredHeight(ILayerCell cell, GC gc,
+							IConfigRegistry configRegistry) {
+						return 0;
 					}
 				}, 
 				CellEdgeEnum.RIGHT, 
