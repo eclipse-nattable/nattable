@@ -188,7 +188,7 @@ public class CellLayerPainter implements ILayerPainter {
 		}
 	}
 	
-	private int getStartXOfColumnPosition(final int columnPosition) {
+	protected int getStartXOfColumnPosition(final int columnPosition) {
 		if (columnPosition < natLayer.getColumnCount()) {
 			Integer start = horizontalPositionToPixelMap.get(columnPosition);
 			if (start == null) {
@@ -208,7 +208,7 @@ public class CellLayerPainter implements ILayerPainter {
 		}
 	}
 	
-	private int getStartYOfRowPosition(final int rowPosition) {
+	protected int getStartYOfRowPosition(final int rowPosition) {
 		if (rowPosition < natLayer.getRowCount()) {
 			Integer start = verticalPositionToPixelMap.get(rowPosition);
 			if (start == null) {

@@ -27,6 +27,8 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
+import org.eclipse.nebula.widgets.nattable.print.command.MultiTurnViewportOffCommandHandler;
+import org.eclipse.nebula.widgets.nattable.print.command.MultiTurnViewportOnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.util.ClientAreaAdapter;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.SliderScroller;
@@ -104,6 +106,14 @@ public class _703_HorizontalSplitViewportExample extends AbstractNatExample {
 		compositeLayer.setChildLayer("REGION_A", viewportLayerLeft, 0, 0);
 		compositeLayer.setChildLayer("REGION_B", viewportLayerRight, 1, 0);
 
+		//in order to make printing and exporting work correctly you need to register the following
+		//command handlers
+		//although in this example printing and exporting is not enabled, we show the registering
+		compositeLayer.registerCommandHandler(new MultiTurnViewportOnCommandHandler(
+				viewportLayerLeft, viewportLayerRight));
+		compositeLayer.registerCommandHandler(new MultiTurnViewportOffCommandHandler(
+				viewportLayerLeft, viewportLayerRight));
+		
 		//set the width of the left viewport to only showing 2 columns at the same time
 		int leftWidth = bodyDataLayer.getStartXOfColumnPosition(2);
 		

@@ -18,6 +18,7 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -41,8 +42,12 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
+import org.eclipse.nebula.widgets.nattable.print.command.MultiTurnViewportOffCommandHandler;
+import org.eclipse.nebula.widgets.nattable.print.command.MultiTurnViewportOnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
@@ -61,6 +66,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -114,6 +120,14 @@ public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample 
 
 		final BodyLayerStack<PersonWithAddress> bodyLayer = new BodyLayerStack<PersonWithAddress>(
 				PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
+		
+		// build the row header layer
+		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+				bodyLayer.getBodyDataProvider());
+		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+				rowHeaderDataProvider);
+		final ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+				bodyLayer, bodyLayer.getSelectionLayer());
 
 		// build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
@@ -122,24 +136,54 @@ public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample 
 				columnHeaderDataProvider);
 		final AbstractLayer columnHeaderLayer = new ColumnHeaderLayer(
 				columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
-		// use a cell layer painter that is configured for left clipping
-		// this ensures that the rendering works correctly for split viewports
-		// as the column header is not split we need the following dynamically
-		// calculation of the clipping behaviour to support correct clipping
+		
+		//Use this special layer painter that supports rendering of split viewports although
+		//the ColumnHeaderLayer is not split. Here is some custom calculation included that
+		//might not work correctly in case there are column groups or other spanning involved.
 		columnHeaderLayer.setLayerPainter(new CellLayerPainter() {
 			@Override
 			protected boolean isClipLeft(int position) {
 				return (position >= SPLIT_COLUMN_POSITION-1);
 			}
-		});
+			
+			@Override
+			protected void paintCell(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+				ILayer layer = cell.getLayer();
+				int columnPosition = cell.getColumnPosition();
+				int rowPosition = cell.getRowPosition();
+				ICellPainter cellPainter = layer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
+				Rectangle adjustedCellBounds = layer.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
+				if (cellPainter != null) {
+					Rectangle originalClipping = gc.getClipping();
+					
+					int startX = getStartXOfColumnPosition(columnPosition);
+					int startY = getStartYOfRowPosition(rowPosition);
+					
+					int endX = getStartXOfColumnPosition(cell.getOriginColumnPosition() + cell.getColumnSpan());
+					int endY = getStartYOfRowPosition(cell.getOriginRowPosition() + cell.getRowSpan());
 
-		// build the row header layer
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-				bodyLayer.getBodyDataProvider());
-		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-				rowHeaderDataProvider);
-		final ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-				bodyLayer, bodyLayer.getSelectionLayer());
+					//correct position of first column in right region
+					//find the last visible column in left region
+					int viewportBorderX = bodyLayer.getViewportLayerLeft().getClientAreaWidth() + rowHeaderLayer.getWidth();
+					if (isClipLeft(columnPosition) && startX < viewportBorderX) {
+						startX = viewportBorderX;
+					}
+					if (!isClipLeft(columnPosition-1) && startX > viewportBorderX) {
+						startX = viewportBorderX;
+					}
+					if (isClipLeft(cell.getOriginColumnPosition() + cell.getColumnSpan()) && endX < viewportBorderX) {
+						endX = viewportBorderX;
+					}
+					
+					Rectangle cellClipBounds = originalClipping.intersection(new Rectangle(startX, startY, endX - startX, endY - startY));
+					gc.setClipping(cellClipBounds.intersection(adjustedCellBounds));
+					
+					cellPainter.paintCell(cell, gc, adjustedCellBounds, configRegistry);
+					
+					gc.setClipping(originalClipping);
+				}
+			}
+		});
 
 		// build the corner layer
 		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
@@ -151,6 +195,13 @@ public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample 
 		// build the grid layer
 		GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer,
 				rowHeaderLayer, cornerLayer);
+
+		//in order to make printing and exporting work correctly you need to register the following
+		//command handlers
+		gridLayer.registerCommandHandler(new MultiTurnViewportOnCommandHandler(
+				bodyLayer.getViewportLayerLeft(), bodyLayer.getViewportLayerRight()));
+		gridLayer.registerCommandHandler(new MultiTurnViewportOffCommandHandler(
+				bodyLayer.getViewportLayerLeft(), bodyLayer.getViewportLayerRight()));
 
 		// Wrap NatTable in composite so we can slap on the external horizontal
 		// sliders

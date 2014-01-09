@@ -27,6 +27,8 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
+import org.eclipse.nebula.widgets.nattable.print.command.MultiTurnViewportOffCommandHandler;
+import org.eclipse.nebula.widgets.nattable.print.command.MultiTurnViewportOnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.util.ClientAreaAdapter;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.SliderScroller;
@@ -103,6 +105,14 @@ public class _704_VerticalSplitViewportExample extends AbstractNatExample {
 		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
 		compositeLayer.setChildLayer("REGION_A", viewportLayerTop, 0, 0);
 		compositeLayer.setChildLayer("REGION_B", viewportLayerBottom, 0, 1);
+
+		//in order to make printing and exporting work correctly you need to register the following
+		//command handlers
+		//although in this example printing and exporting is not enabled, we show the registering
+		compositeLayer.registerCommandHandler(new MultiTurnViewportOnCommandHandler(
+				viewportLayerTop, viewportLayerBottom));
+		compositeLayer.registerCommandHandler(new MultiTurnViewportOffCommandHandler(
+				viewportLayerTop, viewportLayerBottom));
 
 		//set the height of the top viewport to only showing 2 rows at the same time
 		int topHeight = bodyDataLayer.getStartYOfRowPosition(2);

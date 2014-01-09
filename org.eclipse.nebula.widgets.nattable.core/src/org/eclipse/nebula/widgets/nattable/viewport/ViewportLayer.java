@@ -952,25 +952,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		} else if (command instanceof TurnViewportOffCommand) {
 			savedOrigin = origin;
 			viewportOff = true;
-			
-			//in case of split viewports we need to ensure that the other viewports
-			//also got the chance to turn the viewport off, otherwise there is no need
-			//to propagate the TurnViewportOffCommand further
-			if (getMaxColumnPosition() < 0 && getMinColumnPosition() < 0
-					&& getMaxRowPosition() < 0 && getMinRowPosition() < 0) {
-				return true;
-			}
+			return true;
 		} else if (command instanceof TurnViewportOnCommand) {
 			viewportOff = false;
 			origin = savedOrigin;
-			
-			//in case of split viewports we need to ensure that the other viewports
-			//also got the chance to turn the viewport on, otherwise there is no need
-			//to propagate the TurnViewportOnCommand further
-			if (getMaxColumnPosition() < 0 && getMinColumnPosition() < 0
-					&& getMaxRowPosition() < 0 && getMinRowPosition() < 0) {
-				return true;
-			}
+			return true;
 		} else if (command instanceof PrintEntireGridCommand) {
 			moveCellPositionIntoViewport(0, 0);
 		}
