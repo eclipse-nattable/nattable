@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.resize.mode;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
@@ -33,14 +32,18 @@ public class RowResizeDragMode implements IDragMode {
 	
 	private static final int DEFAULT_ROW_HEIGHT_MINIMUM = 18;
 	
-	private int gridRowPositionToResize;
-	private int originalRowHeight;
-	private int startY;
-	private int currentY;
-	private int lastY = -1;
-	private int gridRowStartY;
-	private IOverlayPainter overlayPainter = new RowResizeOverlayPainter();
+	protected int gridRowPositionToResize;
+	protected int originalRowHeight;
+	protected int startY;
+	protected int currentY;
+	protected int lastY = -1;
+	protected int gridRowStartY;
 	
+	protected boolean checkMinimumWidth = true;
+
+	protected final IOverlayPainter overlayPainter = new RowResizeOverlayPainter();
+	
+	@Override
 	public void mouseDown(NatTable natTable, MouseEvent event) {
 		natTable.forceFocus();
 		gridRowPositionToResize = 
@@ -53,12 +56,13 @@ public class RowResizeDragMode implements IDragMode {
 		}
 	}
 	
+	@Override
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		if (event.y > natTable.getHeight()) {
 			return;
 		}
 	    currentY = event.y;
-        if (currentY < gridRowStartY + getRowHeightMinimum()) {
+        if (checkMinimumWidth && currentY < gridRowStartY + getRowHeightMinimum()) {
             currentY = gridRowStartY + getRowHeightMinimum();
         } else {
 	    	int overlayExtent = RowResizeOverlayPainter.ROW_RESIZE_OVERLAY_HEIGHT / 2;
@@ -81,6 +85,7 @@ public class RowResizeDragMode implements IDragMode {
         }
 	}
 
+	@Override
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		natTable.removeOverlayPainter(overlayPainter);
 		updateRowHeight(natTable, event);
@@ -102,7 +107,8 @@ public class RowResizeDragMode implements IDragMode {
 		
 		static final int ROW_RESIZE_OVERLAY_HEIGHT = 2;
 		
-	    public void paintOverlay(GC gc, ILayer layer) {
+	    @Override
+		public void paintOverlay(GC gc, ILayer layer) {
 	        Color originalBackgroundColor = gc.getBackground();
 	        gc.setBackground(GUIHelper.COLOR_DARK_GRAY);
 	        gc.fillRectangle(0, currentY - (ROW_RESIZE_OVERLAY_HEIGHT / 2), layer.getWidth(), ROW_RESIZE_OVERLAY_HEIGHT);

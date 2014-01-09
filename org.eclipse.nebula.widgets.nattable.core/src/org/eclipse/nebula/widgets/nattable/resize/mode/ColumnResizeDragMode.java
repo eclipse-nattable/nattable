@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.resize.mode;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
@@ -33,15 +32,18 @@ public class ColumnResizeDragMode implements IDragMode {
 
 	private static final int DEFAULT_COLUMN_WIDTH_MINIMUM = 25;
 
-	private int columnPositionToResize;
-	private int originalColumnWidth;
-	private int startX;
-	private int currentX;
-	private int lastX = -1;
-	private int gridColumnStartX;
+	protected int columnPositionToResize;
+	protected int originalColumnWidth;
+	protected int startX;
+	protected int currentX;
+	protected int lastX = -1;
+	protected int gridColumnStartX;
+	
+	protected boolean checkMinimumWidth = true;
 
-	private final IOverlayPainter overlayPainter = new ColumnResizeOverlayPainter();
+	protected final IOverlayPainter overlayPainter = new ColumnResizeOverlayPainter();
 
+	@Override
 	public void mouseDown(NatTable natTable, MouseEvent event) {
 		natTable.forceFocus();
 		columnPositionToResize =
@@ -54,12 +56,13 @@ public class ColumnResizeDragMode implements IDragMode {
 		}
 	}
 
+	@Override
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		if (event.x > natTable.getWidth()) {
 			return;
 		}
 	    this.currentX = event.x;
-	    if (currentX < gridColumnStartX + getColumnWidthMinimum()) {
+	    if (checkMinimumWidth && currentX < gridColumnStartX + getColumnWidthMinimum()) {
 	        currentX = gridColumnStartX + getColumnWidthMinimum();
 	    } else {
 	    	int overlayExtent = ColumnResizeOverlayPainter.COLUMN_RESIZE_OVERLAY_WIDTH / 2;
@@ -82,6 +85,7 @@ public class ColumnResizeDragMode implements IDragMode {
 	    }
 	}
 
+	@Override
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 	    natTable.removeOverlayPainter(overlayPainter);
 		updateColumnWidth(natTable, event);
@@ -103,7 +107,8 @@ public class ColumnResizeDragMode implements IDragMode {
 
 		static final int COLUMN_RESIZE_OVERLAY_WIDTH = 2;
 
-	    public void paintOverlay(GC gc, ILayer layer) {
+	    @Override
+		public void paintOverlay(GC gc, ILayer layer) {
 	        Color originalBackgroundColor = gc.getBackground();
 	        gc.setBackground(GUIHelper.COLOR_DARK_GRAY);
 	        gc.fillRectangle(currentX - (COLUMN_RESIZE_OVERLAY_WIDTH / 2), 0, COLUMN_RESIZE_OVERLAY_WIDTH, layer.getHeight());
