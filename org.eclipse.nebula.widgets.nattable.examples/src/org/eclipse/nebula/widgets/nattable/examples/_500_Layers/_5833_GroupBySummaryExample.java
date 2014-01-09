@@ -284,6 +284,9 @@ public class _5833_GroupBySummaryExample extends AbstractNatExample {
 		toggleMoneySummaryButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				//clear the group by summary cache so the new summary calculation gets triggered
+				bodyLayerStack.getBodyDataLayer().clearCache();
+				
 				useMoneySum = !useMoneySum;
 				if (useMoneySum) {
 					configRegistry.registerConfigAttribute(GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,

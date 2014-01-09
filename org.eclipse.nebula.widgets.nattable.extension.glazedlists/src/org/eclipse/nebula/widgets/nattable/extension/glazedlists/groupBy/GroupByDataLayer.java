@@ -252,10 +252,22 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	@Override
 	public void handleLayerEvent(ILayerEvent event) {
 		if (event instanceof IVisualChangeEvent) {
-			this.valueCache.clearCache();
+			clearCache();
 		}
 
 		super.handleLayerEvent(event);
+	}
+	
+	/**
+	 * Clear the internal cache to trigger new calculations.
+	 * <p>
+	 * Usually it is not necessary to call this method manually. But for certain use cases
+	 * it might be useful, e.g. changing the summary provider implementation at runtime.
+	 * 
+	 * @see CalculatedValueCache#clearCache()
+	 */
+	public void clearCache() {
+		this.valueCache.clearCache();
 	}
 	
 	@Override
