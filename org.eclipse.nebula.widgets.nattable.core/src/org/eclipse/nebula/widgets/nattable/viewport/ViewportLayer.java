@@ -20,9 +20,11 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
+import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.ScrollSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -956,6 +958,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		} else if (command instanceof TurnViewportOnCommand) {
 			viewportOff = false;
 			origin = savedOrigin;
+			//only necessary in case of split viewports and auto resizing, but shouldn't hurt in other cases
+			adjustHorizontalScrollBar();
+			adjustVerticalScrollBar();
 			return true;
 		} else if (command instanceof PrintEntireGridCommand) {
 			moveCellPositionIntoViewport(0, 0);
@@ -1146,9 +1151,23 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
 			if (structuralChangeEvent.isHorizontalStructureChanged()) {
 				invalidateHorizontalStructure();
+				
+				//saved origin correction for multi viewports
+				if (viewportOff 
+						&& (getMaxColumnPosition() >= 0 || getMinColumnPosition() >= 0) 
+						&& event instanceof ColumnResizeEvent) {
+					correctSavedOriginX((ColumnResizeEvent)event);
+				}
 			}
 			if (structuralChangeEvent.isVerticalStructureChanged()) {
 				invalidateVerticalStructure();
+				
+				//saved origin correction for multi viewports
+				if (viewportOff 
+						&& (getMaxRowPosition() >= 0 || getMinRowPosition() >= 0) 
+						&& event instanceof RowResizeEvent) {
+					correctSavedOriginY((RowResizeEvent)event);
+				}
 			}
 		}
 
@@ -1161,6 +1180,102 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 		}
 
 		super.handleLayerEvent(event);
+	}
+	
+	/**
+	 * This method gets called in case of automatic column resize is performed when split viewports
+	 * are active.
+	 * <p>
+	 * Automatic resize commands will first turn the viewport off, then perform the resizing and
+	 * then turn the viewport on again. Turning the viewport off and on again causes reapplying 
+	 * the origin, which has impact on split viewport minimum/maximum origins. 
+	 * 
+	 * @param event The ColumnResizeEvent that was fired when the viewport is turned off.
+	 */
+	private void correctSavedOriginX(ColumnResizeEvent event) {
+		int newOriginX = savedOrigin.getX();
+		
+		int columnPosition = -1;
+		for (StructuralDiff diff : event.getColumnDiffs()) {
+			columnPosition = diff.getBeforePositionRange().start;
+		}
+		if (getMinColumnPosition() >= 0) {
+			int possibleWidth = 0;
+			for (int col = columnPosition; col < getMinColumnPosition(); col++) {
+				possibleWidth += scrollableLayer.getColumnWidthByPosition(col);
+			}
+			if (possibleWidth < minimumOrigin.getX()) {
+				newOriginX = newOriginX - (minimumOrigin.getX() - possibleWidth);
+			}
+		}
+		else {
+			int originX = savedOrigin.getX();
+			int visibleWidth = calculateVisibleWidth(originX);
+			int clientAreaWidth = getClientAreaWidth();
+			if (visibleWidth < clientAreaWidth) {
+				int possibleWidth = 0;
+				int columnCount = getMaxColumnPosition() >= 0 ? getMaxColumnPosition() : scrollableLayer.getColumnCount(); 
+				for (int col = columnPosition; col < columnCount; col++) {
+					possibleWidth += scrollableLayer.getColumnWidthByPosition(col);
+				}
+				if (possibleWidth >= clientAreaWidth) {
+					newOriginX = scrollableLayer.getStartXOfColumnPosition(columnPosition);
+				}
+				else {
+					newOriginX = scrollableLayer.getWidth() - clientAreaWidth;
+				}
+				newOriginX = Math.max(0, newOriginX);
+			}
+		}
+		savedOrigin = new PixelCoordinate(newOriginX, savedOrigin.getY());
+	}
+	
+	/**
+	 * This method gets called in case of automatic row resize is performed when split viewports
+	 * are active.
+	 * <p>
+	 * Automatic resize commands will first turn the viewport off, then perform the resizing and
+	 * then turn the viewport on again. Turning the viewport off and on again causes reapplying 
+	 * the origin, which has impact on split viewport minimum/maximum origins. 
+	 * 
+	 * @param event The RowResizeEvent that was fired when the viewport is turned off.
+	 */
+	private void correctSavedOriginY(RowResizeEvent event) {
+		int newOriginY = savedOrigin.getY();
+		
+		int rowPosition = -1;
+		for (StructuralDiff diff : event.getRowDiffs()) {
+			rowPosition = diff.getBeforePositionRange().start;
+		}
+		if (getMinRowPosition() >= 0) {
+			int possibleHeight = 0;
+			for (int row = rowPosition; row < getMinRowPosition(); row++) {
+				possibleHeight += scrollableLayer.getRowHeightByPosition(row);
+			}
+			if (possibleHeight < minimumOrigin.getY()) {
+				newOriginY = newOriginY - (minimumOrigin.getY() - possibleHeight);
+			}
+		}
+		else {
+			int originY = savedOrigin.getY();
+			int visibleHeight = calculateVisibleHeight(originY);
+			int clientAreaHeight = getClientAreaHeight();
+			if (visibleHeight < clientAreaHeight) {
+				int possibleHeight = 0;
+				int rowCount = getMaxRowPosition() >= 0 ? getMaxRowPosition() : scrollableLayer.getRowCount(); 
+				for (int row = rowPosition; row < rowCount; row++) {
+					possibleHeight += scrollableLayer.getRowHeightByPosition(row);
+				}
+				if (possibleHeight >= clientAreaHeight) {
+					newOriginY = scrollableLayer.getStartYOfRowPosition(rowPosition);
+				}
+				else {
+					newOriginY = scrollableLayer.getHeight() - clientAreaHeight;
+				}
+				newOriginY = Math.max(0, newOriginY);
+			}
+		}
+		savedOrigin = new PixelCoordinate(savedOrigin.getX(), newOriginY);
 	}
 	
 	/**

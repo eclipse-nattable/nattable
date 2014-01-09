@@ -42,6 +42,7 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -83,7 +84,7 @@ import org.eclipse.swt.widgets.Slider;
  */
 public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample {
 
-	public static final int SPLIT_COLUMN_POSITION = 5;
+	public static final int SPLIT_COLUMN_INDEX = 5;
 
 	public static void main(String[] args) throws Exception {
 		StandaloneNatExampleRunner.run(600, 400,
@@ -132,7 +133,7 @@ public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample 
 		// build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
 				propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+		final DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
 				columnHeaderDataProvider);
 		final AbstractLayer columnHeaderLayer = new ColumnHeaderLayer(
 				columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
@@ -143,7 +144,8 @@ public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample 
 		columnHeaderLayer.setLayerPainter(new CellLayerPainter() {
 			@Override
 			protected boolean isClipLeft(int position) {
-				return (position >= SPLIT_COLUMN_POSITION-1);
+				int index = LayerUtil.convertColumnPosition(columnHeaderLayer, position, columnHeaderDataLayer);
+				return (index > SPLIT_COLUMN_INDEX);
 			}
 			
 			@Override
@@ -393,8 +395,8 @@ public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample 
 		 * @return The number of visible columns in the left viewport.
 		 */
 		private int getNumberOfLeftColumns() {
-			int fixedColumns = SPLIT_COLUMN_POSITION;
-			for (int i = 0; i < (SPLIT_COLUMN_POSITION); i++) {
+			int fixedColumns = SPLIT_COLUMN_INDEX;
+			for (int i = 0; i < (SPLIT_COLUMN_INDEX); i++) {
 				if (this.columnHideShowLayer.isColumnIndexHidden(i)) {
 					fixedColumns--;
 				}
@@ -468,8 +470,8 @@ public class _705_HorizontalSplitViewportGridExample extends AbstractNatExample 
 
 				// ensure that dragging over split viewport borders is not
 				// allowed
-				if ((fromColumnIndex < SPLIT_COLUMN_POSITION && toColumnIndex < SPLIT_COLUMN_POSITION)
-						|| (fromColumnIndex >= (SPLIT_COLUMN_POSITION) && toColumnIndex >= (SPLIT_COLUMN_POSITION))) {
+				if ((fromColumnIndex < SPLIT_COLUMN_INDEX && toColumnIndex < SPLIT_COLUMN_INDEX)
+						|| (fromColumnIndex >= (SPLIT_COLUMN_INDEX) && toColumnIndex >= (SPLIT_COLUMN_INDEX))) {
 
 					return super.isValidTargetColumnPosition(natLayer,
 							dragFromGridColumnPosition,
