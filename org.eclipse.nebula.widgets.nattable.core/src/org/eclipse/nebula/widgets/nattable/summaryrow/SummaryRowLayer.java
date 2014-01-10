@@ -251,6 +251,20 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	public void clearCache() {
 		this.valueCache.clearCache();
 	}
+	
+	/**
+	 * Clears all values in the internal cache to trigger new calculations. This will also
+	 * clear all values in the cache copy and will result in rendering like there was never
+	 * a summary value calculated before.
+	 * <p>
+	 * Usually it is not necessary to call this method manually. But for certain use cases
+	 * it might be useful, e.g. changing the summary provider implementation at runtime.
+	 * 
+	 * @see CalculatedValueCache#killCache()
+	 */
+	public void killCache() {
+		this.valueCache.killCache();
+	}
 
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
