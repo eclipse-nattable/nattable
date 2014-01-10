@@ -2,6 +2,7 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
 
 public interface GroupByConfigAttributes {
 
@@ -20,4 +21,16 @@ public interface GroupByConfigAttributes {
 	 * </ul>
 	 */
 	ConfigAttribute<String> GROUP_BY_CHILD_COUNT_PATTERN = new ConfigAttribute<String>();
+	
+	/**
+	 * Configuration attribute to specify a hint that should be shown in case no grouping is applied.
+	 */
+	ConfigAttribute<String> GROUP_BY_HINT = new ConfigAttribute<String>();
+	
+	/**
+	 * Configuration attribute to specify the style of a group by hint. Setting the values for
+	 * foreground, background and font is supported.
+	 */
+	ConfigAttribute<IStyle> GROUP_BY_HINT_STYLE = new ConfigAttribute<IStyle>();
+
 }

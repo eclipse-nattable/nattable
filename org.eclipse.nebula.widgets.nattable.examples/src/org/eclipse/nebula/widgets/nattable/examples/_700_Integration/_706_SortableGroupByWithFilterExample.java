@@ -66,16 +66,20 @@ import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -234,6 +238,16 @@ public class _706_SortableGroupByWithFilterExample extends AbstractNatExample {
 				configRegistry.registerConfigAttribute(
 						GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
 						"[{0}] - ({1})");
+
+				configRegistry.registerConfigAttribute(
+						GroupByConfigAttributes.GROUP_BY_HINT,
+						"Drag columns here");
+				
+				Style hintStyle = new Style();
+				hintStyle.setAttributeValue(CellStyleAttributes.FONT, GUIHelper.getFont(new FontData("Arial", 10, SWT.ITALIC)));
+				configRegistry.registerConfigAttribute(
+						GroupByConfigAttributes.GROUP_BY_HINT_STYLE,
+						hintStyle);
 			}
 		});
 		

@@ -19,6 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.AbstractCellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
@@ -43,6 +44,7 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 		this.columnHeaderDataProvider = columnHeaderDataProvider;
 	}
 
+	@Override
 	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		Color originalBackground = gc.getBackground();
 		Color originalForeground = gc.getForeground();
@@ -53,21 +55,22 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 		
 		groupByCellBounds.clear();
 		
+		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
+		gc.setBackground(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+		gc.setForeground(cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+		gc.setFont(cellStyle.getAttributeValue(CellStyleAttributes.FONT));
+		gc.setAntialias(GUIHelper.DEFAULT_ANTIALIAS);
+		gc.setTextAntialias(GUIHelper.DEFAULT_TEXT_ANTIALIAS);
+		
 		List<Integer> groupByColumnIndexes = groupByModel.getGroupByColumnIndexes();
 		if (groupByColumnIndexes.size() > 0) {
-			IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
-			gc.setBackground(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-			gc.setForeground(cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-			gc.setFont(cellStyle.getAttributeValue(CellStyleAttributes.FONT));
-			gc.setAntialias(GUIHelper.DEFAULT_ANTIALIAS);
-			gc.setTextAntialias(GUIHelper.DEFAULT_TEXT_ANTIALIAS);
 			
 			int textHeight = gc.textExtent("X").y; //$NON-NLS-1$
 			
 			int x0 = bounds.x + LEFT_INDENT;
 			int y0 = bounds.y + bounds.height/2 - textHeight/2 - Y_PADDING;
 			int y_height = Y_PADDING + textHeight + Y_PADDING;
-			
+
 			// Draw leftmost edge
 			gc.drawLine(x0, y0, x0, y0 + y_height);
 			x0++;
@@ -108,16 +111,45 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 				x0 += ENDCAP_WIDTH;
 			}
 		}
+		else {
+			//if no grouping is applied and a hint is specified via configuration, the hint is rendered
+			String hint = configRegistry.getConfigAttribute(GroupByConfigAttributes.GROUP_BY_HINT, DisplayMode.NORMAL);
+			if (hint != null) {
+				//check if there is a separate styling configured for the hint
+				IStyle hintStyle = configRegistry.getConfigAttribute(GroupByConfigAttributes.GROUP_BY_HINT_STYLE, DisplayMode.NORMAL);
+				if (hintStyle != null) {
+					Color hintBackground = hintStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
+					gc.setBackground(hintBackground != null ? hintBackground : originalBackground);
+					Color hintForeground = hintStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
+					if (hintForeground != null)
+						gc.setForeground(hintForeground);
+					Font hintFont = hintStyle.getAttributeValue(CellStyleAttributes.FONT);
+					if (hintFont != null)
+						gc.setFont(hintFont);
+				}
+				else {
+					//ensure the background is the same as the background of the groupby header region
+					gc.setBackground(originalBackground);
+				}
+
+				int textHeight = gc.textExtent("X").y; //$NON-NLS-1$
+				int x0 = bounds.x + LEFT_INDENT;
+				int y0 = bounds.y + bounds.height/2 - textHeight/2 - Y_PADDING;
+				gc.drawText(hint, x0 + X_PADDING, y0);
+			}
+		}
 		
 		gc.setBackground(originalBackground);
 		gc.setForeground(originalForeground);
 		gc.setFont(originalFont);
 	}
 
+	@Override
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return 0;
 	}
 
+	@Override
 	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return getPreferredHeight();
 	}
