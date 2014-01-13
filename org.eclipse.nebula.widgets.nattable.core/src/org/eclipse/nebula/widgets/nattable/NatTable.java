@@ -31,7 +31,9 @@ import org.eclipse.nebula.widgets.nattable.conflation.IEventConflater;
 import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
+import org.eclipse.nebula.widgets.nattable.edit.CellEditorCreatedEvent;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
+import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -47,6 +49,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatLayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeManager;
@@ -73,6 +76,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -124,10 +128,10 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		public void handleEvent(Event event) {
 			//as resizing doesn't cause the current active editor to loose focus
 			//we are closing the current active editor manually
-			if (!EditUtils.commitAndCloseActiveEditor()) {
+			if (!commitAndCloseActiveCellEditor()) {
 				//if committing didn't work out we need to perform a hard close
 				//otherwise the state of the table would be unstale
-				ActiveCellEditorRegistry.getActiveCellEditor().close();
+				getActiveCellEditor().close();
 			}
 		}
 	};
@@ -142,6 +146,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	 * The {@link ThemeManager} that is used to switch {@link ThemeConfiguration}s at runtime.
 	 */
 	private ThemeManager themeManager;
+
+	/**
+	 * The active cell editor or {@code null} if there is no one.
+	 */
+	private ICellEditor activeCellEditor;
+
 	
 	public NatTable(Composite parent) {
 		this(parent, DEFAULT_STYLE_OPTIONS);
@@ -530,6 +540,25 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 				re.printStackTrace();
 			}
 		}
+
+		if (event instanceof CellEditorCreatedEvent) {
+			CellEditorCreatedEvent editorEvent = (CellEditorCreatedEvent) event;
+			activeCellEditor = editorEvent.getEditor();
+			Control editorControl = activeCellEditor.getEditorControl();
+			if (editorControl != null && !editorControl.isDisposed()) {
+				editorControl.addDisposeListener(new DisposeListener() {
+
+					@Override
+					public void widgetDisposed(DisposeEvent e) {
+						activeCellEditor = null;
+						ActiveCellEditorRegistry.unregisterActiveCellEditor();
+					}
+				});
+			} else {
+				activeCellEditor = null;
+			}
+			ActiveCellEditorRegistry.registerActiveCellEditor(activeCellEditor);
+		}
 	}
 
 
@@ -914,6 +943,33 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	public void setTheme(ThemeConfiguration themeConfiguration) {
 		this.themeManager.applyTheme(themeConfiguration);
 		doCommand(new VisualRefreshCommand());
+	}
+
+	// Editor
+	/**
+	 * Returns the active cell editor that is currently open or {@code null} if
+	 * there is no editor active.
+	 *
+	 * @return the active editor or {@code null}
+	 */
+	public ICellEditor getActiveCellEditor() {
+		return activeCellEditor;
+	}
+
+	/**
+	 * Checks if there is an active cell editor registered. If there is one, it is
+	 * tried to commit the value that is currently entered there.
+	 *
+	 * @return <code>false</code> if there is an open editor that can not be
+	 *         committed because of conversion/validation errors,
+	 *         <code>true</code> if there is no active open editor or it could
+	 *         be closed after committing the value.
+	 */
+	public boolean commitAndCloseActiveCellEditor() {
+		if (activeCellEditor != null) {
+			return activeCellEditor.commit(MoveDirectionEnum.NONE, true);
+		}
+		return true;
 	}
 
 }

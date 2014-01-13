@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
@@ -205,10 +206,15 @@ public class EditUtils {
 	/**
 	 * Checks if there is an active editor registered. If there is one, it is tried to
 	 * commit the value that is currently entered there. 
+	 *
+	 * @deprecated Has been replaced by {@link NatTable#commitAndCloseActiveCellEditor()}. The active editor is now managed
+	 * by the table itself. Therefore the static helpers to access the editor should not be used any more.
+	 *
 	 * @return <code>false</code> if there is an open editor that can not be committed
 	 * 			because of conversion/validation errors, <code>true</code> if there is
 	 * 			no active open editor or it could be closed after committing the value.
 	 */
+	@Deprecated
 	public static boolean commitAndCloseActiveEditor() {
 		ICellEditor activeCellEditor = ActiveCellEditorRegistry.getActiveCellEditor();
 		if (activeCellEditor != null) {

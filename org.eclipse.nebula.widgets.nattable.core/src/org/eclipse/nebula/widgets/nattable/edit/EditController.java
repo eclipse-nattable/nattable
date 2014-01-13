@@ -105,7 +105,7 @@ public class EditController {
 					//because of the strange behaviour on Mac OS where a control loses focus 
 					//if its bounds are set
 					cellEditor.addEditorControlListeners();
-					ActiveCellEditorRegistry.registerActiveCellEditor(cellEditor);
+					layer.fireLayerEvent(new CellEditorCreatedEvent(cellEditor));
 				}
 			}
 			else {

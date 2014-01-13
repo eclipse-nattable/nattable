@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.ui.mode;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.DragModeEventHandler;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
@@ -60,7 +59,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 		if (singleClickAction != null) {
 			//convert/validate/commit/close possible open editor
 			//needed in case of conversion/validation errors to cancel any action
-			if (EditUtils.commitAndCloseActiveEditor()) {
+			if (natTable.commitAndCloseActiveCellEditor()) {
 				if (doubleClickAction != null &&
 						(isActionExclusive(singleClickAction) || isActionExclusive(doubleClickAction))) {
 					//If a doubleClick action is registered and either the single click or the double
@@ -129,7 +128,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	@Override
 	public synchronized void mouseMove(MouseEvent event) {
 		if (mouseDown && dragMode != null) {
-			if (EditUtils.commitAndCloseActiveEditor()) {
+			if (natTable.commitAndCloseActiveCellEditor()) {
 				dragMode.mouseDown(natTable, initialMouseDownEvent);
 				switchMode(new DragModeEventHandler(getModeSupport(), natTable, dragMode, this, initialMouseDownEvent));
 			}
@@ -150,7 +149,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	private void executeClickAction(IMouseAction action, MouseEvent event) {
 		//convert/validate/commit/close possible open editor
 		//needed in case of conversion/validation errors to cancel any action
-		if (EditUtils.commitAndCloseActiveEditor()) {
+		if (natTable.commitAndCloseActiveCellEditor()) {
 			if (action != null && event != null) {
 				event.data = NatEventData.createInstanceFromEvent(event);
 				action.run(natTable, event);

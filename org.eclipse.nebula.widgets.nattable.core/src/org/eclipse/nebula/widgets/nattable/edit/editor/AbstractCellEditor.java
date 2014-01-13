@@ -21,7 +21,6 @@ import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedExceptio
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
 import org.eclipse.nebula.widgets.nattable.data.validate.ValidationFailedException;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigHelper;
 import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;
@@ -385,8 +384,6 @@ public abstract class AbstractCellEditor implements ICellEditor {
 		if (editorControl != null && !editorControl.isDisposed()) {
 			editorControl.dispose();
 		}
-		
-		ActiveCellEditorRegistry.unregisterActiveCellEditor();
 	}
 
 	@Override

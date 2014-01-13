@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PixelCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -926,6 +927,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 				}
 				
 				hBarListener = new HorizontalScrollBarHandler(this, horizontalScroller);
+				if(scrollable instanceof NatTable) {
+					hBarListener.setTable((NatTable)scrollable);
+				}
 			}
 			if (vBarListener == null && verticalScrollbarEnabled) {
 				ScrollBar vBar = scrollable.getVerticalBar();
@@ -937,6 +941,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 				}
 				
 				vBarListener = new VerticalScrollBarHandler(this, verticalScroller);
+				if(scrollable instanceof NatTable) {
+					vBarListener.setTable((NatTable)scrollable);
+				}
 			}
 
 			handleGridResize();

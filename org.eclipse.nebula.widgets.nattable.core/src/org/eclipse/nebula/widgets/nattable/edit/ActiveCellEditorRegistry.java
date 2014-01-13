@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit;
 
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 
 /**
@@ -37,8 +38,15 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
  * 
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=392535">bug 392535</a>
  * 
+ * @deprecated Storing the editor in a global registry has certain drawbacks as outlined
+ * in the documentation and the bug report. In order to resolve that the active editor
+ * is now an instance field of the table. The methods provided in here to register
+ * or retrieve the editor are available on the {@linkplain NatTable table} itself.
+ * Therefore this registry is obsolete and should not be used any more.
+ *
  * @author Dirk Fauth
  */
+@Deprecated
 public class ActiveCellEditorRegistry {
 
 	/**
@@ -49,25 +57,36 @@ public class ActiveCellEditorRegistry {
 	
 	/**
 	 * Register the given {@link ICellEditor} as the current active one.
+	 *
+	 * @deprecated replaced by firing the {@linkplain CellEditorCreatedEvent}
+	 *
 	 * @param editor The editor that should be registered as the current 
 	 * 			active one.
 	 */
+	@Deprecated
 	public static void registerActiveCellEditor(ICellEditor editor) {
 		activeCellEditor = editor;
 	}
 	
 	/**
 	 * Will unregister the current active cell editor if there is one.
+	 *
+	 * @deprecated The explicit unregistering is not needed any more.
+	 * The instance will automatically be set to {@code null} if the editor
+	 * gets disposed.
 	 */
+	@Deprecated
 	public static void unregisterActiveCellEditor() {
 		activeCellEditor = null;
 	}
 	
 	/**
+	 * @deprecated replaced by {@linkplain NatTable#getActiveCellEditor()}.
 	 * 
 	 * @return The current active {@link ICellEditor} or <code>null</code> if
 	 * 			there is none.
 	 */
+	@Deprecated
 	public static ICellEditor getActiveCellEditor() {
 		return activeCellEditor;
 	}

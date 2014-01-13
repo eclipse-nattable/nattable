@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
-import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.SWT;
@@ -47,6 +47,14 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 	 */
 	private boolean globalHandle = true;
 
+	/**
+	 * The table control of this scroll bar handler.
+	 * <p>
+	 * Required in order to close the active editor when the user starts to scroll
+	 * </p>
+	 */
+	private NatTable table;
+
 	public ScrollBarHandlerTemplate(ViewportLayer viewportLayer, IScroller<?> scroller) {
 		this.viewportLayer = viewportLayer;
 		this.scrollableLayer = viewportLayer.getScrollableLayer();
@@ -66,7 +74,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 			//Only try to commit and close an possible open editor once
 			//when starting the drag operation. Otherwise the conversion
 			//and validation errors would raise multiple times.
-			if (!EditUtils.commitAndCloseActiveEditor()) {
+			if (table != null && !table.commitAndCloseActiveCellEditor()) {
 				this.globalHandle = false;
 			}
 		}
@@ -137,6 +145,19 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 		scroller.setIncrement(scrollIncrement);
 	}
 	
+	/**
+	 * Sets the table belonging to this handler.
+	 * <p>
+	 * The table is required to close the active editor when scrolling. If the
+	 * table is NOT set then the active editor will stay open during the
+	 * scrolling leading to drawing errors.
+	 * </p>
+	 * @param table the table
+	 */
+	void setTable(NatTable table) {
+		this.table = table;
+	}
+
 	/**
 	 * Methods to be implemented by the Horizontal/Vertical scroll bar handlers.
 	 * @return
