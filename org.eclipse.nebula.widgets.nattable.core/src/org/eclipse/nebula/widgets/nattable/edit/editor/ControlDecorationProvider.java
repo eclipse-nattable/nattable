@@ -36,7 +36,7 @@ public class ControlDecorationProvider {
 	 * The String to determine the {@link FieldDecoration} to use by the {@link ControlDecoration}
 	 * that is provided by this {@link ControlDecorationProvider}.
 	 */
-	private final String fieldDecorationId;
+	private String fieldDecorationId;
 	/**
 	 * Flag to determine whether this provider is enabled to add {@link ControlDecoration}s or not.
 	 */
@@ -54,7 +54,7 @@ public class ControlDecorationProvider {
 	 * The position configuration where the decoration should be rendered relative to the control
 	 * that should be decorated.
 	 */
-	private int decorationPositionOverride;
+	private int decorationPositionOverride = SWT.DEFAULT;
 	
 	/**
 	 * Create a default {@link ControlDecorationProvider} for handling
@@ -70,7 +70,6 @@ public class ControlDecorationProvider {
 	 */
 	public ControlDecorationProvider(String fieldDecorationId) {
 		this.fieldDecorationId = fieldDecorationId;
-		this.decorationPositionOverride = SWT.DEFAULT;
 	}
 	
 	/**
@@ -106,7 +105,17 @@ public class ControlDecorationProvider {
 			errorDecoration.showHoverText(errorText);
 		}
 	}
-	
+
+	/**
+	 * Configure the id that should be used to retrieve the {@link FieldDecoration} to be used by
+	 * this {@link ControlDecorationProvider}.
+	 * @param fieldDecorationId The String to determine the {@link FieldDecoration} to use by 
+	 * 			the {@link ControlDecoration} that is provided by this {@link ControlDecorationProvider}.
+	 */
+	public void setFieldDecorationId(String fieldDecorationId) {
+		this.fieldDecorationId = fieldDecorationId;
+	}
+
 	/**
 	 * Set the position configuration where the decoration should be rendered relative to the control
 	 * that should be decorated.

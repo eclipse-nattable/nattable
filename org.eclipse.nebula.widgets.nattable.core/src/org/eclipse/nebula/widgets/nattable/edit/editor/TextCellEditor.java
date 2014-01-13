@@ -11,6 +11,8 @@
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.RenderErrorHandling;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -389,6 +391,17 @@ public class TextCellEditor extends AbstractCellEditor {
 	 */
 	public void showErrorDecorationHover(String customErrorText) {
 		this.decorationProvider.showErrorDecorationHover(customErrorText);
+	}
+	
+	/**
+	 * Set the id of the {@link FieldDecoration} to be used by the local {@link ControlDecorationProvider}.
+	 * @param fieldDecorationId The String to determine the {@link FieldDecoration} to use by 
+	 * 			the {@link ControlDecoration} that is provided by this {@link ControlDecorationProvider}.
+	 * 
+	 * @see FieldDecorationRegistry#getFieldDecoration(String)
+	 */
+	public void setFieldDecorationId(String fieldDecorationId) {
+		this.decorationProvider.setFieldDecorationId(fieldDecorationId);
 	}
 	
 	/**
