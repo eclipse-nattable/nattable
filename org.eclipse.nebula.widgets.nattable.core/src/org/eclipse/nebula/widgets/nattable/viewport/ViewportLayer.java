@@ -20,7 +20,6 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
@@ -959,8 +958,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			viewportOff = false;
 			origin = savedOrigin;
 			//only necessary in case of split viewports and auto resizing, but shouldn't hurt in other cases
-			adjustHorizontalScrollBar();
-			adjustVerticalScrollBar();
+			recalculateScrollBars();
 			return true;
 		} else if (command instanceof PrintEntireGridCommand) {
 			moveCellPositionIntoViewport(0, 0);
@@ -1156,7 +1154,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 				if (viewportOff 
 						&& (getMaxColumnPosition() >= 0 || getMinColumnPosition() >= 0) 
 						&& event instanceof ColumnResizeEvent) {
-					correctSavedOriginX((ColumnResizeEvent)event);
+					correctSavedOriginX();
 				}
 			}
 			if (structuralChangeEvent.isVerticalStructureChanged()) {
@@ -1166,7 +1164,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 				if (viewportOff 
 						&& (getMaxRowPosition() >= 0 || getMinRowPosition() >= 0) 
 						&& event instanceof RowResizeEvent) {
-					correctSavedOriginY((RowResizeEvent)event);
+					correctSavedOriginY();
 				}
 			}
 		}
@@ -1189,23 +1187,21 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * Automatic resize commands will first turn the viewport off, then perform the resizing and
 	 * then turn the viewport on again. Turning the viewport off and on again causes reapplying 
 	 * the origin, which has impact on split viewport minimum/maximum origins. 
-	 * 
-	 * @param event The ColumnResizeEvent that was fired when the viewport is turned off.
 	 */
-	private void correctSavedOriginX(ColumnResizeEvent event) {
+	private void correctSavedOriginX() {
 		int newOriginX = savedOrigin.getX();
 		
-		int columnPosition = -1;
-		for (StructuralDiff diff : event.getColumnDiffs()) {
-			columnPosition = diff.getBeforePositionRange().start;
-		}
+		int columnPosition = 0;
 		if (getMinColumnPosition() >= 0) {
 			int possibleWidth = 0;
 			for (int col = columnPosition; col < getMinColumnPosition(); col++) {
 				possibleWidth += scrollableLayer.getColumnWidthByPosition(col);
 			}
-			if (possibleWidth < minimumOrigin.getX()) {
-				newOriginX = newOriginX - (minimumOrigin.getX() - possibleWidth);
+			if (possibleWidth != minimumOrigin.getX()) {
+				int delta = minimumOrigin.getX() - possibleWidth;
+				newOriginX = newOriginX - delta;
+				//as the width of the other split viewport has changed, we need to update the minimum width too
+				minimumOrigin = new PixelCoordinate(minimumOrigin.getX() - delta, minimumOrigin.getY());
 			}
 		}
 		else {
@@ -1237,23 +1233,21 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * Automatic resize commands will first turn the viewport off, then perform the resizing and
 	 * then turn the viewport on again. Turning the viewport off and on again causes reapplying 
 	 * the origin, which has impact on split viewport minimum/maximum origins. 
-	 * 
-	 * @param event The RowResizeEvent that was fired when the viewport is turned off.
 	 */
-	private void correctSavedOriginY(RowResizeEvent event) {
+	private void correctSavedOriginY() {
 		int newOriginY = savedOrigin.getY();
 		
-		int rowPosition = -1;
-		for (StructuralDiff diff : event.getRowDiffs()) {
-			rowPosition = diff.getBeforePositionRange().start;
-		}
+		int rowPosition = 0;
 		if (getMinRowPosition() >= 0) {
 			int possibleHeight = 0;
 			for (int row = rowPosition; row < getMinRowPosition(); row++) {
 				possibleHeight += scrollableLayer.getRowHeightByPosition(row);
 			}
-			if (possibleHeight < minimumOrigin.getY()) {
-				newOriginY = newOriginY - (minimumOrigin.getY() - possibleHeight);
+			if (possibleHeight != minimumOrigin.getY()) {
+				int delta = minimumOrigin.getY() - possibleHeight;
+				newOriginY = newOriginY - delta;
+				//as the height of the other split viewport has changed, we need to update the minimum height too
+				minimumOrigin = new PixelCoordinate(minimumOrigin.getX(), minimumOrigin.getY() - delta);
 			}
 		}
 		else {
