@@ -14,8 +14,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -29,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
@@ -219,6 +225,38 @@ public class RowSelectionIntegrationTest {
 				new RowDataFixture[] { eventListFixture.get(5), eventListFixture.get(7) }));
 		
 		assertEquals(4, selectionLayer.getFullySelectedRowPositions().length);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testColumnSelectionProcessing() {
+		final List selectedObjects = new ArrayList();
+		
+		//add a listener to see how many rows are selected
+		selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				selectedObjects.addAll(selection.toList());
+			}
+		});
+		
+		//first execute column selection with default configuration to see that all rows get selected
+		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0, false, false));
+		
+		assertEquals(10, selectedObjects.size());
+		
+		//now clear set the flag for column selection processing to false and fire the event again
+		selectedObjects.clear();
+		selectionProvider.setProcessColumnSelection(false);
+		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0, false, false));
+		assertEquals(0, selectedObjects.size());
+		
+		//now select a cell to verify that other selections are still processed
+		selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 1, false, false));
+		assertEquals(1, selectedObjects.size());
 	}
 	
 	private RowDataFixture getSelected() {

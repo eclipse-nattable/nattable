@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
+import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.ISelectionEvent;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
@@ -74,8 +75,27 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	 * Looking at the specification, <code>setSelection()</code> is used to set the <b>new</b> selection.
 	 * So the default here is now to set instead of add. But for convenience to older code 
 	 * that relied on the add behaviour it is now possible to change it back to adding.
+	 * </p>
 	 */
 	private boolean addSelectionOnSet = false;
+	
+	/**
+	 * Flag to configure if row selection should be provided in case a column selection happened.
+	 * <p>
+	 * To understand this flag consider a SelectionLayer that is configured for full row selection
+	 * by using the RowSelectionModel. On performing column selection, all rows would get selected.
+	 * This matches the specification because of the RowSelectionModel and this RowSelectionProvider
+	 * would process every selected row.   
+	 * </p>
+	 * <p>
+	 * As described in Bug 421848 this causes serious issues for huge datasets. To avoid such issues
+	 * by still providing the ability to perform and provide multiple row selections, this flag was
+	 * introduced. Setting the value to <code>false</code> will avoid processing in case of column
+	 * selections.
+	 * </p>
+	 * @see RowSelectionModel
+	 */
+	private boolean processColumnSelection = true;
 	
 	/**
 	 * Create a RowSelectionProvider that only handles fully selected rows and only fires 
@@ -128,6 +148,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	 * As replacing the selection provider during the lifetime of a part is not properly supported
 	 * by the workbench, this implementation adds the possibility to exchange the control that 
 	 * serves as selection provider by exchanging the references in the selection provider itself.
+	 * </p>
 	 * 
 	 * @param selectionLayer The SelectionLayer this ISelectionProvider should be connected to.
 	 * @param rowDataProvider The IRowDataProvider that should be used to access the selected row data.
@@ -192,7 +213,8 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	public void handleLayerEvent(ILayerEvent event) {
 		if (event instanceof ISelectionEvent) {
 			ISelection selection = getSelection();
-			if (handleSameRowSelection || !selection.equals(previousSelection)) {
+			if ((handleSameRowSelection || !selection.equals(previousSelection))
+					&& !(!this.processColumnSelection && event instanceof ColumnSelectionEvent)) {
 				try {
 					for (ISelectionChangedListener listener : listeners) {
 						listener.selectionChanged(new SelectionChangedEvent(this, selection));
@@ -247,12 +269,28 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	 * Looking at the specification, <code>setSelection()</code> is used to set the <b>new</b> selection.
 	 * So the default here is now to set instead of add. But for convenience to older code 
 	 * that relied on the add behaviour it is now possible to change it back to adding.
+	 * </p>
 	 * 
 	 * @param addSelectionOnSet <code>true</code> to add the selection on calling <code>setSelection()</code>
 	 * 			The default is <code>false</code> to behave like specified in RowSelectionProvider
 	 */
 	public void setAddSelectionOnSet(boolean addSelectionOnSet) {
 		this.addSelectionOnSet = addSelectionOnSet;
+	}
+
+	/**
+	 * Configure whether column selections should start row selection processing or not.
+	 * <p>
+	 * This is necessary to handle issues with huge datasets. Dependent on different configurations, selecting
+	 * a column can cause the selection of all rows in a table, which would then lead to populate the whole
+	 * dataset as selection via this provider. Setting the {@link RowSelectionProvider#processColumnSelection}
+	 * flag to <code>false</code> will skip processing to avoid such issues.
+	 * </p>
+	 * @param processColumnSelection <code>true</code> to process row selection in case of column selections (default)
+	 * 			<code>false</code> to skip processing in case of column selections to avoid issues on large datasets.
+	 */
+	public void setProcessColumnSelection(boolean processColumnSelection) {
+		this.processColumnSelection = processColumnSelection;
 	}
 
 }
