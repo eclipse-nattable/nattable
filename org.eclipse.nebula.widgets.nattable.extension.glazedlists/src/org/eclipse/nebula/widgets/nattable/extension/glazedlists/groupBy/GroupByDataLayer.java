@@ -37,9 +37,12 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRo
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCacheKey;
 import org.eclipse.nebula.widgets.nattable.util.ICalculator;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.TreeList;
 import ca.odell.glazedlists.matchers.Matcher;
 
@@ -148,15 +151,28 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	 * @see http://glazedlists.1045722.n5.nabble.com/sorting-a-treelist-td4704550.html
 	 */
 	protected void updateTree() {
-		this.eventList.getReadWriteLock().writeLock().lock();
-		try {
-			for (int i = 0; i < this.eventList.size(); i++) {
-				this.eventList.set(i,
-						this.eventList.get(i));
+		//Perform the update showing the busy indicator, as creating the groupby structure
+		//costs time. This is related to dynamically building a tree structure with additional objects
+		BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
+			
+			@Override
+			public void run() {
+				eventList.getReadWriteLock().writeLock().lock();
+				try {
+					/*
+					 * The workaround for the update issue suggested on the mailing list iterates
+					 * over the whole list. This causes a lot of list change events, which also cost
+					 * processing time. Instead we are performing a clear()-addAll() which is slightly
+					 * faster.
+					 */
+					EventList<T> temp = GlazedLists.eventList(eventList);
+					eventList.clear();
+					eventList.addAll(temp);
+				} finally {
+					eventList.getReadWriteLock().writeLock().unlock();
+				}
 			}
-		} finally {
-			this.eventList.getReadWriteLock().writeLock().unlock();
-		}
+		});
 	}
 
 	@Override

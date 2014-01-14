@@ -65,10 +65,10 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void getPath(List<Object> path, Object element) {
-		List<Integer> groupByColunns = model.getGroupByColumnIndexes();
-		if (!groupByColunns.isEmpty()) {
+		List<Integer> groupByColumns = model.getGroupByColumnIndexes();
+		if (!groupByColumns.isEmpty()) {
 			List<Entry<Integer, Object>> descriptor = new ArrayList<Entry<Integer, Object>>();		
-			for (int columnIndex : groupByColunns) {
+			for (int columnIndex : groupByColumns) {
 				// Build a unique descriptor for the group
 				Object columnValue = columnAccessor.getDataValue((T) element, columnIndex);
 				descriptor.add(new AbstractMap.SimpleEntry<Integer, Object>(columnIndex, columnValue));
