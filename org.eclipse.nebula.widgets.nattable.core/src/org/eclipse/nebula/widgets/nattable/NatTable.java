@@ -108,6 +108,28 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	private final boolean autoconfigure;
 
 	/**
+	 * Listener that is added because of Bug 415459.<br/> 
+	 * It is added to the parent composite and will close an active cell editor in case the parent is resized. 
+	 * We need to listen to the parent composite resize, because resizing a shell or a part in e4 does not 
+	 * cause loosing the focus. Therefore the editor will stay open in such cases. As this causes rendering issues
+	 * when using percentage sizing, this listener closes an editor on parent composite resize.<br/>
+	 * It is not registered as listener to NatTable itself, because this would have impact when filtering or
+	 * dynamic updates cause scrollbars to become visible/invisible, which result in resizing of the NatTable.
+	 */
+	private Listener closeEditorOnParentResize = new Listener() {
+		@Override
+		public void handleEvent(Event event) {
+			//as resizing doesn't cause the current active editor to loose focus
+			//we are closing the current active editor manually
+			if (!EditUtils.commitAndCloseActiveEditor()) {
+				//if committing didn't work out we need to perform a hard close
+				//otherwise the state of the table would be unstale
+				ActiveCellEditorRegistry.getActiveCellEditor().close();
+			}
+		}
+	};
+	
+	/**
 	 * This flag is used to deal with runtime issues on loading states while the initial
 	 * rendering is not finished yet.
 	 */
@@ -169,6 +191,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		conflaterChain.add(getVisualChangeEventConflater());
 		conflaterChain.start();
 
+		parent.addListener(SWT.Resize, closeEditorOnParentResize);
+		
 		addDisposeListener(new DisposeListener() {
 
 			@Override
@@ -177,6 +201,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 				conflaterChain.stop();
 				ActiveCellEditorRegistry.unregisterActiveCellEditor();
 				layer.dispose();
+				
+				parent.removeListener(SWT.Resize, closeEditorOnParentResize);
 			}
 
 		});
@@ -323,16 +349,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		addListener(SWT.Resize, new Listener() {
 			@Override
 			public void handleEvent(final Event e) {
-				//as resizing doesn't cause the current active editor to loose focus
-				//we are closing the current active editor manually
-				if (!EditUtils.commitAndCloseActiveEditor()) {
-					//if committing didn't work out we need to perform a hard close
-					//otherwise the state of the table would be unstale
-					ActiveCellEditorRegistry.getActiveCellEditor().close();
-				}
-				
 				doCommand(new ClientAreaResizeCommand(NatTable.this));
-				
 				redraw();
 			}
 		});
