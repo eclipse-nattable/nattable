@@ -68,6 +68,7 @@ Import-Package: ca.odell.glazedlists,
  org.eclipse.nebula.widgets.nattable.ui.util,
  org.eclipse.nebula.widgets.nattable.util,
  org.eclipse.swt,
+ org.eclipse.swt.custom,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
  org.eclipse.swt.widgets
