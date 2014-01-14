@@ -95,7 +95,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 		if (mouseDown && dragMode != null) {
 			if (EditUtils.commitAndCloseActiveEditor()) {
 				dragMode.mouseDown(natTable, initialMouseDownEvent);
-				switchMode(new DragModeEventHandler(getModeSupport(), natTable, dragMode));
+				switchMode(new DragModeEventHandler(getModeSupport(), natTable, dragMode, this, initialMouseDownEvent));
 			}
 			else {
 				switchMode(Mode.NORMAL_MODE);
