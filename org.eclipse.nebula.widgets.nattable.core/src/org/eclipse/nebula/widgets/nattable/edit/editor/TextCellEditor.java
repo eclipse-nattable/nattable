@@ -285,6 +285,15 @@ public class TextCellEditor extends AbstractCellEditor {
 	
 	@Override
 	public void close() {
+		//ensure to reset the error handlers in case this editor was closed rendering invalid
+		//this is necessary because if the editor is closed rendering invalid, opening the editor
+		//again inserting an invalid value again, it is not rendered invalid because of a wrong
+		//state in the internal error handlers
+		if (this.inputConversionErrorHandler != null)
+			this.inputConversionErrorHandler.removeError(this);
+		if (this.inputValidationErrorHandler != null)
+			this.inputValidationErrorHandler.removeError(this);
+		
 		super.close();
 		
 		this.decorationProvider.dispose();
