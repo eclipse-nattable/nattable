@@ -67,7 +67,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	 * Used internally for adding general behaviour, e.g. forcing the focus
 	 * if the editor is closed.
 	 */
-	private Composite parent;
+	protected Composite parent;
 	/**
 	 * The {@link ICellEditHandler} that will be used on commit.
 	 */
