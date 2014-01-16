@@ -33,6 +33,19 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 	 * twice.
 	 */
 	private boolean dragging = false;
+	
+	/**
+	 * Flag to remember if the drag operation should be handled or not.
+	 * The value will be set on trying to commit an possible open editor. If that
+	 * is not possible, the value will be set to <code>false</code> which will
+	 * result in not performing a scrolling operation.
+	 * <p>
+	 * This is necessary to avoid inconsistent state when having an editor that
+	 * contains invalid data and you are trying to scroll. If scrolling would be
+	 * handled, the open editor wouldn't close which results in broken rendering. 
+	 * </p>
+	 */
+	private boolean globalHandle = true;
 
 	public ScrollBarHandlerTemplate(ViewportLayer viewportLayer, IScroller<?> scroller) {
 		this.viewportLayer = viewportLayer;
@@ -49,23 +62,30 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 
 	@Override
 	public void handleEvent(Event event) {
-		boolean handle = true;
-		
 		if (!this.dragging) {
+			//Only try to commit and close an possible open editor once
+			//when starting the drag operation. Otherwise the conversion
+			//and validation errors would raise multiple times.
 			if (!EditUtils.commitAndCloseActiveEditor()) {
-				handle = false;
+				this.globalHandle = false;
 			}
 		}
+		
+		boolean handle = this.globalHandle;
+		
 		if (event.detail == SWT.DRAG) {
 			this.dragging = true;
 		}
 		else {
+			//dragging is finished so we reset the global states
 			this.dragging = false;
+			this.globalHandle = true;
 		}
 			
 		if (handle && event.widget == scroller.getUnderlying()) {
 			setViewportOrigin(getViewportMinimumOrigin() + scroller.getSelection());
 			setScrollIncrement();
+			event.doit = false;
 		} else {
 			adjustScrollBar();
 		}
