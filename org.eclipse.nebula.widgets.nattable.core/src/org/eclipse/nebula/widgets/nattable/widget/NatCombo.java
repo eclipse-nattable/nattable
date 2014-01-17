@@ -53,8 +53,10 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -433,6 +435,15 @@ public class NatCombo extends Composite {
 		dropdownTable.setForeground(cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 		dropdownTable.setFont(cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 		
+		//add a column to be able to resize the item width in the dropdown
+		new TableColumn(dropdownTable, SWT.NONE);
+		dropdownTable.addListener(SWT.Resize, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				calculateColumnWidth();
+			}
+		});
+		
 		dropdownTable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -567,16 +578,18 @@ public class NatCombo extends Composite {
 		if (dropdownShell != null && !dropdownShell.isDisposed()) {
 			Point size = getSize();
 			//calculate the height by multiplying the number of visible items with
-			//the item height of items in the list and adding 2 to work around a
+			//the item height of items in the list and adding 2*grid line width to work around a
 			//calculation error regarding the descent of the font metrics for the 
 			//last shown item
 			//Note: if there are no items to show in the combo, calculate with the item count of
 			//		3 so an empty combo will open
-			int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount() : 3) * dropdownTable.getItemHeight() + 2;
-			int listWidth = dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x;
-			if (listWidth < size.x) {
-				listWidth = size.x;
-			}
+			int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount() : 3) * dropdownTable.getItemHeight() + dropdownTable.getGridLineWidth() * 2;
+			
+			//since introduced the TableColumn for real full row selection, we call pack() to 
+			//perform autoresize to ensure the width shows the whole content
+			dropdownTable.getColumn(0).pack();
+			int listWidth = Math.max(dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x, size.x);
+
 			dropdownTable.setSize(listWidth, listHeight);
 			
 			Point textPosition = text.toDisplay(text.getLocation());
@@ -597,6 +610,24 @@ public class NatCombo extends Composite {
 		}
 	}
 
+	/**
+	 * Calculates and applies the column width to ensure that the column has the same width as
+	 * the table itself, so selection is possible for the whole row.
+	 */
+	protected void calculateColumnWidth() {
+		int width = dropdownTable.getBounds().width;
+		if (dropdownTable.getVerticalBar() != null
+				&& maxVisibleItems > -1
+				&& dropdownTable.getItemCount() > maxVisibleItems) {
+			width -= dropdownTable.getVerticalBar().getSize().x;
+		}
+		else {
+			//remove the left and the right grid line width so the column does not exceed the table
+			width -= dropdownTable.getGridLineWidth()*2;
+		}
+		dropdownTable.getColumn(0).setWidth(width);
+	}
+	
 	/**
 	 * Returns the zero-relative index of the item which is currently
 	 * selected in the receiver, or -1 if no item is selected.

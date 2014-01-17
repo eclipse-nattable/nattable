@@ -39,6 +39,9 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -116,13 +119,22 @@ public class FilterNatCombo extends NatCombo {
 	protected void calculateBounds() {
 		if (dropdownShell != null && !dropdownShell.isDisposed()) {
 			Point size = getSize();
+			
+			int gridLineAdjustment = dropdownTable.getGridLineWidth() * 2;
+			
 			//calculate the height by multiplying the number of visible items with
-			//the item height of items in the list and adding 2 to work around a
+			//the item height of items in the list and adding 2*grid line width to work around a
 			//calculation error regarding the descent of the font metrics for the 
 			//last shown item
 			//Note: if there are no items to show in the combo, calculate with the item count of
 			//		3 so an empty combo will open
-			int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount() : 3) * dropdownTable.getItemHeight() + 2;
+			int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount() : 3) * dropdownTable.getItemHeight() + gridLineAdjustment;
+
+			//since introduced the TableColumn for real full row selection, we call pack() to 
+			//perform autoresize to ensure the width shows the whole content
+			dropdownTable.getColumn(0).pack();
+			selectAllItemViewer.getTable().getColumn(0).pack();
+
 			int listWidth = Math.max(dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x, size.x);
 
 			int viewerHeight = selectAllItemViewer.getTable().getItemHeight();
@@ -130,8 +142,19 @@ public class FilterNatCombo extends NatCombo {
 			
 			dropdownTable.setSize(listWidth, listHeight);
 			selectAllItemViewer.getTable().setSize(listWidth, viewerHeight);
+
+			//as we performed auto resize for the columns, we now need to ensure again that the columns
+			//span the whole table width in case they shrunk
+			calculateColumnWidth();
 			
 			Point textPosition = text.toDisplay(text.getLocation());
+			
+			//when scrollbars are enabled, we need to increase the shell width
+			if (dropdownTable.getVerticalBar() != null
+					&& maxVisibleItems > -1
+					&& dropdownTable.getItemCount() > maxVisibleItems) {
+				listWidth += gridLineAdjustment;
+			}
 			
 			dropdownShell.setBounds(
 					textPosition.x, 
@@ -141,6 +164,23 @@ public class FilterNatCombo extends NatCombo {
 		}
 	}
 	
+	@Override
+	protected void calculateColumnWidth() {
+		super.calculateColumnWidth();
+		
+		int width = selectAllItemViewer.getTable().getBounds().width;
+		if (dropdownTable.getVerticalBar() != null
+				&& maxVisibleItems > -1
+				&& dropdownTable.getItemCount() > maxVisibleItems) {
+			width -= dropdownTable.getVerticalBar().getSize().x;
+		}
+		else {
+			//remove the left and the right grid line width so the column does not exceed the table
+			width -= dropdownTable.getGridLineWidth()*2;
+		}
+		selectAllItemViewer.getTable().getColumn(0).setWidth(width);
+	}
+
 	@Override
 	protected void createDropdownControl(int style) {
 		super.createDropdownControl(style);
@@ -154,6 +194,15 @@ public class FilterNatCombo extends NatCombo {
 		int dropdownListStyle = style | SWT.V_SCROLL | HorizontalAlignmentEnum.getSWTStyle(cellStyle) | SWT.FULL_SELECTION;
 		this.selectAllItemViewer = CheckboxTableViewer.newCheckList(this.dropdownShell, dropdownListStyle);
 		
+		//add a column to be able to resize the item width in the dropdown
+		new TableColumn(this.selectAllItemViewer.getTable(), SWT.NONE);
+		this.selectAllItemViewer.getTable().addListener(SWT.Resize, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				calculateColumnWidth();
+			}
+		});
+
 		FormData data = new FormData();
 		data.top = new FormAttachment(dropdownShell, 0, SWT.TOP);
 		data.left = new FormAttachment(dropdownShell, 0, SWT.LEFT);
