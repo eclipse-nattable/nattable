@@ -23,7 +23,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
-
+/**
+ * CellPainterWrapper that adds a padding between the cell border and the interior painter.
+ */
 public class PaddingDecorator extends CellPainterWrapper {
 	
 	private final int topPadding;
@@ -31,20 +33,104 @@ public class PaddingDecorator extends CellPainterWrapper {
 	private final int bottomPadding;
 	private final int leftPadding;
 
+	private final boolean paintBg;
+	
+	/**
+	 * Create a PaddingDecorator around the given interior painter, adding a padding
+	 * of 2 pixels on every side.<br/>
+	 * If will paint the background color to fill the resulting gaps, in case the
+	 * PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped by a
+	 * BackgroundPainter.
+	 * @param interiorPainter The painter that should be wrapped.
+	 */
 	public PaddingDecorator(ICellPainter interiorPainter) {
 		this(interiorPainter, 2);
 	}
 	
+	/**
+	 * Create a PaddingDecorator around the given interior painter, adding a padding
+	 * of 2 pixels on every side.<br/>
+	 * This constructor allows to configure whether the PaddingDecorator should itself
+	 * paint the background to avoid gaps or not. In case the PaddingDecorator is wrapped
+	 * in another background painter, e.g. BackgroundImagePainter or GradientBackroundPainter,
+	 * the paintBg parameter needs to be <code>false</code> to avoid rendering issues.
+	 * @param interiorPainter The painter that should be wrapped.
+	 * @param paintBg <code>true</code> if the PaddingDecorator should paint the background,
+	 * 			<code>false</code> if not.
+	 */
+	public PaddingDecorator(ICellPainter interiorPainter, boolean paintBg) {
+		this(interiorPainter, 2, paintBg);
+	}
+	
+	/**
+	 * Create a PaddingDecorator around the given interior painter, adding a padding
+	 * of the given number of pixels on every side.<br/>
+	 * If will paint the background color to fill the resulting gaps, in case the
+	 * PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped by a
+	 * BackgroundPainter.
+	 * @param interiorPainter The painter that should be wrapped.
+	 * @param padding The number of pixels that should be used as padding on every side.
+	 */
 	public PaddingDecorator(ICellPainter interiorPainter, int padding) {
 		this(interiorPainter, padding, padding, padding, padding);
 	}
 	
+	/**
+	 * Create a PaddingDecorator around the given interior painter, adding a padding
+	 * of the given number of pixels on every side.<br/>
+	 * This constructor allows to configure whether the PaddingDecorator should itself
+	 * paint the background to avoid gaps or not. In case the PaddingDecorator is wrapped
+	 * in another background painter, e.g. BackgroundImagePainter or GradientBackroundPainter,
+	 * the paintBg parameter needs to be <code>false</code> to avoid rendering issues.
+	 * @param interiorPainter The painter that should be wrapped.
+	 * @param padding The number of pixels that should be used as padding on every side.
+	 * @param paintBg <code>true</code> if the PaddingDecorator should paint the background,
+	 * 			<code>false</code> if not.
+	 */
+	public PaddingDecorator(ICellPainter interiorPainter, int padding, boolean paintBg) {
+		this(interiorPainter, padding, padding, padding, padding, paintBg);
+	}
+	
+	/**
+	 * Create a PaddingDecorator around the given interior painter, adding the padding
+	 * specified for each side.<br/>
+	 * If will paint the background color to fill the resulting gaps, in case the
+	 * PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped by a
+	 * BackgroundPainter.
+	 * @param interiorPainter The painter that should be wrapped.
+	 * @param topPadding The number of pixels that should be used as padding on top.
+	 * @param rightPadding The number of pixels that should be used as padding to the right.
+	 * @param bottomPaddingThe number of pixels that should be used as padding at the bottom.
+	 * @param leftPaddingThe number of pixels that should be used as padding to the left.
+	 */
 	public PaddingDecorator(ICellPainter interiorPainter, int topPadding, int rightPadding, int bottomPadding, int leftPadding) {
+		this(interiorPainter, topPadding, rightPadding, bottomPadding, leftPadding, true);
+	}
+	
+	/**
+	 * Create a PaddingDecorator around the given interior painter, adding the padding
+	 * specified for each side.<br/>
+	 * This constructor allows to configure whether the PaddingDecorator should itself
+	 * paint the background to avoid gaps or not. In case the PaddingDecorator is wrapped
+	 * in another background painter, e.g. BackgroundImagePainter or GradientBackroundPainter,
+	 * the paintBg parameter needs to be <code>false</code> to avoid rendering issues.
+	 * @param interiorPainter The painter that should be wrapped.
+	 * @param topPadding The number of pixels that should be used as padding on top.
+	 * @param rightPadding The number of pixels that should be used as padding to the right.
+	 * @param bottomPaddingThe number of pixels that should be used as padding at the bottom.
+	 * @param leftPaddingThe number of pixels that should be used as padding to the left.
+	 * @param paintBg <code>true</code> if the PaddingDecorator should paint the background,
+	 * 			<code>false</code> if not.
+	 */
+	public PaddingDecorator(ICellPainter interiorPainter, 
+			int topPadding, int rightPadding, int bottomPadding, int leftPadding,
+			boolean paintBg) {
 		super(interiorPainter);
 		this.topPadding = topPadding;
 		this.rightPadding = rightPadding;
 		this.bottomPadding = bottomPadding;
 		this.leftPadding = leftPadding;
+		this.paintBg = paintBg;
 	}
 
 	@Override
@@ -61,17 +147,25 @@ public class PaddingDecorator extends CellPainterWrapper {
 	public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle interiorBounds = getInteriorBounds(adjustedCellBounds);
 		
-		Color originalBg = gc.getBackground();
-		Color cellStyleBackground = getBackgroundColor(cell, configRegistry);
-        gc.setBackground(cellStyleBackground != null ? cellStyleBackground : originalBg);
-		gc.fillRectangle(adjustedCellBounds);
-		gc.setBackground(originalBg);
+		if (paintBg) {
+			Color originalBg = gc.getBackground();
+			Color cellStyleBackground = getBackgroundColor(cell, configRegistry);
+			gc.setBackground(cellStyleBackground != null ? cellStyleBackground : originalBg);
+			gc.fillRectangle(adjustedCellBounds);
+			gc.setBackground(originalBg);
+		}
 		
 		if (interiorBounds.width > 0 && interiorBounds.height > 0) {
 			super.paintCell(cell, gc, interiorBounds, configRegistry);
 		}
 	}
 	
+	/**
+	 * Calculates the cell bounds that should be used for the internal painter
+	 * out of the available bounds for this PaddingDecorator and the configured padding.
+	 * @param adjustedCellBounds The cell bounds of the cell to render.
+	 * @return The cell bounds that are available for the interior painter.
+	 */
 	public Rectangle getInteriorBounds(Rectangle adjustedCellBounds) {
 		return new Rectangle(
 				adjustedCellBounds.x + leftPadding,
@@ -81,6 +175,12 @@ public class PaddingDecorator extends CellPainterWrapper {
 		);
 	}
 	
+	/**
+	 * Extract the background color that is registered for the given ILayerCell.
+	 * @param cell The cell for which the background color is requested.
+	 * @param configRegistry The IConfigRegistry which contains the style configurations.
+	 * @return The background color that should be used to render the background of the given cell.
+	 */
 	protected Color getBackgroundColor(ILayerCell cell, IConfigRegistry configRegistry) {
 		return CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);		
 	}
