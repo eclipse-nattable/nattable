@@ -26,10 +26,12 @@ public class ConfigRegistry implements IConfigRegistry {
 	// Map<configAttributeType, Map<displayMode, Map<configLabel, value>>>
 	Map<ConfigAttribute<?>, Map<String, Map<String, ?>>> configRegistry = new HashMap<ConfigAttribute<?>, Map<String, Map<String, ?>>>();
 
+	@Override
 	public <T> T getConfigAttribute(ConfigAttribute<T> configAttribute, String targetDisplayMode, String...configLabels) {
 		return getConfigAttribute(configAttribute, targetDisplayMode, Arrays.asList(configLabels));
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getConfigAttribute(ConfigAttribute<T> configAttribute, String targetDisplayMode, List<String> configLabels) {
 		T attributeValue = null;
@@ -58,6 +60,7 @@ public class ConfigRegistry implements IConfigRegistry {
 		return attributeValue;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getSpecificConfigAttribute(ConfigAttribute<T> configAttribute, String displayMode, String configLabel) {
 		T attributeValue = null;
@@ -76,14 +79,17 @@ public class ConfigRegistry implements IConfigRegistry {
 		return attributeValue;
 	}
 	
+	@Override
 	public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute, T attributeValue) {
 		registerConfigAttribute(configAttribute, attributeValue, DisplayMode.NORMAL);
 	}
 	
+	@Override
 	public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute, T attributeValue, String displayMode) {
 		registerConfigAttribute(configAttribute, attributeValue, displayMode, null);
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void registerConfigAttribute(ConfigAttribute<T> configAttribute, T attributeValue, String displayMode, String configLabel) {
 		Map<String, Map<String, ?>> displayModeConfigAttributeMap = configRegistry.get(configAttribute);
@@ -100,7 +106,18 @@ public class ConfigRegistry implements IConfigRegistry {
 		
 		configAttributeMap.put(configLabel, attributeValue);
 	};
+
+	@Override
+	public <T> void unregisterConfigAttribute(ConfigAttribute<T> configAttributeType) {
+		unregisterConfigAttribute(configAttributeType, DisplayMode.NORMAL);
+	}
+
+	@Override
+	public <T> void unregisterConfigAttribute(ConfigAttribute<T> configAttributeType, String displayMode) {
+		unregisterConfigAttribute(configAttributeType, displayMode, null);
+	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void unregisterConfigAttribute(ConfigAttribute<T> configAttributeType, String displayMode, String configLabel) {
 		Map<String, Map<String, ?>> displayModeConfigAttributeMap = configRegistry.get(configAttributeType);
@@ -116,6 +133,7 @@ public class ConfigRegistry implements IConfigRegistry {
 
 	IDisplayModeOrdering displayModeOrdering = new DefaultDisplayModeOrdering();
 
+	@Override
 	public IDisplayModeOrdering getDisplayModeOrdering() {
 		return displayModeOrdering;
 	}
@@ -123,7 +141,5 @@ public class ConfigRegistry implements IConfigRegistry {
 	public void setDisplayModeOrdering(IDisplayModeOrdering displayModeOrdering) {
 		this.displayModeOrdering = displayModeOrdering;
 	}
-	
-	// Private methods
 
 }

@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -47,6 +48,8 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatLayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.theme.ThemeManager;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.mode.ConfigurableModeEventHandler;
 import org.eclipse.nebula.widgets.nattable.ui.mode.Mode;
@@ -134,6 +137,11 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	 * rendering is not finished yet.
 	 */
 	private boolean initialPaintComplete = false;
+	
+	/**
+	 * The {@link ThemeManager} that is used to switch {@link ThemeConfiguration}s at runtime.
+	 */
+	private ThemeManager themeManager;
 	
 	public NatTable(Composite parent) {
 		this(parent, DEFAULT_STYLE_OPTIONS);
@@ -285,10 +293,11 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	 * 	by Layer, DisplayMode and Config labels.
 	 */
 	public IConfigRegistry getConfigRegistry() {
-		if (configRegistry == null) {
-			configRegistry = new ConfigRegistry();
+		if (this.configRegistry == null) {
+			this.configRegistry = new ConfigRegistry();
+			this.themeManager = new ThemeManager(this.configRegistry);
 		}
-		return configRegistry;
+		return this.configRegistry;
 	}
 
 	public void setConfigRegistry(IConfigRegistry configRegistry) {
@@ -297,6 +306,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		}
 
 		this.configRegistry = configRegistry;
+		this.themeManager = new ThemeManager(configRegistry);
 	}
 
 	/**
@@ -891,4 +901,19 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 		dropTarget.setTransfer(transferTypes);
 		dropTarget.addDropListener(listener);
 	}
+	
+	//Theme styling
+	
+	/**
+	 * Will unregister the style configurations that were applied before by another {@link ThemeConfiguration}
+	 * and register the style configurations of the given {@link ThemeConfiguration}.
+	 * 
+	 * @param themeConfiguration 
+	 * 			The ThemeConfiguration that contains the style configurations to apply.
+	 */
+	public void setTheme(ThemeConfiguration themeConfiguration) {
+		this.themeManager.applyTheme(themeConfiguration);
+		doCommand(new VisualRefreshCommand());
+	}
+
 }
