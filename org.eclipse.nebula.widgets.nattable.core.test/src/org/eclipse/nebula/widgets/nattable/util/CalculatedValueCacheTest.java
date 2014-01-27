@@ -49,7 +49,7 @@ public class CalculatedValueCacheTest {
 		//as calculation is performed in background, the immediate return value is null
 		assertNull(result);
 		//now wait so the background process is able to finish 
-		Thread.sleep(210);
+		Thread.sleep(250);
 		result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
 		assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 	}
@@ -70,7 +70,7 @@ public class CalculatedValueCacheTest {
 		//as calculation is performed in background, the immediate return value is null
 		assertNull(result);
 		//now wait so the background process is able to finish 
-		Thread.sleep(210);
+		Thread.sleep(250);
 		result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
 		assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 		
@@ -88,7 +88,7 @@ public class CalculatedValueCacheTest {
 		//as calculation is performed in background, the immediate return value is null
 		assertNull(result);
 		//now wait so the background process is able to finish 
-		Thread.sleep(210);
+		Thread.sleep(250);
 		result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
 		assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 		
@@ -106,7 +106,7 @@ public class CalculatedValueCacheTest {
 		//as calculation is performed in background, the immediate return value is null
 		assertNull(result);
 		//now wait so the background process is able to finish 
-		Thread.sleep(210);
+		Thread.sleep(250);
 		result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
 		assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 		
@@ -125,7 +125,7 @@ public class CalculatedValueCacheTest {
 		//as calculation is performed in background, the immediate return value is null
 		assertNull(result);
 		//now wait so the background process is able to finish 
-		Thread.sleep(210);
+		Thread.sleep(250);
 		result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
 		assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 	}
@@ -146,7 +146,7 @@ public class CalculatedValueCacheTest {
 		//as calculation is performed in background, the immediate return value is null
 		assertNull(result);
 		//now wait so the background process is able to finish 
-		Thread.sleep(210);
+		Thread.sleep(250);
 		result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
 		assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 	}
