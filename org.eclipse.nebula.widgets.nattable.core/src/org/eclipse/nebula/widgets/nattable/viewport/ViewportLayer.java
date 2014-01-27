@@ -65,6 +65,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	private IScroller<?> horizontalScroller;
 	private IScroller<?> verticalScroller;
 	
+	private boolean horizontalScrollbarEnabled = true;
+	private boolean verticalScrollbarEnabled = true;
+	
 	// The viewport origin, in scrollable pixel coordinates.
 	private PixelCoordinate origin = new PixelCoordinate(0, 0);
 	private PixelCoordinate minimumOrigin = new PixelCoordinate(0, 0);
@@ -914,7 +917,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 			int widthDiff = clientArea.width - calcArea.width;
 			int heightDiff = clientArea.height - calcArea.height;
 			
-			if (hBarListener == null) {
+			if (hBarListener == null && horizontalScrollbarEnabled) {
 				ScrollBar hBar = scrollable.getHorizontalBar();
 				if (horizontalScroller != null && horizontalScroller.getUnderlying() != hBar) {
 					hBar.setEnabled(false);
@@ -925,7 +928,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 				
 				hBarListener = new HorizontalScrollBarHandler(this, horizontalScroller);
 			}
-			if (vBarListener == null) {
+			if (vBarListener == null && verticalScrollbarEnabled) {
 				ScrollBar vBar = scrollable.getVerticalBar();
 				if (verticalScroller != null && verticalScroller.getUnderlying() != vBar) {
 					vBar.setEnabled(false);
@@ -1413,6 +1416,44 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 */
 	private void cancelEdgeHoverScroll() {
 		edgeHoverRunnable = null;
+	}
+	
+	/**
+	 * Enable/disable the horizontal scrollbar in this ViewportLayer.
+	 * <p>
+	 * Note: Setting the value to <code>false</code> will avoid registering a
+	 * 		 HorizontalScrollBarHandler, which means that there are no actions
+	 * 		 performed on the horizontal scrollbar in any case. If a horizontal
+	 * 		 scrollbar is rendered, it will be shown disabled. The rendering of
+	 * 		 scrollbar is typically configured via style bit in the NatTable control. 
+	 * 		 So if there is a disabled scrollbar rendered check the style bits of the 
+	 * 		 NatTable, and try to remove SWT.H_SCROLL which is set in the default 
+	 * 		 style options.
+	 * </p> 
+	 * @param enabled <code>false</code> to disable the horizontal scrollbar, 
+	 * 			<code>true</code> to enable it.
+	 */
+	public void setHorizontalScrollbarEnabled(boolean enabled) {
+		this.horizontalScrollbarEnabled = enabled;
+	}
+	
+	/**
+	 * Enable/disable the vertical scrollbar in this ViewportLayer.
+	 * <p>
+	 * Note: Setting the value to <code>false</code> will avoid registering a
+	 * 		 VerticalScrollBarHandler which means that there are no actions
+	 * 		 performed on the vertical scrollbar in any case. If a vertical
+	 * 		 scrollbar is rendered, it will be shown disabled. The rendering of
+	 * 		 scrollbar is typically configured via style bit in the NatTable control. 
+	 * 		 So if there is a disabled scrollbar rendered check the style bits of the 
+	 * 		 NatTable, and try to remove SWT.V_SCROLL which is set in the default 
+	 * 		 style options.
+	 * </p> 
+	 * @param enabled <code>false</code> to disable the vertical scrollbar, 
+	 * 			<code>true</code> to enable it.
+	 */
+	public void setVerticalScrollbarEnabled(boolean enabled) {
+		this.verticalScrollbarEnabled = enabled;
 	}
 	
 	/**
