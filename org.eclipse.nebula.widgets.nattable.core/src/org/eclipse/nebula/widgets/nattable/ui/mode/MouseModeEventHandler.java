@@ -35,6 +35,8 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	
 	private boolean doubleClick;
 	
+	private boolean skipProcessing = false;
+	
 	public MouseModeEventHandler(ModeSupport modeSupport, NatTable natTable, MouseEvent initialMouseDownEvent, IMouseAction singleClickAction, IMouseAction doubleClickAction, IDragMode dragMode) {
 		super(modeSupport);
 		
@@ -65,7 +67,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 					event.display.timerExec(event.display.getDoubleClickTime(), new Runnable() {
 						@Override
 						public void run() {
-							if (!doubleClick) {
+							if (!doubleClick && !skipProcessing) {
 								executeClickAction(singleClickAction, event);
 							}
 						}
@@ -78,6 +80,24 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 		else if (doubleClickAction == null) {
 			//No single or double click action registered when mouseUp detected. Switch back to normal mode.
 			switchMode(Mode.NORMAL_MODE);
+		}
+	}
+	
+	@Override
+	public void mouseDown(MouseEvent event) {
+		//another mouse click was performed than initial
+		//This handling is necessary to react correctly e.g. if an action is registered
+		//for left double click and an action for right single click. Performing a left
+		//and right click in short sequence, nothing will happen without this handling
+		if (event.button != this.initialMouseDownEvent.button) {
+			//ensure the double click runnable is not executed and process single click immediately
+			this.skipProcessing = true;
+			executeClickAction(singleClickAction, event);
+			
+			//reset to the parent mode
+			switchMode(Mode.NORMAL_MODE);
+			//start the mouse event processing for the new button
+			getModeSupport().mouseDown(event);
 		}
 	}
 	
