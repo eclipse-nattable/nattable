@@ -78,7 +78,7 @@ public class LetterOrDigitKeyEventMatcherTest {
 		Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('~'));
 		Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('!'));
 		Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('?'));
-		Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('§'));
+		Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('\u00A7'));
 		Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('$'));
 		Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('%'));
 		Assert.assertTrue(LetterOrDigitKeyEventMatcher.isLetterOrDigit('&'));
