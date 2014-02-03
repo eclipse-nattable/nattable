@@ -803,7 +803,6 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	 * Srcolls the table so that the specified cell is visible i.e. in the Viewport
 	 * @param scrollableColumnPosition
 	 * @param scrollableRowPosition
-	 * @param forceEntireCellIntoViewport
 	 */
 	public void moveCellPositionIntoViewport(int scrollableColumnPosition, int scrollableRowPosition) {
 		moveColumnPositionIntoViewport(scrollableColumnPosition);
@@ -846,7 +845,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 	}
 
 	/**
-	 * @see #moveColumnPositionIntoViewport(int, boolean)
+	 * @see #moveColumnPositionIntoViewport(int)
 	 */
 	public void moveRowPositionIntoViewport(int scrollableRowPosition) {
 		ILayer underlyingLayer = getUnderlyingLayer();

@@ -57,7 +57,7 @@ public class PersonService {
 	/**
 	 * Creates a list of random {@link Person}s. 
 	 * @param numberOfPersons The number of {@link Person}s that should be generated.
-	 * @return
+	 * @return A list containing the given amount of random generated persons.
 	 */
 	public static List<Person> getRandomPersons(int numberOfPersons) {
 		List<Person> result = new ArrayList<Person>();

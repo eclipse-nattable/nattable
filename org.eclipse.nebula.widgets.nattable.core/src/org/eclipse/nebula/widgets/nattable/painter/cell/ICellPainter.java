@@ -29,19 +29,19 @@ public interface ICellPainter {
 
 	/**
 	 * Get the preferred width of the cell when rendered by this painter. Used for auto-resize.
-	 * @param cell
-	 * @param gc
-	 * @param configRegistry
-	 * @return
+	 * @param cell The cell for which the preferred width is requested.
+	 * @param gc The GC that is used for rendering.
+	 * @param configRegistry The IConfigRegistry that contains the configuration used for rendering.
+	 * @return The preferred width of the given cell when rendered by this painter.
 	 */
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry);
 
 	/**
 	 * Get the preferred height of the cell when rendered by this painter. Used for auto-resize.
-	 * @param cell
-	 * @param gc
-	 * @param configRegistry
-	 * @return
+	 * @param cell The cell for which the preferred height is requested.
+	 * @param gc The GC that is used for rendering.
+	 * @param configRegistry The IConfigRegistry that contains the configuration used for rendering.
+	 * @return The preferred height of the given cell when rendered by this painter.
 	 */
 	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry);
 	

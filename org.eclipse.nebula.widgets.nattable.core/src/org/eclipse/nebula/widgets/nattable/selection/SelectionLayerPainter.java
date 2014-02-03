@@ -75,8 +75,8 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 	 * 			if set to <code>false</code> the bottom cell will be clipped.
 	 * 			The default value is <code>false</code>.
 	 */
-	public SelectionLayerPainter(final Color gridColor, boolean clipLeft, boolean clipRight) {
-		super(gridColor, clipLeft, clipRight);
+	public SelectionLayerPainter(final Color gridColor, boolean clipLeft, boolean clipTop) {
+		super(gridColor, clipLeft, clipTop);
 	}
 	
 	/**
@@ -91,8 +91,8 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 	 * 			if set to <code>false</code> the bottom cell will be clipped.
 	 * 			The default value is <code>false</code>.
 	 */
-	public SelectionLayerPainter(boolean clipLeft, boolean clipRight) {
-		this(GUIHelper.COLOR_GRAY, clipLeft, clipRight);
+	public SelectionLayerPainter(boolean clipLeft, boolean clipTop) {
+		this(GUIHelper.COLOR_GRAY, clipLeft, clipTop);
 	}
 
 	@Override

@@ -100,8 +100,8 @@ public class PaddingDecorator extends CellPainterWrapper {
 	 * @param interiorPainter The painter that should be wrapped.
 	 * @param topPadding The number of pixels that should be used as padding on top.
 	 * @param rightPadding The number of pixels that should be used as padding to the right.
-	 * @param bottomPaddingThe number of pixels that should be used as padding at the bottom.
-	 * @param leftPaddingThe number of pixels that should be used as padding to the left.
+	 * @param bottomPadding The number of pixels that should be used as padding at the bottom.
+	 * @param leftPadding The number of pixels that should be used as padding to the left.
 	 */
 	public PaddingDecorator(ICellPainter interiorPainter, int topPadding, int rightPadding, int bottomPadding, int leftPadding) {
 		this(interiorPainter, topPadding, rightPadding, bottomPadding, leftPadding, true);
@@ -117,8 +117,8 @@ public class PaddingDecorator extends CellPainterWrapper {
 	 * @param interiorPainter The painter that should be wrapped.
 	 * @param topPadding The number of pixels that should be used as padding on top.
 	 * @param rightPadding The number of pixels that should be used as padding to the right.
-	 * @param bottomPaddingThe number of pixels that should be used as padding at the bottom.
-	 * @param leftPaddingThe number of pixels that should be used as padding to the left.
+	 * @param bottomPadding The number of pixels that should be used as padding at the bottom.
+	 * @param leftPadding The number of pixels that should be used as padding to the left.
 	 * @param paintBg <code>true</code> if the PaddingDecorator should paint the background,
 	 * 			<code>false</code> if not.
 	 */

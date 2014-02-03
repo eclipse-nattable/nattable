@@ -52,7 +52,7 @@ public class ObjectUtils {
 	 * Returns an unmodifiable ordered collection.
 	 * @param <T>
 	 * @param iterator
-	 * @return
+	 * @return An unmodified ordered collection.
 	 */
 	public static <T>Collection<T> asOrderedCollection(Iterator<T> iterator, Comparator<T> comparator) {
 		Collection<T> collection = new TreeSet<T>(comparator);

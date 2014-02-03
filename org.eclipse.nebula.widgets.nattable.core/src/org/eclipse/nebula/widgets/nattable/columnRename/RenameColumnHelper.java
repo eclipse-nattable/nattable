@@ -38,7 +38,7 @@ public class RenameColumnHelper implements IPersistable {
 	 * Rename the column at the given position.
 	 * Note: This does not change the underlying column name.
 	 *
-	 * @return
+	 * @return <code>true</code> if the column at the given position was successfully changed.
 	 */
     public boolean renameColumnPosition(int columnPosition, String customColumnName) {
         int index = columnHeaderLayer.getColumnIndexByPosition(columnPosition);
@@ -76,6 +76,7 @@ public class RenameColumnHelper implements IPersistable {
 		return renamedColumnsLabelsByIndex.size() > 0;
 	}
 
+	@Override
 	public void loadState(String prefix, Properties properties) {
 		Object property = properties.get(prefix + PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS);
 
@@ -88,6 +89,7 @@ public class RenameColumnHelper implements IPersistable {
 		}
 	}
 
+	@Override
 	public void saveState(String prefix, Properties properties) {
 		String string = PersistenceUtils.mapAsString(renamedColumnsLabelsByIndex);
 		if (!isEmpty(string)) {

@@ -32,7 +32,7 @@ public interface IRowGroup<T> {
 	 * If this group is a nested child of another this will return the parent
 	 * group.
 	 * 
-	 * @return
+	 * @return The parent group if this group is a nested child.
 	 */
 	IRowGroup<T> getParentGroup();
 	
@@ -164,8 +164,7 @@ public interface IRowGroup<T> {
 	void clear();
 	
 	/**
-	 * Returns true if there are no rows (normal or static) in the group.
-	 * @return
+	 * @return <code>true</code> if there are no rows (normal or static) in the group.
 	 */
 	boolean isEmpty();	
 	
@@ -201,8 +200,7 @@ public interface IRowGroup<T> {
 	List<T> getOwnMemberRows(final boolean includeStaticRows);
 
 	/**
-	 * Return static rows only in this group not in nested groups.
-	 * @return
+	 * @return Static rows only in this group not in nested groups.
 	 */
 	List<T> getOwnStaticMemberRows();
 	

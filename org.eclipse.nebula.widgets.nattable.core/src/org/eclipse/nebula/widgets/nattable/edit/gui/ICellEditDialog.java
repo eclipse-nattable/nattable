@@ -15,6 +15,7 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * Interface for dialogs that can be used as editing dialogs in NatTable.
@@ -36,7 +37,7 @@ public interface ICellEditDialog {
 	String DIALOG_SHELL_ICON = "DIALOG_SHELL_ICON"; //$NON-NLS-1$
 	/**
 	 * Key to specify the location where the dialog should be shown. 
-	 * Will be interpreted by {@CellEditDialog#getInitialLocation(Point)}
+	 * Will be interpreted by {@link CellEditDialog#getInitialLocation(Point)}
 	 * The value needs to be a {@link org.eclipse.swt.graphics.Point}.
 	 */
 	String DIALOG_SHELL_LOCATION = "DIALOG_SHELL_LOCATION"; //$NON-NLS-1$

@@ -17,7 +17,7 @@ public interface IRowSelectionModel<R> extends ISelectionModel {
 	/**
 	 * Expose the underlying row objects
 	 * 
-	 * @return
+	 * @return The selected row objects.
 	 */
 	public List<R> getSelectedRowObjects();
 	

@@ -146,9 +146,12 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	/**
 	 * Method to update the tree list after filter or TreeList.Format changed.
 	 * Need this workaround to update the tree list for presentation because of
-	 * http://java.net/jira/browse/GLAZEDLISTS-521
-	 * 
-	 * @see http://glazedlists.1045722.n5.nabble.com/sorting-a-treelist-td4704550.html
+	 * <a href="http://java.net/jira/browse/GLAZEDLISTS-521">http://java.net/jira/browse/GLAZEDLISTS-521</a>
+	 * <p>
+	 * For more information you can also have a look at this discussion:
+	 * <a href="http://glazedlists.1045722.n5.nabble.com/sorting-a-treelist-td4704550.html">
+	 * http://glazedlists.1045722.n5.nabble.com/sorting-a-treelist-td4704550.html</a>
+	 * </p>
 	 */
 	protected void updateTree() {
 		//Perform the update showing the busy indicator, as creating the groupby structure

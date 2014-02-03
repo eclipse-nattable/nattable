@@ -1275,7 +1275,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * That means this {@link IStyle} is registered against {@link DisplayMode#NORMAL}
 	 * for the configurations labels {@link DefaultSortConfiguration#SORT_DOWN_CONFIG_TYPE} and
 	 * {@link DefaultSortConfiguration#SORT_UP_CONFIG_TYPE}. If you need to configure different styles
-	 * for different sort states, you need to override {@link ThemeConfiguration#configureSorting(IConfigRegistry)}.
+	 * for different sort states, you need to override {@link ThemeConfiguration#configureSortHeaderStyle(IConfigRegistry)}.
 	 * Usually the default painter is taking care of the different sort states.
 	 * </p>
 	 * <p>
@@ -1293,7 +1293,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#NORMAL}
 	 * for the configurations labels {@link DefaultSortConfiguration#SORT_DOWN_CONFIG_TYPE} and
 	 * {@link DefaultSortConfiguration#SORT_UP_CONFIG_TYPE}. If you need to configure different painters
-	 * for different sort states, you need to override {@link ThemeConfiguration#configureSorting(IConfigRegistry)}.
+	 * for different sort states, you need to override {@link ThemeConfiguration#configureSortHeaderStyle(IConfigRegistry)}.
 	 * </p>
 	 * <p>
 	 * If this method returns <code>null</code>, no value will be registered to keep the

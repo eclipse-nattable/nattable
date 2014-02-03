@@ -47,6 +47,7 @@ public class ColumnGroupHeaderLayerTest {
 		columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_3, 8, 9);
 		gridLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+			@Override
 			public Rectangle getClientArea() {
 				return new Rectangle(0, 0, 1050, 250);
 			}
@@ -56,7 +57,7 @@ public class ColumnGroupHeaderLayerTest {
 	}
 
 	/**
-	 * @seet {@link DataLayerFixture}
+	 * @see {@link DataLayerFixture}
 	 */
 	@Test
 	public void getCellForACellInAColumnGroup() throws Exception {

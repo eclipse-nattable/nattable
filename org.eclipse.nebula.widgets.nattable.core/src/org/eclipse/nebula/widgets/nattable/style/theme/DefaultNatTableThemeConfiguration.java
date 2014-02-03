@@ -55,7 +55,7 @@ import org.eclipse.swt.graphics.Image;
  * While this ThemeConfiguration only contains the basic styling, you are also able to extend this and
  * add additional stylings, e.g. conditional stylings for custom labels. But on adding new stylings you
  * also need to ensure that the custom styling is removed in 
- * {@link ThemeConfiguration#unregisterThemeStyleConfigurations(org.eclipse.nebula.widgets.nattable.config.IConfigRegistry).
+ * {@link ThemeConfiguration#unregisterThemeStyleConfigurations(org.eclipse.nebula.widgets.nattable.config.IConfigRegistry)}.
  * This is necessary so the applied styles do not stay in case of theme switches.
  * </p>
  * <p>

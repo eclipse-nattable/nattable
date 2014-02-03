@@ -153,7 +153,7 @@ public class RowGroupUtils {
      *
      * @param layer
      * @param bodyRowIndexes
-     * @return
+     * @return the row positions for a specified layer
      */
     public static List<Integer> getRowPositionsInGroup(final IUniqueIndexLayer layer, final Collection<Integer> bodyRowIndexes) {
         final List<Integer> rowPositions = new ArrayList<Integer>();

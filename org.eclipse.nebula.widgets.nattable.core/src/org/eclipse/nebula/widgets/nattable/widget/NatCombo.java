@@ -758,7 +758,7 @@ public class NatCombo extends Composite {
 	 * If the receiver is single-select and multiple indices are specified,
 	 * then all indices are ignored.
 	 *
-	 * @param indices the array of indices for the items to select
+	 * @param indeces the array of indices for the items to select
 	 */
 	public void select(int[] indeces) {
 		if (!this.dropdownTable.isDisposed()) {

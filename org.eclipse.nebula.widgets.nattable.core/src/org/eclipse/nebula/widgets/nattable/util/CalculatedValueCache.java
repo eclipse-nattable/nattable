@@ -28,9 +28,6 @@ import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
  * coordinates should fit most of the use cases.
  * 
  * @author Dirk Fauth
- *
- * @see PositionValueCacheKey
- * @see CoordinateValueCacheKey
  */
 public class CalculatedValueCache {
 
@@ -149,9 +146,6 @@ public class CalculatedValueCache {
      * 
      * @throws IllegalStateException if this CalculatedValueCache is configured to not use 
      * 			the column and row position for cache key definition.
-     * 
-     * @see PositionValueCacheKey
-     * @see CoordinateValueCacheKey
      */
 	public Object getCalculatedValue(final int columnPosition, final int rowPosition, 
 			boolean calculateInBackground, final ICalculator calculator) {
