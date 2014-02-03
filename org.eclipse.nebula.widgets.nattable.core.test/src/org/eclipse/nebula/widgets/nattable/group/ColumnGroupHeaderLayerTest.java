@@ -16,7 +16,6 @@ import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
@@ -56,9 +55,6 @@ public class ColumnGroupHeaderLayerTest {
 		gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
 	}
 
-	/**
-	 * @see {@link DataLayerFixture}
-	 */
 	@Test
 	public void getCellForACellInAColumnGroup() throws Exception {
 		ILayerCell cell = columnGroupLayer.getCellByPosition(0, 0);
