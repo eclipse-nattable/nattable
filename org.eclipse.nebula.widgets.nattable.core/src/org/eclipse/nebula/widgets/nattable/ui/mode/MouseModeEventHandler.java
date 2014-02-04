@@ -17,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.ui.action.DragModeEventHandler;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseClickAction;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 
 public class MouseModeEventHandler extends AbstractModeEventHandler {
@@ -88,11 +89,14 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 		//another mouse click was performed than initial
 		//This handling is necessary to react correctly e.g. if an action is registered
 		//for left double click and an action for right single click. Performing a left
-		//and right click in short sequence, nothing will happen without this handling
-		if (event.button != this.initialMouseDownEvent.button) {
+		//and right click in short sequence, nothing will happen without this handling.
+		//This is also true in case a click is performed without modifier key pressed
+		//and performing a mouse click with modifier key pressed shortly after.
+		if ((event.button != this.initialMouseDownEvent.button)
+				|| (event.stateMask != this.initialMouseDownEvent.stateMask)) {
 			//ensure the double click runnable is not executed and process single click immediately
 			this.skipProcessing = true;
-			executeClickAction(singleClickAction, event);
+			executeClickAction(singleClickAction, this.initialMouseDownEvent);
 			
 			//reset to the parent mode
 			switchMode(Mode.NORMAL_MODE);
@@ -101,6 +105,18 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 		}
 	}
 	
+	@Override
+	public void keyPressed(KeyEvent event) {
+		//ensure the double click runnable is not executed and process single click immediately
+		this.skipProcessing = true;
+		executeClickAction(singleClickAction, this.initialMouseDownEvent);
+		
+		//reset to the parent mode
+		switchMode(Mode.NORMAL_MODE);
+		//start the key event processing
+		getModeSupport().keyPressed(event);
+	}
+
 	@Override
 	public void mouseDoubleClick(MouseEvent event) {
 		//double click event is fired after second mouse up event, so it needs to be set to true here
