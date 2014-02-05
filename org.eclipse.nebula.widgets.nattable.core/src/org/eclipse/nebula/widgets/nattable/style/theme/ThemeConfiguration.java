@@ -5,6 +5,7 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
@@ -17,6 +18,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
+import org.eclipse.swt.graphics.Color;
 
 /**
  * Specialised {@link IConfiguration} that combines style configurations for different parts
@@ -71,6 +73,8 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		configureFilterRowStyle(configRegistry);
 		
 		configureTreeStyle(configRegistry);
+		
+		configureFreezeStyle(configRegistry);
 	}
 
 	/**
@@ -1422,6 +1426,28 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	protected abstract ICellPainter getTreeCellPainter();
 
 	/**
+	 * This method is used to register the style attributes for freeze rendering. This mainly
+	 * means to specify the color that is used to render the freeze separator.
+	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
+	 * 			to which the style configuration should be applied to.
+	 */
+	protected void configureFreezeStyle(IConfigRegistry configRegistry) {
+		if (getFreezeSeparatorColor() != null) {
+			configRegistry.registerConfigAttribute(
+					IFreezeConfigAttributes.SEPARATOR_COLOR, 
+					getFreezeSeparatorColor(),
+					DisplayMode.NORMAL);
+		}
+	}
+
+	/**
+	 * Returns the {@link Color} that should be used to render the freeze separator.
+	 * If <code>null</code> is returned, the default separator color will be used.
+	 * @return The {@link Color} that should be used to render the freeze separator.
+	 */
+	protected abstract Color getFreezeSeparatorColor();
+	
+	/**
 	 * Null-safe check if a {@link IStyle} is empty or not.
 	 * @param style The {@link IStyle} to check.
 	 * @return <code>true</code> if the given {@link IStyle} is <code>null</code> or has no value
@@ -1738,5 +1764,11 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 					DisplayMode.NORMAL, 
 					TreeLayer.TREE_COLUMN_CELL);
 
+		//unregister freeze separator color
+		if (getFreezeSeparatorColor() != null) {
+			configRegistry.unregisterConfigAttribute(
+					IFreezeConfigAttributes.SEPARATOR_COLOR, 
+					DisplayMode.NORMAL);
+		}
 	}
 }

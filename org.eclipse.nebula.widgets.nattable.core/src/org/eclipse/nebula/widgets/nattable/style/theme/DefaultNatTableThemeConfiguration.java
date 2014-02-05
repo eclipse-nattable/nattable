@@ -434,6 +434,8 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 
 	public ICellPainter treeCellPainter 								= null;
 
+	// freeze style
+	public Color freezeSeparatorColor									= null;
 	
 	@Override
 	protected IStyle getDefaultCellStyle() {
@@ -950,6 +952,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	@Override
 	protected ICellPainter getTreeCellPainter() {
 		return this.treeCellPainter;
+	}
+
+	@Override
+	protected Color getFreezeSeparatorColor() {
+		return this.freezeSeparatorColor;
 	}
 
 }
