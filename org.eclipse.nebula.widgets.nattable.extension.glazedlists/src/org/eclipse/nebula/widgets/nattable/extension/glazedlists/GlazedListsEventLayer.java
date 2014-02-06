@@ -14,7 +14,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.ScheduledFuture;
 
-
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -33,10 +32,10 @@ import ca.odell.glazedlists.event.ListEventListener;
 /**
  * This layer acts as the event listener for:
  * <ol>
- *    <li>Glazed list events - {@link ListEvent}
+ *    <li>GlazedLists events - {@link ListEvent}
  *    <li>Bean updates - PropertyChangeEvent(s)
  * </ol>
- * GlazedLists Events are conflated at a 100ms interval i.e a single {@link RowStructuralRefreshEvent}
+ * GlazedLists events are conflated at a 100ms interval i.e a single {@link RowStructuralRefreshEvent}
  * is fired for any number of GlazedLists events received during that interval.
  * <p>
  * PropertyChangeEvent(s) are propagated immediately as a {@link PropertyUpdateEvent}.
@@ -54,6 +53,8 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements 
 	private boolean eventsToProcess = false;
 	private boolean terminated;
 
+	private boolean active = true;
+	
 	public GlazedListsEventLayer(IUniqueIndexLayer underlyingLayer, EventList<T> eventList) {
 	    super(underlyingLayer);
 	    this.underlyingLayer = underlyingLayer;
@@ -62,7 +63,7 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements 
 		this.eventList.addListEventListener(this);
 
 		// Start the event conflation thread
-		future = scheduler.scheduleAtFixedRate(getEventNotifier(),0L,100L);
+		future = scheduler.scheduleAtFixedRate(getEventNotifier(), 0L, 100L);
 	}
 	
 	/**
@@ -70,8 +71,9 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements 
 	 */
     protected Runnable getEventNotifier() {
         return new Runnable() {
-            public void run() {
-                if (eventsToProcess) {
+            @Override
+			public void run() {
+                if (eventsToProcess && active) {
                     ILayerEvent layerEvent;
                     if (structuralChangeEventsToProcess) {
                         layerEvent = new RowStructuralRefreshEvent(getUnderlyingLayer());
@@ -89,6 +91,7 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements 
 	/**
 	 * Glazed list event handling.
 	 */
+	@Override
 	public void listChanged(ListEvent<T> event) {
         while (event.next()) {
             int eventType = event.getType();
@@ -102,6 +105,7 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements 
 	/**
 	 * Object property updated event
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public void propertyChange(PropertyChangeEvent event) {
 		// We can cast since we know that the EventList is of type T
@@ -122,6 +126,7 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements 
 	protected void fireEventFromSWTDisplayThread(final ILayerEvent event) {
 		if (!testMode && Display.getCurrent() == null) {
 			Display.getDefault().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					fireLayerEvent(event);
 				}
@@ -156,15 +161,52 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements 
 	public void setTestMode(boolean testMode) {
 		this.testMode = testMode;
 	}
+    
+    /**
+     * Activates the handling of GlazedLists events. By activating on receiving
+     * GlazedLists change events, there will be NatTable events fired to indicate
+     * that re-rendering is necessary.
+     * <p>
+     * This is usually necessary to perform huge updates of the data model to avoid
+     * concurrency issues. By default the GlazedListsEventLayer is activated. You 
+     * can deactivate it prior performing bulk updates and activate it again after
+     * the update is finished for a better event handling.
+     */
+    public void activate() {
+    	this.active = true;
+    }
+    
+    /**
+     * Deactivates the handling of GlazedLists events. By deactivating there will be no
+     * NatTable events fired on GlazedLists change events.
+     * <p>
+     * This is usually necessary to perform huge updates of the data model to avoid
+     * concurrency issues. By default the GlazedListsEventLayer is activated. You 
+     * can deactivate it prior performing bulk updates and activate it again after
+     * the update is finished for a better event handling.
+     */
+    public void deactivate() {
+    	this.active = false;
+    }
+    
+    /**
+     * @return Whether this GlazedListsEventLayer will propagate {@link ListEvent}s into
+     * 			NatTable or not.
+     */
+    public boolean isActive() {
+    	return this.active;
+    }
 
 	// Columns
 
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		return underlyingLayer.getColumnPositionByIndex(columnIndex);
 	}
 
 	// Rows
 
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		return underlyingLayer.getRowPositionByIndex(rowIndex);
 	}
