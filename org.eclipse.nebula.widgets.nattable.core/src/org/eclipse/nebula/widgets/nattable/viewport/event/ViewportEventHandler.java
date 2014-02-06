@@ -64,7 +64,12 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 				}
 			}
 			
-			viewportLayer.setMinimumOriginX(scrollableLayer.getStartXOfColumnPosition(minimumOriginColumnPosition + columnOffset));
+			int minimumOriginColumn = minimumOriginColumnPosition + columnOffset;
+			//in case of split viewports we use the min column position instead of the calculated value
+			if (viewportLayer.getMinColumnPosition() >= 0) {
+				minimumOriginColumn = viewportLayer.getMinColumnPosition();
+			}
+			viewportLayer.setMinimumOriginX(scrollableLayer.getStartXOfColumnPosition(minimumOriginColumn));
 		}
 		
 		if (event.isVerticalStructureChanged()) {
@@ -94,7 +99,13 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 				}
 			}
 			
-			viewportLayer.setMinimumOriginY(scrollableLayer.getStartYOfRowPosition(minimumOriginRowPosition + rowOffset));
+			
+			int minimumOriginRow = minimumOriginRowPosition + rowOffset;
+			//in case of split viewports we use the min row position instead of the calculated value
+			if (viewportLayer.getMinRowPosition() >= 0) {
+				minimumOriginRow = viewportLayer.getMinRowPosition();
+			}
+			viewportLayer.setMinimumOriginY(scrollableLayer.getStartYOfRowPosition(minimumOriginRow));
 		}
 	}
 
