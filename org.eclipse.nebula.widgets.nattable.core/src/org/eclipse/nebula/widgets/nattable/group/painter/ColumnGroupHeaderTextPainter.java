@@ -99,7 +99,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
     	
 	    ICellPainter sortPainter = new ExpandCollapseImagePainter(columnGroupModel, paintBg);
 	    CellPainterDecorator painter = new CellPainterDecorator(interiorPainter, cellEdge, 
-	    		spacing, sortPainter, paintDecorationDependent);
+	    		spacing, sortPainter, paintDecorationDependent, paintBg);
         setWrappedPainter(painter);
     }
 	
@@ -119,8 +119,8 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
     public ColumnGroupHeaderTextPainter(ColumnGroupModel columnGroupModel, 
 			ICellPainter interiorPainter, boolean paintBg, boolean interiorPainterToSpanFullWidth) {
 	    ICellPainter sortPainter = new ExpandCollapseImagePainter(columnGroupModel, paintBg);
-	    CellPainterDecorator painter = new CellPainterDecorator(interiorPainter, CellEdgeEnum.RIGHT, 0, sortPainter);
-	    painter.setPaintDecorationDependent(!interiorPainterToSpanFullWidth);
+	    CellPainterDecorator painter = new CellPainterDecorator(interiorPainter, CellEdgeEnum.RIGHT, 
+	    		0, sortPainter, !interiorPainterToSpanFullWidth, paintBg);
         setWrappedPainter(painter);
 	}
 

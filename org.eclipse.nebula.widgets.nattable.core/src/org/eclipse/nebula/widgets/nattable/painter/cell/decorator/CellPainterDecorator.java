@@ -54,6 +54,15 @@ public class CellPainterDecorator implements ICellPainter {
 	 * top of the base painter, possibly painting over the base painter. 
 	 */
     private boolean paintDecorationDependent;
+    /**
+     * Flag to specify whether this decorator should paint the background or not.
+     * Typically it will paint the background to avoid rendering gaps for the configured spacing.
+     * Using a default background this will work well as all painters will use the same background
+     * color. Using e.g. the GradientBackgroundPainter, this flag needs to be <code>false</code>
+     * as otherwise there will be no gradient background because it gets overpainted by the internal
+     * background painting.
+     */
+	private boolean paintBg;
 
     /**
      * Will create a {@link CellPainterDecorator} with the default spacing of 2 between base and 
@@ -101,12 +110,31 @@ public class CellPainterDecorator implements ICellPainter {
      * @param paintDecorationDependent Flag to specify whether the base painter should render dependent to the 
      * 			decoration painter or not.
      */
-	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, int spacing, ICellPainter decoratorCellPainter, boolean paintDecorationDependent) {
+	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, int spacing, 
+			ICellPainter decoratorCellPainter, boolean paintDecorationDependent) {
+		this(baseCellPainter, cellEdge, spacing, decoratorCellPainter, paintDecorationDependent, true);
+	}
+	
+    /**
+     * Will create a {@link CellPainterDecorator} with the given amount of pixels as spacing between base and 
+     * decoration painter. If paintDecorationDependent is set to <code>false</code>, the spacing will be ignored
+     * while the decoration is mainly rendered over the base painter.
+     * @param baseCellPainter The base {@link ICellPainter} that should be decorated
+     * @param cellEdge The edge of the cell at which the decoration should be applied
+     * @param decoratorCellPainter The {@link ICellPainter} that should be used to render the decoration.
+     * @param paintDecorationDependent Flag to specify whether the base painter should render dependent to the 
+     * 			decoration painter or not.
+	 * @param paintBg <code>true</code> if the PaddingDecorator should paint the background,
+	 * 			<code>false</code> if not.
+     */
+	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, int spacing, 
+			ICellPainter decoratorCellPainter, boolean paintDecorationDependent, boolean paintBg) {
 		this.baseCellPainter = baseCellPainter;
 		this.cellEdge = cellEdge;
 		this.spacing = spacing;
 		this.decoratorCellPainter = decoratorCellPainter;
 		this.paintDecorationDependent = paintDecorationDependent;
+		this.paintBg = paintBg;
 	}
 
 	/**
@@ -116,6 +144,18 @@ public class CellPainterDecorator implements ICellPainter {
 	 */
 	public void setPaintDecorationDependent(boolean paintDecorationDependent) {
 		this.paintDecorationDependent = paintDecorationDependent;
+	}
+	
+	/**
+	 * Configure whether this CellPainterDecorator should paint the background or not. By default
+	 * it will paint the background to ensure the spacing is also painted in the configured background
+	 * color. This will only cause issues in case another background painter like the GradientBackroundPainter
+	 * should be used.
+	 * @param paintBg <code>true</code> if this CellPainterDecorator should also paint the background,
+	 * 			<code>false</code> if the background should not be painted.
+	 */
+	public void setPaintBackground(boolean paintBg) {
+		this.paintBg = paintBg;
 	}
 	
 	/**
@@ -179,12 +219,12 @@ public class CellPainterDecorator implements ICellPainter {
 				getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry) : adjustedCellBounds;
 		Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
 		
-		Color originalBg = gc.getBackground();
-		gc.setBackground(CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-		
-		gc.fillRectangle(adjustedCellBounds);
-		
-		gc.setBackground(originalBg);
+		if (paintBg) {
+			Color originalBg = gc.getBackground();
+			gc.setBackground(CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+			gc.fillRectangle(adjustedCellBounds);
+			gc.setBackground(originalBg);
+		}
 		
 		baseCellPainter.paintCell(cell, gc, baseCellPainterBounds, configRegistry);
 		decoratorCellPainter.paintCell(cell, gc, decoratorCellPainterBounds, configRegistry);
