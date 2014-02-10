@@ -70,6 +70,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		configureRowGroupHeaderStyle(configRegistry);
 		
 		configureSortHeaderStyle(configRegistry);
+		configureSelectedSortHeaderStyle(configRegistry);
 		configureFilterRowStyle(configRegistry);
 		
 		configureTreeStyle(configRegistry);
@@ -1309,6 +1310,86 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	protected abstract ICellPainter getSortHeaderCellPainter();
 	
 	/**
+	 * This method is used to register styles for the selected sort header layer. It will register the {@link IStyle}
+	 * and the {@link ICellPainter} for both sort states which cause adding the following labels to the
+	 * configuration label stack of a cell:
+	 * <ul>
+	 * <li>DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE</li>
+	 * <li>DefaultSortConfiguration.SORT_UP_CONFIG_TYPE</li>
+	 * </ul>
+	 * Typically the {@link ICellPainter} itself takes care about the sort state. If this needs to be
+	 * handled differently, this method needs to be overridden.
+	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
+	 * 			to which the style configuration should be applied to.
+	 */
+	protected void configureSelectedSortHeaderStyle(IConfigRegistry configRegistry) {
+		IStyle sortStyle = getSelectedSortHeaderStyle();
+		if (!isStyleEmpty(sortStyle)) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					sortStyle, 
+					DisplayMode.SELECT, 
+					DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					sortStyle, 
+					DisplayMode.SELECT, 
+					DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+		}
+		
+		ICellPainter cellPainter = getSelectedSortHeaderCellPainter();
+		if (cellPainter != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					cellPainter, 
+					DisplayMode.SELECT, 
+					DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					cellPainter, 
+					DisplayMode.SELECT, 
+					DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+		}
+	}
+	
+	/**
+	 * Returns the {@link IStyle} that should be used to render the sort header in a NatTable
+	 * in selected state.
+	 * <p>
+	 * That means this {@link IStyle} is registered against {@link DisplayMode#SELECT}
+	 * for the configurations labels {@link DefaultSortConfiguration#SORT_DOWN_CONFIG_TYPE} and
+	 * {@link DefaultSortConfiguration#SORT_UP_CONFIG_TYPE}. If you need to configure different styles
+	 * for different sort states, you need to override {@link ThemeConfiguration#configureSortHeaderStyle(IConfigRegistry)}.
+	 * Usually the default painter is taking care of the different sort states.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link IStyle} that should be used to render the selected sort header in a NatTable. 
+	 */
+	protected abstract IStyle getSelectedSortHeaderStyle();
+
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render the sort header cells in a NatTable
+	 * in selected state.
+	 * <p>
+	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#SELECT}
+	 * for the configurations labels {@link DefaultSortConfiguration#SORT_DOWN_CONFIG_TYPE} and
+	 * {@link DefaultSortConfiguration#SORT_UP_CONFIG_TYPE}. If you need to configure different painters
+	 * for different sort states, you need to override {@link ThemeConfiguration#configureSortHeaderStyle(IConfigRegistry)}.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link ICellPainter} that should be used to render the selected sort header in a NatTable. 
+	 */
+	protected abstract ICellPainter getSelectedSortHeaderCellPainter();
+	
+	/**
 	 * This method is used to register style configurations for the filter row. It will only be applied
 	 * in case the FilterRowHeaderLayer is involved, which introduces a new region that is recognised
 	 * by {@link GridRegion#FILTER_ROW}.
@@ -1737,6 +1818,27 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 			configRegistry.unregisterConfigAttribute(
 					CellConfigAttributes.CELL_PAINTER, 
 					DisplayMode.NORMAL, 
+					DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+		}
+
+		if (!isStyleEmpty(getSelectedSortHeaderStyle())) {
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					DisplayMode.SELECT, 
+					DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					DisplayMode.SELECT, 
+					DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+		}
+		if (getSelectedSortHeaderCellPainter() != null) {
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					DisplayMode.SELECT, 
+					DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					DisplayMode.SELECT, 
 					DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
 		}
 

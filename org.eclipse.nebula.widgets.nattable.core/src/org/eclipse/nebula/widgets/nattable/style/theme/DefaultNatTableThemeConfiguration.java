@@ -402,6 +402,20 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 
 	public ICellPainter sortHeaderCellPainter 							= new BeveledBorderDecorator(new SortableHeaderTextPainter());
 	
+	public Color selectedSortHeaderBgColor 								= null;
+	public Color selectedSortHeaderFgColor 								= null;
+	public Color selectedSortHeaderGradientBgColor 						= null;
+	public Color selectedSortHeaderGradientFgColor 						= null;
+	public HorizontalAlignmentEnum selectedSortHeaderHAlign 			= null;
+	public VerticalAlignmentEnum selectedSortHeaderVAlign 				= null;
+	public Font selectedSortHeaderFont 									= null;
+	public Image selectedSortHeaderImage 								= null;
+	public BorderStyle selectedSortHeaderBorderStyle 					= null;
+	public Character selectedSortHeaderPWEchoChar 						= null;
+	public TextDecorationEnum selectedSortHeaderTextDecoration 			= null;
+
+	public ICellPainter selectedSortHeaderCellPainter 					= null;
+	
 	// filter row style
 	
 	public Color filterRowBgColor 										= null;
@@ -908,6 +922,28 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	@Override
 	protected ICellPainter getSortHeaderCellPainter() {
 		return this.sortHeaderCellPainter;
+	}
+
+	@Override
+	protected IStyle getSelectedSortHeaderStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, selectedSortHeaderBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, selectedSortHeaderFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, selectedSortHeaderGradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, selectedSortHeaderGradientFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, selectedSortHeaderHAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, selectedSortHeaderVAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, selectedSortHeaderFont);
+		cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, selectedSortHeaderImage);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, selectedSortHeaderBorderStyle);
+		cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR, selectedSortHeaderPWEchoChar);
+		cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, selectedSortHeaderTextDecoration);
+		return cellStyle;
+	}
+
+	@Override
+	protected ICellPainter getSelectedSortHeaderCellPainter() {
+		return this.selectedSortHeaderCellPainter;
 	}
 
 	@Override
