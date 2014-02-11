@@ -447,6 +447,22 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	public TextDecorationEnum treeTextDecoration 						= null;
 
 	public ICellPainter treeCellPainter 								= null;
+	
+	// summary row style
+	
+	public Color summaryRowBgColor 										= GUIHelper.COLOR_WHITE;
+	public Color summaryRowFgColor 										= GUIHelper.COLOR_BLACK;
+	public Color summaryRowGradientBgColor 								= null;
+	public Color summaryRowGradientFgColor 								= null;
+	public HorizontalAlignmentEnum summaryRowHAlign 					= null;
+	public VerticalAlignmentEnum summaryRowVAlign 						= null;
+	public Font summaryRowFont 											= GUIHelper.getFont(new FontData("Verdana", 8, SWT.BOLD)); //$NON-NLS-1$
+	public Image summaryRowImage 										= null;
+	public BorderStyle summaryRowBorderStyle 							= new BorderStyle(0, GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
+	public Character summaryRowPWEchoChar 								= null;
+	public TextDecorationEnum summaryRowTextDecoration 					= null;
+
+	public ICellPainter summaryRowCellPainter 							= null;
 
 	// freeze style
 	public Color freezeSeparatorColor									= null;
@@ -988,6 +1004,28 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	@Override
 	protected ICellPainter getTreeCellPainter() {
 		return this.treeCellPainter;
+	}
+	
+	@Override
+	protected IStyle getSummaryRowStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, summaryRowBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, summaryRowFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, summaryRowGradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, summaryRowGradientFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, summaryRowHAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, summaryRowVAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, summaryRowFont);
+		cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, summaryRowImage);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, summaryRowBorderStyle);
+		cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR, summaryRowPWEchoChar);
+		cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, summaryRowTextDecoration);
+		return cellStyle;
+	}
+	
+	@Override
+	protected ICellPainter getSummaryRowCellPainter() {
+		return this.summaryRowCellPainter;
 	}
 
 	@Override

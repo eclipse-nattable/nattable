@@ -17,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.swt.graphics.Color;
 
@@ -71,11 +72,14 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		
 		configureSortHeaderStyle(configRegistry);
 		configureSelectedSortHeaderStyle(configRegistry);
+		
 		configureFilterRowStyle(configRegistry);
 		
 		configureTreeStyle(configRegistry);
 		
 		configureFreezeStyle(configRegistry);
+		
+		configureSummaryRowStyle(configRegistry);
 	}
 
 	/**
@@ -1507,6 +1511,63 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	protected abstract ICellPainter getTreeCellPainter();
 
 	/**
+	 * This method is used to register style configurations for a summary row. It will only be applied
+	 * in case a SummaryRowLayer is involved, which adds the configuration label 
+	 * {@link SummaryRowLayer#DEFAULT_SUMMARY_ROW_CONFIG_LABEL} to the summary row.<br/>
+	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
+	 * 			to which the style configuration should be applied to.
+	 */
+	protected void configureSummaryRowStyle(IConfigRegistry configRegistry) {
+		IStyle style = getSummaryRowStyle();
+		if (!isStyleEmpty(style)) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE,
+					style,
+					DisplayMode.NORMAL,
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		}
+		
+		ICellPainter cellPainter = getSummaryRowCellPainter();
+		if (cellPainter != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					cellPainter, 
+					DisplayMode.NORMAL, 
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		}
+	}
+	
+	/**
+	 * Returns the {@link IStyle} that should be used to render the summary row cells in a NatTable.
+	 * <p>
+	 * That means this {@link IStyle} is registered against {@link DisplayMode#NORMAL}
+	 * and the configuration label {@link SummaryRowLayer#DEFAULT_SUMMARY_ROW_CONFIG_LABEL}.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link IStyle} that should be used to render the summary row in a NatTable. 
+	 */
+	protected abstract IStyle getSummaryRowStyle();
+
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render the summary row cells in a NatTable.
+	 * <p>
+	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#NORMAL}
+	 * and the configuration label {@link SummaryRowLayer#DEFAULT_SUMMARY_ROW_CONFIG_LABEL}.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link ICellPainter} that should be used to render the summary row in a NatTable. 
+	 */
+	protected abstract ICellPainter getSummaryRowCellPainter();
+
+	/**
 	 * This method is used to register the style attributes for freeze rendering. This mainly
 	 * means to specify the color that is used to render the freeze separator.
 	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
@@ -1865,6 +1926,18 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 					CellConfigAttributes.CELL_PAINTER, 
 					DisplayMode.NORMAL, 
 					TreeLayer.TREE_COLUMN_CELL);
+
+		//unregister summary row style configuration
+		if (!isStyleEmpty(getSummaryRowStyle()))
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_STYLE,
+					DisplayMode.NORMAL,
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		if (getSummaryRowCellPainter() != null)
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					DisplayMode.NORMAL, 
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
 		//unregister freeze separator color
 		if (getFreezeSeparatorColor() != null) {
