@@ -370,7 +370,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
 		int columnIndex = getColumnIndexByPosition(columnPosition);
 		int rowIndex = getRowIndexByPosition(rowPosition);
-		return dataProvider.getDataValue(columnIndex, rowIndex);
+		return getDataValue(columnIndex, rowIndex);
 	}
 
 	@Override
