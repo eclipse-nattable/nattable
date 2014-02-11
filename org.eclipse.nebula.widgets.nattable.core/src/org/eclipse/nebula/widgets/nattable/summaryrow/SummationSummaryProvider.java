@@ -14,7 +14,7 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 
 /**
  * Implementation of ISummaryProvider that summarizes all values in a
- * column if they are of type Number and return the sum as Float value.
+ * column if they are of type Number and return the sum as Double value.
  * <p>
  * If a column contains mixed values, e.g. Strings and Integers, the
  * SummationSummaryProvider will return {@link ISummaryProvider#DEFAULT_SUMMARY_VALUE}
@@ -61,20 +61,20 @@ public class SummationSummaryProvider implements ISummaryProvider {
 
 	/**
 	 * Calculates the sum of the values in the column.
-	 * @return The sum of all Number values in the column as Float or
+	 * @return The sum of all Number values in the column as Double or
 	 * 			{@link ISummaryProvider#DEFAULT_SUMMARY_VALUE} if the column contains non
 	 * 			Number values and this SummationSummaryProvider is configured to be strict.
 	 */
 	@Override
 	public Object summarize(int columnIndex) {
 		int rowCount = dataProvider.getRowCount();
-		float summaryValue = 0;
+		double summaryValue = 0;
 		
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			Object dataValue = dataProvider.getDataValue(columnIndex, rowIndex);
 
 			if (dataValue instanceof Number) {
-				summaryValue = summaryValue + Float.parseFloat(dataValue.toString());
+				summaryValue = summaryValue + Double.parseDouble(dataValue.toString());
 			} else if (strict) {
 				return DEFAULT_SUMMARY_VALUE;
 			}
