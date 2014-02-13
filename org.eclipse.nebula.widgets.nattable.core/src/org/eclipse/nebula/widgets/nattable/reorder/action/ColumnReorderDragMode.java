@@ -45,6 +45,7 @@ public class ColumnReorderDragMode implements IDragMode {
 	
 	protected ColumnReorderOverlayPainter targetOverlayPainter = new ColumnReorderOverlayPainter();
 	
+	@Override
 	public void mouseDown(NatTable natTable, MouseEvent event) {
 		this.natTable = natTable;
 		initialEvent = event;
@@ -58,6 +59,7 @@ public class ColumnReorderDragMode implements IDragMode {
         fireMoveStartCommand(natTable, dragFromGridColumnPosition);
 	}
 	
+	@Override
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		currentEvent = event;
 		
@@ -66,6 +68,7 @@ public class ColumnReorderDragMode implements IDragMode {
 		natTable.redraw();
 	}
 
+	@Override
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		natTable.removeOverlayPainter(targetOverlayPainter);
 		
@@ -82,11 +85,11 @@ public class ColumnReorderDragMode implements IDragMode {
 		natTable.redraw();
 	}
 	
-	private int getDragFromGridColumnPosition() {
+	protected int getDragFromGridColumnPosition() {
 		return natTable.getColumnPositionByX(initialEvent.x);
 	}
 	
-	private int getDragToGridColumnPosition(CellEdgeEnum moveDirection, int gridColumnPosition) {
+	protected int getDragToGridColumnPosition(CellEdgeEnum moveDirection, int gridColumnPosition) {
 		int dragToGridColumnPosition = -1;
 		
 		if (moveDirection != null) {
@@ -103,7 +106,7 @@ public class ColumnReorderDragMode implements IDragMode {
 		return dragToGridColumnPosition;
 	}
 	
-	private CellEdgeEnum getMoveDirection(int x) {
+	protected CellEdgeEnum getMoveDirection(int x) {
 	    ILayerCell cell = getColumnCell(x);
 	    if (cell != null) {
 			Rectangle selectedColumnHeaderRect = cell.getBounds();
@@ -133,6 +136,7 @@ public class ColumnReorderDragMode implements IDragMode {
 
 	private class ColumnReorderOverlayPainter implements IOverlayPainter {
 
+		@Override
 		public void paintOverlay(GC gc, ILayer layer) {
 			int dragFromGridColumnPosition = getDragFromGridColumnPosition();
 			

@@ -88,7 +88,7 @@ public class RowReorderDragMode implements IDragMode {
 	/**
 	 * @return The row position of the row that is dragged
 	 */
-	private int getDragFromGridRowPosition() {
+	protected int getDragFromGridRowPosition() {
 		return natTable.getRowPositionByY(initialEvent.y);
 	}
 	
@@ -98,7 +98,7 @@ public class RowReorderDragMode implements IDragMode {
 	 * @param gridRowPosition The row position at which the drop was performed
 	 * @return The row position where the dragged row should be dropped
 	 */
-	private int getDragToGridRowPosition(CellEdgeEnum moveDirection, int gridRowPosition) {
+	protected int getDragToGridRowPosition(CellEdgeEnum moveDirection, int gridRowPosition) {
 		int dragToGridRowPosition = -1;
 		
 		if (moveDirection != null) {
@@ -120,7 +120,7 @@ public class RowReorderDragMode implements IDragMode {
 	 * @return The direction whether the drop should be performed before the the cell at
 	 * 			drop position or after
 	 */
-	private CellEdgeEnum getMoveDirection(int y) {
+	protected CellEdgeEnum getMoveDirection(int y) {
 	    ILayerCell cell = getRowCell(y);
 	    if (cell != null) {
 			Rectangle selectedRowHeaderRect = cell.getBounds();
