@@ -211,14 +211,18 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	@Override
 	public int getColumnWidthByPosition(int columnPosition) {
-        return columnWidthConfig.getSize(columnPosition);
-    }
+		return columnWidthConfig.getSize(columnPosition);
+	}
 
 	public void setColumnWidthByPosition(int columnPosition, int width) {
-		columnWidthConfig.setSize(columnPosition, width);
-		fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
+		setColumnWidthByPosition(columnPosition, width, true);
 	}
-	
+
+	public void setColumnWidthByPosition(int columnPosition, int width, boolean fireEvent) {
+		columnWidthConfig.setSize(columnPosition, width);
+		if (fireEvent) fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
+	}
+
 	public void setColumnWidthPercentageByPosition(int columnPosition, int width) {
 		columnWidthConfig.setPercentage(columnPosition, width);
 		fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
@@ -325,10 +329,14 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	}
 
 	public void setRowHeightByPosition(int rowPosition, int height) {
-		rowHeightConfig.setSize(rowPosition, height);
-		fireLayerEvent(new RowResizeEvent(this, rowPosition));
+		setRowHeightByPosition(rowPosition, height, true);
 	}
-	
+
+	public void setRowHeightByPosition(int rowPosition, int height, boolean fireEvent) {
+		rowHeightConfig.setSize(rowPosition, height);
+		if (fireEvent) fireLayerEvent(new RowResizeEvent(this, rowPosition));
+	}
+
 	public void setRowHeightPercentageByPosition(int rowPosition, int height) {
 		rowHeightConfig.setPercentage(rowPosition, height);
 		fireLayerEvent(new ColumnResizeEvent(this, rowPosition));

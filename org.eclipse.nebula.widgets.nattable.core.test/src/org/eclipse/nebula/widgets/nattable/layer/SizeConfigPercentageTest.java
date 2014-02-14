@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Dirk Fauth
  ******************************************************************************/
@@ -127,6 +127,42 @@ public class SizeConfigPercentageTest {
 		Assert.assertEquals(1000, sizeConfigCalculationMode.getAggregateSize(20));
 	}
 
+	@Test
+	public void getAggregateSizeCalculationModeSpaceChangeCacheCheck() throws Exception {
+		// Change the space and positionCount to test the cached aggregated size values.
+		sizeConfigCalculationMode.calculatePercentages(1000, 20);
+
+		Assert.assertEquals(100, sizeConfigCalculationMode.getAggregateSize(2));
+		Assert.assertEquals(200, sizeConfigCalculationMode.getAggregateSize(4));
+		Assert.assertEquals(300, sizeConfigCalculationMode.getAggregateSize(6));
+		Assert.assertEquals(400, sizeConfigCalculationMode.getAggregateSize(8));
+		Assert.assertEquals(500, sizeConfigCalculationMode.getAggregateSize(10));
+
+		sizeConfigCalculationMode.calculatePercentages(500, 20);
+
+		Assert.assertEquals(50, sizeConfigCalculationMode.getAggregateSize(2));
+		Assert.assertEquals(100, sizeConfigCalculationMode.getAggregateSize(4));
+		Assert.assertEquals(150, sizeConfigCalculationMode.getAggregateSize(6));
+		Assert.assertEquals(200, sizeConfigCalculationMode.getAggregateSize(8));
+		Assert.assertEquals(250, sizeConfigCalculationMode.getAggregateSize(10));
+
+		sizeConfigCalculationMode.calculatePercentages(500, 10);
+
+		Assert.assertEquals(100, sizeConfigCalculationMode.getAggregateSize(2));
+		Assert.assertEquals(200, sizeConfigCalculationMode.getAggregateSize(4));
+		Assert.assertEquals(300, sizeConfigCalculationMode.getAggregateSize(6));
+		Assert.assertEquals(400, sizeConfigCalculationMode.getAggregateSize(8));
+		Assert.assertEquals(500, sizeConfigCalculationMode.getAggregateSize(10));
+	}
+
+	@Test
+	public void getAggregateSizeCalculationModeSizeChangeCacheCheck() throws Exception {
+		Assert.assertEquals(500, sizeConfigCalculationMode.getAggregateSize(5));
+
+		sizeConfigCalculationMode.setPercentage(5, 20);
+
+		Assert.assertEquals(440, sizeConfigCalculationMode.getAggregateSize(5));
+	}
 
 	@Test
 	public void getSizeConfigFixedMode() throws Exception {
@@ -169,7 +205,7 @@ public class SizeConfigPercentageTest {
 		sizeConfigFixedMode.setPercentage(2, 50);
 		sizeConfigFixedMode.setPercentage(3, 50);
 
-		//the correct double value would be 127.5 - because of the rounding as there are no 
+		//the correct double value would be 127.5 - because of the rounding as there are no
 		//double pixels, the values for the first 3 positions will be 127
 		Assert.assertEquals(127, sizeConfigFixedMode.getSize(0));
 		Assert.assertEquals(127, sizeConfigFixedMode.getSize(1));
@@ -219,6 +255,34 @@ public class SizeConfigPercentageTest {
 		Assert.assertEquals(84, sizeConfigFixedMode.getAggregateSize(1));
 		Assert.assertEquals(168, sizeConfigFixedMode.getAggregateSize(2));
 		Assert.assertEquals(255, sizeConfigFixedMode.getAggregateSize(3));
+	}
+
+	@Test
+	public void getAggregateSizeFixedModeSpaceChangeCacheCheck() throws Exception {
+		Assert.assertEquals(127, sizeConfigFixedMode.getAggregateSize(1));
+		Assert.assertEquals(255, sizeConfigFixedMode.getAggregateSize(2));
+
+		sizeConfigFixedMode.calculatePercentages(500, 2);
+
+		Assert.assertEquals(250, sizeConfigFixedMode.getAggregateSize(1));
+		Assert.assertEquals(500, sizeConfigFixedMode.getAggregateSize(2));
+
+		sizeConfigFixedMode.calculatePercentages(255, 3);
+
+		Assert.assertEquals(127, sizeConfigFixedMode.getSize(0));
+		Assert.assertEquals(127, sizeConfigFixedMode.getSize(1));
+		Assert.assertEquals(1, sizeConfigFixedMode.getSize(2));
+	}
+
+	@Test
+	public void getAggregateSizeFixedModeSizeChangeCacheCheck() throws Exception {
+		Assert.assertEquals(127, sizeConfigFixedMode.getAggregateSize(1));
+		Assert.assertEquals(255, sizeConfigFixedMode.getAggregateSize(2));
+
+		sizeConfigFixedMode.setPercentage(1, 40);
+
+		Assert.assertEquals(127, sizeConfigFixedMode.getAggregateSize(1));
+		Assert.assertEquals(229, sizeConfigFixedMode.getAggregateSize(2));
 	}
 
 	@Test
@@ -322,6 +386,33 @@ public class SizeConfigPercentageTest {
 	}
 
 	@Test
+	public void getAggregateSizeMixedModeSpaceChangeCacheCheck() throws Exception {
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getAggregateSize(1));
+		Assert.assertEquals(700, sizeConfigMixedPercentageMode.getAggregateSize(2));
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(3));
+
+		sizeConfigMixedPercentageMode.calculatePercentages(1000, 4);
+
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getAggregateSize(1));
+		Assert.assertEquals(500, sizeConfigMixedPercentageMode.getAggregateSize(2));
+		Assert.assertEquals(800, sizeConfigMixedPercentageMode.getAggregateSize(3));
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(4));
+	}
+
+	@Test
+	public void getAggregateSizeMixedModeSizeChangeCacheCheck() throws Exception {
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getAggregateSize(1));
+		Assert.assertEquals(700, sizeConfigMixedPercentageMode.getAggregateSize(2));
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(3));
+
+		sizeConfigMixedPercentageMode.setPercentage(2, 40);
+
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getAggregateSize(1));
+		Assert.assertEquals(600, sizeConfigMixedPercentageMode.getAggregateSize(2));
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(3));
+	}
+
+	@Test
 	public void getSizeConfigMixedMode() throws Exception {
 		Assert.assertEquals(100, sizeConfigMixedMode.getSize(0));
 		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
@@ -392,7 +483,7 @@ public class SizeConfigPercentageTest {
 
 		Assert.assertEquals(100, sizeConfigMixedMode.getSize(0));
 		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
-		//this column does not have a percentage width set, so it will be 0 if 
+		//this column does not have a percentage width set, so it will be 0 if
 		//other columns with fixed percentage widths are added
 		Assert.assertEquals(0, sizeConfigMixedMode.getSize(2));
 		//4 additional percentage sized positions that have the same percentage size
@@ -401,6 +492,47 @@ public class SizeConfigPercentageTest {
 		Assert.assertEquals(100, sizeConfigMixedMode.getSize(4));
 		Assert.assertEquals(100, sizeConfigMixedMode.getSize(5));
 		Assert.assertEquals(100, sizeConfigMixedMode.getSize(6));
+	}
+
+	@Test
+	public void getAggregateMixedModeSpaceChangeCacheCheck() throws Exception {
+		Assert.assertEquals(100, sizeConfigMixedMode.getAggregateSize(1));
+		Assert.assertEquals(200, sizeConfigMixedMode.getAggregateSize(2));
+		Assert.assertEquals(500, sizeConfigMixedMode.getAggregateSize(3));
+
+		sizeConfigMixedMode.calculatePercentages(1000, 3);
+
+		Assert.assertEquals(100, sizeConfigMixedMode.getAggregateSize(1));
+		Assert.assertEquals(200, sizeConfigMixedMode.getAggregateSize(2));
+		Assert.assertEquals(1000, sizeConfigMixedMode.getAggregateSize(3));
+
+		sizeConfigMixedMode.calculatePercentages(500, 4);
+
+		Assert.assertEquals(100, sizeConfigMixedMode.getAggregateSize(1));
+		Assert.assertEquals(200, sizeConfigMixedMode.getAggregateSize(2));
+		Assert.assertEquals(350, sizeConfigMixedMode.getAggregateSize(3));
+		Assert.assertEquals(500, sizeConfigMixedMode.getAggregateSize(4));
+	}
+
+	@Test
+	public void getAggregateMixedModeSizeChangeCacheCheck() throws Exception {
+		Assert.assertEquals(100, sizeConfigMixedMode.getAggregateSize(1));
+		Assert.assertEquals(200, sizeConfigMixedMode.getAggregateSize(2));
+		Assert.assertEquals(500, sizeConfigMixedMode.getAggregateSize(3));
+
+		sizeConfigMixedMode.setPercentage(2, 25);
+		sizeConfigMixedMode.setPercentage(3, 25);
+		sizeConfigMixedMode.setPercentage(4, 25);
+		sizeConfigMixedMode.setPercentage(5, 25);
+
+		sizeConfigMixedMode.calculatePercentages(1000, 6);
+
+		Assert.assertEquals(100, sizeConfigMixedMode.getAggregateSize(1));
+		Assert.assertEquals(200, sizeConfigMixedMode.getAggregateSize(2));
+		Assert.assertEquals(400, sizeConfigMixedMode.getAggregateSize(3));
+		Assert.assertEquals(600, sizeConfigMixedMode.getAggregateSize(4));
+		Assert.assertEquals(800, sizeConfigMixedMode.getAggregateSize(5));
+		Assert.assertEquals(1000, sizeConfigMixedMode.getAggregateSize(6));
 	}
 
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -92,4 +92,20 @@ public class SizeConfigTest {
 
 		Assert.assertEquals(100, sc.getAggregateSize(4));
 	}
+
+	@Test
+	public void testAggregateSizeCache() {
+		final SizeConfig sc = new SizeConfig(100);
+		sc.setSize(0, 50);
+		Assert.assertEquals(450, sc.getAggregateSize(5));
+		sc.setSize(1, 50);
+		Assert.assertEquals(400, sc.getAggregateSize(5));
+		sc.setSize(2, 50);
+		Assert.assertEquals(350, sc.getAggregateSize(5));
+		sc.setDefaultSize(75);
+		Assert.assertEquals(300, sc.getAggregateSize(5));
+		sc.setSize(2, 100);
+		Assert.assertEquals(350, sc.getAggregateSize(5));
+	}
+
 }
