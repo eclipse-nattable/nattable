@@ -334,7 +334,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
 	@Override
 	public NatCombo createEditorControl(Composite parent) {
-		int style = this.editMode == EditModeEnum.INLINE ? SWT.NONE : SWT.BORDER;
+		int style = SWT.NONE;
 		if (!this.freeEdit) {
 			style |= SWT.READ_ONLY;
 		}

@@ -317,12 +317,11 @@ public class NatCombo extends Composite {
 					showDropdownControl();
 
 					int selectionIndex = dropdownTable.getSelectionIndex();
-					selectionIndex += event.keyCode == SWT.ARROW_DOWN ? 1 : -1;
-					if (selectionIndex < 0) {
-						selectionIndex = 0;
-					}
-
+					if (selectionIndex < 0) selectionIndex = 0;
 					dropdownTable.select(selectionIndex);
+					
+					//ensure the arrow key events do not have any further effect
+					event.doit = false;
 				}
 				else if (!LetterOrDigitKeyEventMatcher.isLetterOrDigit(event.character)) {
 					if (freeEdit) {
@@ -590,7 +589,14 @@ public class NatCombo extends Composite {
 			dropdownTable.getColumn(0).pack();
 			int listWidth = Math.max(dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x, size.x);
 
-			dropdownTable.setSize(listWidth, listHeight);
+			//correction of the shell bounds to ensure the scrollbars are shown full
+			int correction = 0;
+			if (this.maxVisibleItems > 0 && getVisibleItemCount() < dropdownTable.getItemCount()) {
+				correction = 2;
+			}
+			dropdownTable.setSize(listWidth - correction, listHeight - correction);
+			
+			calculateColumnWidth();
 			
 			Point textPosition = text.toDisplay(text.getLocation());
 			
@@ -602,11 +608,13 @@ public class NatCombo extends Composite {
 				dropdownShellStartingY = textPosition.y - listHeight;
 			}
 			
-			dropdownShell.setBounds(
+			Rectangle shellBounds = new Rectangle(
 					textPosition.x, 
 					dropdownShellStartingY, 
 					listWidth, 
 					listHeight);
+			
+			dropdownShell.setBounds(shellBounds);
 		}
 	}
 
