@@ -133,10 +133,12 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 				newColumnIndexOrder.add(Integer.valueOf(index));
 			}
 			
-			if(isRestoredStateValid(newColumnIndexOrder)){
+			if (isRestoredStateValid(newColumnIndexOrder)){
 				columnIndexOrder.clear();
 				columnIndexOrder.addAll(newColumnIndexOrder);
 			}
+			
+			invalidateCache();
 		}
 		fireLayerEvent(new ColumnStructuralRefreshEvent(this));
 	}

@@ -145,10 +145,12 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 				newRowIndexOrder.add(Integer.valueOf(index));
 			}
 			
-			if(isRestoredStateValid(newRowIndexOrder)){
+			if (isRestoredStateValid(newRowIndexOrder)){
 				rowIndexOrder.clear();
 				rowIndexOrder.addAll(newRowIndexOrder);
 			}
+			
+			invalidateCache();
 		}
 		fireLayerEvent(new RowStructuralRefreshEvent(this));
 	}
