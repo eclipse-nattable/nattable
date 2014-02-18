@@ -21,6 +21,8 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -32,11 +34,11 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
-import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -47,8 +49,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Simple example showing how to add the {@link ColumnReorderLayer} and the 
- * {@link RowReorderLayer} to the layer composition of a grid.
+ * Simple example showing how to add the functionality for freezing regions to a grid.
  * 
  * Also adds the functionality to manage NatTable states to proof that the
  * visibility states are stored and loaded correctly.
@@ -56,18 +57,19 @@ import org.eclipse.swt.widgets.Control;
  * @author Dirk Fauth
  *
  */
-public class _543_ColumnAndRowReorderExample extends AbstractNatExample {
+public class _5101_FreezeExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _543_ColumnAndRowReorderExample());
+		StandaloneNatExampleRunner.run(new _5101_FreezeExample());
 	}
 
 	@Override
 	public String getDescription() {
-		return "This example shows the usage of the ColumnReorderLayer and the RowReorderLayer "
-				+ "within a grid. You can drag and drop rows and columns in the corresponding header "
-				+ "regions to reorder them.\n"
-				+ "The corner header menu also gives the opportunity to manage the NatTable states.";
+		return "This example demonstrates the column and row freezing functionality of NatTable.\n" +
+				"\n" +
+				"* FREEZE COLUMNS AND ROWS by selecting a cell and using ctrl-shift-f. The columns to the left and the rows to the right " +
+				"of the selected cell will be frozen such that they will always remain on screen even when the viewport is scrolled.\n" +
+				"* UNFREEZE COLUMNS AND ROWS with ctrl-shift-u.";
 	}
 	
 	@Override
@@ -92,19 +94,22 @@ public class _543_ColumnAndRowReorderExample extends AbstractNatExample {
 		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-		RowReorderLayer rowReorderLayer = new RowReorderLayer(columnReorderLayer);
-		final SelectionLayer selectionLayer = new SelectionLayer(rowReorderLayer);
+		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
+		final SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
 		final ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+		final FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+	    final CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
 
 		//build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
+		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, compositeFreezeLayer, selectionLayer);
 		
 		//build the row header layer
 		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
 		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
+		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, compositeFreezeLayer, selectionLayer);
 		
 		//build the corner layer
 		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
@@ -112,7 +117,7 @@ public class _543_ColumnAndRowReorderExample extends AbstractNatExample {
 		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 		
 		//build the grid layer
-		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
+		GridLayer gridLayer = new GridLayer(compositeFreezeLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 		
 		//turn the auto configuration off as we want to add our header menu configuration
 		final NatTable natTable = new NatTable(panel, gridLayer, false);
