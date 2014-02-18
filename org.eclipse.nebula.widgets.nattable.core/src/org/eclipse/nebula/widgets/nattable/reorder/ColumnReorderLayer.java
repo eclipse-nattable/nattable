@@ -51,7 +51,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 	private final IUniqueIndexLayer underlyingLayer;
 
 	// Position X in the List contains the index of column at position X
-	private final List<Integer> columnIndexOrder = new ArrayList<Integer>();
+	protected final List<Integer> columnIndexOrder = new ArrayList<Integer>();
 
 	private final Map<Integer, Integer> startXCache = new HashMap<Integer, Integer>();
 

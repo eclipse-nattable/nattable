@@ -55,7 +55,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 	 * The local cache of the row index order. Used to track the reordering performed by this layer.
 	 * Position Y in the List contains the index of row at position Y.
 	 */
-	private final List<Integer> rowIndexOrder = new ArrayList<Integer>();
+	protected final List<Integer> rowIndexOrder = new ArrayList<Integer>();
 
 	/**
 	 * Caching of the starting y positions of the rows.
