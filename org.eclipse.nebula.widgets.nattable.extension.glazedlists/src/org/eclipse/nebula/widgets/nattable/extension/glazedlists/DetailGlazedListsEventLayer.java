@@ -96,56 +96,81 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 		try {
 			this.eventList.getReadWriteLock().readLock().lock();
 			
-			int deletedCount = 0;
+			int currentEventType = -1;
 			
 			final List<Range> deleteRanges = new ArrayList<Range>();
 			final List<Range> insertRanges = new ArrayList<Range>();
 			while (event.next()) {
 				int eventType = event.getType();
+				
+				//first event, go ahead
+				if (currentEventType == -1) {
+					currentEventType = eventType;
+				}
+				else if (currentEventType != eventType) {
+					//there is a new event type, fire the collected events
+					internalFireEvents(deleteRanges, insertRanges);
+					
+					//and clear for clean further processing
+					deleteRanges.clear();
+					insertRanges.clear();
+				}
+				
 				if (eventType == ListEvent.DELETE) {
-					int index = event.getIndex() + deletedCount;
+					int index = event.getIndex();
 					deleteRanges.add(new Range(index, index + 1));
-					deletedCount++;
 				}
 				else if (eventType == ListEvent.INSERT) {
 					insertRanges.add(new Range(event.getIndex(), event.getIndex() + 1));
 				}
 			}
 			
-			//The RowStructuralChangeEvents will cause a repaint of the NatTable.
-			//We need to fire the event from the SWT Display thread, otherwise
-			//there will be an exception because painting can only be triggered
-			//from the SWT Display thread.
-			//As there is a structural change, there need to be some processing for
-			//indexes and positions in layers above this one. Therefore we need to
-			//ensure that the processing is handled synchronous, otherwise we would
-			//get into an asynchronous state were we try to process events based on
-			//a ListEvent, while the list itself has already changed again.
-			//e.g. filtering: clear + apply
-
-			if (!deleteRanges.isEmpty()) {
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						fireLayerEvent(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
-					}
-				});
-			}
-			
-			if (!insertRanges.isEmpty()) {
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						fireLayerEvent(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
-					}
-				});
-			}
+			internalFireEvents(deleteRanges, insertRanges);
 		}
 		finally {
 			this.eventList.getReadWriteLock().readLock().unlock();
 		}
 	}
 
+	/**
+	 * Fire events with detail informations to update the NatTable accordingly.
+	 * <p>
+	 * The RowStructuralChangeEvents will cause a repaint of the NatTable.
+	 * We need to fire the event from the SWT Display thread, otherwise
+	 * there will be an exception because painting can only be triggered
+	 * from the SWT Display thread.
+	 * </p>
+	 * <p>
+	 * As there is a structural change, there need to be some processing for
+	 * indexes and positions in layers above this one. Therefore we need to
+	 * ensure that the processing is handled synchronous, otherwise we would
+	 * get into an asynchronous state were we try to process events based on
+	 * a ListEvent, while the list itself has already changed again.
+	 * e.g. filtering: clear + apply
+	 * </p>
+	 * @param deleteRanges The ranges that were deleted and should be fired in an event.
+	 * @param insertRanges The ranges that were inserted and should be fired in an event.
+	 */
+	private void internalFireEvents(final List<Range> deleteRanges, final List<Range> insertRanges) {
+		if (!deleteRanges.isEmpty()) {
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					fireLayerEvent(new RowDeleteEvent(getUnderlyingLayer(), deleteRanges));
+				}
+			});
+		}
+		
+		if (!insertRanges.isEmpty()) {
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					fireLayerEvent(new RowInsertEvent(getUnderlyingLayer(), insertRanges));
+				}
+			});
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
