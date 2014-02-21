@@ -35,15 +35,15 @@ public class AbstractHeaderMenuConfiguration extends AbstractUiBindingConfigurat
 	/**
 	 * The column header menu.
 	 */
-	private Menu colHeaderMenu;
+	protected Menu colHeaderMenu;
 	/**
 	 * The row header menu
 	 */
-	private Menu rowHeaderMenu;
+	protected Menu rowHeaderMenu;
 	/**
 	 * The corner region menu
 	 */
-	private Menu cornerMenu;
+	protected Menu cornerMenu;
 
 	/**
 	 * Creates a header menu configuration that attaches menus to the row header,
