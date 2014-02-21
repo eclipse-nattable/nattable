@@ -10,8 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -74,7 +76,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	}
 	
 	/**
-	 * @return The color that is used to render the grid lines.
+	 * @return The local configured color that is used to render the grid lines.
 	 */
 	public Color getGridColor() {
 		return gridColor;
@@ -83,7 +85,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
 		//Draw GridLines
-		drawGridLines(natLayer, gc, rectangle);
+		drawGridLines(natLayer, gc, rectangle, configRegistry);
 
 		super.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 	}
@@ -93,8 +95,10 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 		return new Rectangle(bounds.x, bounds.y, Math.max(bounds.width - 1, 0), Math.max(bounds.height - 1, 0));
 	}
 	
-	protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle) {
-		gc.setForeground(gridColor);
+	protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
+		Color gColor = configRegistry.getConfigAttribute(
+				CellConfigAttributes.GRID_LINE_COLOR, DisplayMode.NORMAL);
+		gc.setForeground(gColor != null ? gColor : gridColor);
 		
 		drawHorizontalLines(natLayer, gc, rectangle);
 		drawVerticalLines(natLayer, gc, rectangle);

@@ -79,7 +79,11 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		
 		configureFreezeStyle(configRegistry);
 		
+		configureGridLineColor(configRegistry);
+		
 		configureSummaryRowStyle(configRegistry);
+		
+		//TODO add configuration for conversion/validation error styling
 	}
 
 	/**
@@ -1588,6 +1592,27 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * @return The {@link Color} that should be used to render the freeze separator.
 	 */
 	protected abstract Color getFreezeSeparatorColor();
+
+	/**
+	 * This method is used to register the grid line color. 
+	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
+	 * 			to which the style configuration should be applied to.
+	 */
+	protected void configureGridLineColor(IConfigRegistry configRegistry) {
+		if (getGridLineColor() != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.GRID_LINE_COLOR, 
+					getGridLineColor(),
+					DisplayMode.NORMAL);
+		}
+	}
+
+	/**
+	 * Returns the {@link Color} that should be used to render the grid lines.
+	 * If <code>null</code> is returned, the default grid line color will be used.
+	 * @return The {@link Color} that should be used to render the grid lines.
+	 */
+	protected abstract Color getGridLineColor();
 	
 	/**
 	 * Null-safe check if a {@link IStyle} is empty or not.
@@ -1945,5 +1970,13 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 					IFreezeConfigAttributes.SEPARATOR_COLOR, 
 					DisplayMode.NORMAL);
 		}
+
+		//unregister grid line color
+		if (getGridLineColor() != null) {
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.GRID_LINE_COLOR, 
+					DisplayMode.NORMAL);
+		}
+
 	}
 }

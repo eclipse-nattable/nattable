@@ -14,13 +14,28 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.swt.graphics.Color;
 
 public interface CellConfigAttributes {
 
+	/**
+	 * Attribute for configuring the ICellPainter that should be used to render a cell.
+	 */
 	ConfigAttribute<ICellPainter> CELL_PAINTER = new ConfigAttribute<ICellPainter>();
 	
+	/**
+	 * Attribute for configuring the IStyle that should be used to render a cell.
+	 */
 	ConfigAttribute<IStyle> CELL_STYLE = new ConfigAttribute<IStyle>();
 	
+	/**
+	 * Attribute for configuring the IDisplayConverter that should be used to
+	 * convert the data in a cell for rendering.
+	 */
 	ConfigAttribute<IDisplayConverter> DISPLAY_CONVERTER = new ConfigAttribute<IDisplayConverter>();
 	
+	/**
+	 * Attribute for configuring the Color that should be used to render the grid lines.
+	 */
+	ConfigAttribute<Color> GRID_LINE_COLOR = new ConfigAttribute<Color>();
 }

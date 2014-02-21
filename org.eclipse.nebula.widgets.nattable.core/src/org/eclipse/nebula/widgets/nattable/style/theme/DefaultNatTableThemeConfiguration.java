@@ -467,6 +467,9 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	// freeze style
 	public Color freezeSeparatorColor									= null;
 	
+	// grid color
+	public Color gridLineColor											= null;
+	
 	@Override
 	protected IStyle getDefaultCellStyle() {
 		IStyle cellStyle = new Style();
@@ -1031,6 +1034,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	@Override
 	protected Color getFreezeSeparatorColor() {
 		return this.freezeSeparatorColor;
+	}
+
+	@Override
+	protected Color getGridLineColor() {
+		return this.gridLineColor;
 	}
 
 }

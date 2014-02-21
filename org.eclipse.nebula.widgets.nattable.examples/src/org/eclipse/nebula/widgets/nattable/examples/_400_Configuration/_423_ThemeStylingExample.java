@@ -167,7 +167,7 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 		
 		//adding a full border
-		natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
+		natTable.addOverlayPainter(new NatTableBorderOverlayPainter(natTable.getConfigRegistry()));
 		
 		Composite buttonPanel = new Composite(container, SWT.NONE);
 		buttonPanel.setLayout(new RowLayout());

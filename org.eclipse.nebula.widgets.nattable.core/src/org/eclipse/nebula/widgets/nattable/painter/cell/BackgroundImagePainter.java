@@ -33,6 +33,14 @@ public class BackgroundImagePainter extends CellPainterWrapper {
 	/**
 	 * @param interiorPainter used for painting the cell contents
 	 * @param bgImage to be used for painting the background
+	 */
+	public BackgroundImagePainter(ICellPainter interiorPainter, Image bgImage) {
+		this(interiorPainter, bgImage, null);
+	}
+
+	/**
+	 * @param interiorPainter used for painting the cell contents
+	 * @param bgImage to be used for painting the background
 	 * @param separatorColor to be used for drawing left and right borders for the cell.
 	 * 	Set to null if the borders are not required.
 	 */
