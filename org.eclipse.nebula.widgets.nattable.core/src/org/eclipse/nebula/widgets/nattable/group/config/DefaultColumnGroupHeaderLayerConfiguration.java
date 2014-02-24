@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderD
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.AggregateDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.CellDragMode;
+import org.eclipse.nebula.widgets.nattable.ui.action.NoOpMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
@@ -71,7 +72,10 @@ public class DefaultColumnGroupHeaderLayerConfiguration implements IConfiguratio
                 MouseEventMatcher.columnHeaderLeftClick(SWT.NONE),
                 new ColumnHeaderReorderDragMode(columnGroupModel));
 
-
+		//added NoOpMouseAction on single click because of Bug 428901
+		uiBindingRegistry.registerFirstSingleClickBinding(
+				MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
+				new NoOpMouseAction());
 		uiBindingRegistry.registerDoubleClickBinding(
 				MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
 				new ColumnGroupExpandCollapseAction());

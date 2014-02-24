@@ -34,7 +34,10 @@ public class ColumnHeaderClickEventMatcher extends MouseEventMatcher {
 
 	@Override
     public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
-	    return super.matches(natTable, event, regionLabels) && isNearTheHeaderEdge(natTable, event) && isNotFilterRegion(regionLabels);
+	    return super.matches(natTable, event, regionLabels) 
+	    		&& isNearTheHeaderEdge(natTable, event) 
+	    		&& isNotFilterRegion(regionLabels)
+	    		&& isNotColumnGroupRegion(regionLabels);
 	}
 
 	private boolean isNearTheHeaderEdge(ILayer natLayer, MouseEvent event) {
@@ -48,6 +51,14 @@ public class ColumnHeaderClickEventMatcher extends MouseEventMatcher {
     private boolean isNotFilterRegion(LabelStack regionLabels) {
         if(isNotNull(regionLabels)){
             return !regionLabels.getLabels().contains(GridRegion.FILTER_ROW);
+        }
+        return true;
+    }
+
+    //added this additional check because of Bug 428901
+    private boolean isNotColumnGroupRegion(LabelStack regionLabels) {
+        if(isNotNull(regionLabels)){
+            return !regionLabels.getLabels().contains(GridRegion.COLUMN_GROUP_HEADER);
         }
         return true;
     }
