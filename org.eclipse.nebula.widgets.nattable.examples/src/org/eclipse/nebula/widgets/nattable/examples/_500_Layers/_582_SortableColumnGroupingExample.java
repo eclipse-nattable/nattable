@@ -14,13 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -39,22 +44,28 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.SortedList;
+
 /**
  * Simple example showing how to add the {@link ColumnGroupHeaderLayer} to the layer
  * composition of a grid and how to add the corresponding actions to the column
- * header menu.
+ * header menu. This example also adds the ability to sort the data model.
  * 
  * @author Dirk Fauth
  *
  */
-public class _581_ColumnGroupingExample extends AbstractNatExample {
+public class _582_SortableColumnGroupingExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _581_ColumnGroupingExample());
+		StandaloneNatExampleRunner.run(new _582_SortableColumnGroupingExample());
 	}
 
 	@Override
@@ -84,9 +95,17 @@ public class _581_ColumnGroupingExample extends AbstractNatExample {
 		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
 		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
 		//directly as body layer is also working.
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
+		
+		EventList<Person> persons = GlazedLists.eventList(PersonService.getPersons(10));
+		SortedList<Person> sortedList = new SortedList<Person>(persons, null);
+		
+		IColumnPropertyAccessor<Person> accessor = new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+		IDataProvider bodyDataProvider = new ListDataProvider<Person>(sortedList, accessor);
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
+		
+		GlazedListsEventLayer<Person> eventLayer = new GlazedListsEventLayer<Person>(bodyDataLayer, sortedList);
+		
+		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(eventLayer);
 		ColumnGroupReorderLayer columnGroupReorderLayer = new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
 		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
 		ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
@@ -97,7 +116,13 @@ public class _581_ColumnGroupingExample extends AbstractNatExample {
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
-		ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer, columnGroupModel);
+		
+		ConfigRegistry configRegistry = new ConfigRegistry();
+		SortHeaderLayer<Person> sortHeaderLayer = new SortHeaderLayer<Person>(columnHeaderLayer, 
+				new GlazedListsSortModel<Person>(sortedList, 
+						accessor, configRegistry, columnHeaderDataLayer));
+		
+		ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(sortHeaderLayer, selectionLayer, columnGroupModel);
 
 		//configure the column groups
 		columnGroupHeaderLayer.addColumnsIndexesToGroup("Name", 0, 1);
@@ -120,20 +145,12 @@ public class _581_ColumnGroupingExample extends AbstractNatExample {
 		//turn the auto configuration off as we want to add our header menu configuration
 		NatTable natTable = new NatTable(parent, gridLayer, false);
 		
+		natTable.setConfigRegistry(configRegistry);
+		
 		//as the autoconfiguration of the NatTable is turned off, we have to add the 
 		//DefaultNatTableStyleConfiguration manually	
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		
-		//enable this configuration to verify the automatic height calculation when using vertical text painter
-//		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-//			
-//			@Override
-//			public void configureRegistry(IConfigRegistry configRegistry) {
-//				ICellPainter cellPainter = new BeveledBorderDecorator(new VerticalTextPainter(false, true, 5, true, true));
-//				configRegistry.registerConfigAttribute(
-//						CellConfigAttributes.CELL_PAINTER, cellPainter, DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
-//			}
-//		});
+		natTable.addConfiguration(new SingleClickSortConfiguration());
 		
 		natTable.configure();
 		
