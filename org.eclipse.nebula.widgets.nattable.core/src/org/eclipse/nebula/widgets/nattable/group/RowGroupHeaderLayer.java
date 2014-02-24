@@ -63,7 +63,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 		registerCommandHandlers();
 		
 		if( useDefaultConfiguration ) {
-			addConfiguration( new DefaultRowGroupHeaderLayerConfiguration<T>(rowGroupModel) );
+			addConfiguration( new DefaultRowGroupHeaderLayerConfiguration<T>() );
 		}
 	}
 	
@@ -270,11 +270,22 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		int rowIndex = getRowIndexByPosition(rowPosition);
 		if( columnPosition == 0 && RowGroupUtils.isPartOfAGroup(model, rowIndex) ) {
+			LabelStack stack = new LabelStack(GridRegion.ROW_GROUP_HEADER);
+			
+			IRowGroup<T> group = RowGroupUtils.getRowGroupForRowIndex(model, rowIndex);
+			if (RowGroupUtils.isCollapsed(model, group)) {
+				stack.addLabelOnTop(DefaultRowGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
+			}
+			else {
+				stack.addLabelOnTop(DefaultRowGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
+			}
+			
 			List<Integer> selectedRowIndexes = convertToRowIndexes(selectionLayer.getFullySelectedRowPositions());
 			if (selectedRowIndexes.contains(rowIndex)) {
-				return new LabelStack(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE, GridRegion.ROW_GROUP_HEADER);
+				stack.addLabelOnTop(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
 			}
-			return new LabelStack(GridRegion.ROW_GROUP_HEADER);
+
+			return stack;
 		} else {
 			return rowHeaderLayer.getConfigLabelsByPosition(columnPosition - 1, rowPosition);
 		}

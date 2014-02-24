@@ -34,25 +34,31 @@ import org.eclipse.swt.SWT;
 
 public class DefaultColumnGroupHeaderLayerConfiguration implements IConfiguration {
 
+	public static final String GROUP_COLLAPSED_CONFIG_TYPE = "GROUP_COLLAPSED"; //$NON-NLS-1$
+	public static final String GROUP_EXPANDED_CONFIG_TYPE = "GROUP_EXPANDED"; //$NON-NLS-1$
+
 	private final ColumnGroupModel columnGroupModel;
 
 	public DefaultColumnGroupHeaderLayerConfiguration(final ColumnGroupModel columnGroupModel) {
 		this.columnGroupModel = columnGroupModel;
 	}
 
+	@Override
 	public void configureLayer(ILayer layer) {
 		// No op
 	}
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_PAINTER,
-				new BeveledBorderDecorator(new ColumnGroupHeaderTextPainter(columnGroupModel)),
+				new BeveledBorderDecorator(new ColumnGroupHeaderTextPainter()),
 				DisplayMode.NORMAL,
 				GridRegion.COLUMN_GROUP_HEADER
 		);
 	}
 
+	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
 		// Column Group Header is a part of the Group Header.
 		// Register the 'column group header matcher' first so that it gets

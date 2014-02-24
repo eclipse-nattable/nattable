@@ -29,25 +29,43 @@ import org.eclipse.swt.SWT;
 
 public class DefaultRowGroupHeaderLayerConfiguration<T> implements IConfiguration {
 
+	public static final String GROUP_COLLAPSED_CONFIG_TYPE = "GROUP_COLLAPSED"; //$NON-NLS-1$
+	public static final String GROUP_EXPANDED_CONFIG_TYPE = "GROUP_EXPANDED"; //$NON-NLS-1$
+
+	@SuppressWarnings("unused")
 	private final IRowGroupModel<T> rowGroupModel;
 	
+	public DefaultRowGroupHeaderLayerConfiguration() {
+		this.rowGroupModel = null;
+	}
+	
+	/**
+	 * 
+	 * @param rowGroupModel The IRowGroupModel that is used by the RowGroupHeaderLayer.
+	 * 
+	 * @deprecated use constructor without IRowGroupModel as it is not needed anymore
+	 */
+	@Deprecated
 	public DefaultRowGroupHeaderLayerConfiguration(final IRowGroupModel<T> rowGroupModel) {
 		this.rowGroupModel = rowGroupModel;
 	}
 	
+	@Override
 	public void configureLayer(ILayer layer) {
 		// No op
 	}
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_PAINTER,
-				new BeveledBorderDecorator(new RowGroupHeaderTextPainter<T>(rowGroupModel)),
+				new BeveledBorderDecorator(new RowGroupHeaderTextPainter<T>()),
 				DisplayMode.NORMAL,
 				GridRegion.ROW_GROUP_HEADER
 		);
 	}
 
+	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
 		
 		final IMouseAction action = new SelectRowGroupsAction();

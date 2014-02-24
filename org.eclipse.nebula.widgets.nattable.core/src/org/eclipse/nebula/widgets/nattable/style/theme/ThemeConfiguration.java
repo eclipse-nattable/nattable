@@ -1117,8 +1117,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * When adding the ColumnGroupHeaderLayer to a layer stack, there will be a new region with
 	 * region label {@link GridRegion#COLUMN_GROUP_HEADER}. Typically it will share the same
 	 * styling as the column header and have an internally configured {@link ICellPainter}
-	 * because of necessary references to the ColumnGroupModel. Usually changing the {@link ICellPainter}
-	 * is not intended. 
+	 * to render dependent on the state of the ColumnGroupModel. 
 	 * </p>
 	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
 	 * 			to which the style configuration should be applied to.
@@ -1165,11 +1164,9 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * in the region with the region label {@link GridRegion#COLUMN_GROUP_HEADER}.
 	 * </p>
 	 * <p>
-	 * Typically this method should return <code>null</code> which means the default configuration of the
-	 * ColumnGroupHeaderLayer is used. By default the ColumnGroupHeaderTextPainter is registered which
-	 * needs to know the ColumnGroupModel to know the expand/collapse state for rendering the corresponding
-	 * icon. If you create a custom theme that needs to replace that {@link ICellPainter} too, you need to
-	 * be aware of that fact.
+	 * If this method returns <code>null</code> the default configuration of the ColumnGroupHeaderLayer is used. 
+	 * By default the ColumnGroupHeaderTextPainter is registered to render icons corresponding to the expand/collapse
+	 * state of the column group.
 	 * </p>
 	 * @return The {@link ICellPainter} that should be used to render the column group header in a NatTable. 
 	 */
@@ -1181,8 +1178,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * When adding the RowGroupHeaderLayer to a layer stack, there will be a new region with
 	 * region label {@link GridRegion#ROW_GROUP_HEADER}. Typically it will share the same
 	 * styling as the row header and have an internally configured {@link ICellPainter}
-	 * because of necessary references to the RowGroupModel. Usually changing the {@link ICellPainter}
-	 * is not intended. 
+	 * to render dependent on the state of the RowGroupModel. 
 	 * </p>
 	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
 	 * 			to which the style configuration should be applied to.
@@ -1229,11 +1225,9 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * in the region with the region label {@link GridRegion#ROW_GROUP_HEADER}.
 	 * </p>
 	 * <p>
-	 * Typically this method should return <code>null</code> which means the default configuration of the
-	 * RowGroupHeaderLayer is used. By default the RowGroupHeaderTextPainter is registered which
-	 * needs to know the RowGroupModel to know the expand/collapse state for rendering the corresponding
-	 * icon. If you create a custom theme that needs to replace that {@link ICellPainter} too, you need to
-	 * be aware of that fact.
+	 * If this method returns <code>null</code> the default configuration of the RowGroupHeaderLayer is used. 
+	 * By default the RowGroupHeaderTextPainter is registered to render icons corresponding to the expand/collapse
+	 * state of the row group.
 	 * </p>
 	 * @return The {@link ICellPainter} that should be used to render the row group header in a NatTable. 
 	 */

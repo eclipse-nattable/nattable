@@ -337,7 +337,19 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		int columnIndex = getColumnIndexByPosition(columnPosition);
 		if (rowPosition == 0 && model.isPartOfAGroup(columnIndex)) {
-			return new LabelStack(GridRegion.COLUMN_GROUP_HEADER);
+			LabelStack stack = new LabelStack(GridRegion.COLUMN_GROUP_HEADER);
+			
+			if (model.isPartOfACollapseableGroup(columnIndex)) {
+				ColumnGroup group = model.getColumnGroupByIndex(columnIndex);
+				if (group.isCollapsed()) {
+					stack.addLabelOnTop(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
+				}
+				else {
+					stack.addLabelOnTop(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
+				}
+			}
+			
+			return stack;
 		} else {
 			return columnHeaderLayer.getConfigLabelsByPosition(columnPosition, rowPosition);
 		}
