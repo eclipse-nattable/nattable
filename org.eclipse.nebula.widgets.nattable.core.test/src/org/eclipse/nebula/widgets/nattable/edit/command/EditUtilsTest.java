@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
@@ -32,6 +33,7 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class EditUtilsTest {
 
 	private static final String TEST_LABEL = "testLabel";
@@ -45,6 +47,10 @@ public class EditUtilsTest {
 		gridLayerStack = new DummyGridLayerStack(5, 5);
 		selectionLayer = gridLayerStack.getBodyLayer().getSelectionLayer();
 		natTable = new NatTableFixture(gridLayerStack);
+
+		// Ensure no active editor (static) is present
+		// Although deprecated this needs to still work for backwards compatibility
+		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 	}
 
 	@Test

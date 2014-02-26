@@ -65,9 +65,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class EditIntegrationTest {
 
 	private static final String TEST_LABEL = "testLabel";
@@ -83,14 +85,29 @@ public class EditIntegrationTest {
 	public void setup() {
 		gridLayerStack = new DummyGridLayerStack(5, 5);
 		natTable = new NatTableFixture(gridLayerStack);
+
+		// Ensure no active editor (static) is present
+		// Although deprecated this needs to still work for backwards compatibility
+		assertNull(natTable.getActiveCellEditor());
+		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 	}
 
+	@After
+	public void tearDown() {
+		//ensure the editor is closed
+		natTable.commitAndCloseActiveCellEditor();
+		//as the test processing is too fast, we also need to unregister because the registry
+		//is only cleaned on disposal of the editor control, which might not happen in the tests
+		ActiveCellEditorRegistry.unregisterActiveCellEditor();
+	}
+	
 	@Test
 	public void testNotEditableByDefault() {
 		ILayerCell cell = natTable.getCellByPosition(4, 4);
 		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
 
 		assertNull(natTable.getActiveCellEditor());
+		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 	}
 
 	@Test
@@ -124,11 +141,14 @@ public class EditIntegrationTest {
 		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), 
 				natTable.getCellByPosition(4, COLUMN_HEADER_ROW_COUNT + 2)));
 		assertNotNull(natTable.getActiveCellEditor());
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
 
 		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), 
 				natTable.getCellByPosition(4, COLUMN_HEADER_ROW_COUNT + 3)));
 		assertNotNull(natTable.getActiveCellEditor());
 		assertFalse(natTable.getActiveCellEditor().isClosed());
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+		assertFalse(ActiveCellEditorRegistry.getActiveCellEditor().isClosed());
 	}
 
 	@Test
@@ -148,6 +168,7 @@ public class EditIntegrationTest {
 				SWT.FocusOut, null);
 		//ActiveCellEditor should be closed if a ColumnResizeCommand is executed and the editor loses focus
 		assertNull(natTable.getActiveCellEditor());
+		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 	}
 
 	@Test
@@ -205,6 +226,7 @@ public class EditIntegrationTest {
 
 		// Verify that no cell is being edited
 		assertNull(natTable.getActiveCellEditor());
+		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 	}
 	@Test
 	public void testNavigationUsingTabButtonWhenAnInvalidValueIsEntered() throws InterruptedException {
@@ -234,6 +256,8 @@ public class EditIntegrationTest {
 		textControl.notifyListeners(SWT.Traverse, SWTUtils.keyEvent(SWT.TAB));
 		assertEquals(textControl, natTable.getActiveCellEditor().getEditorControl());
 		assertEquals("AA", natTable.getActiveCellEditor().getCanonicalValue());
+		assertEquals(textControl, ActiveCellEditorRegistry.getActiveCellEditor().getEditorControl());
+		assertEquals("AA", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
 	}
 
 	@Test
@@ -246,6 +270,8 @@ public class EditIntegrationTest {
 		// Verify edit mode
 		assertNotNull(natTable.getActiveCellEditor());
 		assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+		assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
 	}
 
 	@Test
@@ -270,11 +296,15 @@ public class EditIntegrationTest {
 		// Value not committed
 		assertNotNull(natTable.getActiveCellEditor().getEditorControl());
 		assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor().getEditorControl());
+		assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
 
 		// Enter a valid value - 'C'
 		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('C'));
 		assertNotNull(natTable.getActiveCellEditor().getEditorControl());
 		assertEquals("C", natTable.getActiveCellEditor().getCanonicalValue());
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor().getEditorControl());
+		assertEquals("C", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
 
 		// Press 'Enter' again
 		natTable.getActiveCellEditor().getEditorControl().notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
@@ -282,6 +312,7 @@ public class EditIntegrationTest {
 		// Value committed and editor closed
 		assertEquals("C", natTable.getCellByPosition(1, 1).getDataValue());
 		assertNull(natTable.getActiveCellEditor());
+		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 	}
 
 	@Test
@@ -330,12 +361,15 @@ public class EditIntegrationTest {
 		// Verify edit mode
 		assertNotNull(natTable.getActiveCellEditor());
 		assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+		assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
 
 		// Press ESC
 		SWTUtils.pressKeyOnControl(SWT.ESC, natTable.getActiveCellEditor().getEditorControl());
 
 		// Verify state
 		assertNull(natTable.getActiveCellEditor());
+		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 		assertEquals("Col: 1, Row: 1", natTable.getDataValueByPosition(1, 1));
 	}
 
@@ -377,6 +411,8 @@ public class EditIntegrationTest {
 		assertNotNull(combo);
 		assertTrue(natTable.getActiveCellEditor().getCanonicalValue() instanceof PricingTypeBean);
 		assertEquals("MN", natTable.getActiveCellEditor().getCanonicalValue().toString());
+		assertTrue(ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue() instanceof PricingTypeBean);
+		assertEquals("MN", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue().toString());
 
 		// Click - expand select value 'Automatic'
 		combo.select(1);
@@ -385,6 +421,7 @@ public class EditIntegrationTest {
 		assertTrue(natTable.getDataValueByPosition(columnPosition, rowPosition) instanceof PricingTypeBean);
 		assertEquals("AT", natTable.getDataValueByPosition(columnPosition, rowPosition).toString());
 		assertNull(natTable.getActiveCellEditor());
+		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
 	}
 
 	@Test
@@ -419,6 +456,8 @@ public class EditIntegrationTest {
 		// Verify edit mode
 		assertNotNull(natTable.getActiveCellEditor());
 		assertEquals("Col: 1, Row: 1", natTable.getActiveCellEditor().getCanonicalValue());
+		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+		assertEquals("Col: 1, Row: 1", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
 
 		//verify that inline editing is used and not dialog
 		assertTrue("No InlineCellEditEvent fired", inlineFired[0]);

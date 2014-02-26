@@ -32,7 +32,6 @@ import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.CellEditorCreatedEvent;
-import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
@@ -81,6 +80,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 
+//this warning suppression is because of the ActiveCellEditorRegistry usage to ensure backwards compatibility
+@SuppressWarnings("deprecation")
 public class NatTable extends Canvas implements ILayer, PaintListener, IClientAreaProvider, ILayerListener, IPersistable {
 
 	public static final int DEFAULT_STYLE_OPTIONS = SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED  | SWT.V_SCROLL | SWT.H_SCROLL;
@@ -556,6 +557,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 				});
 			} else {
 				activeCellEditor = null;
+				ActiveCellEditorRegistry.unregisterActiveCellEditor();
 			}
 			ActiveCellEditorRegistry.registerActiveCellEditor(activeCellEditor);
 		}
