@@ -59,10 +59,13 @@ public class DefaultRowGroupHeaderLayerConfiguration<T> implements IConfiguratio
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_PAINTER,
-				new BeveledBorderDecorator(new RowGroupHeaderTextPainter<T>()),
+				new BeveledBorderDecorator(new RowGroupHeaderTextPainter()),
 				DisplayMode.NORMAL,
 				GridRegion.ROW_GROUP_HEADER
 		);
+		//We are not setting a special configuration for rendering grid lines,
+		//as this would override the column header configuration. This is
+		//because the the column group header is part of the column header region.
 	}
 
 	@Override

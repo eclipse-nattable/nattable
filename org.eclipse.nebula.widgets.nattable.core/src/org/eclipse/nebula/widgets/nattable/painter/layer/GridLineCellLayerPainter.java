@@ -24,6 +24,8 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	
 	private final Color gridColor;
 	
+	private boolean renderGridLines = true;
+	
 	/**
 	 * Create a GridLineCellLayerPainter that renders grid lines in the specified color 
 	 * and uses the default clipping behaviour.
@@ -84,15 +86,25 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	
 	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+		//check if there is a configuration telling to not rendering grid lines
+		Boolean renderConfig = configRegistry.getConfigAttribute(
+				CellConfigAttributes.RENDER_GRID_LINES, 
+				DisplayMode.NORMAL, 
+				natLayer.getRegionLabelsByXY(xOffset, yOffset).getLabels());
+		
+		this.renderGridLines = (renderConfig != null) ? renderConfig : true; 
+		
 		//Draw GridLines
-		drawGridLines(natLayer, gc, rectangle, configRegistry);
+		if (this.renderGridLines) 
+			drawGridLines(natLayer, gc, rectangle, configRegistry);
 
 		super.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 	}
 	
 	@Override
 	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle bounds) {
-		return new Rectangle(bounds.x, bounds.y, Math.max(bounds.width - 1, 0), Math.max(bounds.height - 1, 0));
+		int adjustment = this.renderGridLines ? 1 : 0;
+		return new Rectangle(bounds.x, bounds.y, Math.max(bounds.width - adjustment, 0), Math.max(bounds.height - adjustment, 0));
 	}
 	
 	protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {

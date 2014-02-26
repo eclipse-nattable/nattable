@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.group;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -22,8 +23,6 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
-import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
@@ -40,8 +39,6 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 	private final SizeConfig rowHeightConfig = new SizeConfig(DataLayer.DEFAULT_ROW_HEIGHT);
 	private final ColumnGroupModel model;
 	private final ColumnGroupHeaderLayer columnGroupHeaderLayer;
-	
-	private final ILayerPainter layerPainter = new CellLayerPainter();
 
 	public ColumnGroupGroupHeaderLayer(ColumnGroupHeaderLayer columnGroupHeaderLayer, SelectionLayer selectionLayer, ColumnGroupModel columnGroupModel) {
 		this(columnGroupHeaderLayer, selectionLayer, columnGroupModel, true);
@@ -55,13 +52,6 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 		if (useDefaultConfiguration) {
 			addConfiguration(new DefaultColumnGroupHeaderLayerConfiguration(columnGroupModel));
 		}
-	}
-
-	// Configuration
-
-	@Override
-	public ILayerPainter getLayerPainter() {
-		return layerPainter;
 	}
 
 	// Vertical features

@@ -36,6 +36,13 @@ public interface CellConfigAttributes {
 	
 	/**
 	 * Attribute for configuring the Color that should be used to render the grid lines.
+	 * Will be interpreted by the GridLineCellLayerPainter.
 	 */
 	ConfigAttribute<Color> GRID_LINE_COLOR = new ConfigAttribute<Color>();
+	
+	/**
+	 * Attribute for configuring whether grid lines should be rendered or not.
+	 * Will be interpreted by the GridLineCellLayerPainter.
+	 */
+	ConfigAttribute<Boolean> RENDER_GRID_LINES = new ConfigAttribute<Boolean>();
 }

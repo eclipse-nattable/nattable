@@ -28,8 +28,6 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.TransformedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
-import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
-import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
@@ -46,7 +44,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	private final SizeConfig rowHeightConfig = new SizeConfig(DataLayer.DEFAULT_ROW_HEIGHT);
 	private final ColumnGroupModel model;
 	private final ILayer columnHeaderLayer;
-	private ILayerPainter layerPainter = new CellLayerPainter();
 	
 	/**
 	 * Flag which is used to tell the ColumnGroupHeaderLayer whether to calculate the height of the layer
@@ -101,18 +98,6 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		super.loadState(prefix, properties);
 		model.loadState(prefix, properties);
 		fireLayerEvent(new ColumnStructuralRefreshEvent(this));
-	}
-
-	// Configuration
-
-	@Override
-	public ILayerPainter getLayerPainter() {
-		return layerPainter;
-	}
-	
-	@Override
-	public void setLayerPainter(ILayerPainter layerPainter) {
-		this.layerPainter = layerPainter;
 	}
 
 	// Vertical features

@@ -10,20 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.config;
 
-import static org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes.CELL_PAINTER;
-import static org.eclipse.nebula.widgets.nattable.config.IEditableRule.ALWAYS_EDITABLE;
-import static org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes.CELL_EDITABLE_RULE;
-import static org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode.CONTAINS;
-import static org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes.FILTER_COMPARATOR;
-import static org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER;
-import static org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes.TEXT_MATCHING_MODE;
-import static org.eclipse.nebula.widgets.nattable.grid.GridRegion.FILTER_ROW;
-import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.NORMAL;
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.action.MouseEditAction;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
@@ -31,6 +24,8 @@ import org.eclipse.nebula.widgets.nattable.filterrow.action.ClearFilterAction;
 import org.eclipse.nebula.widgets.nattable.filterrow.action.ToggleFilterRowAction;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.ClearFilterIconMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterRowMouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.swt.SWT;
@@ -38,25 +33,41 @@ import org.eclipse.swt.SWT;
 public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration {
 
 	public FilterRowPainter cellPainter = new FilterRowPainter();
-	public TextMatchingMode textMatchingMode = CONTAINS;
+	public TextMatchingMode textMatchingMode = TextMatchingMode.CONTAINS;
 	public int showHideKeyConstant = SWT.F3;
 
 	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		// Plug in custom painter
-		configRegistry.registerConfigAttribute(CELL_PAINTER, cellPainter, NORMAL, FILTER_ROW);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_PAINTER, 
+				cellPainter, 
+				DisplayMode.NORMAL, 
+				GridRegion.FILTER_ROW);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.RENDER_GRID_LINES, 
+				Boolean.TRUE, 
+				DisplayMode.NORMAL, 
+				GridRegion.FILTER_ROW);
 
 		// Make cells editable
-		configRegistry.registerConfigAttribute(CELL_EDITABLE_RULE, ALWAYS_EDITABLE, NORMAL, FILTER_ROW);
+		configRegistry.registerConfigAttribute(
+				EditConfigAttributes.CELL_EDITABLE_RULE, 
+				IEditableRule.ALWAYS_EDITABLE, 
+				DisplayMode.NORMAL, 
+				GridRegion.FILTER_ROW);
 
 		// Default text matching mode
-		configRegistry.registerConfigAttribute(TEXT_MATCHING_MODE, textMatchingMode);
+		configRegistry.registerConfigAttribute(
+				FilterRowConfigAttributes.TEXT_MATCHING_MODE, textMatchingMode);
 
 		// Default display converter. Used to convert the values typed into the text boxes into String objects.
-		configRegistry.registerConfigAttribute(FILTER_DISPLAY_CONVERTER, new DefaultDisplayConverter());
+		configRegistry.registerConfigAttribute(
+				FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER, new DefaultDisplayConverter());
 
 		// Default comparator. Used to compare objects in the column during threshold matching.
-		configRegistry.registerConfigAttribute(FILTER_COMPARATOR, DefaultComparator.getInstance());
+		configRegistry.registerConfigAttribute(
+				FilterRowConfigAttributes.FILTER_COMPARATOR, DefaultComparator.getInstance());
 	}
 
 	@Override

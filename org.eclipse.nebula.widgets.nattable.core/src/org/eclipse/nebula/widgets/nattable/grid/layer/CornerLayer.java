@@ -14,7 +14,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 
 
@@ -35,7 +34,7 @@ public class CornerLayer extends DimensionallyDependentLayer {
 	 *            The layer to link the vertical dimension to, typically the column header layer
 	 */
 	public CornerLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, ILayer verticalLayerDependency) {
-		this(baseLayer, horizontalLayerDependency, verticalLayerDependency, true, new CellLayerPainter());
+		super(baseLayer, horizontalLayerDependency, verticalLayerDependency);
 	}
 
 	/**

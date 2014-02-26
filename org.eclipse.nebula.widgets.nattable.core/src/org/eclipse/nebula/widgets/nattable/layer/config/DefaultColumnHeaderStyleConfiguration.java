@@ -47,11 +47,36 @@ public class DefaultColumnHeaderStyleConfiguration extends AbstractRegistryConfi
 
 	public ICellPainter cellPainter = new BeveledBorderDecorator(new TextPainter());
 
+	public Boolean renderGridLines = Boolean.FALSE;
+	
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, cellPainter, DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, cellPainter, DisplayMode.NORMAL, GridRegion.CORNER);
+		//configure the painter
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_PAINTER, 
+				cellPainter, 
+				DisplayMode.NORMAL, 
+				GridRegion.COLUMN_HEADER);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_PAINTER, 
+				cellPainter, 
+				DisplayMode.NORMAL, 
+				GridRegion.CORNER);
 
-		// Normal
+		//configure whether to render grid lines or not
+		//e.g. for the BeveledBorderDecorator the rendering of the grid lines should be disabled
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.RENDER_GRID_LINES, 
+				renderGridLines, 
+				DisplayMode.NORMAL, 
+				GridRegion.COLUMN_HEADER);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.RENDER_GRID_LINES, 
+				renderGridLines, 
+				DisplayMode.NORMAL, 
+				GridRegion.CORNER);
+		
+		//configure the normal style
 		Style cellStyle = new Style();
 		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
@@ -62,7 +87,15 @@ public class DefaultColumnHeaderStyleConfiguration extends AbstractRegistryConfi
 		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, borderStyle);
 		cellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
 
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, GridRegion.CORNER);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.NORMAL, 
+				GridRegion.COLUMN_HEADER);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				cellStyle, 
+				DisplayMode.NORMAL, 
+				GridRegion.CORNER);
 	}
 }

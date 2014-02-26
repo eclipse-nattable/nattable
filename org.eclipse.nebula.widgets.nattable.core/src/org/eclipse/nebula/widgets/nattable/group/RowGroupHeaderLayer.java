@@ -27,8 +27,6 @@ import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
-import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
-import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectRowGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -48,7 +46,6 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	private final IRowGroupModel<T> model;
 	private final SelectionLayer selectionLayer;
 	private final ILayer rowHeaderLayer;
-	private final ILayerPainter layerPainter = new CellLayerPainter();
 		
 	public RowGroupHeaderLayer(ILayer rowHeaderLayer, SelectionLayer selectionLayer, IRowGroupModel<T> rowGroupModel) {
 		this(rowHeaderLayer, selectionLayer, rowGroupModel, true);
@@ -91,11 +88,6 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	@Override
 	protected void registerCommandHandlers() {
 		registerCommandHandler(new SelectRowGroupCommandHandler<T>(this.model, this.selectionLayer, this));
-	}
-	
-	@Override
-	public ILayerPainter getLayerPainter() {
-		return layerPainter;
 	}
 	
 	// Horizontal features

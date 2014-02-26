@@ -19,7 +19,6 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderLayerConfiguration;
-import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -49,7 +48,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 	}
 
 	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, SelectionLayer selectionLayer, boolean useDefaultConfiguration) {
-		this(baseLayer, horizontalLayerDependency, selectionLayer, useDefaultConfiguration, new CellLayerPainter());
+		this(baseLayer, horizontalLayerDependency, selectionLayer, useDefaultConfiguration, null);
 	}
 
 	/**

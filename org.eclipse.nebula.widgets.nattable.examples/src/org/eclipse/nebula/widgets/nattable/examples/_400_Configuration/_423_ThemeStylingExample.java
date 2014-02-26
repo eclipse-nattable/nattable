@@ -37,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.hover.config.ColumnHeaderHoverLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.hover.config.RowHeaderHoverLayerConfiguration;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
@@ -48,7 +47,6 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.GradientBackgroundPainte
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
-import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
@@ -200,11 +198,6 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 				
 				//reset to default state
 				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
-
-				//setting the layer painter of the corner and the column header will result 
-				//in rendering grid lines
-				cornerLayer.setLayerPainter(null);
-				columnHeaderLayer.setLayerPainter(null);
 			}
 		});
 		
@@ -241,11 +234,6 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 				
 				//reset to default state
 				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
-
-				//setting the layer painter of the corner and the column header will result 
-				//in rendering grid lines
-				cornerLayer.setLayerPainter(null);
-				columnHeaderLayer.setLayerPainter(null);
 			}
 		});
 		
@@ -253,16 +241,10 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 	}
 
 	/**
-	 * Resets row heights, column widths and ILayerPainter of the column header and corner
-	 * to default settings.
+	 * Resets row heights and column widths to default settings.
 	 */
 	private void cleanupNonThemeSettings(GridLayer gridLayer, 
 			DataLayer bodyDataLayer, DataLayer columnHeaderDataLayer) {
-		//The default NatTable configuration uses BeveledBorderPainters for the column header
-		//In such cases it is not necessary to render the grid lines.
-		//This is achieved by setting the CellLayerPainter which does not render grid lines
-		((AbstractLayer)gridLayer.getCornerLayer()).setLayerPainter(new CellLayerPainter());
-		((AbstractLayer)gridLayer.getColumnHeaderLayer()).setLayerPainter(new CellLayerPainter());
 		
 		columnHeaderDataLayer.setRowHeightByPosition(0, 20);
 		
@@ -300,6 +282,9 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 			this.cHeaderHoverCellPainter = new GradientBackgroundPainter(
 					new PaddingDecorator(new TextPainter(false, false), 0, 0, 0, 5, false), true);
 
+			this.renderCornerGridLines = true;
+			this.renderColumnHeaderGridLines = true;
+			
 			//column header selection
 			this.cHeaderSelectionFont = GUIHelper.DEFAULT_FONT;
 
@@ -353,13 +338,16 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 
 			TextPainter txtPainter = new TextPainter(false, false);
 
-			ICellPainter bgImagePainter = new BackgroundImagePainter(txtPainter, bgImage, GUIHelper.getColor(192, 192, 192));
+			ICellPainter bgImagePainter = new BackgroundImagePainter(txtPainter, bgImage);
 			
 			this.cHeaderCellPainter = bgImagePainter;
 			this.cornerCellPainter = bgImagePainter;
 			
-			this.cHeaderSelectionCellPainter = new BackgroundImagePainter(txtPainter, selectedBgImage, GUIHelper.getColor(192, 192, 192));
-			this.cHeaderHoverCellPainter = new BackgroundImagePainter(txtPainter, hoverBgImage, GUIHelper.getColor(192, 192, 192));
+			this.cHeaderSelectionCellPainter = new BackgroundImagePainter(txtPainter, selectedBgImage);
+			this.cHeaderHoverCellPainter = new BackgroundImagePainter(txtPainter, hoverBgImage);
+
+			this.renderCornerGridLines = true;
+			this.renderColumnHeaderGridLines = true;
 		}
 	}
 	
@@ -412,6 +400,9 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 			this.defaultCellPainter = new BackgroundPainter(new PaddingDecorator(new TextPainter(false, true, true), 0, 0, 0, 5));
 			this.cHeaderCellPainter = new BackgroundPainter(new PaddingDecorator(new TextPainter(false, true, true), 0, 0, 0, 5));
 			this.rHeaderCellPainter = new TextPainter(false, true, true);
+
+			this.renderCornerGridLines = true;
+			this.renderColumnHeaderGridLines = true;
 		}
 	}
 }

@@ -57,6 +57,9 @@ public class DefaultColumnGroupHeaderLayerConfiguration implements IConfiguratio
 				DisplayMode.NORMAL,
 				GridRegion.COLUMN_GROUP_HEADER
 		);
+		//We are not setting a special configuration for rendering grid lines,
+		//as this would override the column header configuration. This is
+		//because the the column group header is part of the column header region.
 	}
 
 	@Override

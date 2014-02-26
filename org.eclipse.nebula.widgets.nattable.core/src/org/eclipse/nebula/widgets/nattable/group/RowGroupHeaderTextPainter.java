@@ -24,7 +24,7 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 
-public class RowGroupHeaderTextPainter<T> extends CellPainterWrapper {
+public class RowGroupHeaderTextPainter extends CellPainterWrapper {
 
 	/**
 	 * Creates the default {@link RowGroupHeaderTextPainter} that uses a {@link TextPainter}
@@ -34,8 +34,9 @@ public class RowGroupHeaderTextPainter<T> extends CellPainterWrapper {
 	 * 
 	 * @deprecated Use constructor without IRowGroupModel reference
 	 */
+	@SuppressWarnings("rawtypes")
 	@Deprecated
-	public RowGroupHeaderTextPainter(IRowGroupModel<T> rowGroupModel) {
+	public RowGroupHeaderTextPainter(IRowGroupModel rowGroupModel) {
 		this(rowGroupModel, new TextPainter());
 	}
 
@@ -48,8 +49,9 @@ public class RowGroupHeaderTextPainter<T> extends CellPainterWrapper {
 	 * 
 	 * @deprecated Use constructor without IRowGroupModel reference
 	 */
+	@SuppressWarnings("rawtypes")
 	@Deprecated
-	public RowGroupHeaderTextPainter(IRowGroupModel<T> rowGroupModel, ICellPainter interiorPainter) {
+	public RowGroupHeaderTextPainter(IRowGroupModel rowGroupModel, ICellPainter interiorPainter) {
 		this(interiorPainter, CellEdgeEnum.BOTTOM);
 	}
 

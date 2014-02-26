@@ -11,6 +11,8 @@
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
+import org.eclipse.nebula.widgets.nattable.group.RowGroupHeaderTextPainter;
+import org.eclipse.nebula.widgets.nattable.group.painter.ColumnGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
@@ -370,7 +372,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	public Character cGroupHeaderPWEchoChar 							= null;
 	public TextDecorationEnum cGroupHeaderTextDecoration 				= null;
 
-	public ICellPainter cGroupHeaderCellPainter 						= null;
+	public ICellPainter cGroupHeaderCellPainter 						= new BeveledBorderDecorator(new ColumnGroupHeaderTextPainter());
 	
 	public Color rGroupHeaderBgColor 									= null;
 	public Color rGroupHeaderFgColor 									= null;
@@ -384,7 +386,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	public Character rGroupHeaderPWEchoChar 							= null;
 	public TextDecorationEnum rGroupHeaderTextDecoration 				= null;
 
-	public ICellPainter rGroupHeaderCellPainter 						= null;
+	public ICellPainter rGroupHeaderCellPainter 						= new BeveledBorderDecorator(new RowGroupHeaderTextPainter());
 	
 	// sort header style
 	
@@ -469,6 +471,13 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	
 	// grid color
 	public Color gridLineColor											= null;
+	
+	// grid line configuration
+	public Boolean renderColumnHeaderGridLines							= Boolean.FALSE;
+	public Boolean renderCornerGridLines								= Boolean.FALSE;
+	public Boolean renderRowHeaderGridLines								= Boolean.TRUE;
+	public Boolean renderBodyGridLines									= Boolean.TRUE;
+	public Boolean renderFilterRowGridLines								= Boolean.TRUE;
 	
 	@Override
 	protected IStyle getDefaultCellStyle() {
@@ -1039,6 +1048,31 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	@Override
 	protected Color getGridLineColor() {
 		return this.gridLineColor;
+	}
+
+	@Override
+	protected Boolean getRenderColumnHeaderGridLines() {
+		return this.renderColumnHeaderGridLines;
+	}
+
+	@Override
+	protected Boolean getRenderCornerGridLines() {
+		return this.renderCornerGridLines;
+	}
+
+	@Override
+	protected Boolean getRenderRowHeaderGridLines() {
+		return this.renderRowHeaderGridLines;
+	}
+
+	@Override
+	protected Boolean getRenderBodyGridLines() {
+		return this.renderBodyGridLines;
+	}
+
+	@Override
+	protected Boolean getRenderFilterRowGridLines() {
+		return this.renderFilterRowGridLines;
 	}
 
 }

@@ -79,7 +79,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		
 		configureFreezeStyle(configRegistry);
 		
-		configureGridLineColor(configRegistry);
+		configureGridLineStyle(configRegistry);
 		
 		configureSummaryRowStyle(configRegistry);
 		
@@ -1575,8 +1575,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		if (getFreezeSeparatorColor() != null) {
 			configRegistry.registerConfigAttribute(
 					IFreezeConfigAttributes.SEPARATOR_COLOR, 
-					getFreezeSeparatorColor(),
-					DisplayMode.NORMAL);
+					getFreezeSeparatorColor());
 		}
 	}
 
@@ -1588,16 +1587,53 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	protected abstract Color getFreezeSeparatorColor();
 
 	/**
-	 * This method is used to register the grid line color. 
+	 * This method is used to register the grid line styling, which consists of grid line
+	 * color and the configuration if grid lines should be rendered or not. These configurations
+	 * will be interpreted by the GridLineCellLayerPainter. 
 	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
 	 * 			to which the style configuration should be applied to.
 	 */
-	protected void configureGridLineColor(IConfigRegistry configRegistry) {
+	protected void configureGridLineStyle(IConfigRegistry configRegistry) {
 		if (getGridLineColor() != null) {
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.GRID_LINE_COLOR, 
-					getGridLineColor(),
-					DisplayMode.NORMAL);
+					getGridLineColor());
+		}
+		
+		if (getRenderColumnHeaderGridLines() != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					getRenderColumnHeaderGridLines(),
+					DisplayMode.NORMAL,
+					GridRegion.COLUMN_HEADER);
+		}
+		if (getRenderCornerGridLines() != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					getRenderCornerGridLines(),
+					DisplayMode.NORMAL,
+					GridRegion.CORNER);
+		}
+		if (getRenderRowHeaderGridLines() != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					getRenderRowHeaderGridLines(),
+					DisplayMode.NORMAL,
+					GridRegion.ROW_HEADER);
+		}
+		if (getRenderBodyGridLines() != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					getRenderBodyGridLines(),
+					DisplayMode.NORMAL,
+					GridRegion.BODY);
+		}
+		if (getRenderFilterRowGridLines() != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					getRenderFilterRowGridLines(),
+					DisplayMode.NORMAL,
+					GridRegion.FILTER_ROW);
 		}
 	}
 
@@ -1608,6 +1644,61 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 */
 	protected abstract Color getGridLineColor();
 	
+	/**
+	 * Returns whether grid lines in the column header should be rendered or not.
+	 * <p>
+	 * That means this configuration is registered against {@link DisplayMode#NORMAL}
+	 * and the configuration label {@link GridRegion#COLUMN_HEADER}.
+	 * </p>
+	 * @return <code>true</code> if grid lines in the column header region should be rendered, 
+	 * 			<code>false</code> if not.
+	 */
+	protected abstract Boolean getRenderColumnHeaderGridLines();
+	
+	/**
+	 * Returns whether grid lines in the corner region should be rendered or not.
+	 * <p>
+	 * That means this configuration is registered against {@link DisplayMode#NORMAL}
+	 * and the configuration label {@link GridRegion#CORNER}.
+	 * </p>
+	 * @return <code>true</code> if grid lines in the corner region should be rendered, 
+	 * 			<code>false</code> if not.
+	 */
+	protected abstract Boolean getRenderCornerGridLines();
+	
+	/**
+	 * Returns whether grid lines in the row header should be rendered or not.
+	 * <p>
+	 * That means this configuration is registered against {@link DisplayMode#NORMAL}
+	 * and the configuration label {@link GridRegion#ROW_HEADER}.
+	 * </p>
+	 * @return <code>true</code> if grid lines in the row header region should be rendered, 
+	 * 			<code>false</code> if not.
+	 */
+	protected abstract Boolean getRenderRowHeaderGridLines();
+	
+	/**
+	 * Returns whether grid lines in the body should be rendered or not.
+	 * <p>
+	 * That means this configuration is registered against {@link DisplayMode#NORMAL}
+	 * and the configuration label {@link GridRegion#BODY}.
+	 * </p>
+	 * @return <code>true</code> if grid lines in the body region should be rendered, 
+	 * 			<code>false</code> if not.
+	 */
+	protected abstract Boolean getRenderBodyGridLines();
+	
+	/**
+	 * Returns whether grid lines in the filter row should be rendered or not.
+	 * <p>
+	 * That means this configuration is registered against {@link DisplayMode#NORMAL}
+	 * and the configuration label {@link GridRegion#FILTER_ROW}.
+	 * </p>
+	 * @return <code>true</code> if grid lines in the filter row should be rendered, 
+	 * 			<code>false</code> if not.
+	 */
+	protected abstract Boolean getRenderFilterRowGridLines();
+
 	/**
 	 * Null-safe check if a {@link IStyle} is empty or not.
 	 * @param style The {@link IStyle} to check.
@@ -1961,16 +2052,45 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		//unregister freeze separator color
 		if (getFreezeSeparatorColor() != null) {
 			configRegistry.unregisterConfigAttribute(
-					IFreezeConfigAttributes.SEPARATOR_COLOR, 
-					DisplayMode.NORMAL);
+					IFreezeConfigAttributes.SEPARATOR_COLOR);
 		}
 
-		//unregister grid line color
+		//unregister grid line configuration
 		if (getGridLineColor() != null) {
 			configRegistry.unregisterConfigAttribute(
-					CellConfigAttributes.GRID_LINE_COLOR, 
-					DisplayMode.NORMAL);
+					CellConfigAttributes.GRID_LINE_COLOR);
 		}
-
+		
+		//unregister grid line rendering
+		if (getRenderColumnHeaderGridLines() != null) {
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					DisplayMode.NORMAL,
+					GridRegion.COLUMN_HEADER);
+		}
+		if (getRenderCornerGridLines() != null) {
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					DisplayMode.NORMAL,
+					GridRegion.CORNER);
+		}
+		if (getRenderRowHeaderGridLines() != null) {
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					DisplayMode.NORMAL,
+					GridRegion.ROW_HEADER);
+		}
+		if (getRenderBodyGridLines() != null) {
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					DisplayMode.NORMAL,
+					GridRegion.BODY);
+		}
+		if (getRenderFilterRowGridLines() != null) {
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					DisplayMode.NORMAL,
+					GridRegion.FILTER_ROW);
+		}
 	}
 }
