@@ -62,6 +62,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBar
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetListener;
@@ -909,7 +910,28 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 	public void addDragSupport(final int operations, final Transfer[] transferTypes, final DragSourceListener listener) {
 		final DragSource dragSource = new DragSource(this, operations);
 		dragSource.setTransfer(transferTypes);
-		dragSource.addDragListener(listener);
+		
+		DragSourceListener wrapper = new DragSourceListener() {
+			
+			@Override
+			public void dragStart(DragSourceEvent event) {
+				//ensure to stop any current active internal drag mode
+				modeSupport.switchMode(Mode.NORMAL_MODE);
+				listener.dragStart(event);
+			}
+			
+			@Override
+			public void dragSetData(DragSourceEvent event) {
+				listener.dragSetData(event);
+			}
+			
+			@Override
+			public void dragFinished(DragSourceEvent event) {
+				listener.dragFinished(event);
+			}
+		};
+		
+		dragSource.addDragListener(wrapper);
 	}
 
 	/**
