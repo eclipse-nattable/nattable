@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.painter.layer;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
@@ -86,11 +87,15 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	
 	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-		//check if there is a configuration telling to not rendering grid lines
-		Boolean renderConfig = configRegistry.getConfigAttribute(
-				CellConfigAttributes.RENDER_GRID_LINES, 
-				DisplayMode.NORMAL, 
-				natLayer.getRegionLabelsByXY(xOffset, yOffset).getLabels());
+		Boolean renderConfig = null;
+		LabelStack stack = natLayer.getRegionLabelsByXY(xOffset, yOffset);
+		if (stack != null) {
+			//check if there is a configuration telling to not rendering grid lines
+			renderConfig = configRegistry.getConfigAttribute(
+					CellConfigAttributes.RENDER_GRID_LINES, 
+					DisplayMode.NORMAL, 
+					stack.getLabels());
+		}
 		
 		this.renderGridLines = (renderConfig != null) ? renderConfig : true; 
 		
