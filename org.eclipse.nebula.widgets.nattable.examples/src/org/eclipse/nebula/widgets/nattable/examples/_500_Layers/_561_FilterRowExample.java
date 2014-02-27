@@ -38,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEven
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -226,6 +227,12 @@ public class _561_FilterRowExample extends AbstractNatExample {
 		@Override
 		public void configureRegistry(IConfigRegistry configRegistry) {
 
+			//register the FilterRowTextCellEditor in the first column which immediately commits on key press
+			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
+					new FilterRowTextCellEditor(), 
+					DisplayMode.NORMAL, 
+					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
+			
 			//register a combo box cell editor for the gender column in the filter row
 			//the label is set automatically to the value of 
 			//FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column position
