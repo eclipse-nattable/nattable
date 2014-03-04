@@ -1,10 +1,14 @@
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
@@ -50,6 +54,11 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 */
 	protected boolean styleCornerLikeColumnHeader = false;
 	
+	/**
+	 * Collection of {@link IThemeExtension} that should be added to this ThemeConfiguration. 
+	 */
+	protected final List<IThemeExtension> extensions = new ArrayList<IThemeExtension>();
+	
 	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configureDefaultStyle(configRegistry);
@@ -83,7 +92,11 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		
 		configureSummaryRowStyle(configRegistry);
 		
-		//TODO add configuration for conversion/validation error styling
+		configureEditErrorStyle(configRegistry);
+		
+		for (IThemeExtension extension : this.extensions) {
+			extension.registerStyles(configRegistry);
+		}
 	}
 
 	/**
@@ -1533,6 +1546,24 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 					DisplayMode.NORMAL, 
 					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 		}
+
+		style = getSummaryRowSelectionStyle();
+		if (!isStyleEmpty(style)) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE,
+					style,
+					DisplayMode.SELECT,
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		}
+		
+		cellPainter = getSummaryRowSelectionCellPainter();
+		if (cellPainter != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					cellPainter, 
+					DisplayMode.SELECT, 
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		}
 	}
 	
 	/**
@@ -1564,6 +1595,38 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * @return The {@link ICellPainter} that should be used to render the summary row in a NatTable. 
 	 */
 	protected abstract ICellPainter getSummaryRowCellPainter();
+	
+	/**
+	 * Returns the {@link IStyle} that should be used to render the selected summary row cells in a NatTable.
+	 * <p>
+	 * That means this {@link IStyle} is registered against {@link DisplayMode#SELECT}
+	 * and the configuration label {@link SummaryRowLayer#DEFAULT_SUMMARY_ROW_CONFIG_LABEL}.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link IStyle} that should be used to render the selected summary row cells in a NatTable. 
+	 */
+	protected abstract IStyle getSummaryRowSelectionStyle();
+
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render the selected summary row cells 
+	 * in a NatTable.
+	 * <p>
+	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#SELECT}
+	 * and the configuration label {@link SummaryRowLayer#DEFAULT_SUMMARY_ROW_CONFIG_LABEL}.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link ICellPainter} that should be used to render the selected summary row cells
+	 * 			in a NatTable. 
+	 */
+	protected abstract ICellPainter getSummaryRowSelectionCellPainter();
 
 	/**
 	 * This method is used to register the style attributes for freeze rendering. This mainly
@@ -1700,13 +1763,85 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	protected abstract Boolean getRenderFilterRowGridLines();
 
 	/**
+	 * This method is used to register the styles that should be applied to an editor
+	 * control in case of conversion/validation errors.
+	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
+	 * 			to which the style configuration should be applied to.
+	 */
+	protected void configureEditErrorStyle(IConfigRegistry configRegistry) {
+		if (!isStyleEmpty(getConversionErrorStyle())) {
+			configRegistry.registerConfigAttribute(
+					EditConfigAttributes.CONVERSION_ERROR_STYLE, 
+					getConversionErrorStyle(),
+					DisplayMode.EDIT);
+		}
+
+		if (!isStyleEmpty(getValidationErrorStyle())) {
+			configRegistry.registerConfigAttribute(
+					EditConfigAttributes.VALIDATION_ERROR_STYLE, 
+					getValidationErrorStyle(),
+					DisplayMode.EDIT);
+		}
+	}
+	
+	/**
+	 * Returns the {@link IStyle} that should be applied to an editor in case the input
+	 * is invalid in terms of conversion errors.
+	 * <p>
+	 * That means the {@link EditConfigAttributes#CONVERSION_ERROR_STYLE} configuration is 
+	 * registered against {@link DisplayMode#EDIT}.
+	 * </p>
+	 * <p>
+	 * Note that only style informations for foreground colour, background colour and font
+	 * are interpreted, as the style informations will be applied to the underlying editor 
+	 * control.
+	 * </p>
+	 * <p>
+	 * Currently mainly the TextCellEditor is using this {@link IStyle} via RenderErrorHandling
+	 * and the TableCellEditor.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, the default behaviour of using a red foreground
+	 * colour will be used on conversion errors.
+	 * </p>
+	 * @return The {@link IStyle} that should be applied to an editor control in case of
+	 * 			conversion errors.
+	 */
+	protected abstract IStyle getConversionErrorStyle();
+	
+	/**
+	 * Returns the {@link IStyle} that should be applied to an editor in case the input
+	 * is invalid in terms of validation errors.
+	 * <p>
+	 * That means the {@link EditConfigAttributes#VALIDATION_ERROR_STYLE} configuration is
+	 *  registered against {@link DisplayMode#EDIT}.
+	 * </p>
+	 * <p>
+	 * Note that only style informations for foreground colour, background colour and font
+	 * are interpreted, as the style informations will be applied to the underlying editor 
+	 * control.
+	 * </p>
+	 * <p>
+	 * Currently mainly the TextCellEditor is using this {@link IStyle} via RenderErrorHandling
+	 * and the TableCellEditor.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, the default behaviour of using a red foreground
+	 * colour will be used on validation errors.
+	 * </p>
+	 * @return The {@link IStyle} that should be applied to an editor control in case of
+	 * 			validation errors.
+	 */
+	protected abstract IStyle getValidationErrorStyle();
+	
+	/**
 	 * Null-safe check if a {@link IStyle} is empty or not.
 	 * @param style The {@link IStyle} to check.
 	 * @return <code>true</code> if the given {@link IStyle} is <code>null</code> or has no value
 	 * 			set for any {@link CellStyleAttributes}, <code>false</code> if at least one 
 	 * 			attribute is set.
 	 */
-	protected boolean isStyleEmpty(IStyle style) {
+	public static boolean isStyleEmpty(IStyle style) {
 		if (style == null) {
 			return true;
 		}
@@ -2048,6 +2183,16 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 					CellConfigAttributes.CELL_PAINTER, 
 					DisplayMode.NORMAL, 
 					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		if (!isStyleEmpty(getSummaryRowSelectionStyle()))
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_STYLE,
+					DisplayMode.SELECT,
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		if (getSummaryRowSelectionCellPainter() != null)
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					DisplayMode.SELECT, 
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
 		//unregister freeze separator color
 		if (getFreezeSeparatorColor() != null) {
@@ -2092,5 +2237,41 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 					DisplayMode.NORMAL,
 					GridRegion.FILTER_ROW);
 		}
+		
+		if (getConversionErrorStyle() != null) {
+			configRegistry.unregisterConfigAttribute(
+					EditConfigAttributes.CONVERSION_ERROR_STYLE, 
+					DisplayMode.EDIT);
+		}
+		if (getValidationErrorStyle() != null) {
+			configRegistry.unregisterConfigAttribute(
+					EditConfigAttributes.VALIDATION_ERROR_STYLE, 
+					DisplayMode.EDIT);
+		}
+
+		// unregister possible extension styles
+		for (IThemeExtension extension : this.extensions) {
+			extension.registerStyles(configRegistry);
+		}
+
+	}
+	
+	/**
+	 * Adds an IThemeExtension to this ThemeConfiguration which adds additional styling 
+	 * configuration on top.
+	 * 
+	 * @param extension The IThemeExtension that should be added to this ThemeConfiguration.
+	 */
+	public void addThemeExtension(IThemeExtension extension) {
+		this.extensions.add(extension);
+	}
+
+	/**
+	 * Removes an IThemeExtension that was added to this ThemeConfiguration before.
+	 * 
+	 * @param extension The IThemeExtension that should be removed from this ThemeConfiguration.
+	 */
+	public void removeThemeExtension(IThemeExtension extension) {
+		this.extensions.remove(extension);
 	}
 }

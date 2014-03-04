@@ -10,9 +10,8 @@
  *******************************************************************************/ 
 package org.eclipse.nebula.widgets.nattable.style.theme;
 
-import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowPainter;
-import org.eclipse.nebula.widgets.nattable.group.RowGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.group.painter.ColumnGroupHeaderTextPainter;
+import org.eclipse.nebula.widgets.nattable.group.painter.RowGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.BeveledBorderDecorator;
@@ -61,10 +60,16 @@ import org.eclipse.swt.graphics.Image;
  * This is necessary so the applied styles do not stay in case of theme switches.
  * </p>
  * <p>
- * Note: If styling of the GroupBy header should also be involved in the theme, you need to use the
- * 		 ThemeConfiguration in the GlazedLists extension. The reason for this is that the labels 
+ * Instead of extending an existing ThemeConfiguration you are also able to create and register {@link IThemeExtension}s
+ * to add additional styling. Creating IThemeExtension gives you the most possible flexibility on creating, modifying
+ * and extending existing themes.
+ * </p>
+ * <p>
+ * Note: If styling of the GroupBy header should also be involved in the theme, you need to register a
+ * 		 matching IThemeExtension out of the GlazedLists extension. The reason for this is that the labels 
  * 		 against which the styles need to be registered are specified there, and there should be
- * 		 no dependency from core to the extensions.
+ * 		 no dependency from core to the extensions. Have a look at the DefaultGroupByThemeExtension or
+ * 		 the ModernGroupByThemeExtension for example.
  * </p>
  * 
  * @author Dirk Fauth
@@ -432,7 +437,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	public Character filterRowPWEchoChar 								= null;
 	public TextDecorationEnum filterRowTextDecoration 					= null;
 
-	public ICellPainter filterRowCellPainter 							= new FilterRowPainter();
+	public ICellPainter filterRowCellPainter 							= null;
 	
 	// tree style
 	
@@ -465,6 +470,20 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	public TextDecorationEnum summaryRowTextDecoration 					= null;
 
 	public ICellPainter summaryRowCellPainter 							= null;
+	
+	public Color summaryRowSelectionBgColor 							= null;
+	public Color summaryRowSelectionFgColor 							= null;
+	public Color summaryRowSelectionGradientBgColor 					= null;
+	public Color summaryRowSelectionGradientFgColor 					= null;
+	public HorizontalAlignmentEnum summaryRowSelectionHAlign 			= null;
+	public VerticalAlignmentEnum summaryRowSelectionVAlign 				= null;
+	public Font summaryRowSelectionFont 								= null;
+	public Image summaryRowSelectionImage 								= null;
+	public BorderStyle summaryRowSelectionBorderStyle 					= null;
+	public Character summaryRowSelectionPWEchoChar 						= null;
+	public TextDecorationEnum summaryRowSelectionTextDecoration 		= null;
+
+	public ICellPainter summaryRowSelectionCellPainter 					= null;
 
 	// freeze style
 	public Color freezeSeparatorColor									= null;
@@ -478,6 +497,15 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	public Boolean renderRowHeaderGridLines								= Boolean.TRUE;
 	public Boolean renderBodyGridLines									= Boolean.TRUE;
 	public Boolean renderFilterRowGridLines								= Boolean.TRUE;
+	
+	// edit error styles
+	public Color conversionErrorBgColor									= null;
+	public Color conversionErrorFgColor									= null;
+	public Font conversionErrorFont										= null;
+
+	public Color validationErrorBgColor									= null;
+	public Color validationErrorFgColor									= null;
+	public Font validationErrorFont										= null;
 	
 	@Override
 	protected IStyle getDefaultCellStyle() {
@@ -1041,6 +1069,28 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	}
 
 	@Override
+	protected IStyle getSummaryRowSelectionStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, summaryRowSelectionBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, summaryRowSelectionFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, summaryRowSelectionGradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, summaryRowSelectionGradientFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, summaryRowSelectionHAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, summaryRowSelectionVAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, summaryRowSelectionFont);
+		cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, summaryRowSelectionImage);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, summaryRowSelectionBorderStyle);
+		cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR, summaryRowSelectionPWEchoChar);
+		cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, summaryRowSelectionTextDecoration);
+		return cellStyle;
+	}
+
+	@Override
+	protected ICellPainter getSummaryRowSelectionCellPainter() {
+		return this.summaryRowSelectionCellPainter;
+	}
+
+	@Override
 	protected Color getFreezeSeparatorColor() {
 		return this.freezeSeparatorColor;
 	}
@@ -1073,6 +1123,24 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	@Override
 	protected Boolean getRenderFilterRowGridLines() {
 		return this.renderFilterRowGridLines;
+	}
+
+	@Override
+	protected IStyle getConversionErrorStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, conversionErrorBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, conversionErrorFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, conversionErrorFont);
+		return cellStyle;
+	}
+
+	@Override
+	protected IStyle getValidationErrorStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, validationErrorBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, validationErrorFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, validationErrorFont);
+		return cellStyle;
 	}
 
 }

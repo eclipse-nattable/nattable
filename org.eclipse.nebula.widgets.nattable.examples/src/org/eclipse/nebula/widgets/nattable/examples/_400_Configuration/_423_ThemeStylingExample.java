@@ -43,19 +43,16 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundImagePainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.GradientBackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.theme.DefaultNatTableThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -173,7 +170,7 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 		
 		final ThemeConfiguration defaultTheme = new DefaultNatTableThemeConfiguration();
 		final ThemeConfiguration hoverTheme = new HoverThemeConfiguration();
-		final ThemeConfiguration windowsTheme = new WindowsLikeThemeConfiguration();
+		final ThemeConfiguration modernTheme = new ModernNatTableThemeConfiguration();
 		final ThemeConfiguration conditionalTheme = new ConditionalStylingThemeConfiguration();
 		final ThemeConfiguration fontTheme = new FontStylingThemeConfiguration();
 		
@@ -190,11 +187,11 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 		});
 		
 		Button windowsThemeButton = new Button(buttonPanel, SWT.PUSH);
-		windowsThemeButton.setText("Windows Like Theme");
+		windowsThemeButton.setText("NatTable Modern Theme");
 		windowsThemeButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				natTable.setTheme(windowsTheme);
+				natTable.setTheme(modernTheme);
 				
 				//reset to default state
 				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
@@ -254,65 +251,6 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 		
 		for (int i = 0; i < gridLayer.getColumnCount(); i++) {
 			bodyDataLayer.setColumnWidthByPosition(i, 100);
-		}
-	}
-	
-	/**
-	 * ThemeConfiguration that is similar to the Windows table styling. As I don't wanted to add
-	 * too much effort in creating the theme, it is just similar, not equal. ;-)
-	 */
-	class WindowsLikeThemeConfiguration extends DefaultNatTableThemeConfiguration {
-		{
-			this.defaultHAlign = HorizontalAlignmentEnum.LEFT;
-			
-			this.defaultCellPainter = new BackgroundPainter(new PaddingDecorator(new TextPainter(), 0, 0, 0, 5));
-			
-			//column header
-			this.cHeaderBgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
-			this.cHeaderFgColor = GUIHelper.COLOR_WIDGET_FOREGROUND;
-			this.cHeaderHAlign = HorizontalAlignmentEnum.LEFT;
-			this.cHeaderFont = GUIHelper.DEFAULT_FONT;
-			
-			this.cHeaderCellPainter = new PaddingDecorator(new TextPainter(), 0, 0, 0, 5);
-			
-			//column header hover
-			this.cHeaderHoverGradientBgColor = GUIHelper.getColor(102, 163, 210);
-			this.cHeaderHoverGradientFgColor = GUIHelper.COLOR_WHITE;
-			
-			this.cHeaderHoverCellPainter = new GradientBackgroundPainter(
-					new PaddingDecorator(new TextPainter(false, false), 0, 0, 0, 5, false), true);
-
-			this.renderCornerGridLines = true;
-			this.renderColumnHeaderGridLines = true;
-			
-			//column header selection
-			this.cHeaderSelectionFont = GUIHelper.DEFAULT_FONT;
-
-			this.cHeaderSelectionCellPainter = new BackgroundPainter(new PaddingDecorator(new TextPainter(), 0, 0, 0, 5));
-
-			this.rHeaderFont = GUIHelper.DEFAULT_FONT;
-			this.rHeaderSelectionFont = GUIHelper.DEFAULT_FONT;
-			this.rHeaderSelectionCellPainter = new TextPainter();
-			
-			//there is no alternate row styling in windows default
-			this.evenRowBgColor = GUIHelper.COLOR_WHITE;
-			this.oddRowBgColor = GUIHelper.COLOR_WHITE;
-			
-			//selection
-			this.defaultSelectionBgColor = GUIHelper.COLOR_LIST_SELECTION;
-			this.defaultSelectionFgColor = GUIHelper.COLOR_BLACK;
-			this.defaultSelectionGradientFgColor = GUIHelper.getColor(102, 163, 210);
-			this.defaultSelectionFont = GUIHelper.DEFAULT_FONT;
-			
-			this.defaultSelectionCellPainter = new GradientBackgroundPainter(
-					new PaddingDecorator(new TextPainter(false, false), 0, 0, 0, 5), true);
-			
-			this.selectionAnchorSelectionBgColor = GUIHelper.COLOR_LIST_SELECTION;
-			this.selectionAnchorSelectionFgColor = GUIHelper.COLOR_BLACK;
-			this.selectionAnchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_BLUE, LineStyleEnum.SOLID);
-			
-			this.selectionAnchorCellPainter = new GradientBackgroundPainter(
-					new PaddingDecorator(new TextPainter(false, false), 0, 0, 0, 5), true);
 		}
 	}
 	
@@ -385,7 +323,7 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 	 * ThemeConfiguration that sets different fonts which has impact on the row heights and columns widths.
 	 * The automatic resizing is done via specially configured TextPainter instances.
 	 */
-	class FontStylingThemeConfiguration extends WindowsLikeThemeConfiguration {
+	class FontStylingThemeConfiguration extends ModernNatTableThemeConfiguration {
 		{
 			this.defaultFont = GUIHelper.getFont(new FontData("Arial", 15, SWT.NORMAL));
 			this.defaultSelectionFont = GUIHelper.getFont(new FontData("Arial", 15, SWT.NORMAL));

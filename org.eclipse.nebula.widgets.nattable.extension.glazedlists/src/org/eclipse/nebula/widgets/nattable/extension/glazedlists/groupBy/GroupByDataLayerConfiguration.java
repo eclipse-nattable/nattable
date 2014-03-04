@@ -16,12 +16,8 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
-import org.eclipse.swt.graphics.GC;
 
 public class GroupByDataLayerConfiguration extends AbstractRegistryConfiguration {
 
@@ -31,17 +27,7 @@ public class GroupByDataLayerConfiguration extends AbstractRegistryConfiguration
 		//even if in the first column by default another painter is registered
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_PAINTER,
-				new BackgroundPainter(new TextPainter() {
-					@Override
-					protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
-						if (cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL) 
-								|| cell.getConfigLabels().hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY)) {
-							return super.getTextToDisplay(cell, gc, availableLength, text);
-						} else {
-							return ""; //$NON-NLS-1$
-						}
-					}
-				}),
+				new BackgroundPainter(new GroupByCellTextPainter()),
 				DisplayMode.NORMAL,
 				GroupByDataLayer.GROUP_BY_OBJECT
 		);

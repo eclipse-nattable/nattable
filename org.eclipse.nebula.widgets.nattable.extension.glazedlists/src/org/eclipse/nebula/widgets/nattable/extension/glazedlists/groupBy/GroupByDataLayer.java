@@ -205,7 +205,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 			configLabels.addLabelOnTop(GROUP_BY_OBJECT);
 			configLabels.addLabelOnTop(GROUP_BY_COLUMN_PREFIX + columnPosition);
 			if (getGroupBySummaryProvider(configLabels) != null) {
-				configLabels.addLabel(GROUP_BY_SUMMARY);
+				configLabels.addLabelOnTop(GROUP_BY_SUMMARY);
 			}
 		}
 		return configLabels;

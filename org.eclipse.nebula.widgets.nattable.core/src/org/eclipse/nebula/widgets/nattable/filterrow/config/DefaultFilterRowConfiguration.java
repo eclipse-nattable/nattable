@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.filterrow.action.ToggleFilterRowActio
 import org.eclipse.nebula.widgets.nattable.filterrow.event.ClearFilterIconMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterRowMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
@@ -41,7 +42,7 @@ public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration
 		// Plug in custom painter
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_PAINTER, 
-				cellPainter, 
+				new PaddingDecorator(cellPainter, 0, 0, 0, 5), 
 				DisplayMode.NORMAL, 
 				GridRegion.FILTER_ROW);
 		configRegistry.registerConfigAttribute(
