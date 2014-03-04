@@ -31,6 +31,7 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 		this.columnGroupExpandCollapseLayer = columnGroupExpandCollapseLayer;
 	}
 	
+	@Override
 	public Class<ColumnGroupExpandCollapseCommand> getCommandClass() {
 		return ColumnGroupExpandCollapseCommand.class;
 	}
@@ -44,7 +45,7 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 		
 		// if group of columnIndex is not collapseable return without any 
 		// further operation ...
-		if (!columnGroup.isCollapseable()) {
+		if (columnGroup == null || !columnGroup.isCollapseable()) {
 			return true;
 		}
 		
