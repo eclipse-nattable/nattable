@@ -40,6 +40,8 @@ import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -234,9 +236,18 @@ class SummaryRowGridLayer extends GridLayer {
 		// Adding the specialized DefaultSummaryRowHeaderDataProvider to indicate the summary row in the row header
 		IDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(
 				bodyLayer.getDataLayer().getDataProvider(), "\u2211");
-		ILayer rowHeaderLayer = new RowHeaderLayer(
-				new DefaultRowHeaderDataLayer(rowHeaderDataProvider), 
-				bodyLayer, selectionLayer);
+		final DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+		//add a label to the row header summary row cell aswell, so it can be styled differently too
+		//in this case it will simply use the same styling as the summary row in the body
+		rowHeaderDataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
+			@Override
+			public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+				if ((rowPosition+1) == rowHeaderDataLayer.getRowCount()) {
+					configLabels.addLabel(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+				}
+			}
+		});
+		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, selectionLayer);
 		
 		// Corner
 		ILayer cornerLayer = new CornerLayer(

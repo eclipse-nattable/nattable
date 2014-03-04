@@ -56,6 +56,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumul
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ComboBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.PasswordTextPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
@@ -574,7 +575,7 @@ public class _447_EditorExample extends AbstractNatExample {
 			
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.CELL_PAINTER, 
-					new ComboBoxPainter(GUIHelper.getImage("plus")), 
+					new PaddingDecorator(new ComboBoxPainter(GUIHelper.getImage("plus")), 0, 2, 0, 0), 
 					DisplayMode.NORMAL, 
 					_447_EditorExample.COLUMN_THIRTEEN_LABEL);
 		}

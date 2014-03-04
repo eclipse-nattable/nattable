@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.examples.examples._150_Column_and_ro
 
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -59,6 +58,7 @@ public class _100_Row_groups extends AbstractNatExample {
 				"* EXPAND/COLLAPSE A ROW GROUP by double-clicking on the row group header.";
 	}
 
+	@Override
 	public Control createExampleControl(Composite parent) {
 		// Body
 
@@ -94,7 +94,7 @@ public class _100_Row_groups extends AbstractNatExample {
 		rowHeaderLayer.addConfiguration(new RowHeaderConfiguration());
 		
 		RowGroupHeaderLayer<RowGroupDataFixture> rowGroupHeaderLayer = new RowGroupHeaderLayer<RowGroupDataFixture>(rowHeaderLayer, selectionLayer, rowGroupModel);
-		rowGroupHeaderLayer.setColumnWidth(15);
+		rowGroupHeaderLayer.setColumnWidth(20);
 		
 		// Create a group of rows for the model.
 		RowGroup<RowGroupDataFixture> rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 1", true);		
