@@ -82,4 +82,15 @@ public interface ITreeData<T> {
 	 * @return The number of elements handled by this ITreeData.
 	 */
 	int getElementCount();
+	
+	/**
+	 * Checks if a given index points to an element of the underlying list this ITreeData
+	 * is connected to. This check is necessary for example to support mixing in a summary
+	 * row together with a tree, where the summary row index is not in scope of the underlying
+	 * list.
+	 * @param index The index to check.
+	 * @return <code>true</code> if the index points to an element of the underlying list,
+	 * 			<code>false</code> if it doesn't.
+	 */
+	boolean isValidIndex(int index);
 }

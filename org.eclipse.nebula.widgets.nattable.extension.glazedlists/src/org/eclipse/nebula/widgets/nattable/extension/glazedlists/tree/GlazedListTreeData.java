@@ -49,6 +49,9 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 
 	@Override
 	public T getDataAtIndex(int index) {
+		if (!isValidIndex(index)) {
+			return null;
+		}
 		return this.treeList.get(index);
 	}
 
@@ -59,6 +62,9 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 
 	@Override
 	public int getDepthOfData(int index) {
+		if (!isValidIndex(index)) {
+			return 0;
+		}
 		return this.treeList.depth(index);
 	}
 
@@ -74,6 +80,9 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 
 	@Override
 	public boolean hasChildren(int index) {
+		if (!isValidIndex(index)) {
+			return false;
+		}
 		return this.treeList.hasChildren(index);
 	}
 
@@ -106,6 +115,10 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 
 	@Override
 	public List<T> getChildren(int index) {
+		if (!isValidIndex(index)) {
+			return null;
+		}
+
 		List<T> children = new ArrayList<T>();
 		if (index >= 0) {
 			Node<T> treeNode = this.treeList.getTreeNode(index);
@@ -145,6 +158,10 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 	 * @param index The index of the tree node to collapse.
 	 */
 	public void collapse(int index) {
+		if (!isValidIndex(index)) {
+			return;
+		}
+
 		this.treeList.setExpanded(index, false);
 	};
 
@@ -153,6 +170,10 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 	 * @param index The index of the tree node to expand.
 	 */
 	public void expand(int index) {
+		if (!isValidIndex(index)) {
+			return;
+		}
+
 		this.treeList.setExpanded(index, true);
 	};
 
@@ -236,6 +257,15 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 	 * 			are visible, <code>false</code> if not
 	 */
 	public boolean isExpanded(int index) {
+		if (!isValidIndex(index)) {
+			return false;
+		}
+
 		return this.treeList.isExpanded(index);
+	}
+
+	@Override
+	public boolean isValidIndex(int index) {
+		return (!(index < 0) && index < this.treeList.size());
 	}
 }
