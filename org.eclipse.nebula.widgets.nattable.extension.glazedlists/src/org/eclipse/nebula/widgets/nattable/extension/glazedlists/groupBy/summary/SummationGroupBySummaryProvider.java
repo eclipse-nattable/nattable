@@ -14,13 +14,14 @@ public class SummationGroupBySummaryProvider<T> implements IGroupBySummaryProvid
 
 	@Override
 	public Object summarize(int columnIndex, List<T> children) {
-		float summaryValue = 0;
+		double summaryValue = 0;
 		for (T child : children) {
 			Object dataValue = columnAccessor.getDataValue(child, columnIndex);
 			if (dataValue instanceof Number) {
-				summaryValue = summaryValue + Float.parseFloat(dataValue.toString());
+				summaryValue += ((Number)dataValue).doubleValue();
 			}
 		}
+		
 		return summaryValue;
 	}
 

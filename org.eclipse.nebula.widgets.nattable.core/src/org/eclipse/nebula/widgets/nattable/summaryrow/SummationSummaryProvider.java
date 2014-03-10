@@ -74,12 +74,12 @@ public class SummationSummaryProvider implements ISummaryProvider {
 			Object dataValue = dataProvider.getDataValue(columnIndex, rowIndex);
 
 			if (dataValue instanceof Number) {
-				summaryValue = summaryValue + Double.parseDouble(dataValue.toString());
+				summaryValue += ((Number)dataValue).doubleValue();
 			} else if (strict) {
 				return DEFAULT_SUMMARY_VALUE;
 			}
 		}
-			
+		
 		return summaryValue;
 	}
 }
