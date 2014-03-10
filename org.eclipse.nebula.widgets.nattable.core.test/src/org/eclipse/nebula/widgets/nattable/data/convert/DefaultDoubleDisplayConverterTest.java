@@ -11,12 +11,30 @@
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DefaultDoubleDisplayConverterTest {
 
 	private DefaultDoubleDisplayConverter doubleConverter = new DefaultDoubleDisplayConverter();
+	
+	private static Locale defaultLocale;
+	
+	@BeforeClass
+	public static void setup() {
+		defaultLocale = Locale.getDefault();
+		Locale.setDefault(new Locale("en"));
+	}
+	
+	@AfterClass
+	public static void tearDown() {
+		Locale.setDefault(defaultLocale);
+	}
 	
 	@Test
 	public void testNonNullDataToDisplay() {
@@ -26,7 +44,7 @@ public class DefaultDoubleDisplayConverterTest {
 	
 	@Test
 	public void testNullDataToDisplay() {
-		Assert.assertEquals(null, doubleConverter.canonicalToDisplayValue(null));
+		Assert.assertNull(doubleConverter.canonicalToDisplayValue(null));
 	}
 	
 	@Test
@@ -37,11 +55,39 @@ public class DefaultDoubleDisplayConverterTest {
 	
 	@Test
 	public void testNullDisplayToData() {
-		Assert.assertEquals(null, doubleConverter.displayToCanonicalValue(""));
+		Assert.assertNull(doubleConverter.displayToCanonicalValue(""));
 	}
 
 	@Test(expected=ConversionFailedException.class)
 	public void testConversionException() {
 		doubleConverter.displayToCanonicalValue("abc");
+	}
+	
+	@Test
+	public void testLocalizedDisplayConversion() {
+		NumberFormat original = doubleConverter.getNumberFormat();
+		NumberFormat localized = NumberFormat.getInstance(Locale.GERMAN);
+		localized.setMinimumFractionDigits(1);
+		localized.setMaximumFractionDigits(2);
+
+		doubleConverter.setNumberFormat(localized);
+		Assert.assertEquals("123,0", doubleConverter.canonicalToDisplayValue(Double.valueOf("123")));
+		
+		doubleConverter.setNumberFormat(original);
+	}
+	
+	@Test
+	public void testLocalizedCanonicalConversion() {
+		NumberFormat original = doubleConverter.getNumberFormat();
+		NumberFormat localized = NumberFormat.getInstance(Locale.GERMAN);
+		localized.setMinimumFractionDigits(1);
+		localized.setMaximumFractionDigits(2);
+
+		doubleConverter.setNumberFormat(localized);
+		Object result = doubleConverter.displayToCanonicalValue("123,5");
+		Assert.assertTrue(result instanceof Double);
+		Assert.assertEquals(123.5, result);
+		
+		doubleConverter.setNumberFormat(original);
 	}
 }

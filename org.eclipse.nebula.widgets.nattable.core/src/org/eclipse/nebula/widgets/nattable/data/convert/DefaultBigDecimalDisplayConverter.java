@@ -11,13 +11,25 @@
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 
 /**
  * Converts the display value to a {@link BigDecimal} and vice versa.
  */
-public class DefaultBigDecimalDisplayConverter extends DefaultDoubleDisplayConverter {
+public class DefaultBigDecimalDisplayConverter extends DecimalNumericDisplayConverter {
 
-	protected Object convertToNumericValue(String value){
-		return new BigDecimal(value);
+	public DefaultBigDecimalDisplayConverter() {
+		this.nf.setMinimumFractionDigits(0);
+		((DecimalFormat)this.nf).setParseBigDecimal(true);
+	}
+
+	@Override
+	protected Object convertToNumericValue(String value) {
+		try {
+			return this.nf.parse(value);
+		} catch (ParseException e) {
+			throw new NumberFormatException(e.getMessage());
+		}
 	}
 }

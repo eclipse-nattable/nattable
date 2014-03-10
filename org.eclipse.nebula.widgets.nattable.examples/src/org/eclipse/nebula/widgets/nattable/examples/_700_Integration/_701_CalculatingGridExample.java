@@ -369,6 +369,12 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 					DisplayMode.NORMAL, _701_CalculatingGridExample.COLUMN_FIVE_LABEL);
 			
 			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.DISPLAY_CONVERTER, 
+					new DefaultIntegerDisplayConverter(), 
+					DisplayMode.NORMAL,
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+			
+			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 
 					DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
 		}

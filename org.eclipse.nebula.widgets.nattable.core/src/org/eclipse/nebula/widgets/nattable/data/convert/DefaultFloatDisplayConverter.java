@@ -10,12 +10,20 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
+import java.text.ParseException;
+
 /**
  * Converts the display value to a float and vice versa.
  */
-public class DefaultFloatDisplayConverter extends NumericDisplayConverter {
+public class DefaultFloatDisplayConverter extends DecimalNumericDisplayConverter {
 
-	protected Object convertToNumericValue(String value){
-		return Float.valueOf(value);
+	@Override
+	protected Object convertToNumericValue(String value) {
+		try {
+			return this.nf.parse(value).floatValue();
+		} catch (ParseException e) {
+			throw new NumberFormatException(e.getMessage());
+		}
 	}
+
 }

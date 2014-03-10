@@ -42,4 +42,9 @@ public class DefaultByteDisplayConverterTest {
 	public void testConversionException() {
 		byteConverter.displayToCanonicalValue("abc");
 	}
+
+	@Test(expected=ConversionFailedException.class)
+	public void testConversionExceptionTooBig() {
+		byteConverter.displayToCanonicalValue("129");
+	}
 }

@@ -42,4 +42,10 @@ public class DefaultShortDisplayConverterTest {
 	public void testConversionException() {
 		shortConverter.displayToCanonicalValue("abc");
 	}
+
+	@Test(expected=ConversionFailedException.class)
+	public void testConversionExceptionTooBig() {
+		short test = (Short) shortConverter.displayToCanonicalValue("32768");
+		System.out.println(test);
+	}
 }

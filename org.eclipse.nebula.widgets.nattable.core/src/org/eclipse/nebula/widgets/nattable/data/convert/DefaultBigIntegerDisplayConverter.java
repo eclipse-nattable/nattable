@@ -17,7 +17,9 @@ import java.math.BigInteger;
  */
 public class DefaultBigIntegerDisplayConverter extends DefaultLongDisplayConverter {
 
+	@Override
 	protected Object convertToNumericValue(String value) {
 		return new BigInteger(value);
 	}
+
 }

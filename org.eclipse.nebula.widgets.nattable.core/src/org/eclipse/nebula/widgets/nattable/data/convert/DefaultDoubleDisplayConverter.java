@@ -10,12 +10,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
+import java.text.ParseException;
+
+
 /**
  * Converts the display value to a double and vice versa.
  */
-public class DefaultDoubleDisplayConverter extends NumericDisplayConverter {
-	
-	protected Object convertToNumericValue(String value){
-		return Double.valueOf(value);
+public class DefaultDoubleDisplayConverter extends DecimalNumericDisplayConverter {
+
+	@Override
+	protected Object convertToNumericValue(String value) {
+		try {
+			return this.nf.parse(value).doubleValue();
+		} catch (ParseException e) {
+			throw new NumberFormatException(e.getMessage());
+		}
 	}
+
 }

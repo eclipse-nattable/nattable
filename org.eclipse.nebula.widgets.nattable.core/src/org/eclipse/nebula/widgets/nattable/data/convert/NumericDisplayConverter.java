@@ -13,6 +13,8 @@ package org.eclipse.nebula.widgets.nattable.data.convert;
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotEmpty;
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
 
+import java.text.NumberFormat;
+
 import org.eclipse.nebula.widgets.nattable.Messages;
 
 /**
@@ -20,10 +22,13 @@ import org.eclipse.nebula.widgets.nattable.Messages;
  */
 public abstract class NumericDisplayConverter extends DisplayConverter {
 
+	protected NumberFormat nf = NumberFormat.getInstance();
+
+	@Override
 	public Object canonicalToDisplayValue(Object canonicalValue) {
 		try {
 			if (isNotNull(canonicalValue)) {
-				return canonicalValue.toString();
+				return this.nf.format(canonicalValue);
 			}
 			return null;
 		} catch (Exception e) {
@@ -31,10 +36,11 @@ public abstract class NumericDisplayConverter extends DisplayConverter {
 		}
 	}
 
+	@Override
 	public Object displayToCanonicalValue(Object displayValue) {
 		try {
 			if (isNotNull(displayValue) && isNotEmpty(displayValue.toString())) {
-				return convertToNumericValue(displayValue.toString());
+				return convertToNumericValue(displayValue.toString().trim());
 			}
 			return null;
 		} catch (Exception e) {
@@ -45,4 +51,21 @@ public abstract class NumericDisplayConverter extends DisplayConverter {
 	}
 	
 	protected abstract Object convertToNumericValue(String value);
+	
+	/**
+	 * 
+	 * @return The {@link NumberFormat} that is used to format numeric values.
+	 */
+	public NumberFormat getNumberFormat() {
+		return nf;
+	}
+
+	/**
+	 * 
+	 * @param nf The {@link NumberFormat} that should be used to format numeric values.
+	 */
+	public void setNumberFormat(NumberFormat nf) {
+		this.nf = nf;
+	}
+	
 }
