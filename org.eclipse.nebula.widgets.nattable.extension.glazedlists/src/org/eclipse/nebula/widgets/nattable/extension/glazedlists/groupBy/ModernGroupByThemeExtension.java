@@ -27,9 +27,9 @@ public class ModernGroupByThemeExtension extends DefaultGroupByThemeExtension {
 		groupByFontData.setStyle(SWT.BOLD);
 
 		this.groupByObjectFont = GUIHelper.getFont(groupByFontData);
-		this.groupByObjectCellPainter = new BackgroundPainter(new PaddingDecorator(new GroupByCellTextPainter(), 0, 0, 0, 5));
+		this.groupByObjectCellPainter = new BackgroundPainter(new PaddingDecorator(new GroupByCellTextPainter(), 0, 5, 0, 5));
 
 		this.groupByObjectSelectionFont = GUIHelper.getFont(groupByFontData);
-		this.groupByObjectSelectionCellPainter = new BackgroundPainter(new PaddingDecorator(new GroupByCellTextPainter(), 0, 0, 0, 5));
+		this.groupByObjectSelectionCellPainter = new BackgroundPainter(new PaddingDecorator(new GroupByCellTextPainter(), 0, 5, 0, 5));
 	}
 }
