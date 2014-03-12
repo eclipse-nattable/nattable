@@ -98,6 +98,12 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 			
 			int currentEventType = -1;
 			
+			//as the delete events in GlazedLists are containing indexes that are related
+			//to prior deletes we need to ensure index consistency within NatTable,
+			//e.g. filtering so the complete list would be empty would result in getting
+			//events that all tell that index 0 is deleted
+			int deleteCount = 0;
+			
 			final List<Range> deleteRanges = new ArrayList<Range>();
 			final List<Range> insertRanges = new ArrayList<Range>();
 			while (event.next()) {
@@ -113,12 +119,14 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 					
 					//and clear for clean further processing
 					deleteRanges.clear();
+					deleteCount = 0;
 					insertRanges.clear();
 				}
 				
 				if (eventType == ListEvent.DELETE) {
-					int index = event.getIndex();
+					int index = event.getIndex() + deleteCount;
 					deleteRanges.add(new Range(index, index + 1));
+					deleteCount++;
 				}
 				else if (eventType == ListEvent.INSERT) {
 					insertRanges.add(new Range(event.getIndex(), event.getIndex() + 1));
