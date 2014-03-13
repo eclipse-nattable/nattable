@@ -49,7 +49,13 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 		Color originalBackground = gc.getBackground();
 		Color originalForeground = gc.getForeground();
 		Font originalFont = gc.getFont();
-		
+
+		// get color for header background
+		Color headerBgColor = configRegistry.getConfigAttribute(
+				GroupByConfigAttributes.GROUP_BY_HEADER_BACKGROUND_COLOR, DisplayMode.NORMAL);
+		if (headerBgColor != null) {
+			gc.setBackground(headerBgColor);
+		}
 		// Draw background
 		gc.fillRectangle(bounds);
 		
@@ -116,7 +122,8 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
 			String hint = configRegistry.getConfigAttribute(GroupByConfigAttributes.GROUP_BY_HINT, DisplayMode.NORMAL);
 			if (hint != null) {
 				//check if there is a separate styling configured for the hint
-				IStyle hintStyle = configRegistry.getConfigAttribute(GroupByConfigAttributes.GROUP_BY_HINT_STYLE, DisplayMode.NORMAL);
+				IStyle hintStyle = configRegistry.getConfigAttribute(
+						GroupByConfigAttributes.GROUP_BY_HINT_STYLE, DisplayMode.NORMAL);
 				if (hintStyle != null) {
 					Color hintBackground = hintStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 					gc.setBackground(hintBackground != null ? hintBackground : originalBackground);

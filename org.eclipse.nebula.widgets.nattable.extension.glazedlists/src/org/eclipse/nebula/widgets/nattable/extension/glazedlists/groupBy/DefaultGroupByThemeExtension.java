@@ -51,7 +51,10 @@ import org.eclipse.swt.graphics.Image;
  */
 public class DefaultGroupByThemeExtension implements IThemeExtension {
 
-	// group by style
+	// group by header background color
+	public Color groupByHeaderBgColor 								= null;
+	
+	// group by item style
 	
 	public Color groupByBgColor 									= null;
 	public Color groupByFgColor 									= null;
@@ -147,12 +150,35 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
 
 	@Override
 	public void registerStyles(IConfigRegistry configRegistry) {
+		configureGroupByHeaderBackgroundColor(configRegistry);
 		configureGroupByStyle(configRegistry);
 		configureGroupByObjectStyle(configRegistry);
 		configureGroupByObjectSelectionStyle(configRegistry);
 		configureGroupBySummaryStyle(configRegistry);
 		configureGroupBySummarySelectionStyle(configRegistry);
 		configureGroupByHint(configRegistry);
+	}
+
+	/**
+	 * Registering the background color for the GroupBy header region.
+	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
+	 * 			to which the style configuration should be applied to.
+	 */
+	protected void configureGroupByHeaderBackgroundColor(IConfigRegistry configRegistry) {
+		if (getGroupByHeaderBackgroundColor() != null) {
+			configRegistry.registerConfigAttribute(
+					GroupByConfigAttributes.GROUP_BY_HEADER_BACKGROUND_COLOR, 
+					getGroupByHeaderBackgroundColor());
+		}
+	}
+
+	/**
+	 * Returns the {@link Color} that should be used to render the group by header background.
+	 * If <code>null</code> is returned, the default color will be used.
+	 * @return The {@link Color} that should be used to render group by header background.
+	 */
+	protected Color getGroupByHeaderBackgroundColor() {
+		return this.groupByHeaderBgColor;
 	}
 
 	/**
@@ -551,6 +577,11 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
 	
 	@Override
 	public void unregisterStyles(IConfigRegistry configRegistry) {
+		if (getGroupByHeaderBackgroundColor() != null) {
+			configRegistry.unregisterConfigAttribute(
+					GroupByConfigAttributes.GROUP_BY_HEADER_BACKGROUND_COLOR);
+		}
+
 		if (!ThemeConfiguration.isStyleEmpty(getGroupByStyle()))
 			configRegistry.unregisterConfigAttribute(
 					CellConfigAttributes.CELL_STYLE,

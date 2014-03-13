@@ -3,6 +3,7 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.swt.graphics.Color;
 
 public interface GroupByConfigAttributes {
 
@@ -32,5 +33,12 @@ public interface GroupByConfigAttributes {
 	 * foreground, background and font is supported.
 	 */
 	ConfigAttribute<IStyle> GROUP_BY_HINT_STYLE = new ConfigAttribute<IStyle>();
+	
+	/**
+	 * Attribute for configuring the Color that should be used to render the background
+	 * of the GroupByHeaderLayer.
+	 * Will be interpreted by the GroupByHeaderPainter.
+	 */
+	ConfigAttribute<Color> GROUP_BY_HEADER_BACKGROUND_COLOR = new ConfigAttribute<Color>();
 
 }
