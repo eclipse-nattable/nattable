@@ -31,5 +31,11 @@ public class ModernGroupByThemeExtension extends DefaultGroupByThemeExtension {
 
 		this.groupByObjectSelectionFont = GUIHelper.getFont(groupByFontData);
 		this.groupByObjectSelectionCellPainter = new BackgroundPainter(new PaddingDecorator(new GroupByCellTextPainter(), 0, 5, 0, 5));
+		
+		this.groupByHint = "Drag columns here to group by column values"; //$NON-NLS-1$
+		
+		FontData groupByHintFontData = GUIHelper.DEFAULT_FONT.getFontData()[0];
+		groupByHintFontData.setStyle(SWT.ITALIC);
+		this.groupByHintFont = GUIHelper.getFont(groupByHintFontData);
 	}
 }

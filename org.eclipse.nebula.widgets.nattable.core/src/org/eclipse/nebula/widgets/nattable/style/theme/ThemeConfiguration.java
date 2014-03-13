@@ -2251,7 +2251,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 
 		// unregister possible extension styles
 		for (IThemeExtension extension : this.extensions) {
-			extension.registerStyles(configRegistry);
+			extension.unregisterStyles(configRegistry);
 		}
 
 	}

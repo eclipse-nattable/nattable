@@ -51,7 +51,9 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.style.theme.DarkNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.DefaultNatTableThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.theme.IThemeExtension;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -62,7 +64,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -165,13 +166,21 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 		natTable.addOverlayPainter(new NatTableBorderOverlayPainter(natTable.getConfigRegistry()));
 		
 		Composite buttonPanel = new Composite(container, SWT.NONE);
-		buttonPanel.setLayout(new RowLayout());
+		buttonPanel.setLayout(new GridLayout(3, true));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 		
 		final ThemeConfiguration defaultTheme = new DefaultNatTableThemeConfiguration();
-		final ThemeConfiguration hoverTheme = new HoverThemeConfiguration();
 		final ThemeConfiguration modernTheme = new ModernNatTableThemeConfiguration();
-		final ThemeConfiguration conditionalTheme = new ConditionalStylingThemeConfiguration();
+		final ThemeConfiguration darkTheme = new DarkNatTableThemeConfiguration();
+		
+		final ThemeConfiguration conditionalDefaultTheme = new DefaultNatTableThemeConfiguration();
+		conditionalDefaultTheme.addThemeExtension(new ConditionalStylingThemeExtension());
+		final ThemeConfiguration conditionalModernTheme = new ModernNatTableThemeConfiguration();
+		conditionalModernTheme.addThemeExtension(new ConditionalStylingThemeExtension());
+		final ThemeConfiguration conditionalDarkTheme = new DarkNatTableThemeConfiguration();
+		conditionalDarkTheme.addThemeExtension(new ConditionalStylingThemeExtension());
+
+		final ThemeConfiguration hoverTheme = new HoverThemeConfiguration();
 		final ThemeConfiguration fontTheme = new FontStylingThemeConfiguration();
 		
 		Button defaultThemeButton = new Button(buttonPanel, SWT.PUSH);
@@ -186,12 +195,60 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 			}
 		});
 		
-		Button windowsThemeButton = new Button(buttonPanel, SWT.PUSH);
-		windowsThemeButton.setText("NatTable Modern Theme");
-		windowsThemeButton.addSelectionListener(new SelectionAdapter() {
+		Button modernThemeButton = new Button(buttonPanel, SWT.PUSH);
+		modernThemeButton.setText("NatTable Modern Theme");
+		modernThemeButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				natTable.setTheme(modernTheme);
+				
+				//reset to default state
+				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
+			}
+		});
+		
+		Button darkThemeButton = new Button(buttonPanel, SWT.PUSH);
+		darkThemeButton.setText("NatTable Dark Theme");
+		darkThemeButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				natTable.setTheme(darkTheme);
+				
+				//reset to default state
+				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
+			}
+		});
+		
+		Button conditionalThemeButton = new Button(buttonPanel, SWT.PUSH);
+		conditionalThemeButton.setText("Conditional Default Theme");
+		conditionalThemeButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				natTable.setTheme(conditionalDefaultTheme);
+				
+				//reset to default state
+				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
+			}
+		});
+		
+		Button conditionalModernThemeButton = new Button(buttonPanel, SWT.PUSH);
+		conditionalModernThemeButton.setText("Conditional Modern Theme");
+		conditionalModernThemeButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				natTable.setTheme(conditionalModernTheme);
+				
+				//reset to default state
+				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
+			}
+		});
+		
+		Button conditionalDarkThemeButton = new Button(buttonPanel, SWT.PUSH);
+		conditionalDarkThemeButton.setText("Conditional Dark Theme");
+		conditionalDarkThemeButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				natTable.setTheme(conditionalDarkTheme);
 				
 				//reset to default state
 				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
@@ -204,18 +261,6 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				natTable.setTheme(hoverTheme);
-				
-				//reset to default state
-				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
-			}
-		});
-		
-		Button conditionalThemeButton = new Button(buttonPanel, SWT.PUSH);
-		conditionalThemeButton.setText("Conditional Theme");
-		conditionalThemeButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.setTheme(conditionalTheme);
 				
 				//reset to default state
 				cleanupNonThemeSettings(gridLayer, bodyDataLayer, columnHeaderDataLayer);
@@ -290,33 +335,34 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 	}
 	
 	/**
-	 * ThemeConfiguration that shows how to create a custom theme with conditional styling.
+	 * IThemeExtension that adds conditional styling.
+	 * As it is implemented as theme extension, it can be added to any ThemeConfiguration
+	 * without the need for inheritance.
 	 */
-	class ConditionalStylingThemeConfiguration extends DefaultNatTableThemeConfiguration {
+	class ConditionalStylingThemeExtension implements IThemeExtension {
+
 		@Override
-		public void configureRegistry(IConfigRegistry configRegistry) {
-			super.configureRegistry(configRegistry);
-			
+		public void registerStyles(IConfigRegistry configRegistry) {
 			//add custom styling
 			IStyle femaleStyle = new Style();
 			femaleStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_YELLOW);
+			femaleStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_BLACK);
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.CELL_STYLE, 
 					femaleStyle,
 					DisplayMode.NORMAL,
 					FEMALE_LABEL);
 		}
-		
+
 		@Override
-		public void unregisterThemeStyleConfigurations(IConfigRegistry configRegistry) {
-			super.unregisterThemeStyleConfigurations(configRegistry);
-			
+		public void unregisterStyles(IConfigRegistry configRegistry) {
 			//unregister custom styling
 			configRegistry.unregisterConfigAttribute(
 					CellConfigAttributes.CELL_STYLE, 
 					DisplayMode.NORMAL,
 					FEMALE_LABEL);
 		}
+		
 	}
 
 	/**
