@@ -29,27 +29,27 @@ public class CellPainterDecorator implements ICellPainter {
 	/**
 	 * The base {@link ICellPainter} that is decorated.
 	 */
-	private final ICellPainter baseCellPainter;
+	private ICellPainter baseCellPainter;
 	/**
 	 * The edge of the cell at which the decoration is applied.
 	 */
-	private final CellEdgeEnum cellEdge;
+	private CellEdgeEnum cellEdge;
 	/**
 	 * The {@link ICellPainter} that is used to render the decoration.
 	 */
-	private final ICellPainter decoratorCellPainter;
+	private ICellPainter decoratorCellPainter;
 	/**
 	 * The spacing to use between base painter and decoration painter.
 	 * Note: If you want to add <b>padding</b> between the decoration and the cell border
 	 * 		 you need to add a PaddingDecorator to your painter stack.
 	 */
-	private final int spacing;
+	private int spacing;
 	/**
 	 * Flag to specify whether the base painter should render dependent to the decoration painter
 	 * or not. This will have effect on the boundary calculation. Setting this flag to <code>true</code>
 	 * the bounds of the base painter will be modified regarding the bounds of the decoration painter.
 	 * This means that the starting coordinates for the base painter are moving e.g. if the base painter
-	 * renders centered the text will move to the left because the decoration consumes space.
+	 * renders centred the text will move to the left because the decoration consumes space.
 	 * If this flag is set to <code>false</code> you can think of the decoration painter painting on
 	 * top of the base painter, possibly painting over the base painter. 
 	 */
@@ -392,9 +392,51 @@ public class CellPainterDecorator implements ICellPainter {
 	}
 
 	/**
+	 * @param baseCellPainter The base {@link ICellPainter} that should be decorated.
+	 */
+	public void setBaseCellPainter(ICellPainter baseCellPainter) {
+		this.baseCellPainter = baseCellPainter;
+	}
+
+	/**
 	 * @return The {@link ICellPainter} that is used to render the decoration.
 	 */
 	public ICellPainter getDecoratorCellPainter() {
 		return decoratorCellPainter;
+	}
+
+	/**
+	 * @param decoratorCellPainter The {@link ICellPainter} that should be used to render the decoration.
+	 */
+	public void setDecoratorCellPainter(ICellPainter decoratorCellPainter) {
+		this.decoratorCellPainter = decoratorCellPainter;
+	}
+
+	/**
+	 * @return The edge of the cell at which the decoration is applied.
+	 */
+	public CellEdgeEnum getCellEdge() {
+		return cellEdge;
+	}
+
+	/**
+	 * @param cellEdge The edge of the cell at which the decoration should be applied.
+	 */
+	public void setCellEdge(CellEdgeEnum cellEdge) {
+		this.cellEdge = cellEdge;
+	}
+
+	/**
+	 * @return The spacing that is used between base painter and decoration painter.
+	 */
+	public int getSpacing() {
+		return spacing;
+	}
+
+	/**
+	 * @param spacing The spacing that should be used between base painter and decoration painter.
+	 */
+	public void setSpacing(int spacing) {
+		this.spacing = spacing;
 	}
 }
