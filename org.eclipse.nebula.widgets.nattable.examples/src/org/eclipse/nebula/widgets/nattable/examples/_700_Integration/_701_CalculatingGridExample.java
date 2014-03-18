@@ -52,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
@@ -370,13 +371,15 @@ public class _701_CalculatingGridExample extends AbstractNatExample {
 			
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER, 
-					new DefaultIntegerDisplayConverter(), 
+					new SummaryDisplayConverter(new DefaultIntegerDisplayConverter()), 
 					DisplayMode.NORMAL,
 					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 			
 			configRegistry.registerConfigAttribute(
-					CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 
-					DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
+					CellConfigAttributes.DISPLAY_CONVERTER, 
+					new SummaryDisplayConverter(new PercentageDisplayConverter()), 
+					DisplayMode.NORMAL, 
+					SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
 		}
 	}
 	

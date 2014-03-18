@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Address;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
@@ -69,6 +70,7 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
@@ -211,6 +213,12 @@ public class _706_SortableGroupByWithFilterExample extends AbstractNatExample {
 						new CheckBoxPainter(), 
 						DisplayMode.NORMAL, 
 						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+				
+				configRegistry.registerConfigAttribute(
+						CellConfigAttributes.DISPLAY_CONVERTER,
+						new DefaultDoubleDisplayConverter(),
+						DisplayMode.NORMAL, 
+						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 			}
 		});
 		
@@ -227,13 +235,17 @@ public class _706_SortableGroupByWithFilterExample extends AbstractNatExample {
 			
 			@Override
 			public void configureRegistry(IConfigRegistry configRegistry) {
-				configRegistry.registerConfigAttribute(GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
+				configRegistry.registerConfigAttribute(
+						GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
 						sumMoneySummaryProvider,
-						DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
+						DisplayMode.NORMAL, 
+						GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
-				configRegistry.registerConfigAttribute(GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
+				configRegistry.registerConfigAttribute(
+						GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
 						new AverageAgeGroupBySummaryProvider(),
-						DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 2);
+						DisplayMode.NORMAL, 
+						GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 2);
 
 				configRegistry.registerConfigAttribute(
 						GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
@@ -248,6 +260,13 @@ public class _706_SortableGroupByWithFilterExample extends AbstractNatExample {
 				configRegistry.registerConfigAttribute(
 						GroupByConfigAttributes.GROUP_BY_HINT_STYLE,
 						hintStyle);
+				
+				//register a groupBy double display converter to avoid rendering rounding issues
+				configRegistry.registerConfigAttribute(
+						CellConfigAttributes.DISPLAY_CONVERTER,
+						new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
+						DisplayMode.NORMAL, 
+						GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3);
 			}
 		});
 		

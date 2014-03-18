@@ -34,6 +34,8 @@ import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DarkGroupByThemeExtension;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DefaultGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
@@ -71,9 +73,12 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.style.theme.DarkNatTableThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.theme.DefaultNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
@@ -81,6 +86,7 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -116,8 +122,10 @@ public class _707_GroupBySummarySummaryRowExample extends AbstractNatExample {
 	
 	private boolean useMoneySum = true;
 	
+	private int currentTheme = 1;
+
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _707_GroupBySummarySummaryRowExample());
+		StandaloneNatExampleRunner.run(800, 600, new _707_GroupBySummarySummaryRowExample());
 	}
 
 	@Override
@@ -301,20 +309,12 @@ public class _707_GroupBySummarySummaryRowExample extends AbstractNatExample {
 						GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
 						"[{0}] - ({1})");
 				
-				//set a custom display converter that transforms the values correctly localized
-				DefaultDoubleDisplayConverter converter = new DefaultDoubleDisplayConverter() {
-					@Override
-					public Object canonicalToDisplayValue(Object canonicalValue) {
-						if (canonicalValue == null) {
-							return IGroupBySummaryProvider.DEFAULT_SUMMARY_VALUE;
-						}
-						return super.canonicalToDisplayValue(canonicalValue);
-					}
-				};
-				converter.setMinimumFractionDigits(0);
+				//set a custom display converter to the money groupby column that transforms the values correctly localized
 				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.DISPLAY_CONVERTER, converter, 
-						DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_SUMMARY);
+						CellConfigAttributes.DISPLAY_CONVERTER, 
+						new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
+						DisplayMode.NORMAL, 
+						GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3);
 
 				// SummaryRow configuration
 				configRegistry.registerConfigAttribute(
@@ -331,7 +331,7 @@ public class _707_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
 				configRegistry.registerConfigAttribute(
 						CellConfigAttributes.DISPLAY_CONVERTER, 
-						new DefaultDoubleDisplayConverter(), 
+						new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
 						DisplayMode.NORMAL, 
 						SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 			}
@@ -358,12 +358,21 @@ public class _707_GroupBySummarySummaryRowExample extends AbstractNatExample {
 			}
 		});
 		
+		natTable.addConfiguration(new DebugMenuConfiguration(natTable));
+		
 		natTable.configure();
 		
 		//set the modern theme to visualize the summary better
-		ThemeConfiguration theme = new ModernNatTableThemeConfiguration();
-		theme.addThemeExtension(new ModernGroupByThemeExtension());
-		natTable.setTheme(theme);
+		final ThemeConfiguration defaultTheme = new DefaultNatTableThemeConfiguration();
+		defaultTheme.addThemeExtension(new DefaultGroupByThemeExtension());
+		
+		final ThemeConfiguration modernTheme = new ModernNatTableThemeConfiguration();
+		modernTheme.addThemeExtension(new ModernGroupByThemeExtension());
+		
+		final ThemeConfiguration darkTheme = new DarkNatTableThemeConfiguration();
+		darkTheme.addThemeExtension(new DarkGroupByThemeExtension());
+		
+		natTable.setTheme(modernTheme);
 		
 		//add a border on every side of the table
 		natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
@@ -440,6 +449,26 @@ public class _707_GroupBySummarySummaryRowExample extends AbstractNatExample {
 							SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 				}
 				natTable.doCommand(new VisualRefreshCommand());
+			}
+		});
+
+		Button toggleThemeButton = new Button(buttonPanel, SWT.PUSH);
+		toggleThemeButton.setText("Toggle Theme");
+		toggleThemeButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (currentTheme == 0) {
+					natTable.setTheme(modernTheme);
+					currentTheme++;
+				}
+				else if (currentTheme == 1) {
+					natTable.setTheme(darkTheme);
+					currentTheme++;
+				}
+				else if (currentTheme == 2) {
+					natTable.setTheme(defaultTheme);
+					currentTheme = 0;
+				}
 			}
 		});
 		
