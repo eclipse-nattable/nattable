@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.action.TreeExpandCollapseAction;
+import org.eclipse.nebula.widgets.nattable.tree.painter.TreeImagePainter;
 import org.eclipse.nebula.widgets.nattable.ui.action.NoOpMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.CellPainterMouseEventMatcher;
@@ -32,6 +33,11 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
  *
  */
 public class DefaultTreeLayerConfiguration implements IConfiguration {
+
+	public static final String TREE_COLLAPSED_CONFIG_TYPE = "TREE_COLLAPSED"; //$NON-NLS-1$
+	public static final String TREE_EXPANDED_CONFIG_TYPE = "TREE_EXPANDED"; //$NON-NLS-1$
+	public static final String TREE_LEAF_CONFIG_TYPE = "TREE_LEAF"; //$NON-NLS-1$
+	public static final String TREE_DEPTH_CONFIG_TYPE = "TREE_DEPTH_"; //$NON-NLS-1$
 	
 	private TreeLayer treeLayer;
 
@@ -42,15 +48,11 @@ public class DefaultTreeLayerConfiguration implements IConfiguration {
 		this.treeLayer = treeLayer;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.config.IConfiguration#configureLayer(org.eclipse.nebula.widgets.nattable.layer.ILayer)
-	 */
+	@Override
 	public void configureLayer(ILayer layer) {
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.config.IConfiguration#configureRegistry(org.eclipse.nebula.widgets.nattable.config.IConfigRegistry)
-	 */
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(
 				CellConfigAttributes.CELL_STYLE,
@@ -58,22 +60,20 @@ public class DefaultTreeLayerConfiguration implements IConfiguration {
 					setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,  HorizontalAlignmentEnum.LEFT);
 				}},
 				DisplayMode.NORMAL,
-				TreeLayer.TREE_COLUMN_CELL
-		);
+				TreeLayer.TREE_COLUMN_CELL);
 		configRegistry.registerConfigAttribute(
 				ExportConfigAttributes.EXPORT_FORMATTER,
 				new TreeExportFormatter(treeLayer.getModel()),
 				DisplayMode.NORMAL,
-				TreeLayer.TREE_COLUMN_CELL
-		);
+				TreeLayer.TREE_COLUMN_CELL);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.config.IConfiguration#configureUiBindings(org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry)
-	 */
+	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
 		TreeExpandCollapseAction treeExpandCollapseAction = new TreeExpandCollapseAction();
-		CellPainterMouseEventMatcher treeImagePainterMouseEventMatcher = new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, treeLayer.getTreeImagePainter());
+		CellPainterMouseEventMatcher treeImagePainterMouseEventMatcher = 
+				new CellPainterMouseEventMatcher(
+						GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, TreeImagePainter.class);
 		
 		uiBindingRegistry.registerFirstSingleClickBinding(
 				treeImagePainterMouseEventMatcher,

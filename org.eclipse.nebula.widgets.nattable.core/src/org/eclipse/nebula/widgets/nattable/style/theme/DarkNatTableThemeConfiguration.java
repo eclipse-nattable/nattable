@@ -14,6 +14,7 @@ import org.eclipse.nebula.widgets.nattable.group.painter.ColumnGroupExpandCollap
 import org.eclipse.nebula.widgets.nattable.group.painter.ColumnGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.group.painter.RowGroupExpandCollapseImagePainter;
 import org.eclipse.nebula.widgets.nattable.group.painter.RowGroupHeaderTextPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.GradientBackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.VerticalTextPainter;
@@ -22,6 +23,8 @@ import org.eclipse.nebula.widgets.nattable.sort.painter.SortIconPainter;
 import org.eclipse.nebula.widgets.nattable.sort.painter.SortableHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
+import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
+import org.eclipse.nebula.widgets.nattable.tree.painter.TreeImagePainter;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
@@ -100,6 +103,11 @@ public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfigura
 						new SortableHeaderTextPainter(
 								new TextPainter(false, false), CellEdgeEnum.RIGHT, new SortIconPainter(false, true), false, 0, false), 
 						0, 2, 0, 5, false), true);
+
+		TreeImagePainter imagePainter = new TreeImagePainter(
+				false, GUIHelper.getImage("right_inv"), GUIHelper.getImage("right_down_inv"), null);  //$NON-NLS-1$//$NON-NLS-2$
+		this.treeStructurePainter = new BackgroundPainter(new PaddingDecorator(
+				new IndentedTreeImagePainter(10, null, CellEdgeEnum.LEFT, imagePainter, false, 2, true), 0, 5, 0, 5, false));
 		
 		this.filterRowBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
 

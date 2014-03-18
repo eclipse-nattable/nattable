@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
@@ -25,25 +27,26 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.tree.config.TreeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
-import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 
 
 public class TreeLayer extends AbstractRowHideShowLayer {
+	
+	private static final Log log = LogFactory.getLog(TreeLayer.class);
 
 	public static final String TREE_COLUMN_CELL = "TREE_COLUMN_CELL"; //$NON-NLS-1$
 
 	public static final int TREE_COLUMN_NUMBER = 0;
-
+	
 	/**
 	 * The ITreeRowModelListener that is used to get information about the tree structure.
 	 */
@@ -65,7 +68,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 * @param treeRowModel The ITreeRowModelListener that is used to get information about the tree structure.
 	 */
 	public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel) {
-		this(underlyingLayer, treeRowModel, new IndentedTreeImagePainter(treeRowModel));
+		this(underlyingLayer, treeRowModel, new IndentedTreeImagePainter());
 	}
 	
 	/**
@@ -90,7 +93,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 * 			if you want to specify your own configuration.
 	 */
 	public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel, boolean useDefaultConfiguration) {
-		this(underlyingLayer, treeRowModel, new IndentedTreeImagePainter(treeRowModel), useDefaultConfiguration);
+		this(underlyingLayer, treeRowModel, new IndentedTreeImagePainter(), useDefaultConfiguration);
 	}
 	
 	/**
@@ -113,21 +116,37 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 		if (useDefaultConfiguration) {
 			addConfiguration(new DefaultTreeLayerConfiguration(this));
 		}
-		
-		setConfigLabelAccumulator(new IConfigLabelAccumulator() {
-			@Override
-			public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-				if (isTreeColumn(columnPosition)) {
-					configLabels.addLabelOnTop(TREE_COLUMN_CELL);
-				}
-			}
-		});
 
 		this.indentedTreeImagePainter = indentedTreeImagePainter;
 
 		registerCommandHandler(new TreeExpandCollapseCommandHandler(this));
 		registerCommandHandler(new TreeCollapseAllCommandHandler(this));
 		registerCommandHandler(new TreeExpandAllCommandHandler(this));
+	}
+	
+	@Override
+	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+		LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
+
+		if (isTreeColumn(columnPosition)) {
+			configLabels.addLabelOnTop(TREE_COLUMN_CELL);
+			
+			int rowIndex = getRowIndexByPosition(rowPosition);
+			configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE 
+					+ this.treeRowModel.depth(rowIndex));
+			if (!this.treeRowModel.hasChildren(rowIndex)) {
+				configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
+			}
+			else {
+				if (this.treeRowModel.isCollapsed(rowIndex)) {
+					configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
+				}
+				else {
+					configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
+				}
+			}
+		}
+		return configLabels;
 	}
 
 	/**
@@ -140,7 +159,10 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	/**
 	 * @return The IndentedTreeImagePainter that paints indentation to the left of the configured base painter
 	 * 			and icons for expand/collapse if possible, to render tree structure accordingly.
+	 * 
+	 * @deprecated since 1.1 the configured TreeImagePainter should be used instead of the hard referenced one
 	 */
+	@Deprecated
 	public IndentedTreeImagePainter getIndentedTreeImagePainter() {
 		return this.indentedTreeImagePainter;
 	}
@@ -150,7 +172,10 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 * 			Usually it is some type	of TreeImagePainter that paints expand/collapse/leaf icons regarding 
 	 * 			the node state.<br/>
 	 * 			Can be <code>null</code> if set explicitly to the IndentedTreeImagePainter!
+	 * 
+	 * @deprecated since 1.1 the configured TreeImagePainter should be used instead of the hard referenced one
 	 */
+	@Deprecated
 	public ICellPainter getTreeImagePainter() {
 		return this.indentedTreeImagePainter != null ? this.indentedTreeImagePainter.getTreeImagePainter() : null;
 	}
@@ -169,8 +194,48 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 		ICellPainter cellPainter = super.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 		
 		if (cell.getConfigLabels().hasLabel(TREE_COLUMN_CELL)) {
-			cellPainter = new BackgroundPainter(new CellPainterDecorator(
-					cellPainter, CellEdgeEnum.LEFT, this.indentedTreeImagePainter));
+
+			ICellPainter treeCellPainter = configRegistry.getConfigAttribute(
+					TreeConfigAttributes.TREE_STRUCTURE_PAINTER, 
+					cell.getDisplayMode(), cell.getConfigLabels().getLabels());
+			
+			if (treeCellPainter != null) {
+				ICellPainter innerWrapper = treeCellPainter;
+				IndentedTreeImagePainter treePainter = null;
+				if (innerWrapper instanceof IndentedTreeImagePainter) {
+					treePainter = (IndentedTreeImagePainter) innerWrapper;
+				}
+				else {
+					while (treePainter == null 
+							&& innerWrapper != null 
+							&& innerWrapper instanceof CellPainterWrapper
+							&& ((CellPainterWrapper)innerWrapper).getWrappedPainter() != null) {
+						
+						innerWrapper = ((CellPainterWrapper)innerWrapper).getWrappedPainter();
+						if (innerWrapper instanceof IndentedTreeImagePainter) {
+							treePainter = (IndentedTreeImagePainter) innerWrapper;
+						}
+					}
+				}
+				
+				if (treePainter != null) {
+					treePainter.setBaseCellPainter(cellPainter);
+					cellPainter = treeCellPainter;
+				}
+				else {
+					//log error
+					log.warn("There is no IndentedTreeImagePainter found for TREE_STRUCTURE_PAINTER, " //$NON-NLS-1$
+							+ "using local configured IndentedTreeImagePainter as fallback"); //$NON-NLS-1$
+					//fallback
+					this.indentedTreeImagePainter.setBaseCellPainter(cellPainter);
+					cellPainter = new BackgroundPainter(this.indentedTreeImagePainter);
+				}
+			}
+			else {
+				//backwards compatibility fallback
+				this.indentedTreeImagePainter.setBaseCellPainter(cellPainter);
+				cellPainter = new BackgroundPainter(this.indentedTreeImagePainter);
+			}
 		}
 		
 		return cellPainter;

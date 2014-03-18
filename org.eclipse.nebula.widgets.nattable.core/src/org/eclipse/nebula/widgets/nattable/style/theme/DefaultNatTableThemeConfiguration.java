@@ -455,6 +455,23 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 
 	public ICellPainter treeCellPainter 								= null;
 	
+	public Color treeSelectionBgColor 									= null;
+	public Color treeSelectionFgColor 									= null;
+	public Color treeSelectionGradientBgColor 							= null;
+	public Color treeSelectionGradientFgColor 							= null;
+	public HorizontalAlignmentEnum treeSelectionHAlign 					= HorizontalAlignmentEnum.LEFT;
+	public VerticalAlignmentEnum treeSelectionVAlign 					= null;
+	public Font treeSelectionFont 										= null;
+	public Image treeSelectionImage 									= null;
+	public BorderStyle treeSelectionBorderStyle 						= null;
+	public Character treeSelectionPWEchoChar 							= null;
+	public TextDecorationEnum treeSelectionTextDecoration 				= null;
+
+	public ICellPainter treeSelectionCellPainter 						= null;
+	
+	public ICellPainter treeStructurePainter 							= null;
+	public ICellPainter treeStructureSelectionPainter 					= null;
+	
 	// summary row style
 	
 	public Color summaryRowBgColor 										= GUIHelper.COLOR_WHITE;
@@ -1044,6 +1061,38 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	@Override
 	protected ICellPainter getTreeCellPainter() {
 		return this.treeCellPainter;
+	}
+
+	@Override
+	protected IStyle getTreeSelectionStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, treeSelectionBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, treeSelectionFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, treeSelectionGradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, treeSelectionGradientFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, treeSelectionHAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, treeSelectionVAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, treeSelectionFont);
+		cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, treeSelectionImage);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, treeSelectionBorderStyle);
+		cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR, treeSelectionPWEchoChar);
+		cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, treeSelectionTextDecoration);
+		return cellStyle;
+	}
+
+	@Override
+	protected ICellPainter getTreeSelectionCellPainter() {
+		return this.treeSelectionCellPainter;
+	}
+
+	@Override
+	protected ICellPainter getTreeStructurePainter() {
+		return this.treeStructurePainter;
+	}
+
+	@Override
+	protected ICellPainter getTreeStructureSelectionPainter() {
+		return this.treeStructureSelectionPainter;
 	}
 	
 	@Override

@@ -14,6 +14,7 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayerPainter;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
@@ -23,6 +24,8 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
+import org.eclipse.nebula.widgets.nattable.tree.config.TreeConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
 import org.eclipse.swt.graphics.Color;
 
 /**
@@ -1464,8 +1467,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	/**
 	 * This method is used to register style configurations for a tree representation. It will only be applied
 	 * in case a TreeLayer is involved, which adds the configuration label {@link TreeLayer#TREE_COLUMN_CELL}
-	 * to the tree column.<br/>
-	 * Usually changing the {@link ICellPainter} is not intended because of internal processing.
+	 * to the tree column.
 	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
 	 * 			to which the style configuration should be applied to.
 	 */
@@ -1486,6 +1488,40 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 					cellPainter, 
 					DisplayMode.NORMAL, 
 					TreeLayer.TREE_COLUMN_CELL);
+		}
+		
+		IStyle treeSelectionStyle = getTreeSelectionStyle();
+		if (!isStyleEmpty(treeSelectionStyle)) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE,
+					treeSelectionStyle,
+					DisplayMode.SELECT,
+					TreeLayer.TREE_COLUMN_CELL);
+		}
+		
+		ICellPainter selectionCellPainter = getTreeSelectionCellPainter();
+		if (selectionCellPainter != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					selectionCellPainter, 
+					DisplayMode.SELECT, 
+					TreeLayer.TREE_COLUMN_CELL);
+		}
+		
+		ICellPainter treePainter = getTreeStructurePainter();
+		if (treePainter != null) {
+			configRegistry.registerConfigAttribute(
+					TreeConfigAttributes.TREE_STRUCTURE_PAINTER, 
+					treePainter,
+					DisplayMode.NORMAL);
+		}
+		
+		ICellPainter treeSelectionPainter = getTreeStructureSelectionPainter();
+		if (treeSelectionPainter != null) {
+			configRegistry.registerConfigAttribute(
+					TreeConfigAttributes.TREE_STRUCTURE_PAINTER, 
+					treeSelectionPainter,
+					DisplayMode.SELECT);
 		}
 	}
 	
@@ -1510,16 +1546,54 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#NORMAL}
 	 * and the configuration label {@link TreeLayer#TREE_COLUMN_CELL}.
 	 * </p>
-	 * <p>
-	 * Typically this method should return <code>null</code>, because the {@link ICellPainter} that
-	 * renders the tree is internally set to the TreeLayer itself. This is one of the few cases
-	 * where styling is hard set in the layer itself rather than configuration only. The reason
-	 * is that the painter for trees is of the special type IndentedTreeImagePainter which is typically 
-	 * using the underlying painter, wrapping it with a painter that adds the tree icons and indentation.
-	 * </p>
 	 * @return The {@link ICellPainter} that should be used to render the tree column in a NatTable. 
 	 */
 	protected abstract ICellPainter getTreeCellPainter();
+	
+	/**
+	 * Returns the {@link IStyle} that should be used to render the selected tree column cells in a NatTable.
+	 * <p>
+	 * That means this {@link IStyle} is registered against {@link DisplayMode#SELECT}
+	 * and the configuration label {@link TreeLayer#TREE_COLUMN_CELL}.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link IStyle} that should be used to render the selected tree column in a NatTable. 
+	 */
+	protected abstract IStyle getTreeSelectionStyle();
+
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render the selected tree column cells in a NatTable.
+	 * <p>
+	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#SELECT}
+	 * and the configuration label {@link TreeLayer#TREE_COLUMN_CELL}.
+	 * </p>
+	 * @return The {@link ICellPainter} that should be used to render the selected tree column in a NatTable. 
+	 */
+	protected abstract ICellPainter getTreeSelectionCellPainter();
+
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render the tree structure in a NatTable.
+	 * It needs to be an {@link IndentedTreeImagePainter} to show the expand/collapsed state aswell as the 
+	 * indentation for the tree level. It that can be wrapped with several {@link CellPainterWrapper}. 
+	 * If there is no  {@link IndentedTreeImagePainter} in the painter hierarchy, this configuration attribute 
+	 * will be ignored by the TreeLayer. 
+	 * @return The {@link IndentedTreeImagePainter} that should be used to render the tree structure in a NatTable. 
+	 */
+	protected abstract ICellPainter getTreeStructurePainter();
+
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render the selected tree structure in a NatTable.
+	 * It needs to be an {@link IndentedTreeImagePainter} to show the expand/collapsed state aswell as the 
+	 * indentation for the tree level. It that can be wrapped with several {@link CellPainterWrapper}. 
+	 * If there is no  {@link IndentedTreeImagePainter} in the painter hierarchy, this configuration attribute 
+	 * will be ignored by the TreeLayer. 
+	 * @return The {@link IndentedTreeImagePainter} that should be used to render the selected tree structure in a NatTable. 
+	 */
+	protected abstract ICellPainter getTreeStructureSelectionPainter();
 
 	/**
 	 * This method is used to register style configurations for a summary row. It will only be applied
@@ -2171,6 +2245,24 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 					CellConfigAttributes.CELL_PAINTER, 
 					DisplayMode.NORMAL, 
 					TreeLayer.TREE_COLUMN_CELL);
+		if (!isStyleEmpty(getTreeSelectionStyle()))
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_STYLE,
+					DisplayMode.SELECT,
+					TreeLayer.TREE_COLUMN_CELL);
+		if (getTreeSelectionCellPainter() != null)
+			configRegistry.unregisterConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					DisplayMode.SELECT, 
+					TreeLayer.TREE_COLUMN_CELL);
+		if (getTreeStructurePainter() != null)
+			configRegistry.unregisterConfigAttribute(
+					TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
+					DisplayMode.NORMAL);
+		if (getTreeStructureSelectionPainter() != null)
+			configRegistry.unregisterConfigAttribute(
+					TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
+					DisplayMode.SELECT);
 
 		//unregister summary row style configuration
 		if (!isStyleEmpty(getSummaryRowStyle()))
