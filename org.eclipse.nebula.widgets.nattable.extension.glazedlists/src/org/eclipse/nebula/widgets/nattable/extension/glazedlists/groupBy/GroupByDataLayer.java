@@ -53,13 +53,17 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	 */
 	public static final String GROUP_BY_OBJECT = "GROUP_BY_OBJECT"; //$NON-NLS-1$
 	/**
+	 * Label prefix for labels that are added to cells for a group by object.
+	 */
+	public static final String GROUP_BY_COLUMN_PREFIX = "GROUP_BY_COLUMN_"; //$NON-NLS-1$
+	/**
 	 * Label that indicates the shown tree item object as GroupByObject and contains a summary value.
 	 */
 	public static final String GROUP_BY_SUMMARY = "GROUP_BY_SUMMARY"; //$NON-NLS-1$
 	/**
-	 * Label prefix for labels that are added to cells for a group by object.
+	 * Label prefix for labels that are added to cells for a group by object summary.
 	 */
-	public static final String GROUP_BY_COLUMN_PREFIX = "GROUP_BY_COLUMN_"; //$NON-NLS-1$
+	public static final String GROUP_BY_SUMMARY_COLUMN_PREFIX = "GROUP_BY_SUMMARY_COLUMN_"; //$NON-NLS-1$
 	/**
 	 * The underlying base EventList.
 	 */
@@ -206,6 +210,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 			configLabels.addLabelOnTop(GROUP_BY_COLUMN_PREFIX + columnPosition);
 			if (getGroupBySummaryProvider(configLabels) != null) {
 				configLabels.addLabelOnTop(GROUP_BY_SUMMARY);
+				configLabels.addLabelOnTop(GROUP_BY_SUMMARY_COLUMN_PREFIX + columnPosition);
 			}
 		}
 		return configLabels;

@@ -14,10 +14,10 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
 
 public class GroupByDataLayerConfiguration extends AbstractRegistryConfiguration {
 
@@ -34,19 +34,10 @@ public class GroupByDataLayerConfiguration extends AbstractRegistryConfiguration
 		
 		//register a converter for group by summary values that renders ... in case there is
 		//no summary value calculated yet
-		DisplayConverter converter = new DefaultDisplayConverter() {
-			@Override
-			public Object canonicalToDisplayValue(Object canonicalValue) {
-				if (canonicalValue == null) {
-					return IGroupBySummaryProvider.DEFAULT_SUMMARY_VALUE;
-				}
-				return super.canonicalToDisplayValue(canonicalValue);
-			}
-		};
 		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.DISPLAY_CONVERTER, converter, 
+				CellConfigAttributes.DISPLAY_CONVERTER, new SummaryDisplayConverter(
+						new DefaultDisplayConverter(), IGroupBySummaryProvider.DEFAULT_SUMMARY_VALUE), 
 				DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_SUMMARY);
-
 	}
 	
 }

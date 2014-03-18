@@ -15,7 +15,6 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -34,6 +33,7 @@ public class DefaultSummaryRowConfiguration extends AbstractRegistryConfiguratio
 	public Color summaryRowBgColor = GUIHelper.COLOR_WHITE;
 	public Font summaryRowFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.BOLD)); //$NON-NLS-1$
 
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		addSummaryRowStyleConfig(configRegistry);
 		addSummaryProviderConfig(configRegistry);
@@ -46,11 +46,19 @@ public class DefaultSummaryRowConfiguration extends AbstractRegistryConfiguratio
 		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, summaryRowBgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, summaryRowFgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, summaryRowBorderStyle);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		configRegistry.registerConfigAttribute(
+				CellConfigAttributes.CELL_STYLE,
+				cellStyle,
+				DisplayMode.NORMAL,
+				SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 	}
 
 	protected void addSummaryProviderConfig(IConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER, ISummaryProvider.DEFAULT, DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		configRegistry.registerConfigAttribute(
+				SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+				ISummaryProvider.DEFAULT,
+				DisplayMode.NORMAL,
+				SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 	}
 	
 	/**
@@ -58,17 +66,10 @@ public class DefaultSummaryRowConfiguration extends AbstractRegistryConfiguratio
 	 * to show in the summary row yet.
 	 */
 	protected void addSummaryRowDisplayConverter(IConfigRegistry configRegistry) {
-		DisplayConverter converter = new DefaultDisplayConverter() {
-			@Override
-			public Object canonicalToDisplayValue(Object canonicalValue) {
-				if (canonicalValue == null) {
-					return ISummaryProvider.DEFAULT_SUMMARY_VALUE;
-				}
-				return super.canonicalToDisplayValue(canonicalValue);
-			}
-		};
 		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.DISPLAY_CONVERTER, converter, 
-				DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+				CellConfigAttributes.DISPLAY_CONVERTER,
+				new SummaryDisplayConverter(new DefaultDisplayConverter()), 
+				DisplayMode.NORMAL,
+				SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 	}
 }
