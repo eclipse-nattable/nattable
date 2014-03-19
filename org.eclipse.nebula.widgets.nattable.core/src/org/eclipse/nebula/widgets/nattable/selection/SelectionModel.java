@@ -222,16 +222,18 @@ public class SelectionModel implements ISelectionModel {
 
 		try {
 			ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
-			Rectangle cellRectangle =
-					new Rectangle(
-							cell.getOriginColumnPosition(),
-							cell.getOriginRowPosition(),
-							cell.getColumnSpan(),
-							cell.getRowSpan());
-			
-			for (Rectangle selectionRectangle : selections) {
-				if (selectionRectangle.intersects(cellRectangle))
-					return true;
+			if (cell != null) {
+				Rectangle cellRectangle =
+						new Rectangle(
+								cell.getOriginColumnPosition(),
+								cell.getOriginRowPosition(),
+								cell.getColumnSpan(),
+								cell.getRowSpan());
+				
+				for (Rectangle selectionRectangle : selections) {
+					if (selectionRectangle.intersects(cellRectangle))
+						return true;
+				}
 			}
 		} finally {
 			selectionsLock.readLock().unlock();

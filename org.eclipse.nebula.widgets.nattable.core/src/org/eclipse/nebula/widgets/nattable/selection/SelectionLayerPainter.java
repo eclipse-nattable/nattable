@@ -10,9 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -28,11 +25,10 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Specialized GridLineCellLayerPainter that renders an additional border around selected cells.
+ * Specialised GridLineCellLayerPainter that renders an additional border around selected cells.
  * By default the additional selection anchor border style is black dotted one pixel sized line.
  * This style can be configured via ConfigRegistry.
  * 
@@ -40,11 +36,6 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class SelectionLayerPainter extends GridLineCellLayerPainter {
 
-	private int columnPositionOffset;
-	
-	private int rowPositionOffset;
-	
-	private Map<Point, ILayerCell> cells;
 	/**
 	 * Create a SelectionLayerPainter that renders grid lines in the specified color 
 	 * and uses the default clipping behaviour.
@@ -98,9 +89,8 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle pixelRectangle, IConfigRegistry configRegistry) {
 		Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
-		columnPositionOffset = positionRectangle.x;
-		rowPositionOffset = positionRectangle.y;
-		cells = new HashMap<Point, ILayerCell>();
+		int columnPositionOffset = positionRectangle.x;
+		int rowPositionOffset = positionRectangle.y;
 		
 		super.paintLayer(natLayer, gc, xOffset, yOffset, pixelRectangle, configRegistry);
 		
@@ -112,104 +102,130 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 		applyBorderStyle(gc, configRegistry);
 		
 		// Draw horizontal borders
-		boolean selectedMode = false;
 		for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
 			ILayerCell previousCell = null;
 			ILayerCell currentCell = null;
+			ILayerCell afterCell = null;
 			for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
-				currentCell = cells.get(new Point(columnPosition, rowPosition));
+				currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
+				afterCell = natLayer.getCellByPosition(columnPosition, rowPosition+1);
+				
 				if (currentCell != null) {
-					if (selectedMode != isSelected(currentCell)) {
-						selectedMode = !selectedMode;
+					Rectangle currentCellBounds = currentCell.getBounds();
+					
+					if (isSelected(currentCell)) {
+						int x0 = currentCellBounds.x - 1;
+						int x1 = currentCellBounds.x + currentCellBounds.width - 1;
 						
-						// Draw minimal shared border between previous and current cell
-						Rectangle currentCellBounds = currentCell.getBounds();
-						
-						int x0 = xOffset + currentCellBounds.x - 1;
-						int x1 = xOffset + currentCellBounds.x + currentCellBounds.width - 1;
-						
-						int y = yOffset + currentCellBounds.y - 1;
+						int y = currentCellBounds.y - 1;
 						
 						if (previousCell != null) {
 							Rectangle previousCellBounds = previousCell.getBounds();
-							x0 = Math.max(x0, xOffset + previousCellBounds.x - 1);
-							x1 = Math.min(x1, xOffset + previousCellBounds.x + previousCellBounds.width - 1);
+							x0 = Math.max(x0, previousCellBounds.x - 1);
+							x1 = Math.min(x1, previousCellBounds.x + previousCellBounds.width - 1);
 						}
 						
-						gc.drawLine(x0, y, x1, y);
+						if (previousCell == null || !isSelected(previousCell))
+							gc.drawLine(x0, y, x1, y);
+						
+						//check after
+						if (afterCell == null || !isSelected(afterCell)) {
+							Rectangle cellBounds = afterCell != null ? afterCell.getBounds() : currentCell.getBounds();
+
+							y = currentCellBounds.y + currentCellBounds.height - 1;
+							
+							x0 = Math.max(x0, cellBounds.x - 1);
+							x1 = Math.min(x1, cellBounds.x + cellBounds.width - 1);
+							
+							gc.drawLine(x0, y, x1, y);
+						}
+					}
+					else {
+						//check if previous was selected to not override the border again
+						//this is necessary because of single cell updates
+						if (positionRectangle.width == 2 || positionRectangle.height == 2) {
+							if (afterCell != null && isSelected(afterCell)) {
+								Rectangle afterCellBounds = afterCell.getBounds();
+								
+								int x0 = Math.max(afterCellBounds.x - 1, currentCellBounds.x - 1);
+								int x1 = Math.min(afterCellBounds.x + afterCellBounds.width - 1, 
+										currentCellBounds.x + currentCellBounds.width - 1);
+								
+								int y = currentCellBounds.y + currentCellBounds.height - 1;
+								gc.drawLine(x0, y, x1, y);
+							}
+						}
 					}
 				}
 				previousCell = currentCell;
 			}
-			if (selectedMode && currentCell != null) {
-				// If last cell is selected, draw its bottom edge
-				Rectangle cellBounds = currentCell.getBounds();
-				gc.drawLine(
-						xOffset + cellBounds.x - 1,
-						yOffset + cellBounds.y + cellBounds.height - 1,
-						xOffset + cellBounds.x + cellBounds.width - 1,
-						yOffset + cellBounds.y + cellBounds.height - 1
-				);
-			}
-			selectedMode = false;
 		}
 		
 		// Draw vertical borders
 		for (int rowPosition = rowPositionOffset; rowPosition < rowPositionOffset + positionRectangle.height; rowPosition++) {
 			ILayerCell previousCell = null;
 			ILayerCell currentCell = null;
+			ILayerCell afterCell = null;
 			for (int columnPosition = columnPositionOffset; columnPosition < columnPositionOffset + positionRectangle.width; columnPosition++) {
-				currentCell = cells.get(new Point(columnPosition, rowPosition));
+				currentCell = natLayer.getCellByPosition(columnPosition, rowPosition);
+				afterCell = natLayer.getCellByPosition(columnPosition+1, rowPosition);
+				
 				if (currentCell != null) {
-					if (selectedMode != isSelected(currentCell)) {
-						selectedMode = !selectedMode;
+					Rectangle currentCellBounds = currentCell.getBounds();
+					
+					if (isSelected(currentCell)) {
+						int y0 = currentCellBounds.y - 1;
+						int y1 = currentCellBounds.y + currentCellBounds.height - 1;
 						
-						// Draw minimal shared border between previous and current cell
-						Rectangle currentCellBounds = currentCell.getBounds();
-						
-						int x = xOffset + currentCellBounds.x - 1;
-						
-						int y0 = yOffset + currentCellBounds.y - 1;
-						int y1 = yOffset + currentCellBounds.y + currentCellBounds.height - 1;
+						int x = currentCellBounds.x - 1;
 						
 						if (previousCell != null) {
 							Rectangle previousCellBounds = previousCell.getBounds();
-							y0 = Math.max(y0, yOffset + previousCellBounds.y - 1);
-							y1 = Math.min(y1, yOffset + previousCellBounds.y + previousCellBounds.height - 1);
+							y0 = Math.max(y0, previousCellBounds.y - 1);
+							y1 = Math.min(y1, previousCellBounds.y + previousCellBounds.height - 1);
 						}
 						
-						gc.drawLine(x, y0, x, y1);
+						if (previousCell == null || !isSelected(previousCell))
+							gc.drawLine(x, y0, x, y1);
+						
+						//check after
+						if (afterCell == null || !isSelected(afterCell)) {
+							Rectangle cellBounds = afterCell != null ? afterCell.getBounds() : currentCell.getBounds();
+							
+							x = currentCellBounds.x + currentCellBounds.width - 1;
+							
+							y0 = Math.max(y0, cellBounds.y - 1);
+							y1 = Math.min(y1, cellBounds.y + cellBounds.height - 1);
+							
+							gc.drawLine(x, y0, x, y1);
+						}
+					}
+					else {
+						//check if previous was selected to not override the border again
+						//this is necessary because of single cell updates
+						//check if previous was selected to not override the border again
+						//this is necessary because of single cell updates
+						if (positionRectangle.width == 2 || positionRectangle.height == 2) {
+							if (afterCell != null && isSelected(afterCell)) {
+								Rectangle afterCellBounds = afterCell.getBounds();
+								
+								int y0 = Math.max(afterCellBounds.y - 1, currentCellBounds.y - 1);
+								int y1 = Math.min(afterCellBounds.y + afterCellBounds.height - 1, 
+										currentCellBounds.y + currentCellBounds.height - 1);
+	
+								int x = currentCellBounds.x + currentCellBounds.width - 1;
+								gc.drawLine(x, y0, x, y1);
+							}
+						}
 					}
 				}
 				previousCell = currentCell;
 			}
-			if (selectedMode && currentCell != null) {
-				// If last cell is selected, draw its right edge
-				Rectangle cellBounds = currentCell.getBounds();
-				gc.drawLine(
-						xOffset + cellBounds.x + cellBounds.width - 1,
-						yOffset + cellBounds.y - 1,
-						xOffset + cellBounds.x + cellBounds.width - 1,
-						yOffset + cellBounds.y + cellBounds.height - 1
-				);
-			}
-			selectedMode = false;
 		}
 		
 		// Restore original gc settings
 		gc.setLineStyle(originalLineStyle);
 		gc.setForeground(originalForeground);
-	}
-	
-	@Override
-	protected void paintCell(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-		for (int columnPosition = cell.getOriginColumnPosition(); columnPosition < cell.getOriginColumnPosition() + cell.getColumnSpan(); columnPosition++) {
-			for (int rowPosition = cell.getOriginRowPosition(); rowPosition < cell.getOriginRowPosition() + cell.getRowSpan(); rowPosition++) {
-				cells.put(new Point(columnPosition, rowPosition), cell);
-			}
-		}
-		
-		super.paintCell(cell, gc, configRegistry);
 	}
 	
 	private boolean isSelected(ILayerCell cell) {
