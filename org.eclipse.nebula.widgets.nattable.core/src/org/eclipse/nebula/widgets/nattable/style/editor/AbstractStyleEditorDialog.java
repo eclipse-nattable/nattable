@@ -11,13 +11,13 @@
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -86,43 +86,42 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
 
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
-		gridLayout.marginLeft = 65;
+		gridLayout.makeColumnsEqualWidth = false;
+		gridLayout.horizontalSpacing = 2;
 		buttonPanel.setLayout(gridLayout);
-
-		GridData gridLayoutData = new GridData();
-		gridLayoutData.horizontalAlignment = GridData.FILL_HORIZONTAL;
-		buttonPanel.setLayoutData(gridLayoutData);
+		
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
 
 		Button okButton = new Button(buttonPanel, SWT.PUSH);
 		okButton.setText(Messages.getString("AbstractStyleEditorDialog.okButton")); //$NON-NLS-1$
-		okButton.setLayoutData(new GridData(70, 25));
 		okButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doFormOK(shell);
 			}
 		});
+		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).minSize(70, 25).grab(true, true).applyTo(okButton);
 
 		Button clearButton = new Button(buttonPanel, SWT.PUSH);
 		clearButton.setText(Messages.getString("AbstractStyleEditorDialog.clearButton")); //$NON-NLS-1$
 		clearButton.setToolTipText(Messages.getString("AbstractStyleEditorDialog.clearButtonTooltip")); //$NON-NLS-1$
-		clearButton.setLayoutData(new GridData(80, 25));
 		clearButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doFormClear(shell);
 			}
 		});
+		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).minSize(80, 25).grab(false, false).applyTo(clearButton);
 
 		Button cancelButton = new Button(buttonPanel, SWT.NONE);
 		cancelButton.setText(Messages.getString("AbstractStyleEditorDialog.cancelButton")); //$NON-NLS-1$
-		cancelButton.setLayoutData(new GridData(80, 25));
 		cancelButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doFormCancel(shell);
 			}
 		});
+		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).minSize(80, 25).grab(false, false).applyTo(cancelButton);
 
 		shell.setDefaultButton(okButton);
 	}

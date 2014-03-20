@@ -75,14 +75,14 @@ public class CreateColumnGroupDialog extends Dialog {
 	private Composite createButtonSection(Composite composite) {
 
 		Composite panel = new Composite(composite, SWT.NONE);
-		GridLayout layout= new GridLayout(1,false);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 0;
+		layout.makeColumnsEqualWidth = false;
+		layout.horizontalSpacing = 2;
 		panel.setLayout(layout);
 		
-		Label spacer = new Label(panel, SWT.LEFT);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(spacer);
-		
 		createButton = createButton(panel, IDialogConstants.CLIENT_ID, Messages.getString("ColumnGroups.createButtonLabel"), false); //$NON-NLS-1$
-		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).grab(false, false).hint(52, SWT.DEFAULT).applyTo(createButton);
+		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).grab(true, true).applyTo(createButton);
 		
 		createButton.setEnabled(false);
 		getShell().setDefaultButton(createButton);
@@ -94,8 +94,8 @@ public class CreateColumnGroupDialog extends Dialog {
 			}
 		});
  		
-		Button closeButton = createButton(panel, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).grab(false, false).hint(52, SWT.DEFAULT).applyTo(closeButton);
+		Button closeButton = createButton(panel, IDialogConstants.CANCEL_ID, Messages.getString("AbstractStyleEditorDialog.cancelButton"), false); //$NON-NLS-1$
+		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).grab(false, false).applyTo(closeButton);
 		
 		return panel;
 	}
@@ -111,6 +111,7 @@ public class CreateColumnGroupDialog extends Dialog {
 		groupNameText = new Text(row, SWT.SINGLE | SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(groupNameText);
 		groupNameText.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				createButton.setEnabled(groupNameText.getText().length() > 0);
 			}
@@ -138,6 +139,7 @@ public class CreateColumnGroupDialog extends Dialog {
 	
 	private void doColumnGrouping() {		
 		BusyIndicator.showWhile(super.getShell().getDisplay(), new Runnable() {
+			@Override
 			public void run() {
 				final CreateColumnGroupCommand command = new CreateColumnGroupCommand(groupNameText.getText());
 				try {
