@@ -133,7 +133,8 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 	 * @return column header as defined by the data source
 	 */
 	public String getOriginalColumnLabel(int columnPosition) {
-		return super.getDataValueByPosition(columnPosition, 0).toString();
+		Object dataValue = super.getDataValueByPosition(columnPosition, 0);
+		return dataValue != null ? dataValue.toString() : ""; //$NON-NLS-1$
 	}
 
 	/**
