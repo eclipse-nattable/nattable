@@ -18,8 +18,10 @@ import org.eclipse.swt.events.MouseEvent;
 
 public class ColumnGroupExpandCollapseAction implements IMouseAction{
 
+	@Override
 	public void run(NatTable natTable, MouseEvent event) {
-		ColumnGroupExpandCollapseCommand command = new ColumnGroupExpandCollapseCommand(natTable, natTable.getColumnPositionByX(event.x));
+		ColumnGroupExpandCollapseCommand command = new ColumnGroupExpandCollapseCommand(
+				natTable, natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
 		natTable.doCommand(command);
 	}
 

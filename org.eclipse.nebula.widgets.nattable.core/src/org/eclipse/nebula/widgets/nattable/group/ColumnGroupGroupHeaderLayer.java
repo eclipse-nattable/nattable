@@ -198,7 +198,8 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
 		if (columnGroup.isCollapsed()) {
-			return columnGroup.getStaticColumnIndexes().size();
+			int sizeOfStaticColumns = columnGroup.getStaticColumnIndexes().size();
+			return sizeOfStaticColumns == 0 ? 1 : sizeOfStaticColumns;
 		} else {
 			int startPositionOfGroup = getStartPositionOfGroup(columnPosition);
 			int sizeOfGroup = columnGroup.getSize();
@@ -304,6 +305,14 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
 
 	public void clearAllGroups(){
 		model.clear();
+	}
+	
+	public void setStaticColumnIndexesByGroup(String colGroupName, int... staticColumnIndexes) {
+		model.setStaticColumnIndexesByGroup(colGroupName, staticColumnIndexes);
+	}
+
+	public boolean isColumnInGroup(int bodyColumnIndex) {
+		return model.isPartOfAGroup(bodyColumnIndex);
 	}
 
 	/**

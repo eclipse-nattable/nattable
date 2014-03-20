@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.examples.examples._150_Column_and_ro
 
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -52,6 +51,7 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
 	
 	private ColumnHeaderLayer columnHeaderLayer;
 
+	@Override
 	public Control createExampleControl(Composite parent) {
 		// Body
 
@@ -59,7 +59,7 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
 		Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 		DefaultBodyDataProvider<RowDataFixture> bodyDataProvider = new DefaultBodyDataProvider<RowDataFixture>(RowDataListFixture.getList(2000),
 				propertyNames);
-		ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(new DataLayer(bodyDataProvider), columnGroupModel);
+		ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(new DataLayer(bodyDataProvider), sndColumnGroupModel, columnGroupModel);
 
 		// Column header
 
@@ -82,6 +82,8 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
 		sndGroup.addColumnsIndexesToGroup("GroupGroup 1", 1,2,3,4,5,6,7);
 		sndGroup.addColumnsIndexesToGroup("GroupGroup 2", 11,12,13,14,15,16,17);
 
+		sndGroup.setStaticColumnIndexesByGroup("GroupGroup 1", 1, 2);
+		
 		// Row header
 
 		final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);

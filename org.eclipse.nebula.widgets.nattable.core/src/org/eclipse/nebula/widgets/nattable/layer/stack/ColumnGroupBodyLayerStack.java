@@ -41,9 +41,9 @@ public class ColumnGroupBodyLayerStack extends AbstractIndexLayerTransform {
 	private SelectionLayer selectionLayer;
 	private ViewportLayer viewportLayer;
 
-	public ColumnGroupBodyLayerStack(IUniqueIndexLayer underlyingLayer, ColumnGroupModel columnGroupModel) {
+	public ColumnGroupBodyLayerStack(IUniqueIndexLayer underlyingLayer, ColumnGroupModel... columnGroupModel) {
 		columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
-		columnGroupReorderLayer = new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
+		columnGroupReorderLayer = new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel[columnGroupModel.length-1]);
 		columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
 		columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
 		selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);

@@ -25,19 +25,33 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
  */
 public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer implements IColumnGroupModelListener {
 
-	private final ColumnGroupModel model;
+	private final ColumnGroupModel[] models;
 
 	public ColumnGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
-		super(underlyingLayer);
-		this.model = model;
+		this(underlyingLayer, new ColumnGroupModel[] {model});
+	}
 
-		model.registerColumnGroupModelListener(this);
+	public ColumnGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer, ColumnGroupModel... models) {
+		super(underlyingLayer);
+		this.models = models;
+
+		for (ColumnGroupModel model : models) {
+			model.registerColumnGroupModelListener(this);
+		}
 
 		registerCommandHandler(new ColumnGroupExpandCollapseCommandHandler(this));
 	}
 
-	public ColumnGroupModel getModel() {
-		return model;
+	public ColumnGroupModel getModel(int row) {
+		//fallback in case of more complex layer compositions
+		//if there is a ColumnGroupModel requested for a row that is greater than the
+		//registered models, always use the bottom most ColumnGroupModel
+		//this is the same behaviour as it was before the modifications to support
+		//expand/collapse for two level column groups
+		if (row >= models.length) {
+			row = models.length - 1;
+		}
+		return models[row];
 	}
 
 	// Expand/collapse
@@ -49,11 +63,20 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 		
 		boolean isHiddeninUnderlyingLayer = 
 			ColumnGroupUtils.isColumnIndexHiddenInUnderLyingLayer(columnIndex, this, underlyingLayer);
-		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
-		boolean isCollapsedAndStaticColumn = columnGroup != null && columnGroup.isCollapsed() &&
-			!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model);
 		
-		return isHiddeninUnderlyingLayer || isCollapsedAndStaticColumn;
+		if (isHiddeninUnderlyingLayer) 
+			return true;
+		
+		for (ColumnGroupModel model : models) {
+			ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+			boolean isCollapsedAndStaticColumn = columnGroup != null && columnGroup.isCollapsed() &&
+					!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model);
+			
+			if (isCollapsedAndStaticColumn)
+				return true;
+		}
+		
+		return false;
 	}
 
 	@Override
@@ -64,11 +87,14 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 		int underlyingColumnCount = underlyingLayer.getColumnCount();
 		for (int i = 0; i < underlyingColumnCount; i++) {
 			int columnIndex = underlyingLayer.getColumnIndexByPosition(i);
-			ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
-
-			if (columnGroup != null && columnGroup.isCollapsed()) {
-				if (!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model)) {
-					hiddenColumnIndexes.add(Integer.valueOf(columnIndex));
+			
+			for (ColumnGroupModel model : models) {
+				ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+				
+				if (columnGroup != null && columnGroup.isCollapsed()) {
+					if (!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model)) {
+						hiddenColumnIndexes.add(Integer.valueOf(columnIndex));
+					}
 				}
 			}
 		}
@@ -78,6 +104,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 
 	// IColumnGroupModelListener
 
+	@Override
 	public void columnGroupModelChanged() {
 		invalidateCache();
 	}

@@ -40,7 +40,7 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 	protected boolean doCommand(ColumnGroupExpandCollapseCommand command) {
 		
 		int columnIndex = columnGroupExpandCollapseLayer.getColumnIndexByPosition(command.getColumnPosition());
-		ColumnGroupModel model = columnGroupExpandCollapseLayer.getModel();
+		ColumnGroupModel model = columnGroupExpandCollapseLayer.getModel(command.getRowPosition());
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 		
 		// if group of columnIndex is not collapseable return without any 
