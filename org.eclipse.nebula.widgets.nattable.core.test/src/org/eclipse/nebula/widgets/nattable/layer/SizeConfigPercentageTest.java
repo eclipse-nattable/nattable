@@ -535,4 +535,121 @@ public class SizeConfigPercentageTest {
 		Assert.assertEquals(1000, sizeConfigMixedMode.getAggregateSize(6));
 	}
 
+	@Test
+	public void setSizeCalculation() {
+		Assert.assertEquals(100, sizeConfigCalculationMode.getSize(5));
+		Assert.assertEquals(1000, sizeConfigCalculationMode.getAggregateSize(10));
+		
+		//resize position 5 to 150
+		sizeConfigCalculationMode.setSize(5, 150);
+
+		//the position itself needs to be 150
+		Assert.assertEquals(150, sizeConfigCalculationMode.getSize(5));
+		//the other cells need to be modified where all positions are adjusted as they are
+		//configured to take the remaining space
+		Assert.assertEquals(94, sizeConfigCalculationMode.getSize(4));
+		Assert.assertEquals(94, sizeConfigCalculationMode.getSize(6));
+
+		//as we're in percentage mode, the aggregate size shouldn't have changed
+		Assert.assertEquals(1000, sizeConfigCalculationMode.getAggregateSize(10));
+	}
+
+	@Test
+	public void setSizeFixed() {
+		sizeConfigFixedMode.calculatePercentages(400, 2);
+		
+		Assert.assertEquals(200, sizeConfigFixedMode.getSize(0));
+		Assert.assertEquals(200, sizeConfigFixedMode.getSize(1));
+		Assert.assertEquals(400, sizeConfigFixedMode.getAggregateSize(2));
+		
+		//resize position 0 to 25 percent
+		sizeConfigFixedMode.setSize(0, 100);
+
+		//the position itself needs to be 100
+		Assert.assertEquals(100, sizeConfigFixedMode.getSize(0));
+		Assert.assertEquals(300, sizeConfigFixedMode.getSize(1));
+
+		//as we're in percentage mode, the aggregate size shouldn't have changed
+		Assert.assertEquals(400, sizeConfigFixedMode.getAggregateSize(2));
+	}
+
+	@Test
+	public void setSizeMixedPercentage() {
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(400, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(2));
+		
+		//resize position 0 to 20 percent
+		sizeConfigMixedPercentageMode.setSize(0, 200);
+
+		//the position itself needs to be 200
+		Assert.assertEquals(200, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(500, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(2));
+
+		//as we're in percentage mode, the aggregate size shouldn't have changed
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(3));
+		
+		//resize position 2 to 20 percent
+		sizeConfigMixedPercentageMode.setSize(2, 200);
+
+		//the position itself needs to be 200
+		Assert.assertEquals(200, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(600, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(200, sizeConfigMixedPercentageMode.getSize(2));
+
+		//as we're in percentage mode, the aggregate size shouldn't have changed
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(3));
+		
+		//resize position 1 to 50 percent
+		sizeConfigMixedPercentageMode.setSize(1, 500);
+
+		//the position itself needs to be 200
+		Assert.assertEquals(200, sizeConfigMixedPercentageMode.getSize(0));
+		Assert.assertEquals(500, sizeConfigMixedPercentageMode.getSize(1));
+		Assert.assertEquals(300, sizeConfigMixedPercentageMode.getSize(2));
+
+		//as we're in percentage mode, the aggregate size shouldn't have changed
+		Assert.assertEquals(1000, sizeConfigMixedPercentageMode.getAggregateSize(3));
+	}
+
+	@Test
+	public void setSizeMixed() {
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
+		Assert.assertEquals(300, sizeConfigMixedMode.getSize(2));
+		
+		//resize position 0 to 200
+		sizeConfigMixedMode.setSize(0, 200);
+
+		//the position itself needs to be 200
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(1));
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(2));
+
+		//as we're in percentage mode, the aggregate size shouldn't have changed
+		Assert.assertEquals(500, sizeConfigMixedMode.getAggregateSize(3));
+		
+		//resize position 1 to 200
+		sizeConfigMixedMode.setSize(1, 200);
+
+		//the position itself needs to be 200
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(1));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(2));
+
+		//as we're in percentage mode, the aggregate size shouldn't have changed
+		Assert.assertEquals(500, sizeConfigMixedMode.getAggregateSize(3));
+		
+		//resize position 2
+		sizeConfigMixedMode.setSize(2, 500);
+
+		//no changes as last column should take remaining space
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(0));
+		Assert.assertEquals(200, sizeConfigMixedMode.getSize(1));
+		Assert.assertEquals(100, sizeConfigMixedMode.getSize(2));
+
+		//as we're in percentage mode, the aggregate size shouldn't have changed
+		Assert.assertEquals(500, sizeConfigMixedMode.getAggregateSize(3));
+	}
 }

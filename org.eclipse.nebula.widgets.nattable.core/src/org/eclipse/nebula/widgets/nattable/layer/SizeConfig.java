@@ -78,9 +78,11 @@ public class SizeConfig implements IPersistable {
 	private final Map<Integer, Integer> realSizeMap = new TreeMap<Integer, Integer>();
 	/**
 	 * Map that contains the cached aggregated sizes.
-	 * The boolean tells if the cache is still valid.
 	 */
 	private final Map<Integer, Integer> aggregatedSizeCacheMap = new HashMap<Integer, Integer>();
+	/**
+	 * Flag that indicates if the aggregated size cache is valid or if it needs to get recalculated.
+	 */
 	private boolean isAggregatedSizeCacheValid = true;
 
 	/**
@@ -263,7 +265,46 @@ public class SizeConfig implements IPersistable {
 			} else {
 				if (availableSpace > 0) {
 					Double percentage = ((double) size * 100)/ availableSpace;
+					
+					Integer oldValue = sizeMap.get(position);
+					int diff = percentage.intValue();
+					if (oldValue != null) {
+						diff = diff - oldValue;
+					}
+					else {
+						//there was no percentage value before
+						//we need to calculate the before value out of the realSizeMap
+						//otherwise the resizing effect would have strange effects
+						if (realSizeMap.containsKey(position)) {
+							Double calculated = ((double) realSizeMap.get(position) * 100)/ availableSpace;
+							diff = diff - calculated.intValue();
+						}
+						
+					}
+
 					sizeMap.put(position, percentage.intValue());
+
+					//check the adjacent positions for percentage corrections
+					int nextPosition = position + 1;
+					while (diff != 0 && realSizeMap.containsKey(nextPosition)) {
+						diff = updateAdjacentPosition(nextPosition, diff);
+						nextPosition++;
+					}
+					
+					int previousPosition = position - 1;
+					while (diff != 0 && realSizeMap.containsKey(previousPosition)) {
+						diff = updateAdjacentPosition(previousPosition, diff);
+						previousPosition--;
+					}
+
+					if (diff != 0 && oldValue == null) {
+						//if the diff is not 0 and there was no size value set before
+						//we will remove the prior set value again
+						//this is because the position was configured as the only percentage 
+						//sizing position with no specified value, which technically means that it
+						//should always take the remaining space
+						sizeMap.remove(position);
+					}
 				}
 			}
 
@@ -272,6 +313,39 @@ public class SizeConfig implements IPersistable {
 		}
 	}
 
+	/**
+	 * This method is used for resizing in percentage mode. If a position that is configured
+	 * for percentage sizing is resized, the size diff needs to be added/removed from adjacent
+	 * cells, to ensure consistent size calculation.
+	 * @param position The position to update.
+	 * @param diff The diff that should be applied to the position
+	 * @return The remaining diff or 0 if the diff could be completely applied to the position.
+	 */
+	private int updateAdjacentPosition(int position, int diff) {
+		if (sizeMap.containsKey(position) || realSizeMap.containsKey(position)) {
+			if (isPercentageSizing(position)) {
+				if (sizeMap.containsKey(position)) {
+					//there is a follow-up position that is configured for percentage sizing
+					//and there is value specified for that position
+					int currentValue = sizeMap.get(position);
+					if (diff < currentValue) {
+						sizeMap.put(position, currentValue - diff);
+						return 0;
+					}
+					else {
+						diff = diff - (currentValue + 1);
+						//never accept a percentage value < 1 as then the position would disappear
+						sizeMap.put(position, 1);
+					}
+				}
+				
+				return 0;
+			}
+		}
+
+		return diff;
+	}
+	
 	/**
 	 * Will set the given percentage size information for the given position and will set the
 	 * given position to be sized via percentage value.
