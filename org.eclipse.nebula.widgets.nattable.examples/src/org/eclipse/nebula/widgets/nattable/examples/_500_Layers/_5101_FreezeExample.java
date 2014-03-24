@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -104,7 +105,7 @@ public class _5101_FreezeExample extends AbstractNatExample {
 		//build the column header layer
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, compositeFreezeLayer, selectionLayer);
+		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, compositeFreezeLayer, selectionLayer);
 		
 		//build the row header layer
 		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
@@ -130,8 +131,17 @@ public class _5101_FreezeExample extends AbstractNatExample {
 		//add the corner menu configuration for adding the view management action
 		natTable.addConfiguration(new AbstractHeaderMenuConfiguration(natTable) {
 			@Override
+			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+				return super.createColumnHeaderMenu(natTable)
+							.withHideColumnMenuItem()
+							.withShowAllColumnsMenuItem()
+							.withColumnChooserMenuItem();
+			}
+
+			@Override
 			protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
 				return super.createCornerMenu(natTable)
+							.withShowAllColumnsMenuItem()
 							.withStateManagerMenuItemProvider();
 			}
 		});
@@ -142,6 +152,16 @@ public class _5101_FreezeExample extends AbstractNatExample {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 		
 		gridLayer.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
+
+		DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
+				selectionLayer,
+				columnHideShowLayer,
+				columnHeaderLayer,
+				columnHeaderDataLayer,
+				null,
+				null);
+		gridLayer.registerCommandHandler(columnChooserCommandHandler);
+		
 		
 		return panel;
 	}
