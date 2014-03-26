@@ -80,7 +80,7 @@ public class EditUtils {
 					EditConfigAttributes.CELL_EDITABLE_RULE, 
 					DisplayMode.EDIT, labelStack.getLabels());
 			
-			if (!editableRule.isEditable(layerCell, configRegistry)) {
+			if (editableRule == null || !editableRule.isEditable(layerCell, configRegistry)) {
 				return false;
 			}
 		}
