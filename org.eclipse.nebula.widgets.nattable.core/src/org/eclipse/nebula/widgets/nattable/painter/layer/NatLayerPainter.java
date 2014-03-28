@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -18,6 +17,13 @@ import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
+/**
+ * ILayerPainter implementation that is rendering the background of the space that is
+ * available for the NatTable instance. It uses the Color that is configured via 
+ * {@link org.eclipse.swt.widgets.Control#setBackground(org.eclipse.swt.graphics.Color)}.
+ * It then calls the ILayerPainter of the underlying layers in the layer stack and
+ * calls all registered IOverlayPainter at the end, to render the overlays correctly.
+ */
 public class NatLayerPainter implements ILayerPainter {
 
 	private final NatTable natTable;
@@ -26,6 +32,7 @@ public class NatLayerPainter implements ILayerPainter {
 		this.natTable = natTable;
 	}
 	
+	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
 		try {
 			paintBackground(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
@@ -55,6 +62,7 @@ public class NatLayerPainter implements ILayerPainter {
 		}
 	}
 
+	@Override
 	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
 		ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
 		return layerPainter.adjustCellBounds(columnPosition, rowPosition, cellBounds);
