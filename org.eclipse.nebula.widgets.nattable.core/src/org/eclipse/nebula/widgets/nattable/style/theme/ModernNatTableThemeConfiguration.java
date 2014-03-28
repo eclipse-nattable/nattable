@@ -81,7 +81,8 @@ public class ModernNatTableThemeConfiguration extends DefaultNatTableThemeConfig
 		this.cGroupHeaderHAlign = HorizontalAlignmentEnum.CENTER;
 		this.cGroupHeaderCellPainter = new ColumnGroupHeaderTextPainter();
 		this.rGroupHeaderCellPainter = new BackgroundPainter(new PaddingDecorator(
-				new RowGroupHeaderTextPainter(new VerticalTextPainter(false, false)), 2, 0, 2, 0, false));
+				new RowGroupHeaderTextPainter(new VerticalTextPainter(false, false),
+						CellEdgeEnum.BOTTOM, false, 2, true), 0, 0, 2, 0, false));
 		
 		// sort header styling
 		this.sortHeaderCellPainter = new BackgroundPainter(

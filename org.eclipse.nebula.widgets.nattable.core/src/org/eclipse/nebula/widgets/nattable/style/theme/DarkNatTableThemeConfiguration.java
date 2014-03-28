@@ -90,7 +90,7 @@ public class DarkNatTableThemeConfiguration extends ModernNatTableThemeConfigura
 						new TextPainter(false, false), CellEdgeEnum.RIGHT, new ColumnGroupExpandCollapseImagePainter(false, true), false, 0, false));
 		this.rGroupHeaderCellPainter = new GradientBackgroundPainter(new PaddingDecorator(
 				new RowGroupHeaderTextPainter(
-						new VerticalTextPainter(false, false), CellEdgeEnum.BOTTOM, new RowGroupExpandCollapseImagePainter(false, true), false, 0, false), 2, 0, 2, 0, false));
+						new VerticalTextPainter(false, false), CellEdgeEnum.BOTTOM, new RowGroupExpandCollapseImagePainter(false, true), false, 0, true), 0, 0, 2, 0, false));
 		
 		// sort header styling
 		this.sortHeaderCellPainter = new GradientBackgroundPainter(
