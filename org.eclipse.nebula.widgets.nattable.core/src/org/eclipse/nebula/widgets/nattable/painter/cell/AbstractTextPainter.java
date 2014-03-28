@@ -259,7 +259,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 		if (calculateByTextLength && wrapText) {
 			if (availableLength < textLength) {
 				//calculate length by finding the longest word in text
-				textLength = availableLength;
+				textLength = (availableLength - (2*spacing));
 				
 				String[] lines = text.split(NEW_LINE_REGEX);
 				for (String line : lines) {
@@ -284,7 +284,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 				output.append(text);
 			}
 			
-			setNewMinLength(cell, textLength + calculatePadding(cell, availableLength));
+			setNewMinLength(cell, textLength + calculatePadding(cell, availableLength) + (2*spacing));
 		}
 		else if (calculateByTextLength && !wrapText){
 			output.append(modifyTextToDisplay(text, gc, textLength));

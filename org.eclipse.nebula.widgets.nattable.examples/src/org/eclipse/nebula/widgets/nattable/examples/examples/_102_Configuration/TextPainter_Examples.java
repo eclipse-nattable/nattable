@@ -355,7 +355,7 @@ public class TextPainter_Examples extends AbstractNatExample {
 
 		@Override
 		public Object getDataValue(int columnIndex, int rowIndex) {
-			return "Lorem ipsum.";
+			return "Lorem ipsum";
 		}
 
 		@Override
