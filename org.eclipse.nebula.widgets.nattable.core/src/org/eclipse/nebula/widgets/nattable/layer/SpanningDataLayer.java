@@ -64,7 +64,7 @@ public class SpanningDataLayer extends DataLayer {
 		ILayerCell cell = getCellByPosition(columnIndex, rowIndex);
 		for (int i = 0; i < cell.getColumnSpan(); i++) {
 			for (int j = 0; j < cell.getRowSpan(); j++) {
-				super.setDataValue(columnIndex+i, rowIndex+j, newValue);
+				super.setDataValue(cell.getOriginColumnPosition()+i, cell.getOriginRowPosition()+j, newValue);
 			}
 		}
 	}
