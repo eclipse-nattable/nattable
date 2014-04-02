@@ -213,17 +213,19 @@ public class PersonWithAddressSortModel implements ISortModel {
 			int result = 0;
 
 			//make null safe compare
-			if (compareObject1 == null && compareObject2 != null) {
-				result = -1;
-			}
-			else if (compareObject1 == null && compareObject2 == null) {
-				result = 0;
-			}
-			else if (compareObject1 != null && compareObject2 == null) {
-				result = 1;
-			}
+			if (compareObject1 == null) {
+				if (compareObject2 != null) {
+					result = -1;         
+				} else {
+					result = 0;          
+				}
+			} 
 			else {
-				result = compareObject1.compareTo(compareObject2);
+				if (compareObject2 != null) {
+					result = compareObject1.compareTo(compareObject2);
+				} else {
+					result = 1;          
+				}        
 			}
 
 			//negate compare result if sort direction is descending
