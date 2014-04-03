@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -42,6 +44,9 @@ import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
@@ -54,6 +59,7 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
+import org.eclipse.nebula.widgets.nattable.group.config.ColumnGroupMenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -62,9 +68,16 @@ import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -119,7 +132,7 @@ public class _807_SortableFilterableColumnGroupExample extends AbstractNatExampl
 
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 		
 		SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = 
 				new SortHeaderLayer<ExtendedPersonWithAddress>(columnHeaderLayer, 
@@ -170,6 +183,40 @@ public class _807_SortableFilterableColumnGroupExample extends AbstractNatExampl
 		//add filter row configuration
 		natTable.addConfiguration(new FilterRowConfiguration());
 		
+		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+			@Override
+			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+				return super.createColumnHeaderMenu(natTable)
+						.withColumnChooserMenuItem();
+			}
+		});
+		
+		// Column group header menu
+		final Menu columnGroupHeaderMenu =
+				new PopupMenuBuilder(natTable)
+					.withMenuItemProvider(ColumnGroupMenuItemProviders.renameColumnGroupMenuItemProvider())
+					.withMenuItemProvider(ColumnGroupMenuItemProviders.removeColumnGroupMenuItemProvider())
+					.build();
+		
+		natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+			@Override
+			public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+				uiBindingRegistry.registerFirstMouseDownBinding(
+						new MouseEventMatcher(SWT.NONE, GridRegion.COLUMN_GROUP_HEADER, MouseEventMatcher.RIGHT_BUTTON),
+						new PopupMenuAction(columnGroupHeaderMenu));
+			}
+		});
+		
+		// Register column chooser
+		DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
+				bodyLayer.getSelectionLayer(),
+				bodyLayer.getColumnHideShowLayer(),
+				columnHeaderLayer,
+				columnHeaderDataLayer,
+				columnGroupHeaderLayer,
+				columnGroupModel);
+		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
+		
 		natTable.configure();
 
 		return natTable;
@@ -217,7 +264,11 @@ public class _807_SortableFilterableColumnGroupExample extends AbstractNatExampl
 			columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
 			selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
 			viewportLayer = new ViewportLayer(selectionLayer);
-			setUnderlyingLayer(viewportLayer);
+			
+			final FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+		    final CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
+
+			setUnderlyingLayer(compositeFreezeLayer);
 		}
 
 		public SortedList<T> getSortedList() {

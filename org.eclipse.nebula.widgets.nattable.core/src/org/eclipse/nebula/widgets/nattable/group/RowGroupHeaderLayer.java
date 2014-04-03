@@ -211,23 +211,30 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 		// Get the row and the group from our cache and model.
 		final IRowGroup<T> rowGroup = RowGroupUtils.getRowGroupForRowIndex(model, rowIndex);
 		
-		if (RowGroupUtils.isCollapsed(model, rowGroup)) {
-			return rowGroup.getOwnStaticMemberRows().size();			
-		} else {
-			int startPositionOfGroup = getStartPositionOfGroup(rowPosition);
-			int sizeOfGroup = RowGroupUtils.sizeOfGroup(model, rowIndex);
-			int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
-			List<Integer> rowIndexesInGroup = RowGroupUtils.getRowIndexesInGroup(model, rowIndex);
+		int sizeOfGroup = RowGroupUtils.sizeOfGroup(model, rowIndex);
 
-			for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
-				int index = getRowIndexByPosition(i);
-				if (!rowIndexesInGroup.contains(Integer.valueOf(index))) {
-					sizeOfGroup--;
-				}
+		if (RowGroupUtils.isCollapsed(model, rowGroup)) {
+			int sizeOfStaticRows = rowGroup.getOwnStaticMemberRows().size();
+			if (sizeOfStaticRows == 0) {
+				return 1;
 			}
-			
-			return Math.max(1, sizeOfGroup);
+			else {
+				sizeOfGroup = sizeOfStaticRows;
+			}
+		} 
+		
+		int startPositionOfGroup = getStartPositionOfGroup(rowPosition);
+		int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
+		List<Integer> rowIndexesInGroup = RowGroupUtils.getRowIndexesInGroup(model, rowIndex);
+
+		for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
+			int index = getRowIndexByPosition(i);
+			if (!rowIndexesInGroup.contains(Integer.valueOf(index))) {
+				sizeOfGroup--;
+			}
 		}
+		
+		return sizeOfGroup;
 	}
 	
 	/**

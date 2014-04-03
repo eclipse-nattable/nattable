@@ -269,23 +269,29 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		int columnIndex = getColumnIndexByPosition(columnPosition);
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 		
+		int sizeOfGroup = columnGroup.getSize();		
+		
 		if (columnGroup.isCollapsed()) {
 			int sizeOfStaticColumns = columnGroup.getStaticColumnIndexes().size();
-			return sizeOfStaticColumns == 0 ? 1 : sizeOfStaticColumns;
-		} else {
-			int startPositionOfGroup = getStartPositionOfGroup(columnPosition);
-			int sizeOfGroup = columnGroup.getSize();
-			int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
-			List<Integer> columnIndexesInGroup = columnGroup.getMembers();
-
-			for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
-				int index = getColumnIndexByPosition(i);
-				if (!columnIndexesInGroup.contains(Integer.valueOf(index))) {
-					sizeOfGroup--;
-				}
+			if (sizeOfStaticColumns == 0) {
+				return 1;
 			}
-			return sizeOfGroup;
+			else {
+				sizeOfGroup = sizeOfStaticColumns;
+			}
 		}
+
+		int startPositionOfGroup = getStartPositionOfGroup(columnPosition);
+		int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
+		List<Integer> columnIndexesInGroup = columnGroup.getMembers();
+
+		for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
+			int index = getColumnIndexByPosition(i);
+			if (!columnIndexesInGroup.contains(Integer.valueOf(index))) {
+				sizeOfGroup--;
+			}
+		}
+		return sizeOfGroup;
 	}
 
 	/**

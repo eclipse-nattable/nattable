@@ -504,8 +504,7 @@ public class ColumnGroupModel implements IPersistable {
 		
 		public List<Integer> getMembersSorted() {
 			
-			List<Integer> sortedMembers = 
-					Collections.unmodifiableList(members);
+			List<Integer> sortedMembers = new LinkedList<Integer>(members);
 			Collections.sort(sortedMembers);
 			
 			return sortedMembers;
