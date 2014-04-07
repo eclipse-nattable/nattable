@@ -15,17 +15,24 @@ import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.print.command.PrintCommand;
-import org.eclipse.nebula.widgets.nattable.print.command.PrintCommandHandler;
-import org.eclipse.nebula.widgets.nattable.print.config.DefaultPrintBindings;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -41,19 +48,17 @@ import org.eclipse.swt.widgets.Control;
  * @author Dirk Fauth
  *
  */
-public class _751_PrintExample extends AbstractNatExample {
+public class _772_GridExcelExportExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _751_PrintExample());
+		StandaloneNatExampleRunner.run(new _772_GridExcelExportExample());
 	}
 
 	@Override
 	public String getDescription() {
-		return "This example shows how to trigger printing a NatTable.\n"
-				+ "You can also use the [Ctrl] + [P] to trigger printing via key binding.\n"
-				+ "Note that this example adds the printing functionality manually. If you "
-				+ "are using a GridLayer in your composition, the ability to print is added "
-				+ "by default with the corresponding default configurations.";
+		return "This example shows how to trigger an export for a NatTable grid.\n"
+				+ "You can also use the [Ctrl] + [E] to trigger the export via key bindings.\n"
+				+ "This example does not add any further export configuration.";
 	}
 	
 	@Override
@@ -71,7 +76,7 @@ public class _751_PrintExample extends AbstractNatExample {
 		
 		Composite buttonPanel = new Composite(panel, SWT.NONE);
 		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
 		
 		//property names of the Person class
@@ -85,30 +90,42 @@ public class _751_PrintExample extends AbstractNatExample {
 		propertyToLabelMap.put("married", "Married");
 		propertyToLabelMap.put("birthday", "Birthday");
 
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(100), propertyNames);
+		//build the body layer stack 
+		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
+		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
+		//directly as body layer is also working.
+		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+		//build the column header layer
+		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 		
-		//add the PrintCommandHandler to the ViewportLayer in order to make printing work
-		viewportLayer.registerCommandHandler(new PrintCommandHandler(viewportLayer));
+		//build the row header layer
+		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
+		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 		
-		final NatTable natTable = new NatTable(gridPanel, viewportLayer, false);
+		//build the corner layer
+		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 		
-		//adding this configuration adds the styles and the painters to use
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new DefaultPrintBindings());
+		//build the grid layer
+		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 		
-		natTable.configure();
-		
+		final NatTable natTable = new NatTable(gridPanel, gridLayer);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 		
 		Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
-		addColumnButton.setText("Print");
+		addColumnButton.setText("Export");
 		addColumnButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new PrintCommand(natTable.getConfigRegistry(), natTable.getShell()));
+				natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(), natTable.getShell()));
 			}
 		});
 

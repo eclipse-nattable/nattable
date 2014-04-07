@@ -21,13 +21,11 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
-import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
-import org.eclipse.nebula.widgets.nattable.export.config.DefaultExportBindings;
-import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.print.command.PrintCommand;
+import org.eclipse.nebula.widgets.nattable.print.command.PrintCommandHandler;
+import org.eclipse.nebula.widgets.nattable.print.config.DefaultPrintBindings;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -43,24 +41,27 @@ import org.eclipse.swt.widgets.Control;
  * @author Dirk Fauth
  *
  */
-public class _761_ExcelExportExample extends AbstractNatExample {
+public class _761_PrintExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _761_ExcelExportExample());
+		StandaloneNatExampleRunner.run(new _761_PrintExample());
 	}
 
 	@Override
 	public String getDescription() {
-		return "This example shows how to trigger an export for a NatTable.\n"
-				+ "You can also use the [Ctrl] + [E] to trigger the export via key bindings.";
+		return "This example shows how to trigger printing a NatTable.\n"
+				+ "You can also use the [Ctrl] + [P] to trigger printing via key binding.\n"
+				+ "Note that this example adds the printing functionality manually. If you "
+				+ "are using a GridLayer in your composition, the ability to print is added "
+				+ "by default with the corresponding default configurations.";
 	}
 	
 	@Override
 	public Control createExampleControl(Composite parent) {
 		Composite panel = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
-		layout.marginHeight = 5;
-		layout.marginWidth = 5;
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
 		panel.setLayout(layout);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 		
@@ -70,7 +71,7 @@ public class _761_ExcelExportExample extends AbstractNatExample {
 		
 		Composite buttonPanel = new Composite(panel, SWT.NONE);
 		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
 		
 		//property names of the Person class
@@ -84,34 +85,30 @@ public class _761_ExcelExportExample extends AbstractNatExample {
 		propertyToLabelMap.put("married", "Married");
 		propertyToLabelMap.put("birthday", "Birthday");
 
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
+		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(100), propertyNames);
 		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 		
-		viewportLayer.setRegionName(GridRegion.BODY);
-		
-		//add the ExportCommandHandler to the ViewportLayer in order to make exporting work
-		viewportLayer.registerCommandHandler(new ExportCommandHandler(viewportLayer));
+		//add the PrintCommandHandler to the ViewportLayer in order to make printing work
+		viewportLayer.registerCommandHandler(new PrintCommandHandler(viewportLayer));
 		
 		final NatTable natTable = new NatTable(gridPanel, viewportLayer, false);
 		
 		//adding this configuration adds the styles and the painters to use
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new DefaultExportBindings());
-		
-		natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
+		natTable.addConfiguration(new DefaultPrintBindings());
 		
 		natTable.configure();
 		
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 		
 		Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
-		addColumnButton.setText("Export");
+		addColumnButton.setText("Print");
 		addColumnButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(), natTable.getShell()));
+				natTable.doCommand(new PrintCommand(natTable.getConfigRegistry(), natTable.getShell()));
 			}
 		});
 

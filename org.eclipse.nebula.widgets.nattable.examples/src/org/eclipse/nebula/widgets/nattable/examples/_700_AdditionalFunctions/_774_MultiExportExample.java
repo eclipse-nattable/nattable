@@ -68,13 +68,13 @@ import org.eclipse.swt.widgets.Display;
  * @author Dirk Fauth
  *
  */
-public class _764_MultiExportExample extends AbstractNatExample {
+public class _774_MultiExportExample extends AbstractNatExample {
 
 	public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
 	public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 480, new _764_MultiExportExample());
+		StandaloneNatExampleRunner.run(600, 480, new _774_MultiExportExample());
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class _764_MultiExportExample extends AbstractNatExample {
 		
 		Composite buttonPanel = new Composite(panel, SWT.NONE);
 		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
 		//property names of the Person class
 		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};

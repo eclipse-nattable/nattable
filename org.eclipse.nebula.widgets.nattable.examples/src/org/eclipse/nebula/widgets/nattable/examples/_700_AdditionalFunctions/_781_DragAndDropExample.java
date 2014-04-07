@@ -56,13 +56,13 @@ import org.eclipse.swt.widgets.Control;
  * @author Dirk Fauth
  *
  */
-public class _771_DragAndDropExample extends AbstractNatExample {
+public class _781_DragAndDropExample extends AbstractNatExample {
 
 	private NatTable firstNatTable;
 	private NatTable secondNatTable;
 	
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _771_DragAndDropExample());
+		StandaloneNatExampleRunner.run(600, 400, new _781_DragAndDropExample());
 	}
 
 	@Override

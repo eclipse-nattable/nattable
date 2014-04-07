@@ -49,10 +49,10 @@ import org.eclipse.swt.widgets.Control;
  * @author Dirk Fauth
  *
  */
-public class _741_CopyExample extends AbstractNatExample {
+public class _751_CopyExample extends AbstractNatExample {
 
 	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _741_CopyExample());
+		StandaloneNatExampleRunner.run(new _751_CopyExample());
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class _741_CopyExample extends AbstractNatExample {
 		
 		Composite buttonPanel = new Composite(panel, SWT.NONE);
 		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
 		
 		//property names of the Person class
