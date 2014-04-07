@@ -10,8 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.regex.PatternSyntaxException;
+
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -20,112 +26,161 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 	
 	private final IConfigRegistry configRegistry;
 	
-	public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch) {
-		this(configRegistry, wrapSearch, ISearchDirection.SEARCH_FORWARD);
+	public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch, boolean columnFirst) {
+		this(configRegistry, wrapSearch, ISearchDirection.SEARCH_FORWARD, columnFirst);
 	}
 	
-	public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch, String searchDirection) {		
+	public GridSearchStrategy(IConfigRegistry configRegistry, boolean wrapSearch, String searchDirection, boolean columnFirst) {		
 		this.configRegistry = configRegistry;
 		this.wrapSearch = wrapSearch;
 		this.searchDirection = searchDirection;
-	}
-
-	public PositionCoordinate executeSearch(Object valueToMatch) {
-		ILayer contextLayer = getContextLayer();
-		if (! (contextLayer instanceof SelectionLayer)) {
-			throw new RuntimeException("For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
-		}
-		
-		SelectionLayer selectionLayer = (SelectionLayer) contextLayer;
-		PositionCoordinate selectionAnchor = selectionLayer .getSelectionAnchor();
-		boolean hadSelectionAnchor = true;
-		if (selectionAnchor.columnPosition < 0 || selectionAnchor.rowPosition < 0) {
-			selectionAnchor.columnPosition = 0;
-			selectionAnchor.rowPosition = 0;
-			hadSelectionAnchor = false;
-		}
-		int anchorColumnPosition = selectionAnchor.columnPosition;
-		
-		int startingRowPosition;
-		int[] columnsToSearch = null;
-		final int columnCount = selectionLayer.getColumnCount();
-		if (searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {
-			int rowPosition = hadSelectionAnchor ? selectionAnchor.rowPosition + 1 : selectionAnchor.rowPosition;
-			if (rowPosition > (contextLayer.getRowCount() - 1)) {
-				rowPosition = wrapSearch ? 0 : contextLayer.getRowCount() - 1;
-			}
-			int rowCount = selectionLayer.getRowCount();
-			startingRowPosition = rowPosition < rowCount ? rowPosition : 0;
-			if (selectionAnchor.rowPosition + 1 >= rowCount && anchorColumnPosition + 1 >= columnCount && hadSelectionAnchor) {
-				if (wrapSearch) {
-					anchorColumnPosition = 0;
-				} else {
-					return null;
-				}
-			} else if (selectionAnchor.rowPosition == rowCount - 1 && anchorColumnPosition < columnCount - 1) {
-				anchorColumnPosition++;
-			}
-			columnsToSearch = getColumnsToSearchArray(columnCount, anchorColumnPosition);
-		} else {
-			int rowPosition = selectionAnchor.rowPosition - 1;
-			if (rowPosition < 0) {
-				rowPosition  = wrapSearch ? contextLayer.getRowCount() - 1 : 0;
-			}
-			startingRowPosition = rowPosition > 0 ? rowPosition : 0;
-
-			if (selectionAnchor.rowPosition - 1 < 0 && anchorColumnPosition - 1 < 0 && hadSelectionAnchor) {
-				if (wrapSearch) {
-					anchorColumnPosition = columnCount - 1;
-				} else {
-					return null;
-				}
-			} else if (selectionAnchor.rowPosition == 0 && anchorColumnPosition > 0) {
-				anchorColumnPosition--;
-			}
-			columnsToSearch = getDescendingColumnsToSearchArray(anchorColumnPosition);
-		}
-		
-		PositionCoordinate executeSearch = searchGrid(valueToMatch, contextLayer, selectionLayer, anchorColumnPosition,
-				startingRowPosition, columnsToSearch);
-		return executeSearch;
-	}
-
-	private PositionCoordinate searchGrid(Object valueToMatch, ILayer contextLayer, SelectionLayer selectionLayer,
-			final int anchorColumnPosition, int startingRowPosition, int[] columnsToSearch) {
-		// Search for value across columns		
-		ColumnSearchStrategy columnSearcher = new ColumnSearchStrategy(columnsToSearch, startingRowPosition, configRegistry, searchDirection);
-		columnSearcher.setCaseSensitive(caseSensitive);
-		columnSearcher.setWrapSearch(wrapSearch);
-		columnSearcher.setContextLayer(contextLayer);
-		columnSearcher.setComparator(getComparator());
-		PositionCoordinate executeSearch = columnSearcher.executeSearch(valueToMatch);
-		
-		if (executeSearch == null && wrapSearch) {
-			if (searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {				
-				columnSearcher.setColumnPositions(getColumnsToSearchArray(anchorColumnPosition + 1, 0));
-			} else {
-				columnSearcher.setColumnPositions(getDescendingColumnsToSearchArray(anchorColumnPosition));
-			}
-			columnSearcher.setStartingRowPosition(0);
-			executeSearch = columnSearcher.executeSearch(valueToMatch);
-		}
-		return executeSearch;
-	}
-
-	protected int[] getColumnsToSearchArray(int columnCount, int startingColumnPosition) {
-		final int numberOfColumnsToSearch = (columnCount - startingColumnPosition);
-		final int[] columnPositions = new int[numberOfColumnsToSearch];
-		for (int columnPosition = 0; columnPosition < numberOfColumnsToSearch; columnPosition++) {
-			columnPositions[columnPosition] = startingColumnPosition + columnPosition;
-		}
-		return columnPositions;
+		this.columnFirst = columnFirst;
 	}
 	
-	protected int[] getDescendingColumnsToSearchArray(int startingColumnPosition) {
-		final int[] columnPositions = new int[startingColumnPosition + 1];
-		for (int columnPosition = 0; startingColumnPosition >= 0; columnPosition++) {
-			columnPositions[columnPosition] = startingColumnPosition-- ;
-		}
-		return columnPositions;
+	public static class GridRectangle {
+		Range firstDim;
+		Range secondDim;
 	}
+
+	public PositionCoordinate executeSearch(Object valueToMatch)
+			throws PatternSyntaxException {
+		
+		ILayer contextLayer = getContextLayer();
+		if (!(contextLayer instanceof SelectionLayer)) {
+			throw new RuntimeException("For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
+		}
+		SelectionLayer selectionLayer = (SelectionLayer) contextLayer;
+		PositionCoordinate selectionAnchor = selectionLayer .getSelectionAnchor();
+		boolean hadSelectionAnchor = selectionAnchor.columnPosition >= 0 && selectionAnchor.rowPosition >= 0;
+		if (!hadSelectionAnchor) {
+			selectionAnchor.columnPosition = 0;
+			selectionAnchor.rowPosition = 0;
+		}
+		
+		// Pick a first and second dimension based on whether it's a column or row-first search.
+		int firstDimPosition;
+		int firstDimCount;
+		int secondDimPosition;
+		int secondDimCount;
+		if (columnFirst) {
+			firstDimPosition = selectionAnchor.columnPosition;
+			firstDimCount = selectionLayer.getColumnCount();
+			secondDimPosition = selectionAnchor.rowPosition;
+			secondDimCount = selectionLayer.getRowCount();
+		} else {
+			firstDimPosition = selectionAnchor.rowPosition;
+			firstDimCount = selectionLayer.getRowCount();
+			secondDimPosition = selectionAnchor.columnPosition;
+			secondDimCount = selectionLayer.getColumnCount();
+		}
+
+		// Pick start and end values depending on the direction of the search.
+		int direction = searchDirection.equals(ISearchDirection.SEARCH_FORWARD)
+				? 1 : -1;
+		int firstDimStart;
+		int firstDimEnd;
+		int secondDimStart;
+		int secondDimEnd;
+		if (direction == 1) {
+			firstDimStart = 0;
+			firstDimEnd = firstDimCount;
+			secondDimStart = 0;
+			secondDimEnd = secondDimCount;
+		} else {
+			firstDimStart = firstDimCount - 1;
+			firstDimEnd = -1;
+			secondDimStart = secondDimCount - 1;
+			secondDimEnd = -1;
+		}
+
+		// Move to the next cell if a selection was active and it's not
+		// an incremental search.
+		final boolean startWithNextCell = hadSelectionAnchor && !isIncremental();
+		if (startWithNextCell) {
+			if (secondDimPosition + direction != secondDimEnd) {
+				// Increment the second dimension
+				secondDimPosition += direction;
+			} else {
+				// Wrap the second dimension
+				secondDimPosition = secondDimStart;
+				if (firstDimPosition + direction != firstDimEnd) {
+					// Increment the first dimension
+					firstDimPosition += direction;
+				} else if (wrapSearch) {
+					// Wrap the first dimension
+					firstDimPosition = firstDimStart;
+				} else {
+					// Fail outright because there's nothing to search
+					return null;
+				}
+			}
+		}
+		
+		// Get a sequence of ranges for searching.
+		List<GridRectangle> gridRanges = getRanges(firstDimPosition, secondDimPosition,
+					direction, firstDimStart, firstDimEnd, secondDimStart,
+					secondDimEnd);
+
+		// Perform the search.
+		@SuppressWarnings("unchecked")
+		Comparator<String> comparator2 = (Comparator<String>) getComparator();
+		return CellDisplayValueSearchUtil.findCell(getContextLayer(), configRegistry,
+				gridRanges, valueToMatch, comparator2,
+				isCaseSensitive(), isWholeWord(), isRegex(),
+				isColumnFirst(), isIncludeCollapsed());
+	}
+
+	/**
+	 * Divides the grid search into multiple, sequential ranges, with
+	 * single slices at the starting point and multiple slices elsewhere.
+	 * 
+	 * @param firstDimPosition
+	 * @param secondDimPosition
+	 * @param direction
+	 * @param firstDimStart
+	 * @param firstDimEnd
+	 * @param secondDimStart
+	 * @param secondDimEnd
+	 * @return
+	 */
+	private List<GridRectangle> getRanges(int firstDimPosition, int secondDimPosition,
+			int direction, int firstDimStart, int firstDimEnd, int secondDimStart, int secondDimEnd) {
+		
+		List<GridRectangle> gridRanges = new ArrayList<GridRectangle>();
+		GridRectangle gridRange;
+		
+		// One first-dimension slice starting at the second
+		// dimension selection.
+		gridRange = new GridRectangle();
+		gridRange.firstDim = new Range(firstDimPosition, firstDimPosition + direction);
+		gridRange.secondDim = new Range(secondDimPosition, secondDimEnd);
+		gridRanges.add(gridRange);
+
+		// One or more first-dimension slices to the wrapping boundary.
+		gridRange = new GridRectangle();
+		gridRange.firstDim = new Range(firstDimPosition + direction, firstDimEnd);
+		gridRange.secondDim = new Range(secondDimStart, secondDimEnd);
+		gridRanges.add(gridRange);
+
+		// We're done if wrapping is not enabled or if we've already covered the whole table.
+		if (!wrapSearch || firstDimPosition == firstDimStart && secondDimPosition == secondDimStart) {
+			return gridRanges;
+		}
+			
+		// One or more first-dimension slices after wrapping, up to the
+		// first-dimension slice with the starting point.
+		gridRange = new GridRectangle();
+		gridRange.firstDim = new Range(firstDimStart, firstDimPosition);
+		gridRange.secondDim = new Range(secondDimStart, secondDimEnd);
+		gridRanges.add(gridRange);
+	
+		// One first-dimension slice ending at the second-dimension selection.
+		gridRange = new GridRectangle();
+		gridRange.firstDim = new Range(firstDimPosition, firstDimPosition + direction);
+		gridRange.secondDim = new Range(secondDimStart, secondDimPosition);
+		gridRanges.add(gridRange);
+		
+		return gridRanges;
+	}
+
 }

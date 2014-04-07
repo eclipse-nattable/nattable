@@ -12,7 +12,9 @@ package org.eclipse.nebula.widgets.nattable.search.strategy;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -27,21 +29,32 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
 	private final String searchDirection;
 
 	public SelectionSearchStrategy(IConfigRegistry configRegistry) {
-		this(configRegistry, ISearchDirection.SEARCH_FORWARD);
+		this(configRegistry, true);
 	}
 	
-	public SelectionSearchStrategy(IConfigRegistry configRegistry, String searchDirection) {
+	public SelectionSearchStrategy(IConfigRegistry configRegistry, boolean columnFirst) {
+		this(configRegistry, ISearchDirection.SEARCH_FORWARD, columnFirst);
+	}
+	
+	public SelectionSearchStrategy(IConfigRegistry configRegistry, String searchDirection,
+			boolean columnFirst) {
 		this.configRegistry = configRegistry;
 		this.searchDirection = searchDirection;
+		this.columnFirst = columnFirst;
 	}
 	
-	public PositionCoordinate executeSearch(Object valueToMatch) {
+	public PositionCoordinate executeSearch(Object valueToMatch)
+			throws PatternSyntaxException {
 		ILayer contextLayer = getContextLayer();
 		if (! (contextLayer instanceof SelectionLayer)) {
 			throw new RuntimeException("For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
 		}
 		SelectionLayer selectionLayer = (SelectionLayer)contextLayer;
-		PositionCoordinate coordinate = CellDisplayValueSearchUtil.findCell(selectionLayer, configRegistry, getSelectedCells(selectionLayer), valueToMatch, getComparator(), isCaseSensitive());		
+		@SuppressWarnings("unchecked")
+		PositionCoordinate coordinate = CellDisplayValueSearchUtil.findCell(
+				selectionLayer, configRegistry, getSelectedCells(selectionLayer),
+				valueToMatch, (Comparator<String>) getComparator(),
+				isCaseSensitive(), isWholeWord(), isRegex(), isIncludeCollapsed());
 		return coordinate;
 	}
 
