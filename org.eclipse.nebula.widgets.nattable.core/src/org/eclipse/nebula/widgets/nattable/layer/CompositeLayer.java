@@ -47,6 +47,7 @@ public class CompositeLayer extends AbstractLayer {
 	private final int layoutYCount;
 
 	private final Map<ILayer, String> childLayerToRegionNameMap = new HashMap<ILayer, String>();
+	private final Map<String, ILayer> regionNameToChildLayerMap = new HashMap<String, ILayer>();
 
 	private final Map<String, IConfigLabelAccumulator> regionNameToConfigLabelAccumulatorMap = new HashMap<String, IConfigLabelAccumulator>();
 
@@ -597,6 +598,7 @@ public class CompositeLayer extends AbstractLayer {
 		}
 
 		childLayerToRegionNameMap.put(childLayer, regionName);
+		regionNameToChildLayerMap.put(regionName, childLayer);
 
 		childLayer.addLayerListener(this);
 		childLayerToLayoutCoordinateMap.put(childLayer, new LayoutCoordinate(layoutX, layoutY));
@@ -666,6 +668,14 @@ public class CompositeLayer extends AbstractLayer {
 		}
 	}
 
+	/**
+	 * @param regionName The region name for which the child layer is requested.
+	 * @return The child layer that is registered for the given region name.
+	 */
+	public ILayer getChildLayerByRegionName(String regionName) {
+		return this.regionNameToChildLayerMap.get(regionName);
+	}
+	
 	/**
 	 * @param x pixel position
 	 * @param y pixel position

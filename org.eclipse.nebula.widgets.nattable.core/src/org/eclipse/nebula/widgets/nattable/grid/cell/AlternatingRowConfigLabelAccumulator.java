@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable.grid.cell;
 
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultRowStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 
@@ -27,7 +28,33 @@ public class AlternatingRowConfigLabelAccumulator implements IConfigLabelAccumul
 
 	public static final String EVEN_ROW_CONFIG_TYPE = "EVEN_" + GridRegion.BODY; //$NON-NLS-1$
 
+	private ILayer layer;
+	
+	/**
+	 * Creates an AlternatingRowConfigLabelAccumulator that operates on row positions.
+	 * In several layer compositions, this will lead to jumping alternating colors, as
+	 * e.g. the ViewportLayer updates row positions on scrolling.
+	 */
+	public AlternatingRowConfigLabelAccumulator() {}
+	
+	/**
+	 * Creates an AlternatingRowConfigLabelAccumulator that operates on row indices.
+	 * To achieve that it uses the given layer to calculate the row index by given
+	 * row position.
+	 * @param layer The layer that should be used for row index transformation, typically
+	 * 			the ViewportLayer or body layer stack.
+	 */
+	public AlternatingRowConfigLabelAccumulator(ILayer layer) {
+		this.layer = layer;
+	}
+	
+	@Override
 	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-		configLabels.addLabel((rowPosition % 2 == 0 ? EVEN_ROW_CONFIG_TYPE : ODD_ROW_CONFIG_TYPE));
+		int row = rowPosition;
+		if (this.layer != null) {
+			row = this.layer.getRowIndexByPosition(rowPosition);
+		}
+		
+		configLabels.addLabel((row % 2 == 0 ? EVEN_ROW_CONFIG_TYPE : ODD_ROW_CONFIG_TYPE));
 	}
 }

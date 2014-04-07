@@ -51,7 +51,8 @@ public class DefaultGridLayerConfiguration extends AggregateConfiguration {
 
 	protected void addAlternateRowColoringConfig(CompositeLayer gridLayer) {
 		addConfiguration(new DefaultRowStyleConfiguration());
-		gridLayer.setConfigLabelAccumulatorForRegion(GridRegion.BODY, new AlternatingRowConfigLabelAccumulator());
+		gridLayer.setConfigLabelAccumulatorForRegion(GridRegion.BODY, 
+				new AlternatingRowConfigLabelAccumulator(gridLayer.getChildLayerByRegionName(GridRegion.BODY)));
 	}
 
 }
