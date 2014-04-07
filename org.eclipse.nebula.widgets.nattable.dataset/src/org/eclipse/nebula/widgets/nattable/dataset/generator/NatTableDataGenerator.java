@@ -82,7 +82,7 @@ public class NatTableDataGenerator {
 						value = doubleGenerator.generate(DoubleColumnValueBean.class);
 						break;
 					}
-					String stringValue = value.getValue() == null ? " " : value.getValue().toString();
+					String stringValue = (value == null || value.getValue() == null) ? " " : value.getValue().toString();
 					stringValue = "".equals(stringValue) ? " " : stringValue;
 					out.write(stringValue);
 					out.write(j == numCols - 1 ? "" : ",");
@@ -230,10 +230,12 @@ public class NatTableDataGenerator {
 		@GenerateDouble(range = 1000)
 		private Double value;
 
+		@Override
 		public Double getValue() {
 			return value;
 		}
 
+		@Override
 		public void setValue(Double value) {
 			this.value = value;
 		}
@@ -243,10 +245,12 @@ public class NatTableDataGenerator {
 		@DataValueGenerator(UppercaseStringValueGenerator.class)
 		private String value;
 
+		@Override
 		public String getValue() {
 			return value;
 		}
 
+		@Override
 		public void setValue(String value) {
 			this.value = value;
 		}
