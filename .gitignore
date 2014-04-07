@@ -6,6 +6,7 @@ dependencies/
 target/
 
 org.eclipse.nebula.widgets.nattable.examples/NatTableExamples.jar
+org.eclipse.nebula.widgets.nattable.examples/myState.properties
 org.eclipse.nebula.widgets.nattable.examples/natTable.properties
 org.eclipse.nebula.widgets.nattable.examples/src/examples.index
 org.eclipse.nebula.widgets.nattable.examples/src/**/Issue*.java
