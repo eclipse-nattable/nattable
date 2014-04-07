@@ -29,12 +29,11 @@ import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
+import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
 import org.eclipse.nebula.widgets.nattable.search.action.SearchAction;
 import org.eclipse.nebula.widgets.nattable.search.command.SearchCommand;
@@ -45,7 +44,6 @@ import org.eclipse.nebula.widgets.nattable.search.strategy.SelectionSearchStrate
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
-import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ModifyEvent;
@@ -181,20 +179,10 @@ public class SearchDialog extends Dialog {
 		updateCombo(findCombo, findHistory);
 		findCombo.addModifyListener(findComboModifyListener);
 
-		// Try to find a SelectionLayer
-		selectionLayer = null;
-		ILayer topLayer = natTable.getUnderlyingLayerByPosition(0, 0);
-		if (topLayer instanceof GridLayer) {
-			ILayer bodyLayer = ((GridLayer) topLayer).getBodyLayer();
-			bodyLayer.getUnderlyingLayersByColumnPosition(0);
-			if (bodyLayer instanceof DefaultBodyLayerStack) {
-				selectionLayer = ((DefaultBodyLayerStack) bodyLayer).getSelectionLayer();
-			} else if (bodyLayer instanceof ViewportLayer) {
-				ILayer underlyingLayer = bodyLayer.getUnderlyingLayerByPosition(0, 0);
-				if (underlyingLayer instanceof SelectionLayer) {
-					selectionLayer = (SelectionLayer) underlyingLayer;
-				}
-			}
+		//search SelectionLayer in layer stack
+		ILayer result = findSelectionLayer(natTable.getLayer());
+		if (result != null && result instanceof SelectionLayer) {
+			selectionLayer = (SelectionLayer) result;
 		}
 
 		// Pick the user's selection, if possible
@@ -204,6 +192,32 @@ public class SearchDialog extends Dialog {
 		findCombo.setText(text);
 	}
 
+	
+	private ILayer findSelectionLayer(ILayer layer) {
+		if (layer == null || layer instanceof SelectionLayer) {
+			return layer;
+		}
+		else if (layer instanceof CompositeLayer) {
+			//if the layer is a CompositeLayer, search for the SelectionLayer in every region
+			//as the SelectionLayer is typically placed in the bottom/right most region (e.g. the body
+			//in a grid, the search is performed backwards
+			CompositeLayer composite = (CompositeLayer)layer; 
+			for (int x = composite.getLayoutXCount(); x >= 0; x--) {
+				for (int y = composite.getLayoutYCount(); y >= 0; y--) {
+					ILayer childStack = composite.getChildLayerByLayoutCoordinate(x, y);
+					ILayer result = findSelectionLayer(childStack);
+					if (result instanceof SelectionLayer) {
+						return result;
+					}
+				}
+			}
+			return null;
+		}
+		else {
+			return findSelectionLayer(layer.getUnderlyingLayerByPosition(0, 0));
+		}
+	}
+	
 	private String getTextForSelection(PositionCoordinate selection) {
 		if (selectionLayer == null || selection == null || selection.columnPosition == SelectionLayer.NO_SELECTION) {
 			return ""; //$NON-NLS-1$

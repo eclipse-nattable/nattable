@@ -869,6 +869,20 @@ public class CompositeLayer extends AbstractLayer {
 		return offset;
 	}
 
+	/**
+	 * @return The number of column regions in this CompositeLayer.
+	 */
+	public int getLayoutXCount() {
+		return this.layoutXCount;
+	}
+
+	/**
+	 * @return The number of row regions in this CompositeLayer.
+	 */
+	public int getLayoutYCount() {
+		return this.layoutYCount;
+	}
+	
 	protected class CompositeLayerPainter implements ILayerPainter {
 
 		@Override
