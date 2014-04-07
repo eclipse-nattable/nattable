@@ -18,8 +18,13 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 public abstract class AbstractSearchStrategy implements ISearchStrategy {
 	private ILayer contextLayer;
 	protected String searchDirection;
-	protected boolean wrapSearch = false;
-	protected boolean caseSensitive = false;
+	protected boolean caseSensitive;
+	protected boolean wrapSearch;
+	protected boolean wholeWord;
+	protected boolean incremental;
+	protected boolean regex;
+	protected boolean includeCollapsed;
+	protected boolean columnFirst;
 	protected Comparator<?> comparator;
 	
 	public void setContextLayer(ILayer contextLayer) {
@@ -52,6 +57,46 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
 	
 	public boolean isCaseSensitive() {
 		return caseSensitive;
+	}
+	
+	public void setWholeWord(boolean wholeWord) {
+		this.wholeWord = wholeWord;
+	}
+	
+	public boolean isWholeWord() {
+		return wholeWord;
+	}
+	
+	public void setIncremental(boolean incremental) {
+		this.incremental = incremental;
+	}
+	
+	public boolean isIncremental() {
+		return incremental;
+	}
+	
+	public void setRegex(boolean regex) {
+		this.regex = regex;
+	}
+	
+	public boolean isRegex() {
+		return regex;
+	}
+	
+	public void setIncludeCollapsed(boolean includeCollapsed) {
+		this.includeCollapsed = includeCollapsed;
+	}
+	
+	public boolean isIncludeCollapsed() {
+		return includeCollapsed;
+	}
+	
+	public void setColumnFirst(boolean columnFirst) {
+		this.columnFirst = columnFirst;
+	}
+	
+	public boolean isColumnFirst() {
+		return columnFirst;
 	}
 	
 	public Comparator<?> getComparator() {

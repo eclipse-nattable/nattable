@@ -11,7 +11,9 @@
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -37,8 +39,13 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
 		this.searchDirection = searchDirection;
 	}
 	
-	public PositionCoordinate executeSearch(Object valueToMatch) {
-		return CellDisplayValueSearchUtil.findCell(getContextLayer(), configRegistry, getColumnCellsToSearch(getContextLayer()), valueToMatch, getComparator(), isCaseSensitive());
+	public PositionCoordinate executeSearch(Object valueToMatch)
+			throws PatternSyntaxException {
+		@SuppressWarnings("unchecked")
+		Comparator<String> comparator2 = (Comparator<String>) getComparator();
+		return CellDisplayValueSearchUtil.findCell(getContextLayer(), configRegistry,
+				getColumnCellsToSearch(getContextLayer()), valueToMatch, comparator2,
+				isCaseSensitive(), isWholeWord(), isRegex(), isIncludeCollapsed());
 	}
 	
 	public void setStartingRowPosition(int startingRowPosition) {
@@ -54,19 +61,21 @@ public class ColumnSearchStrategy extends AbstractSearchStrategy {
 		int rowPosition = startingRowPosition;
 		// See how many rows we can add, depends on where the search is starting from
 		final int rowCount = contextLayer.getRowCount();
-		int height = rowCount;
+		int height;
 		if (searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {
-			height = height - startingRowPosition;
+			height = rowCount - startingRowPosition;
 		} else {
 			height = startingRowPosition;
 		}
 		for (int columnIndex = 0; columnIndex < columnPositions.length; columnIndex++) {
 			final int startingColumnPosition = columnPositions[columnIndex];
 			if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
-				cellsToSearch.addAll(CellDisplayValueSearchUtil.getDescendingCellCoordinates(getContextLayer(), startingColumnPosition, rowPosition, 1, height));
+				cellsToSearch.addAll(CellDisplayValueSearchUtil.getDescendingCellCoordinates(
+						getContextLayer(), startingColumnPosition, rowPosition, 1, height));
 				rowPosition = rowCount - 1;
 			} else {
-				cellsToSearch.addAll(CellDisplayValueSearchUtil.getCellCoordinates(getContextLayer(), startingColumnPosition, rowPosition, 1, height));
+				cellsToSearch.addAll(CellDisplayValueSearchUtil.getCellCoordinates(
+						getContextLayer(), startingColumnPosition, rowPosition, 1, height));
 				rowPosition = 0;
 			}
 			height = rowCount;

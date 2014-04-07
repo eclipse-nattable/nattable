@@ -19,7 +19,6 @@ import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.search.CellValueAsStringComparator;
 import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
-import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.GridLayerFixture;
@@ -89,25 +88,11 @@ public class GridSearchStrategyTest {
 	}
 	
 	@Test
-	public void shouldAccessCorrectNumberOfRemainingColumns() {
-		final SelectionLayer selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
-		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, false);
-		int columnsArray[] = gridStrategy.getColumnsToSearchArray(selectionLayer.getColumnCount(), 5);
-		Assert.assertEquals(5, columnsArray[0]);
-		Assert.assertEquals(6, columnsArray[1]);
-		Assert.assertEquals(7, columnsArray[2]);
-		Assert.assertEquals(8, columnsArray[3]);
-		Assert.assertEquals(9, columnsArray[4]);
-		
-		Assert.assertEquals(5, columnsArray.length);
-	}
-	
-	@Test
 	public void searchShouldWrapAroundColumn() {
 		// Select search starting point in composite coordinates
 		gridLayer.doCommand(new SelectCellCommand(gridLayer, 3, 4, false, false));
 		
-		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, false);
+		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, false, true);
 		
 		// If we don't specify to wrap the search, it will not find it.
 		final SelectionLayer selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
@@ -126,7 +111,7 @@ public class GridSearchStrategyTest {
 		// Select search starting point in composite coordinates
 		gridLayer.doCommand(new SelectCellCommand(gridLayer, 3, 4, false, false));
 		
-		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, false);
+		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, false, true);
 		gridStrategy.setComparator(new CellValueAsStringComparator<Comparable<String>>());
 		// If we don't specify to wrap the search, it will not find it.
 		final SelectionLayer selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
@@ -144,7 +129,7 @@ public class GridSearchStrategyTest {
 		// Select search starting point in composite coordinates
 		gridLayer.doCommand(new SelectCellCommand(gridLayer, 3, 4, false, false));
 		
-		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, false, ISearchDirection.SEARCH_BACKWARDS);
+		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, false, ISearchDirection.SEARCH_BACKWARDS, true);
 		gridStrategy.setComparator(new CellValueAsStringComparator<Comparable<String>>());
 		final SelectionLayer selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
 		gridStrategy.setContextLayer(selectionLayer);
@@ -154,7 +139,7 @@ public class GridSearchStrategyTest {
 	
 	@Test
 	public void shouldFindAllCellsWithValue() {
-		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, true, ISearchDirection.SEARCH_BACKWARDS);
+		GridSearchStrategy gridStrategy = new GridSearchStrategy(configRegistry, true, ISearchDirection.SEARCH_BACKWARDS, true);
 		gridStrategy.setComparator(new CellValueAsStringComparator<Comparable<String>>());
 		final SelectionLayer selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
 		gridStrategy.setContextLayer(selectionLayer);

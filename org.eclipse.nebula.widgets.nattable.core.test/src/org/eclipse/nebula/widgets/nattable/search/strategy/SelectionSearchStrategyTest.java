@@ -139,7 +139,8 @@ public class SelectionSearchStrategyTest {
 		Assert.assertEquals(0, positionCoordinate.rowPosition);
 		
 		// Should find last cell
-		selectionStrategy = new SelectionSearchStrategy(configRegistry, ISearchDirection.SEARCH_BACKWARDS);
+		selectionStrategy = new SelectionSearchStrategy(configRegistry,
+				ISearchDirection.SEARCH_BACKWARDS, true);
 		selectionStrategy.setComparator(new CellValueAsStringComparator<Comparable<String>>());
 		selectionStrategy.setContextLayer(selectionLayer);
 		

@@ -11,8 +11,9 @@
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -22,31 +23,63 @@ import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
 
 public class RowSearchStrategy extends AbstractSearchStrategy {
 
-	private final IConfigRegistry configRegistry;
-	private final int[] rowPositions;
+	private int[] rowPositions;
+	private int startingColumnPosition;
 	private final String searchDirection;
+	private final IConfigRegistry configRegistry;
 
 	public RowSearchStrategy(int[] rowPositions, IConfigRegistry configRegistry) {
-		this(rowPositions, configRegistry, ISearchDirection.SEARCH_FORWARD);
+		this(rowPositions, 0, configRegistry, ISearchDirection.SEARCH_FORWARD);
 	}
 	
-	public RowSearchStrategy(int[] rowPositions, IConfigRegistry configRegistry, String searchDirection) {
+	public RowSearchStrategy(int[] rowPositions, int startingColumnPosition, IConfigRegistry configRegistry, String searchDirection) {
 		this.rowPositions = rowPositions;
+		this.startingColumnPosition = startingColumnPosition;
 		this.configRegistry = configRegistry;
 		this.searchDirection = searchDirection;
 	}
 	
-	public PositionCoordinate executeSearch(Object valueToMatch) {
-		return CellDisplayValueSearchUtil.findCell(getContextLayer(), configRegistry, getRowCellsToSearch(getContextLayer()), valueToMatch, getComparator(), isCaseSensitive());
+	public PositionCoordinate executeSearch(Object valueToMatch)
+			throws PatternSyntaxException {
+		@SuppressWarnings("unchecked")
+		Comparator<String> comparator2 = (Comparator<String>) getComparator();
+		return CellDisplayValueSearchUtil.findCell(getContextLayer(), configRegistry,
+				getRowCellsToSearch(getContextLayer()), valueToMatch, comparator2,
+				isCaseSensitive(), isWholeWord(), isRegex(), isIncludeCollapsed());
 	}
 
+	public void setStartingColumnPosition(int startingColumnPosition) {
+		this.startingColumnPosition = startingColumnPosition;
+	}
+	
+	public void setRowPositions(int[] rowPositions) {
+		this.rowPositions = rowPositions;
+	}
+	
 	protected PositionCoordinate[] getRowCellsToSearch(ILayer contextLayer) {
 		List<PositionCoordinate> cellsToSearch = new ArrayList<PositionCoordinate>();
-		for (int rowPosition : rowPositions) {
-			cellsToSearch.addAll(CellDisplayValueSearchUtil.getCellCoordinates(getContextLayer(), 0, rowPosition, contextLayer.getColumnCount(), 1));
+		int columnPosition = startingColumnPosition;
+		// See how many columns we can add, depends on where the search is starting from
+		final int columnCount = contextLayer.getColumnCount();
+		int width;
+		if (searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {
+			width = columnCount - startingColumnPosition;
+		} else {
+			width = startingColumnPosition;
 		}
-		if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
-			Collections.reverse(cellsToSearch);
+		for (int rowIndex = 0; rowIndex < rowPositions.length; rowIndex++) {
+			final int startingRowPosition = rowPositions[rowIndex];
+			if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
+				cellsToSearch.addAll(CellDisplayValueSearchUtil.getDescendingCellCoordinatesRowFirst(
+						getContextLayer(), columnPosition, startingRowPosition, width, 1));
+				columnPosition = columnCount - 1;
+			} else {
+				cellsToSearch.addAll(CellDisplayValueSearchUtil.getCellCoordinatesRowFirst(
+						getContextLayer(), columnPosition, startingRowPosition, width, 1));
+				columnPosition = 0;
+			}
+			width = columnCount;
+			// After first row is set, start the next row from the top
 		}
 		return cellsToSearch.toArray(new PositionCoordinate[0]);
 	}
