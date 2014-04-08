@@ -87,11 +87,14 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 	@Override
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
 		int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, selectionLayer);
+		String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
 		if (selectionLayer.isColumnPositionSelected(selectionLayerColumnPosition)) {
+			if (DisplayMode.HOVER.equals(displayMode)) {
+				return DisplayMode.SELECT_HOVER;
+			}
 			return DisplayMode.SELECT;
-		} else {
-			return super.getDisplayModeByPosition(columnPosition, rowPosition);
 		}
+		return displayMode;
 	}
 
 	@Override

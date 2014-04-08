@@ -29,4 +29,5 @@ public interface DisplayMode {
 	String SELECT = "SELECT"; //$NON-NLS-1$
 	String EDIT = "EDIT"; //$NON-NLS-1$
 	String HOVER = "HOVER"; //$NON-NLS-1$
+	String SELECT_HOVER = "SELECT_HOVER"; //$NON-NLS-1$
 }

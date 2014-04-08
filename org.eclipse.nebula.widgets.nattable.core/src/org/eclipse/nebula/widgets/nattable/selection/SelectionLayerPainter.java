@@ -229,7 +229,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 	}
 	
 	private boolean isSelected(ILayerCell cell) {
-		return cell.getDisplayMode() == DisplayMode.SELECT;
+		return (cell.getDisplayMode() == DisplayMode.SELECT || cell.getDisplayMode() == DisplayMode.SELECT_HOVER);
 	}
 	
 	private void applyBorderStyle(GC gc, IConfigRegistry configRegistry) {

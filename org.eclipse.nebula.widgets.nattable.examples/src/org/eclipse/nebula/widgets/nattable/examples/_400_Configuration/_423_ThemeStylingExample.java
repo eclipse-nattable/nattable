@@ -306,8 +306,10 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 	class HoverThemeConfiguration extends DefaultNatTableThemeConfiguration {
 		{
 			this.bodyHoverBgColor = GUIHelper.COLOR_YELLOW;
+			this.bodyHoverSelectionBgColor = GUIHelper.COLOR_GREEN;
 			
 			this.rHeaderHoverBgColor = GUIHelper.COLOR_RED;
+			this.rHeaderHoverSelectionBgColor = GUIHelper.COLOR_BLUE;
 			
 			Image bgImage = new Image(
 					Display.getDefault(), 
@@ -318,6 +320,9 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 			Image selectedBgImage = new Image(
 					Display.getDefault(), 
 					getClass().getResourceAsStream("../resources/selected_column_header_bg.png"));
+			Image selectedHoveredBgImage = new Image(
+					Display.getDefault(), 
+					getClass().getResourceAsStream("../resources/selected_hovered_column_header_bg.png"));
 
 			TextPainter txtPainter = new TextPainter(false, false);
 
@@ -328,6 +333,7 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
 			
 			this.cHeaderSelectionCellPainter = new BackgroundImagePainter(txtPainter, selectedBgImage);
 			this.cHeaderHoverCellPainter = new BackgroundImagePainter(txtPainter, hoverBgImage);
+			this.cHeaderHoverSelectionCellPainter = new BackgroundImagePainter(txtPainter, selectedHoveredBgImage);
 
 			this.renderCornerGridLines = true;
 			this.renderColumnHeaderGridLines = true;

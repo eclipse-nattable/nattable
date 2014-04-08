@@ -70,6 +70,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 		configureCornerStyle(configRegistry);
 		
 		configureHoverStyle(configRegistry);
+		configureHoverSelectionStyle(configRegistry);
 		
 		configureDefaultSelectionStyle(configRegistry);
 		configureColumnHeaderSelectionStyle(configRegistry);
@@ -558,6 +559,247 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 	 * @return The {@link ICellPainter} that should be used to render hovered cells in a NatTable row header region.
 	 */
 	protected abstract ICellPainter getRowHeaderHoverCellPainter();
+
+	/**
+	 * Register the style configurations for hovering selections. 
+	 * <p>
+	 * This means to register the style configurations against {@link DisplayMode#SELECT_HOVER}.
+	 * Additionally the GridRegion labels are used to register hover styles per region.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * @param configRegistry The IConfigRegistry that is used by the NatTable instance
+	 * 			to which the style configuration should be applied to.
+	 */
+	protected void configureHoverSelectionStyle(IConfigRegistry configRegistry) {
+		IStyle defaultHoverStyle = getDefaultHoverSelectionStyle();
+		if (!isStyleEmpty(defaultHoverStyle)) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					defaultHoverStyle, 
+					DisplayMode.SELECT_HOVER);
+		}
+		ICellPainter defaultHoverCellPainter = getDefaultHoverSelectionCellPainter();
+		if (defaultHoverCellPainter != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					defaultHoverCellPainter, 
+					DisplayMode.SELECT_HOVER);
+		}
+		
+		IStyle bodyHoverStyle = getBodyHoverSelectionStyle();
+		if (!isStyleEmpty(bodyHoverStyle)) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					bodyHoverStyle, 
+					DisplayMode.SELECT_HOVER,
+					GridRegion.BODY);
+		}
+		ICellPainter bodyHoverCellPainter = getBodyHoverSelectionCellPainter();
+		if (bodyHoverCellPainter != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					bodyHoverCellPainter, 
+					DisplayMode.SELECT_HOVER,
+					GridRegion.BODY);
+		}
+		
+		IStyle columnHeaderHoverStyle = getColumnHeaderHoverSelectionStyle();
+		if (!isStyleEmpty(columnHeaderHoverStyle)) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					columnHeaderHoverStyle, 
+					DisplayMode.SELECT_HOVER,
+					GridRegion.COLUMN_HEADER);
+		}
+		ICellPainter columnHeaderHoverCellPainter = getColumnHeaderHoverSelectionCellPainter();
+		if (columnHeaderHoverCellPainter != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					columnHeaderHoverCellPainter, 
+					DisplayMode.SELECT_HOVER,
+					GridRegion.COLUMN_HEADER);
+		}
+		
+		IStyle rowHeaderHoverStyle = getRowHeaderHoverSelectionStyle();
+		if (!isStyleEmpty(rowHeaderHoverStyle)) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					rowHeaderHoverStyle, 
+					DisplayMode.SELECT_HOVER,
+					GridRegion.ROW_HEADER);
+		}
+		ICellPainter rowHeaderHoverCellPainter = getRowHeaderHoverSelectionCellPainter();
+		if (rowHeaderHoverCellPainter != null) {
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					rowHeaderHoverCellPainter, 
+					DisplayMode.SELECT_HOVER,
+					GridRegion.ROW_HEADER);
+		}
+	}
+	
+	/**
+	 * Returns the {@link IStyle} that should be used by default to render hovered selected cells in a NatTable.
+	 * <p>
+	 * That means this {@link IStyle} is registered against {@link DisplayMode#SELECT_HOVER}.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link IStyle} that should be used to render hovered selected cells in a NatTable.
+	 */
+	protected abstract IStyle getDefaultHoverSelectionStyle();
+	
+	/**
+	 * Returns the {@link ICellPainter} that should be used by default to render hovered selected cells in a NatTable.
+	 * <p>
+	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#SELECT_HOVER}.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link ICellPainter} that should be used to render hovered selected cells in a NatTable.
+	 */
+	protected abstract ICellPainter getDefaultHoverSelectionCellPainter();
+	
+	/**
+	 * Returns the {@link IStyle} that should be used to render hovered selected cells in a NatTable body region.
+	 * <p>
+	 * That means this {@link IStyle} is registered against {@link DisplayMode#SELECT_HOVER}
+	 * in the region with the region label {@link GridRegion#BODY}.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link IStyle} that should be used to render hovered selected cells in a NatTable body region.
+	 */
+	protected abstract IStyle getBodyHoverSelectionStyle();
+	
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render hovered selected cells in a NatTable 
+	 * body region.
+	 * <p>
+	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#SELECT_HOVER}
+	 * in the region with the region label {@link GridRegion#BODY}.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link ICellPainter} that should be used to render hovered selected cells in a NatTable 
+	 * 			body region.
+	 */
+	protected abstract ICellPainter getBodyHoverSelectionCellPainter();
+	
+	/**
+	 * Returns the {@link IStyle} that should be used to render hovered selected cells in a NatTable 
+	 * column header region.
+	 * <p>
+	 * That means this {@link IStyle} is registered against {@link DisplayMode#SELECT_HOVER}
+	 * in the region with the region label {@link GridRegion#COLUMN_HEADER}.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link IStyle} that should be used to render hovered selected cells in a NatTable 
+	 * 			column header region.
+	 */
+	protected abstract IStyle getColumnHeaderHoverSelectionStyle();
+	
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render hovered selected cells in a NatTable 
+	 * column header region.
+	 * <p>
+	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#SELECT_HOVER}
+	 * in the region with the region label {@link GridRegion#COLUMN_HEADER}.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link ICellPainter} that should be used to render hovered selected cells in a NatTable 
+	 * 			column header region.
+	 */
+	protected abstract ICellPainter getColumnHeaderHoverSelectionCellPainter();
+	
+	/**
+	 * Returns the {@link IStyle} that should be used to render hovered selected cells in a NatTable 
+	 * row header region.
+	 * <p>
+	 * That means this {@link IStyle} is registered against {@link DisplayMode#SELECT_HOVER}
+	 * in the region with the region label {@link GridRegion#ROW_HEADER}.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link IStyle} that should be used to render hovered selected cells in a NatTable 
+	 * 			row header region.
+	 */
+	protected abstract IStyle getRowHeaderHoverSelectionStyle();
+	
+	/**
+	 * Returns the {@link ICellPainter} that should be used to render hovered selected cells in a NatTable 
+	 * row header region.
+	 * <p>
+	 * That means this {@link ICellPainter} is registered against {@link DisplayMode#SELECT_HOVER}
+	 * in the region with the region label {@link GridRegion#ROW_HEADER}.
+	 * </p>
+	 * <p>
+	 * Note: This configuration is only working if the {@link HoverLayer} is part of the
+	 * 		 layer stack. Otherwise the configuration will not have any effect.
+	 * </p>
+	 * <p>
+	 * If this method returns <code>null</code>, no value will be registered to keep the
+	 * IConfigRegistry clean. The result would be the same, as if no value is found in the
+	 * IConfigRegistry. In this case the rendering will fallback to the default configuration.
+	 * </p>
+	 * @return The {@link ICellPainter} that should be used to render hovered selected cells in a NatTable 
+	 * 			row header region.
+	 */
+	protected abstract ICellPainter getRowHeaderHoverSelectionCellPainter();
 	
 	/**
 	 * Register default selection style configurations. Typically these configurations are
@@ -2103,6 +2345,46 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 			configRegistry.unregisterConfigAttribute(
 				CellConfigAttributes.CELL_PAINTER, 
 				DisplayMode.HOVER,
+				GridRegion.ROW_HEADER);
+		
+		//unregister hover selection styling
+		if (!isStyleEmpty(getDefaultHoverSelectionStyle()))
+			configRegistry.unregisterConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				DisplayMode.SELECT_HOVER);
+		if (getDefaultHoverSelectionCellPainter() != null) 
+			configRegistry.unregisterConfigAttribute(
+				CellConfigAttributes.CELL_PAINTER, 
+				DisplayMode.SELECT_HOVER);
+		if (!isStyleEmpty(getBodyHoverSelectionStyle()))
+			configRegistry.unregisterConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				DisplayMode.SELECT_HOVER,
+				GridRegion.BODY);
+		if (getBodyHoverSelectionCellPainter() != null) 
+			configRegistry.unregisterConfigAttribute(
+				CellConfigAttributes.CELL_PAINTER, 
+				DisplayMode.SELECT_HOVER,
+				GridRegion.BODY);
+		if (!isStyleEmpty(getColumnHeaderHoverSelectionStyle()))
+			configRegistry.unregisterConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				DisplayMode.SELECT_HOVER,
+				GridRegion.COLUMN_HEADER);
+		if (getColumnHeaderHoverSelectionCellPainter() != null) 
+			configRegistry.unregisterConfigAttribute(
+				CellConfigAttributes.CELL_PAINTER, 
+				DisplayMode.SELECT_HOVER,
+				GridRegion.COLUMN_HEADER);
+		if (!isStyleEmpty(getRowHeaderHoverSelectionStyle()))
+			configRegistry.unregisterConfigAttribute(
+				CellConfigAttributes.CELL_STYLE, 
+				DisplayMode.SELECT_HOVER,
+				GridRegion.ROW_HEADER);
+		if (getRowHeaderHoverSelectionCellPainter() != null) 
+			configRegistry.unregisterConfigAttribute(
+				CellConfigAttributes.CELL_PAINTER, 
+				DisplayMode.SELECT_HOVER,
 				GridRegion.ROW_HEADER);
 		
 		//unregister selection anchor style configuration

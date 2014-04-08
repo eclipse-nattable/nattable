@@ -203,6 +203,64 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 
 	public ICellPainter rHeaderHoverCellPainter 						= null;
 	
+	// hover styling
+	
+	public Color defaultHoverSelectionBgColor 							= null;
+	public Color defaultHoverSelectionFgColor 							= null;
+	public Color defaultHoverSelectionGradientBgColor 					= null;
+	public Color defaultHoverSelectionGradientFgColor 					= null;
+	public HorizontalAlignmentEnum defaultHoverSelectionHAlign 			= null;
+	public VerticalAlignmentEnum defaultHoverSelectionVAlign 			= null;
+	public Font defaultHoverSelectionFont 								= null;
+	public Image defaultHoverSelectionImage 							= null;
+	public BorderStyle defaultHoverSelectionBorderStyle 				= null;
+	public Character defaultHoverSelectionPWEchoChar 					= null;
+	public TextDecorationEnum defaultHoverSelectionTextDecoration 		= null;
+
+	public ICellPainter defaultHoverSelectionCellPainter 				= null;
+	
+	public Color bodyHoverSelectionBgColor 								= null;
+	public Color bodyHoverSelectionFgColor 								= null;
+	public Color bodyHoverSelectionGradientBgColor 						= null;
+	public Color bodyHoverSelectionGradientFgColor 						= null;
+	public HorizontalAlignmentEnum bodyHoverSelectionHAlign 			= null;
+	public VerticalAlignmentEnum bodyHoverSelectionVAlign 				= null;
+	public Font bodyHoverSelectionFont 									= null;
+	public Image bodyHoverSelectionImage 								= null;
+	public BorderStyle bodyHoverSelectionBorderStyle 					= null;
+	public Character bodyHoverSelectionPWEchoChar 						= null;
+	public TextDecorationEnum bodyHoverSelectionTextDecoration 			= null;
+
+	public ICellPainter bodyHoverSelectionCellPainter 					= null;
+	
+	public Color cHeaderHoverSelectionBgColor 							= null;
+	public Color cHeaderHoverSelectionFgColor 							= null;
+	public Color cHeaderHoverSelectionGradientBgColor 					= null;
+	public Color cHeaderHoverSelectionGradientFgColor 					= null;
+	public HorizontalAlignmentEnum cHeaderHoverSelectionHAlign 			= null;
+	public VerticalAlignmentEnum cHeaderHoverSelectionVAlign 			= null;
+	public Font cHeaderHoverSelectionFont 								= null;
+	public Image cHeaderHoverSelectionImage 							= null;
+	public BorderStyle cHeaderHoverSelectionBorderStyle 				= null;
+	public Character cHeaderHoverSelectionPWEchoChar 					= null;
+	public TextDecorationEnum cHeaderHoverSelectionTextDecoration 		= null;
+
+	public ICellPainter cHeaderHoverSelectionCellPainter 				= null;
+	
+	public Color rHeaderHoverSelectionBgColor 							= null;
+	public Color rHeaderHoverSelectionFgColor 							= null;
+	public Color rHeaderHoverSelectionGradientBgColor 					= null;
+	public Color rHeaderHoverSelectionGradientFgColor 					= null;
+	public HorizontalAlignmentEnum rHeaderHoverSelectionHAlign 			= null;
+	public VerticalAlignmentEnum rHeaderHoverSelectionVAlign 			= null;
+	public Font rHeaderHoverSelectionFont 								= null;
+	public Image rHeaderHoverSelectionImage 							= null;
+	public BorderStyle rHeaderHoverSelectionBorderStyle 				= null;
+	public Character rHeaderHoverSelectionPWEchoChar 					= null;
+	public TextDecorationEnum rHeaderHoverSelectionTextDecoration 		= null;
+
+	public ICellPainter rHeaderHoverSelectionCellPainter 				= null;
+	
 	//default selection style
 	
 	public Color defaultSelectionBgColor 								= GUIHelper.COLOR_TITLE_INACTIVE_BACKGROUND;
@@ -698,6 +756,94 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 	@Override
 	protected ICellPainter getRowHeaderHoverCellPainter() {
 		return this.rHeaderHoverCellPainter;
+	}
+
+	@Override
+	protected IStyle getDefaultHoverSelectionStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, defaultHoverSelectionBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, defaultHoverSelectionFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, defaultHoverSelectionGradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, defaultHoverSelectionGradientFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, defaultHoverSelectionHAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, defaultHoverSelectionVAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, defaultHoverSelectionFont);
+		cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, defaultHoverSelectionImage);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, defaultHoverSelectionBorderStyle);
+		cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR, defaultHoverSelectionPWEchoChar);
+		cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, defaultHoverSelectionTextDecoration);
+		return cellStyle;
+	}
+
+	@Override
+	protected ICellPainter getDefaultHoverSelectionCellPainter() {
+		return this.defaultHoverSelectionCellPainter;
+	}
+
+	@Override
+	protected IStyle getBodyHoverSelectionStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bodyHoverSelectionBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, bodyHoverSelectionFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, bodyHoverSelectionGradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, bodyHoverSelectionGradientFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, bodyHoverSelectionHAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, bodyHoverSelectionVAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, bodyHoverSelectionFont);
+		cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, bodyHoverSelectionImage);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, bodyHoverSelectionBorderStyle);
+		cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR, bodyHoverSelectionPWEchoChar);
+		cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, bodyHoverSelectionTextDecoration);
+		return cellStyle;
+	}
+
+	@Override
+	protected ICellPainter getBodyHoverSelectionCellPainter() {
+		return this.bodyHoverSelectionCellPainter;
+	}
+
+	@Override
+	protected IStyle getColumnHeaderHoverSelectionStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, cHeaderHoverSelectionBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, cHeaderHoverSelectionFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, cHeaderHoverSelectionGradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, cHeaderHoverSelectionGradientFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, cHeaderHoverSelectionHAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, cHeaderHoverSelectionVAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, cHeaderHoverSelectionFont);
+		cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, cHeaderHoverSelectionImage);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, cHeaderHoverSelectionBorderStyle);
+		cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR, cHeaderHoverSelectionPWEchoChar);
+		cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, cHeaderHoverSelectionTextDecoration);
+		return cellStyle;
+	}
+
+	@Override
+	protected ICellPainter getColumnHeaderHoverSelectionCellPainter() {
+		return this.cHeaderHoverSelectionCellPainter;
+	}
+
+	@Override
+	protected IStyle getRowHeaderHoverSelectionStyle() {
+		IStyle cellStyle = new Style();
+		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, rHeaderHoverSelectionBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, rHeaderHoverSelectionFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, rHeaderHoverSelectionGradientBgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, rHeaderHoverSelectionGradientFgColor);
+		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, rHeaderHoverSelectionHAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, rHeaderHoverSelectionVAlign);
+		cellStyle.setAttributeValue(CellStyleAttributes.FONT, rHeaderHoverSelectionFont);
+		cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, rHeaderHoverSelectionImage);
+		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, rHeaderHoverSelectionBorderStyle);
+		cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR, rHeaderHoverSelectionPWEchoChar);
+		cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, rHeaderHoverSelectionTextDecoration);
+		return cellStyle;
+	}
+
+	@Override
+	protected ICellPainter getRowHeaderHoverSelectionCellPainter() {
+		return this.rHeaderHoverSelectionCellPainter;
 	}
 
 	@Override

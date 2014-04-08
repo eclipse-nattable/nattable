@@ -345,11 +345,14 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
 	@Override
 	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+		String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
 		if (isCellPositionSelected(columnPosition, rowPosition)) {
+			if (DisplayMode.HOVER.equals(displayMode)) {
+				return DisplayMode.SELECT_HOVER;
+			}
 			return DisplayMode.SELECT;
-		} else {
-			return super.getDisplayModeByPosition(columnPosition, rowPosition);
 		}
+		return displayMode;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.hover.config.SimpleHoverStylingBindings;
@@ -80,6 +81,8 @@ public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
 		SelectionLayer selectionLayer = new SelectionLayer(hoverLayer);
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 		
+		viewportLayer.setRegionName(GridRegion.BODY);
+		
 		//turn the auto configuration off as we want to add our hover styling configuration
 		NatTable natTable = new NatTable(parent, viewportLayer, false);
 		
@@ -92,6 +95,7 @@ public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
 			
 			@Override
 			public void configureRegistry(IConfigRegistry configRegistry) {
+				//style that is applied when cells are hovered
 				Style style = new Style();
 				style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_YELLOW);
 				
@@ -99,6 +103,15 @@ public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
 						CellConfigAttributes.CELL_STYLE, 
 						style, 
 						DisplayMode.HOVER);
+				
+				//style that is applied when selected cells are hovered
+				style = new Style();
+				style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_GREEN);
+				
+				configRegistry.registerConfigAttribute(
+						CellConfigAttributes.CELL_STYLE, 
+						style, 
+						DisplayMode.SELECT_HOVER);
 			}
 		});
 		

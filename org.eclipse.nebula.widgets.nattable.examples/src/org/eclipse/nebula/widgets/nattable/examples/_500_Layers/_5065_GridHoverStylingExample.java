@@ -154,12 +154,29 @@ public class _5065_GridHoverStylingExample extends AbstractNatExample {
 					DisplayMode.HOVER);
 			
 			style = new Style();
+			style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_GREEN);
+			
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					style, 
+					DisplayMode.SELECT_HOVER);
+			
+			style = new Style();
 			style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_RED);
 			
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.CELL_STYLE, 
 					style, 
 					DisplayMode.HOVER,
+					GridRegion.ROW_HEADER);
+			
+			style = new Style();
+			style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_BLUE);
+			
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_STYLE, 
+					style, 
+					DisplayMode.SELECT_HOVER,
 					GridRegion.ROW_HEADER);
 			
 			
@@ -172,6 +189,9 @@ public class _5065_GridHoverStylingExample extends AbstractNatExample {
 			Image selectedBgImage = new Image(
 					Display.getDefault(), 
 					getClass().getResourceAsStream("../resources/selected_column_header_bg.png"));
+			Image selectedHoveredBgImage = new Image(
+					Display.getDefault(), 
+					getClass().getResourceAsStream("../resources/selected_hovered_column_header_bg.png"));
 
 			TextPainter txtPainter = new TextPainter(false, false);
 
@@ -204,6 +224,15 @@ public class _5065_GridHoverStylingExample extends AbstractNatExample {
 					CellConfigAttributes.CELL_PAINTER, 
 					selectedHeaderPainter, 
 					DisplayMode.SELECT, 
+					GridRegion.COLUMN_HEADER);
+
+			ICellPainter selectedHoveredHeaderPainter = 
+					new BackgroundImagePainter(txtPainter, selectedHoveredBgImage, GUIHelper.getColor(192, 192, 192));
+
+			configRegistry.registerConfigAttribute(
+					CellConfigAttributes.CELL_PAINTER, 
+					selectedHoveredHeaderPainter, 
+					DisplayMode.SELECT_HOVER, 
 					GridRegion.COLUMN_HEADER);
 		}
 		
