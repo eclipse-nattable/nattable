@@ -150,8 +150,8 @@ public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIn
 				rowIndexOrder.addAll(newRowIndexOrder);
 			}
 			
-			invalidateCache();
 		}
+		invalidateCache();
 		fireLayerEvent(new RowStructuralRefreshEvent(this));
 	}
 

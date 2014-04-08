@@ -138,8 +138,8 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 				columnIndexOrder.addAll(newColumnIndexOrder);
 			}
 			
-			invalidateCache();
 		}
+		invalidateCache();
 		fireLayerEvent(new ColumnStructuralRefreshEvent(this));
 	}
 
