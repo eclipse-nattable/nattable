@@ -16,7 +16,6 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TreePath;
@@ -67,16 +66,24 @@ public class TabbedNatExampleRunner {
 		GridData gridData = new GridData(GridData.FILL_VERTICAL);
 		gridData.widthHint = 200;
 		navTreeViewer.getControl().setLayoutData(gridData);
-		NavContentProvider contentProvider = new NavContentProvider();
+		final NavContentProvider contentProvider = new NavContentProvider();
 		navTreeViewer.setContentProvider(contentProvider);
 		navTreeViewer.setLabelProvider(new NavLabelProvider(contentProvider));
 		navTreeViewer.setInput(examplePaths);
 		navTreeViewer.addDoubleClickListener(new IDoubleClickListener() {
 		
+			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				TreeSelection selection = (TreeSelection) event.getSelection();
 				for (TreePath path : selection.getPaths()) {
-					openExampleInTab(path.getLastSegment().toString());
+					//check for item - if node expand/collapse, if child open
+					if (contentProvider.hasChildren(path.getLastSegment().toString())) {
+						boolean expanded = navTreeViewer.getExpandedState(path);
+						navTreeViewer.setExpandedState(path, !expanded);
+					}
+					else {
+						openExampleInTab(path.getLastSegment().toString());
+					}
 				}
 			}
 			
@@ -107,8 +114,9 @@ public class TabbedNatExampleRunner {
 		display.dispose();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static Class<? extends INatExample> getExampleClass(String examplePath) {
-		String className = INatExample.BASE_PACKAGE + examplePath.replace('/', '.');
+		String className = examplePath.replace('/', '.');
 		try {
 			Class<?> clazz = Class.forName(className);
 			if (INatExample.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers())) {
@@ -124,11 +132,22 @@ public class TabbedNatExampleRunner {
 	public static INatExample getExample(String examplePath) {
 		INatExample example = examplePathMap.get(examplePath);
 		if (example == null) {
-			Class<? extends INatExample> exampleClass = getExampleClass(examplePath);
+			String path = examplePath;
+			if (examplePath.startsWith("/" + INatExample.TUTORIAL_EXAMPLES_PREFIX)) {
+				path = examplePath.replace("/" + INatExample.TUTORIAL_EXAMPLES_PREFIX, INatExample.BASE_PATH + "/");
+			}
+			else if (examplePath.startsWith("/" + INatExample.CLASSIC_EXAMPLES_PREFIX)) {
+				path = examplePath.replace("/" + INatExample.CLASSIC_EXAMPLES_PREFIX, INatExample.CLASSIC_BASE_PATH + "/");
+			}
+			
+			if (path.startsWith("/"))
+				path = path.substring(1);
+
+			Class<? extends INatExample> exampleClass = getExampleClass(path);
 			if (exampleClass != null) {
 				try {
-					example = (INatExample) exampleClass.newInstance();
-					examplePathMap .put(examplePath, example);
+					example = exampleClass.newInstance();
+					examplePathMap.put(examplePath, example);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -148,6 +167,7 @@ public class TabbedNatExampleRunner {
 		tabItem.setText(exampleName);
 		tabItem.addDisposeListener(new DisposeListener() {
 
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				// Stop
 				example.onStop();
@@ -189,7 +209,14 @@ public class TabbedNatExampleRunner {
 		final SelectionAdapter linkSelectionListener = new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				String source = getResourceAsString(INatExample.BASE_PATH + event.text + ".java");
+				String path = event.text;
+				if (path.startsWith("/" + INatExample.TUTORIAL_EXAMPLES_PREFIX)) {
+					path = path.replace("/" + INatExample.TUTORIAL_EXAMPLES_PREFIX, INatExample.BASE_PATH + "/");
+				}
+				else if (path.startsWith("/" + INatExample.CLASSIC_EXAMPLES_PREFIX)) {
+					path = path.replace("/" + INatExample.CLASSIC_EXAMPLES_PREFIX, INatExample.CLASSIC_BASE_PATH + "/");
+				}
+				String source = getResourceAsString(path + ".java");
 				if (source != null) {
 					viewSource(exampleName, source);
 				}

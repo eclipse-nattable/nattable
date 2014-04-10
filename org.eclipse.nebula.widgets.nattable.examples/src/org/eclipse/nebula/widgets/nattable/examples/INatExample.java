@@ -15,10 +15,18 @@ import org.eclipse.swt.widgets.Control;
 
 public interface INatExample {
 
-	public static final String BASE_PACKAGE = "org.eclipse.nebula.widgets.nattable.examples.examples";
-	
-	public static final String BASE_PATH = "/org/eclipse/nebula/widgets/nattable/examples/examples";
+	public static final String BASE_PACKAGE = "org.eclipse.nebula.widgets.nattable.examples";
 
+	public static final String CLASSIC_BASE_PACKAGE = BASE_PACKAGE + ".examples";
+	
+	public static final String BASE_PATH = "/org/eclipse/nebula/widgets/nattable/examples";
+	
+	public static final String CLASSIC_BASE_PATH = BASE_PATH + "/examples";
+
+	public static final String TUTORIAL_EXAMPLES_PREFIX = "Tutorial Examples/";
+
+	public static final String CLASSIC_EXAMPLES_PREFIX = "Classic Examples/";
+	
 	public String getName();
 	
 	public String getShortDescription();

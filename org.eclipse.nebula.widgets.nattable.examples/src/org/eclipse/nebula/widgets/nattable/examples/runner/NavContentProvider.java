@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.nebula.widgets.nattable.examples.INatExample;
 
 public class NavContentProvider implements ITreeContentProvider {
 
@@ -33,18 +34,22 @@ public class NavContentProvider implements ITreeContentProvider {
 		return children;
 	}
 
+	@Override
 	public void dispose() {
 		pathToChildrenMap = null;
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		pathToChildrenMap = new HashMap<String, Collection<String>>();
 	}
 
+	@Override
 	public Object[] getChildren(Object parent) {
 		return pathToChildrenMap.get(parent).toArray();
 	}
 
+	@Override
 	public Object getParent(Object element) {
 		String str = (String) element;
 		int lastSlashIndex = str.lastIndexOf('/');
@@ -55,10 +60,12 @@ public class NavContentProvider implements ITreeContentProvider {
 		}
 	}
 
+	@Override
 	public boolean hasChildren(Object element) {
 		return pathToChildrenMap.get(element) != null;
 	}
 
+	@Override
 	public Object[] getElements(Object inputElement) {
 		Set<String> topLevelElements = new LinkedHashSet<String>();
 		
@@ -67,7 +74,15 @@ public class NavContentProvider implements ITreeContentProvider {
 			String parentPath = "";
 			String absolutePath = "";
 			
-			final StringTokenizer tok = new StringTokenizer(examplePath, "/");
+			//remove the package name for the tree structure
+			String path = examplePath;
+			if (examplePath.startsWith(INatExample.TUTORIAL_EXAMPLES_PREFIX)) {
+				path = examplePath.replace(INatExample.BASE_PATH, "");
+			}
+			else if (examplePath.startsWith(INatExample.CLASSIC_EXAMPLES_PREFIX)) {
+				path = examplePath.replace(INatExample.CLASSIC_BASE_PATH, "");
+			}
+			final StringTokenizer tok = new StringTokenizer(path, "/");
 			while (tok.hasMoreTokens()) {
 				final String pathElement = tok.nextToken();
 				if (parentPath.length() == 0) {
