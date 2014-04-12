@@ -44,7 +44,7 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T>{
 		
 		for (int i = (getTreeData().getElementCount()-1); i >= 0; i--) {
 			if (hasChildren(i) && !isCollapsed(i)) {
-				collapse(i);
+				collapsedChildren.addAll(collapse(i));
 			}
 		}
 		
