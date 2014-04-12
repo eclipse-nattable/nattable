@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
@@ -60,6 +61,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
@@ -131,7 +133,7 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
 		//to enable the group by summary feature, the GroupByDataLayer needs to know the ConfigRegistry
 		final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack = 
 				new BodyLayerStack<ExtendedPersonWithAddress>(
-						PersonService.getExtendedPersonsWithAddress(10000), columnPropertyAccessor, configRegistry);
+						PersonService.getExtendedPersonsWithAddress(100), columnPropertyAccessor, configRegistry);
 
 		bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 		
@@ -218,6 +220,14 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
 				configRegistry.registerConfigAttribute(
 						GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
 						"[{0}] - ({1})");
+				
+				//set a custom display converter to the money groupby column that transforms the 
+				//values correctly localized
+				configRegistry.registerConfigAttribute(
+						CellConfigAttributes.DISPLAY_CONVERTER, 
+						new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
+						DisplayMode.NORMAL, 
+						GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3);
 			}
 		});
 		
