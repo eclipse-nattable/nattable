@@ -362,14 +362,15 @@ public class TableCellEditor extends AbstractCellEditor {
 	 */
 	protected Object[] getDataAsArray(Object cellData) {
 		Object[] cellDataArray = null;
-		if (cellData.getClass().isArray()) {
-			cellDataArray = (Object[])cellData;
+		if (cellData != null) {
+			if (cellData.getClass().isArray()) {
+				cellDataArray = (Object[])cellData;
+			}
+			else if (cellData instanceof Collection) {
+				Collection<?> cellDataCollection = (Collection<?>)cellData;
+				cellDataArray = cellDataCollection.toArray();
+			}
 		}
-		else if (cellData instanceof Collection) {
-			Collection<?> cellDataCollection = (Collection<?>)cellData;
-			cellDataArray = cellDataCollection.toArray();
-		}
-
 		return cellDataArray;
 	}
 
