@@ -308,7 +308,10 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 */
 	public void expandTreeRow(int parentIndex) {
 		List<Integer> rowIndexes = 	this.treeRowModel.expand(parentIndex);
-		this.hiddenRowIndexes.removeAll(rowIndexes);
+		//Bug 432865: iterating and removing every single item is faster than removeAll()
+		for (final Integer expandedChildRowIndex : rowIndexes) {
+			this.hiddenRowIndexes.remove(expandedChildRowIndex);
+	    }		
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
 	}
@@ -318,7 +321,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 */
 	public void expandAll() {
 		List<Integer> rowIndexes = this.treeRowModel.expandAll();
-		this.hiddenRowIndexes.removeAll(rowIndexes);
+		this.hiddenRowIndexes.clear();
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
 	}
