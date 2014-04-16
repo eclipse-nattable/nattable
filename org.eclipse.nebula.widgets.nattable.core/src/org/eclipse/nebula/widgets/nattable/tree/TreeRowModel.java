@@ -13,10 +13,11 @@ package org.eclipse.nebula.widgets.nattable.tree;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class TreeRowModel<T> extends AbstractTreeRowModel<T>{
+public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
-	private final HashSet<Integer> parentIndexes = new HashSet<Integer>();
+	protected final Set<Integer> parentIndexes = new HashSet<Integer>();
 
 	public TreeRowModel(ITreeData<T> treeData) {
 		super(treeData);
