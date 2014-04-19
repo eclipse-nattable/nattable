@@ -27,36 +27,52 @@ import org.eclipse.nebula.widgets.nattable.examples.runner.TabbedNatExampleRunne
 public class NatTableExamples {
 
 	public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
-		List<String> examples = new ArrayList<String>();
-
-		InputStream inputStream = NatTableExamples.class.getResourceAsStream("/examples.index");
-		if (inputStream != null) {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-			String line = reader.readLine();
-			while (line != null) {
-				examples.add(line);
-				line = reader.readLine();
+		if (args.length == 0) {
+			List<String> examples;
+	
+			InputStream inputStream = NatTableExamples.class.getResourceAsStream("/examples.index");
+			if (inputStream != null) {
+				examples = new ArrayList<String>();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+				String line = reader.readLine();
+				while (line != null) {
+					examples.add(line);
+					line = reader.readLine();
+				}
+				reader.close();
+			} else {
+				System.out.println("examples.index not found, reconstructing");
+				examples = createExamplesIndex(null);
 			}
-			reader.close();
+	
+			TabbedNatExampleRunner.run(examples.toArray(new String[] {}));
+		} else if (args.length == 2 && "--createIndex".equals(args[0])) {
+			System.out.println("Creating examples.index");
+			System.out.println("basedir: " + args[1]);
+			createExamplesIndex(args[1]);
 		} else {
-			System.out.println("examples.index not found, reconstructing");
-			
-			File examplesDir = new File("src" + INatExample.BASE_PATH);
-			findTutorialExamples(examplesDir, examples);
-
-			examplesDir = new File("src" + INatExample.CLASSIC_BASE_PATH);
-			findExamples(examplesDir, examples, INatExample.CLASSIC_EXAMPLES_PREFIX);
-			
-			File examplesIndexFile = new File("src", "examples.index");
-			BufferedWriter writer = new BufferedWriter(new FileWriter(examplesIndexFile));
-			for (String example : examples) {
-				writer.write(example + "\n");
-			}
-			writer.flush();
-			writer.close();
+			System.out.println("Usage: NatTableExamples [--createIndex <basedir>]");
 		}
+	}
+	
+	private static List<String> createExamplesIndex(String basedir) throws IOException {
+		List<String> examples = new ArrayList<String>();
+		
+		File examplesDir = new File(basedir, "src" + INatExample.BASE_PATH);
+		findTutorialExamples(examplesDir, examples);
 
-		TabbedNatExampleRunner.run(examples.toArray(new String[] {}));
+		examplesDir = new File(basedir, "src" + INatExample.CLASSIC_BASE_PATH);
+		findExamples(examplesDir, examples, INatExample.CLASSIC_EXAMPLES_PREFIX);
+		
+		File examplesIndexFile = new File(new File(basedir, "src"), "examples.index");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(examplesIndexFile));
+		for (String example : examples) {
+			writer.write(example + "\n");
+		}
+		writer.flush();
+		writer.close();
+		
+		return examples;
 	}
 	
 	private static void findTutorialExamples(File dir, List<String> examples) throws IOException {
@@ -67,6 +83,9 @@ public class NatTableExamples {
 				return name.matches("_\\d{3}.*");
 			}
 		};
+		
+		System.out.println("dir: " + dir.getCanonicalPath());
+		System.out.println("list: " + dir.list(packageFilter));
 		
 		for (String packageName : dir.list(packageFilter)) {
 			File f = new File(dir, packageName);
@@ -86,10 +105,7 @@ public class NatTableExamples {
 				examplePath = examplePath.replace(File.separator, "/");  // Convert to /-delimited path
 				if (examplePath.endsWith(".java")) {
 					examplePath = examplePath.replaceAll("^.*/src/", "").replaceAll("\\.java$", "");
-					Class<? extends INatExample> exampleClass = TabbedNatExampleRunner.getExampleClass(examplePath);
-					if (exampleClass != null) {
-						examples.add(prefix + examplePath);
-					}
+					examples.add(prefix + examplePath);
 				}
 			}
 		}
