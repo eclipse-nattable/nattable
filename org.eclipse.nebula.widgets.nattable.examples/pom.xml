@@ -94,6 +94,7 @@
                 <artifact>
                   <file>target/NatTableExamples.jar</file>
                   <type>jar</type>
+                  <classifier>with-dependencies</classifier>
                 </artifact>
               </artifacts>
             </configuration>

@@ -4,7 +4,7 @@
     <!--ANT 1.7 is required                                        -->
 	
     <target name="prepare_jar">
-        <jar destfile="target/NatTablExamples.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
+        <jar destfile="target/NatTableExamples.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.nebula.widgets.nattable.examples.NatTableExamples"/>
                 <attribute name="Class-Path" value="."/>
