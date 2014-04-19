@@ -6,6 +6,7 @@
     <target name="prepare_jar">
         <jar destfile="target/NatTableExamples.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
             <manifest>
+            	<attribute name="Application-Name" value="NatTable Examples"/>
                 <attribute name="Main-Class" value="org.eclipse.nebula.widgets.nattable.examples.NatTableExamples"/>
                 <attribute name="Class-Path" value="."/>
             	<attribute name="Permissions" value="all-permissions"/>
