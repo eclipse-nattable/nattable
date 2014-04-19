@@ -32,6 +32,10 @@
 		<module>../org.eclipse.nebula.widgets.nattable.extension.poi.source.feature</module>
 
 		<module>../org.eclipse.nebula.widgets.nattable.updatesite</module>
+		
+		<module>../org.eclipse.nebula.widgets.nattable.extension.builder</module>
+		<module>../org.eclipse.nebula.widgets.nattable.dataset</module>
+		<module>../org.eclipse.nebula.widgets.nattable.examples</module>
 	</modules>
 
 	<properties>

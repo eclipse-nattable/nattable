@@ -45,6 +45,6 @@
 		<input message="path to keystore" addProperty="keystore.path"/>
 		<input message="keystore password" addProperty="keystore.password"/>
 		<input message="alias" addProperty="alias"/>
-		<signjar jar="NatTableExamples.jar" keystore="${keystore.path}" storepass="${keystore.password}" alias="${alias}"></signjar>
+		<signjar jar="target/org.eclipse.nebula.widgets.nattable.examples-1.0.1-SNAPSHOT.jar" keystore="${keystore.path}" storepass="${keystore.password}" alias="${alias}"></signjar>
 	</target>
 </project>
