@@ -66,4 +66,32 @@
     </plugins>
   </build>
   
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>org.eclipse.nebula.widgets.nattable.core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>org.eclipse.nebula.widgets.nattable.core.test</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>org.eclipse.nebula.widgets.nattable.extension.glazedlists</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>org.eclipse.nebula.widgets.nattable.extension.builder</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>org.eclipse.nebula.widgets.nattable.dataset</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  
 </project>
