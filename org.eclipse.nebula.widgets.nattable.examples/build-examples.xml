@@ -11,12 +11,12 @@
             	<attribute name="Permissions" value="all-permissions"/>
             </manifest>
             <fileset dir="src"/>
-            <fileset dir="../org.eclipse.nebula.widgets.nattable.core/bin"/>
-            <fileset dir="../org.eclipse.nebula.widgets.nattable.core.test/bin"/>
-            <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.glazedlists/bin"/>
-            <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.builder/bin"/>
-            <fileset dir="../org.eclipse.nebula.widgets.nattable.dataset/bin"/>
-            <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/bin"/>
+            <fileset dir="../org.eclipse.nebula.widgets.nattable.core/target/classes"/>
+            <fileset dir="../org.eclipse.nebula.widgets.nattable.core.test/target/classes"/>
+            <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.glazedlists/target/classes"/>
+            <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.builder/target/classes"/>
+            <fileset dir="../org.eclipse.nebula.widgets.nattable.dataset/target/classes"/>
+            <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/target/classes"/>
             <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="lib/ca.odell.glazedlists_1.9.0.v201303080712.jar"/>
             <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="lib/org.apache.poi_3.9.0.v201303080712.jar"/>
             <zipfileset excludes="about_files/*,META-INF/*.SF,META-INF/*.inf,META-INF/*.RSA,*" src="lib/org.apache.commons.lang_2.4.0.v20081016-1030.jar"/>
