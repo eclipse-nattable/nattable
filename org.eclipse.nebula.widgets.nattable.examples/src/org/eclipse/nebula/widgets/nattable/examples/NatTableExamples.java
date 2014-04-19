@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.examples.runner.TabbedNatExampleRunner;
@@ -84,10 +86,9 @@ public class NatTableExamples {
 			}
 		};
 		
-		System.out.println("dir: " + dir.getCanonicalPath());
-		System.out.println("list: " + dir.list(packageFilter));
-		
-		for (String packageName : dir.list(packageFilter)) {
+		List<String> sortedList = Arrays.asList(dir.list(packageFilter));
+		Collections.sort(sortedList);
+		for (String packageName : sortedList) {
 			File f = new File(dir, packageName);
 			if (f.isDirectory()) {
 				findExamples(f, examples, INatExample.TUTORIAL_EXAMPLES_PREFIX);
@@ -96,7 +97,9 @@ public class NatTableExamples {
 	}
 	
 	private static void findExamples(File dir, List<String> examples, String prefix) throws IOException {
-		for (String s : dir.list()) {
+		List<String> sortedList = Arrays.asList(dir.list());
+		Collections.sort(sortedList);
+		for (String s : sortedList) {
 			File f = new File(dir, s);
 			if (f.isDirectory()) {
 				findExamples(f, examples, prefix);
