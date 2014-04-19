@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples;
 
+import static org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture.ASK_PRICE_PROP_NAME;
+import static org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture.getColumnIndexOfProperty;
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
 
 import java.beans.PropertyChangeListener;
@@ -22,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
 import org.apache.commons.lang.math.RandomUtils;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.blink.BlinkConfigAttributes;
@@ -32,12 +33,14 @@ import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnCh
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.PersistentNatExampleWrapper;
 import org.eclipse.nebula.widgets.nattable.examples.examples._110_Editing.EditableGridExample;
 import org.eclipse.nebula.widgets.nattable.examples.examples._131_Filtering.FilterRowGridExample;
-import org.eclipse.nebula.widgets.nattable.examples.examples._150_Column_and_row_grouping._300_Summary_row;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.FullFeaturedBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.FullFeaturedColumnHeaderLayerStack;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -56,6 +59,11 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
+import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.BlinkingRowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
@@ -192,7 +200,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
 		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
 		// Summary row configuration
-		natTable.addConfiguration(new _300_Summary_row<BlinkingRowDataFixture>(bodyDataProvider));
+		natTable.addConfiguration(new MySummaryRow<BlinkingRowDataFixture>(bodyDataProvider));
 		natTable.configure();
 
 		return natTable;
@@ -354,4 +362,28 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
 		}
 	}
 
+	class MySummaryRow<T> extends DefaultSummaryRowConfiguration implements IConfiguration {
+
+		private IRowDataProvider<T> dataProvider;
+		
+		public MySummaryRow(IRowDataProvider<T> dataProvider) {
+			this.dataProvider = dataProvider;
+		}
+
+		@Override
+		public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
+			// Add summaries to ask price column
+			configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+					new SummationSummaryProvider(dataProvider),
+					DisplayMode.NORMAL,
+					SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + getColumnIndexOfProperty(ASK_PRICE_PROP_NAME));
+
+			// No Summary by default
+			configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+					ISummaryProvider.NONE,
+					DisplayMode.NORMAL,
+					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+		}
+	}
+	
 }
