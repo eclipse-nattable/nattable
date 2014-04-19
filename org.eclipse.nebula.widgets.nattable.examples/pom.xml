@@ -52,6 +52,9 @@
             <manifest>
               <mainClass>org.eclipse.nebula.widgets.nattable.examples.NatTableExamples</mainClass>
             </manifest>
+            <manifestEntries>
+              <Permissions>all-permissions</Permissions>
+            </manifestEntries>
           </archive>
         </configuration>
         <executions>
