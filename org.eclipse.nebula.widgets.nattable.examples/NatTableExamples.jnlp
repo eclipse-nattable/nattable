@@ -1,26 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- JNLP File for NatTable -->
 
-<jnlp spec="0.2 1.0"
-      codebase="http://nattable.org/webstart"
+<jnlp spec="1.0+"
+      codebase="http://download.eclipse.org/nattable/webstart"
       href="NatTableExamples.jnlp">
+   
    <information> 
       <title>NatTable Examples</title> 
       <vendor>Open Source Software</vendor>
-      <homepage href="http://nattable.org"/>
+      <homepage href="http://www.eclipse.org/nattable"/>
       <description>Examples demonstrating the NatTable feature set</description>
       <description kind="short">NatTable Examples</description>
       <icon href="http://nattable.org/drupal/files/garland_logo.png"/>
       <offline-allowed/> 
    </information> 
+   
    <security>
       <all-permissions/>
    </security>
+   
    <resources>
-      <j2se version="1.5+" href="http://java.sun.com/products/autodl/j2se"/>
-      <j2se version="1.5+"/>
+      <j2se version="1.6+"/>
       <jar href="NatTableExamples.jar" main="true" download="eager"/>
-      <extension name="SWT" href="SWT.jnlp"/>
    </resources>
+   
+	<resources os="Windows" arch="x86">
+		<jar href="swt-win32-win32-x86.jar" />
+	</resources>
+
+	<resources os="Windows" arch="x86_64">
+		<jar href="swt-win32-win32-x86_64.jar" />
+	</resources>
+
+	<resources os="Linux">
+		<jar href="swt-gtk-linux-x86.jar" />
+	</resources>
+
+	<resources os="Linux" arch="x86_64">
+		<jar href="swt-gtk-linux-x86_64.jar" />
+	</resources>
+
+	<resources os="Linux" arch="ppc">
+		<jar href="swt-gtk-linux-ppc.jar" />
+	</resources>
+	
+	<resources os="Mac"> 
+	    <j2se version="1.6+" java-vm-args="-XstartOnFirstThread"/>
+	    <jar href="swt-cocoa-macosx.jar"/>
+	</resources>
+	
    <application-desc main-class="org.eclipse.nebula.widgets.nattable.examples.NatTableExamples"/>
 </jnlp> 
