@@ -103,6 +103,8 @@ public class FreezeHelper {
 	 */
 	public static void resetViewport(FreezeLayer freezeLayer, ViewportLayer viewportLayer) {
 		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
-		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(Math.max(0, topLeftPosition.columnPosition)), viewportLayer.getStartYOfRowPosition(Math.max(0,topLeftPosition.rowPosition)));
+		viewportLayer.resetOrigin(
+				viewportLayer.getScrollableLayer().getStartXOfColumnPosition(Math.max(0, topLeftPosition.columnPosition)), 
+				viewportLayer.getScrollableLayer().getStartYOfRowPosition(Math.max(0,topLeftPosition.rowPosition)));
 	}
 }
