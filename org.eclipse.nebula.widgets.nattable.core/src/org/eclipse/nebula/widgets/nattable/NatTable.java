@@ -915,8 +915,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			
 			@Override
 			public void dragStart(DragSourceEvent event) {
-				//ensure to stop any current active internal drag mode
-				modeSupport.switchMode(Mode.NORMAL_MODE);
 				listener.dragStart(event);
 			}
 			
@@ -928,6 +926,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			@Override
 			public void dragFinished(DragSourceEvent event) {
 				listener.dragFinished(event);
+				//ensure to stop any current active internal drag mode
+				modeSupport.switchMode(Mode.NORMAL_MODE);
 			}
 		};
 		

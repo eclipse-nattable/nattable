@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -114,7 +115,8 @@ public class _781_DragAndDropExample extends AbstractNatExample {
 		IRowDataProvider<Person> bodyDataProvider = 
 				new ListDataProvider<Person>(data, columnPropertyAccessor);
 		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+		ColumnReorderLayer reorderLayer = new ColumnReorderLayer(bodyDataLayer);
+		final SelectionLayer selectionLayer = new SelectionLayer(reorderLayer);
 		
 		//set row selection model with single selection enabled
 		selectionLayer.setSelectionModel(
@@ -172,7 +174,11 @@ public class _781_DragAndDropExample extends AbstractNatExample {
 		}
 
 		@Override
-		public void dragStart(DragSourceEvent event) { }
+		public void dragStart(DragSourceEvent event) {
+			if (this.selectionLayer.getSelectedRowCount() == 0) {
+				event.doit = false;
+			}
+		}
 
 		@SuppressWarnings("unchecked")
 		@Override
