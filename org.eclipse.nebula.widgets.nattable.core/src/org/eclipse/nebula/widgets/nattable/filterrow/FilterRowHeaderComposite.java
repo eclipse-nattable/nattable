@@ -42,9 +42,8 @@ public class FilterRowHeaderComposite<T> extends CompositeLayer {
 		setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
 
 		filterRowDataLayer = new FilterRowDataLayer<T>(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
-		DimensionallyDependentLayer filterRowLayer = new DimensionallyDependentLayer(filterRowDataLayer, columnHeaderLayer, filterRowDataLayer);
 
-		setChildLayer(GridRegion.FILTER_ROW, filterRowLayer, 0, 1);
+		setChildLayer(GridRegion.FILTER_ROW, filterRowDataLayer, 0, 1);
 	}
 	
 	public FilterRowDataLayer<T> getFilterRowDataLayer() {

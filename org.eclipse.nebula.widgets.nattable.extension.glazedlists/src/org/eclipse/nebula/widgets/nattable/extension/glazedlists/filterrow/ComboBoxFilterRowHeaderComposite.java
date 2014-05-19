@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.ComboBoxFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboUpdateEvent;
@@ -28,7 +29,6 @@ import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersComm
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
@@ -298,11 +298,8 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 				this.filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
 		
 		setAllValuesSelected();
-		
-		DimensionallyDependentLayer filterRowLayer = 
-				new DimensionallyDependentLayer(this.filterRowDataLayer, columnHeaderLayer, this.filterRowDataLayer);
 
-		setChildLayer(GridRegion.FILTER_ROW, filterRowLayer, 0, 1);
+		setChildLayer(GridRegion.FILTER_ROW, filterRowDataLayer, 0, 1);
 		
 		if (useDefaultConfiguration) {
 			addConfiguration(new ComboBoxFilterRowConfiguration(this.comboBoxDataProvider));
@@ -370,10 +367,11 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 	 * 		 compositions.
 	 */
 	public void setAllValuesSelected() {
-		for (int i = 0; i < this.filterRowDataLayer.getColumnCount(); i++) {
-			this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap().put(i, comboBoxDataProvider.getValues(i, 0));
+		FilterRowDataProvider<T> dataProvider = this.filterRowDataLayer.getFilterRowDataProvider();
+		for (int i = 0; i < dataProvider.getColumnCount(); i++) {
+			dataProvider.getFilterIndexToObjectMap().put(i, comboBoxDataProvider.getValues(i, 0));
 		}
-		getFilterStrategy().applyFilter(this.filterRowDataLayer.getFilterRowDataProvider().getFilterIndexToObjectMap());
+		getFilterStrategy().applyFilter(dataProvider.getFilterIndexToObjectMap());
 	}
 	
 	@Override
@@ -405,7 +403,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer implemen
 		//clear filter commands in here instead of delegating it to the FilterRowDataLayer
 		else if (command instanceof ClearFilterCommand && command.convertToTargetLayer(this)) {
 			int columnPosition = ((ClearFilterCommand) command).getColumnPosition();
-			this.filterRowDataLayer.getFilterRowDataProvider().setDataValue(
+			this.filterRowDataLayer.setDataValueByPosition(
 					columnPosition, 0, getComboBoxDataProvider().getValues(columnPosition, 0));
 			handled = true;
 		} 

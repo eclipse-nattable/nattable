@@ -381,6 +381,12 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		return getDataValue(columnIndex, rowIndex);
 	}
 
+	public void setDataValueByPosition(int columnPosition, int rowPosition, Object newValue) {
+		int columnIndex = getColumnIndexByPosition(columnPosition);
+		int rowIndex = getRowIndexByPosition(rowPosition);
+		setDataValue(columnIndex, rowIndex, newValue);
+	}
+
 	@Override
 	public int getColumnPositionByX(int x) {
 		return LayerUtil.getColumnPositionByX(this, x);

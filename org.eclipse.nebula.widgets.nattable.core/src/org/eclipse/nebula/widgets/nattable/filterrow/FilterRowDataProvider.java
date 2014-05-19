@@ -157,8 +157,6 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
 	@Override
 	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-		columnIndex = columnHeaderLayer.getColumnIndexByPosition(columnIndex);
-
 		if (ObjectUtils.isNotNull(newValue)) {
 			filterIndexToObjectMap.put(columnIndex, newValue);
 		} else {

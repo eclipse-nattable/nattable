@@ -10,8 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow;
 
+import java.util.Collection;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
@@ -37,9 +40,15 @@ public class FilterRowDataLayer<T> extends DataLayer {
 	/** Prefix for the persistence key in the properties file */
 	public static final String PERSISTENCE_KEY_FILTER_ROW_TOKENS = ".filterTokens"; //$NON-NLS-1$
 
-
+	/**
+	 * The ILayer to which this FilterRowDataLayer is dependent. Typically the ColumnHeaderLayer.
+	 */
+	private ILayer columnHeaderLayer;
+	
 	public FilterRowDataLayer(IFilterStrategy<T> filterStrategy, ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider, IConfigRegistry configRegistry) {
 		super(new FilterRowDataProvider<T>(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry));
+		
+		this.columnHeaderLayer = columnHeaderLayer;
 		
 		addConfiguration(new DefaultFilterRowConfiguration());
 	}
@@ -54,7 +63,7 @@ public class FilterRowDataLayer<T> extends DataLayer {
 		boolean handled = false;
 		if (command instanceof ClearFilterCommand && command.convertToTargetLayer(this)) {
 			int columnPosition = ((ClearFilterCommand) command).getColumnPosition();
-			dataProvider.setDataValue(columnPosition, 0, null);
+			setDataValueByPosition(columnPosition, 0, null);
 			handled = true;
 		} else if (command instanceof ClearAllFiltersCommand) {
 			getFilterRowDataProvider().clearAllFilters();
@@ -73,8 +82,88 @@ public class FilterRowDataLayer<T> extends DataLayer {
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		// At the data layer level position == index
 		final LabelStack labels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
-		labels.addLabel(FILTER_ROW_COLUMN_LABEL_PREFIX + columnPosition);
+		//the label needs to be index based as the position changes on scrolling
+		labels.addLabel(FILTER_ROW_COLUMN_LABEL_PREFIX + getColumnIndexByPosition(columnPosition));
 		labels.addLabel(GridRegion.FILTER_ROW);
 		return labels;
 	}
+
+	//There is no multiple inheritance in Java, but the FilterRowDataLayer needs to be a 
+	//DimensionallyDependentLayer aswell. Wrapping it in a DimensionallyDependentLayer together
+	//with the ColumnHeaderLayer causes several position-transformation-issues.
+	
+	// Columns
+
+	@Override
+	public int getColumnCount() {
+		return columnHeaderLayer.getColumnCount();
+	}
+
+	@Override
+	public int getPreferredColumnCount() {
+		return columnHeaderLayer.getPreferredColumnCount();
+	}
+
+	@Override
+	public int getColumnIndexByPosition(int columnPosition) {
+		return columnHeaderLayer.getColumnIndexByPosition(columnPosition);
+	}
+
+	@Override
+	public int localToUnderlyingColumnPosition(int localColumnPosition) {
+		return columnHeaderLayer.localToUnderlyingColumnPosition(localColumnPosition);
+	}
+
+	@Override
+	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
+		if (sourceUnderlyingLayer == columnHeaderLayer) {
+			return underlyingColumnPosition;
+		}
+		return columnHeaderLayer.underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPosition);
+	}
+	
+	@Override
+	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
+		if (sourceUnderlyingLayer == columnHeaderLayer) {
+			return underlyingColumnPositionRanges;
+		}
+		return columnHeaderLayer.underlyingToLocalColumnPositions(sourceUnderlyingLayer, underlyingColumnPositionRanges);
+	}
+
+	// Width
+
+	@Override
+	public int getWidth() {
+		return columnHeaderLayer.getWidth();
+	}
+
+	@Override
+	public int getPreferredWidth() {
+		return columnHeaderLayer.getPreferredWidth();
+	}
+
+	@Override
+	public int getColumnWidthByPosition(int columnPosition) {
+		return columnHeaderLayer.getColumnWidthByPosition(columnPosition);
+	}
+
+	// Column resize
+
+	@Override
+	public boolean isColumnPositionResizable(int columnPosition) {
+		return columnHeaderLayer.isColumnPositionResizable(columnPosition);
+	}
+
+	// X
+
+	@Override
+	public int getColumnPositionByX(int x) {
+		return columnHeaderLayer.getColumnPositionByX(x);
+	}
+
+	@Override
+	public int getStartXOfColumnPosition(int columnPosition) {
+		return columnHeaderLayer.getStartXOfColumnPosition(columnPosition);
+	}
+
 }
