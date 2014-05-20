@@ -275,6 +275,18 @@ public class NatCombo extends Composite {
 				text.dispose();
 			}
 		});
+		
+		//typically the dropdown shell should be hidden when the focus is lost
+		//but in case the NatCombo is the first control in a shell, the text control
+		//will get the focus immediately after the shell lost focus.
+		//as handling with focus listeners in such a case fails, we add a move listener
+		//that will update the position of the dropdown shell if the parent shell moves
+		getShell().addListener(SWT.Move, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				calculateBounds();
+			}
+		});
 	}
 	
 	/**
