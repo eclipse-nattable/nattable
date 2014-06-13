@@ -182,16 +182,16 @@ public class _5065_GridHoverStylingExample extends AbstractNatExample {
 			
 			Image bgImage = new Image(
 					Display.getDefault(), 
-					getClass().getResourceAsStream("../resources/column_header_bg.png"));
+					getClass().getResourceAsStream("/org/eclipse/nebula/widgets/nattable/examples/resources/column_header_bg.png"));
 			Image hoverBgImage = new Image(
 					Display.getDefault(), 
-					getClass().getResourceAsStream("../resources/hovered_column_header_bg.png"));
+					getClass().getResourceAsStream("/org/eclipse/nebula/widgets/nattable/examples/resources/hovered_column_header_bg.png"));
 			Image selectedBgImage = new Image(
 					Display.getDefault(), 
-					getClass().getResourceAsStream("../resources/selected_column_header_bg.png"));
+					getClass().getResourceAsStream("/org/eclipse/nebula/widgets/nattable/examples/resources/selected_column_header_bg.png"));
 			Image selectedHoveredBgImage = new Image(
 					Display.getDefault(), 
-					getClass().getResourceAsStream("../resources/selected_hovered_column_header_bg.png"));
+					getClass().getResourceAsStream("/org/eclipse/nebula/widgets/nattable/examples/resources/selected_hovered_column_header_bg.png"));
 
 			TextPainter txtPainter = new TextPainter(false, false);
 

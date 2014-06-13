@@ -179,10 +179,10 @@ public class _4222_CellPainterExample extends AbstractNatExample {
 			
 			Image bgImage = new Image(
 					Display.getDefault(), 
-					getClass().getResourceAsStream("../resources/column_header_bg.png"));
+					getClass().getResourceAsStream("/org/eclipse/nebula/widgets/nattable/examples/resources/column_header_bg.png"));
 			Image selectedBgImage = new Image(
 					Display.getDefault(), 
-					getClass().getResourceAsStream("../resources/selected_column_header_bg.png"));
+					getClass().getResourceAsStream("/org/eclipse/nebula/widgets/nattable/examples/resources/selected_column_header_bg.png"));
 
 			TextPainter txtPainter = new TextPainter(false, false);
 

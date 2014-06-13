@@ -122,10 +122,10 @@ public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
 				
 				Image bgImage = new Image(
 						Display.getDefault(), 
-						getClass().getResourceAsStream("../resources/column_header_bg.png"));
+						getClass().getResourceAsStream("/org/eclipse/nebula/widgets/nattable/examples/resources/column_header_bg.png"));
 				Image hoverBgImage = new Image(
 						Display.getDefault(), 
-						getClass().getResourceAsStream("../resources/hovered_column_header_bg.png"));
+						getClass().getResourceAsStream("/org/eclipse/nebula/widgets/nattable/examples/resources/hovered_column_header_bg.png"));
 
 				TextPainter txtPainter = new TextPainter(false, false);
 
