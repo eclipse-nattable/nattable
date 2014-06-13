@@ -178,6 +178,9 @@ public class _781_DragAndDropExample extends AbstractNatExample {
 			if (this.selectionLayer.getSelectedRowCount() == 0) {
 				event.doit = false;
 			}
+			else if (!this.natTable.getRegionLabelsByXY(event.x, event.y).hasLabel(GridRegion.BODY)) {
+	            event.doit = false;
+	        }
 		}
 
 		@SuppressWarnings("unchecked")
