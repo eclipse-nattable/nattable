@@ -7,6 +7,10 @@
  * 
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
+ *       Markus Wahl <Markus.Wahl@jeppesen.com> - Delegate markers to model iff
+ *         model is an IMarkerSelectionModel. Add getters and setters for marker
+ *         fields.
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -126,11 +130,9 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	}
 
 	public void addSelection(Rectangle selection) {
-		if (selection != lastSelectedRegion) {
-			selectionAnchor.columnPosition = lastSelectedCell.columnPosition;
-			selectionAnchor.rowPosition = lastSelectedCell.rowPosition;
-
-			lastSelectedRegion = selection;
+		if (selection != getLastSelectedRegion()) {
+			setSelectionAnchor(getLastSelectedCell().columnPosition, getLastSelectedCell().rowPosition);
+			setLastSelectedRegion(selection);
 		}
 
 		selectionModel.addSelection(selection);
@@ -142,17 +144,15 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	
 	public void clear(boolean fireSelectionEvent) {
 		selectionModel.clearSelection();
-		
-		boolean validLastSelectedCell = lastSelectedCell.columnPosition != NO_SELECTION && lastSelectedCell.rowPosition != NO_SELECTION;
-		lastSelectedCell.columnPosition = -1;
-		lastSelectedCell.rowPosition = -1;
-		lastSelectedRegion = new Rectangle(0,0,0,0);
-		
-		selectionAnchor.columnPosition = -1;
-		selectionAnchor.rowPosition = -1;
-		
+
+		boolean validLastSelectedCell = hasSelection(getLastSelectedCell());
+		setLastSelectedCell(NO_SELECTION, NO_SELECTION);
+		setLastSelectedRegion(new Rectangle(0, 0, 0, 0));
+
+		setSelectionAnchor(NO_SELECTION, NO_SELECTION);
+
 		if (validLastSelectedCell && fireSelectionEvent) {
-			fireCellSelectionEvent(lastSelectedCell.columnPosition, lastSelectedCell.rowPosition, false, false, false);
+			fireCellSelectionEvent(getLastSelectedCell().columnPosition, getLastSelectedCell().rowPosition, false, false, false);
 		}
 	}
 
@@ -162,24 +162,22 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
 	public void clearSelection(Rectangle selection) {
 		selectionModel.clearSelection(selection);
-		
-		//if the selection anchor is within the selection that is removed
-		//it needs to be cleared also
-		Point anchorPoint = new Point(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
+
+		// if the selection anchor is within the selection that is removed
+		// it needs to be cleared also
+		Point anchorPoint = new Point(getSelectionAnchor().columnPosition, getSelectionAnchor().rowPosition);
 		if (selection.contains(anchorPoint)) {
-			selectionAnchor.columnPosition = -1;
-			selectionAnchor.rowPosition = -1;
+			setSelectionAnchor(NO_SELECTION, NO_SELECTION);
 		}
 	}
 
 	public void selectAll() {
 		Rectangle selection = new Rectangle(0, 0, getColumnCount(), getRowCount());
-		if(lastSelectedCell.columnPosition == SelectionLayer.NO_SELECTION || lastSelectedCell.rowPosition == SelectionLayer.NO_SELECTION){
-			lastSelectedCell.rowPosition = 0;
-			lastSelectedCell.columnPosition = 0;
+		if (getLastSelectedCell().columnPosition == SelectionLayer.NO_SELECTION || getLastSelectedCell().rowPosition == SelectionLayer.NO_SELECTION) {
+			setLastSelectedCell(0, 0);
 		}
 		addSelection(selection);
-		fireCellSelectionEvent(lastSelectedCell.columnPosition, lastSelectedCell.rowPosition, false, false, false);
+		fireCellSelectionEvent(getLastSelectedCell().columnPosition, getLastSelectedCell().rowPosition, false, false, false);
 	}
 
 	// Cell features
@@ -244,51 +242,102 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	}
 	
 	public void selectRegion(int startColumnPosition, int startRowPosition, int regionWidth, int regionHeight) {
-		if (lastSelectedRegion == null) {
-			lastSelectedRegion =  new Rectangle(startColumnPosition, startRowPosition, regionWidth, regionHeight);
+		if (getLastSelectedRegion() == null) {
+			setLastSelectedRegion(new Rectangle(startColumnPosition, startRowPosition, regionWidth, regionHeight));
+		} else {
+			setLastSelectedRegion(startColumnPosition, startRowPosition, regionWidth, regionHeight);
+		}
+		selectionModel.addSelection(new Rectangle(getLastSelectedRegion().x, getLastSelectedRegion().y, getLastSelectedRegion().width, getLastSelectedRegion().height));
+	}
+
+	protected void setLastSelectedRegion(Rectangle region) {
+		if (selectionModel instanceof IMarkerSelectionModel) {
+			((IMarkerSelectionModel) selectionModel).setLastSelectedRegion(region);
+		} else {
+			lastSelectedRegion = region;
+		}
+	}
+
+	protected void setLastSelectedRegion(int startColumnPosition, int startRowPosition, int regionWidth, int regionHeight) {
+		if (selectionModel instanceof IMarkerSelectionModel) {
+			((IMarkerSelectionModel) selectionModel).setLastSelectedRegion(startColumnPosition, startRowPosition, regionWidth, regionHeight);
 		} else {
 			lastSelectedRegion.x = startColumnPosition;
 			lastSelectedRegion.y = startRowPosition;
 			lastSelectedRegion.width = regionWidth;
 			lastSelectedRegion.height = regionHeight;
 		}
-		selectionModel.addSelection(new Rectangle(lastSelectedRegion.x, lastSelectedRegion.y, lastSelectedRegion.width,	lastSelectedRegion.height));
 	}
 	
 	// Selection anchor
 
 	public PositionCoordinate getSelectionAnchor() {
-		return selectionAnchor;
+		if (selectionModel instanceof IMarkerSelectionModel) {
+			Point coordinate = ((IMarkerSelectionModel) selectionModel).getSelectionAnchor();
+			return new PositionCoordinate(this, coordinate.x, coordinate.y);
+		} else {
+			return selectionAnchor;
+		}
 	}
 
 	public void moveSelectionAnchor(int startColumnPositionInRegion, int startRowPosition) {
-		selectionAnchor.columnPosition = startColumnPositionInRegion;
-		selectionAnchor.rowPosition = startRowPosition;
+		setSelectionAnchor(startColumnPositionInRegion, startRowPosition);
 	}
-	
+
+	void setSelectionAnchor(int columnPosition, int rowPosition) {
+		if (selectionModel instanceof IMarkerSelectionModel) {
+			((IMarkerSelectionModel) selectionModel).setSelectionAnchor(new Point(columnPosition, rowPosition));
+		} else {
+			selectionAnchor.columnPosition = columnPosition;
+			selectionAnchor.rowPosition = rowPosition;
+		}
+	}
+
 	// Last selected
 
 	public PositionCoordinate getLastSelectedCellPosition() {
-		if (lastSelectedCell.columnPosition != NO_SELECTION && lastSelectedCell.rowPosition != NO_SELECTION) {
-			return lastSelectedCell;
+		PositionCoordinate coordinate = getLastSelectedCell();
+		if (hasSelection(coordinate)) {
+			return coordinate;
 		} else {
 			return null;
 		}
 	}
 
+	PositionCoordinate getLastSelectedCell() {
+		if (selectionModel instanceof IMarkerSelectionModel) {
+			Point coordinate = ((IMarkerSelectionModel) selectionModel).getLastSelectedCell();
+			return new PositionCoordinate(this, coordinate.x, coordinate.y);
+		} else {
+			return lastSelectedCell;
+		}
+	}
+
+	static boolean hasSelection(PositionCoordinate coordinate) {
+		return coordinate.columnPosition != NO_SELECTION && coordinate.rowPosition != NO_SELECTION;
+	}
+
 	public void setLastSelectedCell(int columnPosition, int rowPosition) {
-		lastSelectedCell.columnPosition = columnPosition;
-		lastSelectedCell.rowPosition = rowPosition;
+		if (selectionModel instanceof IMarkerSelectionModel) {
+			((IMarkerSelectionModel) selectionModel).setLastSelectedCell(new Point(columnPosition, rowPosition));
+		} else {
+			lastSelectedCell.columnPosition = columnPosition;
+			lastSelectedCell.rowPosition = rowPosition;
+		}
 	}
 
 	public Rectangle getLastSelectedRegion() {
-		return lastSelectedRegion;
+		if (selectionModel instanceof IMarkerSelectionModel) {
+			return ((IMarkerSelectionModel) selectionModel).getLastSelectedRegion();
+		} else {
+			return lastSelectedRegion;
+		}
 	}
 
 	// Column features
 
 	public boolean hasColumnSelection() {
-		return lastSelectedCell.columnPosition != NO_SELECTION;
+		return getLastSelectedCell().columnPosition != NO_SELECTION;
 	}
 
 	public int[] getSelectedColumnPositions() {
@@ -314,7 +363,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	// Row features
 
 	public boolean hasRowSelection() {
-		return lastSelectedCell.rowPosition != NO_SELECTION;
+		return getLastSelectedCell().rowPosition != NO_SELECTION;
 	}
 
 	public int getSelectedRowCount() {
@@ -361,14 +410,9 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		if (cell != null) {
-			Rectangle cellRectangle =
-					new Rectangle(
-							cell.getOriginColumnPosition(),
-							cell.getOriginRowPosition(),
-							cell.getColumnSpan(),
-							cell.getRowSpan());
-			
-			if (cellRectangle.contains(selectionAnchor.columnPosition, selectionAnchor.rowPosition)) {
+			Rectangle cellRectangle = new Rectangle(cell.getOriginColumnPosition(), cell.getOriginRowPosition(), cell.getColumnSpan(), cell.getRowSpan());
+
+			if (cellRectangle.contains(getSelectionAnchor().columnPosition, getSelectionAnchor().rowPosition)) {
 				labelStack.addLabel(SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
 			}
 		}

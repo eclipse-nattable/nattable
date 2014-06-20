@@ -7,6 +7,9 @@
  * 
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
+ *       Markus Wahl <Markus.Wahl@jeppesen.com> - Use getters and setters for
+ *         the markers of SelectionLayer instead of the fields.
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -77,9 +80,8 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 			changedRowRanges.add(selectRowWithCtrlKey(columnPosition, rowPosition));
 		}
 
-		selectionLayer.lastSelectedCell.columnPosition = columnPosition;
-		selectionLayer.lastSelectedCell.rowPosition = rowPosition;
-		
+		selectionLayer.setLastSelectedCell(columnPosition, rowPosition);
+
 		return changedRowRanges;
 	}
 
@@ -88,17 +90,17 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 
 		if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
 			selectionLayer.clearSelection(selectedRowRectangle);
-			if (selectionLayer.lastSelectedRegion != null && selectionLayer.lastSelectedRegion.equals(selectedRowRectangle)) {
-				selectionLayer.lastSelectedRegion = null;
+			if (selectionLayer.getLastSelectedRegion() != null && selectionLayer.getLastSelectedRegion().equals(selectedRowRectangle)) {
+				selectionLayer.setLastSelectedRegion(null);
 			}
 		} else {
 			// Preserve last selected region
-			if (selectionLayer.lastSelectedRegion != null) {
-				selectionLayer.selectionModel.addSelection(
-						new Rectangle(selectionLayer.lastSelectedRegion.x,
-								selectionLayer.lastSelectedRegion.y,
-								selectionLayer.lastSelectedRegion.width,
-								selectionLayer.lastSelectedRegion.height));
+			if (selectionLayer.getLastSelectedRegion() != null) {
+				selectionLayer.selectionModel.addSelection(new Rectangle(
+						selectionLayer.getLastSelectedRegion().x,
+							selectionLayer.getLastSelectedRegion().y,
+							selectionLayer.getLastSelectedRegion().width,
+							selectionLayer.getLastSelectedRegion().height));
 			}
 			selectionLayer.selectRegion(0, rowPosition, Integer.MAX_VALUE, 1);
 			selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
@@ -114,17 +116,17 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 		//if multiple selection is disabled, we need to ensure to only select the current rowPosition
 		//modifying the selection anchor here ensures that the anchor also moves
 		if (!selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
-			selectionLayer.selectionAnchor.rowPosition = rowPosition;
+			selectionLayer.getSelectionAnchor().rowPosition = rowPosition;
 		}
-		
-		if (selectionLayer.lastSelectedRegion != null) {
-			numOfRowsToIncludeInRegion = Math.abs(selectionLayer.selectionAnchor.rowPosition - rowPosition) + 1;
-			if (startRowPosition < selectionLayer.selectionAnchor.rowPosition) {
+
+		if (selectionLayer.getLastSelectedRegion() != null) {
+			numOfRowsToIncludeInRegion = Math.abs(selectionLayer.getSelectionAnchor().rowPosition - rowPosition) + 1;
+			if (startRowPosition < selectionLayer.getSelectionAnchor().rowPosition) {
 				// Selecting above
 				startRowPosition = rowPosition;
 			} else {
 				// Selecting below
-				startRowPosition = selectionLayer.selectionAnchor.rowPosition;
+				startRowPosition = selectionLayer.getSelectionAnchor().rowPosition;
 			}
 		}
 		selectionLayer.selectRegion(0, startRowPosition, Integer.MAX_VALUE, numOfRowsToIncludeInRegion);
