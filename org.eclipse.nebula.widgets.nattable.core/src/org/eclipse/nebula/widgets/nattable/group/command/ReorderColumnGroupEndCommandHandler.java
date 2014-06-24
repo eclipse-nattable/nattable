@@ -21,6 +21,7 @@ public class ReorderColumnGroupEndCommandHandler extends AbstractLayerCommandHan
 		this.columnGroupReorderLayer = columnGroupReorderLayer;
 	}
 	
+	@Override
 	public Class<ReorderColumnGroupEndCommand> getCommandClass() {
 		return ReorderColumnGroupEndCommand.class;
 	}
@@ -28,6 +29,12 @@ public class ReorderColumnGroupEndCommandHandler extends AbstractLayerCommandHan
 	@Override
 	protected boolean doCommand(ReorderColumnGroupEndCommand command) {
 		int toColumnPosition = command.getToColumnPosition();
+		
+		//Bug 437744
+		//if not reorderToLeftEdge we increase toColumnPosition by 1
+		//as the following processing is calculating the reorderToLeftEdge 
+		//value out of the given toColumnPosition and the column count
+		if (!command.isReorderToLeftEdge()) toColumnPosition++;
 		
 		return columnGroupReorderLayer.reorderColumnGroup(columnGroupReorderLayer.getReorderFromColumnPosition(), toColumnPosition);
 	}

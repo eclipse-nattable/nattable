@@ -53,13 +53,13 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 		int toColumnIndex = natLayer.getColumnIndexByPosition(toGridColumnPosition);
 
 		boolean betweenGroups = false;
-		if(this.currentEvent != null){
+		if (this.currentEvent != null){
 			int minX = this.currentEvent.x -  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
 			int maxX = this.currentEvent.x +  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
 			betweenGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, model);
 		}
-
-		return (!model.isPartOfAGroup(toColumnIndex)) || betweenGroups;
+		
+		return toColumnIndex == 0 || (!model.isPartOfAGroup(toColumnIndex)) || betweenGroups;
 	}
 	
 	@Override
