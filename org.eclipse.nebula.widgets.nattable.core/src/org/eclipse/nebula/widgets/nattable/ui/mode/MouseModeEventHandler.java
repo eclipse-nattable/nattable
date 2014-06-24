@@ -21,8 +21,6 @@ import org.eclipse.swt.events.MouseEvent;
 
 public class MouseModeEventHandler extends AbstractModeEventHandler {
 	
-	private final NatTable natTable;
-	
 	private MouseEvent initialMouseDownEvent;
 	
 	private IMouseAction singleClickAction;
@@ -38,9 +36,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 	private boolean skipProcessing = false;
 	
 	public MouseModeEventHandler(ModeSupport modeSupport, NatTable natTable, MouseEvent initialMouseDownEvent, IMouseAction singleClickAction, IMouseAction doubleClickAction, IDragMode dragMode) {
-		super(modeSupport);
-		
-		this.natTable = natTable;
+		super(modeSupport, natTable);
 		
 		this.mouseDown = true;
 		
@@ -136,8 +132,12 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 				switchMode(Mode.NORMAL_MODE);
 			}
 		} else {
-			// No drag mode registered when mouseMove detected. Switch back to normal mode.
-			switchMode(Mode.NORMAL_MODE);
+			if (!(mouseDown && eventOnSameCell(initialMouseDownEvent, event))) {
+				//Bug 436770
+				//do not switch back to normal mode in case a click is processed
+				// No drag mode registered when mouseMove detected. Switch back to normal mode.
+				switchMode(Mode.NORMAL_MODE);
+			}
 		}
 	}
 

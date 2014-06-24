@@ -22,12 +22,8 @@ import org.eclipse.swt.events.MouseEvent;
 
 public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 
-	private final NatTable natTable;
-		
 	public ConfigurableModeEventHandler(ModeSupport modeSupport, NatTable natTable) {
-		super(modeSupport);
-		
-		this.natTable = natTable;
+		super(modeSupport, natTable);
 	}
 	
 	// Event handling /////////////////////////////////////////////////////////

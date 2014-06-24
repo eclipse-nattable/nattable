@@ -20,8 +20,6 @@ import org.eclipse.swt.events.MouseEvent;
 
 public class DragModeEventHandler extends AbstractModeEventHandler {
 
-	private final NatTable natTable;
-	
 	private final IDragMode dragMode;
 	
 	private final MouseModeEventHandler parentModeEventHandler;
@@ -29,9 +27,8 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
 	
 	public DragModeEventHandler(ModeSupport modeSupport, NatTable natTable, IDragMode dragMode, 
 			MouseModeEventHandler parentModeEventHandler, MouseEvent mouseDownEvent) {
-		super(modeSupport);
+		super(modeSupport, natTable);
 		
-		this.natTable = natTable;
 		this.dragMode = dragMode;
 		this.parentModeEventHandler = parentModeEventHandler;
 		this.mouseDownEvent = mouseDownEvent;
@@ -50,13 +47,7 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
 		//Bug 379884
 		//check if the drag operation started and ended within the same cell
 		//in that case the registered click operation is executed also
-		int startCol = natTable.getColumnPositionByX(mouseDownEvent.x);
-		int startRow = natTable.getRowPositionByY(mouseDownEvent.y);
-		
-		int col = natTable.getColumnPositionByX(event.x);
-		int row = natTable.getRowPositionByY(event.y);
-		
-		if (startCol == col && startRow == row) {
+		if (eventOnSameCell(mouseDownEvent, event)) {
 			parentModeEventHandler.mouseUp(event);
 		}
 	}
