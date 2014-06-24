@@ -49,5 +49,10 @@
 	    <jar href="swt-cocoa-macosx.jar"/>
 	</resources>
 	
+	<resources os="Mac" arch="x86_64"> 
+	    <j2se version="1.6+" java-vm-args="-XstartOnFirstThread"/>
+	    <jar href="swt-cocoa-macosx-x86_64.jar"/>
+	</resources>
+	
    <application-desc main-class="org.eclipse.nebula.widgets.nattable.examples.NatTableExamples"/>
 </jnlp> 
