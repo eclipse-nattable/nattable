@@ -212,10 +212,10 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
 
 	@Override
 	public Object calculateValue(Object currentValue, Object processValue) {
-		double delta = processValue instanceof Number 
-				? ((Number)processValue).doubleValue() : Double.valueOf((String)processValue).doubleValue();
+		double delta = ((processValue == null) ? 0 : (processValue instanceof Number) 
+				? ((Number)processValue).doubleValue() : Double.valueOf((String)processValue).doubleValue());
 		if (this.editType == EditTypeEnum.ADJUST) {
-		    if(delta >= 0) {
+		    if (delta >= 0) {
 		    	this.editType = EditTypeEnum.INCREASE;
 		    } else {
 		    	this.editType = EditTypeEnum.DECREASE;
