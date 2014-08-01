@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.group.action;
 
 
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
-import org.eclipse.nebula.widgets.nattable.group.action.ColumnGroupHeaderReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.group.ColumnGroupModelFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
@@ -42,7 +41,7 @@ public class ColumnGroupReorderDragModeTest {
 
 	@Test
 	public void isValidTargetColumnPositionMovingRight() throws Exception {
-		Assert.assertFalse(groupReorderDragMode.isValidTargetColumnPosition(testLayer, 0, 0));
+		Assert.assertTrue(groupReorderDragMode.isValidTargetColumnPosition(testLayer, 0, 0));
 		Assert.assertFalse(groupReorderDragMode.isValidTargetColumnPosition(testLayer, 0, 1));
 
 		Assert.assertTrue(groupReorderDragMode.isValidTargetColumnPosition(testLayer, 0, 2));
@@ -68,6 +67,7 @@ public class ColumnGroupReorderDragModeTest {
 		Assert.assertTrue(groupReorderDragMode.isValidTargetColumnPosition(testLayer, 11, 2));
 
 		Assert.assertFalse(groupReorderDragMode.isValidTargetColumnPosition(testLayer, 11, 1));
-		Assert.assertFalse(groupReorderDragMode.isValidTargetColumnPosition(testLayer, 11, 0));
+		//it is allowed to reorder column 11 to 0, because that means to reorder G3 to the beginning
+		Assert.assertTrue(groupReorderDragMode.isValidTargetColumnPosition(testLayer, 11, 0));
 	}
 }
