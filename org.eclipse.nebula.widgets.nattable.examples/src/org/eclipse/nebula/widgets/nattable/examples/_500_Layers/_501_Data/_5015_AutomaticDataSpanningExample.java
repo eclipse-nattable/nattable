@@ -11,9 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._501_Data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
@@ -71,14 +69,6 @@ public class _5015_AutomaticDataSpanningExample extends AbstractNatExample {
 		//property names of the NumberValues class
 		String[] propertyNames = {"columnOneNumber", "columnTwoNumber", "columnThreeNumber", "columnFourNumber", 
 				"columnFiveNumber"};
-
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("columnOneNumber", "Column 1");
-		propertyToLabelMap.put("columnTwoNumber", "Column 2");
-		propertyToLabelMap.put("columnThreeNumber", "Column 3");
-		propertyToLabelMap.put("columnFourNumber", "Column 4");
-		propertyToLabelMap.put("columnFiveNumber", "Column 5");
 
 		IColumnPropertyAccessor<NumberValues> cpa = new ReflectiveColumnPropertyAccessor<NumberValues>(propertyNames);
 		IDataProvider dataProvider = new ListDataProvider<NumberValues>(createNumberValueList(), cpa);

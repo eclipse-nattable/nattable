@@ -10,9 +10,6 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._501_Data;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
@@ -62,14 +59,6 @@ public class _5011_DataLayerExample extends AbstractNatExample {
 
 		//property names of the Person class
 		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
-
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
 
 		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
 				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);

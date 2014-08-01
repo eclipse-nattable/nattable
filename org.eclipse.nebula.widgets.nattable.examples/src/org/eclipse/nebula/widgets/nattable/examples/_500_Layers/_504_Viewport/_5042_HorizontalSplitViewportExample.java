@@ -10,9 +10,6 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._504_Viewport;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
@@ -67,18 +64,6 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
 		//property names of the Person class
 		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday", 
 				"address.street", "address.housenumber", "address.postalCode", "address.city"};
-
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
-		propertyToLabelMap.put("address.street", "Street");
-		propertyToLabelMap.put("address.housenumber", "Housenumber");
-		propertyToLabelMap.put("address.postalCode", "Postal Code");
-		propertyToLabelMap.put("address.city", "City");
 
 		IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = 
 				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);

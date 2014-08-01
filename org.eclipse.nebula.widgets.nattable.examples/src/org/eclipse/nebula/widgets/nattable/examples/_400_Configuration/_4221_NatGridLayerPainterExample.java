@@ -57,14 +57,6 @@ public class _4221_NatGridLayerPainterExample extends AbstractNatExample {
 		//property names of the Person class
 		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
-
 		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
 				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
 		
