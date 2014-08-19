@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.blink.BlinkConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.blink.BlinkLayer;
@@ -88,6 +87,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 		return "Cell blinking";
 	}
 
+	@Override
 	public Control createExampleControl(Composite parent) {
 		// Data backing the table
 		baseTupleList.add(new Tuple(headers, new Object[]{"Name 1", "Value 1", 1.5d, -1000}, 0));
@@ -136,8 +136,8 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
 		NatTable natTable = new NatTable(parent, gridLayer, false);
 
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.setConfigRegistry(configRegistry);
+		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
 		natTable.configure();
 
@@ -146,6 +146,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
 	private IRowIdAccessor<Tuple> getRowIdAccessor() {
 		return new IRowIdAccessor<Tuple>(){
+			@Override
 			public Serializable getRowId(Tuple rowObject) {
 				return rowObject.id;
 			}
@@ -196,6 +197,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 			support.firePropertyChange(propertyNames.get(index), oldValue, newValue);
 		}
 
+		@Override
 		public int compareTo(Tuple o) {
 			return 0;
 		}
@@ -218,6 +220,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 		return new BlinkingCellResolver() {
 			private final String[] configLabels = new String[1];
 
+			@Override
 			public String[] resolve(Object oldValue, Object newValue) {
 				int old = ((Integer) oldValue).intValue();
 				int latest = ((Integer) newValue).intValue();
@@ -229,42 +232,51 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
 	public class TupleColumnPropertyAccessor implements IColumnPropertyAccessor<Tuple> {
 
+		@Override
 		public int getColumnCount() {
 			return headers.size();
 		}
 
+		@Override
 		public Object getDataValue(Tuple tuple, int colIndex) {
 			return tuple.getValue(colIndex);
 		}
 
+		@Override
 		public void setDataValue(Tuple arg0, int arg1, Object arg2) {
 			// not supported
 		}
 
+		@Override
 		public int getColumnIndex(String propertyName) {
-			return 0;
+			return headers.indexOf(propertyName);
 		}
 
+		@Override
 		public String getColumnProperty(int columnIndex) {
-			return null;
+			return headers.get(columnIndex);
 		}
 
 	}
 
 	public class ColumnHeaderDataProvider implements IDataProvider {
 
+		@Override
 		public int getColumnCount() {
 			return headers.size();
 		}
 
+		@Override
 		public Object getDataValue(int columnIndex, int rowIndex) {
 			return headers.get(columnIndex);
 		}
 
+		@Override
 		public int getRowCount() {
 			return 1;
 		}
 
+		@Override
 		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
 			// none
 		}
