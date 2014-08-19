@@ -113,7 +113,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 	
 	public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
 			IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
-		this(groupByModel, eventList, columnAccessor, configRegistry, true, true);
+		this(groupByModel, eventList, columnAccessor, configRegistry, true, useDefaultConfiguration);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
