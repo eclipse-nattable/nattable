@@ -17,18 +17,13 @@ import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import java.util.List;
 
-
-import org.eclipse.nebula.widgets.nattable.blink.BlinkConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.blink.BlinkLayer;
-import org.eclipse.nebula.widgets.nattable.blink.BlinkingCellResolver;
-import org.eclipse.nebula.widgets.nattable.blink.IBlinkingCellResolver;
-import org.eclipse.nebula.widgets.nattable.blink.UpdateEventsCache;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.BlinkingRowDataFixture;
@@ -43,6 +38,9 @@ public class BlinkLayerTest {
 	private static final String NOT_BLINKING_LABEL = "Not Blinking";
 	private static final String BLINKING_LABEL = "Blinking";
 
+	private static final String TEST_LABEL = "TestLabel";
+	
+	private DataLayer dataLayer;
 	private BlinkLayer<BlinkingRowDataFixture> layerUnderTest;
 	private final ConfigRegistry configRegistry = new ConfigRegistry();
 	private List<BlinkingRowDataFixture> dataList;
@@ -58,7 +56,7 @@ public class BlinkLayerTest {
 		listDataProvider = new ListDataProvider<BlinkingRowDataFixture>(dataList, columnPropertyAccessor);
 		propertyChangeListener = getPropertyChangeListener();
 
-		DataLayer dataLayer = new DataLayer(listDataProvider);
+		dataLayer = new DataLayer(listDataProvider);
 		layerUnderTest = new BlinkLayer<BlinkingRowDataFixture>(
 				dataLayer,
 				listDataProvider,
@@ -97,11 +95,49 @@ public class BlinkLayerTest {
 		assertEquals(0, blinkLabels.getLabels().size());
 	}
 
+	@Test
+	public void layerStackShouldUpdate() throws Exception {
+		//add label accumulator to DataLayer
+		dataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+			
+			@Override
+			public void accumulateConfigLabels(LabelStack configLabels,
+					int columnPosition, int rowPosition) {
+				configLabels.addLabel(TEST_LABEL);
+			}
+		});
+
+		layerUnderTest.setBlinkDurationInMilis(100);
+
+		dataList.get(0).setAsk_price(100);
+		LabelStack blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+
+		// Blink started
+		assertEquals(2, blinkLabels.getLabels().size());
+		assertEquals(BLINKING_LABEL, blinkLabels.getLabels().get(0));
+		assertEquals(TEST_LABEL, blinkLabels.getLabels().get(1));
+
+		// After 50 ms
+		Thread.sleep(50);
+		blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+		assertEquals(2, blinkLabels.getLabels().size());
+
+		//Wait for blink to elapse
+		Thread.sleep(110);
+		// Force running the event queue to ensure any Display.asyncExecs are run.
+		while(display.readAndDispatch());
+
+		blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+		assertEquals(1, blinkLabels.getLabels().size());
+		assertEquals(TEST_LABEL, blinkLabels.getLabels().get(0));
+	}
+	
 	/**
 	 * Sets the even rows to blink
 	 */
 	private void registerBlinkConfigTypes() {
 		IBlinkingCellResolver blinkingCellResolver = new BlinkingCellResolver() {
+			@Override
 			public String[] resolve(Object oldValue, Object newValue) {
 				Double doubleValue = Double.valueOf(newValue.toString());
 				return doubleValue.intValue() % 2 == 0 ? new String[] { BLINKING_LABEL } : new String[] { NOT_BLINKING_LABEL };
@@ -117,6 +153,7 @@ public class BlinkLayerTest {
 	 */
 	private PropertyChangeListener getPropertyChangeListener() {
 		return new PropertyChangeListener(){
+			@Override
 			public void propertyChange(PropertyChangeEvent event) {
 				PropertyUpdateEvent<BlinkingRowDataFixture> updateEvent = new PropertyUpdateEvent<BlinkingRowDataFixture>(
 						new DataLayerFixture(), (BlinkingRowDataFixture)event.getSource(), event.getPropertyName(), event.getOldValue(), event.getNewValue());

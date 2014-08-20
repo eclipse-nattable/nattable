@@ -11,14 +11,12 @@
 package org.eclipse.nebula.widgets.nattable.blink;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.nebula.widgets.nattable.blink.command.BlinkTimerEnableCommandHandler;
 import org.eclipse.nebula.widgets.nattable.blink.event.BlinkEvent;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -156,25 +154,22 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 				blinkingTasks.put(key, scheduler.schedule(stopBlinkTask, blinkDurationInMilis, TimeUnit.MILLISECONDS));
 				return blinkingConfigTypes;
 			} else {
-				return new LabelStack();
+				return underlyingLabelStack;
 			}
 		}
+		
 		// Previous blink timer is still running
 		if (blinkingUpdates.containsKey(key)) {
 			PropertyUpdateEvent<T> event = blinkingUpdates.get(key);
 			return resolveConfigTypes(cell, event.getOldValue(), event.getNewValue());
-
 		}
+		
 		return underlyingLabelStack;
 	}
 
-	private IBlinkingCellResolver getBlinkingCellResolver(List<String> configTypes) {
-		return configRegistry.getConfigAttribute(BlinkConfigAttributes.BLINK_RESOLVER, DisplayMode.NORMAL, configTypes);
-	}
-
 	/**
-	 * Find the {@link IBlinkingCellResolver} from the {@link ConfigRegistry}.
-	 * Use this to find the config types associated with a blinking cell.
+	 * Checks if there is a {@link IBlinkingCellResolver} registered in the {@link ConfigRegistry}
+	 * and use it to add config type labels associated with a blinking cell to the label stack.
 	 * @param cell the cell
 	 * @param oldValue the old value
 	 * @param newValue the new value
@@ -184,14 +179,22 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 		// Acquire default config types for the coordinate. Use these to search for the associated resolver.
 		LabelStack underlyingLabelStack = underlyingLayer.getConfigLabelsByPosition(cell.getColumnIndex(), cell.getRowIndex());
 
+		IBlinkingCellResolver resolver = configRegistry.getConfigAttribute(
+				BlinkConfigAttributes.BLINK_RESOLVER, 
+				DisplayMode.NORMAL, 
+				underlyingLabelStack.getLabels());
+				
 		String[] blinkConfigTypes = null;
-		IBlinkingCellResolver resolver = getBlinkingCellResolver(underlyingLabelStack.getLabels());
 		if (resolver != null) {
 		    blinkConfigTypes = resolver.resolve(cell, configRegistry, oldValue, newValue);
 		}
-		if (!ArrayUtils.isEmpty(blinkConfigTypes)) { //blinkConfigTypes != null && blinkConfigTypes.length > 0
-			return new LabelStack(blinkConfigTypes);
+		
+		if (blinkConfigTypes != null && blinkConfigTypes.length > 0) {
+			for (String configType : blinkConfigTypes) {
+				underlyingLabelStack.addLabelOnTop(configType);
+			}
 		}
+		
 		return underlyingLabelStack;
 	}
 
