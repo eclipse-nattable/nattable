@@ -10,39 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.GroupByColumnIndexCommand;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.UngroupByColumnIndexCommand;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.GroupByColumnCommandHandler;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.command.UngroupByColumnCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
 public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 
 	public static final String GROUP_BY_REGION = "GROUP_BY_REGION"; //$NON-NLS-1$
-	
-	private static DataLayer baseLayer = new DataLayer(new IDataProvider() {
-		@Override
-		public Object getDataValue(int columnIndex, int rowIndex) {
-			return null;
-		}
-		@Override
-		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-		}
-		@Override
-		public int getRowCount() {
-			return 1;
-		}
-		@Override
-		public int getColumnCount() {
-			return 1;
-		}
-	});
 	
 	private final GroupByModel groupByModel;
 
@@ -51,24 +31,47 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 	private boolean visible = true;
 	
 	public GroupByHeaderLayer(GroupByModel groupByModel, ILayer gridLayer, IDataProvider columnHeaderDataProvider) {
-		super(baseLayer, gridLayer, baseLayer);
+		super(new DataLayer(new IDataProvider() {
+			@Override
+			public Object getDataValue(int columnIndex, int rowIndex) {
+				return null;
+			}
+			@Override
+			public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+			}
+			@Override
+			public int getRowCount() {
+				return 1;
+			}
+			@Override
+			public int getColumnCount() {
+				return 1;
+			}
+		}));
+		
+		setHorizontalLayerDependency(gridLayer);
+		setVerticalLayerDependency(getBaseLayer());
 		
 		this.groupByModel = groupByModel;
 		registerPersistable(this.groupByModel);
 		
-		registerCommandHandler(new GroupByColumnCommandHandler());
-		registerCommandHandler(new UngroupByColumnCommandHandler());
+		registerCommandHandler(new GroupByColumnCommandHandler(this));
+		registerCommandHandler(new UngroupByColumnCommandHandler(this));
 		
 		GroupByHeaderConfiguration configuration = new GroupByHeaderConfiguration(groupByModel, columnHeaderDataProvider);
 		addConfiguration(configuration);
 		
 		groupByHeaderPainter = configuration.getGroupByHeaderPainter();
-		baseLayer.setRowHeightByPosition(0, groupByHeaderPainter.getPreferredHeight());
+		((DataLayer)getBaseLayer()).setRowHeightByPosition(0, groupByHeaderPainter.getPreferredHeight());
+	}
+	
+	public GroupByModel getGroupByModel() {
+		return this.groupByModel;
 	}
 	
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		fireLayerEvent(new RowStructuralRefreshEvent(baseLayer));
+		fireLayerEvent(new RowStructuralRefreshEvent(getBaseLayer()));
 	}
 	
 	public boolean isVisible() {
@@ -94,43 +97,6 @@ public class GroupByHeaderLayer extends DimensionallyDependentLayer {
 	@Override
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		return new LayerCell(this, 0, 0, 0, 0, getColumnCount(), 1);
-	}
-	
-	
-	class GroupByColumnCommandHandler extends AbstractLayerCommandHandler<GroupByColumnIndexCommand> {
-
-		@Override
-		public Class<GroupByColumnIndexCommand> getCommandClass() {
-			return GroupByColumnIndexCommand.class;
-		}
-
-		@Override
-		protected boolean doCommand(GroupByColumnIndexCommand command) {
-			int columnIndex = command.getGroupByColumnIndex();
-			if (groupByModel.addGroupByColumnIndex(columnIndex)) {
-				fireLayerEvent(new VisualRefreshEvent(GroupByHeaderLayer.this));
-			}
-			return true;
-		}
-
-	}
-
-	class UngroupByColumnCommandHandler extends AbstractLayerCommandHandler<UngroupByColumnIndexCommand> {
-
-		@Override
-		public Class<UngroupByColumnIndexCommand> getCommandClass() {
-			return UngroupByColumnIndexCommand.class;
-		}
-
-		@Override
-		protected boolean doCommand(UngroupByColumnIndexCommand command) {
-			int columnIndex = command.getGroupByColumnIndex();
-			if (groupByModel.removeGroupByColumnIndex(columnIndex)) {
-				fireLayerEvent(new VisualRefreshEvent(GroupByHeaderLayer.this));
-			}
-			return true;
-		}
-
 	}
 
 	public int getGroupByColumnIndexAtXY(int x, int y) {

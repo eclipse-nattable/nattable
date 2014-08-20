@@ -19,12 +19,9 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
@@ -58,32 +55,17 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 	private ILayer verticalLayerDependency;
 	private IClientAreaProvider clientAreaProvider;
 
+	protected DimensionallyDependentLayer(IUniqueIndexLayer baseLayer) {
+		this.baseLayer = baseLayer;
+		this.baseLayer.addLayerListener(this);
+	}
+
 	public DimensionallyDependentLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, ILayer verticalLayerDependency) {
 		this.baseLayer = baseLayer;
-		this.horizontalLayerDependency = horizontalLayerDependency;
-		this.verticalLayerDependency = verticalLayerDependency;
-
-		baseLayer.addLayerListener(this);
-		horizontalLayerDependency.addLayerListener(new ILayerListener() {
-
-			@Override
-			public void handleLayerEvent(ILayerEvent event) {
-				if (event instanceof IStructuralChangeEvent) {
-					// TODO refresh horizontal structure
-				}
-			}
-
-		});
-		verticalLayerDependency.addLayerListener(new ILayerListener() {
-
-			@Override
-			public void handleLayerEvent(ILayerEvent event) {
-				if (event instanceof IStructuralChangeEvent) {
-					// TODO refresh vertical structure
-				}
-			}
-
-		});
+		this.baseLayer.addLayerListener(this);
+		
+		setHorizontalLayerDependency(horizontalLayerDependency);
+		setVerticalLayerDependency(verticalLayerDependency);
 	}
 
 	// Persistence
@@ -112,10 +94,32 @@ public class DimensionallyDependentLayer extends AbstractLayer {
 
 	public void setHorizontalLayerDependency(ILayer horizontalLayerDependency) {
 		this.horizontalLayerDependency = horizontalLayerDependency;
+		
+//		this.horizontalLayerDependency.addLayerListener(new ILayerListener() {
+//
+//			@Override
+//			public void handleLayerEvent(ILayerEvent event) {
+//				if (event instanceof IStructuralChangeEvent) {
+//					// TODO refresh horizontal structure
+//				}
+//			}
+//
+//		});
 	}
 
 	public void setVerticalLayerDependency(ILayer verticalLayerDependency) {
 		this.verticalLayerDependency = verticalLayerDependency;
+		
+//		this.verticalLayerDependency.addLayerListener(new ILayerListener() {
+//
+//			@Override
+//			public void handleLayerEvent(ILayerEvent event) {
+//				if (event instanceof IStructuralChangeEvent) {
+//					// TODO refresh vertical structure
+//				}
+//			}
+//
+//		});
 	}
 
 	public ILayer getHorizontalLayerDependency() {
