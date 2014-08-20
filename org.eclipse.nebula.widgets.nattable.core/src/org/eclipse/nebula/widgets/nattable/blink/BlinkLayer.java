@@ -51,10 +51,6 @@ import org.eclipse.swt.widgets.Display;
  */
 public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-    private static class DefaultSchedulerLazyInitializer {
-        private final static ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
-    }
-    
 	private final IUniqueIndexLayer dataLayer;
 	private final IRowDataProvider<T> rowDataProvider;
 	private final IConfigRegistry configRegistry;
@@ -90,7 +86,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 			IColumnPropertyResolver columnPropertyResolver,
 			IConfigRegistry configRegistry,
 			boolean triggerBlinkOnRowUpdate) {
-	    this(dataLayer, listDataProvider, rowIdAccessor, columnPropertyResolver, configRegistry, triggerBlinkOnRowUpdate, DefaultSchedulerLazyInitializer.SCHEDULER);
+	    this(dataLayer, listDataProvider, rowIdAccessor, columnPropertyResolver, configRegistry, triggerBlinkOnRowUpdate, Executors.newSingleThreadScheduledExecutor());
 	}
 	
     public BlinkLayer(IUniqueIndexLayer dataLayer,
@@ -205,9 +201,11 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
     private Runnable getStopBlinkTask(final String key, final ILayer layer) {
 
 		return new Runnable() {
+			@Override
 			public void run() {
 				
 				Display.getDefault().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						
 						blinkingUpdates.remove(key);
@@ -235,10 +233,12 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 		this.blinkingEnabled = enabled;
 	}
 
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		return dataLayer.getColumnPositionByIndex(columnIndex);
 	}
 
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		return dataLayer.getRowPositionByIndex(rowIndex);
 	}
