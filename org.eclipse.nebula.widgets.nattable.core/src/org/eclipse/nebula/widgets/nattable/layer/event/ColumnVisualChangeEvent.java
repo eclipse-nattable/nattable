@@ -35,6 +35,15 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 	
 	/**
 	 * Creates a new ColumnVisualChangeEvent based on the given information.
+	 * @param layer The ILayer to which the given column position matches.
+	 * @param columnPosition The column position of the column that has changed.
+	 */
+	public ColumnVisualChangeEvent(ILayer layer, int columnPosition) {
+		this(layer, new Range(columnPosition, columnPosition + 1));
+	}
+	
+	/**
+	 * Creates a new ColumnVisualChangeEvent based on the given information.
 	 * @param layer The ILayer to which the given column positions match.
 	 * @param columnPositionRanges The column position ranges for the columns that have changed.
 	 */

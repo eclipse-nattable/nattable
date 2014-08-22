@@ -53,6 +53,9 @@ public class PositionUtil {
 	 * 
 	 * <p>Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]</p>
 	 * <p>The last number in the Range is not inclusive.</p>
+	 * 
+	 * @param numbers The numbers to create the Range collection.
+	 * @return List of Ranges for the given Collection of numbers.
 	 */
 	public static List<Range> getRanges(Collection<Integer> numbers) {
 		List<Range> ranges = new ArrayList<Range>();
@@ -69,4 +72,23 @@ public class PositionUtil {
 		return ranges;
 	}
 
+	/**
+	 * <p>Creates {@link Range}s out of list of numbers.
+	 * The contiguous numbers are grouped together in Ranges.</p>
+	 * 
+	 * <p>Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]</p>
+	 * <p>The last number in the Range is not inclusive.</p>
+	 * 
+	 * @param numbers The numbers to create the Range collection.
+	 * @return List of Ranges for the given Collection of numbers.
+	 */
+	public static List<Range> getRanges(int... numbers) {
+		List<Integer> numberCollection = new ArrayList<Integer>();
+
+		for (int number : numbers) {
+			numberCollection.add(number);
+		}
+
+		return getRanges(numberCollection);
+	}
 }

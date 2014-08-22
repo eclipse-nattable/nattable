@@ -40,8 +40,10 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -527,6 +529,32 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 			CellVisualUpdateEvent update = (CellVisualUpdateEvent)event;
 			repaintCell(update.getColumnPosition(), update.getRowPosition());
 			return;
+		}
+		
+		if (event instanceof ColumnVisualUpdateEvent) {
+			ColumnVisualUpdateEvent update = (ColumnVisualUpdateEvent)event;
+			//if more than one column has changed repaint the whole table
+			Collection<Range> ranges = update.getColumnPositionRanges();
+			if (ranges.size() == 1) {
+				Range range = ranges.iterator().next();
+				if (range.end - range.start == 1) {
+					repaintColumn(range.start);
+					return;
+				}
+			}
+		}
+		
+		if (event instanceof RowVisualUpdateEvent) {
+			RowVisualUpdateEvent update = (RowVisualUpdateEvent)event;
+			//if more than one row has changed repaint the whole table
+			Collection<Range> ranges = update.getRowPositionRanges();
+			if (ranges.size() == 1) {
+				Range range = ranges.iterator().next();
+				if (range.end - range.start == 1) {
+					repaintRow(range.start);
+					return;
+				}
+			}
 		}
 		
 	    if (event instanceof IVisualChangeEvent) {

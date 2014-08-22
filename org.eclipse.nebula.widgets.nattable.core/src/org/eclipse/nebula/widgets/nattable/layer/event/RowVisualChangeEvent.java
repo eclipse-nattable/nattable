@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Rectangle;
@@ -25,6 +24,10 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 	
 	private Collection<Range> rowPositionRanges = new ArrayList<Range>();
 	
+	public RowVisualChangeEvent(ILayer layer, int rowPosition) {
+		this(layer, new Range(rowPosition, rowPosition + 1));
+	}
+
 	public RowVisualChangeEvent(ILayer layer, Range...rowPositionRanges) {
 		this(layer, Arrays.asList(rowPositionRanges));
 	}
@@ -40,6 +43,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 		this.rowPositionRanges = event.rowPositionRanges;
 	}
 	
+	@Override
 	public ILayer getLayer() {
 		return layer;
 	}
@@ -52,6 +56,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 		this.rowPositionRanges = rowPositionRanges;
 	}
 
+	@Override
 	public boolean convertToLocal(ILayer localLayer) {
 		rowPositionRanges = localLayer.underlyingToLocalRowPositions(layer, rowPositionRanges);
 		layer = localLayer;
@@ -59,6 +64,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 		return rowPositionRanges != null && rowPositionRanges.size() > 0;
 	}
 	
+	@Override
 	public Collection<Rectangle> getChangedPositionRectangles() {
 		Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
 		
@@ -70,6 +76,7 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 		return changedPositionRectangles;
 	}
 	
+	@Override
 	public String toString() {
 		return getClass().getSimpleName();
 	}
