@@ -111,13 +111,16 @@ public class LayerPrinter {
 		//turn viewport off to ensure calculation of the print pages for the whole table
 		layer.doCommand(new TurnViewportOffCommand());
 		
-		final Printer printer = setupPrinter(shell);
-		if (printer == null) {
-			return;
+		Printer printer = null;
+		try {
+			printer = setupPrinter(shell);
+			if (printer == null) {
+				return;
+			}
+		} finally {
+			//turn viewport on
+			layer.doCommand(new TurnViewportOnCommand());
 		}
-
-		//turn viewport on
-		layer.doCommand(new TurnViewportOnCommand());
 		
 		//Note: As we are operating on the same layer instance that is shown in the UI
 		//		executing the print job asynchronously will not cause a real asynchronous
