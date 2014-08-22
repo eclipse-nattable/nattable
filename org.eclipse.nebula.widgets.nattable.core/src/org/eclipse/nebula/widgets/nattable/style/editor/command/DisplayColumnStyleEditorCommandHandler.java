@@ -18,11 +18,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.persistence.StylePersistor;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -73,7 +74,19 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 			return true;
 		}
 		
-		applySelectedStyleToColumns(command, getSelectedColumnIndeces());
+		int[] selectedColumns = getSelectedColumnIndeces();
+		if (selectedColumns.length > 0) {
+			applySelectedStyleToColumns(command, getSelectedColumnIndeces());
+			//fire refresh event
+			this.selectionLayer.fireLayerEvent(new ColumnVisualUpdateEvent(selectionLayer, selectionLayer.getSelectedColumnPositions()));
+		}
+		else {
+			applySelectedStyleToColumns(command, new int[] {columnIndexOfClick});
+			//fire refresh event
+			int pos = LayerUtil.convertColumnPosition(command.getNattableLayer(), command.columnPosition, selectionLayer);
+			this.selectionLayer.fireLayerEvent(new ColumnVisualUpdateEvent(selectionLayer, pos));
+		}
+		
 		return true;
 	}
 
@@ -86,15 +99,17 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 		return selectedColumnIndeces;
 	}
 
+	@Override
 	public Class<DisplayColumnStyleEditorCommand> getCommandClass() {
 		return DisplayColumnStyleEditorCommand.class;
 	}
 
 	protected void applySelectedStyleToColumns(DisplayColumnStyleEditorCommand command, int[] columnIndeces) {
+		// Read the edited styles
+		Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
+
 		for (int i=0; i<columnIndeces.length; i++) {
 			final int columnIndex = columnIndeces[i];
-			// Read the edited styles
-			Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
 			
 			String configLabel = getConfigLabel(columnIndex);
 			if (newColumnCellStyle == null) {
@@ -112,6 +127,7 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 		return USER_EDITED_STYLE_LABEL + columnIndex;
 	}
 
+	@Override
 	public void loadState(String prefix, Properties properties) {
 		prefix = prefix + DOT + PERSISTENCE_PREFIX;
 		Set<Object> keySet = properties.keySet();
@@ -143,6 +159,7 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 		return Integer.parseInt(columnConfigLabel.substring(lastUnderscoreInLabel + 1));
 	}
 
+	@Override
 	public void saveState(String prefix, Properties properties) {
 		prefix = prefix + DOT + PERSISTENCE_PREFIX;
 
