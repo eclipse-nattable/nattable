@@ -98,14 +98,14 @@ public class _100_Row_groups extends AbstractNatExample {
 		
 		// Create a group of rows for the model.
 		RowGroup<RowGroupDataFixture> rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 1", true);		
-		rowGroup.addMemberRow(bodyDataProvider.getRowObject(1));
-		rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(2));
+		rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(1));
+		rowGroup.addMemberRow(bodyDataProvider.getRowObject(2));
 		rowGroupModel.addRowGroup(rowGroup);
 		
 		rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 2", true);		
-		rowGroup.addMemberRow(bodyDataProvider.getRowObject(11));
+		rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(11));
 		rowGroup.addMemberRow(bodyDataProvider.getRowObject(12));
-		rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(13));
+		rowGroup.addMemberRow(bodyDataProvider.getRowObject(13));
 		rowGroupModel.addRowGroup(rowGroup);
 		
 		rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 3", false);		

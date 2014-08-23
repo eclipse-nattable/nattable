@@ -26,6 +26,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.TransformedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectRowGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -106,11 +107,19 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	
 	@Override
 	public int getColumnIndexByPosition(int columnPosition) {
-		if( columnPosition == 0 ) {
+		if (columnPosition == 0) {
 			return columnPosition;
 		} else {
 			return rowHeaderLayer.getColumnIndexByPosition(columnPosition - 1);
 		}
+	}
+
+	@Override
+	public int localToUnderlyingColumnPosition(int localColumnPosition) {
+		if (localColumnPosition == 0) {
+			return localColumnPosition;
+		}
+		return localColumnPosition-1;
 	}
 	
 	// Width
@@ -127,7 +136,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	
 	@Override
 	public int getColumnWidthByPosition(int columnPosition) {
-		if( columnPosition == 0 ) {
+		if (columnPosition == 0) {
 			return columnWidthConfig.getSize(columnPosition);
 		} else {
 			return rowHeaderLayer.getColumnWidthByPosition(columnPosition - 1);
@@ -142,7 +151,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	
 	@Override
 	public boolean isColumnPositionResizable(int columnPosition) {
-		if( columnPosition == 0 ) {
+		if (columnPosition == 0) {
 			return columnWidthConfig.isPositionResizable(columnPosition);
 		} else {
 			return rowHeaderLayer.isRowPositionResizable(columnPosition - 1);
@@ -154,7 +163,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	@Override
 	public int getColumnPositionByX(int x) {
 		int col0Width = getColumnWidthByPosition(0);
-		if( x < col0Width ) {
+		if (x < col0Width) {
 			return 0;
 		} else {
 			return 1 + rowHeaderLayer.getColumnPositionByX(x - col0Width);
@@ -163,7 +172,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	
 	@Override
 	public int getStartXOfColumnPosition(int columnPosition) {
-		if( columnPosition == 0 ) {
+		if (columnPosition == 0) {
 			return columnWidthConfig.getAggregateSize(columnPosition);
 		} else {
 			return getColumnWidthByPosition(0) + rowHeaderLayer.getStartXOfColumnPosition(columnPosition - 1);
@@ -193,10 +202,30 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 						columnPosition, rowPosition,
 						1, getRowSpan(rowPosition)
 				);
+			} else {
+				return new LayerCell(this, columnPosition, rowPosition);
 			}
+		} else {
+			// render row header w/ columnspan = 2
+			// as in this case we ask the row header layer for the cell position
+			// and the row header layer asks his data provider for the column count
+			// which should always return 1, we ask for row position 0 
+			ILayerCell cell = rowHeaderLayer.getCellByPosition(0, rowPosition);
+			if (cell != null) {
+				cell = new TransformedLayerCell(cell) {
+					@Override
+					public ILayer getLayer() {
+						return RowGroupHeaderLayer.this;
+					}
+					
+					@Override
+					public int getColumnSpan() {
+						return 2;
+					}
+				};
+			}
+			return cell;
 		}
-		
-		return new LayerCell(this, columnPosition, rowPosition);
 	}
 	
 	/**
@@ -301,12 +330,8 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	@Override
 	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
 		int rowIndex = getRowIndexByPosition(rowPosition);
-		if( columnPosition == 0 ) {
-			if( RowGroupUtils.isPartOfAGroup(model, rowIndex) ) {		
-				return RowGroupUtils.getRowGroupNameForIndex(model, rowIndex);
-			} else {
-				return null;
-			}
+		if (columnPosition == 0 && RowGroupUtils.isPartOfAGroup(model, rowIndex)) {		
+			return RowGroupUtils.getRowGroupNameForIndex(model, rowIndex);
 		} else {
 			return rowHeaderLayer.getDataValueByPosition(columnPosition - 1, rowPosition);
 		}

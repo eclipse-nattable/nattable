@@ -58,7 +58,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer imp
 		IRowGroup<T> rowGroup = model.getRowGroupForRow(row);
 			
 		if (rowGroup == null) {
-			return true;
+			return false;
 		}
 		
 		boolean isCollapsedAndNotStaticRow = RowGroupUtils.isCollapsed(model, rowGroup) &&
@@ -83,6 +83,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer imp
 		return hiddenRowIndexes;
 	}
 	
+	@Override
 	public void rowGroupModelChanged() {
 		invalidateCache();
 	}
