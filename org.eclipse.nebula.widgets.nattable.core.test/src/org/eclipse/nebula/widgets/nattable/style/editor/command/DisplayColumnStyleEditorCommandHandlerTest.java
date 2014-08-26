@@ -12,12 +12,11 @@ package org.eclipse.nebula.widgets.nattable.style.editor.command;
 
 import static org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes.CELL_STYLE;
 import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.NORMAL;
-import static org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommandHandler.USER_EDITED_STYLE_LABEL;
+import static org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommandHandler.USER_EDITED_COLUMN_STYLE_LABEL_PREFIX;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Properties;
-
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -31,8 +30,6 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.editor.ColumnStyleEditorDialog;
-import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommand;
-import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommandHandler;
 import org.eclipse.nebula.widgets.nattable.test.fixture.CellStyleFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.PropertiesFixture;
@@ -72,7 +69,7 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
 
 		List<String> columnLableOverrides = handlerUnderTest.columnLabelAccumulator.getOverrides(Integer.valueOf(0));
 		assertEquals(1, columnLableOverrides.size());
-		assertEquals(USER_EDITED_STYLE_LABEL + "0", columnLableOverrides.get(0));
+		assertEquals(USER_EDITED_COLUMN_STYLE_LABEL_PREFIX + "0", columnLableOverrides.get(0));
 	}
 
 	@Test
@@ -130,5 +127,24 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
 		style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE_FOR_INDEX_1");
 		assertEquals(VerticalAlignmentEnum.TOP, style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
 		
+	}
+	
+	@Test
+	public void loadStateForMultipleMixedLabels() throws Exception {
+		PropertiesFixture propertiesFixture = new PropertiesFixture()
+			.addStyleProperties("prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_0")
+			.addStyleProperties("prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_1")
+			.addStyleProperties("prefix.userDefinedColumnStyle.USER_EDITED_STYLE");
+
+		handlerUnderTest.loadState("prefix", propertiesFixture);
+		
+		Style style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE_FOR_INDEX_0");
+		assertEquals(HorizontalAlignmentEnum.LEFT, style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT));
+
+		style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE_FOR_INDEX_1");
+		assertEquals(VerticalAlignmentEnum.TOP, style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
+		
+		style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE");
+		assertEquals(VerticalAlignmentEnum.TOP, style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
 	}
 }

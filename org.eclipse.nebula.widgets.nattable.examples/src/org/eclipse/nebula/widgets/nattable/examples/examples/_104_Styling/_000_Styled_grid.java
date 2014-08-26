@@ -30,12 +30,12 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommandHandler;
 import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
@@ -76,6 +76,7 @@ public class _000_Styled_grid extends AbstractNatExample {
 				"	Support is provided for automatic creation and disposal for SWT colors/fonts (see GUIHelper)";
 	}
 	
+	@Override
 	public Control createExampleControl(Composite parent) {
 		NatTable natTable = setup(parent);
 
@@ -102,8 +103,8 @@ public class _000_Styled_grid extends AbstractNatExample {
 		ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
 		ColumnOverrideLabelAccumulator bodyLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
 
-		aggregrateConfigLabelAccumulator.add(bodyLabelAccumulator);
 		aggregrateConfigLabelAccumulator.add(columnLabelAccumulator);
+		aggregrateConfigLabelAccumulator.add(bodyLabelAccumulator);
 
 		// Add a label for the highlighted column
 		// We will add a style for this label to the config registry in a bit
@@ -137,7 +138,7 @@ public class _000_Styled_grid extends AbstractNatExample {
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, // attribute to apply
 		                                       style, 							// value of the attribute
 		                                       DisplayMode.NORMAL, 				// apply during normal rendering i.e not during selection or edit
-		                                       COLUMN_LABEL_1); 				// apply the above for all cells with this label
+		                                       BODY_LABEL_1); 					// apply the above for all cells with this label
 	}
 
 	private void addCustomStyling(NatTable natTable) {

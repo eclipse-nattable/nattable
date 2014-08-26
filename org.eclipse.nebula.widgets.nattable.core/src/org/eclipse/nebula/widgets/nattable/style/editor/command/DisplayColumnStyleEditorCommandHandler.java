@@ -21,9 +21,9 @@ import java.util.Set;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualUpdateEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.persistence.StylePersistor;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -42,7 +42,8 @@ import org.eclipse.swt.widgets.Display;
 public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommandHandler<DisplayColumnStyleEditorCommand> implements IPersistable {
 	
 	protected static final String PERSISTENCE_PREFIX = "userDefinedColumnStyle"; //$NON-NLS-1$
-	protected static final String USER_EDITED_STYLE_LABEL = "USER_EDITED_STYLE_FOR_INDEX_"; //$NON-NLS-1$
+	protected static final String USER_EDITED_STYLE_LABEL = "USER_EDITED_STYLE"; //$NON-NLS-1$
+	protected static final String USER_EDITED_COLUMN_STYLE_LABEL_PREFIX = "USER_EDITED_STYLE_FOR_INDEX_"; //$NON-NLS-1$
 
 	protected final SelectionLayer selectionLayer;
 	protected ColumnOverrideLabelAccumulator columnLabelAccumulator;
@@ -76,22 +77,21 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 		
 		int[] selectedColumns = getSelectedColumnIndeces();
 		if (selectedColumns.length > 0) {
-			applySelectedStyleToColumns(command, getSelectedColumnIndeces());
+			applySelectedStyleToColumns(command, selectedColumns);
 			//fire refresh event
 			this.selectionLayer.fireLayerEvent(new ColumnVisualUpdateEvent(selectionLayer, selectionLayer.getSelectedColumnPositions()));
 		}
 		else {
-			applySelectedStyleToColumns(command, new int[] {columnIndexOfClick});
+			applySelectedStyle();
 			//fire refresh event
-			int pos = LayerUtil.convertColumnPosition(command.getNattableLayer(), command.columnPosition, selectionLayer);
-			this.selectionLayer.fireLayerEvent(new ColumnVisualUpdateEvent(selectionLayer, pos));
+			this.selectionLayer.fireLayerEvent(new VisualRefreshEvent(selectionLayer));
 		}
 		
 		return true;
 	}
 
 	private int[] getSelectedColumnIndeces() {
-		int[] selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
+		int[] selectedColumnPositions = selectionLayer.getFullySelectedColumnPositions();
 		int[] selectedColumnIndeces = new int[selectedColumnPositions.length];
 		for (int i=0; i<selectedColumnPositions.length; i++) {
 			selectedColumnIndeces[i] = selectionLayer.getColumnIndexByPosition(selectedColumnPositions[i]);
@@ -112,19 +112,43 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 			final int columnIndex = columnIndeces[i];
 			
 			String configLabel = getConfigLabel(columnIndex);
-			if (newColumnCellStyle == null) {
-				stylesToPersist.remove(configLabel);
-			} else {
-				newColumnCellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, dialog.getNewColumnBorderStyle());
-				stylesToPersist.put(configLabel, newColumnCellStyle);
+			applySelectedStyle(newColumnCellStyle, configLabel);
+			
+			if (newColumnCellStyle != null) {
+				columnLabelAccumulator.registerColumnOverridesOnTop(columnIndex, configLabel);
 			}
-			configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, configLabel);
-			columnLabelAccumulator.registerColumnOverridesOnTop(columnIndex, configLabel);
+			else {
+				columnLabelAccumulator.unregisterOverrides(columnIndex, configLabel);
+			}
 		}
 	}
 
+	protected void applySelectedStyle() {
+		// Read the edited styles
+		Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
+
+		applySelectedStyle(newColumnCellStyle, USER_EDITED_STYLE_LABEL);
+		
+		if (newColumnCellStyle != null) {
+			columnLabelAccumulator.registerOverridesOnTop(USER_EDITED_STYLE_LABEL);
+		}
+		else {
+			columnLabelAccumulator.unregisterOverrides(USER_EDITED_STYLE_LABEL);
+		}
+	}
+
+	protected void applySelectedStyle(Style newColumnCellStyle, String configLabel) {
+		if (newColumnCellStyle == null) {
+			stylesToPersist.remove(configLabel);
+		} else {
+			newColumnCellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, dialog.getNewColumnBorderStyle());
+			stylesToPersist.put(configLabel, newColumnCellStyle);
+		}
+		configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, configLabel);
+	}
+	
 	protected String getConfigLabel(int columnIndex) {
-		return USER_EDITED_STYLE_LABEL + columnIndex;
+		return USER_EDITED_COLUMN_STYLE_LABEL_PREFIX + columnIndex;
 	}
 
 	@Override
@@ -137,22 +161,35 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 
 			// Relevant Key
 			if (keyString.contains(PERSISTENCE_PREFIX)) {
-				int colIndex = parseColumnIndexFromKey(keyString);
-
-				// Has the config label been processed
-				if (!stylesToPersist.keySet().contains(getConfigLabel(colIndex))) {
-					Style savedStyle = StylePersistor.loadStyle(prefix + DOT + getConfigLabel(colIndex), properties);
-
-					configRegistry.registerConfigAttribute(CELL_STYLE, savedStyle, NORMAL, getConfigLabel(colIndex));
-					stylesToPersist.put(getConfigLabel(colIndex), savedStyle);
-					columnLabelAccumulator.registerColumnOverrides(colIndex, getConfigLabel(colIndex));
+				if (keyString.contains(USER_EDITED_COLUMN_STYLE_LABEL_PREFIX)) {
+					int colIndex = parseColumnIndexFromKey(keyString);
+					
+					// Has the config label been processed
+					String configLabel = getConfigLabel(colIndex);
+					if (!stylesToPersist.keySet().contains(configLabel)) {
+						Style savedStyle = StylePersistor.loadStyle(prefix + DOT + configLabel, properties);
+						
+						configRegistry.registerConfigAttribute(CELL_STYLE, savedStyle, NORMAL, configLabel);
+						stylesToPersist.put(configLabel, savedStyle);
+						columnLabelAccumulator.registerColumnOverrides(colIndex, configLabel);
+					}
+				}
+				else {
+					// Has the config label been processed
+					if (!stylesToPersist.keySet().contains(USER_EDITED_STYLE_LABEL)) {
+						Style savedStyle = StylePersistor.loadStyle(prefix + DOT + USER_EDITED_STYLE_LABEL, properties);
+						
+						configRegistry.registerConfigAttribute(CELL_STYLE, savedStyle, NORMAL, USER_EDITED_STYLE_LABEL);
+						stylesToPersist.put(USER_EDITED_STYLE_LABEL, savedStyle);
+						columnLabelAccumulator.registerOverrides(USER_EDITED_STYLE_LABEL, USER_EDITED_STYLE_LABEL);
+					}
 				}
 			}
 		}
 	}
-
+	
 	protected int parseColumnIndexFromKey(String keyString) {
-		int colLabelStartIndex = keyString.indexOf(USER_EDITED_STYLE_LABEL);
+		int colLabelStartIndex = keyString.indexOf(USER_EDITED_COLUMN_STYLE_LABEL_PREFIX);
 		String columnConfigLabel = keyString.substring(colLabelStartIndex, keyString.indexOf('.', colLabelStartIndex));
 		int lastUnderscoreInLabel = columnConfigLabel.lastIndexOf('_', colLabelStartIndex);
 

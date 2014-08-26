@@ -27,9 +27,13 @@ public abstract class AbstractOverrider implements IConfigLabelAccumulator {
 	}
 
 	public void registerOverrides(Serializable key, String...configLabels) {
+		registerOverrides(key, ArrayUtil.asList(configLabels));
+	}
+	
+	public void registerOverrides(Serializable key, List<String> configLabels) {
 		List<String> existingOverrides = getOverrides(key);
-		if(existingOverrides == null){
-			registerOverrides(key, ArrayUtil.asList(configLabels));
+		if (existingOverrides == null){
+			overrides.put(key, configLabels);
 		} else {
 			for (String configLabel : configLabels) {
 				if (!existingOverrides.contains(configLabel)) {
@@ -40,20 +44,21 @@ public abstract class AbstractOverrider implements IConfigLabelAccumulator {
 	}
 	
 	public void registerOverridesOnTop(Serializable key, String...configLabels) {
+		registerOverridesOnTop(key, ArrayUtil.asList(configLabels));
+	}
+	
+	public void registerOverridesOnTop(Serializable key, List<String> configLabels) {
 		List<String> existingOverrides = getOverrides(key);
-		if(existingOverrides == null){
-			registerOverrides(key, ArrayUtil.asList(configLabels));
+		if (existingOverrides == null){
+			overrides.put(key, configLabels);
 		} else {
-			for (String configLabel : configLabels) {
+			for (int i = configLabels.size()-1; i >= 0; i--) {
+				String configLabel = configLabels.get(i);
 				if (!existingOverrides.contains(configLabel)) {
 					existingOverrides.add(0, configLabel);
 				}
 			}
 		}
-	}
-	
-	public void registerOverrides(Serializable key, List<String> configLabels) {
-		overrides.put(key, configLabels);
 	}
 
 	public Map<Serializable, List<String>> getOverrides() {
