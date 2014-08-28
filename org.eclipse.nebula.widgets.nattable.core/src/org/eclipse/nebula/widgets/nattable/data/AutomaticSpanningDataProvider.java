@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    neal zhang <nujiah001@126.com> - Bug 442009
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data;
 
@@ -228,21 +229,23 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * 			if it is not spanned with the columns to the left.
 	 */
 	protected int getStartColumnPosition(int columnPosition, int rowPosition) {
-		if (columnPosition <= 0 || !isAutoSpanColumn(columnPosition) || !isAutoSpanColumn(columnPosition-1)) {
-			return columnPosition;
+		int columnPos;
+		for (columnPos = columnPosition; columnPos >= 0; columnPos--){
+			if (columnPos <= 0 || !isAutoSpanColumn(columnPos) || !isAutoSpanColumn(columnPos-1)) {
+				break;
+			}
+
+			//get value for the given column
+			Object current = getDataValue(columnPos, rowPosition);
+			//get value of the column to the left
+			Object before = getDataValue(columnPos-1, rowPosition);
+
+			if (valuesNotEqual(current, before)) {
+				//the both values are not equal, therefore return the given column position
+				break;
+			}
 		}
-		
-		//get value for the given column
-		Object current = getDataValue(columnPosition, rowPosition);
-		//get value of the column to the left
-		Object before = getDataValue(columnPosition-1, rowPosition);
-		
-		if (valuesNotEqual(current, before)) {
-			//the both values are not equal, therefore return the given column position
-			return columnPosition;
-		}
-		
-		return getStartColumnPosition(columnPosition-1, rowPosition);
+		return columnPos;
 	}
 	
 	/**
@@ -256,21 +259,23 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * 			if it is not spanned with rows above.
 	 */
 	protected int getStartRowPosition(int columnPosition, int rowPosition) {
-		if (rowPosition <= 0 || !isAutoSpanRow(rowPosition) || !isAutoSpanRow(rowPosition - 1)) {
-			return rowPosition;
+		int rowPos;
+		for (rowPos = rowPosition; rowPos >= 0; rowPos--){
+			if (rowPos <= 0 || !isAutoSpanRow(rowPos) || !isAutoSpanRow(rowPos - 1)) {
+				break;
+			}
+
+			//get value of given row
+			Object current = getDataValue(columnPosition, rowPos);
+			//get value of row before
+			Object before = getDataValue(columnPosition, rowPos-1);
+
+			if (valuesNotEqual(current, before)) {
+				//the both values are not equal, therefore return the given row
+				break;
+			}
 		}
-		
-		//get value of given row
-		Object current = getDataValue(columnPosition, rowPosition);
-		//get value of row before
-		Object before = getDataValue(columnPosition, rowPosition-1);
-		
-		if (valuesNotEqual(current, before)) {
-			//the both values are not equal, therefore return the given row
-			return rowPosition;
-		}
-		
-		return getStartRowPosition(columnPosition, rowPosition-1);
+		return rowPos;
 	}
 	
 	/**
