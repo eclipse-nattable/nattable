@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -135,16 +136,21 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 				EventList<MatcherEditor<T>> stringMatcherEditors = new BasicEventList<MatcherEditor<T>>();
 				for (ParseResult parseResult : parseResults)
 				{
-					MatchType matchOperation = parseResult.getMatchOperation();
-					if (matchOperation == MatchType.NONE) {
-						stringMatcherEditors.add(getTextMatcherEditor(columnIndex, textMatchingMode, displayConverter, parseResult.getValueToMatch()));
-					} else {
-						Object threshold = displayConverter.displayToCanonicalValue(parseResult.getValueToMatch());
-						matcherEditors.add(getThresholdMatcherEditor(columnIndex, threshold, comparator, columnValueProvider, matchOperation));
+					try {
+						MatchType matchOperation = parseResult.getMatchOperation();
+						if (matchOperation == MatchType.NONE) {
+							stringMatcherEditors.add(getTextMatcherEditor(columnIndex, textMatchingMode, displayConverter, parseResult.getValueToMatch()));
+						} else {
+							Object threshold = displayConverter.displayToCanonicalValue(parseResult.getValueToMatch());
+							matcherEditors.add(getThresholdMatcherEditor(columnIndex, threshold, comparator, columnValueProvider, matchOperation));
+						}
+					}
+					catch (PatternSyntaxException e) {
+						log.warn("Error on applying a filter: " + e.getLocalizedMessage()); //$NON-NLS-1$
 					}
 				}
 				
-				if (stringMatcherEditors.size()>0){
+				if (stringMatcherEditors.size() > 0){
 					CompositeMatcherEditor<T> stringCompositeMatcherEditor = new CompositeMatcherEditor<T>(stringMatcherEditors);
 					stringCompositeMatcherEditor.setMode(CompositeMatcherEditor.OR);
 					matcherEditors.add(stringCompositeMatcherEditor);
@@ -160,7 +166,8 @@ public class DefaultGlazedListsFilterStrategy<T> implements IFilterStrategy<T> {
 				this.filterLock.writeLock().unlock();
 			}
 
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			log.error("Error on applying a filter", e); //$NON-NLS-1$
 		}
 	}
