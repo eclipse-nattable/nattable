@@ -58,7 +58,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 							if (minimumOriginColumnPosition > 0) {
 								for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
 									if (i < minimumOriginColumnPosition) {
-										columnOffset += 1;
+										minimumOriginColumnPosition++;
 									}
 								}
 							}
@@ -123,7 +123,7 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 							if (minimumOriginRowPosition > 0) {
 								for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
 									if (i < minimumOriginRowPosition) {
-										rowOffset += 1;
+										minimumOriginRowPosition++;
 									}
 								}
 							}

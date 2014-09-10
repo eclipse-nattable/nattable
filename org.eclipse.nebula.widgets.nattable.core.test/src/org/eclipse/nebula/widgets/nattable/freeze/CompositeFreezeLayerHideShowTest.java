@@ -558,6 +558,56 @@ public class CompositeFreezeLayerHideShowTest {
 	}
 
 	@Test
+	public void testFreezeHideShowColumnFrozenRegionMiddle() {
+		//freeze the first 4 columns
+		compositeFreezeLayer.doCommand(new FreezeColumnCommand(compositeFreezeLayer, 3));
+
+		assertEquals(4, freezeLayer.getColumnCount());
+		assertEquals(0, freezeLayer.getRowCount());
+		assertEquals(3, freezeLayer.getBottomRightPosition().columnPosition);
+		assertEquals(-1, freezeLayer.getBottomRightPosition().rowPosition);
+		
+		assertEquals(1, viewportLayer.getColumnCount());
+		assertEquals(5, viewportLayer.getRowCount());
+		assertEquals(4, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(0, viewportLayer.getMinimumOriginRowPosition());
+		assertEquals(400, viewportLayer.getMinimumOrigin().getX());
+		assertEquals(0, viewportLayer.getMinimumOrigin().getY());
+
+		//hide column 1 and 2
+		compositeFreezeLayer.doCommand(new MultiColumnHideCommand(compositeFreezeLayer, new int[] {1, 2}));
+
+		assertEquals(2, freezeLayer.getColumnCount());
+		assertEquals(0, freezeLayer.getRowCount());
+		assertEquals(1, freezeLayer.getBottomRightPosition().columnPosition);
+		assertEquals(-1, freezeLayer.getBottomRightPosition().rowPosition);
+		
+		assertEquals(1, viewportLayer.getColumnCount());
+		assertEquals(5, viewportLayer.getRowCount());
+		assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(0, viewportLayer.getMinimumOriginRowPosition());
+		assertEquals(200, viewportLayer.getMinimumOrigin().getX());
+		assertEquals(0, viewportLayer.getMinimumOrigin().getY());
+		
+		//show again
+		compositeFreezeLayer.doCommand(new ShowAllColumnsCommand());
+
+		assertEquals(4, freezeLayer.getColumnCount());
+		assertEquals(0, freezeLayer.getRowCount());
+		assertEquals(3, freezeLayer.getBottomRightPosition().columnPosition);
+		assertEquals(-1, freezeLayer.getBottomRightPosition().rowPosition);
+		
+		assertEquals(1, viewportLayer.getColumnCount());
+		assertEquals(5, viewportLayer.getRowCount());
+		assertEquals(4, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(0, viewportLayer.getMinimumOriginRowPosition());
+		assertEquals(400, viewportLayer.getMinimumOrigin().getX());
+		assertEquals(0, viewportLayer.getMinimumOrigin().getY());
+		
+		reset();
+	}
+
+	@Test
 	public void testFreezeHideShowColumnBothRegionsViewportAll() {
 		//freeze
 		compositeFreezeLayer.doCommand(new FreezeColumnCommand(compositeFreezeLayer, 1));
@@ -1110,6 +1160,56 @@ public class CompositeFreezeLayerHideShowTest {
 	}
 
 	@Test
+	public void testFreezeHideShowRowFrozenRegionMiddle() {
+		//freeze
+		compositeFreezeLayer.doCommand(new FreezeRowCommand(compositeFreezeLayer, 3));
+	
+		assertEquals(0, freezeLayer.getColumnCount());
+		assertEquals(4, freezeLayer.getRowCount());
+		assertEquals(-1, freezeLayer.getBottomRightPosition().columnPosition);
+		assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+		
+		assertEquals(5, viewportLayer.getColumnCount());
+		assertEquals(1, viewportLayer.getRowCount());
+		assertEquals(0, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(4, viewportLayer.getMinimumOriginRowPosition());
+		assertEquals(0, viewportLayer.getMinimumOrigin().getX());
+		assertEquals(80, viewportLayer.getMinimumOrigin().getY());
+
+		//hide
+		compositeFreezeLayer.doCommand(new MultiRowHideCommand(compositeFreezeLayer, new int[] {1, 2}));
+
+		assertEquals(0, freezeLayer.getColumnCount());
+		assertEquals(2, freezeLayer.getRowCount());
+		assertEquals(-1, freezeLayer.getBottomRightPosition().columnPosition);
+		assertEquals(1, freezeLayer.getBottomRightPosition().rowPosition);
+		
+		assertEquals(5, viewportLayer.getColumnCount());
+		assertEquals(1, viewportLayer.getRowCount());
+		assertEquals(0, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
+		assertEquals(0, viewportLayer.getMinimumOrigin().getX());
+		assertEquals(40, viewportLayer.getMinimumOrigin().getY());
+		
+		//show again
+		compositeFreezeLayer.doCommand(new ShowAllRowsCommand());
+
+		assertEquals(0, freezeLayer.getColumnCount());
+		assertEquals(4, freezeLayer.getRowCount());
+		assertEquals(-1, freezeLayer.getBottomRightPosition().columnPosition);
+		assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+		
+		assertEquals(5, viewportLayer.getColumnCount());
+		assertEquals(1, viewportLayer.getRowCount());
+		assertEquals(0, viewportLayer.getMinimumOriginColumnPosition());
+		assertEquals(4, viewportLayer.getMinimumOriginRowPosition());
+		assertEquals(0, viewportLayer.getMinimumOrigin().getX());
+		assertEquals(80, viewportLayer.getMinimumOrigin().getY());
+		
+		reset();
+	}
+
+	@Test
 	public void testFreezeHideShowRowBothRegionsViewportAll() {
 		//freeze
 		compositeFreezeLayer.doCommand(new FreezeRowCommand(compositeFreezeLayer, 1));
@@ -1258,7 +1358,7 @@ public class CompositeFreezeLayerHideShowTest {
 		
 		reset();
 	}
-	
+
 	private void reset() {
 		compositeFreezeLayer.doCommand(new UnFreezeGridCommand());
 
