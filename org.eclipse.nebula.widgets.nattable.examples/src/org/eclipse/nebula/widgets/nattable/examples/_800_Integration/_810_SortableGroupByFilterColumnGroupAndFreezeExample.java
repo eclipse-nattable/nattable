@@ -190,7 +190,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends Abstr
 						bodyLayerStack.getSortedList(), 
 						columnPropertyAccessor,
 						configRegistry, 
-						bodyLayerStack.getBodyDataLayer()), 
+						columnHeaderDataLayer), 
 				false);
 		
 		//connect sortModel to GroupByDataLayer to support sorting by group by summary values

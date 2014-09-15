@@ -149,7 +149,7 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
 						bodyLayerStack.getSortedList(), 
 						columnPropertyAccessor,
 						configRegistry, 
-						bodyLayerStack.getBodyDataLayer()), 
+						columnHeaderDataLayer), 
 				false);
 		
 		//connect sortModel to GroupByDataLayer to support sorting by group by summary values

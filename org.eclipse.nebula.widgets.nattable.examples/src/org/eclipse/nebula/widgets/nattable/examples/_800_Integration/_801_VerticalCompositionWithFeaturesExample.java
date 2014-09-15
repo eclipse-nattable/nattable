@@ -150,8 +150,9 @@ public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExam
 		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
 		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap); 
+		DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
 		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-				new DataLayer(columnHeaderDataProvider),
+				columnHeaderDataLayer,
 				viewportLayer, 
 				selectionLayer);
 
@@ -162,7 +163,7 @@ public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExam
 						sortedList, 
 						columnPropertyAccessor,
 						configRegistry, 
-						bodyDataLayer), 
+						columnHeaderDataLayer), 
 				false);
 
 		//add the filter row functionality
