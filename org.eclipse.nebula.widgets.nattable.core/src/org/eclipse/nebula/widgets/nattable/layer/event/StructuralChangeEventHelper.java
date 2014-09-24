@@ -248,7 +248,7 @@ public class StructuralChangeEventHelper {
 	public static boolean isReorder(Collection<StructuralDiff> structuralDiffs) {
 		//if there is a diff that deletes columns and a diff that adds the same amount of columns at once
 		//it seems to be a reordering and therefore it is not a real deletion/insertion so we don't need to handle
-		if (structuralDiffs != null && structuralDiffs.size() == 2) {
+		if (structuralDiffs != null && (structuralDiffs.size() % 2) == 0) {
 			int numberOfDeleteCols = 0;
 			int numberOfInsertCols = 0;
 			for (Iterator<StructuralDiff> diffIterator = structuralDiffs.iterator(); diffIterator.hasNext();) {
