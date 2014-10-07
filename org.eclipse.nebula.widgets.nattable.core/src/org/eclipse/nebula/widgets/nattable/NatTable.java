@@ -52,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.NatLayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.selection.event.ISelectionEvent;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeManager;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
@@ -543,7 +544,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 				}
 			}
 		}
-		
+
 		if (event instanceof RowVisualUpdateEvent) {
 			RowVisualUpdateEvent update = (RowVisualUpdateEvent)event;
 			//if more than one row has changed repaint the whole table
@@ -556,19 +557,28 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
 				}
 			}
 		}
-		
-	    if (event instanceof IVisualChangeEvent) {
-	    	conflaterChain.addEvent(event);
-	    }
 
-		if (event instanceof CellSelectionEvent) {
-			Event e = new Event();
-			e.widget = this;
-			try {
-				notifyListeners(SWT.Selection, e);
-			} catch (RuntimeException re) {
-				re.printStackTrace();
+		if (event instanceof ISelectionEvent) {
+			if (event instanceof CellSelectionEvent) {
+				Event e = new Event();
+				e.widget = this;
+				try {
+					notifyListeners(SWT.Selection, e);
+				} catch (RuntimeException re) {
+					re.printStackTrace();
+				}
 			}
+
+			//in case of selections we redraw immediately
+			//this is because with Bug 440037 it was reported that
+			//NatTable is too lazy in handling selections which
+			//was caused by the EventConflaterChain that only performs
+			//updates every 100ms to avoid flickering when handling too
+			//many refresh operations in a short period
+			redraw();
+		}
+		else if (event instanceof IVisualChangeEvent) {
+			conflaterChain.addEvent(event);
 		}
 
 		if (event instanceof CellEditorCreatedEvent) {
