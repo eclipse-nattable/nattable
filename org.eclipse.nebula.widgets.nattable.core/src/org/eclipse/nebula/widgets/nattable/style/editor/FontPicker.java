@@ -17,6 +17,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -26,20 +27,21 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * A button that displays a font name and allows the user to pick another font. 
  */
-public class FontPicker extends Button {
+public class FontPicker {
     
+	private Button button;
 	private Font originalFont;
     private Font selectedFont;
     private FontData[] fontData = new FontData[1];
     private Font displayFont; 
     
     public FontPicker(final Composite parent, Font originalFont) {
-        super(parent, SWT.NONE);
+    	button = new Button(parent, SWT.NONE);
         if (originalFont == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
         
         update(originalFont.getFontData()[0]);
         
-        addSelectionListener(
+        button.addSelectionListener(
                 new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
@@ -48,7 +50,7 @@ public class FontPicker extends Button {
                         FontData selected = dialog.open();
                         if (selected != null) {                            
                             update(selected);
-                            pack(true);
+                            button.pack(true);
                         }
                     }
                 });
@@ -60,10 +62,10 @@ public class FontPicker extends Button {
         if (originalFont == null) {
         	originalFont = selectedFont;
         }
-        setText(data.getName() + ", " + data.getHeight() + "pt"); //$NON-NLS-1$ //$NON-NLS-2$
-        setFont(createDisplayFont(data));
-        setAlignment(SWT.CENTER);
-        setToolTipText(Messages.getString("FontPicker.tooltip")); //$NON-NLS-1$
+        button.setText(data.getName() + ", " + data.getHeight() + "pt"); //$NON-NLS-1$ //$NON-NLS-2$
+        button.setFont(createDisplayFont(data));
+        button.setAlignment(SWT.CENTER);
+        button.setToolTipText(Messages.getString("FontPicker.tooltip")); //$NON-NLS-1$
     }
     
     private Font createDisplayFont(FontData data) {
@@ -95,10 +97,16 @@ public class FontPicker extends Button {
         }
     }
 
-    @Override
-    protected void checkSubclass() {
-        ; // do nothing
-    }
+	/**
+	 * @return the button
+	 */
+	public Button getButton() {
+		return button;
+	}
+
+	public void setLayoutData(GridData gridData) {
+		button.setLayoutData(gridData);
+	}
 }
 
     
