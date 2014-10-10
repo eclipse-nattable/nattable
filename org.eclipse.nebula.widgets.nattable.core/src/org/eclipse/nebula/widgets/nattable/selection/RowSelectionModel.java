@@ -410,4 +410,9 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 	
+	@Override
+	public void updateSelection() {
+		// do nothing, the selection state is held internally by id
+	}
+	
 }

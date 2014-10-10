@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import java.util.List;
 import java.util.Set;
 
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -138,6 +137,18 @@ public interface ISelectionModel {
 	 */
 	public int[] getFullySelectedRowPositions(int rowWidth);
 
+	/**
+	 * Check if all cells in a row are selected, which means the row is fully selected.
+	 * @param rowPosition The row position that should be checked.
+	 * @param rowWidth The number of columns in the row which is needed to determine if the
+	 * 			all cells in a row are selected.
+	 * @return <code>true</code> if all cells in a row are selected, <code>false</code>
+	 * 			if not
+	 */
 	public boolean isRowPositionFullySelected(int rowPosition, int rowWidth);
 	
+	/**
+	 * Callback function that is called by default on structural changes in the data model.
+	 */
+	public void updateSelection();
 }

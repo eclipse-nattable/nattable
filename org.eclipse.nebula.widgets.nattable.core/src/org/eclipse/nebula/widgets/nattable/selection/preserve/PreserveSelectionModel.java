@@ -638,6 +638,11 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 			selectionsLock.writeLock().unlock();
 		}
 	}
+	
+	@Override
+	public void updateSelection() {
+		// do nothing, the selection state is held internally by id
+	}
 
 	/**
 	 * Internal interface to be used for higher order methods.

@@ -66,7 +66,7 @@ public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHa
 				for (Rectangle rectangle : rectangles) {
 					Range changedRange = new Range(rectangle.y, rectangle.y + rectangle.height);
 					if (selectedRowModified(changedRange)) {
-						selectionLayer.clear();
+						selectionLayer.updateSelection();
 						break;
 					}
 				}
@@ -77,7 +77,7 @@ public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHa
 					//DiffTypeEnum.CHANGE is used for resizing and shouldn't result in clearing the selection
 					if (diff.getDiffType() != DiffTypeEnum.CHANGE) {
 						if (selectedRowModified(diff.getBeforePositionRange())) {
-							selectionLayer.clear();
+							selectionLayer.updateSelection();
 							break;
 						}
 					}

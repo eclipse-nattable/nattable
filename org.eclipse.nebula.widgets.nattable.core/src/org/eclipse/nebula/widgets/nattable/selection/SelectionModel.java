@@ -552,6 +552,14 @@ public class SelectionModel implements ISelectionModel {
 		return null;
 	}
 
+	@Override
+	public void updateSelection() {
+		//since this selection model is not able to restore a selection
+		//on structural changes, we simply clear on update to ensure 
+		//there are no selection updates
+		this.selectionLayer.clear();
+	}
+	
 	// Object methods
 
 	@Override

@@ -414,6 +414,10 @@ public class SelectionLayerTest {
 			this.lastSelectedRegion.width = width;
 			this.lastSelectedRegion.height = height;
 		}
+		
+		@Override
+		public void updateSelection() {
+		}
 
 	}
 

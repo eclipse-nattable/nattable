@@ -11,6 +11,11 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.selection.event.SelectionLayerStructuralChangeEventHandler;
@@ -64,5 +69,36 @@ public class SelectionLayerStructuralChangeEventHandlerTest {
 		
 		Assert.assertFalse(selectionModel.isEmpty());
 		Assert.assertTrue(selectionModel.isRowPositionSelected(4));
+	}
+	
+	@Test
+	public void shouldClearSelectionIfListIsCleared() {
+		selectionModel.addSelection(3, 4);
+		
+		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer);
+		handler.handleLayerEvent(new RowDeleteEvent(dataLayer, new Range(0, 9)));
+		
+		Assert.assertTrue(selectionModel.isEmpty());
+	}
+	
+	@Test
+	public void shouldClearSelectionIfAllRowsAreHidden() {
+		selectionModel.addSelection(3, 4);
+		
+		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer);
+		List<Integer> rows = new ArrayList<Integer>();
+		rows.add(0);
+		rows.add(1);
+		rows.add(2);
+		rows.add(3);
+		rows.add(4);
+		rows.add(5);
+		rows.add(6);
+		rows.add(7);
+		rows.add(8);
+		rows.add(9);
+		handler.handleLayerEvent(new HideRowPositionsEvent(dataLayer, rows));
+		
+		Assert.assertTrue(selectionModel.isEmpty());
 	}
 }

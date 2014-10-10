@@ -601,4 +601,9 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 			return super.doCommand(command);
 		}
 	}
+	
+	
+	public void updateSelection() {
+		this.selectionModel.updateSelection();
+	}
 }
