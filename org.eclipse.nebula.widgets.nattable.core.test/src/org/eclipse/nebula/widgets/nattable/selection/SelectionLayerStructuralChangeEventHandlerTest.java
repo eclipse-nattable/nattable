@@ -38,7 +38,7 @@ public class SelectionLayerStructuralChangeEventHandlerTest {
 	public void shouldClearSelectionIfASelectedRowIsModified() throws Exception {
 		selectionModel.addSelection(2, 3);
 		
-		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer, selectionModel);
+		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer);
 		handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 3));
 		
 		Assert.assertTrue(selectionModel.isEmpty());
@@ -48,7 +48,7 @@ public class SelectionLayerStructuralChangeEventHandlerTest {
 	public void shouldLeaveSelectionUnchangedIfASelectedRowIsNotModified() throws Exception {
 		selectionModel.addSelection(2, 3);
 		
-		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer, selectionModel);
+		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer);
 		handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 5));
 		
 		Assert.assertFalse(selectionModel.isEmpty());
@@ -59,7 +59,7 @@ public class SelectionLayerStructuralChangeEventHandlerTest {
 	public void shouldLeaveSelectionUnchangedIfTheFollowingRowIsModified() throws Exception {
 		selectionModel.addSelection(3, 4);
 		
-		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer, selectionModel);
+		SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(selectionLayer);
 		handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 5));
 		
 		Assert.assertFalse(selectionModel.isEmpty());

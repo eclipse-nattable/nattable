@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,12 +24,28 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHandler<IStructuralChangeEvent> {
 
-	private ISelectionModel selectionModel;
 	private final SelectionLayer selectionLayer;
 	
+	/**
+	 * 
+	 * @param selectionLayer The {@link SelectionLayer} this handler is operating on.
+	 * 			Needed to clear selections and retrieve selection states while handling 
+	 * 			{@link IStructuralChangeEvent}s
+	 */
+	public SelectionLayerStructuralChangeEventHandler(SelectionLayer selectionLayer) {
+		this.selectionLayer = selectionLayer;
+	}
+	
+	/**
+	 * 
+	 * @param selectionLayer
+	 * @param selectionModel
+	 * @deprecated This handler doesn't make use of the ISelectionModel anymore, therefore 
+	 * 			setting another ISelectionModel will have no effect
+	 */
+	@Deprecated
 	public SelectionLayerStructuralChangeEventHandler(SelectionLayer selectionLayer, ISelectionModel selectionModel) {
 		this.selectionLayer = selectionLayer;
-		this.selectionModel = selectionModel;
 	}
 
 	@Override
@@ -71,7 +87,7 @@ public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHa
 	}
 	
 	private boolean selectedRowModified(Range changedRange){
-		Set<Range> selectedRows = selectionModel.getSelectedRowPositions();
+		Set<Range> selectedRows = this.selectionLayer.getSelectedRowPositions();
 		for (Range rowRange : selectedRows) {
 			if (rowRange.overlap(changedRange)){
 				return true;
@@ -80,8 +96,14 @@ public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHa
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param selectionModel
+	 * @deprecated This handler doesn't make use of the ISelectionModel anymore, therefore 
+	 * 			setting another ISelectionModel will have no effect
+	 */
+	@Deprecated
 	public void setSelectionModel(ISelectionModel selectionModel) {
-		this.selectionModel = selectionModel;
 	}
 
 }

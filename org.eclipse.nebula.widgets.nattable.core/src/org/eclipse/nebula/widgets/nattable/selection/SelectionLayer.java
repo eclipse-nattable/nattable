@@ -109,7 +109,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 		registerCommandHandlers();
 
 		if(registerDefaultEventHandler){
-			registerEventHandler(new SelectionLayerStructuralChangeEventHandler(this, this.selectionModel));
+			registerEventHandler(new SelectionLayerStructuralChangeEventHandler(this));
 		}
 		if (useDefaultConfiguration) {
 			addConfiguration(new DefaultSelectionLayerConfiguration());
