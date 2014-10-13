@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.config;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -70,7 +70,7 @@ public interface IConfigRegistry {
      * @see #getConfigAttribute(ConfigAttribute, String, String...)
      */
     public <T> T getConfigAttribute(ConfigAttribute<T> configAttribute,
-            String targetDisplayMode, List<String> configLabels);
+            String targetDisplayMode, Collection<String> configLabels);
 
     /**
      * @see #getConfigAttribute(ConfigAttribute, String, String...)

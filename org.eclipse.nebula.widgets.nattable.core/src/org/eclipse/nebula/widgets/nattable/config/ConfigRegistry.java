@@ -11,8 +11,8 @@
 package org.eclipse.nebula.widgets.nattable.config;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
@@ -35,7 +35,7 @@ public class ConfigRegistry implements IConfigRegistry {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getConfigAttribute(ConfigAttribute<T> configAttribute,
-            String targetDisplayMode, List<String> configLabels) {
+            String targetDisplayMode, Collection<String> configLabels) {
         T attributeValue = null;
 
         Map<String, Map<String, ?>> displayModeConfigAttributeMap = this.configRegistry
