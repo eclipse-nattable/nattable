@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Roman Flueckiger <roman.flueckiger@mac.com> - Bug 446866
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
@@ -16,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 
 /**
@@ -93,20 +95,23 @@ public class CellEditorMouseEventMatcher implements IMouseEventMatcher {
 	public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
 		if ((this.regionLabel == null || (regionLabels != null && regionLabels.hasLabel(this.regionLabel)))
 				&& event.button == this.button) {
-			
-			ILayerCell cell = natTable.getCellByPosition(
-					natTable.getColumnPositionByX(event.x), 
-					natTable.getRowPositionByY(event.y));
-			
-			//Bug 407598: only perform a check if the click in the body region was performed on a cell
-			//cell == null can happen if the viewport is quite large and contains not enough cells to fill it.
-			if (cell != null) {
-				ICellEditor cellEditor = natTable.getConfigRegistry().getConfigAttribute(
-						EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, cell.getConfigLabels().getLabels());
-				
-				if (cellEditor != null && cellEditor.activateAtAnyPosition()) {
-					//if there is a cell editor configured for the cell that was clicked on, the match is found
-					return true;
+
+			// Bug 446866: if modifier keys are pressed (e.g. CTRL or SHIFT to perform multi-selections) do NOT open editors.
+			if (event.stateMask == SWT.NONE) {
+				ILayerCell cell = natTable.getCellByPosition(
+						natTable.getColumnPositionByX(event.x),
+						natTable.getRowPositionByY(event.y));
+
+				//Bug 407598: only perform a check if the click in the body region was performed on a cell
+				//cell == null can happen if the viewport is quite large and contains not enough cells to fill it.
+				if (cell != null) {
+					ICellEditor cellEditor = natTable.getConfigRegistry().getConfigAttribute(
+							EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, cell.getConfigLabels().getLabels());
+
+					if (cellEditor != null && cellEditor.activateAtAnyPosition()) {
+						//if there is a cell editor configured for the cell that was clicked on, the match is found
+						return true;
+					}
 				}
 			}
 		}
