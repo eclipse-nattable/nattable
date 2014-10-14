@@ -46,36 +46,48 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
 		IConfigRegistry configRegistry = command.getConfigRegistry();
 		Character initialValue = command.getCharacter();
 		
+		
+		//TODO on row selection, single cells in a row can not be edited via key bindings
+		//in such a case only the anchor should be checked
+		
+		
 		if (EditUtils.allCellsEditable(this.selectionLayer, configRegistry)
 				&& EditUtils.isEditorSame(this.selectionLayer, configRegistry)
 				&& EditUtils.isConverterSame(this.selectionLayer, configRegistry)) {
-			//check how many cells are selected
-			Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
-			if (selectedCells.size() == 1) {
-				//editing is triggered by key for a single cell
-				//we need to fire the InlineCellEditEvent here because we don't know the correct bounds
-				//of the cell to edit inline corresponding to the NatTable. On firing the event, a
-				//translation process is triggered, converting the information to the correct values
-				//needed for inline editing
-				ILayerCell cell = selectedCells.iterator().next();
-				this.selectionLayer.fireLayerEvent(
-						new InlineCellEditEvent(
-								this.selectionLayer, 
-								new PositionCoordinate(this.selectionLayer, cell.getColumnPosition(), cell.getRowPosition()), 
-								parent, 
-								configRegistry, 
-								(initialValue != null ? initialValue : cell.getDataValue())));
-			}
-			else if (selectedCells.size() > 1) {
-				//determine the initial value
-				Object initialEditValue = initialValue;
-				if (initialValue == null && EditUtils.isValueSame(this.selectionLayer)) {
-					ILayerCell cell = selectedCells.iterator().next();
-					initialEditValue = this.selectionLayer.getDataValueByPosition(
-							 cell.getColumnPosition(), cell.getRowPosition());
-				}
+			
+			
+			//TODO
+			if (!command.isByTraversal() || EditUtils.getLastSelectedCellEditor(selectionLayer, configRegistry).activateOnTraversal()) {
 				
-				EditController.editCells(selectedCells, parent, initialEditValue, configRegistry);
+				
+				//check how many cells are selected
+				Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
+				if (selectedCells.size() == 1) {
+					//editing is triggered by key for a single cell
+					//we need to fire the InlineCellEditEvent here because we don't know the correct bounds
+					//of the cell to edit inline corresponding to the NatTable. On firing the event, a
+					//translation process is triggered, converting the information to the correct values
+					//needed for inline editing
+					ILayerCell cell = selectedCells.iterator().next();
+					this.selectionLayer.fireLayerEvent(
+							new InlineCellEditEvent(
+									this.selectionLayer, 
+									new PositionCoordinate(this.selectionLayer, cell.getColumnPosition(), cell.getRowPosition()), 
+									parent, 
+									configRegistry, 
+									(initialValue != null ? initialValue : cell.getDataValue())));
+				}
+				else if (selectedCells.size() > 1) {
+					//determine the initial value
+					Object initialEditValue = initialValue;
+					if (initialValue == null && EditUtils.isValueSame(this.selectionLayer)) {
+						ILayerCell cell = selectedCells.iterator().next();
+						initialEditValue = this.selectionLayer.getDataValueByPosition(
+								cell.getColumnPosition(), cell.getRowPosition());
+					}
+					
+					EditController.editCells(selectedCells, parent, initialEditValue, configRegistry);
+				}
 			}
 		}
 

@@ -345,7 +345,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 						
 						if (direction != MoveDirectionEnum.NONE && openAdjacentEditor()) {
 							this.layerCell.getLayer().doCommand(
-									new EditSelectionCommand(this.parent, this.configRegistry));
+									new EditSelectionCommand(this.parent, this.configRegistry, true));
 						}
 					}
 					
@@ -413,6 +413,12 @@ public abstract class AbstractCellEditor implements ICellEditor {
 
 	@Override
 	public boolean activateAtAnyPosition() {
+		return true;
+	}
+	
+	@Override
+	public boolean activateOnTraversal() {
+		// TODO extend EditConfigHelper
 		return true;
 	}
 	

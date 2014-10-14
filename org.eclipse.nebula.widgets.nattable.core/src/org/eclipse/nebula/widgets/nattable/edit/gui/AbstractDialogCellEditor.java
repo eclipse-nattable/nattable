@@ -413,6 +413,15 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	public boolean activateAtAnyPosition() {
 		return true;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#activateOnTraversal()
+	 */
+	@Override
+	public boolean activateOnTraversal() {
+		// TODO should it open or not?
+		return false;
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#addEditorControlListeners()

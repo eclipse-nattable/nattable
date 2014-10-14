@@ -141,4 +141,12 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
 		//to be activated.
 		return false;
 	}
+	
+	@Override
+	public boolean activateOnTraversal() {
+		//the checkbox editor is immediatelly changing the value and closing the editor
+		//on tab traversal it is not intended that the value changes
+		//therefore this editor is not activated on traversal
+		return false;
+	}
 }

@@ -315,6 +315,9 @@ public interface ICellEditor {
 	 */
 	boolean activateAtAnyPosition();
 	
+	//TODO javadoc
+	boolean activateOnTraversal();
+	
 	/**
 	 * This method is intended to add listeners to the wrapped editor control to add context related
 	 * behaviour. For example, in {@link EditModeEnum#INLINE} by default this should add a FocusListener

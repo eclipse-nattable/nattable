@@ -42,6 +42,11 @@ public class EditSelectionCommand extends AbstractContextFreeCommand {
 	 */
 	private final Composite parent;
 
+	
+	//TODO
+	private final boolean byTraversal;
+	
+	
 	/**
 	 * @param parent The parent Composite, needed for the creation of the editor control.
 	 * @param configRegistry The {@link IConfigRegistry} containing the configuration of the
@@ -65,11 +70,23 @@ public class EditSelectionCommand extends AbstractContextFreeCommand {
 	 * 			programmatical execution.
 	 */
 	public EditSelectionCommand(Composite parent, IConfigRegistry configRegistry, Character character) {
+		this(parent, configRegistry, character, false);
+	}
+
+	
+	public EditSelectionCommand(Composite parent, IConfigRegistry configRegistry, boolean byTraversal) {
+		this(parent, configRegistry, null, byTraversal);
+	}
+
+	
+	public EditSelectionCommand(Composite parent, IConfigRegistry configRegistry, Character character, boolean byTraversal) {
 		this.parent = parent;
 		this.configRegistry = configRegistry;
 		this.character = character;
+		this.byTraversal = byTraversal;
 	}
 
+	
 	/**
 	 * @return The {@link IConfigRegistry} containing the configuration of the current NatTable 
 	 * 			instance the command should be executed for.
@@ -94,5 +111,9 @@ public class EditSelectionCommand extends AbstractContextFreeCommand {
 	public Composite getParent() {
 		return parent;
 	}
+
 	
+	public boolean isByTraversal() {
+		return this.byTraversal;
+	}
 }
