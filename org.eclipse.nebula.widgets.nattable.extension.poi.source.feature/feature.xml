@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.nebula.widgets.nattable.extension.poi.source.feature"
       label="NatTable POI Extension Source Feature"
-      version="1.1.1.qualifier">
+      version="1.2.0.qualifier">
 
    <description url="http://nattable.org">
       NatTable POI Extension Source
