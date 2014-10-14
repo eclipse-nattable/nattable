@@ -12,8 +12,8 @@ package org.eclipse.nebula.widgets.nattable.data.validate;
 
 public class DefaultDataValidator extends DataValidator {
 
-	public boolean validate(int columnIndex, int rowIndex, Object newValue) {
-		return true;
-	}
+    public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+        return true;
+    }
 
 }

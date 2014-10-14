@@ -19,33 +19,35 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
-public class MultiRowResizeCommandHandler extends AbstractLayerCommandHandler<MultiRowResizeCommand> {
+public class MultiRowResizeCommandHandler extends
+        AbstractLayerCommandHandler<MultiRowResizeCommand> {
 
-	private final DataLayer dataLayer;
+    private final DataLayer dataLayer;
 
-	public MultiRowResizeCommandHandler(DataLayer dataLayer) {
-		this.dataLayer = dataLayer;
-	}
+    public MultiRowResizeCommandHandler(DataLayer dataLayer) {
+        this.dataLayer = dataLayer;
+    }
 
-	public Class<MultiRowResizeCommand> getCommandClass() {
-		return MultiRowResizeCommand.class;
-	}
+    public Class<MultiRowResizeCommand> getCommandClass() {
+        return MultiRowResizeCommand.class;
+    }
 
-	@Override
-	protected boolean doCommand(MultiRowResizeCommand command) {
-		List<Integer> rowPositions = new ArrayList<Integer>();
-		
-		for (int rowPosition : command.getRowPositions()) {
-			rowPositions.add(rowPosition);
-			dataLayer.setRowHeightByPosition(rowPosition, command.getRowHeight(rowPosition), false);
-		}
+    @Override
+    protected boolean doCommand(MultiRowResizeCommand command) {
+        List<Integer> rowPositions = new ArrayList<Integer>();
 
-		List<Range> ranges = PositionUtil.getRanges(rowPositions);
-		for (Range range : ranges) {
-			dataLayer.fireLayerEvent(new RowResizeEvent(dataLayer, range));
-		}
+        for (int rowPosition : command.getRowPositions()) {
+            rowPositions.add(rowPosition);
+            dataLayer.setRowHeightByPosition(rowPosition,
+                    command.getRowHeight(rowPosition), false);
+        }
 
-		return true;
-	}
+        List<Range> ranges = PositionUtil.getRanges(rowPositions);
+        for (Range range : ranges) {
+            dataLayer.fireLayerEvent(new RowResizeEvent(dataLayer, range));
+        }
+
+        return true;
+    }
 
 }

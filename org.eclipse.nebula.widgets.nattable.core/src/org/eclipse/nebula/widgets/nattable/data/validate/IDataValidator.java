@@ -18,57 +18,65 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public interface IDataValidator {
 
-	/**
-	 *
-	 * @param columnIndex Index of the column being validated
-	 * @param rowIndex Index of the row being validated
-	 * @param newValue Value entered through the edit control text box, combo box etc.
-	 * 	Note: In case of the {@link TextCellEditor} the text typed in by the user
-	 * 	will be converted to the canonical value using the {@link IDisplayConverter}
-	 * 	before it hits this method
-	 *
-	 * @see IDataProvider#getDataValue(int, int)
-	 *
-	 * @return true is newValue is valid. False otherwise.
-	 */
-	public boolean validate(int columnIndex, int rowIndex, Object newValue);
+    /**
+     *
+     * @param columnIndex
+     *            Index of the column being validated
+     * @param rowIndex
+     *            Index of the row being validated
+     * @param newValue
+     *            Value entered through the edit control text box, combo box
+     *            etc. Note: In case of the {@link TextCellEditor} the text
+     *            typed in by the user will be converted to the canonical value
+     *            using the {@link IDisplayConverter} before it hits this method
+     *
+     * @see IDataProvider#getDataValue(int, int)
+     *
+     * @return true is newValue is valid. False otherwise.
+     */
+    public boolean validate(int columnIndex, int rowIndex, Object newValue);
 
-	/**
-	 * 
-	 * @param cell LayerCell which should be validated
-	 * @param configRegistry 
-	 * @param newValue Value entered through the edit control text box, combo box etc.
-	 * 	Note: In case of the {@link TextCellEditor} the text typed in by the user
-	 * 	will be converted to the canonical value using the {@link IDisplayConverter}
-	 * 	before it hits this method
-	 *
-	 * @see IDataProvider#getDataValue(int, int)
-	 *
-	 * @return true is newValue is valid. False otherwise.
-	 */
-	public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue);
+    /**
+     * 
+     * @param cell
+     *            LayerCell which should be validated
+     * @param configRegistry
+     * @param newValue
+     *            Value entered through the edit control text box, combo box
+     *            etc. Note: In case of the {@link TextCellEditor} the text
+     *            typed in by the user will be converted to the canonical value
+     *            using the {@link IDisplayConverter} before it hits this method
+     *
+     * @see IDataProvider#getDataValue(int, int)
+     *
+     * @return true is newValue is valid. False otherwise.
+     */
+    public boolean validate(ILayerCell cell, IConfigRegistry configRegistry,
+            Object newValue);
 
-	public static final IDataValidator ALWAYS_VALID = new IDataValidator() {
+    public static final IDataValidator ALWAYS_VALID = new IDataValidator() {
 
-		public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
-			return true;
-		}
+        public boolean validate(ILayerCell cell,
+                IConfigRegistry configRegistry, Object newValue) {
+            return true;
+        }
 
-		public boolean validate(int columnIndex, int rowIndex, Object newValue) {
-			return true;
-		}
+        public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+            return true;
+        }
 
-	};
+    };
 
-	public static final IDataValidator NEVER_VALID = new IDataValidator() {
+    public static final IDataValidator NEVER_VALID = new IDataValidator() {
 
-		public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
-			return false;
-		}
+        public boolean validate(ILayerCell cell,
+                IConfigRegistry configRegistry, Object newValue) {
+            return false;
+        }
 
-		public boolean validate(int columnIndex, int rowIndex, Object newValue) {
-			return false;
-		}
+        public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+            return false;
+        }
 
-	};
+    };
 }

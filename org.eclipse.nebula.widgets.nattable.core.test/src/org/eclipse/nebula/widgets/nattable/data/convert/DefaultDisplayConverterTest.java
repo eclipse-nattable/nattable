@@ -10,33 +10,36 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class DefaultDisplayConverterTest {
 
-	private DefaultDisplayConverter defaultDisplayTypeConverter = new DefaultDisplayConverter();
-	
-	@Test
-	public void testNonNullDataToDisplay() {
-		Assert.assertEquals("abc", defaultDisplayTypeConverter.canonicalToDisplayValue("abc"));
-	}
-	
-	@Test
-	public void testNullDataToDisplay() {
-		Assert.assertEquals("", defaultDisplayTypeConverter.canonicalToDisplayValue(null));
-	}
-	
-	@Test
-	public void testNonNullDisplayToData() {
-		Assert.assertEquals("abc", defaultDisplayTypeConverter.displayToCanonicalValue("abc"));
-	}
-	
-	@Test
-	public void testNullDisplayToData() {
-		Assert.assertEquals(null, defaultDisplayTypeConverter.displayToCanonicalValue(""));
-	}
-	
+    private DefaultDisplayConverter defaultDisplayTypeConverter = new DefaultDisplayConverter();
+
+    @Test
+    public void testNonNullDataToDisplay() {
+        Assert.assertEquals("abc",
+                defaultDisplayTypeConverter.canonicalToDisplayValue("abc"));
+    }
+
+    @Test
+    public void testNullDataToDisplay() {
+        Assert.assertEquals("",
+                defaultDisplayTypeConverter.canonicalToDisplayValue(null));
+    }
+
+    @Test
+    public void testNonNullDisplayToData() {
+        Assert.assertEquals("abc",
+                defaultDisplayTypeConverter.displayToCanonicalValue("abc"));
+    }
+
+    @Test
+    public void testNullDisplayToData() {
+        Assert.assertEquals(null,
+                defaultDisplayTypeConverter.displayToCanonicalValue(""));
+    }
+
 }

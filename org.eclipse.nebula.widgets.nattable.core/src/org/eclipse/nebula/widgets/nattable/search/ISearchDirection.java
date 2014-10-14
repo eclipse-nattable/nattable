@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.search;
 
 public interface ISearchDirection {
 
-	public static final String SEARCH_FORWARD = "forward"; //$NON-NLS-1$
-	public static final String SEARCH_BACKWARDS = "backwards"; //$NON-NLS-1$
-	
+    public static final String SEARCH_FORWARD = "forward"; //$NON-NLS-1$
+    public static final String SEARCH_BACKWARDS = "backwards"; //$NON-NLS-1$
+
 }

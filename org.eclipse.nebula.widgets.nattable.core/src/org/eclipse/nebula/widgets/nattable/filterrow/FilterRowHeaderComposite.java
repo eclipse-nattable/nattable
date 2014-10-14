@@ -24,65 +24,69 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent
 /**
  * 1 column x 2 rows Composite layer
  * <ul>
- *   <li>First row is the {@link ColumnHeaderLayer}</li>
- *   <li>Second row is the composite is the filter row layer. The filter row layer is a {@link DimensionallyDependentLayer}
- * 		dependent on the {@link ColumnHeaderLayer}</li>
+ * <li>First row is the {@link ColumnHeaderLayer}</li>
+ * <li>Second row is the composite is the filter row layer. The filter row layer
+ * is a {@link DimensionallyDependentLayer} dependent on the
+ * {@link ColumnHeaderLayer}</li>
  * </ul>
  * 
  * @see FilterRowDataLayer
  */
 public class FilterRowHeaderComposite<T> extends CompositeLayer {
 
-	private final FilterRowDataLayer<T> filterRowDataLayer;
-	private boolean filterRowVisible = true;
-	
-	public FilterRowHeaderComposite(IFilterStrategy<T> filterStrategy, ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider, IConfigRegistry configRegistry) {
-		super(1, 2);
+    private final FilterRowDataLayer<T> filterRowDataLayer;
+    private boolean filterRowVisible = true;
 
-		setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
+    public FilterRowHeaderComposite(IFilterStrategy<T> filterStrategy,
+            ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
+            IConfigRegistry configRegistry) {
+        super(1, 2);
 
-		filterRowDataLayer = new FilterRowDataLayer<T>(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
+        setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
 
-		setChildLayer(GridRegion.FILTER_ROW, filterRowDataLayer, 0, 1);
-	}
-	
-	public FilterRowDataLayer<T> getFilterRowDataLayer() {
-		return filterRowDataLayer;
-	}
+        filterRowDataLayer = new FilterRowDataLayer<T>(filterStrategy,
+                columnHeaderLayer, columnHeaderDataProvider, configRegistry);
 
-	@Override
+        setChildLayer(GridRegion.FILTER_ROW, filterRowDataLayer, 0, 1);
+    }
+
+    public FilterRowDataLayer<T> getFilterRowDataLayer() {
+        return filterRowDataLayer;
+    }
+
+    @Override
     public int getHeight() {
-		if (filterRowVisible) {
-			return super.getHeight();
-		} else {
-			return getHeightOffset(1);
-		}
-	}
+        if (filterRowVisible) {
+            return super.getHeight();
+        } else {
+            return getHeightOffset(1);
+        }
+    }
 
-	@Override
-	public int getRowCount() {
-		if (filterRowVisible) {
-			return super.getRowCount();
-		} else {
-			return super.getRowCount() - 1;
-		}
-	}
-	
-	public boolean isFilterRowVisible() {
-		return filterRowVisible;
-	}
+    @Override
+    public int getRowCount() {
+        if (filterRowVisible) {
+            return super.getRowCount();
+        } else {
+            return super.getRowCount() - 1;
+        }
+    }
 
-	public void setFilterRowVisible(boolean filterRowVisible) {
-		this.filterRowVisible = filterRowVisible;
-		fireLayerEvent(new RowStructuralRefreshEvent(filterRowDataLayer));
-	}
+    public boolean isFilterRowVisible() {
+        return filterRowVisible;
+    }
 
-	@Override
-	public boolean doCommand(ILayerCommand command) {
-		if (command instanceof ToggleFilterRowCommand) {
-			setFilterRowVisible(!filterRowVisible);
-			return true;
-		}
-		return super.doCommand(command);
-	}
+    public void setFilterRowVisible(boolean filterRowVisible) {
+        this.filterRowVisible = filterRowVisible;
+        fireLayerEvent(new RowStructuralRefreshEvent(filterRowDataLayer));
+    }
+
+    @Override
+    public boolean doCommand(ILayerCommand command) {
+        if (command instanceof ToggleFilterRowCommand) {
+            setFilterRowVisible(!filterRowVisible);
+            return true;
+        }
+        return super.doCommand(command);
+    }
 }

@@ -25,44 +25,47 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ReorderRowEventTest {
-	private BaseRowReorderLayerFixture rowReorderLayer;
+    private BaseRowReorderLayerFixture rowReorderLayer;
 
-	@Before
-	public void setUp() {
-		rowReorderLayer = new BaseRowReorderLayerFixture(new DataLayerFixture());
-	}
+    @Before
+    public void setUp() {
+        rowReorderLayer = new BaseRowReorderLayerFixture(new DataLayerFixture());
+    }
 
-	@Test
-	public void shouldThrowAReorderRowEvent() {
-		LayerListenerFixture listenerFixture = new LayerListenerFixture();
-		rowReorderLayer.addLayerListener(listenerFixture);
-		rowReorderLayer.reorderRowPosition(3, 1);
+    @Test
+    public void shouldThrowAReorderRowEvent() {
+        LayerListenerFixture listenerFixture = new LayerListenerFixture();
+        rowReorderLayer.addLayerListener(listenerFixture);
+        rowReorderLayer.reorderRowPosition(3, 1);
 
-		Assert.assertEquals(1, listenerFixture.getEventsCount());
-		Assert.assertNotNull(listenerFixture.getReceivedEvent(RowReorderEvent.class));
-	}
+        Assert.assertEquals(1, listenerFixture.getEventsCount());
+        Assert.assertNotNull(listenerFixture
+                .getReceivedEvent(RowReorderEvent.class));
+    }
 
-	@Test
-	public void reorderEventMustPropagateToTheTop() throws Exception {
-		DefaultBodyLayerStack underlyingLayer = new DefaultBodyLayerStack(
-				new RowReorderLayer(new DataLayerFixture(10, 10, 100, 20)));
-		NatTableFixture natTableFixture = new NatTableFixture(underlyingLayer);
+    @Test
+    public void reorderEventMustPropagateToTheTop() throws Exception {
+        DefaultBodyLayerStack underlyingLayer = new DefaultBodyLayerStack(
+                new RowReorderLayer(new DataLayerFixture(10, 10, 100, 20)));
+        NatTableFixture natTableFixture = new NatTableFixture(underlyingLayer);
 
-		// Add listener
-		LayerListenerFixture listenerFixture = new LayerListenerFixture();
-		natTableFixture.addLayerListener(listenerFixture);
+        // Add listener
+        LayerListenerFixture listenerFixture = new LayerListenerFixture();
+        natTableFixture.addLayerListener(listenerFixture);
 
-		Assert.assertEquals(10, natTableFixture.getRowCount());
-		Assert.assertEquals(1, natTableFixture.getRowIndexByPosition(1));
+        Assert.assertEquals(10, natTableFixture.getRowCount());
+        Assert.assertEquals(1, natTableFixture.getRowIndexByPosition(1));
 
-		// Move to outside the visible range
-		List<Integer> rowsToMove = Arrays.asList(1, 2, 3);
-		int destinationPosition = 10;
-		natTableFixture.doCommand(new MultiRowReorderCommand(natTableFixture, rowsToMove, destinationPosition));
+        // Move to outside the visible range
+        List<Integer> rowsToMove = Arrays.asList(1, 2, 3);
+        int destinationPosition = 10;
+        natTableFixture.doCommand(new MultiRowReorderCommand(natTableFixture,
+                rowsToMove, destinationPosition));
 
-		// Ensure that the event propagates to the top
-		Assert.assertEquals(1, listenerFixture.getEventsCount());
-		Assert.assertNotNull(listenerFixture.getReceivedEvent(RowReorderEvent.class));
-		Assert.assertEquals(4, natTableFixture.getRowIndexByPosition(1));
-	}
+        // Ensure that the event propagates to the top
+        Assert.assertEquals(1, listenerFixture.getEventsCount());
+        Assert.assertNotNull(listenerFixture
+                .getReceivedEvent(RowReorderEvent.class));
+        Assert.assertEquals(4, natTableFixture.getRowIndexByPosition(1));
+    }
 }

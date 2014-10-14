@@ -10,25 +10,24 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
 public class MouseActionFixture implements IMouseAction {
 
-	private boolean actionInvoked;
+    private boolean actionInvoked;
 
-	public void run(NatTable natTable, MouseEvent event) {
-		this.actionInvoked = true;
-	}
+    public void run(NatTable natTable, MouseEvent event) {
+        this.actionInvoked = true;
+    }
 
-	public boolean isActionInvoked() {
-		return actionInvoked;
-	}
+    public boolean isActionInvoked() {
+        return actionInvoked;
+    }
 
-	public void reset(){
-		actionInvoked = false;
-	}
+    public void reset() {
+        actionInvoked = false;
+    }
 
 }

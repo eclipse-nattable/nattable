@@ -20,35 +20,43 @@ import org.junit.Test;
 
 public class RenameColumnIntegrationTest {
 
-	private static final String TEST_COLUMN_NAME = "Test column name";
+    private static final String TEST_COLUMN_NAME = "Test column name";
 
-	@Test
-	public void shouldRenameColumnHeader() throws Exception {
-		NatTable natTableFixture = new NatTableFixture();
+    @Test
+    public void shouldRenameColumnHeader() throws Exception {
+        NatTable natTableFixture = new NatTableFixture();
 
-		String originalColumnHeader = natTableFixture.getDataValueByPosition(2, 0).toString();
-		assertEquals("Column 2", originalColumnHeader);
+        String originalColumnHeader = natTableFixture.getDataValueByPosition(2,
+                0).toString();
+        assertEquals("Column 2", originalColumnHeader);
 
-		natTableFixture.doCommand(new RenameColumnHeaderCommand(natTableFixture, 2, TEST_COLUMN_NAME));
-		String renamedColumnHeader = natTableFixture.getDataValueByPosition(2, 0).toString();
-		assertEquals(TEST_COLUMN_NAME, renamedColumnHeader);
-	}
+        natTableFixture.doCommand(new RenameColumnHeaderCommand(
+                natTableFixture, 2, TEST_COLUMN_NAME));
+        String renamedColumnHeader = natTableFixture.getDataValueByPosition(2,
+                0).toString();
+        assertEquals(TEST_COLUMN_NAME, renamedColumnHeader);
+    }
 
-	@Test
-	public void shouldRenameColumnHeaderForReorderedColumn() throws Exception {
-		NatTable natTableFixture = new NatTableFixture();
+    @Test
+    public void shouldRenameColumnHeaderForReorderedColumn() throws Exception {
+        NatTable natTableFixture = new NatTableFixture();
 
-		String originalColumnHeader = natTableFixture.getDataValueByPosition(2, 0).toString();
-		assertEquals("Column 2", originalColumnHeader);
+        String originalColumnHeader = natTableFixture.getDataValueByPosition(2,
+                0).toString();
+        assertEquals("Column 2", originalColumnHeader);
 
-		natTableFixture.doCommand(new ColumnReorderCommand(natTableFixture, 1, 5));
+        natTableFixture.doCommand(new ColumnReorderCommand(natTableFixture, 1,
+                5));
 
-		originalColumnHeader = natTableFixture.getDataValueByPosition(2, 0).toString();
-		assertEquals("Column 3", originalColumnHeader);
+        originalColumnHeader = natTableFixture.getDataValueByPosition(2, 0)
+                .toString();
+        assertEquals("Column 3", originalColumnHeader);
 
-		natTableFixture.doCommand(new RenameColumnHeaderCommand(natTableFixture, 2, TEST_COLUMN_NAME));
-		String renamedColumnHeader = natTableFixture.getDataValueByPosition(2, 0).toString();
-		assertEquals(TEST_COLUMN_NAME, renamedColumnHeader);
+        natTableFixture.doCommand(new RenameColumnHeaderCommand(
+                natTableFixture, 2, TEST_COLUMN_NAME));
+        String renamedColumnHeader = natTableFixture.getDataValueByPosition(2,
+                0).toString();
+        assertEquals(TEST_COLUMN_NAME, renamedColumnHeader);
 
-	}
+    }
 }

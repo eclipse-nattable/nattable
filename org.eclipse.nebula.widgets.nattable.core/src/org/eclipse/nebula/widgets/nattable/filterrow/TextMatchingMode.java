@@ -12,6 +12,6 @@ package org.eclipse.nebula.widgets.nattable.filterrow;
 
 public enum TextMatchingMode {
 
-	CONTAINS, STARTS_WITH, REGULAR_EXPRESSION, EXACT;
+    CONTAINS, STARTS_WITH, REGULAR_EXPRESSION, EXACT;
 
 }

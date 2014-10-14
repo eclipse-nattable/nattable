@@ -51,124 +51,140 @@ import ca.odell.glazedlists.SortedList;
  */
 public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
 
-	private ColumnOverrideLabelAccumulator columnLabelAccumulator;
-	private DataLayer bodyDataLayer;
-	private DataLayer columnHeaderDataLayer;
+    private ColumnOverrideLabelAccumulator columnLabelAccumulator;
+    private DataLayer bodyDataLayer;
+    private DataLayer columnHeaderDataLayer;
 
-	public ColumnStructureUpdatesExampleGridLayer(EventList<T> eventList, String[] propertyNames, Map<String, String> propertyToLabelMap,
-			IConfigRegistry configRegistry) {
-		this(eventList, propertyNames, propertyToLabelMap, configRegistry, true);
-	}
+    public ColumnStructureUpdatesExampleGridLayer(EventList<T> eventList,
+            String[] propertyNames, Map<String, String> propertyToLabelMap,
+            IConfigRegistry configRegistry) {
+        this(eventList, propertyNames, propertyToLabelMap, configRegistry, true);
+    }
 
-	public ColumnStructureUpdatesExampleGridLayer(EventList<T> eventList, String[] propertyNames, Map<String, String> propertyToLabelMap,
-			IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
-		super(useDefaultConfiguration);
+    public ColumnStructureUpdatesExampleGridLayer(EventList<T> eventList,
+            String[] propertyNames, Map<String, String> propertyToLabelMap,
+            IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
+        super(useDefaultConfiguration);
 
-		// Body - with list event listener
-		// NOTE: Remember to use the SortedList constructor with 'null' for the
-		// Comparator
-		SortedList<T> sortedList = new SortedList<T>(eventList, null);
-		IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(propertyNames);
-		bodyDataProvider = new ListDataProviderExample<T>(sortedList, columnPropertyAccessor);
+        // Body - with list event listener
+        // NOTE: Remember to use the SortedList constructor with 'null' for the
+        // Comparator
+        SortedList<T> sortedList = new SortedList<T>(eventList, null);
+        IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
+                propertyNames);
+        bodyDataProvider = new ListDataProviderExample<T>(sortedList,
+                columnPropertyAccessor);
 
-		bodyDataLayer = new DataLayer(bodyDataProvider);
-		GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, eventList);
-		DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(glazedListsEventLayer);
+        bodyDataLayer = new DataLayer(bodyDataProvider);
+        GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
+                bodyDataLayer, eventList);
+        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(
+                glazedListsEventLayer);
 
-		// Sort Column header
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer
-				.getSelectionLayer());
+        // Sort Column header
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+                columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
-		// Auto configure off. Configurations have to applied manually.
-		SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<T>(columnHeaderLayer,
-				new GlazedListsSortModel<T>(sortedList, columnPropertyAccessor, configRegistry, columnHeaderDataLayer),
-				false);
+        // Auto configure off. Configurations have to applied manually.
+        SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<T>(
+                columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
+                        columnPropertyAccessor, configRegistry,
+                        columnHeaderDataLayer), false);
 
-		// Row header
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        // Row header
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
 
-		// Corner
-		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider,
-				rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
+        // Corner
+        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
+                rowHeaderLayer, columnHeaderLayer);
 
-		// Grid
-		setBodyLayer(bodyLayer);
-		setColumnHeaderLayer(columnHeaderSortableLayer);
-		setRowHeaderLayer(rowHeaderLayer);
-		setCornerLayer(cornerLayer);
-	}
+        // Grid
+        setBodyLayer(bodyLayer);
+        setColumnHeaderLayer(columnHeaderSortableLayer);
+        setRowHeaderLayer(rowHeaderLayer);
+        setCornerLayer(cornerLayer);
+    }
 
-	public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
-		return columnLabelAccumulator;
-	}
+    public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
+        return columnLabelAccumulator;
+    }
 
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		super.setClientAreaProvider(clientAreaProvider);
-	}
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        super.setClientAreaProvider(clientAreaProvider);
+    }
 
-	public DataLayer getBodyDataLayer() {
-		return bodyDataLayer;
-	}
+    public DataLayer getBodyDataLayer() {
+        return bodyDataLayer;
+    }
 
-	public AbstractLayer getColumnHeaderDataLayer() {
-		return columnHeaderDataLayer;
-	}
+    public AbstractLayer getColumnHeaderDataLayer() {
+        return columnHeaderDataLayer;
+    }
 
-	public ListDataProviderExample<T> bodyDataProvider;
+    public ListDataProviderExample<T> bodyDataProvider;
 
-	public class ListDataProviderExample<E> extends ListDataProvider<E> {
-		private int mColumnCount = 0;
+    public class ListDataProviderExample<E> extends ListDataProvider<E> {
+        private int mColumnCount = 0;
 
-		public ListDataProviderExample(SortedList<E> sortedList, IColumnPropertyAccessor<E> columnPropertyAccessor) {
-			super(sortedList, columnPropertyAccessor);
-		}
+        public ListDataProviderExample(SortedList<E> sortedList,
+                IColumnPropertyAccessor<E> columnPropertyAccessor) {
+            super(sortedList, columnPropertyAccessor);
+        }
 
-		@Override
-		public int getColumnCount() {
-			return mColumnCount == 0 ? 2 : mColumnCount;
-		}
+        @Override
+        public int getColumnCount() {
+            return mColumnCount == 0 ? 2 : mColumnCount;
+        }
 
-		public void setColumnCount(int pColumnCount) {
-			this.mColumnCount = pColumnCount;
-			fireColumnCountChangeEvent(bodyDataLayer);
-		}
+        public void setColumnCount(int pColumnCount) {
+            this.mColumnCount = pColumnCount;
+            fireColumnCountChangeEvent(bodyDataLayer);
+        }
 
-		private void fireColumnCountChangeEvent(ILayer layer) {
-			if (layer instanceof AbstractLayer) {
-				AbstractLayer alay = (AbstractLayer) layer;
-				alay.fireLayerEvent(new MultiColumnStructuralChangeEventExtension(layer));
-			}
-		}
+        private void fireColumnCountChangeEvent(ILayer layer) {
+            if (layer instanceof AbstractLayer) {
+                AbstractLayer alay = (AbstractLayer) layer;
+                alay.fireLayerEvent(new MultiColumnStructuralChangeEventExtension(
+                        layer));
+            }
+        }
 
-		private final class MultiColumnStructuralChangeEventExtension extends ColumnStructuralChangeEvent {
-			private MultiColumnStructuralChangeEventExtension(ILayer layer) {
-				super(layer);
-			}
+        private final class MultiColumnStructuralChangeEventExtension extends
+                ColumnStructuralChangeEvent {
+            private MultiColumnStructuralChangeEventExtension(ILayer layer) {
+                super(layer);
+            }
 
-			public Collection<StructuralDiff> getColumnDiffs() {
-				return null;
-			}
+            public Collection<StructuralDiff> getColumnDiffs() {
+                return null;
+            }
 
-			@Override
-			public boolean isHorizontalStructureChanged() {
-				return true;
-			}
+            @Override
+            public boolean isHorizontalStructureChanged() {
+                return true;
+            }
 
-			@Override
-			public boolean convertToLocal(ILayer localLayer) {
-				return true;
-			}
+            @Override
+            public boolean convertToLocal(ILayer localLayer) {
+                return true;
+            }
 
-			public ILayerEvent cloneEvent() {
-				return new MultiColumnStructuralChangeEventExtension(getLayer());
-			}
-		}
-	}
+            public ILayerEvent cloneEvent() {
+                return new MultiColumnStructuralChangeEventExtension(getLayer());
+            }
+        }
+    }
 }

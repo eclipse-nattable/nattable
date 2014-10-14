@@ -13,22 +13,24 @@ package org.eclipse.nebula.widgets.nattable.viewport.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-public class ShowColumnInViewportCommandHandler extends AbstractLayerCommandHandler<ShowColumnInViewportCommand> {
-	
-	private final ViewportLayer viewportLayer;
+public class ShowColumnInViewportCommandHandler extends
+        AbstractLayerCommandHandler<ShowColumnInViewportCommand> {
 
-	public ShowColumnInViewportCommandHandler(ViewportLayer viewportLayer) {
-		this.viewportLayer = viewportLayer;
-	}
-	
-	public Class<ShowColumnInViewportCommand> getCommandClass() {
-		return ShowColumnInViewportCommand.class;
-	}
+    private final ViewportLayer viewportLayer;
 
-	@Override
-	protected boolean doCommand(ShowColumnInViewportCommand command) {
-		viewportLayer.moveColumnPositionIntoViewport(command.getColumnPosition());
-		return true;
-	}
+    public ShowColumnInViewportCommandHandler(ViewportLayer viewportLayer) {
+        this.viewportLayer = viewportLayer;
+    }
+
+    public Class<ShowColumnInViewportCommand> getCommandClass() {
+        return ShowColumnInViewportCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(ShowColumnInViewportCommand command) {
+        viewportLayer.moveColumnPositionIntoViewport(command
+                .getColumnPosition());
+        return true;
+    }
 
 }

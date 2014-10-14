@@ -14,71 +14,71 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public abstract class TransformedLayerCell extends AbstractLayerCell {
 
-	private ILayerCell cell;
-	
-	public TransformedLayerCell(ILayerCell cell) {
-		this.cell = cell;
-	}
-	
-	public int getOriginColumnPosition() {
-		return cell.getOriginColumnPosition();
-	}
+    private ILayerCell cell;
 
-	public int getOriginRowPosition() {
-		return cell.getOriginRowPosition();
-	}
+    public TransformedLayerCell(ILayerCell cell) {
+        this.cell = cell;
+    }
 
-	public ILayer getLayer() {
-		return cell.getLayer();
-	}
+    public int getOriginColumnPosition() {
+        return cell.getOriginColumnPosition();
+    }
 
-	public int getColumnPosition() {
-		return cell.getColumnPosition();
-	}
+    public int getOriginRowPosition() {
+        return cell.getOriginRowPosition();
+    }
 
-	public int getRowPosition() {
-		return cell.getRowPosition();
-	}
+    public ILayer getLayer() {
+        return cell.getLayer();
+    }
 
-	public int getColumnIndex() {
-		return cell.getColumnIndex();
-	}
+    public int getColumnPosition() {
+        return cell.getColumnPosition();
+    }
 
-	public int getRowIndex() {
-		return cell.getRowIndex();
-	}
+    public int getRowPosition() {
+        return cell.getRowPosition();
+    }
 
-	public int getColumnSpan() {
-		return cell.getColumnSpan();
-	}
+    public int getColumnIndex() {
+        return cell.getColumnIndex();
+    }
 
-	public int getRowSpan() {
-		return cell.getRowSpan();
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		TransformedLayerCell other = (TransformedLayerCell) obj;
-		if (cell == null) {
-			if (other.cell != null)
-				return false;
-		} else if (!cell.equals(other.cell))
-			return false;
-		return true;
-	}
+    public int getRowIndex() {
+        return cell.getRowIndex();
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((cell == null) ? 0 : cell.hashCode());
-		return result;
-	}
+    public int getColumnSpan() {
+        return cell.getColumnSpan();
+    }
+
+    public int getRowSpan() {
+        return cell.getRowSpan();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TransformedLayerCell other = (TransformedLayerCell) obj;
+        if (cell == null) {
+            if (other.cell != null)
+                return false;
+        } else if (!cell.equals(other.cell))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((cell == null) ? 0 : cell.hashCode());
+        return result;
+    }
 
 }

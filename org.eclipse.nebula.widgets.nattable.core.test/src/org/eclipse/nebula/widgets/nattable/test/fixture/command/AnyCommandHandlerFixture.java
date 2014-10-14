@@ -17,24 +17,24 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 @SuppressWarnings("unchecked")
 public class AnyCommandHandlerFixture implements ILayerCommandHandler {
 
-	private ILayerCommand commadHandled;
-	private int numberOfCommandsHandled;
+    private ILayerCommand commadHandled;
+    private int numberOfCommandsHandled;
 
-	public boolean doCommand(ILayer targetLayer, ILayerCommand command) {
-		this.commadHandled = command;
-		this.numberOfCommandsHandled++;
-		return true;
-	}
+    public boolean doCommand(ILayer targetLayer, ILayerCommand command) {
+        this.commadHandled = command;
+        this.numberOfCommandsHandled++;
+        return true;
+    }
 
-	public Class getCommandClass() {
-		return ILayerCommand.class;
-	}
+    public Class getCommandClass() {
+        return ILayerCommand.class;
+    }
 
-	public ILayerCommand getCommadHandled() {
-		return commadHandled;
-	}
+    public ILayerCommand getCommadHandled() {
+        return commadHandled;
+    }
 
-	public int getNumberOfCommandsHandled() {
-		return numberOfCommandsHandled;
-	}
+    public int getNumberOfCommandsHandled() {
+        return numberOfCommandsHandled;
+    }
 }

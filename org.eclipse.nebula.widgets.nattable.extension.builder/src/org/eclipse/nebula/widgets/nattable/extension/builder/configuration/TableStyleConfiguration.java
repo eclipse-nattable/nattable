@@ -13,12 +13,11 @@ package org.eclipse.nebula.widgets.nattable.extension.builder.configuration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.builder.model.TableStyle;
 
-
 public class TableStyleConfiguration extends DefaultNatTableStyleConfiguration {
 
-	public TableStyleConfiguration(TableStyle tableProperties) {
-		super.font = tableProperties.tableFont;
-		super.hAlign = tableProperties.defaultHorizontalAlign;
-		super.vAlign = tableProperties.defaultVerticalAlign;
-	}
+    public TableStyleConfiguration(TableStyle tableProperties) {
+        super.font = tableProperties.tableFont;
+        super.hAlign = tableProperties.defaultHorizontalAlign;
+        super.vAlign = tableProperties.defaultVerticalAlign;
+    }
 }

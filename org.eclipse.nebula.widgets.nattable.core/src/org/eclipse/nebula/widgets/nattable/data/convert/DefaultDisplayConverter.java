@@ -12,15 +12,16 @@ package org.eclipse.nebula.widgets.nattable.data.convert;
 
 public class DefaultDisplayConverter extends DisplayConverter {
 
-	public Object canonicalToDisplayValue(Object sourceValue) {
-		return sourceValue != null ? sourceValue.toString() : ""; //$NON-NLS-1$
-	}
+    public Object canonicalToDisplayValue(Object sourceValue) {
+        return sourceValue != null ? sourceValue.toString() : ""; //$NON-NLS-1$
+    }
 
-	public Object displayToCanonicalValue(Object destinationValue) {
-		if (destinationValue == null || destinationValue.toString().length() == 0){
-			return null;
-		} else {
-			return destinationValue.toString();
-		}
-	}
+    public Object displayToCanonicalValue(Object destinationValue) {
+        if (destinationValue == null
+                || destinationValue.toString().length() == 0) {
+            return null;
+        } else {
+            return destinationValue.toString();
+        }
+    }
 }

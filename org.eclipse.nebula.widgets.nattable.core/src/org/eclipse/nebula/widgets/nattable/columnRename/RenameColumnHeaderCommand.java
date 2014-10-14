@@ -21,19 +21,21 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  */
 public class RenameColumnHeaderCommand extends AbstractColumnCommand {
 
-	private final String customColumnName;
+    private final String customColumnName;
 
-	public RenameColumnHeaderCommand(ILayer layer, int columnPosition, String customColumnName) {
-		super(layer, columnPosition);
-		this.customColumnName = customColumnName;
-	}
+    public RenameColumnHeaderCommand(ILayer layer, int columnPosition,
+            String customColumnName) {
+        super(layer, columnPosition);
+        this.customColumnName = customColumnName;
+    }
 
-	public ILayerCommand cloneCommand() {
-		return new RenameColumnHeaderCommand(getLayer(), getColumnPosition(), customColumnName);
-	}
+    public ILayerCommand cloneCommand() {
+        return new RenameColumnHeaderCommand(getLayer(), getColumnPosition(),
+                customColumnName);
+    }
 
-	public String getCustomColumnName() {
-		return customColumnName;
-	}
+    public String getCustomColumnName() {
+        return customColumnName;
+    }
 
 }

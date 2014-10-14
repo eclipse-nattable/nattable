@@ -25,36 +25,36 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.command.AnyCommandHandle
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 
-
 public class NatTableTest {
 
-	private NatTable natTable;
-	private DataLayerFixture underlyingLayerFixture;
+    private NatTable natTable;
+    private DataLayerFixture underlyingLayerFixture;
 
-	@Before
-	public void setup(){
-		underlyingLayerFixture = new DataLayerFixture(10,5,100,20);
-		natTable = new NatTable(new Shell(Display.getDefault()), underlyingLayerFixture);
-	}
+    @Before
+    public void setup() {
+        underlyingLayerFixture = new DataLayerFixture(10, 5, 100, 20);
+        natTable = new NatTable(new Shell(Display.getDefault()),
+                underlyingLayerFixture);
+    }
 
-	@Test
-	public void shouldPassOnLayerEventsToListeners() throws Exception {
-		LayerListenerFixture listener = new LayerListenerFixture();
+    @Test
+    public void shouldPassOnLayerEventsToListeners() throws Exception {
+        LayerListenerFixture listener = new LayerListenerFixture();
 
-		natTable.addLayerListener(listener);
-		natTable.handleLayerEvent(new LayerEventFixture());
+        natTable.addLayerListener(listener);
+        natTable.handleLayerEvent(new LayerEventFixture());
 
-		assertTrue(listener.containsInstanceOf(LayerEventFixture.class));
-	}
+        assertTrue(listener.containsInstanceOf(LayerEventFixture.class));
+    }
 
-	@Test
-	public void shouldFireDisposeCommandOnDisposal() throws Exception {
-		AnyCommandHandlerFixture commandHandler = new AnyCommandHandlerFixture();
-		underlyingLayerFixture.registerCommandHandler(commandHandler);
+    @Test
+    public void shouldFireDisposeCommandOnDisposal() throws Exception {
+        AnyCommandHandlerFixture commandHandler = new AnyCommandHandlerFixture();
+        underlyingLayerFixture.registerCommandHandler(commandHandler);
 
-		natTable.dispose();
+        natTable.dispose();
 
-		assertEquals(1, commandHandler.getNumberOfCommandsHandled());
-		assertTrue(commandHandler.getCommadHandled() instanceof DisposeResourcesCommand);
-	}
+        assertEquals(1, commandHandler.getNumberOfCommandsHandled());
+        assertTrue(commandHandler.getCommadHandled() instanceof DisposeResourcesCommand);
+    }
 }

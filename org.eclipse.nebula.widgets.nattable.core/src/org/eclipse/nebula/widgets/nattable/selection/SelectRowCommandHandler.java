@@ -29,114 +29,132 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsCommand> {
+public class SelectRowCommandHandler implements
+        ILayerCommandHandler<SelectRowsCommand> {
 
-	private final SelectionLayer selectionLayer;
+    private final SelectionLayer selectionLayer;
 
-	public SelectRowCommandHandler(SelectionLayer selectionLayer) {
-		this.selectionLayer = selectionLayer;
-	}
+    public SelectRowCommandHandler(SelectionLayer selectionLayer) {
+        this.selectionLayer = selectionLayer;
+    }
 
-	@Override
-	public boolean doCommand(ILayer targetLayer, SelectRowsCommand command) {
-		if (command.convertToTargetLayer(selectionLayer)) {
-			selectRows(command.getColumnPosition(), command.getRowPositions(), command.isWithShiftMask(), command.isWithControlMask(), command.getRowPositionToMoveIntoViewport());
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean doCommand(ILayer targetLayer, SelectRowsCommand command) {
+        if (command.convertToTargetLayer(selectionLayer)) {
+            selectRows(command.getColumnPosition(), command.getRowPositions(),
+                    command.isWithShiftMask(), command.isWithControlMask(),
+                    command.getRowPositionToMoveIntoViewport());
+            return true;
+        }
+        return false;
+    }
 
-	protected void selectRows(int columnPosition, Collection<Integer> rowPositions, boolean withShiftMask, boolean withControlMask, int rowPositionToMoveIntoViewport) {
-		Set<Range> changedRowRanges = new HashSet<Range>();
-		
-		for (int rowPosition : rowPositions) {
-			changedRowRanges.addAll(internalSelectRow(columnPosition, rowPosition, withShiftMask, withControlMask));
-		}
+    protected void selectRows(int columnPosition,
+            Collection<Integer> rowPositions, boolean withShiftMask,
+            boolean withControlMask, int rowPositionToMoveIntoViewport) {
+        Set<Range> changedRowRanges = new HashSet<Range>();
 
-		Set<Integer> changedRows = new HashSet<Integer>();
-		for (Range range : changedRowRanges) {
-			for (int i = range.start; i < range.end; i++) {
-				changedRows.add(Integer.valueOf(i));
-			}
-		}
-		selectionLayer.fireLayerEvent(new RowSelectionEvent(selectionLayer, changedRows, rowPositionToMoveIntoViewport));
-	}
+        for (int rowPosition : rowPositions) {
+            changedRowRanges.addAll(internalSelectRow(columnPosition,
+                    rowPosition, withShiftMask, withControlMask));
+        }
 
-	private Set<Range> internalSelectRow(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
-		Set<Range> changedRowRanges = new HashSet<Range>();
-		
-		if (noShiftOrControl(withShiftMask, withControlMask)) {
-			changedRowRanges.addAll(selectionLayer.getSelectedRowPositions());
-			selectionLayer.clear(false);
-			selectionLayer.selectCell(0, rowPosition, withShiftMask, withControlMask);
-			selectionLayer.selectRegion(0, rowPosition, Integer.MAX_VALUE, 1);
-			selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
-			changedRowRanges.add(new Range(rowPosition, rowPosition + 1));
-		} else if (bothShiftAndControl(withShiftMask, withControlMask)) {
-			changedRowRanges.add(selectRowWithShiftKey(rowPosition));
-		} else if (isShiftOnly(withShiftMask, withControlMask)) {
-			changedRowRanges.add(selectRowWithShiftKey(rowPosition));
-		} else if (isControlOnly(withShiftMask, withControlMask)) {
-			changedRowRanges.add(selectRowWithCtrlKey(columnPosition, rowPosition));
-		}
+        Set<Integer> changedRows = new HashSet<Integer>();
+        for (Range range : changedRowRanges) {
+            for (int i = range.start; i < range.end; i++) {
+                changedRows.add(Integer.valueOf(i));
+            }
+        }
+        selectionLayer.fireLayerEvent(new RowSelectionEvent(selectionLayer,
+                changedRows, rowPositionToMoveIntoViewport));
+    }
 
-		selectionLayer.setLastSelectedCell(columnPosition, rowPosition);
+    private Set<Range> internalSelectRow(int columnPosition, int rowPosition,
+            boolean withShiftMask, boolean withControlMask) {
+        Set<Range> changedRowRanges = new HashSet<Range>();
 
-		return changedRowRanges;
-	}
+        if (noShiftOrControl(withShiftMask, withControlMask)) {
+            changedRowRanges.addAll(selectionLayer.getSelectedRowPositions());
+            selectionLayer.clear(false);
+            selectionLayer.selectCell(0, rowPosition, withShiftMask,
+                    withControlMask);
+            selectionLayer.selectRegion(0, rowPosition, Integer.MAX_VALUE, 1);
+            selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
+            changedRowRanges.add(new Range(rowPosition, rowPosition + 1));
+        } else if (bothShiftAndControl(withShiftMask, withControlMask)) {
+            changedRowRanges.add(selectRowWithShiftKey(rowPosition));
+        } else if (isShiftOnly(withShiftMask, withControlMask)) {
+            changedRowRanges.add(selectRowWithShiftKey(rowPosition));
+        } else if (isControlOnly(withShiftMask, withControlMask)) {
+            changedRowRanges.add(selectRowWithCtrlKey(columnPosition,
+                    rowPosition));
+        }
 
-	private Range selectRowWithCtrlKey(int columnPosition, int rowPosition) {
-		Rectangle selectedRowRectangle = new Rectangle(0, rowPosition, Integer.MAX_VALUE, 1);
+        selectionLayer.setLastSelectedCell(columnPosition, rowPosition);
 
-		if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
-			selectionLayer.clearSelection(selectedRowRectangle);
-			if (selectionLayer.getLastSelectedRegion() != null && selectionLayer.getLastSelectedRegion().equals(selectedRowRectangle)) {
-				selectionLayer.setLastSelectedRegion(null);
-			}
-		} else {
-			// Preserve last selected region
-			if (selectionLayer.getLastSelectedRegion() != null) {
-				selectionLayer.selectionModel.addSelection(new Rectangle(
-						selectionLayer.getLastSelectedRegion().x,
-							selectionLayer.getLastSelectedRegion().y,
-							selectionLayer.getLastSelectedRegion().width,
-							selectionLayer.getLastSelectedRegion().height));
-			}
-			selectionLayer.selectRegion(0, rowPosition, Integer.MAX_VALUE, 1);
-			selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
-		}
-		
-		return new Range(rowPosition, rowPosition + 1);
-	}
+        return changedRowRanges;
+    }
 
-	private Range selectRowWithShiftKey(int rowPosition) {
-		int numOfRowsToIncludeInRegion = 1;
-		int startRowPosition = rowPosition;
+    private Range selectRowWithCtrlKey(int columnPosition, int rowPosition) {
+        Rectangle selectedRowRectangle = new Rectangle(0, rowPosition,
+                Integer.MAX_VALUE, 1);
 
-		//if multiple selection is disabled, we need to ensure to only select the current rowPosition
-		//modifying the selection anchor here ensures that the anchor also moves
-		if (!selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
-			selectionLayer.getSelectionAnchor().rowPosition = rowPosition;
-		}
+        if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
+            selectionLayer.clearSelection(selectedRowRectangle);
+            if (selectionLayer.getLastSelectedRegion() != null
+                    && selectionLayer.getLastSelectedRegion().equals(
+                            selectedRowRectangle)) {
+                selectionLayer.setLastSelectedRegion(null);
+            }
+        } else {
+            // Preserve last selected region
+            if (selectionLayer.getLastSelectedRegion() != null) {
+                selectionLayer.selectionModel.addSelection(new Rectangle(
+                        selectionLayer.getLastSelectedRegion().x,
+                        selectionLayer.getLastSelectedRegion().y,
+                        selectionLayer.getLastSelectedRegion().width,
+                        selectionLayer.getLastSelectedRegion().height));
+            }
+            selectionLayer.selectRegion(0, rowPosition, Integer.MAX_VALUE, 1);
+            selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
+        }
 
-		if (selectionLayer.getLastSelectedRegion() != null) {
-			numOfRowsToIncludeInRegion = Math.abs(selectionLayer.getSelectionAnchor().rowPosition - rowPosition) + 1;
-			if (startRowPosition < selectionLayer.getSelectionAnchor().rowPosition) {
-				// Selecting above
-				startRowPosition = rowPosition;
-			} else {
-				// Selecting below
-				startRowPosition = selectionLayer.getSelectionAnchor().rowPosition;
-			}
-		}
-		selectionLayer.selectRegion(0, startRowPosition, Integer.MAX_VALUE, numOfRowsToIncludeInRegion);
-		
-		return new Range(startRowPosition, startRowPosition + numOfRowsToIncludeInRegion);
-	}
+        return new Range(rowPosition, rowPosition + 1);
+    }
 
-	@Override
-	public Class<SelectRowsCommand> getCommandClass() {
-		return SelectRowsCommand.class;
-	}
+    private Range selectRowWithShiftKey(int rowPosition) {
+        int numOfRowsToIncludeInRegion = 1;
+        int startRowPosition = rowPosition;
+
+        // if multiple selection is disabled, we need to ensure to only select
+        // the current rowPosition
+        // modifying the selection anchor here ensures that the anchor also
+        // moves
+        if (!selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
+            selectionLayer.getSelectionAnchor().rowPosition = rowPosition;
+        }
+
+        if (selectionLayer.getLastSelectedRegion() != null) {
+            numOfRowsToIncludeInRegion = Math.abs(selectionLayer
+                    .getSelectionAnchor().rowPosition - rowPosition) + 1;
+            if (startRowPosition < selectionLayer.getSelectionAnchor().rowPosition) {
+                // Selecting above
+                startRowPosition = rowPosition;
+            } else {
+                // Selecting below
+                startRowPosition = selectionLayer.getSelectionAnchor().rowPosition;
+            }
+        }
+        selectionLayer.selectRegion(0, startRowPosition, Integer.MAX_VALUE,
+                numOfRowsToIncludeInRegion);
+
+        return new Range(startRowPosition, startRowPosition
+                + numOfRowsToIncludeInRegion);
+    }
+
+    @Override
+    public Class<SelectRowsCommand> getCommandClass() {
+        return SelectRowsCommand.class;
+    }
 
 }

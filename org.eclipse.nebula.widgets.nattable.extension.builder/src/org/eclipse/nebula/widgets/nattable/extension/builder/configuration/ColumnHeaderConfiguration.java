@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.builder.configuration;
 
-
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.extension.builder.model.TableStyle;
@@ -28,58 +27,81 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.graphics.Image;
 
-public class ColumnHeaderConfiguration extends DefaultColumnHeaderLayerConfiguration {
+public class ColumnHeaderConfiguration extends
+        DefaultColumnHeaderLayerConfiguration {
 
-	private final TableStyle tableStyle;
+    private final TableStyle tableStyle;
 
-	public ColumnHeaderConfiguration(TableStyle tableStyle) {
-		this.tableStyle = tableStyle;
-	}
+    public ColumnHeaderConfiguration(TableStyle tableStyle) {
+        this.tableStyle = tableStyle;
+    }
 
-	@Override
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		addNormalModeStyling(configRegistry);
-		addSelectedModeStyling(configRegistry);
-	}
+    @Override
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        addNormalModeStyling(configRegistry);
+        addSelectedModeStyling(configRegistry);
+    }
 
-	private void addSelectedModeStyling(IConfigRegistry configRegistry) {
-		Image selectedBgImage = tableStyle.columnHeaderSelectedBgImage;
-		ICellPainter sortHeaderPainter;
+    private void addSelectedModeStyling(IConfigRegistry configRegistry) {
+        Image selectedBgImage = tableStyle.columnHeaderSelectedBgImage;
+        ICellPainter sortHeaderPainter;
 
-		if(ObjectUtils.isNotNull(selectedBgImage)){
-			TextPainter txtPainter = new TextPainter(false, false);
-			ICellPainter selectedCellPainter = new BackgroundImagePainter(txtPainter, selectedBgImage, GUIHelper.getColor(192, 192, 192));
-			sortHeaderPainter = new SortableHeaderTextPainter(selectedCellPainter, false, false);
-		} else {
-			sortHeaderPainter = new SortableHeaderTextPainter(new BeveledBorderDecorator(new TextPainter()), false, false);
-		}
+        if (ObjectUtils.isNotNull(selectedBgImage)) {
+            TextPainter txtPainter = new TextPainter(false, false);
+            ICellPainter selectedCellPainter = new BackgroundImagePainter(
+                    txtPainter, selectedBgImage, GUIHelper.getColor(192, 192,
+                            192));
+            sortHeaderPainter = new SortableHeaderTextPainter(
+                    selectedCellPainter, false, false);
+        } else {
+            sortHeaderPainter = new SortableHeaderTextPainter(
+                    new BeveledBorderDecorator(new TextPainter()), false, false);
+        }
 
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, sortHeaderPainter, DisplayMode.SELECT, GridRegion.COLUMN_HEADER);
-	}
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER, sortHeaderPainter,
+                DisplayMode.SELECT, GridRegion.COLUMN_HEADER);
+    }
 
-	private void addNormalModeStyling(IConfigRegistry configRegistry) {
-		Style cellStyle = new Style();
-		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, tableStyle.columnHeaderBGColor);
-		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, tableStyle.columnHeaderFGColor);
-		cellStyle.setAttributeValue(CellStyleAttributes.FONT, tableStyle.columnHeaderFont);
+    private void addNormalModeStyling(IConfigRegistry configRegistry) {
+        Style cellStyle = new Style();
+        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                tableStyle.columnHeaderBGColor);
+        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+                tableStyle.columnHeaderFGColor);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+                tableStyle.columnHeaderFont);
 
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, GridRegion.CORNER);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                cellStyle, DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                cellStyle, DisplayMode.NORMAL, GridRegion.CORNER);
 
-		// Gradient painter
-		Image bgImage = tableStyle.columnHeaderBgImage;
+        // Gradient painter
+        Image bgImage = tableStyle.columnHeaderBgImage;
 
-		if (ObjectUtils.isNotNull(bgImage)) {
-			TextPainter txtPainter = new TextPainter(false, false);
-			ICellPainter cellPainter = new BackgroundImagePainter(txtPainter, bgImage, GUIHelper.getColor(192, 192, 192));
-			SortableHeaderTextPainter sortHeaderPainter = new SortableHeaderTextPainter(cellPainter, false, false);
+        if (ObjectUtils.isNotNull(bgImage)) {
+            TextPainter txtPainter = new TextPainter(false, false);
+            ICellPainter cellPainter = new BackgroundImagePainter(txtPainter,
+                    bgImage, GUIHelper.getColor(192, 192, 192));
+            SortableHeaderTextPainter sortHeaderPainter = new SortableHeaderTextPainter(
+                    cellPainter, false, false);
 
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, sortHeaderPainter, DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, sortHeaderPainter, DisplayMode.NORMAL, GridRegion.CORNER);
-		} else {
-			SortableHeaderTextPainter sortHeaderPainter = new SortableHeaderTextPainter(new BeveledBorderDecorator(new TextPainter()), false, false);
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, sortHeaderPainter, DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, sortHeaderPainter, DisplayMode.NORMAL, GridRegion.CORNER);
-		}
-	}
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER, sortHeaderPainter,
+                    DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER, sortHeaderPainter,
+                    DisplayMode.NORMAL, GridRegion.CORNER);
+        } else {
+            SortableHeaderTextPainter sortHeaderPainter = new SortableHeaderTextPainter(
+                    new BeveledBorderDecorator(new TextPainter()), false, false);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER, sortHeaderPainter,
+                    DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER, sortHeaderPainter,
+                    DisplayMode.NORMAL, GridRegion.CORNER);
+        }
+    }
 }

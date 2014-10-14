@@ -12,11 +12,10 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 
-
 /**
  * Marker interface for all column group related commands
  *
  */
 public interface IColumnGroupCommand extends ILayerCommand {
-	
+
 }

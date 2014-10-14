@@ -10,19 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.group.command.ColumnGroupExpandCollapseCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
-public class ColumnGroupExpandCollapseAction implements IMouseAction{
+public class ColumnGroupExpandCollapseAction implements IMouseAction {
 
-	@Override
-	public void run(NatTable natTable, MouseEvent event) {
-		ColumnGroupExpandCollapseCommand command = new ColumnGroupExpandCollapseCommand(
-				natTable, natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
-		natTable.doCommand(command);
-	}
+    @Override
+    public void run(NatTable natTable, MouseEvent event) {
+        ColumnGroupExpandCollapseCommand command = new ColumnGroupExpandCollapseCommand(
+                natTable, natTable.getColumnPositionByX(event.x),
+                natTable.getRowPositionByY(event.y));
+        natTable.doCommand(command);
+    }
 
 }

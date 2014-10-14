@@ -18,28 +18,31 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SelectAllTest {	
-	private SelectionLayer selectionLayer;
-	
-	@Before
-	public void setUp() {
-		selectionLayer = new SelectionLayer(new DataLayerFixture());
-		// Selection all cells in grid
-		selectionLayer.selectAll();
-	}
-	
-	@After
-	public void cleanUp() {
-		selectionLayer.clear();
-	}
-	
-	@Test
-	public void shouldHaveAllCellsSelected() {
-		for (int columnPosition = 0; columnPosition < selectionLayer.getColumnCount(); columnPosition++) {
-			for (int rowPosition = 0; rowPosition < selectionLayer.getRowCount(); rowPosition++) {
-				ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
-				Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
-			}
-		}	
-	}
+public class SelectAllTest {
+    private SelectionLayer selectionLayer;
+
+    @Before
+    public void setUp() {
+        selectionLayer = new SelectionLayer(new DataLayerFixture());
+        // Selection all cells in grid
+        selectionLayer.selectAll();
+    }
+
+    @After
+    public void cleanUp() {
+        selectionLayer.clear();
+    }
+
+    @Test
+    public void shouldHaveAllCellsSelected() {
+        for (int columnPosition = 0; columnPosition < selectionLayer
+                .getColumnCount(); columnPosition++) {
+            for (int rowPosition = 0; rowPosition < selectionLayer
+                    .getRowCount(); rowPosition++) {
+                ILayerCell cell = selectionLayer.getCellByPosition(
+                        columnPosition, rowPosition);
+                Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
+            }
+        }
+    }
 }

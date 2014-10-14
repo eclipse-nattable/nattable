@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -29,40 +28,52 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 
-public class DefaultRowHeaderStyleConfiguration extends AbstractRegistryConfiguration {
+public class DefaultRowHeaderStyleConfiguration extends
+        AbstractRegistryConfiguration {
 
-	public Font font = GUIHelper.getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
-	public Color bgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
-	public Color fgColor = GUIHelper.COLOR_WIDGET_FOREGROUND;
-	public Color gradientBgColor = GUIHelper.COLOR_WHITE;
-	public Color gradientFgColor = GUIHelper.getColor(136, 212, 215);
-	public HorizontalAlignmentEnum hAlign = HorizontalAlignmentEnum.CENTER;
-	public VerticalAlignmentEnum vAlign = VerticalAlignmentEnum.MIDDLE;
-	public BorderStyle borderStyle = null;
+    public Font font = GUIHelper
+            .getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
+    public Color bgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
+    public Color fgColor = GUIHelper.COLOR_WIDGET_FOREGROUND;
+    public Color gradientBgColor = GUIHelper.COLOR_WHITE;
+    public Color gradientFgColor = GUIHelper.getColor(136, 212, 215);
+    public HorizontalAlignmentEnum hAlign = HorizontalAlignmentEnum.CENTER;
+    public VerticalAlignmentEnum vAlign = VerticalAlignmentEnum.MIDDLE;
+    public BorderStyle borderStyle = null;
 
-	public ICellPainter cellPainter = new TextPainter();
+    public ICellPainter cellPainter = new TextPainter();
 
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		configureRowHeaderCellPainter(configRegistry);
-		configureRowHeaderStyle(configRegistry);
-	}
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        configureRowHeaderCellPainter(configRegistry);
+        configureRowHeaderStyle(configRegistry);
+    }
 
-	protected void configureRowHeaderStyle(IConfigRegistry configRegistry) {
-		Style cellStyle = new Style();
-		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
-		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
-		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, gradientBgColor);
-		cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, gradientFgColor);
-		cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
-		cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);
-		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, borderStyle);
-		cellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
+    protected void configureRowHeaderStyle(IConfigRegistry configRegistry) {
+        Style cellStyle = new Style();
+        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                bgColor);
+        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+                fgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, gradientBgColor);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, gradientFgColor);
+        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                hAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+                vAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+                borderStyle);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
 
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, GridRegion.ROW_HEADER);
-	}
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                cellStyle, DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+    }
 
-	protected void configureRowHeaderCellPainter(IConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, cellPainter, DisplayMode.NORMAL, GridRegion.ROW_HEADER);
-	}
+    protected void configureRowHeaderCellPainter(IConfigRegistry configRegistry) {
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER, cellPainter,
+                DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+    }
 
 }

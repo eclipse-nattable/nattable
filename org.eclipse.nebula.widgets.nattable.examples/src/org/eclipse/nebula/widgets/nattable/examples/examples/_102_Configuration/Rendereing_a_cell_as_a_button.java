@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._102_Configuration;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -47,119 +46,133 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class Rendereing_a_cell_as_a_button extends AbstractNatExample {
-	public static final String CUSTOM_CELL_LABEL = "Cell_LABEL";
+    public static final String CUSTOM_CELL_LABEL = "Cell_LABEL";
 
-	private ButtonCellPainter buttonPainter;
-	private SelectionExampleGridLayer gridLayer;
+    private ButtonCellPainter buttonPainter;
+    private SelectionExampleGridLayer gridLayer;
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new Rendereing_a_cell_as_a_button());
-	}
-	
-	@Override
-	public String getDescription() {
-		return
-				"Demonstrates rendering the cell as a button. Custom actions can be triggered on button click.\n" +
-				"\n" +
-				"Note: The button is 'drawn' using a custom painter. This is more efficient than using a Button widget.";
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new Rendereing_a_cell_as_a_button());
+    }
 
-	public Control createExampleControl(Composite parent) {
-		gridLayer = new SelectionExampleGridLayer();
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		IConfigRegistry configRegistry = new ConfigRegistry();
+    @Override
+    public String getDescription() {
+        return "Demonstrates rendering the cell as a button. Custom actions can be triggered on button click.\n"
+                + "\n"
+                + "Note: The button is 'drawn' using a custom painter. This is more efficient than using a Button widget.";
+    }
 
-		DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
+    public Control createExampleControl(Composite parent) {
+        gridLayer = new SelectionExampleGridLayer();
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+        IConfigRegistry configRegistry = new ConfigRegistry();
 
-		// Step 1: Create a label accumulator - adds custom labels to all cells which we
-		// wish to render differently. In this case render as a button.
-		ColumnOverrideLabelAccumulator cellLabelAccumulator =	new ColumnOverrideLabelAccumulator(bodyDataLayer);
-		cellLabelAccumulator.registerColumnOverrides(2, CUSTOM_CELL_LABEL);
+        DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 
-		// Step 2: Register label accumulator
-		bodyDataLayer.setConfigLabelAccumulator(cellLabelAccumulator);
+        // Step 1: Create a label accumulator - adds custom labels to all cells
+        // which we
+        // wish to render differently. In this case render as a button.
+        ColumnOverrideLabelAccumulator cellLabelAccumulator = new ColumnOverrideLabelAccumulator(
+                bodyDataLayer);
+        cellLabelAccumulator.registerColumnOverrides(2, CUSTOM_CELL_LABEL);
 
-		// Step 3: Register your custom cell painter, cell style, against the label applied to the cell.
-		addButtonToColumn(configRegistry, natTable);
-		natTable.addConfiguration(new ButtonClickConfiguration<RowDataFixture>(buttonPainter));
+        // Step 2: Register label accumulator
+        bodyDataLayer.setConfigLabelAccumulator(cellLabelAccumulator);
 
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new DebugMenuConfiguration(natTable));
+        // Step 3: Register your custom cell painter, cell style, against the
+        // label applied to the cell.
+        addButtonToColumn(configRegistry, natTable);
+        natTable.addConfiguration(new ButtonClickConfiguration<RowDataFixture>(
+                buttonPainter));
 
-		natTable.setConfigRegistry(configRegistry);
-		natTable.configure();
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
-		// Layout SWT widgets. Not relevant to example code.
-		parent.setLayout(new GridLayout(1, true));
-		natTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-		setupTextArea(parent);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.configure();
 
-		return natTable;
-	}
+        // Layout SWT widgets. Not relevant to example code.
+        parent.setLayout(new GridLayout(1, true));
+        natTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
+                true));
+        setupTextArea(parent);
 
-	private void addButtonToColumn(IConfigRegistry configRegistry, Composite parent) {
-		buttonPainter = new ButtonCellPainter(
-				new CellPainterDecorator(new TextPainter(), CellEdgeEnum.RIGHT, new ImagePainter(GUIHelper.getImage("preferences"))));
+        return natTable;
+    }
 
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
-				buttonPainter,
-				DisplayMode.NORMAL,
-				CUSTOM_CELL_LABEL);
+    private void addButtonToColumn(IConfigRegistry configRegistry,
+            Composite parent) {
+        buttonPainter = new ButtonCellPainter(new CellPainterDecorator(
+                new TextPainter(), CellEdgeEnum.RIGHT, new ImagePainter(
+                        GUIHelper.getImage("preferences"))));
 
-		// Add your listener to the button
-		buttonPainter.addClickListener(new MyMouseAction());
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER, buttonPainter,
+                DisplayMode.NORMAL, CUSTOM_CELL_LABEL);
 
-		// Set the color of the cell. This is picked up by the button painter to style the button
-		Style style = new Style();
-		style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_WHITE);
+        // Add your listener to the button
+        buttonPainter.addClickListener(new MyMouseAction());
 
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,	style, DisplayMode.NORMAL, CUSTOM_CELL_LABEL);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,	style, DisplayMode.SELECT, CUSTOM_CELL_LABEL);
-	}
+        // Set the color of the cell. This is picked up by the button painter to
+        // style the button
+        Style style = new Style();
+        style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                GUIHelper.COLOR_WHITE);
 
-	/**
-	 * Sample action to execute when the button is clicked.
-	 */
-	class MyMouseAction implements IMouseAction{
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                style, DisplayMode.NORMAL, CUSTOM_CELL_LABEL);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                style, DisplayMode.SELECT, CUSTOM_CELL_LABEL);
+    }
 
-		public void run(NatTable natTable, MouseEvent event) {
-			NatEventData eventData = NatEventData.createInstanceFromEvent(event);
-			int rowIndex = natTable.getRowIndexByPosition(eventData.getRowPosition());
-			int columnIndex = natTable.getColumnIndexByPosition(eventData.getColumnPosition());
+    /**
+     * Sample action to execute when the button is clicked.
+     */
+    class MyMouseAction implements IMouseAction {
 
-			ListDataProvider<RowDataFixture> dataProvider = gridLayer.getBodyDataProvider();
+        public void run(NatTable natTable, MouseEvent event) {
+            NatEventData eventData = NatEventData
+                    .createInstanceFromEvent(event);
+            int rowIndex = natTable.getRowIndexByPosition(eventData
+                    .getRowPosition());
+            int columnIndex = natTable.getColumnIndexByPosition(eventData
+                    .getColumnPosition());
 
-			Object rowObject = dataProvider.getRowObject(rowIndex);
-			Object cellData = dataProvider.getDataValue(columnIndex, rowIndex);
+            ListDataProvider<RowDataFixture> dataProvider = gridLayer
+                    .getBodyDataProvider();
 
-			log("Clicked on cell: " + cellData);
-			log("Clicked on row: " + rowObject + "\n");
-		}
-	}
+            Object rowObject = dataProvider.getRowObject(rowIndex);
+            Object cellData = dataProvider.getDataValue(columnIndex, rowIndex);
 
-	class ButtonClickConfiguration<T> extends AbstractUiBindingConfiguration {
+            log("Clicked on cell: " + cellData);
+            log("Clicked on row: " + rowObject + "\n");
+        }
+    }
 
-		private final ButtonCellPainter buttonCellPainter;
+    class ButtonClickConfiguration<T> extends AbstractUiBindingConfiguration {
 
-		public ButtonClickConfiguration(ButtonCellPainter buttonCellPainter) {
-			this.buttonCellPainter = buttonCellPainter;
-		}
+        private final ButtonCellPainter buttonCellPainter;
 
-		/**
-		 * Configure the UI bindings for the mouse click
-		 */
-		public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-			// Match a mouse event on the body, when the left button is clicked
-			// and the custom cell label is present
-			CellLabelMouseEventMatcher mouseEventMatcher = new CellLabelMouseEventMatcher(
-																GridRegion.BODY,
-																MouseEventMatcher.LEFT_BUTTON,
-																Rendereing_a_cell_as_a_button.CUSTOM_CELL_LABEL);
+        public ButtonClickConfiguration(ButtonCellPainter buttonCellPainter) {
+            this.buttonCellPainter = buttonCellPainter;
+        }
 
-			// Inform the button painter of the click.
-			uiBindingRegistry.registerMouseDownBinding(mouseEventMatcher, buttonCellPainter);
-		}
+        /**
+         * Configure the UI bindings for the mouse click
+         */
+        public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+            // Match a mouse event on the body, when the left button is clicked
+            // and the custom cell label is present
+            CellLabelMouseEventMatcher mouseEventMatcher = new CellLabelMouseEventMatcher(
+                    GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON,
+                    Rendereing_a_cell_as_a_button.CUSTOM_CELL_LABEL);
 
-	}
-	
+            // Inform the button painter of the click.
+            uiBindingRegistry.registerMouseDownBinding(mouseEventMatcher,
+                    buttonCellPainter);
+        }
+
+    }
+
 }

@@ -21,31 +21,31 @@ import org.eclipse.nebula.widgets.nattable.tickupdate.config.DefaultTickUpdateCo
  */
 public class DefaultSelectionLayerConfiguration extends AggregateConfiguration {
 
-	public DefaultSelectionLayerConfiguration() {
-		addSelectionStyleConfig();
-		addSelectionUIBindings();
-		addSearchUIBindings();
-		addTickUpdateConfig();
-		addMoveSelectionConfig();
-	}
+    public DefaultSelectionLayerConfiguration() {
+        addSelectionStyleConfig();
+        addSelectionUIBindings();
+        addSearchUIBindings();
+        addTickUpdateConfig();
+        addMoveSelectionConfig();
+    }
 
-	protected void addSelectionStyleConfig() {
-		addConfiguration(new DefaultSelectionStyleConfiguration());
-	}
+    protected void addSelectionStyleConfig() {
+        addConfiguration(new DefaultSelectionStyleConfiguration());
+    }
 
-	protected void addSelectionUIBindings() {
-		addConfiguration(new DefaultSelectionBindings());
-	}
+    protected void addSelectionUIBindings() {
+        addConfiguration(new DefaultSelectionBindings());
+    }
 
-	protected void addSearchUIBindings() {
-		addConfiguration(new DefaultSearchBindings());
-	}
+    protected void addSearchUIBindings() {
+        addConfiguration(new DefaultSearchBindings());
+    }
 
-	protected void addTickUpdateConfig() {
-		addConfiguration(new DefaultTickUpdateConfiguration());
-	}
+    protected void addTickUpdateConfig() {
+        addConfiguration(new DefaultTickUpdateConfiguration());
+    }
 
-	protected void addMoveSelectionConfig() {
-		addConfiguration(new DefaultMoveSelectionConfiguration());
-	}
+    protected void addMoveSelectionConfig() {
+        addConfiguration(new DefaultMoveSelectionConfiguration());
+    }
 }

@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.test.performance;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
@@ -26,36 +25,39 @@ import org.junit.Test;
 
 import ca.odell.glazedlists.GlazedLists;
 
-public class ListDataProviderPerformanceTest extends AbstractLayerPerformanceTest {
+public class ListDataProviderPerformanceTest extends
+        AbstractLayerPerformanceTest {
 
-	// Bench marked ~ 65 milliseconds. Intel 2GHZ, 2GB Ram
-	@Test
-	public void performanceOfListDataProvider() throws Exception {
-		List<RowDataFixture> largeList = RowDataListFixture.getList(26000);
-		Assert.assertTrue(largeList.size() > 25000);
-		
-		layer = new DefaultGridLayer(
-					largeList, 
-					RowDataListFixture.getPropertyNames(),
-					RowDataListFixture.getPropertyToLabelMap());
-	}
+    // Bench marked ~ 65 milliseconds. Intel 2GHZ, 2GB Ram
+    @Test
+    public void performanceOfListDataProvider() throws Exception {
+        List<RowDataFixture> largeList = RowDataListFixture.getList(26000);
+        Assert.assertTrue(largeList.size() > 25000);
 
-	// Bench marked ~ 45 milliseconds. Intel 2GHZ, 2GB Ram
-	@Test
-	public void performanceOfGlazedListDataProvider() throws Exception {
-		String[] propertyNames = RowDataListFixture.getPropertyNames();
-		Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
-		List<RowDataFixture> largeList = RowDataListFixture.getList(26000);
+        layer = new DefaultGridLayer(largeList,
+                RowDataListFixture.getPropertyNames(),
+                RowDataListFixture.getPropertyToLabelMap());
+    }
 
-		Assert.assertTrue(largeList.size() > 25000);
-		
-		IDataProvider glazedListsDataProvider =	new GlazedListsDataProvider<RowDataFixture>(
-													GlazedLists.eventList(largeList), 
-													new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames));
-		
-		IDataProvider columnHeaderDataProvider = 
-			new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+    // Bench marked ~ 45 milliseconds. Intel 2GHZ, 2GB Ram
+    @Test
+    public void performanceOfGlazedListDataProvider() throws Exception {
+        String[] propertyNames = RowDataListFixture.getPropertyNames();
+        Map<String, String> propertyToLabelMap = RowDataListFixture
+                .getPropertyToLabelMap();
+        List<RowDataFixture> largeList = RowDataListFixture.getList(26000);
 
-		layer = new DefaultGridLayer(glazedListsDataProvider, columnHeaderDataProvider);
-	}
+        Assert.assertTrue(largeList.size() > 25000);
+
+        IDataProvider glazedListsDataProvider = new GlazedListsDataProvider<RowDataFixture>(
+                GlazedLists.eventList(largeList),
+                new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                        propertyNames));
+
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+
+        layer = new DefaultGridLayer(glazedListsDataProvider,
+                columnHeaderDataProvider);
+    }
 }

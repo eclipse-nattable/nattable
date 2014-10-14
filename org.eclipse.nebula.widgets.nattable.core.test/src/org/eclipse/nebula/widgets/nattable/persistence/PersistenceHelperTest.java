@@ -22,177 +22,217 @@ import org.junit.Test;
 
 public class PersistenceHelperTest {
 
-	@Test
-	public void testGetAvailableStates() {
-		Properties properties = new Properties();
-		
-		NatTable natTable = new NatTableFixture();
-		natTable.saveState("", properties);
-		natTable.saveState("Blubb", properties);
-		natTable.saveState("Temp", properties);
-		
-		Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-	}
+    @Test
+    public void testGetAvailableStates() {
+        Properties properties = new Properties();
 
-	@Test
-	public void testGetAvailableStatesOnNull() {
-		assertTrue("Resulting state name collection is not empty", 
-				PersistenceHelper.getAvailableStates(null).isEmpty());
-	}
+        NatTable natTable = new NatTableFixture();
+        natTable.saveState("", properties);
+        natTable.saveState("Blubb", properties);
+        natTable.saveState("Temp", properties);
 
-	@Test
-	public void testGetAvailableStatesOnEmpty() {
-		assertTrue("Resulting state name collection is not empty", 
-				PersistenceHelper.getAvailableStates(new Properties()).isEmpty());
-	}
+        Collection<String> stateNames = PersistenceHelper
+                .getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+    }
 
-	@Test
-	public void testDeleteState() {
-		Properties properties = new Properties();
-		
-		NatTable natTable = new NatTableFixture();
-		natTable.saveState("", properties);
-		natTable.saveState("Blubb", properties);
-		natTable.saveState("Temp", properties);
-		
-		Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-		
-		PersistenceHelper.deleteState("Blubb", properties);
+    @Test
+    public void testGetAvailableStatesOnNull() {
+        assertTrue("Resulting state name collection is not empty",
+                PersistenceHelper.getAvailableStates(null).isEmpty());
+    }
 
-		stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertFalse("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-	}
+    @Test
+    public void testGetAvailableStatesOnEmpty() {
+        assertTrue("Resulting state name collection is not empty",
+                PersistenceHelper.getAvailableStates(new Properties())
+                        .isEmpty());
+    }
 
-	@Test
-	public void testDeleteStateOnNullProperties() {
-		Properties properties = new Properties();
-		
-		NatTable natTable = new NatTableFixture();
-		natTable.saveState("", properties);
-		natTable.saveState("Blubb", properties);
-		natTable.saveState("Temp", properties);
-		
-		Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-		
-		PersistenceHelper.deleteState("Blubb", null);
+    @Test
+    public void testDeleteState() {
+        Properties properties = new Properties();
 
-		//no impact
-		stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-	}
+        NatTable natTable = new NatTableFixture();
+        natTable.saveState("", properties);
+        natTable.saveState("Blubb", properties);
+        natTable.saveState("Temp", properties);
 
-	@Test
-	public void testDeleteStateOnNullState() {
-		Properties properties = new Properties();
-		
-		NatTable natTable = new NatTableFixture();
-		natTable.saveState("", properties);
-		natTable.saveState("Blubb", properties);
-		natTable.saveState("Temp", properties);
-		
-		Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-		
-		PersistenceHelper.deleteState(null, properties);
+        Collection<String> stateNames = PersistenceHelper
+                .getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
 
-		//no impact
-		stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-	}
+        PersistenceHelper.deleteState("Blubb", properties);
 
-	@Test
-	public void testDeleteStateOnEmptyProperties() {
-		Properties properties = new Properties();
-		
-		NatTable natTable = new NatTableFixture();
-		natTable.saveState("", properties);
-		natTable.saveState("Blubb", properties);
-		natTable.saveState("Temp", properties);
-		
-		Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-		
-		PersistenceHelper.deleteState("Blubb", new Properties());
+        stateNames = PersistenceHelper.getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertFalse(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+    }
 
-		//no impact
-		stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-	}
+    @Test
+    public void testDeleteStateOnNullProperties() {
+        Properties properties = new Properties();
 
-	@Test
-	public void testDeleteStateOnEmptyState() {
-		Properties properties = new Properties();
-		
-		NatTable natTable = new NatTableFixture();
-		natTable.saveState("", properties);
-		natTable.saveState("Blubb", properties);
-		natTable.saveState("Temp", properties);
-		
-		Collection<String> stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertTrue("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-		
-		PersistenceHelper.deleteState("", properties);
+        NatTable natTable = new NatTableFixture();
+        natTable.saveState("", properties);
+        natTable.saveState("Blubb", properties);
+        natTable.saveState("Temp", properties);
 
-		//no impact
-		stateNames = PersistenceHelper.getAvailableStates(properties);
-		assertFalse("Resulting state name collection does not contain the empty default state", 
-				stateNames.contains(""));
-		assertTrue("Resulting state name collection does not contain the 'Blubb' state", 
-				stateNames.contains("Blubb"));
-		assertTrue("Resulting state name collection does not contain the 'Temp' state", 
-				stateNames.contains("Temp"));
-	}
+        Collection<String> stateNames = PersistenceHelper
+                .getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+
+        PersistenceHelper.deleteState("Blubb", null);
+
+        // no impact
+        stateNames = PersistenceHelper.getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+    }
+
+    @Test
+    public void testDeleteStateOnNullState() {
+        Properties properties = new Properties();
+
+        NatTable natTable = new NatTableFixture();
+        natTable.saveState("", properties);
+        natTable.saveState("Blubb", properties);
+        natTable.saveState("Temp", properties);
+
+        Collection<String> stateNames = PersistenceHelper
+                .getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+
+        PersistenceHelper.deleteState(null, properties);
+
+        // no impact
+        stateNames = PersistenceHelper.getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+    }
+
+    @Test
+    public void testDeleteStateOnEmptyProperties() {
+        Properties properties = new Properties();
+
+        NatTable natTable = new NatTableFixture();
+        natTable.saveState("", properties);
+        natTable.saveState("Blubb", properties);
+        natTable.saveState("Temp", properties);
+
+        Collection<String> stateNames = PersistenceHelper
+                .getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+
+        PersistenceHelper.deleteState("Blubb", new Properties());
+
+        // no impact
+        stateNames = PersistenceHelper.getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+    }
+
+    @Test
+    public void testDeleteStateOnEmptyState() {
+        Properties properties = new Properties();
+
+        NatTable natTable = new NatTableFixture();
+        natTable.saveState("", properties);
+        natTable.saveState("Blubb", properties);
+        natTable.saveState("Temp", properties);
+
+        Collection<String> stateNames = PersistenceHelper
+                .getAvailableStates(properties);
+        assertTrue(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+
+        PersistenceHelper.deleteState("", properties);
+
+        // no impact
+        stateNames = PersistenceHelper.getAvailableStates(properties);
+        assertFalse(
+                "Resulting state name collection does not contain the empty default state",
+                stateNames.contains(""));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Blubb' state",
+                stateNames.contains("Blubb"));
+        assertTrue(
+                "Resulting state name collection does not contain the 'Temp' state",
+                stateNames.contains("Temp"));
+    }
 }

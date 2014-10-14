@@ -26,144 +26,163 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 /**
- * {@link DataLayer} with a custom {@link IDataProvider} which stores/tracks the filter text on columns.
- * Applies region name of {@link GridRegion#FILTER_ROW} to the filter row.
- * Persists the filter text to the properties file.
+ * {@link DataLayer} with a custom {@link IDataProvider} which stores/tracks the
+ * filter text on columns. Applies region name of {@link GridRegion#FILTER_ROW}
+ * to the filter row. Persists the filter text to the properties file.
  *
- * @param <T> type of the underlying row object
+ * @param <T>
+ *            type of the underlying row object
  */
 public class FilterRowDataLayer<T> extends DataLayer {
 
-	/** Prefix of the column label applied to each column in the filter row */
-	public static final String FILTER_ROW_COLUMN_LABEL_PREFIX = "FILTER_COLUMN_"; //$NON-NLS-1$
+    /** Prefix of the column label applied to each column in the filter row */
+    public static final String FILTER_ROW_COLUMN_LABEL_PREFIX = "FILTER_COLUMN_"; //$NON-NLS-1$
 
-	/** Prefix for the persistence key in the properties file */
-	public static final String PERSISTENCE_KEY_FILTER_ROW_TOKENS = ".filterTokens"; //$NON-NLS-1$
+    /** Prefix for the persistence key in the properties file */
+    public static final String PERSISTENCE_KEY_FILTER_ROW_TOKENS = ".filterTokens"; //$NON-NLS-1$
 
-	/**
-	 * The ILayer to which this FilterRowDataLayer is dependent. Typically the ColumnHeaderLayer.
-	 */
-	private ILayer columnHeaderLayer;
-	
-	public FilterRowDataLayer(IFilterStrategy<T> filterStrategy, ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider, IConfigRegistry configRegistry) {
-		super(new FilterRowDataProvider<T>(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry));
-		
-		this.columnHeaderLayer = columnHeaderLayer;
-		
-		addConfiguration(new DefaultFilterRowConfiguration());
-	}
-	
-	@SuppressWarnings("unchecked")
-	public FilterRowDataProvider<T> getFilterRowDataProvider() {
-		return (FilterRowDataProvider<T>)dataProvider;
-	}
+    /**
+     * The ILayer to which this FilterRowDataLayer is dependent. Typically the
+     * ColumnHeaderLayer.
+     */
+    private ILayer columnHeaderLayer;
 
-	@Override
-	public boolean doCommand(ILayerCommand command) {
-		boolean handled = false;
-		if (command instanceof ClearFilterCommand && command.convertToTargetLayer(this)) {
-			int columnPosition = ((ClearFilterCommand) command).getColumnPosition();
-			setDataValueByPosition(columnPosition, 0, null);
-			handled = true;
-		} else if (command instanceof ClearAllFiltersCommand) {
-			getFilterRowDataProvider().clearAllFilters();
-			handled = true;
-		}
+    public FilterRowDataLayer(IFilterStrategy<T> filterStrategy,
+            ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
+            IConfigRegistry configRegistry) {
+        super(new FilterRowDataProvider<T>(filterStrategy, columnHeaderLayer,
+                columnHeaderDataProvider, configRegistry));
 
-		if (handled) {
-			fireLayerEvent(new RowStructuralRefreshEvent(this));
-			return true;
-		} else {
-			return super.doCommand(command);
-		}
-	}
+        this.columnHeaderLayer = columnHeaderLayer;
 
-	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		// At the data layer level position == index
-		final LabelStack labels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
-		//the label needs to be index based as the position changes on scrolling
-		labels.addLabel(FILTER_ROW_COLUMN_LABEL_PREFIX + getColumnIndexByPosition(columnPosition));
-		labels.addLabel(GridRegion.FILTER_ROW);
-		return labels;
-	}
+        addConfiguration(new DefaultFilterRowConfiguration());
+    }
 
-	//There is no multiple inheritance in Java, but the FilterRowDataLayer needs to be a 
-	//DimensionallyDependentLayer aswell. Wrapping it in a DimensionallyDependentLayer together
-	//with the ColumnHeaderLayer causes several position-transformation-issues.
-	
-	// Columns
+    @SuppressWarnings("unchecked")
+    public FilterRowDataProvider<T> getFilterRowDataProvider() {
+        return (FilterRowDataProvider<T>) dataProvider;
+    }
 
-	@Override
-	public int getColumnCount() {
-		return columnHeaderLayer.getColumnCount();
-	}
+    @Override
+    public boolean doCommand(ILayerCommand command) {
+        boolean handled = false;
+        if (command instanceof ClearFilterCommand
+                && command.convertToTargetLayer(this)) {
+            int columnPosition = ((ClearFilterCommand) command)
+                    .getColumnPosition();
+            setDataValueByPosition(columnPosition, 0, null);
+            handled = true;
+        } else if (command instanceof ClearAllFiltersCommand) {
+            getFilterRowDataProvider().clearAllFilters();
+            handled = true;
+        }
 
-	@Override
-	public int getPreferredColumnCount() {
-		return columnHeaderLayer.getPreferredColumnCount();
-	}
+        if (handled) {
+            fireLayerEvent(new RowStructuralRefreshEvent(this));
+            return true;
+        } else {
+            return super.doCommand(command);
+        }
+    }
 
-	@Override
-	public int getColumnIndexByPosition(int columnPosition) {
-		return columnHeaderLayer.getColumnIndexByPosition(columnPosition);
-	}
+    @Override
+    public LabelStack getConfigLabelsByPosition(int columnPosition,
+            int rowPosition) {
+        // At the data layer level position == index
+        final LabelStack labels = super.getConfigLabelsByPosition(
+                columnPosition, rowPosition);
+        // the label needs to be index based as the position changes on
+        // scrolling
+        labels.addLabel(FILTER_ROW_COLUMN_LABEL_PREFIX
+                + getColumnIndexByPosition(columnPosition));
+        labels.addLabel(GridRegion.FILTER_ROW);
+        return labels;
+    }
 
-	@Override
-	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		return columnHeaderLayer.localToUnderlyingColumnPosition(localColumnPosition);
-	}
+    // There is no multiple inheritance in Java, but the FilterRowDataLayer
+    // needs to be a
+    // DimensionallyDependentLayer aswell. Wrapping it in a
+    // DimensionallyDependentLayer together
+    // with the ColumnHeaderLayer causes several position-transformation-issues.
 
-	@Override
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-		if (sourceUnderlyingLayer == columnHeaderLayer) {
-			return underlyingColumnPosition;
-		}
-		return columnHeaderLayer.underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPosition);
-	}
-	
-	@Override
-	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
-		if (sourceUnderlyingLayer == columnHeaderLayer) {
-			return underlyingColumnPositionRanges;
-		}
-		return columnHeaderLayer.underlyingToLocalColumnPositions(sourceUnderlyingLayer, underlyingColumnPositionRanges);
-	}
+    // Columns
 
-	// Width
+    @Override
+    public int getColumnCount() {
+        return columnHeaderLayer.getColumnCount();
+    }
 
-	@Override
-	public int getWidth() {
-		return columnHeaderLayer.getWidth();
-	}
+    @Override
+    public int getPreferredColumnCount() {
+        return columnHeaderLayer.getPreferredColumnCount();
+    }
 
-	@Override
-	public int getPreferredWidth() {
-		return columnHeaderLayer.getPreferredWidth();
-	}
+    @Override
+    public int getColumnIndexByPosition(int columnPosition) {
+        return columnHeaderLayer.getColumnIndexByPosition(columnPosition);
+    }
 
-	@Override
-	public int getColumnWidthByPosition(int columnPosition) {
-		return columnHeaderLayer.getColumnWidthByPosition(columnPosition);
-	}
+    @Override
+    public int localToUnderlyingColumnPosition(int localColumnPosition) {
+        return columnHeaderLayer
+                .localToUnderlyingColumnPosition(localColumnPosition);
+    }
 
-	// Column resize
+    @Override
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
+            int underlyingColumnPosition) {
+        if (sourceUnderlyingLayer == columnHeaderLayer) {
+            return underlyingColumnPosition;
+        }
+        return columnHeaderLayer.underlyingToLocalColumnPosition(
+                sourceUnderlyingLayer, underlyingColumnPosition);
+    }
 
-	@Override
-	public boolean isColumnPositionResizable(int columnPosition) {
-		return columnHeaderLayer.isColumnPositionResizable(columnPosition);
-	}
+    @Override
+    public Collection<Range> underlyingToLocalColumnPositions(
+            ILayer sourceUnderlyingLayer,
+            Collection<Range> underlyingColumnPositionRanges) {
+        if (sourceUnderlyingLayer == columnHeaderLayer) {
+            return underlyingColumnPositionRanges;
+        }
+        return columnHeaderLayer.underlyingToLocalColumnPositions(
+                sourceUnderlyingLayer, underlyingColumnPositionRanges);
+    }
 
-	// X
+    // Width
 
-	@Override
-	public int getColumnPositionByX(int x) {
-		return columnHeaderLayer.getColumnPositionByX(x);
-	}
+    @Override
+    public int getWidth() {
+        return columnHeaderLayer.getWidth();
+    }
 
-	@Override
-	public int getStartXOfColumnPosition(int columnPosition) {
-		return columnHeaderLayer.getStartXOfColumnPosition(columnPosition);
-	}
+    @Override
+    public int getPreferredWidth() {
+        return columnHeaderLayer.getPreferredWidth();
+    }
+
+    @Override
+    public int getColumnWidthByPosition(int columnPosition) {
+        return columnHeaderLayer.getColumnWidthByPosition(columnPosition);
+    }
+
+    // Column resize
+
+    @Override
+    public boolean isColumnPositionResizable(int columnPosition) {
+        return columnHeaderLayer.isColumnPositionResizable(columnPosition);
+    }
+
+    // X
+
+    @Override
+    public int getColumnPositionByX(int x) {
+        return columnHeaderLayer.getColumnPositionByX(x);
+    }
+
+    @Override
+    public int getStartXOfColumnPosition(int columnPosition) {
+        return columnHeaderLayer.getStartXOfColumnPosition(columnPosition);
+    }
 
 }

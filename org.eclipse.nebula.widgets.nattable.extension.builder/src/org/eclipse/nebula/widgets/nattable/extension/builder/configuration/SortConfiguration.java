@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.builder.configuration;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.action.SortColumnAction;
 import org.eclipse.nebula.widgets.nattable.sort.event.ColumnHeaderClickEventMatcher;
@@ -20,15 +19,17 @@ import org.eclipse.swt.SWT;
 
 public class SortConfiguration extends AbstractUiBindingConfiguration {
 
-	/**
-	 * Remove the original key bindings and implement new ones.
-	 */
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		// Register single click bindings
-		uiBindingRegistry.registerSingleClickBinding(
-              new ColumnHeaderClickEventMatcher(SWT.NONE, 1), new SortColumnAction(false));
+    /**
+     * Remove the original key bindings and implement new ones.
+     */
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        // Register single click bindings
+        uiBindingRegistry.registerSingleClickBinding(
+                new ColumnHeaderClickEventMatcher(SWT.NONE, 1),
+                new SortColumnAction(false));
 
-		uiBindingRegistry.registerSingleClickBinding(
-             MouseEventMatcher.columnHeaderLeftClick(SWT.ALT), new SortColumnAction(true));
-	}
+        uiBindingRegistry.registerSingleClickBinding(
+                MouseEventMatcher.columnHeaderLeftClick(SWT.ALT),
+                new SortColumnAction(true));
+    }
 }

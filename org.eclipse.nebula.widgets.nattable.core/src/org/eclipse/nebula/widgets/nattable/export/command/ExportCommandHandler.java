@@ -10,33 +10,33 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export.command;
 
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.NatExporter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.widgets.Shell;
 
-public class ExportCommandHandler extends AbstractLayerCommandHandler<ExportCommand> {
+public class ExportCommandHandler extends
+        AbstractLayerCommandHandler<ExportCommand> {
 
-	private final ILayer layer;
+    private final ILayer layer;
 
-	public ExportCommandHandler(ILayer layer) {
-		this.layer = layer;
-	}
+    public ExportCommandHandler(ILayer layer) {
+        this.layer = layer;
+    }
 
-	@Override
-	public boolean doCommand(final ExportCommand command) {
-		Shell shell = command.getShell();
-		IConfigRegistry configRegistry = command.getConfigRegistry();
-		
-		new NatExporter(shell).exportSingleLayer(layer, configRegistry);
-		
-		return true;
-	}
+    @Override
+    public boolean doCommand(final ExportCommand command) {
+        Shell shell = command.getShell();
+        IConfigRegistry configRegistry = command.getConfigRegistry();
 
-	public Class<ExportCommand> getCommandClass() {
-		return ExportCommand.class;
-	}
+        new NatExporter(shell).exportSingleLayer(layer, configRegistry);
+
+        return true;
+    }
+
+    public Class<ExportCommand> getCommandClass() {
+        return ExportCommand.class;
+    }
 
 }

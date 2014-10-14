@@ -19,45 +19,44 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-
 public class SelectionExampleBodyLayerStack extends AbstractIndexLayerTransform {
 
-	private final ColumnReorderLayer columnReorderLayer;
-	private final ColumnHideShowLayer columnHideShowLayer;
-	private final SelectionLayer selectionLayer;
-	private final ViewportLayer viewportLayer;
+    private final ColumnReorderLayer columnReorderLayer;
+    private final ColumnHideShowLayer columnHideShowLayer;
+    private final SelectionLayer selectionLayer;
+    private final ViewportLayer viewportLayer;
 
-	public SelectionExampleBodyLayerStack(IUniqueIndexLayer underlyingLayer) {
-		columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
-		columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
+    public SelectionExampleBodyLayerStack(IUniqueIndexLayer underlyingLayer) {
+        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+        columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
 
-		// No autoconfig on selection layer
-		selectionLayer = new SelectionLayer(columnHideShowLayer, false);
+        // No autoconfig on selection layer
+        selectionLayer = new SelectionLayer(columnHideShowLayer, false);
 
-		viewportLayer = new ViewportLayer(selectionLayer);
-		setUnderlyingLayer(viewportLayer);
+        viewportLayer = new ViewportLayer(selectionLayer);
+        setUnderlyingLayer(viewportLayer);
 
-		registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
-	}
+        registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+    }
 
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		super.setClientAreaProvider(clientAreaProvider);
-	}
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        super.setClientAreaProvider(clientAreaProvider);
+    }
 
-	public ColumnReorderLayer getColumnReorderLayer() {
-		return columnReorderLayer;
-	}
+    public ColumnReorderLayer getColumnReorderLayer() {
+        return columnReorderLayer;
+    }
 
-	public ColumnHideShowLayer getColumnHideShowLayer() {
-		return columnHideShowLayer;
-	}
+    public ColumnHideShowLayer getColumnHideShowLayer() {
+        return columnHideShowLayer;
+    }
 
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
 
-	public ViewportLayer getViewportLayer() {
-		return viewportLayer;
-	}
+    public ViewportLayer getViewportLayer() {
+        return viewportLayer;
+    }
 }

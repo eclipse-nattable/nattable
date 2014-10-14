@@ -14,20 +14,20 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class LayerCommandFixture implements ILayerCommand {
-	
-	private ILayer targetLayer;
 
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		this.targetLayer = targetLayer;
-		return true;
-	}
-	
-	public ILayer getTargetLayer() {
-		return targetLayer;
-	}
+    private ILayer targetLayer;
 
-	public LayerCommandFixture cloneCommand() {
-		return this;
-	}
-	
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        this.targetLayer = targetLayer;
+        return true;
+    }
+
+    public ILayer getTargetLayer() {
+        return targetLayer;
+    }
+
+    public LayerCommandFixture cloneCommand() {
+        return this;
+    }
+
 }

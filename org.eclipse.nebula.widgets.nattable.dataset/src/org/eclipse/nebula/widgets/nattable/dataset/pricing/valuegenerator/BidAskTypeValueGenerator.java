@@ -12,13 +12,11 @@ package org.eclipse.nebula.widgets.nattable.dataset.pricing.valuegenerator;
 
 import org.eclipse.nebula.widgets.nattable.dataset.valuegenerator.AbstractListValueGenerator;
 
-public class BidAskTypeValueGenerator extends AbstractListValueGenerator<String> {
+public class BidAskTypeValueGenerator extends
+        AbstractListValueGenerator<String> {
 
-	public BidAskTypeValueGenerator() {
-		super(new String[] {
-				"Bid-BA",
-				""
-		});
-	}
+    public BidAskTypeValueGenerator() {
+        super(new String[] { "Bid-BA", "" });
+    }
 
 }

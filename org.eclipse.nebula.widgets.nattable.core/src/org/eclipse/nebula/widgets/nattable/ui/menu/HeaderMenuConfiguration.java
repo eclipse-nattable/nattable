@@ -10,37 +10,32 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 
 public class HeaderMenuConfiguration extends AbstractHeaderMenuConfiguration {
 
-	public HeaderMenuConfiguration(NatTable natTable) {
-		super(natTable);
-	}
+    public HeaderMenuConfiguration(NatTable natTable) {
+        super(natTable);
+    }
 
-	@Override
-	protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-		return super.createColumnHeaderMenu(natTable)
-								.withHideColumnMenuItem()
-								.withShowAllColumnsMenuItem()
-								.withCreateColumnGroupsMenuItem()
-								.withUngroupColumnsMenuItem()
-								.withAutoResizeSelectedColumnsMenuItem()
-								.withColumnStyleEditor()
-								.withColumnRenameDialog()
-								.withClearAllFilters();
-	}
+    @Override
+    protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+        return super.createColumnHeaderMenu(natTable).withHideColumnMenuItem()
+                .withShowAllColumnsMenuItem().withCreateColumnGroupsMenuItem()
+                .withUngroupColumnsMenuItem()
+                .withAutoResizeSelectedColumnsMenuItem()
+                .withColumnStyleEditor().withColumnRenameDialog()
+                .withClearAllFilters();
+    }
 
-	@Override
-	protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
-		return super.createRowHeaderMenu(natTable)
-								.withAutoResizeSelectedRowsMenuItem();
-	}
+    @Override
+    protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
+        return super.createRowHeaderMenu(natTable)
+                .withAutoResizeSelectedRowsMenuItem();
+    }
 
-	@Override
-	protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
-		return super.createCornerMenu(natTable)
-								.withShowAllColumnsMenuItem();
-	}
+    @Override
+    protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
+        return super.createCornerMenu(natTable).withShowAllColumnsMenuItem();
+    }
 }

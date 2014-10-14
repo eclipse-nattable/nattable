@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.style;
 import java.util.List;
 
 public interface IDisplayModeOrdering {
-	
-	public List<String> getDisplayModeOrdering(String targetDisplayMode);
+
+    public List<String> getDisplayModeOrdering(String targetDisplayMode);
 
 }

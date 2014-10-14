@@ -14,22 +14,23 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.command.ScrollSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-public class ScrollSelectionCommandHandler extends AbstractLayerCommandHandler<ScrollSelectionCommand> {
+public class ScrollSelectionCommandHandler extends
+        AbstractLayerCommandHandler<ScrollSelectionCommand> {
 
-	private final ViewportLayer viewportLayer;
+    private final ViewportLayer viewportLayer;
 
-	public ScrollSelectionCommandHandler(ViewportLayer viewportLayer) {
-		this.viewportLayer = viewportLayer;
-	}
-	
-	public Class<ScrollSelectionCommand> getCommandClass() {
-		return ScrollSelectionCommand.class;
-	}
+    public ScrollSelectionCommandHandler(ViewportLayer viewportLayer) {
+        this.viewportLayer = viewportLayer;
+    }
 
-	@Override
-	protected boolean doCommand(ScrollSelectionCommand command) {
-		viewportLayer.scrollVerticallyByAPage(command);
-		return true;
-	}
+    public Class<ScrollSelectionCommand> getCommandClass() {
+        return ScrollSelectionCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(ScrollSelectionCommand command) {
+        viewportLayer.scrollVerticallyByAPage(command);
+        return true;
+    }
 
 }

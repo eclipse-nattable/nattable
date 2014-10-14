@@ -17,17 +17,17 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  */
 public class RowStructuralRefreshEvent extends StructuralRefreshEvent {
 
-	public RowStructuralRefreshEvent(ILayer layer) {
-		super(layer);
-	}
-	
-	@Override
-	public boolean isVerticalStructureChanged() {
-		return true;
-	}
-	
-	@Override
-	public boolean isHorizontalStructureChanged() {
-		return false;
-	}
+    public RowStructuralRefreshEvent(ILayer layer) {
+        super(layer);
+    }
+
+    @Override
+    public boolean isVerticalStructureChanged() {
+        return true;
+    }
+
+    @Override
+    public boolean isHorizontalStructureChanged() {
+        return false;
+    }
 }

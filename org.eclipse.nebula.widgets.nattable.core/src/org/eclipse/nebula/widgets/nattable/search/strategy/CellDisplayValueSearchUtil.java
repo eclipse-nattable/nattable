@@ -27,219 +27,249 @@ import org.eclipse.nebula.widgets.nattable.search.strategy.GridSearchStrategy.Gr
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 public class CellDisplayValueSearchUtil {
-	
-	static List<PositionCoordinate> getCellCoordinates(ILayer contextLayer, int startingColumnPosition, int startingRowPosition, int width, int height) {
-		List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
-		for (int columnPosition = 0; columnPosition < width; columnPosition++) {
-			for (int rowPosition = 0; rowPosition < height; rowPosition++) {
-				PositionCoordinate coordinate = new PositionCoordinate(contextLayer, startingColumnPosition, startingRowPosition++);
-				coordinates.add(coordinate);
-			}
-			startingColumnPosition++;
-		}
-		return coordinates;
-	}
-	
-	static List<PositionCoordinate> getDescendingCellCoordinates(ILayer contextLayer, int startingColumnPosition, int startingRowPosition, int width, int height) {
-		List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
-		for (int columnPosition = width; columnPosition >= 0 && startingColumnPosition >= 0; columnPosition--) {
-			for (int rowPosition = height; rowPosition >= 0 && startingRowPosition >= 0; rowPosition--) {
-				PositionCoordinate coordinate = new PositionCoordinate(contextLayer, startingColumnPosition, startingRowPosition--);
-				coordinates.add(coordinate);
-			}
-			startingColumnPosition--;
-		}
-		return coordinates;
-	}
-	
-	static List<PositionCoordinate> getCellCoordinatesRowFirst(ILayer contextLayer,
-			int startingColumnPosition, int startingRowPosition, int width, int height) {
-		List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
-		for (int rowPosition = 0; rowPosition < height; rowPosition++) {
-			for (int columnPosition = 0; columnPosition < width; columnPosition++) {
-				PositionCoordinate coordinate = new PositionCoordinate(contextLayer,
-						startingColumnPosition++, startingRowPosition);
-				coordinates.add(coordinate);
-			}
-			startingRowPosition++;
-		}
-		return coordinates;
-	}
-	
-	static List<PositionCoordinate> getDescendingCellCoordinatesRowFirst(ILayer contextLayer,
-			int startingColumnPosition, int startingRowPosition, int width, int height) {
-		List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
-		for (int rowPosition = height; rowPosition >= 0 && startingRowPosition >= 0; rowPosition--) {
-			for (int columnPosition = width; columnPosition >= 0 && startingColumnPosition >= 0; columnPosition--) {
-				PositionCoordinate coordinate = new PositionCoordinate(contextLayer,
-						startingColumnPosition--, startingRowPosition);
-				coordinates.add(coordinate);
-			}
-			startingRowPosition--;
-		}
-		return coordinates;
-	}
-	
-	/**
-	 * Finds the first matching cell in a list of cells.
-	 * 
-	 * @param layer
-	 * @param configRegistry
-	 * @param cellsToSearch
-	 * @param valueToMatch
-	 * @param comparator
-	 * @param caseSensitive
-	 * @param wholeWord
-	 * @param regex
-	 * @param includeCollapsed TODO currently ignored
-	 * @return
-	 * @throws PatternSyntaxException
-	 */
-	static PositionCoordinate findCell(final ILayer layer, final IConfigRegistry configRegistry,
-			final PositionCoordinate[] cellsToSearch,
-			final Object valueToMatch, final Comparator<String> comparator,
-			final boolean caseSensitive,
-			final boolean wholeWord, final boolean regex,
-			final boolean includeCollapsed)
-			throws PatternSyntaxException {	
-		final List<PositionCoordinate> cellCoordinates = Arrays.asList(cellsToSearch);		
-		String stringValue = caseSensitive ? valueToMatch.toString() : valueToMatch.toString().toLowerCase();
-		Pattern pattern = regex ? Pattern.compile(stringValue) : null;
-		for (int cellIndex = 0; cellIndex < cellCoordinates.size(); cellIndex++) {
-			final PositionCoordinate cellCoordinate = cellCoordinates.get(cellIndex);
-			if (compare(layer, configRegistry, pattern, stringValue, comparator, caseSensitive,
-					wholeWord, regex, cellCoordinate.columnPosition, cellCoordinate.rowPosition)) {
-				return cellCoordinate;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Finds the first matching cell in a list of grid cell rectangles.
-	 * 
-	 * @param layer
-	 * @param configRegistry
-	 * @param cellRectangles
-	 * @param valueToMatch
-	 * @param comparator
-	 * @param caseSensitive
-	 * @param wholeWord
-	 * @param regex
-	 * @param includeCollapsed TODO currently ignored
-	 * @return
-	 * @throws PatternSyntaxException
-	 */
-	static PositionCoordinate findCell(final ILayer layer, final IConfigRegistry configRegistry,
-			final List<GridRectangle> cellRectangles,
-			final Object valueToMatch, final Comparator<String> comparator,
-			final boolean caseSensitive,
-			final boolean wholeWord, final boolean regex,
-			final boolean columnFirst, final boolean includeCollapsed)
-	throws PatternSyntaxException {	
-		String stringValue = caseSensitive ? valueToMatch.toString() : valueToMatch.toString().toLowerCase();
-		Pattern pattern = regex ? Pattern.compile(stringValue) : null;
-		for (GridRectangle cellRectangle : cellRectangles) {
-			int direction = cellRectangle.firstDim.size() > 0
-					|| cellRectangle.secondDim.size() > 0 ? 1 : -1;
-			for (int i = cellRectangle.firstDim.start; 
-					Math.abs(cellRectangle.firstDim.end - i) > 0;
-					i += direction) {
-				PositionCoordinate result = findCell(layer, configRegistry,
-						i, cellRectangle.secondDim.start, cellRectangle.secondDim.end,
-						direction, pattern, stringValue, comparator,
-						caseSensitive, wholeWord, regex, columnFirst, includeCollapsed);
-				if (result != null) {
-					return result;
-				}
-			}
-		}
-		return null;
-	}
 
-	/**
-	 * Finds the first matching cell in a table slice.
-	 * 
-	 * @param layer
-	 * @param configRegistry
-	 * @param firstDimIndex
-	 * @param secondDimStart
-	 * @param secondDimEnd
-	 * @param direction
-	 * @param pattern
-	 * @param stringValue
-	 * @param comparator
-	 * @param caseSensitive
-	 * @param wholeWord
-	 * @param regex
-	 * @param columnFirst
-	 * @param includeCollapsed
-	 * @return
-	 * @throws PatternSyntaxException
-	 */
-	private static PositionCoordinate findCell(ILayer layer,
-			IConfigRegistry configRegistry, int firstDimIndex,
-			int secondDimStart, int secondDimEnd, int direction, Pattern pattern,
-			String stringValue, Comparator<String> comparator, boolean caseSensitive,
-			boolean wholeWord, boolean regex, final boolean columnFirst,
-			boolean includeCollapsed)
-	throws PatternSyntaxException {	
-		
-		int columnPosition;
-		int rowPosition;
-		if (columnFirst) {
-			columnPosition = firstDimIndex;
-			rowPosition = secondDimStart;
-		} else {
-			columnPosition = secondDimStart;
-			rowPosition = firstDimIndex;
-		}
-		for (int i = secondDimStart; direction * (secondDimEnd - i) > 0; i += direction) {
-			if (compare(layer, configRegistry, pattern, stringValue, comparator,
-					caseSensitive, wholeWord, regex, columnPosition, rowPosition)) {
-				return new PositionCoordinate(layer, columnPosition, rowPosition);
-			}
-			if (columnFirst) {
-				rowPosition += direction;
-			} else {
-				columnPosition += direction;
-			}
-		}
-		return null;
-	}
+    static List<PositionCoordinate> getCellCoordinates(ILayer contextLayer,
+            int startingColumnPosition, int startingRowPosition, int width,
+            int height) {
+        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
+        for (int columnPosition = 0; columnPosition < width; columnPosition++) {
+            for (int rowPosition = 0; rowPosition < height; rowPosition++) {
+                PositionCoordinate coordinate = new PositionCoordinate(
+                        contextLayer, startingColumnPosition,
+                        startingRowPosition++);
+                coordinates.add(coordinate);
+            }
+            startingColumnPosition++;
+        }
+        return coordinates;
+    }
 
-	private static boolean compare(ILayer layer, IConfigRegistry configRegistry,
-			Pattern pattern, String stringValue, Comparator<String> comparator,
-			boolean caseSensitive, boolean wholeWord, boolean regex,
-			int columnPosition, int rowPosition) {
-		
-		// Convert cell's data
-		final IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
-				CellConfigAttributes.DISPLAY_CONVERTER, DisplayMode.NORMAL,
-				layer.getConfigLabelsByPosition(columnPosition, rowPosition).getLabels());
-		Object dataValue = null;
-		if (displayConverter != null) {
-			ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
-			if (cell != null) {
-				dataValue = displayConverter.canonicalToDisplayValue(cell,
-						configRegistry, cell.getDataValue());
-			}
-		}
-		
-		// Compare with valueToMatch
-		if (dataValue instanceof Comparable<?>) {
-			String dataValueString = caseSensitive ? dataValue.toString() 
-					: dataValue.toString().toLowerCase();
-			if (regex) {
-				if (pattern.matcher(dataValueString).matches()) {
-					return true;
-				}
-			} else if (comparator.compare(stringValue, dataValueString) == 0) {
-				return true;
-			} else if (!wholeWord && dataValueString.contains(stringValue)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    static List<PositionCoordinate> getDescendingCellCoordinates(
+            ILayer contextLayer, int startingColumnPosition,
+            int startingRowPosition, int width, int height) {
+        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
+        for (int columnPosition = width; columnPosition >= 0
+                && startingColumnPosition >= 0; columnPosition--) {
+            for (int rowPosition = height; rowPosition >= 0
+                    && startingRowPosition >= 0; rowPosition--) {
+                PositionCoordinate coordinate = new PositionCoordinate(
+                        contextLayer, startingColumnPosition,
+                        startingRowPosition--);
+                coordinates.add(coordinate);
+            }
+            startingColumnPosition--;
+        }
+        return coordinates;
+    }
+
+    static List<PositionCoordinate> getCellCoordinatesRowFirst(
+            ILayer contextLayer, int startingColumnPosition,
+            int startingRowPosition, int width, int height) {
+        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
+        for (int rowPosition = 0; rowPosition < height; rowPosition++) {
+            for (int columnPosition = 0; columnPosition < width; columnPosition++) {
+                PositionCoordinate coordinate = new PositionCoordinate(
+                        contextLayer, startingColumnPosition++,
+                        startingRowPosition);
+                coordinates.add(coordinate);
+            }
+            startingRowPosition++;
+        }
+        return coordinates;
+    }
+
+    static List<PositionCoordinate> getDescendingCellCoordinatesRowFirst(
+            ILayer contextLayer, int startingColumnPosition,
+            int startingRowPosition, int width, int height) {
+        List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
+        for (int rowPosition = height; rowPosition >= 0
+                && startingRowPosition >= 0; rowPosition--) {
+            for (int columnPosition = width; columnPosition >= 0
+                    && startingColumnPosition >= 0; columnPosition--) {
+                PositionCoordinate coordinate = new PositionCoordinate(
+                        contextLayer, startingColumnPosition--,
+                        startingRowPosition);
+                coordinates.add(coordinate);
+            }
+            startingRowPosition--;
+        }
+        return coordinates;
+    }
+
+    /**
+     * Finds the first matching cell in a list of cells.
+     * 
+     * @param layer
+     * @param configRegistry
+     * @param cellsToSearch
+     * @param valueToMatch
+     * @param comparator
+     * @param caseSensitive
+     * @param wholeWord
+     * @param regex
+     * @param includeCollapsed
+     *            TODO currently ignored
+     * @return
+     * @throws PatternSyntaxException
+     */
+    static PositionCoordinate findCell(final ILayer layer,
+            final IConfigRegistry configRegistry,
+            final PositionCoordinate[] cellsToSearch,
+            final Object valueToMatch, final Comparator<String> comparator,
+            final boolean caseSensitive, final boolean wholeWord,
+            final boolean regex, final boolean includeCollapsed)
+            throws PatternSyntaxException {
+        final List<PositionCoordinate> cellCoordinates = Arrays
+                .asList(cellsToSearch);
+        String stringValue = caseSensitive ? valueToMatch.toString()
+                : valueToMatch.toString().toLowerCase();
+        Pattern pattern = regex ? Pattern.compile(stringValue) : null;
+        for (int cellIndex = 0; cellIndex < cellCoordinates.size(); cellIndex++) {
+            final PositionCoordinate cellCoordinate = cellCoordinates
+                    .get(cellIndex);
+            if (compare(layer, configRegistry, pattern, stringValue,
+                    comparator, caseSensitive, wholeWord, regex,
+                    cellCoordinate.columnPosition, cellCoordinate.rowPosition)) {
+                return cellCoordinate;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds the first matching cell in a list of grid cell rectangles.
+     * 
+     * @param layer
+     * @param configRegistry
+     * @param cellRectangles
+     * @param valueToMatch
+     * @param comparator
+     * @param caseSensitive
+     * @param wholeWord
+     * @param regex
+     * @param includeCollapsed
+     *            TODO currently ignored
+     * @return
+     * @throws PatternSyntaxException
+     */
+    static PositionCoordinate findCell(final ILayer layer,
+            final IConfigRegistry configRegistry,
+            final List<GridRectangle> cellRectangles,
+            final Object valueToMatch, final Comparator<String> comparator,
+            final boolean caseSensitive, final boolean wholeWord,
+            final boolean regex, final boolean columnFirst,
+            final boolean includeCollapsed) throws PatternSyntaxException {
+        String stringValue = caseSensitive ? valueToMatch.toString()
+                : valueToMatch.toString().toLowerCase();
+        Pattern pattern = regex ? Pattern.compile(stringValue) : null;
+        for (GridRectangle cellRectangle : cellRectangles) {
+            int direction = cellRectangle.firstDim.size() > 0
+                    || cellRectangle.secondDim.size() > 0 ? 1 : -1;
+            for (int i = cellRectangle.firstDim.start; Math
+                    .abs(cellRectangle.firstDim.end - i) > 0; i += direction) {
+                PositionCoordinate result = findCell(layer, configRegistry, i,
+                        cellRectangle.secondDim.start,
+                        cellRectangle.secondDim.end, direction, pattern,
+                        stringValue, comparator, caseSensitive, wholeWord,
+                        regex, columnFirst, includeCollapsed);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds the first matching cell in a table slice.
+     * 
+     * @param layer
+     * @param configRegistry
+     * @param firstDimIndex
+     * @param secondDimStart
+     * @param secondDimEnd
+     * @param direction
+     * @param pattern
+     * @param stringValue
+     * @param comparator
+     * @param caseSensitive
+     * @param wholeWord
+     * @param regex
+     * @param columnFirst
+     * @param includeCollapsed
+     * @return
+     * @throws PatternSyntaxException
+     */
+    private static PositionCoordinate findCell(ILayer layer,
+            IConfigRegistry configRegistry, int firstDimIndex,
+            int secondDimStart, int secondDimEnd, int direction,
+            Pattern pattern, String stringValue, Comparator<String> comparator,
+            boolean caseSensitive, boolean wholeWord, boolean regex,
+            final boolean columnFirst, boolean includeCollapsed)
+            throws PatternSyntaxException {
+
+        int columnPosition;
+        int rowPosition;
+        if (columnFirst) {
+            columnPosition = firstDimIndex;
+            rowPosition = secondDimStart;
+        } else {
+            columnPosition = secondDimStart;
+            rowPosition = firstDimIndex;
+        }
+        for (int i = secondDimStart; direction * (secondDimEnd - i) > 0; i += direction) {
+            if (compare(layer, configRegistry, pattern, stringValue,
+                    comparator, caseSensitive, wholeWord, regex,
+                    columnPosition, rowPosition)) {
+                return new PositionCoordinate(layer, columnPosition,
+                        rowPosition);
+            }
+            if (columnFirst) {
+                rowPosition += direction;
+            } else {
+                columnPosition += direction;
+            }
+        }
+        return null;
+    }
+
+    private static boolean compare(ILayer layer,
+            IConfigRegistry configRegistry, Pattern pattern,
+            String stringValue, Comparator<String> comparator,
+            boolean caseSensitive, boolean wholeWord, boolean regex,
+            int columnPosition, int rowPosition) {
+
+        // Convert cell's data
+        final IDisplayConverter displayConverter = configRegistry
+                .getConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        DisplayMode.NORMAL,
+                        layer.getConfigLabelsByPosition(columnPosition,
+                                rowPosition).getLabels());
+        Object dataValue = null;
+        if (displayConverter != null) {
+            ILayerCell cell = layer.getCellByPosition(columnPosition,
+                    rowPosition);
+            if (cell != null) {
+                dataValue = displayConverter.canonicalToDisplayValue(cell,
+                        configRegistry, cell.getDataValue());
+            }
+        }
+
+        // Compare with valueToMatch
+        if (dataValue instanceof Comparable<?>) {
+            String dataValueString = caseSensitive ? dataValue.toString()
+                    : dataValue.toString().toLowerCase();
+            if (regex) {
+                if (pattern.matcher(dataValueString).matches()) {
+                    return true;
+                }
+            } else if (comparator.compare(stringValue, dataValueString) == 0) {
+                return true;
+            } else if (!wholeWord && dataValueString.contains(stringValue)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -20,9 +20,10 @@ import org.eclipse.swt.events.KeyEvent;
  */
 public class PrintAction implements IKeyAction {
 
-	@Override
-	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new PrintCommand(natTable.getConfigRegistry(), natTable.getShell()));
-	}
+    @Override
+    public void run(NatTable natTable, KeyEvent event) {
+        natTable.doCommand(new PrintCommand(natTable.getConfigRegistry(),
+                natTable.getShell()));
+    }
 
 }

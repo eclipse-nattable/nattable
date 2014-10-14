@@ -14,17 +14,17 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
 public class BlinkTimerEnableCommand extends AbstractContextFreeCommand {
 
-	private boolean enableBlinkTimer;
+    private boolean enableBlinkTimer;
 
-	public BlinkTimerEnableCommand(boolean enableBlinkTimer) {
-		this.enableBlinkTimer = enableBlinkTimer;
-	}
-	
-	public boolean isEnableBlinkTimer() {
-		return enableBlinkTimer;
-	}
-	
-	public void setEnableBlinkTimer(boolean enableBlinkTimer) {
-		this.enableBlinkTimer = enableBlinkTimer;
-	}
+    public BlinkTimerEnableCommand(boolean enableBlinkTimer) {
+        this.enableBlinkTimer = enableBlinkTimer;
+    }
+
+    public boolean isEnableBlinkTimer() {
+        return enableBlinkTimer;
+    }
+
+    public void setEnableBlinkTimer(boolean enableBlinkTimer) {
+        this.enableBlinkTimer = enableBlinkTimer;
+    }
 }

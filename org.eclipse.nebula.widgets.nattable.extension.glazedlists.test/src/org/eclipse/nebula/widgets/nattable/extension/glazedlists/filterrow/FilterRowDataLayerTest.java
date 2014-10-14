@@ -39,118 +39,128 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class FilterRowDataLayerTest {
 
-	private DataLayerFixture columnHeaderLayer;
-	private IConfigRegistry configRegistry;
-	private FilterList<RowDataFixture> filterList;
-	private FilterRowDataLayer<RowDataFixture> layerUnderTest;
-	private LayerListenerFixture listener;
+    private DataLayerFixture columnHeaderLayer;
+    private IConfigRegistry configRegistry;
+    private FilterList<RowDataFixture> filterList;
+    private FilterRowDataLayer<RowDataFixture> layerUnderTest;
+    private LayerListenerFixture listener;
 
-	@Before
-	public void setup() {
-		columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
+    @Before
+    public void setup() {
+        columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
 
-		configRegistry = new ConfigRegistry();
-		new DefaultNatTableStyleConfiguration().configureRegistry(configRegistry);
-		new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
+        configRegistry = new ConfigRegistry();
+        new DefaultNatTableStyleConfiguration()
+                .configureRegistry(configRegistry);
+        new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
 
-		filterList = new FilterList<RowDataFixture>(GlazedLists.eventList(RowDataListFixture.getList()));
-		
-		layerUnderTest = new FilterRowDataLayer<RowDataFixture>(
-				new DefaultGlazedListsFilterStrategy<RowDataFixture>(
-						filterList,
-					new ReflectiveColumnPropertyAccessor<RowDataFixture>(RowDataListFixture.getPropertyNames()),
-					configRegistry
-				),
-				columnHeaderLayer, columnHeaderLayer.getDataProvider(), configRegistry);
-		listener = new LayerListenerFixture();
-		layerUnderTest.addLayerListener(listener);
-	}
+        filterList = new FilterList<RowDataFixture>(
+                GlazedLists.eventList(RowDataListFixture.getList()));
 
-	@Test
-	public void shouldHandleClearFilterCommand() throws Exception {
-		assertEquals(13, filterList.size());
+        layerUnderTest = new FilterRowDataLayer<RowDataFixture>(
+                new DefaultGlazedListsFilterStrategy<RowDataFixture>(
+                        filterList,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()),
+                        configRegistry), columnHeaderLayer,
+                columnHeaderLayer.getDataProvider(), configRegistry);
+        listener = new LayerListenerFixture();
+        layerUnderTest.addLayerListener(listener);
+    }
 
-		layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 0, "ford"));
-		assertEquals(1, filterList.size());
+    @Test
+    public void shouldHandleClearFilterCommand() throws Exception {
+        assertEquals(13, filterList.size());
 
-		layerUnderTest.doCommand(new ClearFilterCommand(layerUnderTest, 1));
-		assertEquals(13, filterList.size());
+        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 0,
+                "ford"));
+        assertEquals(1, filterList.size());
 
-		listener.containsInstanceOf(RowStructuralRefreshEvent.class);
-	}
+        layerUnderTest.doCommand(new ClearFilterCommand(layerUnderTest, 1));
+        assertEquals(13, filterList.size());
 
-	@Test
-	public void shouldHandleTheClearAllFiltersCommand() throws Exception {
-		assertEquals(13, filterList.size());
+        listener.containsInstanceOf(RowStructuralRefreshEvent.class);
+    }
 
-		layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 0, "ford"));
-		assertEquals(1, filterList.size());
+    @Test
+    public void shouldHandleTheClearAllFiltersCommand() throws Exception {
+        assertEquals(13, filterList.size());
 
-		layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 0, 0, "XXX"));
-		assertEquals(0, filterList.size());
+        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 0,
+                "ford"));
+        assertEquals(1, filterList.size());
 
-		layerUnderTest.doCommand(new ClearAllFiltersCommand());
-		assertEquals(13, filterList.size());
+        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 0, 0,
+                "XXX"));
+        assertEquals(0, filterList.size());
 
-		listener.containsInstanceOf(RowStructuralRefreshEvent.class);
-	}
+        layerUnderTest.doCommand(new ClearAllFiltersCommand());
+        assertEquals(13, filterList.size());
 
-	@Test
-	public void shouldHandleTheToggeleFilterRowCommand() throws Exception {
-		assertEquals(1, layerUnderTest.getRowCount());
-		layerUnderTest.doCommand(new ToggleFilterRowCommand());
-		//as the command is handled by the FilterRowHeaderComposite now, it should
-		//have no effect to do the command on the FilterRowDataLayer
-		assertEquals(1, layerUnderTest.getRowCount());
-	}
+        listener.containsInstanceOf(RowStructuralRefreshEvent.class);
+    }
 
-	@Test
-	public void saveState() throws Exception {
-		layerUnderTest.setDataValue(1, 1, "testValue");
-		layerUnderTest.setDataValue(2, 1, "testValue");
-		layerUnderTest.setDataValue(3, 1, "testValue");
-		layerUnderTest.setDataValue(2, 1, null); // clear filter
+    @Test
+    public void shouldHandleTheToggeleFilterRowCommand() throws Exception {
+        assertEquals(1, layerUnderTest.getRowCount());
+        layerUnderTest.doCommand(new ToggleFilterRowCommand());
+        // as the command is handled by the FilterRowHeaderComposite now, it
+        // should
+        // have no effect to do the command on the FilterRowDataLayer
+        assertEquals(1, layerUnderTest.getRowCount());
+    }
 
-		Properties properties = new Properties();
+    @Test
+    public void saveState() throws Exception {
+        layerUnderTest.setDataValue(1, 1, "testValue");
+        layerUnderTest.setDataValue(2, 1, "testValue");
+        layerUnderTest.setDataValue(3, 1, "testValue");
+        layerUnderTest.setDataValue(2, 1, null); // clear filter
 
-		// save state
-		layerUnderTest.saveState("prefix", properties);
-		String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+        Properties properties = new Properties();
 
-		assertEquals("1:testValue|3:testValue|", persistedProperty);
-	}
+        // save state
+        layerUnderTest.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix"
+                + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
 
-	@Test
-	public void loadState() throws Exception {
-		Properties properties = new Properties();
-		properties.put("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS, "1:testValue|3:testValue|");
+        assertEquals("1:testValue|3:testValue|", persistedProperty);
+    }
 
-		// load state
-		layerUnderTest.loadState("prefix", properties);
+    @Test
+    public void loadState() throws Exception {
+        Properties properties = new Properties();
+        properties.put("prefix"
+                + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS,
+                "1:testValue|3:testValue|");
 
-		assertEquals("testValue", layerUnderTest.getDataValue(1, 1));
-		assertNull(layerUnderTest.getDataValue(2, 1));
-		assertEquals("testValue", layerUnderTest.getDataValue(3, 1));
-	}
+        // load state
+        layerUnderTest.loadState("prefix", properties);
 
-	@Test
-	public void testUnregisterPersistable() {
-		layerUnderTest.unregisterPersistable(layerUnderTest.getFilterRowDataProvider());
+        assertEquals("testValue", layerUnderTest.getDataValue(1, 1));
+        assertNull(layerUnderTest.getDataValue(2, 1));
+        assertEquals("testValue", layerUnderTest.getDataValue(3, 1));
+    }
 
-		layerUnderTest.setDataValue(1, 1, "testValue");
-		layerUnderTest.setDataValue(2, 1, "testValue");
-		layerUnderTest.setDataValue(3, 1, "testValue");
-		layerUnderTest.setDataValue(2, 1, null); // clear filter
+    @Test
+    public void testUnregisterPersistable() {
+        layerUnderTest.unregisterPersistable(layerUnderTest
+                .getFilterRowDataProvider());
 
-		Properties properties = new Properties();
+        layerUnderTest.setDataValue(1, 1, "testValue");
+        layerUnderTest.setDataValue(2, 1, "testValue");
+        layerUnderTest.setDataValue(3, 1, "testValue");
+        layerUnderTest.setDataValue(2, 1, null); // clear filter
 
-		// save state
-		layerUnderTest.saveState("prefix", properties);
-		for (Object key : properties.keySet()) {
-			if (key.toString().contains(FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS)) {
-				fail("Filter state saved");
-			}
-		}
-	}
+        Properties properties = new Properties();
+
+        // save state
+        layerUnderTest.saveState("prefix", properties);
+        for (Object key : properties.keySet()) {
+            if (key.toString().contains(
+                    FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS)) {
+                fail("Filter state saved");
+            }
+        }
+    }
 }
-

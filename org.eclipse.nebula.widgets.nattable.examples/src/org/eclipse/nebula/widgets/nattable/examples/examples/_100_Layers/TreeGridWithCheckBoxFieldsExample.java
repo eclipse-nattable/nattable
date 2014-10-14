@@ -93,408 +93,447 @@ import ca.odell.glazedlists.TreeList;
 
 public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 
-	protected static final String NO_SORT_LABEL = "noSortLabel";
-	
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(800, 400, new TreeGridWithCheckBoxFieldsExample());
-	}
-	
-	public Control createExampleControl(Composite parent) {
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		configRegistry.registerConfigAttribute(SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
-		
-		// Underlying data source
-		createDatums();
-		EventList<Datum> eventList = GlazedLists.eventList(datums.values());
-		SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
-//		TreeList <RowDataFixture> treeList = new TreeList<RowDataFixture>(eventList, new RowDataFixtureTreeFormat(), new RowDataFixtureExpansionModel());
-		
-		String[] propertyNames = new String[] { "self", "bar" };
-		IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(propertyNames);
-		
-		// Column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		
-		ISortModel sortModel = new GlazedListsSortModel<Datum>(
-				sortedList,
-				columnPropertyAccessor,
-				configRegistry, 
-				columnHeaderDataLayer);
-		
-		final TreeList <Datum> treeList = new TreeList<Datum>(sortedList, new DatumTreeFormat(sortModel), new DatumExpansionModel());
-		GlazedListTreeData <Datum> treeData = new DatumTreeData(treeList);
-		
-		GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(treeList, columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		
-		// Handle update of CheckBoxField objects in column 0
-		bodyDataLayer.registerCommandHandler(new UpdateDataCommandHandler(bodyDataLayer) {
-			@Override
-			protected boolean doCommand(UpdateDataCommand command) {
-				int columnPosition = command.getColumnPosition();
-				int rowPosition = command.getRowPosition();
-				
-				if (columnPosition == 0) {
-					Datum datum = (Datum) bodyDataLayer.getDataProvider().getDataValue(columnPosition, rowPosition);
-					datum.setOn((Boolean) command.getNewValue());
-					
-					bodyDataLayer.fireLayerEvent(new CellVisualChangeEvent(bodyDataLayer, columnPosition, rowPosition));
-					return true;
-				} else {
-					return super.doCommand(command);
-				}
-			}
-		});
-		
-		// Body layer
-		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-		SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
-		
-		// Switch the ITreeRowModel implementation between using native grid Hide/Show or GlazedList TreeList Hide/Show  
-//		TreeLayer treeLayer = new TreeLayer(selectionLayer, new TreeRowModel<Datum>(treeData), true);
-		final TreeLayer treeLayer = new TreeLayer(selectionLayer, new GlazedListTreeRowModel<Datum>(treeData));
-		
-		ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
-		
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
-		//	Note: The column header layer is wrapped in a filter row composite.
-		//	This plugs in the filter row functionality
-	
+    protected static final String NO_SORT_LABEL = "noSortLabel";
 
-		ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
-		columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(800, 400,
+                new TreeGridWithCheckBoxFieldsExample());
+    }
 
-		// Register labels
-		SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<Datum>(
-				columnHeaderLayer, 
-				sortModel, 
-				false);
+    public Control createExampleControl(Composite parent) {
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        configRegistry.registerConfigAttribute(
+                SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
 
-		// Row header layer
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
+        // Underlying data source
+        createDatums();
+        EventList<Datum> eventList = GlazedLists.eventList(datums.values());
+        SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
+        // TreeList <RowDataFixture> treeList = new
+        // TreeList<RowDataFixture>(eventList, new RowDataFixtureTreeFormat(),
+        // new RowDataFixtureExpansionModel());
 
-		// Corner layer
-		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-//		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
-		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, sortHeaderLayer);
+        String[] propertyNames = new String[] { "self", "bar" };
+        IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(
+                propertyNames);
 
-		// Grid
-		GridLayer gridLayer = new GridLayer(
-				viewportLayer,
-//				columnHeaderLayer,
-				sortHeaderLayer,
-				rowHeaderLayer,
-				cornerLayer);
-		
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
-		natTable.addConfiguration(new SingleClickSortConfiguration());
-		
-		// Uncomment to see the native tree list printed to stout.
-//		printTree(treeList, treeData);
-		
-		columnHeaderDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-		
-		final ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter = new ColumnHeaderCheckBoxPainter(bodyDataLayer) {
-			@Override
-			protected Boolean convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
-				Datum dataValue = (Datum) cell.getDataValue();
-				return dataValue.isOn();
-			}
-		};
-		final ICellPainter checkBoxPainter = new TreeCheckBoxPainter() {
-			@Override
-			protected CheckBoxStateEnum getCheckBoxState(ILayerCell cell) {
-				Datum dataValue = (Datum) cell.getDataValue();
-				return dataValue.getCheckBoxState();
-			}
-		};
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				// Column header
-				configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
-						new BeveledBorderDecorator(new CellPainterDecorator(new SortableHeaderTextPainter(), CellEdgeEnum.LEFT, columnHeaderCheckBoxPainter)),
-						DisplayMode.NORMAL,
-						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0);
-				
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.CELL_PAINTER,
-						new BackgroundPainter(
-								new CellPainterDecorator(
-										new TextPainter() {
-											@Override
-											protected String convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
-												Datum dataValue = (Datum) cell.getDataValue();
-												return dataValue.getName();
-											}
-										},
-										CellEdgeEnum.LEFT,
-										checkBoxPainter
-								)
-						),
-						DisplayMode.NORMAL,
-						TreeLayer.TREE_COLUMN_CELL
-				);
-				
-				configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new DefaultBooleanDisplayConverter(), DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
-				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT, TreeLayer.TREE_COLUMN_CELL);
-				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, new CheckBoxCellEditor() {
-					@Override
-					public void setCanonicalValue(Object canonicalValue) {
-						Datum value = (Datum) canonicalValue;
-						super.setCanonicalValue(value.isOn());
-					}
-				}, DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
-			}
-			
-			@Override
-			public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-				uiBindingRegistry.registerFirstSingleClickBinding(
-						new CellPainterMouseEventMatcher(GridRegion.COLUMN_HEADER, MouseEventMatcher.LEFT_BUTTON, columnHeaderCheckBoxPainter),
-						new ToggleCheckBoxColumnAction(columnHeaderCheckBoxPainter, bodyDataLayer)
-				);
-				
-				uiBindingRegistry.registerFirstSingleClickBinding(
-		                new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, checkBoxPainter),
-		                new MouseEditAction());
-				
-				uiBindingRegistry.registerFirstMouseDragMode(
-		                new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, checkBoxPainter),
-						new CellEditDragMode());
-			}
-		});
-		
-		natTable.configure();
-		return natTable;
-	}
+        // Column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
 
-	private static class DatumTreeData extends GlazedListTreeData<Datum>{
+        ISortModel sortModel = new GlazedListsSortModel<Datum>(sortedList,
+                columnPropertyAccessor, configRegistry, columnHeaderDataLayer);
 
-		public DatumTreeData(TreeList<Datum> treeList) {
-			super(treeList);
-		}
+        final TreeList<Datum> treeList = new TreeList<Datum>(sortedList,
+                new DatumTreeFormat(sortModel), new DatumExpansionModel());
+        GlazedListTreeData<Datum> treeData = new DatumTreeData(treeList);
 
-		@Override
-		public String formatDataForDepth(int depth, Datum object) {
-			return object.getName();
-		}
+        GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(
+                treeList, columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
-		
-	}
-	
-	private static class DatumTreeFormat implements TreeList.Format<Datum> {
-		
-		private final ISortModel sortModel;
+        // Handle update of CheckBoxField objects in column 0
+        bodyDataLayer.registerCommandHandler(new UpdateDataCommandHandler(
+                bodyDataLayer) {
+            @Override
+            protected boolean doCommand(UpdateDataCommand command) {
+                int columnPosition = command.getColumnPosition();
+                int rowPosition = command.getRowPosition();
 
-		public DatumTreeFormat(ISortModel sortModel) {
-			this.sortModel = sortModel;
-		}
-		
-		public void getPath(List<Datum> path, Datum element) {
-			path.add(element);
-			Datum parent = element.getParent();
-			while (parent != null) {
-				path.add(parent);
-				parent = parent.getParent();
-			}
-			Collections.reverse(path);
-		}
-		
-		public boolean allowsChildren(Datum element) {
-			return true;
-		}
+                if (columnPosition == 0) {
+                    Datum datum = (Datum) bodyDataLayer.getDataProvider()
+                            .getDataValue(columnPosition, rowPosition);
+                    datum.setOn((Boolean) command.getNewValue());
 
-		public Comparator<Datum> getComparator(int depth) {
-			return new SortableTreeComparator<Datum>(GlazedLists.beanPropertyComparator(Datum.class, "self"), sortModel);
-		}
-	}
+                    bodyDataLayer.fireLayerEvent(new CellVisualChangeEvent(
+                            bodyDataLayer, columnPosition, rowPosition));
+                    return true;
+                } else {
+                    return super.doCommand(command);
+                }
+            }
+        });
 
-	private static class DatumExpansionModel implements TreeList.ExpansionModel<Datum> {
-		public boolean isExpanded(Datum element, List<Datum> path) {
-			return true;
-		}
+        // Body layer
+        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
+                bodyDataLayer);
+        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
+                columnReorderLayer);
+        SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
 
-		public void setExpanded(Datum element,	List<Datum> path, boolean expanded) {
-		}
-	}
-	
-	private void printTree(TreeList <Datum> treeList, ITreeData<Datum> treeData){
-		System.out.println(treeList.size());
-		   for (int i = 0; i < treeList.size(); i++) {
-	            final Datum location = treeList.get(i);
-	            final int depth = treeList.depth(i);
-	            final boolean hasChildren = treeList.hasChildren(i);
-	            final boolean isExpanded = treeList.isExpanded(i);
+        // Switch the ITreeRowModel implementation between using native grid
+        // Hide/Show or GlazedList TreeList Hide/Show
+        // TreeLayer treeLayer = new TreeLayer(selectionLayer, new
+        // TreeRowModel<Datum>(treeData), true);
+        final TreeLayer treeLayer = new TreeLayer(selectionLayer,
+                new GlazedListTreeRowModel<Datum>(treeData));
 
-	            for (int j = 0; j < depth; j++)
-	                System.out.print("\t");
+        ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
-	            if (hasChildren)
-	                System.out.print(isExpanded ? "- " : "+ ");
-	            else
-	                System.out.print("  ");
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+                columnHeaderDataLayer, viewportLayer, selectionLayer);
+        // Note: The column header layer is wrapped in a filter row composite.
+        // This plugs in the filter row functionality
 
-	            System.out.println(treeData.formatDataForDepth(depth, location));
-	        }
-	}
-	
-	public class Datum implements Comparable<Datum> {
+        ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
+                columnHeaderDataLayer);
+        columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
-		private final Datum parent;
-		private final List<Datum> children = new ArrayList<Datum>();
-		
-		private final String name;
-		private boolean on;
-		private int bar;
-		
-		public Datum(Datum parent, String name, boolean on, int bar) {
-			this.parent = parent;
-			if (parent != null) {
-				parent.addChild(this);
-			}
-			
-			this.name = name;
-			this.on = on;
-			this.bar = bar;
-		}
-		
-		public Datum getParent() {
-			return parent;
-		}
-		
-		public void addChild(Datum child) {
-			children.add(child);
-		}
-		
-		public List<Datum> getChildren() {
-			return children;
-		}
-		
-		public Datum getSelf() {
-			return this;
-		}
-		
-		public String getName() {
-			return name;
-		}
-		
-		public boolean isOn() {
-			if (children.size() == 0) {
-				return on;
-			} else {
-				return getCheckBoxState() == CheckBoxStateEnum.CHECKED;
-			}
-		}
-		
-		public void setOn(boolean on) {
-			if (children.size() == 0) {
-				this.on = on;
-			} else {
-				for (Datum child : children) {
-					child.setOn(on);
-				}
-			}
-		}
-		
-		public int getBar() {
-			return bar;
-		}
-		
-		public CheckBoxStateEnum getCheckBoxState() {
-			if (children.size() == 0) {
-				return on ? CheckBoxStateEnum.CHECKED : CheckBoxStateEnum.UNCHECKED;
-			} else {
-				boolean atLeastOneChildChecked = false;
-				boolean atLeastOneChildUnchecked = false;
-				
-				for (Datum child : children) {
-					CheckBoxStateEnum childCheckBoxState = child.getCheckBoxState();
-					switch (childCheckBoxState) {
-					case CHECKED:
-						atLeastOneChildChecked = true;
-						break;
-					case SEMICHECKED:
-						return CheckBoxStateEnum.SEMICHECKED;
-					case UNCHECKED:
-						atLeastOneChildUnchecked = true;
-						break;
-					}
-				}
-				
-				if (atLeastOneChildChecked) {
-					if (atLeastOneChildUnchecked) {
-						return CheckBoxStateEnum.SEMICHECKED;
-					} else {
-						return CheckBoxStateEnum.CHECKED;
-					}
-				} else {
-					return CheckBoxStateEnum.UNCHECKED;
-				}
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "[" +
-					"parent=" + parent +
-					", name=" + name +
-					", on=" + on +
-					", bar=" + bar +
-					"]";
-		}
-		
-		/**
-		 * Comparison is based on name only
-		 */
-		public int compareTo(Datum o) {
-			return this.name.compareTo(o.name);
-		}
-		
-	}
-	
-	private Map<String, Datum> datums = new HashMap<String, Datum>();
-	
-	private void createDatum(String parent, String foo, boolean fooFlag, int bar) {
-		Datum datum = new Datum(datums.get(parent), foo, fooFlag, bar);
-		datums.put(foo, datum);
-	}
-	
-	private void createDatums() {
-		createDatum(null, "root", false, 1);
-			createDatum("root", "A", false, 10);
-				createDatum("A", "A.1", false, 100);
-				createDatum("A", "A.2", false, 110);
-				createDatum("A", "A.3", true, 120);
-			createDatum("root", "B", true, 20);
-				createDatum("B", "B.1", true, 200);
-				createDatum("B", "B.2", true, 210);
-			createDatum("root", "C", false, 30);
-				createDatum("C", "C.1", true, 330);
-				createDatum("C", "C.2", false, 370);
-				createDatum("C", "C.3", true, 322);
-				createDatum("C", "C.4", false, 310);
-				createDatum("C", "C.5", true, 315);
-		createDatum(null, "root2", false, 2);
-			createDatum("root2", "X", false, 70);
-				createDatum("X", "X.1", false, 700);
-				createDatum("X", "X.2", false, 710);
-				createDatum("X", "X.3", false, 720);
-			createDatum("root2", "Y", false, 80);
-				createDatum("Y", "Y.1", false, 800);
-				createDatum("Y", "Y.2", false, 810);
-			createDatum("root2", "Z", false, 90);
-				createDatum("Z", "Z.1", false, 900);
-				createDatum("Z", "Z.2", false, 910);
-				createDatum("Z", "Z.3", false, 920);
-				createDatum("Z", "Z.4", false, 930);
-				createDatum("Z", "Z.5", false, 940);
-	}
-	
+        // Register labels
+        SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<Datum>(
+                columnHeaderLayer, sortModel, false);
+
+        // Row header layer
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer);
+
+        // Corner layer
+        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        // CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
+        // rowHeaderLayer, columnHeaderLayer);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
+                rowHeaderLayer, sortHeaderLayer);
+
+        // Grid
+        GridLayer gridLayer = new GridLayer(viewportLayer,
+        // columnHeaderLayer,
+                sortHeaderLayer, rowHeaderLayer, cornerLayer);
+
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+        natTable.addConfiguration(new SingleClickSortConfiguration());
+
+        // Uncomment to see the native tree list printed to stout.
+        // printTree(treeList, treeData);
+
+        columnHeaderDataLayer
+                .setConfigLabelAccumulator(new ColumnLabelAccumulator());
+
+        final ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter = new ColumnHeaderCheckBoxPainter(
+                bodyDataLayer) {
+            @Override
+            protected Boolean convertDataType(ILayerCell cell,
+                    IConfigRegistry configRegistry) {
+                Datum dataValue = (Datum) cell.getDataValue();
+                return dataValue.isOn();
+            }
+        };
+        final ICellPainter checkBoxPainter = new TreeCheckBoxPainter() {
+            @Override
+            protected CheckBoxStateEnum getCheckBoxState(ILayerCell cell) {
+                Datum dataValue = (Datum) cell.getDataValue();
+                return dataValue.getCheckBoxState();
+            }
+        };
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                // Column header
+                configRegistry
+                        .registerConfigAttribute(
+                                CellConfigAttributes.CELL_PAINTER,
+                                new BeveledBorderDecorator(
+                                        new CellPainterDecorator(
+                                                new SortableHeaderTextPainter(),
+                                                CellEdgeEnum.LEFT,
+                                                columnHeaderCheckBoxPainter)),
+                                DisplayMode.NORMAL,
+                                ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0);
+
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new BackgroundPainter(new CellPainterDecorator(
+                                new TextPainter() {
+                                    @Override
+                                    protected String convertDataType(
+                                            ILayerCell cell,
+                                            IConfigRegistry configRegistry) {
+                                        Datum dataValue = (Datum) cell
+                                                .getDataValue();
+                                        return dataValue.getName();
+                                    }
+                                }, CellEdgeEnum.LEFT, checkBoxPainter)),
+                        DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultBooleanDisplayConverter(),
+                        DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITABLE_RULE,
+                        IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT,
+                        TreeLayer.TREE_COLUMN_CELL);
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new CheckBoxCellEditor() {
+                            @Override
+                            public void setCanonicalValue(Object canonicalValue) {
+                                Datum value = (Datum) canonicalValue;
+                                super.setCanonicalValue(value.isOn());
+                            }
+                        }, DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+            }
+
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerFirstSingleClickBinding(
+                        new CellPainterMouseEventMatcher(
+                                GridRegion.COLUMN_HEADER,
+                                MouseEventMatcher.LEFT_BUTTON,
+                                columnHeaderCheckBoxPainter),
+                        new ToggleCheckBoxColumnAction(
+                                columnHeaderCheckBoxPainter, bodyDataLayer));
+
+                uiBindingRegistry
+                        .registerFirstSingleClickBinding(
+                                new CellPainterMouseEventMatcher(
+                                        GridRegion.BODY,
+                                        MouseEventMatcher.LEFT_BUTTON,
+                                        checkBoxPainter), new MouseEditAction());
+
+                uiBindingRegistry
+                        .registerFirstMouseDragMode(
+                                new CellPainterMouseEventMatcher(
+                                        GridRegion.BODY,
+                                        MouseEventMatcher.LEFT_BUTTON,
+                                        checkBoxPainter),
+                                new CellEditDragMode());
+            }
+        });
+
+        natTable.configure();
+        return natTable;
+    }
+
+    private static class DatumTreeData extends GlazedListTreeData<Datum> {
+
+        public DatumTreeData(TreeList<Datum> treeList) {
+            super(treeList);
+        }
+
+        @Override
+        public String formatDataForDepth(int depth, Datum object) {
+            return object.getName();
+        }
+
+    }
+
+    private static class DatumTreeFormat implements TreeList.Format<Datum> {
+
+        private final ISortModel sortModel;
+
+        public DatumTreeFormat(ISortModel sortModel) {
+            this.sortModel = sortModel;
+        }
+
+        public void getPath(List<Datum> path, Datum element) {
+            path.add(element);
+            Datum parent = element.getParent();
+            while (parent != null) {
+                path.add(parent);
+                parent = parent.getParent();
+            }
+            Collections.reverse(path);
+        }
+
+        public boolean allowsChildren(Datum element) {
+            return true;
+        }
+
+        public Comparator<Datum> getComparator(int depth) {
+            return new SortableTreeComparator<Datum>(
+                    GlazedLists.beanPropertyComparator(Datum.class, "self"),
+                    sortModel);
+        }
+    }
+
+    private static class DatumExpansionModel implements
+            TreeList.ExpansionModel<Datum> {
+        public boolean isExpanded(Datum element, List<Datum> path) {
+            return true;
+        }
+
+        public void setExpanded(Datum element, List<Datum> path,
+                boolean expanded) {}
+    }
+
+    private void printTree(TreeList<Datum> treeList, ITreeData<Datum> treeData) {
+        System.out.println(treeList.size());
+        for (int i = 0; i < treeList.size(); i++) {
+            final Datum location = treeList.get(i);
+            final int depth = treeList.depth(i);
+            final boolean hasChildren = treeList.hasChildren(i);
+            final boolean isExpanded = treeList.isExpanded(i);
+
+            for (int j = 0; j < depth; j++)
+                System.out.print("\t");
+
+            if (hasChildren)
+                System.out.print(isExpanded ? "- " : "+ ");
+            else
+                System.out.print("  ");
+
+            System.out.println(treeData.formatDataForDepth(depth, location));
+        }
+    }
+
+    public class Datum implements Comparable<Datum> {
+
+        private final Datum parent;
+        private final List<Datum> children = new ArrayList<Datum>();
+
+        private final String name;
+        private boolean on;
+        private int bar;
+
+        public Datum(Datum parent, String name, boolean on, int bar) {
+            this.parent = parent;
+            if (parent != null) {
+                parent.addChild(this);
+            }
+
+            this.name = name;
+            this.on = on;
+            this.bar = bar;
+        }
+
+        public Datum getParent() {
+            return parent;
+        }
+
+        public void addChild(Datum child) {
+            children.add(child);
+        }
+
+        public List<Datum> getChildren() {
+            return children;
+        }
+
+        public Datum getSelf() {
+            return this;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isOn() {
+            if (children.size() == 0) {
+                return on;
+            } else {
+                return getCheckBoxState() == CheckBoxStateEnum.CHECKED;
+            }
+        }
+
+        public void setOn(boolean on) {
+            if (children.size() == 0) {
+                this.on = on;
+            } else {
+                for (Datum child : children) {
+                    child.setOn(on);
+                }
+            }
+        }
+
+        public int getBar() {
+            return bar;
+        }
+
+        public CheckBoxStateEnum getCheckBoxState() {
+            if (children.size() == 0) {
+                return on ? CheckBoxStateEnum.CHECKED
+                        : CheckBoxStateEnum.UNCHECKED;
+            } else {
+                boolean atLeastOneChildChecked = false;
+                boolean atLeastOneChildUnchecked = false;
+
+                for (Datum child : children) {
+                    CheckBoxStateEnum childCheckBoxState = child
+                            .getCheckBoxState();
+                    switch (childCheckBoxState) {
+                        case CHECKED:
+                            atLeastOneChildChecked = true;
+                            break;
+                        case SEMICHECKED:
+                            return CheckBoxStateEnum.SEMICHECKED;
+                        case UNCHECKED:
+                            atLeastOneChildUnchecked = true;
+                            break;
+                    }
+                }
+
+                if (atLeastOneChildChecked) {
+                    if (atLeastOneChildUnchecked) {
+                        return CheckBoxStateEnum.SEMICHECKED;
+                    } else {
+                        return CheckBoxStateEnum.CHECKED;
+                    }
+                } else {
+                    return CheckBoxStateEnum.UNCHECKED;
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "[" + "parent=" + parent + ", name=" + name + ", on=" + on
+                    + ", bar=" + bar + "]";
+        }
+
+        /**
+         * Comparison is based on name only
+         */
+        public int compareTo(Datum o) {
+            return this.name.compareTo(o.name);
+        }
+
+    }
+
+    private Map<String, Datum> datums = new HashMap<String, Datum>();
+
+    private void createDatum(String parent, String foo, boolean fooFlag, int bar) {
+        Datum datum = new Datum(datums.get(parent), foo, fooFlag, bar);
+        datums.put(foo, datum);
+    }
+
+    private void createDatums() {
+        createDatum(null, "root", false, 1);
+        createDatum("root", "A", false, 10);
+        createDatum("A", "A.1", false, 100);
+        createDatum("A", "A.2", false, 110);
+        createDatum("A", "A.3", true, 120);
+        createDatum("root", "B", true, 20);
+        createDatum("B", "B.1", true, 200);
+        createDatum("B", "B.2", true, 210);
+        createDatum("root", "C", false, 30);
+        createDatum("C", "C.1", true, 330);
+        createDatum("C", "C.2", false, 370);
+        createDatum("C", "C.3", true, 322);
+        createDatum("C", "C.4", false, 310);
+        createDatum("C", "C.5", true, 315);
+        createDatum(null, "root2", false, 2);
+        createDatum("root2", "X", false, 70);
+        createDatum("X", "X.1", false, 700);
+        createDatum("X", "X.2", false, 710);
+        createDatum("X", "X.3", false, 720);
+        createDatum("root2", "Y", false, 80);
+        createDatum("Y", "Y.1", false, 800);
+        createDatum("Y", "Y.2", false, 810);
+        createDatum("root2", "Z", false, 90);
+        createDatum("Z", "Z.1", false, 900);
+        createDatum("Z", "Z.2", false, 910);
+        createDatum("Z", "Z.3", false, 920);
+        createDatum("Z", "Z.4", false, 930);
+        createDatum("Z", "Z.5", false, 940);
+    }
+
 }

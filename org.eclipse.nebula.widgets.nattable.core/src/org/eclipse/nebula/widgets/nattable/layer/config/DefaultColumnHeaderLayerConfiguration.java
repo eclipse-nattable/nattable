@@ -15,22 +15,23 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.resize.config.DefaultColumnResizeBindings;
 
 /**
- * Sets up Column header styling and resize bindings.
- * Added by the {@link ColumnHeaderLayer}
+ * Sets up Column header styling and resize bindings. Added by the
+ * {@link ColumnHeaderLayer}
  */
-public class DefaultColumnHeaderLayerConfiguration extends AggregateConfiguration {
+public class DefaultColumnHeaderLayerConfiguration extends
+        AggregateConfiguration {
 
-	public DefaultColumnHeaderLayerConfiguration() {
-		addColumnHeaderStyleConfig();
-		addColumnHeaderUIBindings();
-	}
+    public DefaultColumnHeaderLayerConfiguration() {
+        addColumnHeaderStyleConfig();
+        addColumnHeaderUIBindings();
+    }
 
-	protected void addColumnHeaderUIBindings() {
-		addConfiguration(new DefaultColumnResizeBindings());
-	}
+    protected void addColumnHeaderUIBindings() {
+        addConfiguration(new DefaultColumnResizeBindings());
+    }
 
-	protected void addColumnHeaderStyleConfig() {
-		addConfiguration(new DefaultColumnHeaderStyleConfiguration());
-	}
+    protected void addColumnHeaderStyleConfig() {
+        addConfiguration(new DefaultColumnHeaderStyleConfiguration());
+    }
 
 }

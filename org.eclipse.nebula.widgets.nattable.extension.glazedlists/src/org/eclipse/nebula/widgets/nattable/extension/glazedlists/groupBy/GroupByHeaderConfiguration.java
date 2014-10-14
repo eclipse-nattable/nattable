@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -27,43 +26,48 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
 
 public class GroupByHeaderConfiguration extends AbstractRegistryConfiguration {
-	
-	private final GroupByHeaderPainter groupByHeaderPainter;
 
-	public GroupByHeaderConfiguration(GroupByModel groupByModel, IDataProvider columnHeaderDataProvider) {
-		groupByHeaderPainter = new GroupByHeaderPainter(groupByModel, columnHeaderDataProvider);
-	}
-	
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, groupByHeaderPainter, DisplayMode.NORMAL, GroupByHeaderLayer.GROUP_BY_REGION);
-	}
-	
-	@Override
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerFirstMouseDragMode(
-				MouseEventMatcher.columnHeaderLeftClick(SWT.NONE),
-				new AggregateDragMode(
-						new CellDragMode(),
-						new ColumnReorderDragMode() {
-							@Override
-							protected boolean isValidTargetColumnPosition(
-									ILayer natLayer,
-									int dragFromGridColumnPosition,
-									int dragToGridColumnPosition) {
-								// Suppress reorder if cursor is over the group by region
-								LabelStack regionLabels = natLayer.getRegionLabelsByXY(this.currentEvent.x, this.currentEvent.y);
-								if (regionLabels != null && !regionLabels.hasLabel(GroupByHeaderLayer.GROUP_BY_REGION)) {
-									return super.isValidTargetColumnPosition(natLayer, dragFromGridColumnPosition,
-											dragToGridColumnPosition);
-								}
-								return false;
-							}
-						},
-						new GroupByDragMode()));
-	}
-	
-	public GroupByHeaderPainter getGroupByHeaderPainter() {
-		return groupByHeaderPainter;
-	}
-	
+    private final GroupByHeaderPainter groupByHeaderPainter;
+
+    public GroupByHeaderConfiguration(GroupByModel groupByModel,
+            IDataProvider columnHeaderDataProvider) {
+        groupByHeaderPainter = new GroupByHeaderPainter(groupByModel,
+                columnHeaderDataProvider);
+    }
+
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER, groupByHeaderPainter,
+                DisplayMode.NORMAL, GroupByHeaderLayer.GROUP_BY_REGION);
+    }
+
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher
+                .columnHeaderLeftClick(SWT.NONE), new AggregateDragMode(
+                new CellDragMode(), new ColumnReorderDragMode() {
+                    @Override
+                    protected boolean isValidTargetColumnPosition(
+                            ILayer natLayer, int dragFromGridColumnPosition,
+                            int dragToGridColumnPosition) {
+                        // Suppress reorder if cursor is over the group by
+                        // region
+                        LabelStack regionLabels = natLayer.getRegionLabelsByXY(
+                                this.currentEvent.x, this.currentEvent.y);
+                        if (regionLabels != null
+                                && !regionLabels
+                                        .hasLabel(GroupByHeaderLayer.GROUP_BY_REGION)) {
+                            return super.isValidTargetColumnPosition(natLayer,
+                                    dragFromGridColumnPosition,
+                                    dragToGridColumnPosition);
+                        }
+                        return false;
+                    }
+                }, new GroupByDragMode()));
+    }
+
+    public GroupByHeaderPainter getGroupByHeaderPainter() {
+        return groupByHeaderPainter;
+    }
+
 }

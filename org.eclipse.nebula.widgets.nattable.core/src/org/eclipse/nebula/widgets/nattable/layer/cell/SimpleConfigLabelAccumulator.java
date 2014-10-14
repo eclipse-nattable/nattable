@@ -14,14 +14,15 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 public class SimpleConfigLabelAccumulator implements IConfigLabelAccumulator {
 
-	private final String configLabel;
+    private final String configLabel;
 
-	public SimpleConfigLabelAccumulator(String configLabel) {
-		this.configLabel = configLabel;
-	}
+    public SimpleConfigLabelAccumulator(String configLabel) {
+        this.configLabel = configLabel;
+    }
 
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-		configLabels.addLabel(configLabel);
-	}
-	
+    public void accumulateConfigLabels(LabelStack configLabels,
+            int columnPosition, int rowPosition) {
+        configLabels.addLabel(configLabel);
+    }
+
 }

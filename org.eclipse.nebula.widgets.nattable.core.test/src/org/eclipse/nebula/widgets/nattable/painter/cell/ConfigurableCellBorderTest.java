@@ -29,31 +29,40 @@ import org.junit.Test;
 
 public class ConfigurableCellBorderTest {
 
-	private NatTable natTable;
-	private ConfigRegistry configRegistry;
+    private NatTable natTable;
+    private ConfigRegistry configRegistry;
 
     @Before
     public void setUp() throws Exception {
         natTable = new NatTableFixture();
-        configRegistry = (ConfigRegistry)natTable.getConfigRegistry();
+        configRegistry = (ConfigRegistry) natTable.getConfigRegistry();
     }
 
     @Test
     public void shouldReturnASelectedCellWithDottedLineStyling() {
         Style cellStyle = new Style();
-		final BorderStyle defaultBorderStyle = new BorderStyle(13, GUIHelper.COLOR_YELLOW, LineStyleEnum.DOTTED);
-		cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, defaultBorderStyle);
+        final BorderStyle defaultBorderStyle = new BorderStyle(13,
+                GUIHelper.COLOR_YELLOW, LineStyleEnum.DOTTED);
+        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+                defaultBorderStyle);
 
-		// Register line styling for body cells in selection mode
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT, SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
+        // Register line styling for body cells in selection mode
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                cellStyle, DisplayMode.SELECT,
+                SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
 
-		// Select and access cell
-		natTable.doCommand(new SelectCellCommand(natTable, 2, 2, false, false));
-		ILayerCell cell = natTable.getCellByPosition(2, 2);
-		Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
+        // Select and access cell
+        natTable.doCommand(new SelectCellCommand(natTable, 2, 2, false, false));
+        ILayerCell cell = natTable.getCellByPosition(2, 2);
+        Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
 
-		// Check for line styling
-		Assert.assertEquals(defaultBorderStyle, configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell.getConfigLabels().getLabels()).getAttributeValue(CellStyleAttributes.BORDER_STYLE));
+        // Check for line styling
+        Assert.assertEquals(
+                defaultBorderStyle,
+                configRegistry.getConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(),
+                        cell.getConfigLabels().getLabels()).getAttributeValue(
+                        CellStyleAttributes.BORDER_STYLE));
     }
 
 }

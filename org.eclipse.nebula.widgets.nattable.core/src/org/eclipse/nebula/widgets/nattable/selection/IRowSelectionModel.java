@@ -14,18 +14,18 @@ import java.util.List;
 
 public interface IRowSelectionModel<R> extends ISelectionModel {
 
-	/**
-	 * Expose the underlying row objects
-	 * 
-	 * @return The selected row objects.
-	 */
-	public List<R> getSelectedRowObjects();
-	
-	/**
-	 * Removes the selected row object from the selection
-	 * 
-	 * @param rowObject
-	 */
-	public void clearSelection(R rowObject);
-	
+    /**
+     * Expose the underlying row objects
+     * 
+     * @return The selected row objects.
+     */
+    public List<R> getSelectedRowObjects();
+
+    /**
+     * Removes the selected row object from the selection
+     * 
+     * @param rowObject
+     */
+    public void clearSelection(R rowObject);
+
 }

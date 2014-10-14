@@ -18,10 +18,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface GenerateListOfStrings {
-	
-	String[] values();
-	/** Will add this number of nulls into the list to enable nulls to be generated with the weighting given
-	 *  (eg adding 6 nulls to a list of 6 strings ought to produce nulls 50% of the time). Default is zero ie no nulls. */
-	int nullLoadFactor() default 0;
-	
+
+    String[] values();
+
+    /**
+     * Will add this number of nulls into the list to enable nulls to be
+     * generated with the weighting given (eg adding 6 nulls to a list of 6
+     * strings ought to produce nulls 50% of the time). Default is zero ie no
+     * nulls.
+     */
+    int nullLoadFactor() default 0;
+
 }

@@ -15,6 +15,6 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public interface IExportFormatter {
 
-	Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry);
+    Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry);
 
 }

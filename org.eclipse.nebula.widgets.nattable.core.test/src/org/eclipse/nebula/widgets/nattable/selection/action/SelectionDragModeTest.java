@@ -26,38 +26,38 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SelectionDragModeTest {
-	
-	NatTable natTable;
-	CellSelectionDragMode dragMode;
-	MouseEvent mouseEvent;
-	private DummyGridLayerStack gridLayer;
-	private LayerListenerFixture listener;
-	
-	@Before
-	public void setup() {
-		gridLayer = new DummyGridLayerStack();
-		natTable = new NatTable(new Shell(Display.getDefault()), gridLayer);
-		natTable.setSize(400,400);
-		natTable.doCommand(new InitializeClientAreaCommandFixture());
-		dragMode = new CellSelectionDragMode();
-		Event event = new Event();
-		event.widget = new Shell();
-		event.x = 100;
-		event.y = 100;
-		mouseEvent = new MouseEvent(event);
-		
-		listener = new LayerListenerFixture();
-		gridLayer.addLayerListener(listener);
-	}
-	
-	@Test
-	public void mouseDownShouldNotFireCommand() throws Exception {
-		dragMode.mouseDown(natTable, mouseEvent);
-		
-		List<ILayerEvent> receivedEvents = listener.getReceivedEvents();
-		Assert.assertNotNull(receivedEvents);
 
-		Assert.assertEquals(0, receivedEvents.size());
-	}
+    NatTable natTable;
+    CellSelectionDragMode dragMode;
+    MouseEvent mouseEvent;
+    private DummyGridLayerStack gridLayer;
+    private LayerListenerFixture listener;
+
+    @Before
+    public void setup() {
+        gridLayer = new DummyGridLayerStack();
+        natTable = new NatTable(new Shell(Display.getDefault()), gridLayer);
+        natTable.setSize(400, 400);
+        natTable.doCommand(new InitializeClientAreaCommandFixture());
+        dragMode = new CellSelectionDragMode();
+        Event event = new Event();
+        event.widget = new Shell();
+        event.x = 100;
+        event.y = 100;
+        mouseEvent = new MouseEvent(event);
+
+        listener = new LayerListenerFixture();
+        gridLayer.addLayerListener(listener);
+    }
+
+    @Test
+    public void mouseDownShouldNotFireCommand() throws Exception {
+        dragMode.mouseDown(natTable, mouseEvent);
+
+        List<ILayerEvent> receivedEvents = listener.getReceivedEvents();
+        Assert.assertNotNull(receivedEvents);
+
+        Assert.assertEquals(0, receivedEvents.size());
+    }
 
 }

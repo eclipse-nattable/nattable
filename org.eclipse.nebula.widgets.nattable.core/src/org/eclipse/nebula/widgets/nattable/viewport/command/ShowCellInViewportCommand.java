@@ -14,17 +14,18 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractPositionCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ShowCellInViewportCommand extends AbstractPositionCommand {
-	
-	public ShowCellInViewportCommand(ILayer layer, int columnPosition, int rowPosition) {
-		super(layer, columnPosition, rowPosition);
-	}
-	
-	protected ShowCellInViewportCommand(ShowCellInViewportCommand command) {
-		super(command);
-	}
-	
-	public ShowCellInViewportCommand cloneCommand() {
-		return new ShowCellInViewportCommand(this);
-	}
+
+    public ShowCellInViewportCommand(ILayer layer, int columnPosition,
+            int rowPosition) {
+        super(layer, columnPosition, rowPosition);
+    }
+
+    protected ShowCellInViewportCommand(ShowCellInViewportCommand command) {
+        super(command);
+    }
+
+    public ShowCellInViewportCommand cloneCommand() {
+        return new ShowCellInViewportCommand(this);
+    }
 
 }

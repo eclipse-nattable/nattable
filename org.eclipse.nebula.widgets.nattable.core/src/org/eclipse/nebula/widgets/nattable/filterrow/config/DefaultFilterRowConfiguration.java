@@ -31,50 +31,55 @@ import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.swt.SWT;
 
-public class DefaultFilterRowConfiguration extends AbstractRegistryConfiguration {
+public class DefaultFilterRowConfiguration extends
+        AbstractRegistryConfiguration {
 
-	public FilterRowPainter cellPainter = new FilterRowPainter();
-	public TextMatchingMode textMatchingMode = TextMatchingMode.CONTAINS;
-	public int showHideKeyConstant = SWT.F3;
+    public FilterRowPainter cellPainter = new FilterRowPainter();
+    public TextMatchingMode textMatchingMode = TextMatchingMode.CONTAINS;
+    public int showHideKeyConstant = SWT.F3;
 
-	@Override
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		// Plug in custom painter
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.CELL_PAINTER, 
-				new PaddingDecorator(cellPainter, 0, 0, 0, 5), 
-				DisplayMode.NORMAL, 
-				GridRegion.FILTER_ROW);
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.RENDER_GRID_LINES, 
-				Boolean.TRUE, 
-				DisplayMode.NORMAL, 
-				GridRegion.FILTER_ROW);
+    @Override
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        // Plug in custom painter
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER, new PaddingDecorator(
+                        cellPainter, 0, 0, 0, 5), DisplayMode.NORMAL,
+                GridRegion.FILTER_ROW);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.RENDER_GRID_LINES, Boolean.TRUE,
+                DisplayMode.NORMAL, GridRegion.FILTER_ROW);
 
-		// Make cells editable
-		configRegistry.registerConfigAttribute(
-				EditConfigAttributes.CELL_EDITABLE_RULE, 
-				IEditableRule.ALWAYS_EDITABLE, 
-				DisplayMode.NORMAL, 
-				GridRegion.FILTER_ROW);
+        // Make cells editable
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL,
+                GridRegion.FILTER_ROW);
 
-		// Default text matching mode
-		configRegistry.registerConfigAttribute(
-				FilterRowConfigAttributes.TEXT_MATCHING_MODE, textMatchingMode);
+        // Default text matching mode
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.TEXT_MATCHING_MODE, textMatchingMode);
 
-		// Default display converter. Used to convert the values typed into the text boxes into String objects.
-		configRegistry.registerConfigAttribute(
-				FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER, new DefaultDisplayConverter());
+        // Default display converter. Used to convert the values typed into the
+        // text boxes into String objects.
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                new DefaultDisplayConverter());
 
-		// Default comparator. Used to compare objects in the column during threshold matching.
-		configRegistry.registerConfigAttribute(
-				FilterRowConfigAttributes.FILTER_COMPARATOR, DefaultComparator.getInstance());
-	}
+        // Default comparator. Used to compare objects in the column during
+        // threshold matching.
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.FILTER_COMPARATOR,
+                DefaultComparator.getInstance());
+    }
 
-	@Override
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerFirstSingleClickBinding(new FilterRowMouseEventMatcher(), new MouseEditAction());
-		uiBindingRegistry.registerFirstSingleClickBinding(new ClearFilterIconMouseEventMatcher(cellPainter), new ClearFilterAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(showHideKeyConstant), new ToggleFilterRowAction());
-	}
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerFirstSingleClickBinding(
+                new FilterRowMouseEventMatcher(), new MouseEditAction());
+        uiBindingRegistry.registerFirstSingleClickBinding(
+                new ClearFilterIconMouseEventMatcher(cellPainter),
+                new ClearFilterAction());
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(
+                showHideKeyConstant), new ToggleFilterRowAction());
+    }
 }

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -26,50 +25,54 @@ import org.junit.Test;
 
 public class CellLabelMouseEventMatcherTest {
 
-	private static final String TEST_LABEL = "testLabel";
-	private NatTableFixture natTableFixture;
+    private static final String TEST_LABEL = "testLabel";
+    private NatTableFixture natTableFixture;
 
-	@Before
-	public void setUpCustomCellLabel() {
-		DummyGridLayerStack gridLayerStack = new DummyGridLayerStack(5, 5);
-		natTableFixture = new NatTableFixture(gridLayerStack);
+    @Before
+    public void setUpCustomCellLabel() {
+        DummyGridLayerStack gridLayerStack = new DummyGridLayerStack(5, 5);
+        natTableFixture = new NatTableFixture(gridLayerStack);
 
-		// Register custom label
-		DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
-		natTableFixture.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
-	}
+        // Register custom label
+        DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
+        natTableFixture.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
+    }
 
-	@Test
-	public void shouldMatchCellsWithCustomLabels() throws Exception {
-		CellLabelMouseEventMatcher matcher = new CellLabelMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, TEST_LABEL);
+    @Test
+    public void shouldMatchCellsWithCustomLabels() throws Exception {
+        CellLabelMouseEventMatcher matcher = new CellLabelMouseEventMatcher(
+                GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, TEST_LABEL);
 
-		boolean match = matcher.matches(natTableFixture,
-							new MouseEvent(SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
-							new LabelStack(GridRegion.BODY));
+        boolean match = matcher.matches(natTableFixture, new MouseEvent(
+                SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
+                new LabelStack(GridRegion.BODY));
 
-		Assert.assertTrue(match);
-	}
+        Assert.assertTrue(match);
+    }
 
-	@Test
-	public void shouldTakeTheRegionIntoAccountWhileMatching() throws Exception {
-		CellLabelMouseEventMatcher matcher = new CellLabelMouseEventMatcher(GridRegion.COLUMN_HEADER, MouseEventMatcher.LEFT_BUTTON, TEST_LABEL);
+    @Test
+    public void shouldTakeTheRegionIntoAccountWhileMatching() throws Exception {
+        CellLabelMouseEventMatcher matcher = new CellLabelMouseEventMatcher(
+                GridRegion.COLUMN_HEADER, MouseEventMatcher.LEFT_BUTTON,
+                TEST_LABEL);
 
-		boolean match = matcher.matches(natTableFixture,
-				new MouseEvent(SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
-				new LabelStack(GridRegion.BODY));
+        boolean match = matcher.matches(natTableFixture, new MouseEvent(
+                SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
+                new LabelStack(GridRegion.BODY));
 
-		Assert.assertFalse(match);
-	}
+        Assert.assertFalse(match);
+    }
 
-	@Test
-	public void shouldTakeTheButtomIntoAccountWhileMatching() throws Exception {
-		CellLabelMouseEventMatcher matcher = new CellLabelMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON, TEST_LABEL);
+    @Test
+    public void shouldTakeTheButtomIntoAccountWhileMatching() throws Exception {
+        CellLabelMouseEventMatcher matcher = new CellLabelMouseEventMatcher(
+                GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON, TEST_LABEL);
 
-		boolean match = matcher.matches(natTableFixture,
-				new MouseEvent(SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
-				new LabelStack(GridRegion.BODY));
+        boolean match = matcher.matches(natTableFixture, new MouseEvent(
+                SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
+                new LabelStack(GridRegion.BODY));
 
-		Assert.assertFalse(match);
-	}
+        Assert.assertFalse(match);
+    }
 
 }

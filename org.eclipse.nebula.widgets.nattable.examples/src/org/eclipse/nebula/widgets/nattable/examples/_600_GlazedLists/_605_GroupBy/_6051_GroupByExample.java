@@ -73,202 +73,234 @@ import ca.odell.glazedlists.TransformedList;
  */
 public class _6051_GroupByExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _6051_GroupByExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new _6051_GroupByExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return
-				"This example has a 'Group By' region at the top.\n" +
-				"If you drag a column header into this region, rows in the grid will be grouped by this column.\n" +
-				"If you right-click on the names in the Group By region, you can ungroup by the clicked column.\n" +
-				"You can also change the visibility of the Group By region by toggling the visibility via context menu in the corner region.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//create a new ConfigRegistry which will be needed for GlazedLists handling
-		ConfigRegistry configRegistry = new ConfigRegistry();
+    @Override
+    public String getDescription() {
+        return "This example has a 'Group By' region at the top.\n"
+                + "If you drag a column header into this region, rows in the grid will be grouped by this column.\n"
+                + "If you right-click on the names in the Group By region, you can ungroup by the clicked column.\n"
+                + "You can also change the visibility of the Group By region by toggling the visibility via context menu in the corner region.";
+    }
 
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday", 
-				"address.street", "address.housenumber", "address.postalCode", "address.city"};
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // create a new ConfigRegistry which will be needed for GlazedLists
+        // handling
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
-		propertyToLabelMap.put("address.street", "Street");
-		propertyToLabelMap.put("address.housenumber", "Housenumber");
-		propertyToLabelMap.put("address.postalCode", "Postal Code");
-		propertyToLabelMap.put("address.city", "City");
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday", "address.street", "address.housenumber",
+                "address.postalCode", "address.city" };
 
-		IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = 
-				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
-		
-		BodyLayerStack<PersonWithAddress> bodyLayerStack = 
-				new BodyLayerStack<PersonWithAddress>(PersonService.getPersonsWithAddress(100), columnPropertyAccessor);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
+        propertyToLabelMap.put("address.street", "Street");
+        propertyToLabelMap.put("address.housenumber", "Housenumber");
+        propertyToLabelMap.put("address.postalCode", "Postal Code");
+        propertyToLabelMap.put("address.city", "City");
 
-		//build the column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-		
-		//build the row header layer
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
-		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-		
-		//build the corner layer
-		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
-		
-		//build the grid layer
-		GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		//set the group by header on top of the grid
-		CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
-		final GroupByHeaderLayer groupByHeaderLayer = 
-				new GroupByHeaderLayer(bodyLayerStack.getGroupByModel(), gridLayer, columnHeaderDataProvider);
-		compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
-		compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
-		
-		//turn the auto configuration off as we want to add our header menu configuration
-		NatTable natTable = new NatTable(parent, compositeGridLayer, false);
-		
-		//as the autoconfiguration of the NatTable is turned off, we have to add the 
-		//DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		//add group by configuration
-		natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
-		
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-			@Override
-			protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
-				return super.createCornerMenu(natTable)
-						.withStateManagerMenuItemProvider()
-						.withMenuItemProvider(new IMenuItemProvider() {
-							
-							@Override
-							public void addMenuItem(NatTable natTable, Menu popupMenu) {
-								MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-								menuItem.setText("Toggle Group By Header"); //$NON-NLS-1$
-								menuItem.setEnabled(true);
-		
-								menuItem.addSelectionListener(new SelectionAdapter() {
-									@Override
-									public void widgetSelected(SelectionEvent event) {
-										groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
-									}
-								});
-							}
-						})
-						.withMenuItemProvider(new IMenuItemProvider() {
-							
-							@Override
-							public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-								MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-								menuItem.setText("Collapse All"); //$NON-NLS-1$
-								menuItem.setEnabled(true);
-		
-								menuItem.addSelectionListener(new SelectionAdapter() {
-									@Override
-									public void widgetSelected(SelectionEvent event) {
-										natTable.doCommand(new TreeCollapseAllCommand());
-									}
-								});
-							}
-						})
-						.withMenuItemProvider(new IMenuItemProvider() {
-							
-							@Override
-							public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-								MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-								menuItem.setText("Expand All"); //$NON-NLS-1$
-								menuItem.setEnabled(true);
-		
-								menuItem.addSelectionListener(new SelectionAdapter() {
-									@Override
-									public void widgetSelected(SelectionEvent event) {
-										natTable.doCommand(new TreeExpandAllCommand());
-									}
-								});
-							}
-						});
-			}
-		});
-		
-		natTable.configure();
-		
-		natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
-		
-		return natTable;
-	}
-	
-	/**
-	 * Always encapsulate the body layer stack in an AbstractLayerTransform to ensure that the
-	 * index transformations are performed in later commands.
-	 * @param <T>
-	 */
-	class BodyLayerStack<T> extends AbstractLayerTransform {
-		
-		private final SortedList<T> sortedList;
-		
-		private final IDataProvider bodyDataProvider;
-		
-		private final SelectionLayer selectionLayer;
-		
-		private final GroupByModel groupByModel = new GroupByModel();
-		
-		public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
-			//wrapping of the list to show into GlazedLists
-			//see http://publicobject.com/glazedlists/ for further information
-			EventList<T> eventList = GlazedLists.eventList(values);
-			TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-			
-			//use the SortedList constructor with 'null' for the Comparator because the Comparator
-			//will be set by configuration
-			sortedList = new SortedList<T>(rowObjectsGlazedList, null);
-			
-			//Use the GroupByDataLayer instead of the default DataLayer
-			GroupByDataLayer<T> bodyDataLayer = new GroupByDataLayer<T>(getGroupByModel(), sortedList, columnPropertyAccessor);
-			//get the IDataProvider that was created by the GroupByDataLayer
-			this.bodyDataProvider = bodyDataLayer.getDataProvider();
-			
-			//layer for event handling of GlazedLists and PropertyChanges
-			GlazedListsEventLayer<T> glazedListsEventLayer = 
-				new GlazedListsEventLayer<T>(bodyDataLayer, sortedList);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(
+                propertyNames);
 
-			this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
-			
-			//add a tree layer to visualise the grouping
-			TreeLayer treeLayer = new TreeLayer(selectionLayer, bodyDataLayer.getTreeRowModel());
+        BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
+                PersonService.getPersonsWithAddress(100),
+                columnPropertyAccessor);
 
-			ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
-			
-			setUnderlyingLayer(viewportLayer);
-		}
+        // build the column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
-		public SelectionLayer getSelectionLayer() {
-			return selectionLayer;
-		}
-		
-		public SortedList<T> getSortedList() {
-			return this.sortedList;
-		}
+        // build the row header layer
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
-		public IDataProvider getBodyDataProvider() {
-			return bodyDataProvider;
-		}
+        // build the corner layer
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                columnHeaderLayer);
 
-		public GroupByModel getGroupByModel() {
-			return groupByModel;
-		}
-	}
+        // build the grid layer
+        GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
+
+        // set the group by header on top of the grid
+        CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
+        final GroupByHeaderLayer groupByHeaderLayer = new GroupByHeaderLayer(
+                bodyLayerStack.getGroupByModel(), gridLayer,
+                columnHeaderDataProvider);
+        compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION,
+                groupByHeaderLayer, 0, 0);
+        compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
+
+        // turn the auto configuration off as we want to add our header menu
+        // configuration
+        NatTable natTable = new NatTable(parent, compositeGridLayer, false);
+
+        // as the autoconfiguration of the NatTable is turned off, we have to
+        // add the
+        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        // add group by configuration
+        natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable,
+                groupByHeaderLayer));
+
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
+                return super.createCornerMenu(natTable)
+                        .withStateManagerMenuItemProvider()
+                        .withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(NatTable natTable,
+                                    Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu,
+                                        SWT.PUSH);
+                                menuItem.setText("Toggle Group By Header"); //$NON-NLS-1$
+                                menuItem.setEnabled(true);
+
+                                menuItem.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(
+                                            SelectionEvent event) {
+                                        groupByHeaderLayer
+                                                .setVisible(!groupByHeaderLayer
+                                                        .isVisible());
+                                    }
+                                });
+                            }
+                        }).withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(final NatTable natTable,
+                                    Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu,
+                                        SWT.PUSH);
+                                menuItem.setText("Collapse All"); //$NON-NLS-1$
+                                menuItem.setEnabled(true);
+
+                                menuItem.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(
+                                            SelectionEvent event) {
+                                        natTable.doCommand(new TreeCollapseAllCommand());
+                                    }
+                                });
+                            }
+                        }).withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(final NatTable natTable,
+                                    Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu,
+                                        SWT.PUSH);
+                                menuItem.setText("Expand All"); //$NON-NLS-1$
+                                menuItem.setEnabled(true);
+
+                                menuItem.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(
+                                            SelectionEvent event) {
+                                        natTable.doCommand(new TreeExpandAllCommand());
+                                    }
+                                });
+                            }
+                        });
+            }
+        });
+
+        natTable.configure();
+
+        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
+                natTable));
+
+        return natTable;
+    }
+
+    /**
+     * Always encapsulate the body layer stack in an AbstractLayerTransform to
+     * ensure that the index transformations are performed in later commands.
+     * 
+     * @param <T>
+     */
+    class BodyLayerStack<T> extends AbstractLayerTransform {
+
+        private final SortedList<T> sortedList;
+
+        private final IDataProvider bodyDataProvider;
+
+        private final SelectionLayer selectionLayer;
+
+        private final GroupByModel groupByModel = new GroupByModel();
+
+        public BodyLayerStack(List<T> values,
+                IColumnPropertyAccessor<T> columnPropertyAccessor) {
+            // wrapping of the list to show into GlazedLists
+            // see http://publicobject.com/glazedlists/ for further information
+            EventList<T> eventList = GlazedLists.eventList(values);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
+                    .threadSafeList(eventList);
+
+            // use the SortedList constructor with 'null' for the Comparator
+            // because the Comparator
+            // will be set by configuration
+            sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+
+            // Use the GroupByDataLayer instead of the default DataLayer
+            GroupByDataLayer<T> bodyDataLayer = new GroupByDataLayer<T>(
+                    getGroupByModel(), sortedList, columnPropertyAccessor);
+            // get the IDataProvider that was created by the GroupByDataLayer
+            this.bodyDataProvider = bodyDataLayer.getDataProvider();
+
+            // layer for event handling of GlazedLists and PropertyChanges
+            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
+                    bodyDataLayer, sortedList);
+
+            this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
+
+            // add a tree layer to visualise the grouping
+            TreeLayer treeLayer = new TreeLayer(selectionLayer,
+                    bodyDataLayer.getTreeRowModel());
+
+            ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+
+            setUnderlyingLayer(viewportLayer);
+        }
+
+        public SelectionLayer getSelectionLayer() {
+            return selectionLayer;
+        }
+
+        public SortedList<T> getSortedList() {
+            return this.sortedList;
+        }
+
+        public IDataProvider getBodyDataProvider() {
+            return bodyDataProvider;
+        }
+
+        public GroupByModel getGroupByModel() {
+            return groupByModel;
+        }
+    }
 }

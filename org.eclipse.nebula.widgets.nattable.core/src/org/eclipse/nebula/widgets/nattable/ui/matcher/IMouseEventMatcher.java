@@ -10,18 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.swt.events.MouseEvent;
 
 public interface IMouseEventMatcher {
 
-	/**
-	 * Figures out if the mouse event occurred in the supplied region.
-	 * 
-	 * @param event SWT mouse event
-	 */
-	public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels);
+    /**
+     * Figures out if the mouse event occurred in the supplied region.
+     * 
+     * @param event
+     *            SWT mouse event
+     */
+    public boolean matches(NatTable natTable, MouseEvent event,
+            LabelStack regionLabels);
 
 }

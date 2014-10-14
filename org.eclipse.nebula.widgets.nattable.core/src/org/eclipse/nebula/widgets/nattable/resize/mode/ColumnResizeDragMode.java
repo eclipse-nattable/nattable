@@ -30,89 +30,99 @@ import org.eclipse.swt.graphics.Point;
  */
 public class ColumnResizeDragMode implements IDragMode {
 
-	private static final int DEFAULT_COLUMN_WIDTH_MINIMUM = 25;
+    private static final int DEFAULT_COLUMN_WIDTH_MINIMUM = 25;
 
-	protected int columnPositionToResize;
-	protected int originalColumnWidth;
-	protected int startX;
-	protected int currentX;
-	protected int lastX = -1;
-	protected int gridColumnStartX;
-	
-	protected boolean checkMinimumWidth = true;
+    protected int columnPositionToResize;
+    protected int originalColumnWidth;
+    protected int startX;
+    protected int currentX;
+    protected int lastX = -1;
+    protected int gridColumnStartX;
 
-	protected final IOverlayPainter overlayPainter = new ColumnResizeOverlayPainter();
+    protected boolean checkMinimumWidth = true;
 
-	@Override
-	public void mouseDown(NatTable natTable, MouseEvent event) {
-		natTable.forceFocus();
-		columnPositionToResize =
-		    CellEdgeDetectUtil.getColumnPositionToResize(natTable, new Point(event.x, event.y));
-		if (columnPositionToResize >= 0) {
-		    gridColumnStartX = natTable.getStartXOfColumnPosition(columnPositionToResize);
-		    originalColumnWidth = natTable.getColumnWidthByPosition(columnPositionToResize);
-		    startX = event.x;
-		    natTable.addOverlayPainter(overlayPainter);
-		}
-	}
+    protected final IOverlayPainter overlayPainter = new ColumnResizeOverlayPainter();
 
-	@Override
-	public void mouseMove(NatTable natTable, MouseEvent event) {
-		if (event.x > natTable.getWidth()) {
-			return;
-		}
-	    this.currentX = event.x;
-	    if (checkMinimumWidth && currentX < gridColumnStartX + getColumnWidthMinimum()) {
-	        currentX = gridColumnStartX + getColumnWidthMinimum();
-	    } else {
-	    	int overlayExtent = ColumnResizeOverlayPainter.COLUMN_RESIZE_OVERLAY_WIDTH / 2;
+    @Override
+    public void mouseDown(NatTable natTable, MouseEvent event) {
+        natTable.forceFocus();
+        columnPositionToResize = CellEdgeDetectUtil.getColumnPositionToResize(
+                natTable, new Point(event.x, event.y));
+        if (columnPositionToResize >= 0) {
+            gridColumnStartX = natTable
+                    .getStartXOfColumnPosition(columnPositionToResize);
+            originalColumnWidth = natTable
+                    .getColumnWidthByPosition(columnPositionToResize);
+            startX = event.x;
+            natTable.addOverlayPainter(overlayPainter);
+        }
+    }
 
-	    	Set<Integer> columnsToRepaint = new HashSet<Integer>();
+    @Override
+    public void mouseMove(NatTable natTable, MouseEvent event) {
+        if (event.x > natTable.getWidth()) {
+            return;
+        }
+        this.currentX = event.x;
+        if (checkMinimumWidth
+                && currentX < gridColumnStartX + getColumnWidthMinimum()) {
+            currentX = gridColumnStartX + getColumnWidthMinimum();
+        } else {
+            int overlayExtent = ColumnResizeOverlayPainter.COLUMN_RESIZE_OVERLAY_WIDTH / 2;
 
-	    	columnsToRepaint.add(Integer.valueOf(natTable.getColumnPositionByX(currentX - overlayExtent)));
-	    	columnsToRepaint.add(Integer.valueOf(natTable.getColumnPositionByX(currentX + overlayExtent)));
+            Set<Integer> columnsToRepaint = new HashSet<Integer>();
 
-	    	if (lastX >= 0) {
-	    		columnsToRepaint.add(Integer.valueOf(natTable.getColumnPositionByX(lastX - overlayExtent)));
-	    		columnsToRepaint.add(Integer.valueOf(natTable.getColumnPositionByX(lastX + overlayExtent)));
-	    	}
+            columnsToRepaint.add(Integer.valueOf(natTable
+                    .getColumnPositionByX(currentX - overlayExtent)));
+            columnsToRepaint.add(Integer.valueOf(natTable
+                    .getColumnPositionByX(currentX + overlayExtent)));
 
-	    	for (Integer columnToRepaint : columnsToRepaint) {
-	    		natTable.repaintColumn(columnToRepaint.intValue());
-	    	}
+            if (lastX >= 0) {
+                columnsToRepaint.add(Integer.valueOf(natTable
+                        .getColumnPositionByX(lastX - overlayExtent)));
+                columnsToRepaint.add(Integer.valueOf(natTable
+                        .getColumnPositionByX(lastX + overlayExtent)));
+            }
 
-	        lastX = currentX;
-	    }
-	}
+            for (Integer columnToRepaint : columnsToRepaint) {
+                natTable.repaintColumn(columnToRepaint.intValue());
+            }
 
-	@Override
-	public void mouseUp(NatTable natTable, MouseEvent event) {
-	    natTable.removeOverlayPainter(overlayPainter);
-		updateColumnWidth(natTable, event);
-	}
+            lastX = currentX;
+        }
+    }
 
-	private void updateColumnWidth(ILayer natLayer, MouseEvent e) {
-	    int dragWidth = e.x - startX;
+    @Override
+    public void mouseUp(NatTable natTable, MouseEvent event) {
+        natTable.removeOverlayPainter(overlayPainter);
+        updateColumnWidth(natTable, event);
+    }
+
+    private void updateColumnWidth(ILayer natLayer, MouseEvent e) {
+        int dragWidth = e.x - startX;
         int newColumnWidth = originalColumnWidth + dragWidth;
-        if (newColumnWidth < getColumnWidthMinimum()) newColumnWidth = getColumnWidthMinimum();
-		natLayer.doCommand(new ColumnResizeCommand(natLayer, columnPositionToResize, newColumnWidth));
-	}
+        if (newColumnWidth < getColumnWidthMinimum())
+            newColumnWidth = getColumnWidthMinimum();
+        natLayer.doCommand(new ColumnResizeCommand(natLayer,
+                columnPositionToResize, newColumnWidth));
+    }
 
-	// XXX: This method must ask the layer what it's minimum width is!
-	private int getColumnWidthMinimum() {
-	    return DEFAULT_COLUMN_WIDTH_MINIMUM;
-	}
+    // XXX: This method must ask the layer what it's minimum width is!
+    private int getColumnWidthMinimum() {
+        return DEFAULT_COLUMN_WIDTH_MINIMUM;
+    }
 
-	private class ColumnResizeOverlayPainter implements IOverlayPainter {
+    private class ColumnResizeOverlayPainter implements IOverlayPainter {
 
-		static final int COLUMN_RESIZE_OVERLAY_WIDTH = 2;
+        static final int COLUMN_RESIZE_OVERLAY_WIDTH = 2;
 
-	    @Override
-		public void paintOverlay(GC gc, ILayer layer) {
-	        Color originalBackgroundColor = gc.getBackground();
-	        gc.setBackground(GUIHelper.COLOR_DARK_GRAY);
-	        gc.fillRectangle(currentX - (COLUMN_RESIZE_OVERLAY_WIDTH / 2), 0, COLUMN_RESIZE_OVERLAY_WIDTH, layer.getHeight());
-	        gc.setBackground(originalBackgroundColor);
-	    }
-	}
+        @Override
+        public void paintOverlay(GC gc, ILayer layer) {
+            Color originalBackgroundColor = gc.getBackground();
+            gc.setBackground(GUIHelper.COLOR_DARK_GRAY);
+            gc.fillRectangle(currentX - (COLUMN_RESIZE_OVERLAY_WIDTH / 2), 0,
+                    COLUMN_RESIZE_OVERLAY_WIDTH, layer.getHeight());
+            gc.setBackground(originalBackgroundColor);
+        }
+    }
 }

@@ -16,66 +16,65 @@ package org.eclipse.nebula.widgets.nattable.filterrow;
  */
 public class ParseResult {
 
-	/**
-	 * Comparison tokens
-	 */
-	public enum MatchType {
-		EQUAL("="), //$NON-NLS-1$
-		NOT_EQUAL("<>"), //$NON-NLS-1$
-		GREATER_THAN(">"), //$NON-NLS-1$
-		GREATER_THAN_OR_EQUAL(">="), //$NON-NLS-1$
-		LESS_THAN_OR_EQUAL("<="), //$NON-NLS-1$
-		LESS_THAN("<"), //$NON-NLS-1$
-		NONE(""); //$NON-NLS-1$
+    /**
+     * Comparison tokens
+     */
+    public enum MatchType {
+        EQUAL("="), //$NON-NLS-1$
+        NOT_EQUAL("<>"), //$NON-NLS-1$
+        GREATER_THAN(">"), //$NON-NLS-1$
+        GREATER_THAN_OR_EQUAL(">="), //$NON-NLS-1$
+        LESS_THAN_OR_EQUAL("<="), //$NON-NLS-1$
+        LESS_THAN("<"), //$NON-NLS-1$
+        NONE(""); //$NON-NLS-1$
 
-		private String symbol;
+        private String symbol;
 
-		private MatchType(String symbol) {
-			this.symbol = symbol;
-		}
+        private MatchType(String symbol) {
+            this.symbol = symbol;
+        }
 
-		public String getSymbol() {
-			return symbol;
-		}
+        public String getSymbol() {
+            return symbol;
+        }
 
-		public static MatchType parse(String symbol) {
-			if ("=".equals(symbol)) { //$NON-NLS-1$
-				return EQUAL;
-			} else if ("<>".equals(symbol)) { //$NON-NLS-1$
-				return NOT_EQUAL;
-			} else if (">".equals(symbol)) { //$NON-NLS-1$
-				return GREATER_THAN;
-			} else if ("<".equals(symbol)) { //$NON-NLS-1$
-				return LESS_THAN;
-			} else if (">=".equals(symbol)) { //$NON-NLS-1$
-				return GREATER_THAN_OR_EQUAL;
-			} else if ("<=".equals(symbol)) { //$NON-NLS-1$
-				return LESS_THAN_OR_EQUAL;
-			}
-			return NONE;
-		}
-	};
+        public static MatchType parse(String symbol) {
+            if ("=".equals(symbol)) { //$NON-NLS-1$
+                return EQUAL;
+            } else if ("<>".equals(symbol)) { //$NON-NLS-1$
+                return NOT_EQUAL;
+            } else if (">".equals(symbol)) { //$NON-NLS-1$
+                return GREATER_THAN;
+            } else if ("<".equals(symbol)) { //$NON-NLS-1$
+                return LESS_THAN;
+            } else if (">=".equals(symbol)) { //$NON-NLS-1$
+                return GREATER_THAN_OR_EQUAL;
+            } else if ("<=".equals(symbol)) { //$NON-NLS-1$
+                return LESS_THAN_OR_EQUAL;
+            }
+            return NONE;
+        }
+    };
 
-	private MatchType matchType = MatchType.NONE;
-	private String valueToMatch;
+    private MatchType matchType = MatchType.NONE;
+    private String valueToMatch;
 
-	public ParseResult() {
-	}
+    public ParseResult() {}
 
-	public MatchType getMatchOperation() {
-		return matchType;
-	}
+    public MatchType getMatchOperation() {
+        return matchType;
+    }
 
-	public String getValueToMatch() {
-		return valueToMatch;
-	}
+    public String getValueToMatch() {
+        return valueToMatch;
+    }
 
-	public void setMatchType(MatchType matchType) {
-		this.matchType = matchType;
-	}
+    public void setMatchType(MatchType matchType) {
+        this.matchType = matchType;
+    }
 
-	public void setValueToMatch(String valueToMatch) {
-		this.valueToMatch = valueToMatch;
-	}
+    public void setValueToMatch(String valueToMatch) {
+        this.valueToMatch = valueToMatch;
+    }
 
 }

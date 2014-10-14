@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
@@ -20,13 +19,16 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 
 public class AutoResizeRowAction implements IMouseAction {
-	
-	public void run(NatTable natTable, MouseEvent event) {
-		Point clickPoint = new Point(event.x, event.y);
-		int row = CellEdgeDetectUtil.getRowPositionToResize(natTable, clickPoint);
 
-		InitializeAutoResizeRowsCommand command = new InitializeAutoResizeRowsCommand(natTable, row, natTable.getConfigRegistry(), new GCFactory(natTable));
-		natTable.doCommand(command);
-	}
-	
+    public void run(NatTable natTable, MouseEvent event) {
+        Point clickPoint = new Point(event.x, event.y);
+        int row = CellEdgeDetectUtil.getRowPositionToResize(natTable,
+                clickPoint);
+
+        InitializeAutoResizeRowsCommand command = new InitializeAutoResizeRowsCommand(
+                natTable, row, natTable.getConfigRegistry(), new GCFactory(
+                        natTable));
+        natTable.doCommand(command);
+    }
+
 }

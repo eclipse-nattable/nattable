@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.copy.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
@@ -18,7 +17,8 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class CopyDataAction implements IKeyAction {
 
-	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new CopyDataToClipboardCommand("\t", System.getProperty("line.separator"), natTable.getConfigRegistry())); //$NON-NLS-1$ //$NON-NLS-2$
-	}	
+    public void run(NatTable natTable, KeyEvent event) {
+        natTable.doCommand(new CopyDataToClipboardCommand(
+                "\t", System.getProperty("line.separator"), natTable.getConfigRegistry())); //$NON-NLS-1$ //$NON-NLS-2$
+    }
 }

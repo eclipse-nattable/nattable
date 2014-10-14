@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.util.OpenStrategy;
 import org.eclipse.jface.util.SafeRunnable;
@@ -24,59 +23,67 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Control;
 
-public class RowPostSelectionProvider<T> extends RowSelectionProvider<T> implements IPostSelectionProvider
-{
-	private ListenerList postSelectionChangedListeners = new ListenerList();
-	private ISelection previousSelection;
+public class RowPostSelectionProvider<T> extends RowSelectionProvider<T>
+        implements IPostSelectionProvider {
+    private ListenerList postSelectionChangedListeners = new ListenerList();
+    private ISelection previousSelection;
 
-	public RowPostSelectionProvider(NatTable natTable, SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider) {
-		super(selectionLayer, rowDataProvider);
-		hookControl(natTable);
-	}
-	
-	public RowPostSelectionProvider(NatTable natTable, SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider, boolean fullySelectedRowsOnly) {
-		super(selectionLayer, rowDataProvider, fullySelectedRowsOnly);
-		hookControl(natTable);
-	}	
+    public RowPostSelectionProvider(NatTable natTable,
+            SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider) {
+        super(selectionLayer, rowDataProvider);
+        hookControl(natTable);
+    }
 
-	protected void hookControl(Control control) {
-		OpenStrategy handler = new OpenStrategy(control);
-		handler.addPostSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				handlePostSelect(e);
-			}
-		});
-	}
-	
-	public void addPostSelectionChangedListener(ISelectionChangedListener listener)
-	{
-		postSelectionChangedListeners.add(listener);
-	}
+    public RowPostSelectionProvider(NatTable natTable,
+            SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider,
+            boolean fullySelectedRowsOnly) {
+        super(selectionLayer, rowDataProvider, fullySelectedRowsOnly);
+        hookControl(natTable);
+    }
 
-	public void removePostSelectionChangedListener(ISelectionChangedListener listener)
-	{
-		postSelectionChangedListeners.remove(listener);
-	}
+    protected void hookControl(Control control) {
+        OpenStrategy handler = new OpenStrategy(control);
+        handler.addPostSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                handlePostSelect(e);
+            }
+        });
+    }
 
-	protected void handlePostSelect(SelectionEvent e) {
-		ISelection selection = getSelection();
-		if (!selection.equals(previousSelection)) { // OpenStrategy doesn't throttle left/right cursor key presses, so only fire event when row changes
-			SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
-			firePostSelectionChanged(event);
-			previousSelection = selection;
-		}
-	}
+    public void addPostSelectionChangedListener(
+            ISelectionChangedListener listener) {
+        postSelectionChangedListeners.add(listener);
+    }
 
-	protected void firePostSelectionChanged(final SelectionChangedEvent event) {
-		Object[] listeners = postSelectionChangedListeners.getListeners();
-		for (int i = 0; i < listeners.length; ++i) {
-			final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
-			SafeRunnable.run(new SafeRunnable() {
-				public void run() {
-					l.selectionChanged(event);
-				}
-			});
-		}
-	}
+    public void removePostSelectionChangedListener(
+            ISelectionChangedListener listener) {
+        postSelectionChangedListeners.remove(listener);
+    }
+
+    protected void handlePostSelect(SelectionEvent e) {
+        ISelection selection = getSelection();
+        if (!selection.equals(previousSelection)) { // OpenStrategy doesn't
+                                                    // throttle left/right
+                                                    // cursor key presses, so
+                                                    // only fire event when row
+                                                    // changes
+            SelectionChangedEvent event = new SelectionChangedEvent(this,
+                    selection);
+            firePostSelectionChanged(event);
+            previousSelection = selection;
+        }
+    }
+
+    protected void firePostSelectionChanged(final SelectionChangedEvent event) {
+        Object[] listeners = postSelectionChangedListeners.getListeners();
+        for (int i = 0; i < listeners.length; ++i) {
+            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+            SafeRunnable.run(new SafeRunnable() {
+                public void run() {
+                    l.selectionChanged(event);
+                }
+            });
+        }
+    }
 }

@@ -20,85 +20,95 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 
-
 /**
  * Layer for the row headers of the grid layer
  */
 public class RowHeaderLayer extends DimensionallyDependentLayer {
 
-	private final SelectionLayer selectionLayer;
+    private final SelectionLayer selectionLayer;
 
+    /**
+     * Creates a row header layer using the default configuration and painter
+     * 
+     * @param baseLayer
+     *            The data provider for this layer
+     * @param verticalLayerDependency
+     *            The layer to link the vertical dimension to, typically the
+     *            body layer
+     * @param selectionLayer
+     *            The selection layer required to respond to selection events
+     */
+    public RowHeaderLayer(IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency, SelectionLayer selectionLayer) {
+        this(baseLayer, verticalLayerDependency, selectionLayer, true);
+    }
 
-	/**
-	 * Creates a row header layer using the default configuration and painter
-	 * 
-	 * @param baseLayer
-	 *            The data provider for this layer
-	 * @param verticalLayerDependency
-	 *            The layer to link the vertical dimension to, typically the body layer
-	 * @param selectionLayer
-	 *            The selection layer required to respond to selection events
-	 */
-	public RowHeaderLayer(IUniqueIndexLayer baseLayer, ILayer verticalLayerDependency, SelectionLayer selectionLayer) {
-		this(baseLayer, verticalLayerDependency, selectionLayer, true);
-	}
-	
-	public RowHeaderLayer(IUniqueIndexLayer baseLayer, ILayer verticalLayerDependency, SelectionLayer selectionLayer,
-			boolean useDefaultConfiguration) {
-		this(baseLayer, verticalLayerDependency, selectionLayer, useDefaultConfiguration, null);
-	}
+    public RowHeaderLayer(IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency, SelectionLayer selectionLayer,
+            boolean useDefaultConfiguration) {
+        this(baseLayer, verticalLayerDependency, selectionLayer,
+                useDefaultConfiguration, null);
+    }
 
-	/**
-	 * @param baseLayer
-	 *            The data provider for this layer
-	 * @param verticalLayerDependency
-	 *            The layer to link the vertical dimension to, typically the body layer
-	 * @param selectionLayer
-	 *            The selection layer required to respond to selection events
-	 * @param useDefaultConfiguration
-	 *            If default configuration should be applied to this layer
-	 * @param layerPainter
-	 *            The painter for this layer or <code>null</code> to use the painter of the base layer
-	 */
-	public RowHeaderLayer(IUniqueIndexLayer baseLayer, ILayer verticalLayerDependency,
-			SelectionLayer selectionLayer, boolean useDefaultConfiguration, ILayerPainter layerPainter) {
-		super(baseLayer, baseLayer, verticalLayerDependency);
-		if (selectionLayer == null) {
-			throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
-		}
+    /**
+     * @param baseLayer
+     *            The data provider for this layer
+     * @param verticalLayerDependency
+     *            The layer to link the vertical dimension to, typically the
+     *            body layer
+     * @param selectionLayer
+     *            The selection layer required to respond to selection events
+     * @param useDefaultConfiguration
+     *            If default configuration should be applied to this layer
+     * @param layerPainter
+     *            The painter for this layer or <code>null</code> to use the
+     *            painter of the base layer
+     */
+    public RowHeaderLayer(IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency, SelectionLayer selectionLayer,
+            boolean useDefaultConfiguration, ILayerPainter layerPainter) {
+        super(baseLayer, baseLayer, verticalLayerDependency);
+        if (selectionLayer == null) {
+            throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
+        }
 
-		this.selectionLayer = selectionLayer;
-		this.layerPainter = layerPainter;
-		
-		if (useDefaultConfiguration) {
-			addConfiguration(new DefaultRowHeaderLayerConfiguration());
-		}
-	}
+        this.selectionLayer = selectionLayer;
+        this.layerPainter = layerPainter;
 
+        if (useDefaultConfiguration) {
+            addConfiguration(new DefaultRowHeaderLayerConfiguration());
+        }
+    }
 
-	@Override
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		int selectionLayerRowPosition = LayerUtil.convertRowPosition(this, rowPosition, selectionLayer);
-		String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
-		if (selectionLayer.isRowPositionSelected(selectionLayerRowPosition)) {
-			if (DisplayMode.HOVER.equals(displayMode)) {
-				return DisplayMode.SELECT_HOVER;
-			}
-			return DisplayMode.SELECT;
-		}
-		return displayMode;
-	}
-	
-	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
-		
-		final int selectionLayerRowPosition = LayerUtil.convertRowPosition(this, rowPosition, selectionLayer);
-		if (selectionLayer.isRowPositionFullySelected(selectionLayerRowPosition)) {
-			labelStack.addLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
-		}
-		
-		return labelStack;
-	}
-	
+    @Override
+    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+        int selectionLayerRowPosition = LayerUtil.convertRowPosition(this,
+                rowPosition, selectionLayer);
+        String displayMode = super.getDisplayModeByPosition(columnPosition,
+                rowPosition);
+        if (selectionLayer.isRowPositionSelected(selectionLayerRowPosition)) {
+            if (DisplayMode.HOVER.equals(displayMode)) {
+                return DisplayMode.SELECT_HOVER;
+            }
+            return DisplayMode.SELECT;
+        }
+        return displayMode;
+    }
+
+    @Override
+    public LabelStack getConfigLabelsByPosition(int columnPosition,
+            int rowPosition) {
+        LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition,
+                rowPosition);
+
+        final int selectionLayerRowPosition = LayerUtil.convertRowPosition(
+                this, rowPosition, selectionLayer);
+        if (selectionLayer
+                .isRowPositionFullySelected(selectionLayerRowPosition)) {
+            labelStack.addLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
+        }
+
+        return labelStack;
+    }
+
 }

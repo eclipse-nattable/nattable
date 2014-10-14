@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
-
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -27,37 +26,39 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * A button that displays a solid block of color and allows the user to pick a color. The user can double click on the
- * button in order to change the selected color which also changes the background color of the button.
+ * A button that displays a solid block of color and allows the user to pick a
+ * color. The user can double click on the button in order to change the
+ * selected color which also changes the background color of the button.
  *
  */
 public class ColorPicker extends CLabel {
 
     private Color selectedColor;
-	private Image image;
+    private Image image;
 
     public ColorPicker(Composite parent, final Color originalColor) {
         super(parent, SWT.SHADOW_OUT);
-        if (originalColor == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        if (originalColor == null)
+            throw new IllegalArgumentException("null"); //$NON-NLS-1$
         this.selectedColor = originalColor;
         setImage(getColorImage(originalColor));
-        addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mouseDown(MouseEvent e) {
-                        ColorDialog dialog = new ColorDialog(new Shell(Display.getDefault(), SWT.SHELL_TRIM));
-                        dialog.setRGB(selectedColor.getRGB());
-                        RGB selected = dialog.open();
-                        if (selected != null) {
-                            update(selected);
-                        }
-                    }
-                });
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                ColorDialog dialog = new ColorDialog(new Shell(
+                        Display.getDefault(), SWT.SHELL_TRIM));
+                dialog.setRGB(selectedColor.getRGB());
+                RGB selected = dialog.open();
+                if (selected != null) {
+                    update(selected);
+                }
+            }
+        });
     }
 
-    private Image getColorImage(Color color){
-    	Display display = Display.getCurrent();
-		image = new Image(display, new Rectangle(10, 10, 70, 20));
+    private Image getColorImage(Color color) {
+        Display display = Display.getCurrent();
+        image = new Image(display, new Rectangle(10, 10, 70, 20));
         GC gc = new GC(image);
         gc.setBackground(color);
         gc.fillRectangle(image.getBounds());
@@ -71,7 +72,8 @@ public class ColorPicker extends CLabel {
     }
 
     /**
-     * @return the Color most recently selected by the user. <em>Note that it is the responsibility of the client to
+     * @return the Color most recently selected by the user.
+     *         <em>Note that it is the responsibility of the client to
      *         dispose this resource</em>
      */
     public Color getSelectedColor() {
@@ -79,20 +81,22 @@ public class ColorPicker extends CLabel {
     }
 
     /**
-     * Set the current selected color that will be displayed by the picker. <em>Note that this class is not responsible
+     * Set the current selected color that will be displayed by the picker.
+     * <em>Note that this class is not responsible
      * for destroying the given Color object. It does not take ownership. Instead it will create its own internal
      * copy of the given Color resource.</em>
      *
      * @param backgroundColor
      */
     public void setSelectedColor(Color backgroundColor) {
-        if (backgroundColor == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        if (backgroundColor == null)
+            throw new IllegalArgumentException("null"); //$NON-NLS-1$
         update(backgroundColor.getRGB());
     }
 
     @Override
     public void dispose() {
-    	super.dispose();
-    	image.dispose();
+        super.dispose();
+        image.dispose();
     }
 }

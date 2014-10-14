@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.SWT;
@@ -23,30 +22,30 @@ public class AbstractMouseSelectionAction implements IMouseAction {
     private int gridColumnPosition;
     private int gridRowPosition;
 
-	@Override
-	public void run(NatTable natTable, MouseEvent event) {
-    	withShiftMask = (event.stateMask & SWT.SHIFT) != 0;
-    	withControlMask = (event.stateMask & SWT.CTRL) != 0;
+    @Override
+    public void run(NatTable natTable, MouseEvent event) {
+        withShiftMask = (event.stateMask & SWT.SHIFT) != 0;
+        withControlMask = (event.stateMask & SWT.CTRL) != 0;
 
-    	gridColumnPosition = natTable.getColumnPositionByX(event.x);
-    	gridRowPosition = natTable.getRowPositionByY(event.y);
+        gridColumnPosition = natTable.getColumnPositionByX(event.x);
+        gridRowPosition = natTable.getRowPositionByY(event.y);
 
-    	natTable.forceFocus();
-	}
+        natTable.forceFocus();
+    }
 
-	public boolean isWithShiftMask() {
-		return withShiftMask;
-	}
+    public boolean isWithShiftMask() {
+        return withShiftMask;
+    }
 
-	public boolean isWithControlMask() {
-		return withControlMask;
-	}
+    public boolean isWithControlMask() {
+        return withControlMask;
+    }
 
-	public int getGridColumnPosition() {
-		return gridColumnPosition;
-	}
+    public int getGridColumnPosition() {
+        return gridColumnPosition;
+    }
 
-	public int getGridRowPosition() {
-		return gridRowPosition;
-	}
+    public int getGridRowPosition() {
+        return gridRowPosition;
+    }
 }

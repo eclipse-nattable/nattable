@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.command;
 
-
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.CommandHandlerFixture;
@@ -24,24 +23,24 @@ import org.junit.Test;
 //Test AbstractLayer implementations of command propagation
 public class CommandPropagationTest {
 
-	private DataLayer underlyingLayer = new DataLayerFixture(10, 5, 100, 20);
-	private ILayer layer = new GenericLayerFixture(underlyingLayer);
+    private DataLayer underlyingLayer = new DataLayerFixture(10, 5, 100, 20);
+    private ILayer layer = new GenericLayerFixture(underlyingLayer);
 
-	@Before
-	public void setUp() {
-		underlyingLayer.registerCommandHandler(new CommandHandlerFixture());
-	}
+    @Before
+    public void setUp() {
+        underlyingLayer.registerCommandHandler(new CommandHandlerFixture());
+    }
 
-	@Test
-	public void shouldHandleGenericLayerCommand() {
-		Assert.assertTrue(layer.doCommand(new LayerCommandFixture()));
-	}
-	
-	@Test
-	public void shouldPropagateToUnderlyingLayer() {
-		LayerCommandFixture command = new LayerCommandFixture();
-		layer.doCommand(command);
-		Assert.assertTrue(command.getTargetLayer() instanceof DataLayerFixture);
-	}
-	
+    @Test
+    public void shouldHandleGenericLayerCommand() {
+        Assert.assertTrue(layer.doCommand(new LayerCommandFixture()));
+    }
+
+    @Test
+    public void shouldPropagateToUnderlyingLayer() {
+        LayerCommandFixture command = new LayerCommandFixture();
+        layer.doCommand(command);
+        Assert.assertTrue(command.getTargetLayer() instanceof DataLayerFixture);
+    }
+
 }

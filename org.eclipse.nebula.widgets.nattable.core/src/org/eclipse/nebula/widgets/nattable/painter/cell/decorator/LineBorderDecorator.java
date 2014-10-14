@@ -23,92 +23,100 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
-
 public class LineBorderDecorator extends CellPainterWrapper {
 
-	private final BorderStyle defaultBorderStyle;
+    private final BorderStyle defaultBorderStyle;
 
-	public LineBorderDecorator(ICellPainter interiorPainter) {
-		this(interiorPainter, null);
-	}
-	
-	public LineBorderDecorator(ICellPainter interiorPainter, BorderStyle defaultBorderStyle) {
-		super(interiorPainter);
-		this.defaultBorderStyle = defaultBorderStyle;
-	}
+    public LineBorderDecorator(ICellPainter interiorPainter) {
+        this(interiorPainter, null);
+    }
 
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-		int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
-		
-		return super.getPreferredWidth(cell, gc, configRegistry) + (borderThickness * 2);
-	}
-	
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-		int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
-		
-		return super.getPreferredHeight(cell, gc, configRegistry) + (borderThickness * 2);
-	}
+    public LineBorderDecorator(ICellPainter interiorPainter,
+            BorderStyle defaultBorderStyle) {
+        super(interiorPainter);
+        this.defaultBorderStyle = defaultBorderStyle;
+    }
 
-	private BorderStyle getBorderStyle(ILayerCell cell, IConfigRegistry configRegistry) {
-		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
-		BorderStyle borderStyle = cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE);
-		if (borderStyle == null) {
-			borderStyle = defaultBorderStyle;
-		}
-		return borderStyle;
-	}
+    public int getPreferredWidth(ILayerCell cell, GC gc,
+            IConfigRegistry configRegistry) {
+        BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
+        int borderThickness = borderStyle != null ? borderStyle.getThickness()
+                : 0;
 
-	public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
-		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-		int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
-		
-		Rectangle interiorBounds =
-			new Rectangle(
-					rectangle.x + borderThickness,
-					rectangle.y + borderThickness,
-					rectangle.width - (borderThickness * 2),
-					rectangle.height - (borderThickness * 2)
-			);
-		super.paintCell(cell, gc, interiorBounds, configRegistry);
-		
-		if (borderStyle == null || borderThickness <= 0) {
-			return;
-		}
-		
-		// Save GC settings
-		Color originalForeground = gc.getForeground();
-		int originalLineWidth = gc.getLineWidth();
-		int originalLineStyle = gc.getLineStyle();
+        return super.getPreferredWidth(cell, gc, configRegistry)
+                + (borderThickness * 2);
+    }
 
-		gc.setLineWidth(borderThickness);
+    public int getPreferredHeight(ILayerCell cell, GC gc,
+            IConfigRegistry configRegistry) {
+        BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
+        int borderThickness = borderStyle != null ? borderStyle.getThickness()
+                : 0;
 
-		Rectangle borderArea = new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-		if (borderThickness >= 1) {
-			int shift = 0;
-			int areaShift = 0;
-			if ((borderThickness % 2) == 0) {
-				shift = borderThickness / 2;
-				areaShift = (shift * 2);
-			} else {
-				shift = borderThickness / 2;
-				areaShift = (shift * 2) + 1;
-			}
-			borderArea.x += shift;
-			borderArea.y += shift;
-			borderArea.width -= areaShift;
-			borderArea.height -= areaShift;
-		}
+        return super.getPreferredHeight(cell, gc, configRegistry)
+                + (borderThickness * 2);
+    }
 
-		gc.setLineStyle(LineStyleEnum.toSWT(borderStyle.getLineStyle()));
-		gc.setForeground(borderStyle.getColor());
-		gc.drawRectangle(borderArea);
+    private BorderStyle getBorderStyle(ILayerCell cell,
+            IConfigRegistry configRegistry) {
+        IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
+        BorderStyle borderStyle = cellStyle
+                .getAttributeValue(CellStyleAttributes.BORDER_STYLE);
+        if (borderStyle == null) {
+            borderStyle = defaultBorderStyle;
+        }
+        return borderStyle;
+    }
 
-		// Restore GC settings
-		gc.setForeground(originalForeground);
-		gc.setLineWidth(originalLineWidth);
-		gc.setLineStyle(originalLineStyle);
-	}
-	
+    public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
+            IConfigRegistry configRegistry) {
+        BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
+        int borderThickness = borderStyle != null ? borderStyle.getThickness()
+                : 0;
+
+        Rectangle interiorBounds = new Rectangle(rectangle.x + borderThickness,
+                rectangle.y + borderThickness, rectangle.width
+                        - (borderThickness * 2), rectangle.height
+                        - (borderThickness * 2));
+        super.paintCell(cell, gc, interiorBounds, configRegistry);
+
+        if (borderStyle == null || borderThickness <= 0) {
+            return;
+        }
+
+        // Save GC settings
+        Color originalForeground = gc.getForeground();
+        int originalLineWidth = gc.getLineWidth();
+        int originalLineStyle = gc.getLineStyle();
+
+        gc.setLineWidth(borderThickness);
+
+        Rectangle borderArea = new Rectangle(rectangle.x, rectangle.y,
+                rectangle.width, rectangle.height);
+        if (borderThickness >= 1) {
+            int shift = 0;
+            int areaShift = 0;
+            if ((borderThickness % 2) == 0) {
+                shift = borderThickness / 2;
+                areaShift = (shift * 2);
+            } else {
+                shift = borderThickness / 2;
+                areaShift = (shift * 2) + 1;
+            }
+            borderArea.x += shift;
+            borderArea.y += shift;
+            borderArea.width -= areaShift;
+            borderArea.height -= areaShift;
+        }
+
+        gc.setLineStyle(LineStyleEnum.toSWT(borderStyle.getLineStyle()));
+        gc.setForeground(borderStyle.getColor());
+        gc.drawRectangle(borderArea);
+
+        // Restore GC settings
+        gc.setForeground(originalForeground);
+        gc.setLineWidth(originalLineWidth);
+        gc.setLineStyle(originalLineStyle);
+    }
+
 }

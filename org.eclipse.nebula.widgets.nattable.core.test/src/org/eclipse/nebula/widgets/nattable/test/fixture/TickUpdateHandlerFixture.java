@@ -14,26 +14,26 @@ import org.eclipse.nebula.widgets.nattable.tickupdate.ITickUpdateHandler;
 
 public class TickUpdateHandlerFixture implements ITickUpdateHandler {
 
-	public boolean isApplicableFor(Object value) {
-		return value instanceof String;
-	}
-	
-	public Object getDecrementedValue(Object currentValue) {
-		return ((String) currentValue).concat("down");
-	}
-
-	public Object getIncrementedValue(Object currentValue) {
-		return ((String) currentValue).concat("up");
-	}
-
-    public Object getIncrementedValue(Object currentValue, double incrementSize)
-    {
-        return ((String)getDecrementedValue(currentValue)).concat(String.valueOf(incrementSize));
+    public boolean isApplicableFor(Object value) {
+        return value instanceof String;
     }
 
-    public Object getDecrementedValue(Object currentValue, double decrementSize)
-    {
-        return ((String)getDecrementedValue(currentValue)).concat(String.valueOf(decrementSize));
+    public Object getDecrementedValue(Object currentValue) {
+        return ((String) currentValue).concat("down");
+    }
+
+    public Object getIncrementedValue(Object currentValue) {
+        return ((String) currentValue).concat("up");
+    }
+
+    public Object getIncrementedValue(Object currentValue, double incrementSize) {
+        return ((String) getDecrementedValue(currentValue)).concat(String
+                .valueOf(incrementSize));
+    }
+
+    public Object getDecrementedValue(Object currentValue, double decrementSize) {
+        return ((String) getDecrementedValue(currentValue)).concat(String
+                .valueOf(decrementSize));
     }
 
 }

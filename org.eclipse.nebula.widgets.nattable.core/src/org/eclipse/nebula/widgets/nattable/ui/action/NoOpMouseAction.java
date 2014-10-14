@@ -10,12 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.events.MouseEvent;
 
 public class NoOpMouseAction implements IMouseAction {
 
-	public void run(NatTable natTable, MouseEvent event) {}
+    public void run(NatTable natTable, MouseEvent event) {}
 
 }

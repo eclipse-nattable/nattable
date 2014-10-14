@@ -13,25 +13,27 @@ package org.eclipse.nebula.widgets.nattable.reorder.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 
-public class ColumnReorderStartCommandHandler extends AbstractLayerCommandHandler<ColumnReorderStartCommand> {
+public class ColumnReorderStartCommandHandler extends
+        AbstractLayerCommandHandler<ColumnReorderStartCommand> {
 
-	private final ColumnReorderLayer columnReorderLayer;
+    private final ColumnReorderLayer columnReorderLayer;
 
-	public ColumnReorderStartCommandHandler(ColumnReorderLayer columnReorderLayer) {
-		this.columnReorderLayer = columnReorderLayer;
-	}
-	
-	public Class<ColumnReorderStartCommand> getCommandClass() {
-		return ColumnReorderStartCommand.class;
-	}
+    public ColumnReorderStartCommandHandler(
+            ColumnReorderLayer columnReorderLayer) {
+        this.columnReorderLayer = columnReorderLayer;
+    }
 
-	@Override
-	protected boolean doCommand(ColumnReorderStartCommand command) {
-		int fromColumnPosition = command.getFromColumnPosition();
-		
-		columnReorderLayer.setReorderFromColumnPosition(fromColumnPosition);
-		
-		return true;
-	}
+    public Class<ColumnReorderStartCommand> getCommandClass() {
+        return ColumnReorderStartCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(ColumnReorderStartCommand command) {
+        int fromColumnPosition = command.getFromColumnPosition();
+
+        columnReorderLayer.setReorderFromColumnPosition(fromColumnPosition);
+
+        return true;
+    }
 
 }

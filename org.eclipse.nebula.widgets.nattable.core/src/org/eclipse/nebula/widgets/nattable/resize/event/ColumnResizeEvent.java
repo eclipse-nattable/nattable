@@ -19,35 +19,34 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEve
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 
-
 public class ColumnResizeEvent extends ColumnStructuralChangeEvent {
 
-	public ColumnResizeEvent(ILayer layer, int columnPosition) {
-		super(layer, new Range(columnPosition, columnPosition + 1));
-	}
+    public ColumnResizeEvent(ILayer layer, int columnPosition) {
+        super(layer, new Range(columnPosition, columnPosition + 1));
+    }
 
-	public ColumnResizeEvent(ILayer layer, Range columnPositionRange) {
-		super(layer, columnPositionRange);
-	}
+    public ColumnResizeEvent(ILayer layer, Range columnPositionRange) {
+        super(layer, columnPositionRange);
+    }
 
-	protected ColumnResizeEvent(ColumnResizeEvent event) {
-		super(event);
-	}
+    protected ColumnResizeEvent(ColumnResizeEvent event) {
+        super(event);
+    }
 
-	@Override
-	public ColumnResizeEvent cloneEvent() {
-		return new ColumnResizeEvent(this);
-	}
+    @Override
+    public ColumnResizeEvent cloneEvent() {
+        return new ColumnResizeEvent(this);
+    }
 
-	@Override
-	public Collection<StructuralDiff> getColumnDiffs() {
-		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
+    @Override
+    public Collection<StructuralDiff> getColumnDiffs() {
+        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 
-		for (Range range : getColumnPositionRanges()) {
-			rowDiffs.add(new StructuralDiff(DiffTypeEnum.CHANGE, range, range));
-		}
+        for (Range range : getColumnPositionRanges()) {
+            rowDiffs.add(new StructuralDiff(DiffTypeEnum.CHANGE, range, range));
+        }
 
-		return rowDiffs;
-	}
+        return rowDiffs;
+    }
 
 }

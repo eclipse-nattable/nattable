@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
@@ -21,4 +21,4 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
  * @see TreeLayer
  * @see TreeCollapseAllCommandHandler
  */
-public class TreeCollapseAllCommand extends AbstractContextFreeCommand { }
+public class TreeCollapseAllCommand extends AbstractContextFreeCommand {}

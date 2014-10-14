@@ -64,159 +64,172 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _773_GridExcelExportFormatterExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _773_GridExcelExportFormatterExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner
+                .run(new _773_GridExcelExportFormatterExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows how to trigger an export for a NatTable grid.\n"
-				+ "You can also use the [Ctrl] + [E] to trigger the export via key bindings.\n"
-				+ "It uses Apache POI for exporting and different formatters for several values.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		panel.setLayout(layout);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
-		
-		Composite gridPanel = new Composite(panel, SWT.NONE);
-		gridPanel.setLayout(layout);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
-		
-		Composite buttonPanel = new Composite(panel, SWT.NONE);
-		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
+    @Override
+    public String getDescription() {
+        return "This example shows how to trigger an export for a NatTable grid.\n"
+                + "You can also use the [Ctrl] + [E] to trigger the export via key bindings.\n"
+                + "It uses Apache POI for exporting and different formatters for several values.";
+    }
 
-		
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public Control createExampleControl(Composite parent) {
+        Composite panel = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        panel.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+        Composite gridPanel = new Composite(panel, SWT.NONE);
+        gridPanel.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
 
-		//build the body layer stack 
-		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
-		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
-		//directly as body layer is also working.
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        Composite buttonPanel = new Composite(panel, SWT.NONE);
+        buttonPanel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
-		//build the column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
-		
-		//build the row header layer
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
-		
-		//build the corner layer
-		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
-		
-		//build the grid layer
-		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		final NatTable natTable = new NatTable(gridPanel, gridLayer, false);
-		
-		//adding this configuration adds the styles and the painters to use
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				PoiExcelExporter exporter = new HSSFExcelExporter();
-				exporter.setApplyVerticalTextConfiguration(true);
-				exporter.setApplyBackgroundColor(false);
-				configRegistry.registerConfigAttribute(
-						ExportConfigAttributes.EXPORTER, exporter);
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-				configRegistry.registerConfigAttribute(
-						ExportConfigAttributes.DATE_FORMAT, "dd.MM.yyyy");
-			
-				//register a custom formatter to the body of the grid
-				//you could also implement different formatter for different columns by using the label mechanism
-				configRegistry.registerConfigAttribute(
-						ExportConfigAttributes.EXPORT_FORMATTER, 
-						new ExampleExportFormatter(),
-						DisplayMode.NORMAL,
-						GridRegion.BODY);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
 
-				configRegistry.registerConfigAttribute(
-						ExportConfigAttributes.EXPORT_FORMATTER, 
-						new IExportFormatter() {
-							@Override
-							public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
-								//simply return the data value which is an integer for the row header
-								//doing this avoids the default conversion to string for export
-								return cell.getDataValue();
-							}
-						},
-						DisplayMode.NORMAL,
-						GridRegion.ROW_HEADER);
-				
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.CELL_PAINTER, 
-						new BeveledBorderDecorator(new VerticalTextPainter(false, true, true)),
-						DisplayMode.NORMAL,
-						GridRegion.COLUMN_HEADER);
-				
-			}
-		});
-		
-		natTable.configure();
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		
-		Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
-		addColumnButton.setText("Export");
-		addColumnButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(), natTable.getShell()));
-			}
-		});
+        // build the body layer stack
+        // Usually you would create a new layer stack by extending
+        // AbstractIndexLayerTransform and
+        // setting the ViewportLayer as underlying layer. But in this case using
+        // the ViewportLayer
+        // directly as body layer is also working.
+        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
+                PersonService.getPersons(10), propertyNames);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-		return panel;
-	}
+        // build the column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                viewportLayer, selectionLayer);
 
-	
-	class ExampleExportFormatter implements IExportFormatter {
-		@Override
-		public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
-			Object data = cell.getDataValue();
-			if (data != null) {
-				try {
-					if (data instanceof Boolean) {
-						return ((Boolean)data).booleanValue() ? "X" : ""; //$NON-NLS-1$ //$NON-NLS-2$
-					}
-					else if (data instanceof Date) {
-						//return the Date object directly to ensure Date type in export
-						return data;
-					}
-					else {
-						return data.toString();
-					}
-				}
-				catch (Exception e) {
-					//if that fails, we simply return the string value
-					return data.toString();
-				}
-			}
-			return ""; //$NON-NLS-1$
-		}
-	}
+        // build the row header layer
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer);
+
+        // build the corner layer
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                columnHeaderLayer);
+
+        // build the grid layer
+        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
+
+        final NatTable natTable = new NatTable(gridPanel, gridLayer, false);
+
+        // adding this configuration adds the styles and the painters to use
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                PoiExcelExporter exporter = new HSSFExcelExporter();
+                exporter.setApplyVerticalTextConfiguration(true);
+                exporter.setApplyBackgroundColor(false);
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORTER, exporter);
+
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.DATE_FORMAT, "dd.MM.yyyy");
+
+                // register a custom formatter to the body of the grid
+                // you could also implement different formatter for different
+                // columns by using the label mechanism
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        new ExampleExportFormatter(), DisplayMode.NORMAL,
+                        GridRegion.BODY);
+
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        new IExportFormatter() {
+                            @Override
+                            public Object formatForExport(ILayerCell cell,
+                                    IConfigRegistry configRegistry) {
+                                // simply return the data value which is an
+                                // integer for the row header
+                                // doing this avoids the default conversion to
+                                // string for export
+                                return cell.getDataValue();
+                            }
+                        }, DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new BeveledBorderDecorator(new VerticalTextPainter(
+                                false, true, true)), DisplayMode.NORMAL,
+                        GridRegion.COLUMN_HEADER);
+
+            }
+        });
+
+        natTable.configure();
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
+        addColumnButton.setText("Export");
+        addColumnButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(new ExportCommand(natTable
+                        .getConfigRegistry(), natTable.getShell()));
+            }
+        });
+
+        return panel;
+    }
+
+    class ExampleExportFormatter implements IExportFormatter {
+        @Override
+        public Object formatForExport(ILayerCell cell,
+                IConfigRegistry configRegistry) {
+            Object data = cell.getDataValue();
+            if (data != null) {
+                try {
+                    if (data instanceof Boolean) {
+                        return ((Boolean) data).booleanValue() ? "X" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+                    } else if (data instanceof Date) {
+                        // return the Date object directly to ensure Date type
+                        // in export
+                        return data;
+                    } else {
+                        return data.toString();
+                    }
+                } catch (Exception e) {
+                    // if that fails, we simply return the string value
+                    return data.toString();
+                }
+            }
+            return ""; //$NON-NLS-1$
+        }
+    }
 }

@@ -14,23 +14,23 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class UngroupByColumnIndexCommand implements ILayerCommand {
-	
-	private final int groupByColumnIndex;
 
-	public UngroupByColumnIndexCommand(int groupByColumnIndex) {
-		this.groupByColumnIndex = groupByColumnIndex;
-	}
-	
-	public int getGroupByColumnIndex() {
-		return groupByColumnIndex;
-	}
-	
-	public UngroupByColumnIndexCommand cloneCommand() {
-		return this;
-	}
+    private final int groupByColumnIndex;
 
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		return true;
-	}
+    public UngroupByColumnIndexCommand(int groupByColumnIndex) {
+        this.groupByColumnIndex = groupByColumnIndex;
+    }
+
+    public int getGroupByColumnIndex() {
+        return groupByColumnIndex;
+    }
+
+    public UngroupByColumnIndexCommand cloneCommand() {
+        return this;
+    }
+
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        return true;
+    }
 
 }

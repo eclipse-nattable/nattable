@@ -41,42 +41,45 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _5032_HorizontalCompositionExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5032_HorizontalCompositionExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _5032_HorizontalCompositionExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows how to assemble a table that consists of a row header and a body layer.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows how to assemble a table that consists of a row header and a body layer.";
+    }
 
-		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
-				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		
-		final List<Person> data = PersonService.getPersons(10);
-		
-		IRowDataProvider<Person> bodyDataProvider = 
-				new ListDataProvider<Person>(data, columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		ILayer rowHeaderLayer = new RowHeaderLayer(
-				new DefaultRowHeaderDataLayer(new DefaultRowHeaderDataProvider(bodyDataProvider)), 
-				viewportLayer, 
-				selectionLayer);
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
 
-		//set the region labels to make default configurations work, e.g. selection
-		CompositeLayer compositeLayer = new CompositeLayer(2, 1);
-		compositeLayer.setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0, 0);
-		compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 1, 0);
-		
-		return new NatTable(parent, compositeLayer);
-	}
+        final List<Person> data = PersonService.getPersons(10);
+
+        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(
+                data, columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        ILayer rowHeaderLayer = new RowHeaderLayer(
+                new DefaultRowHeaderDataLayer(new DefaultRowHeaderDataProvider(
+                        bodyDataProvider)), viewportLayer, selectionLayer);
+
+        // set the region labels to make default configurations work, e.g.
+        // selection
+        CompositeLayer compositeLayer = new CompositeLayer(2, 1);
+        compositeLayer.setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0,
+                0);
+        compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 1, 0);
+
+        return new NatTable(parent, compositeLayer);
+    }
 
 }

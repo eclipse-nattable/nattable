@@ -35,78 +35,87 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Simple example showing how to add the {@link HoverLayer} to a simple layer composition.
+ * Simple example showing how to add the {@link HoverLayer} to a simple layer
+ * composition.
  * 
  * @author Dirk Fauth
  *
  */
 public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5061_SimpleHoverStylingExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _5061_SimpleHoverStylingExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows the usage of the HoverLayer within a simple layer composition.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows the usage of the HoverLayer within a simple layer composition.";
+    }
 
-		//build the body layer stack 
-		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
-		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
-		//directly as body layer is also working.
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		HoverLayer hoverLayer = new HoverLayer(bodyDataLayer, false);
-		//we need to ensure that the hover styling is removed when the mouse cursor moves out of the cell area
-		hoverLayer.addConfiguration(new SimpleHoverStylingBindings(hoverLayer));
-		
-		SelectionLayer selectionLayer = new SelectionLayer(hoverLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
-		
-		viewportLayer.setRegionName(GridRegion.BODY);
-		
-		//turn the auto configuration off as we want to add our hover styling configuration
-		NatTable natTable = new NatTable(parent, viewportLayer, false);
-		
-		//as the autoconfiguration of the NatTable is turned off, we have to add the 
-		//DefaultNatTableStyleConfiguration manually	
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		
-		//add the style configuration for hover
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				//style that is applied when cells are hovered
-				Style style = new Style();
-				style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_YELLOW);
-				
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.CELL_STYLE, 
-						style, 
-						DisplayMode.HOVER);
-				
-				//style that is applied when selected cells are hovered
-				style = new Style();
-				style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_GREEN);
-				
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.CELL_STYLE, 
-						style, 
-						DisplayMode.SELECT_HOVER);
-			}
-		});
-		
-		natTable.configure();
-		
-		return natTable;
-	}
+        // build the body layer stack
+        // Usually you would create a new layer stack by extending
+        // AbstractIndexLayerTransform and
+        // setting the ViewportLayer as underlying layer. But in this case using
+        // the ViewportLayer
+        // directly as body layer is also working.
+        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
+                PersonService.getPersons(10), propertyNames);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+
+        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer, false);
+        // we need to ensure that the hover styling is removed when the mouse
+        // cursor moves out of the cell area
+        hoverLayer.addConfiguration(new SimpleHoverStylingBindings(hoverLayer));
+
+        SelectionLayer selectionLayer = new SelectionLayer(hoverLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        viewportLayer.setRegionName(GridRegion.BODY);
+
+        // turn the auto configuration off as we want to add our hover styling
+        // configuration
+        NatTable natTable = new NatTable(parent, viewportLayer, false);
+
+        // as the autoconfiguration of the NatTable is turned off, we have to
+        // add the
+        // DefaultNatTableStyleConfiguration manually
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+
+        // add the style configuration for hover
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                // style that is applied when cells are hovered
+                Style style = new Style();
+                style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.COLOR_YELLOW);
+
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE, style,
+                        DisplayMode.HOVER);
+
+                // style that is applied when selected cells are hovered
+                style = new Style();
+                style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.COLOR_GREEN);
+
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE, style,
+                        DisplayMode.SELECT_HOVER);
+            }
+        });
+
+        natTable.configure();
+
+        return natTable;
+    }
 
 }

@@ -13,29 +13,30 @@ package org.eclipse.nebula.widgets.nattable.grid.data;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 
 public class DefaultCornerDataProvider implements IDataProvider {
-	
-	private final IDataProvider columnHeaderDataProvider;
-	private final IDataProvider rowHeaderDataProvider;
 
-	public DefaultCornerDataProvider(IDataProvider columnHeaderDataProvider, IDataProvider rowHeaderDataProvider) {
-		this.columnHeaderDataProvider = columnHeaderDataProvider;
-		this.rowHeaderDataProvider = rowHeaderDataProvider;
-	}
-	
-	public int getColumnCount() {
-		return rowHeaderDataProvider.getColumnCount();
-	}
+    private final IDataProvider columnHeaderDataProvider;
+    private final IDataProvider rowHeaderDataProvider;
 
-	public int getRowCount() {
-		return columnHeaderDataProvider.getRowCount();
-	}
+    public DefaultCornerDataProvider(IDataProvider columnHeaderDataProvider,
+            IDataProvider rowHeaderDataProvider) {
+        this.columnHeaderDataProvider = columnHeaderDataProvider;
+        this.rowHeaderDataProvider = rowHeaderDataProvider;
+    }
 
-	public Object getDataValue(int columnIndex, int rowIndex) {
-		return null;
-	}
-	
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-		throw new UnsupportedOperationException();
-	}
+    public int getColumnCount() {
+        return rowHeaderDataProvider.getColumnCount();
+    }
+
+    public int getRowCount() {
+        return columnHeaderDataProvider.getRowCount();
+    }
+
+    public Object getDataValue(int columnIndex, int rowIndex) {
+        return null;
+    }
+
+    public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+        throw new UnsupportedOperationException();
+    }
 
 }

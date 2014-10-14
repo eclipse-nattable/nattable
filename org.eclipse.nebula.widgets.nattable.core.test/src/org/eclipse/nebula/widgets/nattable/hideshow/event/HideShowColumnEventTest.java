@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.hideshow.event;
 
 import java.util.Arrays;
 
-
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseColumnHideShowLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
@@ -22,48 +21,49 @@ import org.junit.Test;
 
 @SuppressWarnings("boxing")
 public class HideShowColumnEventTest {
-	
-	private LayerListenerFixture layerListener;
-	private BaseColumnHideShowLayerFixture hideShowLayer;
-	
-	@Before
-	public void setUp() {
-		hideShowLayer = new BaseColumnHideShowLayerFixture(new DataLayerFixture(100, 40));
-		layerListener = new LayerListenerFixture();
-	}
-	
-	@Test
-	public void willHideColumnShouldThrowsHideShowEvent() {
-		hideShowLayer.addLayerListener(layerListener);
-		hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
-		
-		Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
-		Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
-	}
-	
-	@Test
-	public void willShowColumnShouldThrowsHideShowEvent() {
-		hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
-		hideShowLayer.addLayerListener(layerListener);
-		
-		Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
-		Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
-		
-		hideShowLayer.showColumnIndexes(Arrays.asList(1, 4));
-		Assert.assertFalse(hideShowLayer.isColumnIndexHidden(1));
-		Assert.assertFalse(hideShowLayer.isColumnIndexHidden(4));
-	}
-	
-	@Test
-	public void willShowAllColumnsThrowsHideShowEvent() {
-		hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
-		hideShowLayer.addLayerListener(layerListener);
-		
-		Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
-		Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
-		
-		hideShowLayer.showAllColumns();
-		Assert.assertFalse(hideShowLayer.isColumnIndexHidden(1));
-		Assert.assertFalse(hideShowLayer.isColumnIndexHidden(4));
-	}
+
+    private LayerListenerFixture layerListener;
+    private BaseColumnHideShowLayerFixture hideShowLayer;
+
+    @Before
+    public void setUp() {
+        hideShowLayer = new BaseColumnHideShowLayerFixture(
+                new DataLayerFixture(100, 40));
+        layerListener = new LayerListenerFixture();
+    }
+
+    @Test
+    public void willHideColumnShouldThrowsHideShowEvent() {
+        hideShowLayer.addLayerListener(layerListener);
+        hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
+
+        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
+    }
+
+    @Test
+    public void willShowColumnShouldThrowsHideShowEvent() {
+        hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
+        hideShowLayer.addLayerListener(layerListener);
+
+        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
+
+        hideShowLayer.showColumnIndexes(Arrays.asList(1, 4));
+        Assert.assertFalse(hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertFalse(hideShowLayer.isColumnIndexHidden(4));
+    }
+
+    @Test
+    public void willShowAllColumnsThrowsHideShowEvent() {
+        hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
+        hideShowLayer.addLayerListener(layerListener);
+
+        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
+
+        hideShowLayer.showAllColumns();
+        Assert.assertFalse(hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertFalse(hideShowLayer.isColumnIndexHidden(4));
+    }
 }

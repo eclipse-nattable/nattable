@@ -28,64 +28,57 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import ca.odell.glazedlists.SortedList;
 
 /**
- * Column header layer stack, with a {@link SortHeaderLayer}.
- * 	Utilizes {@link GlazedListsSortModel} for sorting
+ * Column header layer stack, with a {@link SortHeaderLayer}. Utilizes
+ * {@link GlazedListsSortModel} for sorting
  */
-public class GlazedListsColumnHeaderLayerStack<T> extends AbstractLayerTransform {
-	private IDataProvider dataProvider;
-	private DefaultColumnHeaderDataLayer dataLayer;
-	private ColumnHeaderLayer columnHeaderLayer;
+public class GlazedListsColumnHeaderLayerStack<T> extends
+        AbstractLayerTransform {
+    private IDataProvider dataProvider;
+    private DefaultColumnHeaderDataLayer dataLayer;
+    private ColumnHeaderLayer columnHeaderLayer;
 
-	public GlazedListsColumnHeaderLayerStack(String[] propertyNames, 
-												Map<String, String> propertyToLabelMap, 
-												SortedList<T> sortedList,
-												IColumnPropertyAccessor<T> columnPropertyAccessor, 
-												IConfigRegistry configRegistry,
-												DefaultBodyLayerStack bodyLayerStack) {
+    public GlazedListsColumnHeaderLayerStack(String[] propertyNames,
+            Map<String, String> propertyToLabelMap, SortedList<T> sortedList,
+            IColumnPropertyAccessor<T> columnPropertyAccessor,
+            IConfigRegistry configRegistry, DefaultBodyLayerStack bodyLayerStack) {
 
-		this(new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap),
-				sortedList,
-				columnPropertyAccessor, 
-				configRegistry,
-				bodyLayerStack);
-	}
-	
-	public GlazedListsColumnHeaderLayerStack(IDataProvider dataProvider, 
-			SortedList<T> sortedList,
-			IColumnPropertyAccessor<T> columnPropertyAccessor, 
-			IConfigRegistry configRegistry,
-			DefaultBodyLayerStack bodyLayerStack) {
-		
-		this.dataProvider = dataProvider;
-		dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
-		columnHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        this(new DefaultColumnHeaderDataProvider(propertyNames,
+                propertyToLabelMap), sortedList, columnPropertyAccessor,
+                configRegistry, bodyLayerStack);
+    }
 
-		SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
-												columnHeaderLayer, 
-												new GlazedListsSortModel<T>(
-														sortedList, 
-														columnPropertyAccessor,
-														configRegistry, 
-														dataLayer), 
-												false);
+    public GlazedListsColumnHeaderLayerStack(IDataProvider dataProvider,
+            SortedList<T> sortedList,
+            IColumnPropertyAccessor<T> columnPropertyAccessor,
+            IConfigRegistry configRegistry, DefaultBodyLayerStack bodyLayerStack) {
 
-		setUnderlyingLayer(sortHeaderLayer);
-	}
-	
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		super.setClientAreaProvider(clientAreaProvider);
-	}
+        this.dataProvider = dataProvider;
+        dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
+        columnHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayerStack,
+                bodyLayerStack.getSelectionLayer());
 
-	public DataLayer getDataLayer() {
-		return dataLayer;
-	}
+        SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
+                columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
+                        columnPropertyAccessor, configRegistry, dataLayer),
+                false);
 
-	public IDataProvider getDataProvider() {
-		return dataProvider;
-	}
+        setUnderlyingLayer(sortHeaderLayer);
+    }
 
-	public ColumnHeaderLayer getColumnHeaderLayer() {
-		return columnHeaderLayer;
-	}
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        super.setClientAreaProvider(clientAreaProvider);
+    }
+
+    public DataLayer getDataLayer() {
+        return dataLayer;
+    }
+
+    public IDataProvider getDataProvider() {
+        return dataProvider;
+    }
+
+    public ColumnHeaderLayer getColumnHeaderLayer() {
+        return columnHeaderLayer;
+    }
 }

@@ -10,16 +10,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture;
 
-
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class AreaProviderFixture implements IClientAreaProvider {
 
-	public int width = 120;
-	public int height = 100;
+    public int width = 120;
+    public int height = 100;
 
-	public Rectangle getClientArea() {
-		return new Rectangle(0, 0, width, height);
-	}
+    public Rectangle getClientArea() {
+        return new Rectangle(0, 0, width, height);
+    }
 }

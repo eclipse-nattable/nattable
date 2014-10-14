@@ -20,135 +20,170 @@ import org.eclipse.swt.graphics.Rectangle;
  * Tracks the selections made in the table.
  */
 public interface ISelectionModel {
-	
-	/**
-	 * Determines whether multiple cells can be selected simultaneously
-	 * @return whether multiple cells can be selected simultaneously
-	 */
-	public boolean isMultipleSelectionAllowed();
-	
-	/**
-	 * Sets whether multiple cells can be selected simultaneously
-	 * @param multipleSelectionAllowed whether multiple cells can be selected simultaneously
-	 */
-	public void setMultipleSelectionAllowed(boolean multipleSelectionAllowed);
 
-	/**
-	 * Selects a specified cell
-	 * @param columnPosition column position of the cell to select
-	 * @param rowPosition row position of the cell to select
-	 */
-	public void addSelection(int columnPosition, int rowPosition);
+    /**
+     * Determines whether multiple cells can be selected simultaneously
+     * 
+     * @return whether multiple cells can be selected simultaneously
+     */
+    public boolean isMultipleSelectionAllowed();
 
-	/**
-	 * Selects the cells of a specified area
-	 * @param range the position based area to select
-	 */
-	public void addSelection(final Rectangle range);
+    /**
+     * Sets whether multiple cells can be selected simultaneously
+     * 
+     * @param multipleSelectionAllowed
+     *            whether multiple cells can be selected simultaneously
+     */
+    public void setMultipleSelectionAllowed(boolean multipleSelectionAllowed);
 
-	/**
-	 * Removes all cell selections
-	 */
-	public void clearSelection();
+    /**
+     * Selects a specified cell
+     * 
+     * @param columnPosition
+     *            column position of the cell to select
+     * @param rowPosition
+     *            row position of the cell to select
+     */
+    public void addSelection(int columnPosition, int rowPosition);
 
-	/**
-	 * Deselects a specified cell
-	 * @param columnPosition column position of the cell to deselect
-	 * @param rowPosition row position of the cell to deselect
-	 */
-	public void clearSelection(int columnPosition, int rowPosition);
+    /**
+     * Selects the cells of a specified area
+     * 
+     * @param range
+     *            the position based area to select
+     */
+    public void addSelection(final Rectangle range);
 
-	/**
-	 * Removes the selection of specified cells
-	 * @param removedSelection the position based area to deselect
-	 */
-	public void clearSelection(Rectangle removedSelection);
+    /**
+     * Removes all cell selections
+     */
+    public void clearSelection();
 
-	/**
-	 * Determines whether there are any selected cells
-	 * @return whether there are any selected cells
-	 */
-	public boolean isEmpty();
+    /**
+     * Deselects a specified cell
+     * 
+     * @param columnPosition
+     *            column position of the cell to deselect
+     * @param rowPosition
+     *            row position of the cell to deselect
+     */
+    public void clearSelection(int columnPosition, int rowPosition);
 
-	/**
-	 * Retrieves the cells that are selected
-	 * @return the cells that are selected, expressed in position coordinates
-	 */
-	public List<Rectangle> getSelections();
-	
-	// Cell features
+    /**
+     * Removes the selection of specified cells
+     * 
+     * @param removedSelection
+     *            the position based area to deselect
+     */
+    public void clearSelection(Rectangle removedSelection);
 
-	/**
-	 * Determines whether a specified cell is selected
-	 * @param columnPosition column position of the cell to inspect
-	 * @param rowPosition row position of the cell to inspect
-	 * @return whether the specified cell is selected
-	 */
-	public boolean isCellPositionSelected(int columnPosition, int rowPosition);
-	
-	// Column features
+    /**
+     * Determines whether there are any selected cells
+     * 
+     * @return whether there are any selected cells
+     */
+    public boolean isEmpty();
 
-	/**
-	 * Retrieves the columns that have any selected cells
-	 * @return the column positions that have any selected cells
-	 */
-	public int[] getSelectedColumnPositions();
+    /**
+     * Retrieves the cells that are selected
+     * 
+     * @return the cells that are selected, expressed in position coordinates
+     */
+    public List<Rectangle> getSelections();
 
-	/**
-	 * Determines whether a specified column contains any selected cell
-	 * @param columnPosition column position to inspect
-	 * @return whether the specified column contains any selected cell
-	 */
-	public boolean isColumnPositionSelected(int columnPosition);
+    // Cell features
 
-	/**
-	 * @param columnHeight the number of rows in a fully selected column
-	 */
-	public int[] getFullySelectedColumnPositions(int columnHeight);
+    /**
+     * Determines whether a specified cell is selected
+     * 
+     * @param columnPosition
+     *            column position of the cell to inspect
+     * @param rowPosition
+     *            row position of the cell to inspect
+     * @return whether the specified cell is selected
+     */
+    public boolean isCellPositionSelected(int columnPosition, int rowPosition);
 
-	/**
-	 * @param columnHeight the number of rows in a fully selected column
-	 */
-	public boolean isColumnPositionFullySelected(int columnPosition, int columnHeight);
+    // Column features
 
-	// Row features
+    /**
+     * Retrieves the columns that have any selected cells
+     * 
+     * @return the column positions that have any selected cells
+     */
+    public int[] getSelectedColumnPositions();
 
-	/**
-	 * Retrieves the number of rows that have any selected cell
-	 * @return the number of rows that have any selected cell
-	 */
-	public int getSelectedRowCount();
-	
-	/**
-	 * Retrieves the rows with a valid row position that have any selected cells
-	 * @return the row positions with a valid row position that have any selected cells
-	 */
-	public Set<Range> getSelectedRowPositions();
-	
-	/**
-	 * Determines whether a specified row contains any selected cell
-	 * @param rowPosition row position to inspect
-	 * @return whether the specified row contains any selected cell
-	 */
-	public boolean isRowPositionSelected(int rowPosition);
+    /**
+     * Determines whether a specified column contains any selected cell
+     * 
+     * @param columnPosition
+     *            column position to inspect
+     * @return whether the specified column contains any selected cell
+     */
+    public boolean isColumnPositionSelected(int columnPosition);
 
-	/**
-	 * @param rowWidth the number of columns in a fully selected row
-	 */
-	public int[] getFullySelectedRowPositions(int rowWidth);
+    /**
+     * @param columnHeight
+     *            the number of rows in a fully selected column
+     */
+    public int[] getFullySelectedColumnPositions(int columnHeight);
 
-	/**
-	 * Check if all cells in a row are selected, which means the row is fully selected.
-	 * @param rowPosition The row position that should be checked.
-	 * @param rowWidth The number of columns in the row which is needed to determine if the
-	 * 			all cells in a row are selected.
-	 * @return <code>true</code> if all cells in a row are selected, <code>false</code>
-	 * 			if not
-	 */
-	public boolean isRowPositionFullySelected(int rowPosition, int rowWidth);
-	
-	/**
-	 * Callback function that is called by default on structural changes in the data model.
-	 */
-	public void updateSelection();
+    /**
+     * @param columnHeight
+     *            the number of rows in a fully selected column
+     */
+    public boolean isColumnPositionFullySelected(int columnPosition,
+            int columnHeight);
+
+    // Row features
+
+    /**
+     * Retrieves the number of rows that have any selected cell
+     * 
+     * @return the number of rows that have any selected cell
+     */
+    public int getSelectedRowCount();
+
+    /**
+     * Retrieves the rows with a valid row position that have any selected cells
+     * 
+     * @return the row positions with a valid row position that have any
+     *         selected cells
+     */
+    public Set<Range> getSelectedRowPositions();
+
+    /**
+     * Determines whether a specified row contains any selected cell
+     * 
+     * @param rowPosition
+     *            row position to inspect
+     * @return whether the specified row contains any selected cell
+     */
+    public boolean isRowPositionSelected(int rowPosition);
+
+    /**
+     * @param rowWidth
+     *            the number of columns in a fully selected row
+     */
+    public int[] getFullySelectedRowPositions(int rowWidth);
+
+    /**
+     * Check if all cells in a row are selected, which means the row is fully
+     * selected.
+     * 
+     * @param rowPosition
+     *            The row position that should be checked.
+     * @param rowWidth
+     *            The number of columns in the row which is needed to determine
+     *            if the all cells in a row are selected.
+     * @return <code>true</code> if all cells in a row are selected,
+     *         <code>false</code> if not
+     */
+    public boolean isRowPositionFullySelected(int rowPosition, int rowWidth);
+
+    /**
+     * Callback function that is called by default on structural changes in the
+     * data model.
+     */
+    public void updateSelection();
 }

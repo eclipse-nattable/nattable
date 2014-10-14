@@ -15,16 +15,16 @@ import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
 public class GroupColumnsEvent extends VisualRefreshEvent {
 
-	public GroupColumnsEvent(ILayer layer) {
-		super(layer);
-	}
+    public GroupColumnsEvent(ILayer layer) {
+        super(layer);
+    }
 
-	protected GroupColumnsEvent(GroupColumnsEvent event) {
-		super(event);
-	}
-	
-	public GroupColumnsEvent cloneEvent() {
-		return new GroupColumnsEvent(this);
-	}
+    protected GroupColumnsEvent(GroupColumnsEvent event) {
+        super(event);
+    }
+
+    public GroupColumnsEvent cloneEvent() {
+        return new GroupColumnsEvent(this);
+    }
 
 }

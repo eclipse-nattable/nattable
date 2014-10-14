@@ -48,94 +48,115 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Simple example showing how to add the {@link HoverLayer} to a grid layer composition.
- * This example only show how to add hover styling to the body of a grid.
+ * Simple example showing how to add the {@link HoverLayer} to a grid layer
+ * composition. This example only show how to add hover styling to the body of a
+ * grid.
  * 
  * @author Dirk Fauth
  *
  */
 public class _5063_GridBodyHoverStylingExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5063_GridBodyHoverStylingExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _5063_GridBodyHoverStylingExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows the usage of the HoverLayer within a grid only for the body area.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows the usage of the HoverLayer within a grid only for the body area.";
+    }
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		//build the body layer stack 
-		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
-		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
-		//directly as body layer is also working.
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
-		SelectionLayer selectionLayer = new SelectionLayer(hoverLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
 
-		//build the column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer, false);
-		
-		//add ColumnHeaderHoverLayerConfiguration to ensure that hover styling and resizing is working together
-		columnHeaderLayer.addConfiguration(new ColumnHeaderHoverLayerConfiguration(null));
-		
-		//build the row header layer
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer, false);
-		
-		//add RowHeaderHoverLayerConfiguration to ensure that hover styling and resizing is working together
-		rowHeaderLayer.addConfiguration(new RowHeaderHoverLayerConfiguration(null));
-		
-		//build the corner layer
-		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
-		
-		//build the grid layer
-		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		//turn the auto configuration off as we want to add our header menu configuration
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		
-		//as the autoconfiguration of the NatTable is turned off, we have to add the 
-		//DefaultNatTableStyleConfiguration manually	
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		
-		//add the style configuration for hover
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				Style style = new Style();
-				style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_YELLOW);
-				
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.CELL_STYLE, 
-						style, 
-						DisplayMode.HOVER);
-			}
-		});
-		natTable.configure();
-		
-		return natTable;
-	}
+        // build the body layer stack
+        // Usually you would create a new layer stack by extending
+        // AbstractIndexLayerTransform and
+        // setting the ViewportLayer as underlying layer. But in this case using
+        // the ViewportLayer
+        // directly as body layer is also working.
+        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
+                PersonService.getPersons(10), propertyNames);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
+        SelectionLayer selectionLayer = new SelectionLayer(hoverLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        // build the column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+                columnHeaderDataLayer, viewportLayer, selectionLayer, false);
+
+        // add ColumnHeaderHoverLayerConfiguration to ensure that hover styling
+        // and resizing is working together
+        columnHeaderLayer
+                .addConfiguration(new ColumnHeaderHoverLayerConfiguration(null));
+
+        // build the row header layer
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer, false);
+
+        // add RowHeaderHoverLayerConfiguration to ensure that hover styling and
+        // resizing is working together
+        rowHeaderLayer.addConfiguration(new RowHeaderHoverLayerConfiguration(
+                null));
+
+        // build the corner layer
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                columnHeaderLayer);
+
+        // build the grid layer
+        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
+
+        // turn the auto configuration off as we want to add our header menu
+        // configuration
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+
+        // as the autoconfiguration of the NatTable is turned off, we have to
+        // add the
+        // DefaultNatTableStyleConfiguration manually
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+
+        // add the style configuration for hover
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                Style style = new Style();
+                style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                        GUIHelper.COLOR_YELLOW);
+
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_STYLE, style,
+                        DisplayMode.HOVER);
+            }
+        });
+        natTable.configure();
+
+        return natTable;
+    }
 
 }

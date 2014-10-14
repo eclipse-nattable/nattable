@@ -10,39 +10,44 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 
 public class DefaultCharacterDisplayConverterTest {
 
-	private DefaultCharacterDisplayConverter characterConverter = new DefaultCharacterDisplayConverter();
-	
-	@Test
-	public void testNonNullDataToDisplay() {
-		Assert.assertEquals("a", characterConverter.canonicalToDisplayValue('a'));
-		Assert.assertEquals("1", characterConverter.canonicalToDisplayValue('1'));
-	}
-	
-	@Test
-	public void testNullDataToDisplay() {
-		Assert.assertEquals("", characterConverter.canonicalToDisplayValue(null));
-	}
-	
-	@Test
-	public void testNonNullDisplayToData() {
-		Assert.assertEquals('a', characterConverter.displayToCanonicalValue("a"));
-		Assert.assertEquals('1', characterConverter.displayToCanonicalValue("1"));
-	}
-	
-	@Test
-	public void testNullDisplayToData() {
-		Assert.assertEquals(null, characterConverter.displayToCanonicalValue(""));
-	}
+    private DefaultCharacterDisplayConverter characterConverter = new DefaultCharacterDisplayConverter();
 
-	@Test(expected=ConversionFailedException.class)
-	public void testConversionException() {
-		characterConverter.displayToCanonicalValue("abc");
-	}
-	
+    @Test
+    public void testNonNullDataToDisplay() {
+        Assert.assertEquals("a",
+                characterConverter.canonicalToDisplayValue('a'));
+        Assert.assertEquals("1",
+                characterConverter.canonicalToDisplayValue('1'));
+    }
+
+    @Test
+    public void testNullDataToDisplay() {
+        Assert.assertEquals("",
+                characterConverter.canonicalToDisplayValue(null));
+    }
+
+    @Test
+    public void testNonNullDisplayToData() {
+        Assert.assertEquals('a',
+                characterConverter.displayToCanonicalValue("a"));
+        Assert.assertEquals('1',
+                characterConverter.displayToCanonicalValue("1"));
+    }
+
+    @Test
+    public void testNullDisplayToData() {
+        Assert.assertEquals(null,
+                characterConverter.displayToCanonicalValue(""));
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionException() {
+        characterConverter.displayToCanonicalValue("abc");
+    }
+
 }

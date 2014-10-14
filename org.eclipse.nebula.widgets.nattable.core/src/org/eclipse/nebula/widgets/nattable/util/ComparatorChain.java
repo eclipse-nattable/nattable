@@ -15,20 +15,20 @@ import java.util.List;
 
 public class ComparatorChain<T> implements Comparator<T> {
 
-	private final List<Comparator<T>> comparators;
+    private final List<Comparator<T>> comparators;
 
-	public ComparatorChain(List<Comparator<T>> comparators) {
-		this.comparators = comparators;
-	}
-	
-	public int compare(T arg0, T arg1) {
-		for (int i = 0; i < comparators.size(); i++) {
-			int compareResult = comparators.get(i).compare(arg0, arg1);
-			if (compareResult != 0) {
-				return compareResult;
-			}
-		}
-		return 0;
-	}
+    public ComparatorChain(List<Comparator<T>> comparators) {
+        this.comparators = comparators;
+    }
+
+    public int compare(T arg0, T arg1) {
+        for (int i = 0; i < comparators.size(); i++) {
+            int compareResult = comparators.get(i).compare(arg0, arg1);
+            if (compareResult != 0) {
+                return compareResult;
+            }
+        }
+        return 0;
+    }
 
 }

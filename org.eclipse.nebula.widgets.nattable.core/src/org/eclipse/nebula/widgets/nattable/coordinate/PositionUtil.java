@@ -19,76 +19,92 @@ import java.util.List;
 
 public class PositionUtil {
 
-	/**
-	 * Finds contiguous numbers in a group of numbers.
-	 * <p>
-	 * See ColumnChooserDialogTest#getGroupedByContiguous()
-	 */
-	public static List<List<Integer>> getGroupedByContiguous(Collection<Integer> numberCollection) {
-		List<Integer> numbers = new ArrayList<Integer>(numberCollection);
-		Collections.sort(numbers);
+    /**
+     * Finds contiguous numbers in a group of numbers.
+     * <p>
+     * See ColumnChooserDialogTest#getGroupedByContiguous()
+     */
+    public static List<List<Integer>> getGroupedByContiguous(
+            Collection<Integer> numberCollection) {
+        List<Integer> numbers = new ArrayList<Integer>(numberCollection);
+        Collections.sort(numbers);
 
-		List<Integer> contiguous = new ArrayList<Integer>();
-		List<List<Integer>> grouped =  new ArrayList<List<Integer>>();
+        List<Integer> contiguous = new ArrayList<Integer>();
+        List<List<Integer>> grouped = new ArrayList<List<Integer>>();
 
-		for(int i = 0; i < numbers.size()-1; i++) {
-			if(numbers.get(i).intValue()+1 != numbers.get(i+1).intValue()){
-				contiguous.add(numbers.get(i));
-				grouped.add(contiguous);
-				contiguous = new ArrayList<Integer>();
-			} else {
-				contiguous.add(numbers.get(i));
-			}
-		}
-		if(isNotEmpty(numbers)){
-			contiguous.add(numbers.get(numbers.size()-1));
-		}
-		grouped.add(contiguous);
-		return grouped;
-	}
+        for (int i = 0; i < numbers.size() - 1; i++) {
+            if (numbers.get(i).intValue() + 1 != numbers.get(i + 1).intValue()) {
+                contiguous.add(numbers.get(i));
+                grouped.add(contiguous);
+                contiguous = new ArrayList<Integer>();
+            } else {
+                contiguous.add(numbers.get(i));
+            }
+        }
+        if (isNotEmpty(numbers)) {
+            contiguous.add(numbers.get(numbers.size() - 1));
+        }
+        grouped.add(contiguous);
+        return grouped;
+    }
 
-	/**
-	 * <p>Creates {@link Range}s out of list of numbers.
-	 * The contiguous numbers are grouped together in Ranges.</p>
-	 * 
-	 * <p>Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]</p>
-	 * <p>The last number in the Range is not inclusive.</p>
-	 * 
-	 * @param numbers The numbers to create the Range collection.
-	 * @return List of Ranges for the given Collection of numbers.
-	 */
-	public static List<Range> getRanges(Collection<Integer> numbers) {
-		List<Range> ranges = new ArrayList<Range>();
+    /**
+     * <p>
+     * Creates {@link Range}s out of list of numbers. The contiguous numbers are
+     * grouped together in Ranges.
+     * </p>
+     * 
+     * <p>
+     * Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]
+     * </p>
+     * <p>
+     * The last number in the Range is not inclusive.
+     * </p>
+     * 
+     * @param numbers
+     *            The numbers to create the Range collection.
+     * @return List of Ranges for the given Collection of numbers.
+     */
+    public static List<Range> getRanges(Collection<Integer> numbers) {
+        List<Range> ranges = new ArrayList<Range>();
 
-		if(isNotEmpty(numbers)){
-			for (List<Integer> number : PositionUtil.getGroupedByContiguous(numbers)) {
-				int start = number.get(0).intValue();
-				int end = number.get(number.size() - 1).intValue() + 1;
+        if (isNotEmpty(numbers)) {
+            for (List<Integer> number : PositionUtil
+                    .getGroupedByContiguous(numbers)) {
+                int start = number.get(0).intValue();
+                int end = number.get(number.size() - 1).intValue() + 1;
 
-				ranges.add(new Range(start, end));
-			}
-		}
+                ranges.add(new Range(start, end));
+            }
+        }
 
-		return ranges;
-	}
+        return ranges;
+    }
 
-	/**
-	 * <p>Creates {@link Range}s out of list of numbers.
-	 * The contiguous numbers are grouped together in Ranges.</p>
-	 * 
-	 * <p>Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]</p>
-	 * <p>The last number in the Range is not inclusive.</p>
-	 * 
-	 * @param numbers The numbers to create the Range collection.
-	 * @return List of Ranges for the given Collection of numbers.
-	 */
-	public static List<Range> getRanges(int... numbers) {
-		List<Integer> numberCollection = new ArrayList<Integer>();
+    /**
+     * <p>
+     * Creates {@link Range}s out of list of numbers. The contiguous numbers are
+     * grouped together in Ranges.
+     * </p>
+     * 
+     * <p>
+     * Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]
+     * </p>
+     * <p>
+     * The last number in the Range is not inclusive.
+     * </p>
+     * 
+     * @param numbers
+     *            The numbers to create the Range collection.
+     * @return List of Ranges for the given Collection of numbers.
+     */
+    public static List<Range> getRanges(int... numbers) {
+        List<Integer> numberCollection = new ArrayList<Integer>();
 
-		for (int number : numbers) {
-			numberCollection.add(number);
-		}
+        for (int number : numbers) {
+            numberCollection.add(number);
+        }
 
-		return getRanges(numberCollection);
-	}
+        return getRanges(numberCollection);
+    }
 }

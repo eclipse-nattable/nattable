@@ -16,33 +16,36 @@ import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ColumnReorderStartCommand implements ILayerCommand {
-	
-	private ColumnPositionCoordinate fromColumnPositionCoordinate;
-	
-	public ColumnReorderStartCommand(ILayer layer, int fromColumnPosition) {
-		fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer, fromColumnPosition);
-	}
-	
-	protected ColumnReorderStartCommand(ColumnReorderStartCommand command) {
-		this.fromColumnPositionCoordinate = command.fromColumnPositionCoordinate;
-	}
-	
-	public int getFromColumnPosition() {
-		return fromColumnPositionCoordinate.getColumnPosition();
-	}
-	
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(fromColumnPositionCoordinate, targetLayer);
-		if (targetFromColumnPositionCoordinate != null) {
-			fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public ColumnReorderStartCommand cloneCommand() {
-		return new ColumnReorderStartCommand(this);
-	}
-	
+
+    private ColumnPositionCoordinate fromColumnPositionCoordinate;
+
+    public ColumnReorderStartCommand(ILayer layer, int fromColumnPosition) {
+        fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+                fromColumnPosition);
+    }
+
+    protected ColumnReorderStartCommand(ColumnReorderStartCommand command) {
+        this.fromColumnPositionCoordinate = command.fromColumnPositionCoordinate;
+    }
+
+    public int getFromColumnPosition() {
+        return fromColumnPositionCoordinate.getColumnPosition();
+    }
+
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil
+                .convertColumnPositionToTargetContext(
+                        fromColumnPositionCoordinate, targetLayer);
+        if (targetFromColumnPositionCoordinate != null) {
+            fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public ColumnReorderStartCommand cloneCommand() {
+        return new ColumnReorderStartCommand(this);
+    }
+
 }

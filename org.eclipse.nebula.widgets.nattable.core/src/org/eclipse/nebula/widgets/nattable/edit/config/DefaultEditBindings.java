@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.config;
 
-
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.action.CellEditDragMode;
@@ -29,50 +28,57 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
 
 /**
- * Default configuration for edit related bindings. Adds bindings that support opening
- * cell editors via keypress and mouse click.
+ * Default configuration for edit related bindings. Adds bindings that support
+ * opening cell editors via keypress and mouse click.
  * <p>
- * By default {@link GridRegion#BODY} is used for the matchers to evaluate if an editor 
- * should be activated. By doing this only the editing in the body layer stack of a grid
- * is enabled.
+ * By default {@link GridRegion#BODY} is used for the matchers to evaluate if an
+ * editor should be activated. By doing this only the editing in the body layer
+ * stack of a grid is enabled.
  * </p>
  * <p>
- * Note: For typical {@link ICellEditor}s there is no special registering necessary like
- * 		 it was previous to 1.0.0. Only {@link ICellEditor}s that return <code>false</code>
- * 		 for {@link ICellEditor#activateAtAnyPosition()} need to register a custom
- * 		 {@link IMouseEventMatcher} to determine whether to activate the editor or not,
- * 		 regarding the correct position. This is for example necessary for the {@link CheckboxCellEditor}
- * 		 that is configured with the corresponding {@link CheckBoxPainter}, so the editor is only
- * 		 activated if the checkbox item is clicked, not any other position in the cell. 
+ * Note: For typical {@link ICellEditor}s there is no special registering
+ * necessary like it was previous to 1.0.0. Only {@link ICellEditor}s that
+ * return <code>false</code> for {@link ICellEditor#activateAtAnyPosition()}
+ * need to register a custom {@link IMouseEventMatcher} to determine whether to
+ * activate the editor or not, regarding the correct position. This is for
+ * example necessary for the {@link CheckboxCellEditor} that is configured with
+ * the corresponding {@link CheckBoxPainter}, so the editor is only activated if
+ * the checkbox item is clicked, not any other position in the cell.
  * </p>
  */
 public class DefaultEditBindings extends AbstractUiBindingConfiguration {
 
-	@Override
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		//configure the space key to activate a cell editor via keyboard
-		//this is especially useful for changing the value for a checkbox
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, 32), new KeyEditAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.F2), new KeyEditAction());
-		uiBindingRegistry.registerKeyBinding(new LetterOrDigitKeyEventMatcher(), new KeyEditAction());
-		uiBindingRegistry.registerKeyBinding(new LetterOrDigitKeyEventMatcher(SWT.SHIFT), new KeyEditAction());
-		
-		uiBindingRegistry.registerSingleClickBinding(
-				new CellEditorMouseEventMatcher(GridRegion.BODY),
-				new MouseEditAction());
-		
-		uiBindingRegistry.registerMouseDragMode(
-				new CellEditorMouseEventMatcher(GridRegion.BODY),
-				new CellEditDragMode());
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        // configure the space key to activate a cell editor via keyboard
+        // this is especially useful for changing the value for a checkbox
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, 32),
+                new KeyEditAction());
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.F2), new KeyEditAction());
+        uiBindingRegistry.registerKeyBinding(
+                new LetterOrDigitKeyEventMatcher(), new KeyEditAction());
+        uiBindingRegistry.registerKeyBinding(new LetterOrDigitKeyEventMatcher(
+                SWT.SHIFT), new KeyEditAction());
 
-		uiBindingRegistry.registerFirstSingleClickBinding(
-                new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
+        uiBindingRegistry.registerSingleClickBinding(
+                new CellEditorMouseEventMatcher(GridRegion.BODY),
                 new MouseEditAction());
-		
-		uiBindingRegistry.registerFirstMouseDragMode(
-                new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
-				new CellEditDragMode());
 
-	}
+        uiBindingRegistry.registerMouseDragMode(
+                new CellEditorMouseEventMatcher(GridRegion.BODY),
+                new CellEditDragMode());
+
+        uiBindingRegistry.registerFirstSingleClickBinding(
+                new CellPainterMouseEventMatcher(GridRegion.BODY,
+                        MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
+                new MouseEditAction());
+
+        uiBindingRegistry.registerFirstMouseDragMode(
+                new CellPainterMouseEventMatcher(GridRegion.BODY,
+                        MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
+                new CellEditDragMode());
+
+    }
 
 }

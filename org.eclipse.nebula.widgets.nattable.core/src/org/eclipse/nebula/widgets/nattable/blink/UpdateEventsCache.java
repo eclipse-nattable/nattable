@@ -20,127 +20,132 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 
-
 /**
  * Cache for the update events coming in.
  *
  * This cache is used by the {@link BlinkLayer} to check if updates are
  * available for a cell (hence, does it need to blink).
  *
- * @param <T> Type of the Bean in the backing list.
+ * @param <T>
+ *            Type of the Bean in the backing list.
  */
 public class UpdateEventsCache<T> {
 
-	/** Initial startup delay for the expired event removal task */
-	public static final int INITIAL_DELAY = 100;
+    /** Initial startup delay for the expired event removal task */
+    public static final int INITIAL_DELAY = 100;
 
-	/** TTL for an event in the cache. The event is deleted when this expires */
-	public static final int TIME_TO_LIVE = 500;
+    /** TTL for an event in the cache. The event is deleted when this expires */
+    public static final int TIME_TO_LIVE = 500;
 
-	private final IRowIdAccessor<T> rowIdAccessor;
-	private final KeyStrategy keyStrategy;
-	private final ScheduledExecutorService cleanupScheduler;
+    private final IRowIdAccessor<T> rowIdAccessor;
+    private final KeyStrategy keyStrategy;
+    private final ScheduledExecutorService cleanupScheduler;
 
-	private Map<String, TimeStampedEvent> updateEvents;
-	private ScheduledFuture<?> scheduledFutureCleanup;
+    private Map<String, TimeStampedEvent> updateEvents;
+    private ScheduledFuture<?> scheduledFutureCleanup;
 
-	public UpdateEventsCache(IRowIdAccessor<T> rowIdAccessor, KeyStrategy keyStrategy, ScheduledExecutorService cleanupScheduler) {
-		this.rowIdAccessor = rowIdAccessor;
-		this.keyStrategy = keyStrategy;
+    public UpdateEventsCache(IRowIdAccessor<T> rowIdAccessor,
+            KeyStrategy keyStrategy, ScheduledExecutorService cleanupScheduler) {
+        this.rowIdAccessor = rowIdAccessor;
+        this.keyStrategy = keyStrategy;
         this.cleanupScheduler = cleanupScheduler;
-		this.updateEvents = new HashMap<String, TimeStampedEvent>();
-	}
+        this.updateEvents = new HashMap<String, TimeStampedEvent>();
+    }
 
-	/**
-	 * We are not interested in update events which are too old and need not be blinked.
-	 * This task cleans them up, by looking at the received time stamp.
-	 */
-	private Runnable getStaleUpdatesCleanupTask() {
-		return new Runnable(){
+    /**
+     * We are not interested in update events which are too old and need not be
+     * blinked. This task cleans them up, by looking at the received time stamp.
+     */
+    private Runnable getStaleUpdatesCleanupTask() {
+        return new Runnable() {
 
-			public void run() {
-				Map<String, TimeStampedEvent> recentEvents = new HashMap<String, TimeStampedEvent>();
-				Date recent = new Date(System.currentTimeMillis() - TIME_TO_LIVE);
+            public void run() {
+                Map<String, TimeStampedEvent> recentEvents = new HashMap<String, TimeStampedEvent>();
+                Date recent = new Date(System.currentTimeMillis()
+                        - TIME_TO_LIVE);
 
-				for (Map.Entry<String, TimeStampedEvent> entry : updateEvents.entrySet()) {
-					if (entry.getValue().timeRecieved.after(recent)) {
-						recentEvents.put(entry.getKey(), entry.getValue());
-					}
-				}
-				synchronized (updateEvents) {
-					updateEvents = recentEvents;
-					checkUpdateEvents();
-				}
-			}
+                for (Map.Entry<String, TimeStampedEvent> entry : updateEvents
+                        .entrySet()) {
+                    if (entry.getValue().timeRecieved.after(recent)) {
+                        recentEvents.put(entry.getKey(), entry.getValue());
+                    }
+                }
+                synchronized (updateEvents) {
+                    updateEvents = recentEvents;
+                    checkUpdateEvents();
+                }
+            }
 
-		};
-	}
+        };
+    }
 
-	private void checkUpdateEvents() {
-		if (updateEvents.isEmpty()) {
-		    if (scheduledFutureCleanup != null) {
-		        scheduledFutureCleanup.cancel(true);
-		        scheduledFutureCleanup = null;
-		    }
-		} else {
-		    if (scheduledFutureCleanup == null) {
-		        scheduledFutureCleanup = cleanupScheduler.scheduleAtFixedRate(getStaleUpdatesCleanupTask(), INITIAL_DELAY, TIME_TO_LIVE, TimeUnit.MILLISECONDS);
-		    }
-		}
-	}
+    private void checkUpdateEvents() {
+        if (updateEvents.isEmpty()) {
+            if (scheduledFutureCleanup != null) {
+                scheduledFutureCleanup.cancel(true);
+                scheduledFutureCleanup = null;
+            }
+        } else {
+            if (scheduledFutureCleanup == null) {
+                scheduledFutureCleanup = cleanupScheduler.scheduleAtFixedRate(
+                        getStaleUpdatesCleanupTask(), INITIAL_DELAY,
+                        TIME_TO_LIVE, TimeUnit.MILLISECONDS);
+            }
+        }
+    }
 
-	public void put(PropertyUpdateEvent<T> event) {
-		String key = getKey(event);
-		updateEvents.put(key, new TimeStampedEvent(event));
-		checkUpdateEvents();
-	}
+    public void put(PropertyUpdateEvent<T> event) {
+        String key = getKey(event);
+        updateEvents.put(key, new TimeStampedEvent(event));
+        checkUpdateEvents();
+    }
 
-	protected String getKey(PropertyUpdateEvent<T> event) {
-		String rowId = rowIdAccessor.getRowId(event.getSourceBean()).toString();
-		return getKey(event.getPropertyName(), rowId);
-	}
+    protected String getKey(PropertyUpdateEvent<T> event) {
+        String rowId = rowIdAccessor.getRowId(event.getSourceBean()).toString();
+        return getKey(event.getPropertyName(), rowId);
+    }
 
-	public String getKey(String columnProperty, String rowId) {
-		return keyStrategy.getKey(columnProperty, rowId);
-	}
+    public String getKey(String columnProperty, String rowId) {
+        return keyStrategy.getKey(columnProperty, rowId);
+    }
 
-	public PropertyUpdateEvent<T> getEvent(String key){
-		return updateEvents.get(key).event;
-	}
+    public PropertyUpdateEvent<T> getEvent(String key) {
+        return updateEvents.get(key).event;
+    }
 
-	public int getCount() {
-		return updateEvents.size();
-	}
+    public int getCount() {
+        return updateEvents.size();
+    }
 
-	public boolean contains(String columnProperty, String rowId) {
-		return updateEvents.containsKey(getKey(columnProperty, rowId));
-	}
+    public boolean contains(String columnProperty, String rowId) {
+        return updateEvents.containsKey(getKey(columnProperty, rowId));
+    }
 
-	public boolean isUpdated(String key) {
-		return updateEvents.containsKey(key);
-	}
+    public boolean isUpdated(String key) {
+        return updateEvents.containsKey(key);
+    }
 
-	public void clear() {
-		updateEvents.clear();
-		checkUpdateEvents();
-	}
+    public void clear() {
+        updateEvents.clear();
+        checkUpdateEvents();
+    }
 
-	public void remove(String key) {
-		updateEvents.remove(key);
-		checkUpdateEvents();
-	}
+    public void remove(String key) {
+        updateEvents.remove(key);
+        checkUpdateEvents();
+    }
 
-	/**
-	 * Class to keep track of the time when an event was received
-	 */
-	private class TimeStampedEvent {
-		Date timeRecieved;
-		PropertyUpdateEvent<T> event;
+    /**
+     * Class to keep track of the time when an event was received
+     */
+    private class TimeStampedEvent {
+        Date timeRecieved;
+        PropertyUpdateEvent<T> event;
 
-		public TimeStampedEvent(PropertyUpdateEvent<T> event) {
-			this.event = event;
-			this.timeRecieved = new Date();
-		}
-	}
+        public TimeStampedEvent(PropertyUpdateEvent<T> event) {
+            this.event = event;
+            this.timeRecieved = new Date();
+        }
+    }
 
 }

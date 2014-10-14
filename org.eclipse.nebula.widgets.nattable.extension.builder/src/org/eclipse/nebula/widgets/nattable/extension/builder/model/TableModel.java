@@ -15,22 +15,25 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 
 public class TableModel {
 
-	public TableStyle tableStyle = new TableStyle();
-	public TableColumn[] columnProperties;
+    public TableStyle tableStyle = new TableStyle();
+    public TableColumn[] columnProperties;
 
-	public boolean enableFullRowSelection = true;
-	public boolean enableColumnGroups = true;
-	public boolean enableColumnCategories = true;
-	public boolean enableColumnStyleCustomization = true;
-	public boolean enableColumnHeaderRightClickMenu = true;
-	public boolean enableFilterRow = true;
+    public boolean enableFullRowSelection = true;
+    public boolean enableColumnGroups = true;
+    public boolean enableColumnCategories = true;
+    public boolean enableColumnStyleCustomization = true;
+    public boolean enableColumnHeaderRightClickMenu = true;
+    public boolean enableFilterRow = true;
 
-	public TableModel(TableColumn[] columnProperties) {
-		this.columnProperties = columnProperties;
-	}
+    public TableModel(TableColumn[] columnProperties) {
+        this.columnProperties = columnProperties;
+    }
 
-	/** You do not have to set these up, the builder will build this from the column data */
-	public ColumnGroupModel columnGroupModel;
-	public ColumnCategoriesModel columnCategoriesModel;
+    /**
+     * You do not have to set these up, the builder will build this from the
+     * column data
+     */
+    public ColumnGroupModel columnGroupModel;
+    public ColumnCategoriesModel columnCategoriesModel;
 
 }

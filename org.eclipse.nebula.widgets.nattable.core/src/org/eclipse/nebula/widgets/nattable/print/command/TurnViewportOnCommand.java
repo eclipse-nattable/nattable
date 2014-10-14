@@ -17,5 +17,4 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
  * 
  * @see TurnViewportOffCommand
  */
-public class TurnViewportOnCommand extends AbstractContextFreeCommand {
-}
+public class TurnViewportOnCommand extends AbstractContextFreeCommand {}

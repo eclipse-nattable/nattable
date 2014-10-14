@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._100_Layers._900_test.elemental;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -23,18 +22,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class CompositeDataLayerExample extends AbstractNatExample {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new CompositeDataLayerExample());
-	}
 
-	public Control createExampleControl(Composite parent) {
-		ILayer dataLayer = new DataLayer(new DummyBodyDataProvider(1000000, 1000000));
-		
-		CompositeLayer compositeLayer = new CompositeLayer(1, 1);
-		compositeLayer.setChildLayer(GridRegion.BODY, dataLayer, 0, 0);
-		
-		return new NatTable(parent, compositeLayer);
-	}
-	
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new CompositeDataLayerExample());
+    }
+
+    public Control createExampleControl(Composite parent) {
+        ILayer dataLayer = new DataLayer(new DummyBodyDataProvider(1000000,
+                1000000));
+
+        CompositeLayer compositeLayer = new CompositeLayer(1, 1);
+        compositeLayer.setChildLayer(GridRegion.BODY, dataLayer, 0, 0);
+
+        return new NatTable(parent, compositeLayer);
+    }
+
 }

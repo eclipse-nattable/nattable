@@ -31,104 +31,117 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelp
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
-
 public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
-	
-	public static final String PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES = ".hiddenColumnIndexes"; //$NON-NLS-1$
-	
-	private final Set<Integer> hiddenColumnIndexes;
 
-	public ColumnHideShowLayer(IUniqueIndexLayer underlyingLayer) {
-		super(underlyingLayer);
-		this.hiddenColumnIndexes = new TreeSet<Integer>();
-		
-		registerCommandHandler(new MultiColumnHideCommandHandler(this));
-		registerCommandHandler(new ColumnHideCommandHandler(this));
-		registerCommandHandler(new ShowAllColumnsCommandHandler(this));
-		registerCommandHandler(new MultiColumnShowCommandHandler(this));
-	}
-	
-	@Override
-	public void handleLayerEvent(ILayerEvent event) {
-		if (event instanceof IStructuralChangeEvent) {
-			IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
-			if (structuralChangeEvent.isHorizontalStructureChanged()) {
-				Collection<StructuralDiff> columnDiffs = structuralChangeEvent.getColumnDiffs();
-				
-				if (columnDiffs != null && !columnDiffs.isEmpty() && !StructuralChangeEventHelper.isReorder(columnDiffs)) {
-					StructuralChangeEventHelper.handleColumnDelete(columnDiffs, underlyingLayer, hiddenColumnIndexes, false);
-					StructuralChangeEventHelper.handleColumnInsert(columnDiffs, underlyingLayer, hiddenColumnIndexes, false);
-				}
-			}
-		}
-		super.handleLayerEvent(event);
-	}
+    public static final String PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES = ".hiddenColumnIndexes"; //$NON-NLS-1$
 
-	// Persistence
-	
-	@Override
-	public void saveState(String prefix, Properties properties) {
-		if (hiddenColumnIndexes.size() > 0) {
-			StringBuilder strBuilder = new StringBuilder();
-			for (Integer index : hiddenColumnIndexes) {
-				strBuilder.append(index);
-				strBuilder.append(IPersistable.VALUE_SEPARATOR);
-			}
-			properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES, strBuilder.toString());
-		}
-		
-		super.saveState(prefix, properties);
-	}
-	
-	@Override
-	public void loadState(String prefix, Properties properties) {
-		//Bug 396925: always clear the state of the hidden columns, whether there is a state saved or not
-		hiddenColumnIndexes.clear();
-		String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES);
-		if (property != null) {
-			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
-			while (tok.hasMoreTokens()) {
-				String index = tok.nextToken();
-				hiddenColumnIndexes.add(Integer.valueOf(index));
-			}
-		}
-		
-		super.loadState(prefix, properties);
-	}
-	
-	// Hide/show
+    private final Set<Integer> hiddenColumnIndexes;
 
-	@Override
-	public boolean isColumnIndexHidden(int columnIndex) {
-		return hiddenColumnIndexes.contains(Integer.valueOf(columnIndex));
-	}
+    public ColumnHideShowLayer(IUniqueIndexLayer underlyingLayer) {
+        super(underlyingLayer);
+        this.hiddenColumnIndexes = new TreeSet<Integer>();
 
-	@Override
-	public Collection<Integer> getHiddenColumnIndexes(){
-		return hiddenColumnIndexes;
-	}
+        registerCommandHandler(new MultiColumnHideCommandHandler(this));
+        registerCommandHandler(new ColumnHideCommandHandler(this));
+        registerCommandHandler(new ShowAllColumnsCommandHandler(this));
+        registerCommandHandler(new MultiColumnShowCommandHandler(this));
+    }
 
-	public void hideColumnPositions(Collection<Integer> columnPositions) {
-		Set<Integer> columnIndexes = new HashSet<Integer>();
-		for (Integer columnPosition : columnPositions) {
-			columnIndexes.add(Integer.valueOf(getColumnIndexByPosition(columnPosition.intValue())));
-		}
-		hiddenColumnIndexes.addAll(columnIndexes);
-		invalidateCache();
-		fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
-	}
+    @Override
+    public void handleLayerEvent(ILayerEvent event) {
+        if (event instanceof IStructuralChangeEvent) {
+            IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
+            if (structuralChangeEvent.isHorizontalStructureChanged()) {
+                Collection<StructuralDiff> columnDiffs = structuralChangeEvent
+                        .getColumnDiffs();
 
-	public void showColumnIndexes(Collection<Integer> columnIndexes) {
-		hiddenColumnIndexes.removeAll(columnIndexes);
-		invalidateCache();
-		fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(columnIndexes)));
-	}
+                if (columnDiffs != null && !columnDiffs.isEmpty()
+                        && !StructuralChangeEventHelper.isReorder(columnDiffs)) {
+                    StructuralChangeEventHelper.handleColumnDelete(columnDiffs,
+                            underlyingLayer, hiddenColumnIndexes, false);
+                    StructuralChangeEventHelper.handleColumnInsert(columnDiffs,
+                            underlyingLayer, hiddenColumnIndexes, false);
+                }
+            }
+        }
+        super.handleLayerEvent(event);
+    }
 
-	public void showAllColumns() {
-		Collection<Integer> hiddenColumns = new ArrayList<Integer>(hiddenColumnIndexes);
-		hiddenColumnIndexes.clear();
-		invalidateCache();
-		fireLayerEvent(new ShowColumnPositionsEvent(this, hiddenColumns));
-	}
-	
+    // Persistence
+
+    @Override
+    public void saveState(String prefix, Properties properties) {
+        if (hiddenColumnIndexes.size() > 0) {
+            StringBuilder strBuilder = new StringBuilder();
+            for (Integer index : hiddenColumnIndexes) {
+                strBuilder.append(index);
+                strBuilder.append(IPersistable.VALUE_SEPARATOR);
+            }
+            properties.setProperty(prefix
+                    + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES,
+                    strBuilder.toString());
+        }
+
+        super.saveState(prefix, properties);
+    }
+
+    @Override
+    public void loadState(String prefix, Properties properties) {
+        // Bug 396925: always clear the state of the hidden columns, whether
+        // there is a state saved or not
+        hiddenColumnIndexes.clear();
+        String property = properties.getProperty(prefix
+                + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES);
+        if (property != null) {
+            StringTokenizer tok = new StringTokenizer(property,
+                    IPersistable.VALUE_SEPARATOR);
+            while (tok.hasMoreTokens()) {
+                String index = tok.nextToken();
+                hiddenColumnIndexes.add(Integer.valueOf(index));
+            }
+        }
+
+        super.loadState(prefix, properties);
+    }
+
+    // Hide/show
+
+    @Override
+    public boolean isColumnIndexHidden(int columnIndex) {
+        return hiddenColumnIndexes.contains(Integer.valueOf(columnIndex));
+    }
+
+    @Override
+    public Collection<Integer> getHiddenColumnIndexes() {
+        return hiddenColumnIndexes;
+    }
+
+    public void hideColumnPositions(Collection<Integer> columnPositions) {
+        Set<Integer> columnIndexes = new HashSet<Integer>();
+        for (Integer columnPosition : columnPositions) {
+            columnIndexes
+                    .add(Integer
+                            .valueOf(getColumnIndexByPosition(columnPosition
+                                    .intValue())));
+        }
+        hiddenColumnIndexes.addAll(columnIndexes);
+        invalidateCache();
+        fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
+    }
+
+    public void showColumnIndexes(Collection<Integer> columnIndexes) {
+        hiddenColumnIndexes.removeAll(columnIndexes);
+        invalidateCache();
+        fireLayerEvent(new ShowColumnPositionsEvent(this,
+                getColumnPositionsByIndexes(columnIndexes)));
+    }
+
+    public void showAllColumns() {
+        Collection<Integer> hiddenColumns = new ArrayList<Integer>(
+                hiddenColumnIndexes);
+        hiddenColumnIndexes.clear();
+        invalidateCache();
+        fireLayerEvent(new ShowColumnPositionsEvent(this, hiddenColumns));
+    }
+
 }

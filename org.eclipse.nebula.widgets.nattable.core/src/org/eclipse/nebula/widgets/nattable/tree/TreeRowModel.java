@@ -17,60 +17,60 @@ import java.util.Set;
 
 public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
-	protected final Set<Integer> parentIndexes = new HashSet<Integer>();
+    protected final Set<Integer> parentIndexes = new HashSet<Integer>();
 
-	public TreeRowModel(ITreeData<T> treeData) {
-		super(treeData);
-	}
+    public TreeRowModel(ITreeData<T> treeData) {
+        super(treeData);
+    }
 
-	@Override
-	public boolean isCollapsed(int index) {
-		return this.parentIndexes.contains(index);
-	}
+    @Override
+    public boolean isCollapsed(int index) {
+        return this.parentIndexes.contains(index);
+    }
 
-	public void clear() {
-		this.parentIndexes.clear();
-	}
+    public void clear() {
+        this.parentIndexes.clear();
+    }
 
-	@Override
-	public List<Integer> collapse(int index) {
-		this.parentIndexes.add(index);
-		notifyListeners();
-		return getChildIndexes(index);
-	}
+    @Override
+    public List<Integer> collapse(int index) {
+        this.parentIndexes.add(index);
+        notifyListeners();
+        return getChildIndexes(index);
+    }
 
-	@Override
-	public List<Integer> collapseAll() {
-		List<Integer> collapsedChildren = new ArrayList<Integer>();
-		
-		for (int i = (getTreeData().getElementCount()-1); i >= 0; i--) {
-			if (hasChildren(i) && !isCollapsed(i)) {
-				collapsedChildren.addAll(collapse(i));
-			}
-		}
-		
-		notifyListeners();
-		return collapsedChildren;
-	}
+    @Override
+    public List<Integer> collapseAll() {
+        List<Integer> collapsedChildren = new ArrayList<Integer>();
 
-	@Override
-	public List<Integer> expand(int index) {
-		this.parentIndexes.remove(index);
-		notifyListeners();
-		List<Integer> children = getChildIndexes(index);
-		this.parentIndexes.removeAll(children);
-		return children;
-	}
+        for (int i = (getTreeData().getElementCount() - 1); i >= 0; i--) {
+            if (hasChildren(i) && !isCollapsed(i)) {
+                collapsedChildren.addAll(collapse(i));
+            }
+        }
 
-	@Override
-	public List<Integer> expandAll() {
-		List<Integer> children = new ArrayList<Integer>();
-		for (int index : this.parentIndexes) {
-			children.addAll(getChildIndexes(index));
-		}
-		this.parentIndexes.clear();
-		notifyListeners();
-		return children;
-	}
+        notifyListeners();
+        return collapsedChildren;
+    }
+
+    @Override
+    public List<Integer> expand(int index) {
+        this.parentIndexes.remove(index);
+        notifyListeners();
+        List<Integer> children = getChildIndexes(index);
+        this.parentIndexes.removeAll(children);
+        return children;
+    }
+
+    @Override
+    public List<Integer> expandAll() {
+        List<Integer> children = new ArrayList<Integer>();
+        for (int index : this.parentIndexes) {
+            children.addAll(getChildIndexes(index));
+        }
+        this.parentIndexes.clear();
+        notifyListeners();
+        return children;
+    }
 
 }

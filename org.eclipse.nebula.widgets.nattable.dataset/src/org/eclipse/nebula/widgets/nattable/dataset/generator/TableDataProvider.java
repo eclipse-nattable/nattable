@@ -10,28 +10,27 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.dataset.generator;
 
-
 public class TableDataProvider {
 
-	private Object[][] data;
-	private int numRows;
-	private int numCols;
+    private Object[][] data;
+    private int numRows;
+    private int numCols;
 
-	public TableDataProvider(Object[][] data, int numCols, int numRows) {
-		this.data = data;
-		this.numRows = numRows;
-		this.numCols = numCols;
-	}
+    public TableDataProvider(Object[][] data, int numCols, int numRows) {
+        this.data = data;
+        this.numRows = numRows;
+        this.numCols = numCols;
+    }
 
-	public int getColumnCount() {
-		return numCols;
-	}
+    public int getColumnCount() {
+        return numCols;
+    }
 
-	public int getRowCount() {
-		return numRows;
-	}
+    public int getRowCount() {
+        return numRows;
+    }
 
-	public Object[][] getData() {
-		return data;
-	}
+    public Object[][] getData() {
+        return data;
+    }
 }

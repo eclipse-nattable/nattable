@@ -14,13 +14,12 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 
-
 public interface IColumnCategoriesDialogListener {
 
-	void itemsSelected(List<Integer> addedColumnIndexes);
+    void itemsSelected(List<Integer> addedColumnIndexes);
 
-	void itemsRemoved(List<Integer> removedColumnPositions);
+    void itemsRemoved(List<Integer> removedColumnPositions);
 
-	void itemsMoved(MoveDirectionEnum direction, List<Integer> selectedPositions);
+    void itemsMoved(MoveDirectionEnum direction, List<Integer> selectedPositions);
 
 }

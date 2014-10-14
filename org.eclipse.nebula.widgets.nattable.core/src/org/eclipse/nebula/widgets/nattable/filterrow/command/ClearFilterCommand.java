@@ -16,12 +16,12 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ClearFilterCommand extends AbstractColumnCommand {
 
-	public ClearFilterCommand(ILayer layer, int columnPosition) {
-		super(layer, columnPosition);
-	}
+    public ClearFilterCommand(ILayer layer, int columnPosition) {
+        super(layer, columnPosition);
+    }
 
-	public ILayerCommand cloneCommand() {
-		return new ClearFilterCommand(getLayer(), getColumnPosition());
-	}
+    public ILayerCommand cloneCommand() {
+        return new ClearFilterCommand(getLayer(), getColumnPosition());
+    }
 
 }

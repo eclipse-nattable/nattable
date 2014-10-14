@@ -15,23 +15,25 @@ import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 
 public class FreezePositionStrategy implements IFreezeCoordinatesProvider {
 
-	private final FreezeLayer freezeLayer;
-	
-	private final int columnPosition;
-	private final int rowPosition;
+    private final FreezeLayer freezeLayer;
 
-	public FreezePositionStrategy(FreezeLayer freezeLayer, int columnPosition, int rowPosition) {
-		this.freezeLayer = freezeLayer;
-		this.columnPosition = columnPosition;
-		this.rowPosition = rowPosition;
-	}
+    private final int columnPosition;
+    private final int rowPosition;
 
-	public PositionCoordinate getTopLeftPosition() {
-		return new PositionCoordinate(freezeLayer, 0, 0);
-	}
-	
-	public PositionCoordinate getBottomRightPosition() {
-		return new PositionCoordinate(freezeLayer, columnPosition-1, rowPosition-1);
-	}
-	
+    public FreezePositionStrategy(FreezeLayer freezeLayer, int columnPosition,
+            int rowPosition) {
+        this.freezeLayer = freezeLayer;
+        this.columnPosition = columnPosition;
+        this.rowPosition = rowPosition;
+    }
+
+    public PositionCoordinate getTopLeftPosition() {
+        return new PositionCoordinate(freezeLayer, 0, 0);
+    }
+
+    public PositionCoordinate getBottomRightPosition() {
+        return new PositionCoordinate(freezeLayer, columnPosition - 1,
+                rowPosition - 1);
+    }
+
 }

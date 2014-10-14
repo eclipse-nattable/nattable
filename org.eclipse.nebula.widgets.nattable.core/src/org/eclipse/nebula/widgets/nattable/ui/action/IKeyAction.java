@@ -10,12 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.events.KeyEvent;
 
 public interface IKeyAction {
 
-	public void run(NatTable natTable, KeyEvent event);
-	
+    public void run(NatTable natTable, KeyEvent event);
+
 }

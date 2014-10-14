@@ -35,137 +35,148 @@ import org.junit.Test;
 
 public class BlinkLayerTest {
 
-	private static final String NOT_BLINKING_LABEL = "Not Blinking";
-	private static final String BLINKING_LABEL = "Blinking";
+    private static final String NOT_BLINKING_LABEL = "Not Blinking";
+    private static final String BLINKING_LABEL = "Blinking";
 
-	private static final String TEST_LABEL = "TestLabel";
-	
-	private DataLayer dataLayer;
-	private BlinkLayer<BlinkingRowDataFixture> layerUnderTest;
-	private final ConfigRegistry configRegistry = new ConfigRegistry();
-	private List<BlinkingRowDataFixture> dataList;
-	private ListDataProvider<BlinkingRowDataFixture> listDataProvider;
-	private PropertyChangeListener propertyChangeListener;
-	private Display display;
+    private static final String TEST_LABEL = "TestLabel";
 
-	@Before
-	public void setUp() {
-		display = Display.getDefault();
-		dataList = new LinkedList<BlinkingRowDataFixture>();
-		IColumnPropertyAccessor<BlinkingRowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<BlinkingRowDataFixture>(RowDataListFixture.getPropertyNames());
-		listDataProvider = new ListDataProvider<BlinkingRowDataFixture>(dataList, columnPropertyAccessor);
-		propertyChangeListener = getPropertyChangeListener();
+    private DataLayer dataLayer;
+    private BlinkLayer<BlinkingRowDataFixture> layerUnderTest;
+    private final ConfigRegistry configRegistry = new ConfigRegistry();
+    private List<BlinkingRowDataFixture> dataList;
+    private ListDataProvider<BlinkingRowDataFixture> listDataProvider;
+    private PropertyChangeListener propertyChangeListener;
+    private Display display;
 
-		dataLayer = new DataLayer(listDataProvider);
-		layerUnderTest = new BlinkLayer<BlinkingRowDataFixture>(
-				dataLayer,
-				listDataProvider,
-				BlinkingRowDataFixture.rowIdAccessor,
-				columnPropertyAccessor,
-				configRegistry);
+    @Before
+    public void setUp() {
+        display = Display.getDefault();
+        dataList = new LinkedList<BlinkingRowDataFixture>();
+        IColumnPropertyAccessor<BlinkingRowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<BlinkingRowDataFixture>(
+                RowDataListFixture.getPropertyNames());
+        listDataProvider = new ListDataProvider<BlinkingRowDataFixture>(
+                dataList, columnPropertyAccessor);
+        propertyChangeListener = getPropertyChangeListener();
 
-		layerUnderTest.blinkingEnabled = true;
+        dataLayer = new DataLayer(listDataProvider);
+        layerUnderTest = new BlinkLayer<BlinkingRowDataFixture>(dataLayer,
+                listDataProvider, BlinkingRowDataFixture.rowIdAccessor,
+                columnPropertyAccessor, configRegistry);
 
-		registerBlinkConfigTypes();
-		load10Rows();
-	}
+        layerUnderTest.blinkingEnabled = true;
 
-	@Test
-	public void shouldReturnTheBlinkConfigTypeWhenARowIsUpdated() throws Exception {
-		layerUnderTest.setBlinkDurationInMilis(100);
+        registerBlinkConfigTypes();
+        load10Rows();
+    }
 
-		dataList.get(0).setAsk_price(100);
-		LabelStack blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+    @Test
+    public void shouldReturnTheBlinkConfigTypeWhenARowIsUpdated()
+            throws Exception {
+        layerUnderTest.setBlinkDurationInMilis(100);
 
-		// Blink started
-		assertEquals(1, blinkLabels.getLabels().size());
-		assertEquals(BLINKING_LABEL, blinkLabels.getLabels().get(0));
+        dataList.get(0).setAsk_price(100);
+        LabelStack blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
 
-		// After 50 ms
-		Thread.sleep(50);
-		blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
-		assertEquals(1, blinkLabels.getLabels().size());
+        // Blink started
+        assertEquals(1, blinkLabels.getLabels().size());
+        assertEquals(BLINKING_LABEL, blinkLabels.getLabels().get(0));
 
-		//Wait for blink to elapse
-		Thread.sleep(110);
-		// Force running the event queue to ensure any Display.asyncExecs are run.
-		while(display.readAndDispatch());
+        // After 50 ms
+        Thread.sleep(50);
+        blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        assertEquals(1, blinkLabels.getLabels().size());
 
-		blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
-		assertEquals(0, blinkLabels.getLabels().size());
-	}
+        // Wait for blink to elapse
+        Thread.sleep(110);
+        // Force running the event queue to ensure any Display.asyncExecs are
+        // run.
+        while (display.readAndDispatch())
+            ;
 
-	@Test
-	public void layerStackShouldUpdate() throws Exception {
-		//add label accumulator to DataLayer
-		dataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
-			
-			@Override
-			public void accumulateConfigLabels(LabelStack configLabels,
-					int columnPosition, int rowPosition) {
-				configLabels.addLabel(TEST_LABEL);
-			}
-		});
+        blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        assertEquals(0, blinkLabels.getLabels().size());
+    }
 
-		layerUnderTest.setBlinkDurationInMilis(100);
+    @Test
+    public void layerStackShouldUpdate() throws Exception {
+        // add label accumulator to DataLayer
+        dataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
 
-		dataList.get(0).setAsk_price(100);
-		LabelStack blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+            @Override
+            public void accumulateConfigLabels(LabelStack configLabels,
+                    int columnPosition, int rowPosition) {
+                configLabels.addLabel(TEST_LABEL);
+            }
+        });
 
-		// Blink started
-		assertEquals(2, blinkLabels.getLabels().size());
-		assertEquals(BLINKING_LABEL, blinkLabels.getLabels().get(0));
-		assertEquals(TEST_LABEL, blinkLabels.getLabels().get(1));
+        layerUnderTest.setBlinkDurationInMilis(100);
 
-		// After 50 ms
-		Thread.sleep(50);
-		blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
-		assertEquals(2, blinkLabels.getLabels().size());
+        dataList.get(0).setAsk_price(100);
+        LabelStack blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
 
-		//Wait for blink to elapse
-		Thread.sleep(110);
-		// Force running the event queue to ensure any Display.asyncExecs are run.
-		while(display.readAndDispatch());
+        // Blink started
+        assertEquals(2, blinkLabels.getLabels().size());
+        assertEquals(BLINKING_LABEL, blinkLabels.getLabels().get(0));
+        assertEquals(TEST_LABEL, blinkLabels.getLabels().get(1));
 
-		blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
-		assertEquals(1, blinkLabels.getLabels().size());
-		assertEquals(TEST_LABEL, blinkLabels.getLabels().get(0));
-	}
-	
-	/**
-	 * Sets the even rows to blink
-	 */
-	private void registerBlinkConfigTypes() {
-		IBlinkingCellResolver blinkingCellResolver = new BlinkingCellResolver() {
-			@Override
-			public String[] resolve(Object oldValue, Object newValue) {
-				Double doubleValue = Double.valueOf(newValue.toString());
-				return doubleValue.intValue() % 2 == 0 ? new String[] { BLINKING_LABEL } : new String[] { NOT_BLINKING_LABEL };
-			}
-		};
+        // After 50 ms
+        Thread.sleep(50);
+        blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        assertEquals(2, blinkLabels.getLabels().size());
 
-		configRegistry.registerConfigAttribute(BlinkConfigAttributes.BLINK_RESOLVER, blinkingCellResolver, DisplayMode.NORMAL);
-	}
+        // Wait for blink to elapse
+        Thread.sleep(110);
+        // Force running the event queue to ensure any Display.asyncExecs are
+        // run.
+        while (display.readAndDispatch())
+            ;
 
-	/**
-	 * Listen for updates and put them in the {@link UpdateEventsCache}.
-	 * BlinkLayer needs this cache to be updated in order to work.
-	 */
-	private PropertyChangeListener getPropertyChangeListener() {
-		return new PropertyChangeListener(){
-			@Override
-			public void propertyChange(PropertyChangeEvent event) {
-				PropertyUpdateEvent<BlinkingRowDataFixture> updateEvent = new PropertyUpdateEvent<BlinkingRowDataFixture>(
-						new DataLayerFixture(), (BlinkingRowDataFixture)event.getSource(), event.getPropertyName(), event.getOldValue(), event.getNewValue());
-				layerUnderTest.handleLayerEvent(updateEvent);
-			}
-		};
-	}
+        blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        assertEquals(1, blinkLabels.getLabels().size());
+        assertEquals(TEST_LABEL, blinkLabels.getLabels().get(0));
+    }
 
-	private void load10Rows() {
-		List<BlinkingRowDataFixture> list = BlinkingRowDataFixture.getList(propertyChangeListener);
-		for (BlinkingRowDataFixture blinkingRowDataFixture : list) {
-			dataList.add(blinkingRowDataFixture);
-		}
-	}
+    /**
+     * Sets the even rows to blink
+     */
+    private void registerBlinkConfigTypes() {
+        IBlinkingCellResolver blinkingCellResolver = new BlinkingCellResolver() {
+            @Override
+            public String[] resolve(Object oldValue, Object newValue) {
+                Double doubleValue = Double.valueOf(newValue.toString());
+                return doubleValue.intValue() % 2 == 0 ? new String[] { BLINKING_LABEL }
+                        : new String[] { NOT_BLINKING_LABEL };
+            }
+        };
+
+        configRegistry.registerConfigAttribute(
+                BlinkConfigAttributes.BLINK_RESOLVER, blinkingCellResolver,
+                DisplayMode.NORMAL);
+    }
+
+    /**
+     * Listen for updates and put them in the {@link UpdateEventsCache}.
+     * BlinkLayer needs this cache to be updated in order to work.
+     */
+    private PropertyChangeListener getPropertyChangeListener() {
+        return new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                PropertyUpdateEvent<BlinkingRowDataFixture> updateEvent = new PropertyUpdateEvent<BlinkingRowDataFixture>(
+                        new DataLayerFixture(),
+                        (BlinkingRowDataFixture) event.getSource(),
+                        event.getPropertyName(), event.getOldValue(),
+                        event.getNewValue());
+                layerUnderTest.handleLayerEvent(updateEvent);
+            }
+        };
+    }
+
+    private void load10Rows() {
+        List<BlinkingRowDataFixture> list = BlinkingRowDataFixture
+                .getList(propertyChangeListener);
+        for (BlinkingRowDataFixture blinkingRowDataFixture : list) {
+            dataList.add(blinkingRowDataFixture);
+        }
+    }
 }

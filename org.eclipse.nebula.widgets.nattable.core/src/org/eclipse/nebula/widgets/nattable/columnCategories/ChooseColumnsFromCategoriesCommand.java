@@ -10,25 +10,25 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnCategories;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.swt.widgets.Shell;
 
-public class ChooseColumnsFromCategoriesCommand extends AbstractContextFreeCommand {
+public class ChooseColumnsFromCategoriesCommand extends
+        AbstractContextFreeCommand {
 
-	private final NatTable natTable;
+    private final NatTable natTable;
 
-	public ChooseColumnsFromCategoriesCommand(NatTable natTable) {
-		this.natTable = natTable;
-	}
+    public ChooseColumnsFromCategoriesCommand(NatTable natTable) {
+        this.natTable = natTable;
+    }
 
-	public NatTable getNatTable() {
-		return natTable;
-	}
+    public NatTable getNatTable() {
+        return natTable;
+    }
 
-	public Shell getShell() {
-		return natTable.getShell();
-	}
+    public Shell getShell() {
+        return natTable.getShell();
+    }
 
 }

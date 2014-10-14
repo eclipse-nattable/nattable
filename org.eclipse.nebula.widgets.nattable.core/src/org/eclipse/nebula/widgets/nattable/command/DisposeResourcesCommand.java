@@ -13,8 +13,9 @@ package org.eclipse.nebula.widgets.nattable.command;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 
 /**
- * Command fired by {@link NatTable} just before it is disposed.
- * This command can be handled by layers which need to dispose resources (to avoid memory leaks).
+ * Command fired by {@link NatTable} just before it is disposed. This command
+ * can be handled by layers which need to dispose resources (to avoid memory
+ * leaks).
  *
  * See GlazedListsEventLayer
  */

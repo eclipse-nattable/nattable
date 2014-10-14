@@ -14,15 +14,16 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 
 public class ScrollSelectionCommand extends AbstractSelectionCommand {
 
-	private final MoveDirectionEnum direction;
-	
-	public ScrollSelectionCommand(MoveDirectionEnum direction, boolean shiftMask, boolean controlMask) {
-		super(shiftMask, controlMask);
-		this.direction = direction;
-	}
+    private final MoveDirectionEnum direction;
 
-	public MoveDirectionEnum getDirection() {
-		return direction;
-	}
-	
+    public ScrollSelectionCommand(MoveDirectionEnum direction,
+            boolean shiftMask, boolean controlMask) {
+        super(shiftMask, controlMask);
+        this.direction = direction;
+    }
+
+    public MoveDirectionEnum getDirection() {
+        return direction;
+    }
+
 }

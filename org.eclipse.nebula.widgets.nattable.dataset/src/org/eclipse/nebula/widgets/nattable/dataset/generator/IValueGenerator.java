@@ -13,9 +13,10 @@ package org.eclipse.nebula.widgets.nattable.dataset.generator;
 import java.util.Random;
 
 /**
- * Concrete implementations must have a default constructor (i.e. with zero parameters)
+ * Concrete implementations must have a default constructor (i.e. with zero
+ * parameters)
  */
 public interface IValueGenerator {
-	
-	Object newValue(Random random);
+
+    Object newValue(Random random);
 }

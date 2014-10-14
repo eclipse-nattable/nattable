@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.command;
 
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
@@ -21,26 +20,27 @@ import org.junit.Test;
 
 public class ReorderColumnCommandTest {
 
-	private ColumnReorderLayer columnReorderLayer;
-	
-	@Before
-	public void setup() {
-		columnReorderLayer = new ColumnReorderLayer(new DataLayerFixture());
-	}
-	
-	@Test
-	public void testReorderColumnCommand() {
-		int fromColumnPosition = 4;
-		int toColumnPosition = 1;
-		ILayerCommand reorderColumnCommand = new ColumnReorderCommand(columnReorderLayer, fromColumnPosition, toColumnPosition);
+    private ColumnReorderLayer columnReorderLayer;
 
-		columnReorderLayer.doCommand(reorderColumnCommand);
-		
-		Assert.assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
-		Assert.assertEquals(4, columnReorderLayer.getColumnIndexByPosition(1));
-		Assert.assertEquals(1, columnReorderLayer.getColumnIndexByPosition(2));
-		Assert.assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
-		Assert.assertEquals(3, columnReorderLayer.getColumnIndexByPosition(4));
-	}
-	
+    @Before
+    public void setup() {
+        columnReorderLayer = new ColumnReorderLayer(new DataLayerFixture());
+    }
+
+    @Test
+    public void testReorderColumnCommand() {
+        int fromColumnPosition = 4;
+        int toColumnPosition = 1;
+        ILayerCommand reorderColumnCommand = new ColumnReorderCommand(
+                columnReorderLayer, fromColumnPosition, toColumnPosition);
+
+        columnReorderLayer.doCommand(reorderColumnCommand);
+
+        Assert.assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(4, columnReorderLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(1, columnReorderLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
+        Assert.assertEquals(3, columnReorderLayer.getColumnIndexByPosition(4));
+    }
+
 }

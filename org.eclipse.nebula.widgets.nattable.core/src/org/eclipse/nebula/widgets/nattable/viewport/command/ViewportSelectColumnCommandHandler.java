@@ -14,26 +14,25 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnCommand;
 
+public class ViewportSelectColumnCommandHandler extends
+        AbstractLayerCommandHandler<ViewportSelectColumnCommand> {
 
-public class ViewportSelectColumnCommandHandler extends AbstractLayerCommandHandler<ViewportSelectColumnCommand> {
+    private final AbstractLayer viewportLayer;
 
+    public ViewportSelectColumnCommandHandler(AbstractLayer viewportLayer) {
+        this.viewportLayer = viewportLayer;
+    }
 
-	private final AbstractLayer viewportLayer;
+    public Class<ViewportSelectColumnCommand> getCommandClass() {
+        return ViewportSelectColumnCommand.class;
+    }
 
-	public ViewportSelectColumnCommandHandler(AbstractLayer viewportLayer) {
-		this.viewportLayer = viewportLayer;
-	}
-
-	public Class<ViewportSelectColumnCommand> getCommandClass() {
-		return ViewportSelectColumnCommand.class;
-	}
-
-	@Override
-	protected boolean doCommand(ViewportSelectColumnCommand command) {
-		viewportLayer.doCommand(new SelectColumnCommand(viewportLayer,
-				command.getColumnPosition(), 0,
-				command.isWithShiftMask(), command.isWithControlMask() ));
-		return true;
-	}
+    @Override
+    protected boolean doCommand(ViewportSelectColumnCommand command) {
+        viewportLayer.doCommand(new SelectColumnCommand(viewportLayer, command
+                .getColumnPosition(), 0, command.isWithShiftMask(), command
+                .isWithControlMask()));
+        return true;
+    }
 
 }

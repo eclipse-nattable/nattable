@@ -20,40 +20,43 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Paints the background of the cell using the color from the cell style.
- * If no background color is registered in the {@link ConfigRegistry} the painting
- * is skipped.
+ * Paints the background of the cell using the color from the cell style. If no
+ * background color is registered in the {@link ConfigRegistry} the painting is
+ * skipped.
  * <p>
- * Example: The {@link TextPainter} inherits this and uses the paint method
- * in this class to paint the background of the cell.
+ * Example: The {@link TextPainter} inherits this and uses the paint method in
+ * this class to paint the background of the cell.
  *
  * Can be used as a cell painter or a decorator.
  */
 public class BackgroundPainter extends CellPainterWrapper {
 
-	public BackgroundPainter() {}
+    public BackgroundPainter() {}
 
-	public BackgroundPainter(ICellPainter painter) {
-		super(painter);
-	}
+    public BackgroundPainter(ICellPainter painter) {
+        super(painter);
+    }
 
-	@Override
-	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
-		Color backgroundColor = getBackgroundColour(cell, configRegistry);
-		if (backgroundColor != null) {
-			Color originalBackground = gc.getBackground();
+    @Override
+    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds,
+            IConfigRegistry configRegistry) {
+        Color backgroundColor = getBackgroundColour(cell, configRegistry);
+        if (backgroundColor != null) {
+            Color originalBackground = gc.getBackground();
 
-			gc.setBackground(backgroundColor);
-			gc.fillRectangle(bounds);
+            gc.setBackground(backgroundColor);
+            gc.fillRectangle(bounds);
 
-			gc.setBackground(originalBackground);
-		}
+            gc.setBackground(originalBackground);
+        }
 
-		super.paintCell(cell, gc, bounds, configRegistry);
-	}
-	
-	protected Color getBackgroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
-		return CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
-	}
+        super.paintCell(cell, gc, bounds, configRegistry);
+    }
+
+    protected Color getBackgroundColour(ILayerCell cell,
+            IConfigRegistry configRegistry) {
+        return CellStyleUtil.getCellStyle(cell, configRegistry)
+                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
+    }
 
 }

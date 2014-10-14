@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze.command;
 
-
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
@@ -35,139 +34,160 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class FreezeHandlerTest {
-	
-	private FreezeCommandHandler commandHandler;
-	private CompositeFreezeLayer compositeFreezeLayer;
-	private FreezeLayer freezeLayer;
-	private ViewportLayer viewportLayer;
-	private SelectionLayer selectionLayer;
-	
-	@Before
-	public void setUp() {
-		final DataLayer bodyDataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
-		final DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(bodyDataLayer);		
-		selectionLayer = bodyLayer.getSelectionLayer();
-		
-		freezeLayer = new FreezeLayer(selectionLayer);
-	    compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, bodyLayer.getViewportLayer(), bodyLayer.getSelectionLayer());
-	    viewportLayer = bodyLayer.getViewportLayer();
-		commandHandler = new FreezeCommandHandler(freezeLayer, viewportLayer, selectionLayer);
-	    compositeFreezeLayer.registerCommandHandler(commandHandler);
-	    
-	    compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
-			@Override
-			public Rectangle getClientArea() {
-				return new Rectangle(0,0,600,400);
-			}
-	    });
-	    
-	    // Shoot this command so that the viewport can be initialized
-	    compositeFreezeLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
-	}
-	
-	@Test
-	public void shouldFreezeFirstColumn() {
-		// This is what would happen if we selected to freeze a column from some sort of menu action
-		compositeFreezeLayer.doCommand(new FreezeColumnCommand(compositeFreezeLayer, 1));
-		Assert.assertEquals(0, freezeLayer.getTopLeftPosition().columnPosition);
-		Assert.assertEquals(-1, freezeLayer.getTopLeftPosition().rowPosition);
-		Assert.assertEquals(1, freezeLayer.getBottomRightPosition().columnPosition);
-		Assert.assertEquals(-1, freezeLayer.getBottomRightPosition().rowPosition);
-		
-		// Check viewport origin
-		Assert.assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
-		Assert.assertEquals(0, viewportLayer.getMinimumOriginRowPosition());
-	}
-	
-	@Test
-	public void shouldFreezeRowsAndColumnsBasedOnSelection() {
-		compositeFreezeLayer.doCommand(new SelectCellCommand(compositeFreezeLayer, 2, 2, false, false));
-		
-		// Make sure selection layer processed command
-		final PositionCoordinate lastSelectedCell = selectionLayer.getLastSelectedCellPosition();
-		Assert.assertEquals(2, lastSelectedCell.columnPosition);
-		Assert.assertEquals(2, lastSelectedCell.rowPosition);
-		
-		// This is what would happen if we selected to freeze from a selected cell
-		compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
-		Assert.assertEquals(0, freezeLayer.getTopLeftPosition().columnPosition);
-		Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
-		Assert.assertNotNull(freezeLayer.getBottomRightPosition());
-		Assert.assertEquals(1, freezeLayer.getBottomRightPosition().columnPosition);
-		Assert.assertEquals(1, freezeLayer.getBottomRightPosition().rowPosition);
-		
-		// Check viewport origin
-		Assert.assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
-		Assert.assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
-	}
-	
-	@Test
-	public void shouldFreezeAfterScrolling() {
-		// Scroll the viewport to the first column
-		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(0), viewportLayer.getStartYOfRowPosition(0));
-		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
-		Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
-				
-		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 3, false, false));
-		compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
-		
-		// Freezelayer
-		Assert.assertEquals(2, freezeLayer.getColumnCount());
-		
-		// Test Positions
-		Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-		Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
-		Assert.assertEquals(2, freezeLayer.getBottomRightPosition().columnPosition);
-		Assert.assertEquals(2, freezeLayer.getBottomRightPosition().rowPosition);
-		
-		// Test indexes
-		Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-		Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-		Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
-		
-		Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(freezeLayer.getColumnCount() - 1));
-		Assert.assertEquals(2, freezeLayer.getBottomRightPosition().columnPosition);
-		Assert.assertEquals(2, freezeLayer.getBottomRightPosition().rowPosition);
-		
-		// Test viewport		
-		Assert.assertEquals(3, viewportLayer.getMinimumOriginColumnPosition());
-		Assert.assertEquals(3, viewportLayer.getMinimumOriginRowPosition());
-		Assert.assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
-	}
-	
-	@Test
-	public void shouldRestructureFrozenArea() {
-		final ReorderListener reorderListener = new ReorderListener();
-		viewportLayer.addLayerListener(reorderListener);
 
-		// Scroll the viewport to the first column
-		viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(0), viewportLayer.getStartYOfRowPosition(0));
-		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
-		Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
-				
-		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 3, false, false));
-		compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
-		
-		// Move right edge out of frozen area
-		Assert.assertEquals(2, freezeLayer.getColumnCount());
-		compositeFreezeLayer.doCommand(new ColumnReorderCommand(compositeFreezeLayer, 1, 3));
-		
-		Assert.assertEquals(1, freezeLayer.getColumnCount());
-	}
-	
-	class ReorderListener implements ILayerListener {
-		
-		private ColumnReorderEvent reorderEvent;
+    private FreezeCommandHandler commandHandler;
+    private CompositeFreezeLayer compositeFreezeLayer;
+    private FreezeLayer freezeLayer;
+    private ViewportLayer viewportLayer;
+    private SelectionLayer selectionLayer;
 
-		@Override
-		public void handleLayerEvent(ILayerEvent event) {
-			if (event instanceof ColumnReorderEvent) {
-				reorderEvent = (ColumnReorderEvent)event;
-			}
-		}
-		
-		public int getReorderToColumnPosition() {
-			return reorderEvent.getBeforeToColumnPosition();
-		}
-	};
+    @Before
+    public void setUp() {
+        final DataLayer bodyDataLayer = new DataLayer(
+                new DummyBodyDataProvider(10, 10));
+        final DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(
+                bodyDataLayer);
+        selectionLayer = bodyLayer.getSelectionLayer();
+
+        freezeLayer = new FreezeLayer(selectionLayer);
+        compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer,
+                bodyLayer.getViewportLayer(), bodyLayer.getSelectionLayer());
+        viewportLayer = bodyLayer.getViewportLayer();
+        commandHandler = new FreezeCommandHandler(freezeLayer, viewportLayer,
+                selectionLayer);
+        compositeFreezeLayer.registerCommandHandler(commandHandler);
+
+        compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 600, 400);
+            }
+        });
+
+        // Shoot this command so that the viewport can be initialized
+        compositeFreezeLayer.doCommand(new ClientAreaResizeCommand(new Shell(
+                Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
+    }
+
+    @Test
+    public void shouldFreezeFirstColumn() {
+        // This is what would happen if we selected to freeze a column from some
+        // sort of menu action
+        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                compositeFreezeLayer, 1));
+        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(-1, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(1,
+                freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(-1,
+                freezeLayer.getBottomRightPosition().rowPosition);
+
+        // Check viewport origin
+        Assert.assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+        Assert.assertEquals(0, viewportLayer.getMinimumOriginRowPosition());
+    }
+
+    @Test
+    public void shouldFreezeRowsAndColumnsBasedOnSelection() {
+        compositeFreezeLayer.doCommand(new SelectCellCommand(
+                compositeFreezeLayer, 2, 2, false, false));
+
+        // Make sure selection layer processed command
+        final PositionCoordinate lastSelectedCell = selectionLayer
+                .getLastSelectedCellPosition();
+        Assert.assertEquals(2, lastSelectedCell.columnPosition);
+        Assert.assertEquals(2, lastSelectedCell.rowPosition);
+
+        // This is what would happen if we selected to freeze from a selected
+        // cell
+        compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
+        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertNotNull(freezeLayer.getBottomRightPosition());
+        Assert.assertEquals(1,
+                freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(1, freezeLayer.getBottomRightPosition().rowPosition);
+
+        // Check viewport origin
+        Assert.assertEquals(2, viewportLayer.getMinimumOriginColumnPosition());
+        Assert.assertEquals(2, viewportLayer.getMinimumOriginRowPosition());
+    }
+
+    @Test
+    public void shouldFreezeAfterScrolling() {
+        // Scroll the viewport to the first column
+        viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(0),
+                viewportLayer.getStartYOfRowPosition(0));
+        viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
+        Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
+
+        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 3,
+                false, false));
+        compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
+
+        // Freezelayer
+        Assert.assertEquals(2, freezeLayer.getColumnCount());
+
+        // Test Positions
+        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(2,
+                freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(2, freezeLayer.getBottomRightPosition().rowPosition);
+
+        // Test indexes
+        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+
+        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(freezeLayer
+                .getColumnCount() - 1));
+        Assert.assertEquals(2,
+                freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(2, freezeLayer.getBottomRightPosition().rowPosition);
+
+        // Test viewport
+        Assert.assertEquals(3, viewportLayer.getMinimumOriginColumnPosition());
+        Assert.assertEquals(3, viewportLayer.getMinimumOriginRowPosition());
+        Assert.assertEquals(4, viewportLayer.getColumnIndexByPosition(0));
+    }
+
+    @Test
+    public void shouldRestructureFrozenArea() {
+        final ReorderListener reorderListener = new ReorderListener();
+        viewportLayer.addLayerListener(reorderListener);
+
+        // Scroll the viewport to the first column
+        viewportLayer.resetOrigin(viewportLayer.getStartXOfColumnPosition(0),
+                viewportLayer.getStartYOfRowPosition(0));
+        viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
+        Assert.assertEquals(1, viewportLayer.getColumnIndexByPosition(0));
+
+        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 3,
+                false, false));
+        compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
+
+        // Move right edge out of frozen area
+        Assert.assertEquals(2, freezeLayer.getColumnCount());
+        compositeFreezeLayer.doCommand(new ColumnReorderCommand(
+                compositeFreezeLayer, 1, 3));
+
+        Assert.assertEquals(1, freezeLayer.getColumnCount());
+    }
+
+    class ReorderListener implements ILayerListener {
+
+        private ColumnReorderEvent reorderEvent;
+
+        @Override
+        public void handleLayerEvent(ILayerEvent event) {
+            if (event instanceof ColumnReorderEvent) {
+                reorderEvent = (ColumnReorderEvent) event;
+            }
+        }
+
+        public int getReorderToColumnPosition() {
+            return reorderEvent.getBeforeToColumnPosition();
+        }
+    };
 }

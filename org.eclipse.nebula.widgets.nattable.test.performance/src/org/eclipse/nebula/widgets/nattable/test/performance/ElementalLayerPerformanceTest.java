@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.performance;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
@@ -22,38 +21,42 @@ import org.junit.Test;
 
 public class ElementalLayerPerformanceTest extends AbstractLayerPerformanceTest {
 
-	@Test
-	public void testNormalDataLayerPerformance() {
-		layer = new DataLayer(new DummyBodyDataProvider(10, 50));
-	}
+    @Test
+    public void testNormalDataLayerPerformance() {
+        layer = new DataLayer(new DummyBodyDataProvider(10, 50));
+    }
 
-	@Test
-	public void testBigDataLayerPerformance() {
-		layer = new DataLayer(new DummyBodyDataProvider(50, 100));
-		setExpectedTimeInMillis(250);
-	}
-	
-	@Test
-	public void testReorderDataLayerPerformance() {
-		layer = new ColumnReorderLayer(new DataLayer(new DummyBodyDataProvider(10, 50)));
-	}
-	
-	@Test
-	public void testHideShowDataLayerPerformance() {
-		layer = new ColumnHideShowLayer(new DataLayer(new DummyBodyDataProvider(10, 50)));
-	}
-	
-	@Test
-	public void testSelectionDataLayerPerformance() {
-		layer = new SelectionLayer(new DataLayer(new DummyBodyDataProvider(10, 50)));
-	}
-	
-	@Test
-	public void testCompositeDataLayerPerformance() {
-		CompositeLayer compositeLayer = new CompositeLayer(1, 1);
-		compositeLayer.setChildLayer(GridRegion.BODY, new DataLayer(new DummyBodyDataProvider(10, 50)), 0, 0);
-		
-		layer = compositeLayer;
-	}
-	
+    @Test
+    public void testBigDataLayerPerformance() {
+        layer = new DataLayer(new DummyBodyDataProvider(50, 100));
+        setExpectedTimeInMillis(250);
+    }
+
+    @Test
+    public void testReorderDataLayerPerformance() {
+        layer = new ColumnReorderLayer(new DataLayer(new DummyBodyDataProvider(
+                10, 50)));
+    }
+
+    @Test
+    public void testHideShowDataLayerPerformance() {
+        layer = new ColumnHideShowLayer(new DataLayer(
+                new DummyBodyDataProvider(10, 50)));
+    }
+
+    @Test
+    public void testSelectionDataLayerPerformance() {
+        layer = new SelectionLayer(new DataLayer(new DummyBodyDataProvider(10,
+                50)));
+    }
+
+    @Test
+    public void testCompositeDataLayerPerformance() {
+        CompositeLayer compositeLayer = new CompositeLayer(1, 1);
+        compositeLayer.setChildLayer(GridRegion.BODY, new DataLayer(
+                new DummyBodyDataProvider(10, 50)), 0, 0);
+
+        layer = compositeLayer;
+    }
+
 }

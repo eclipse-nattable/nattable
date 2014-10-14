@@ -10,19 +10,18 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.GC;
 
 /**
- * An overlay painter is given a chance to paint the canvas once
- * the layers have finished rendering.
+ * An overlay painter is given a chance to paint the canvas once the layers have
+ * finished rendering.
  * 
- *  @see NatTable#addOverlayPainter(IOverlayPainter)
+ * @see NatTable#addOverlayPainter(IOverlayPainter)
  */
 public interface IOverlayPainter {
 
-	public void paintOverlay(GC gc, ILayer layer);
-	
+    public void paintOverlay(GC gc, ILayer layer);
+
 }

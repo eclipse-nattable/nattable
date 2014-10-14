@@ -14,26 +14,25 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 
+public class ViewportSelectRowCommandHandler extends
+        AbstractLayerCommandHandler<ViewportSelectRowCommand> {
 
-public class ViewportSelectRowCommandHandler extends AbstractLayerCommandHandler<ViewportSelectRowCommand> {
+    private final AbstractLayer viewportLayer;
 
+    public ViewportSelectRowCommandHandler(AbstractLayer viewportLayer) {
+        this.viewportLayer = viewportLayer;
+    }
 
-	private final AbstractLayer viewportLayer;
+    public Class<ViewportSelectRowCommand> getCommandClass() {
+        return ViewportSelectRowCommand.class;
+    }
 
-	public ViewportSelectRowCommandHandler(AbstractLayer viewportLayer) {
-		this.viewportLayer = viewportLayer;
-	}
-
-	public Class<ViewportSelectRowCommand> getCommandClass() {
-		return ViewportSelectRowCommand.class;
-	}
-
-	@Override
-	protected boolean doCommand(ViewportSelectRowCommand command) {
-		viewportLayer.doCommand(new SelectRowsCommand(viewportLayer,
-				0, command.getRowPosition(),
-				command.isWithShiftMask(), command.isWithControlMask() ));
-		return true;
-	}
+    @Override
+    protected boolean doCommand(ViewportSelectRowCommand command) {
+        viewportLayer.doCommand(new SelectRowsCommand(viewportLayer, 0, command
+                .getRowPosition(), command.isWithShiftMask(), command
+                .isWithControlMask()));
+        return true;
+    }
 
 }

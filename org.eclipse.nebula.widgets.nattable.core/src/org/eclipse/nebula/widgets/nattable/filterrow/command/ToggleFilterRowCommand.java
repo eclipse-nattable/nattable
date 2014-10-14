@@ -12,5 +12,4 @@ package org.eclipse.nebula.widgets.nattable.filterrow.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
-public class ToggleFilterRowCommand extends AbstractContextFreeCommand {
-}
+public class ToggleFilterRowCommand extends AbstractContextFreeCommand {}

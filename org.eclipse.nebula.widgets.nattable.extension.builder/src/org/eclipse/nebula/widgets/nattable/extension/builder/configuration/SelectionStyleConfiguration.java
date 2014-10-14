@@ -24,50 +24,62 @@ import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyl
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 
+public class SelectionStyleConfiguration extends
+        DefaultSelectionStyleConfiguration {
 
-public class SelectionStyleConfiguration extends DefaultSelectionStyleConfiguration {
+    private final TableStyle tableStyle;
+    private final Style evenRowStyle;
+    private final Style oddRowStyle;
 
-	private final TableStyle tableStyle;
-	private final Style evenRowStyle;
-	private final Style oddRowStyle;
+    public SelectionStyleConfiguration(TableStyle tableStyle) {
+        this.tableStyle = tableStyle;
 
-	public SelectionStyleConfiguration(TableStyle tableStyle) {
-		this.tableStyle = tableStyle;
+        // Anchor style
+        anchorBorderColor = tableStyle.anchorSelectionBgColor;
+        anchorBgColor = tableStyle.anchorSelectionBgColor;
+        anchorFgColor = tableStyle.anchorSelectionFgColor;
 
-		// Anchor style
-		anchorBorderColor = tableStyle.anchorSelectionBgColor;
-		anchorBgColor = tableStyle.anchorSelectionBgColor;
-		anchorFgColor = tableStyle.anchorSelectionFgColor;
+        // Selected headers style
+        selectedHeaderBgColor = tableStyle.headerSelectionBgColor;
+        selectedHeaderFgColor = tableStyle.headerSelectionFgColor;
+        selectedHeaderFont = tableStyle.headerSelectionFont;
 
-		// Selected headers style
-		selectedHeaderBgColor = tableStyle.headerSelectionBgColor;
-		selectedHeaderFgColor = tableStyle.headerSelectionFgColor;
-		selectedHeaderFont = tableStyle.headerSelectionFont;
+        // Even/row row sensitive selection style
+        evenRowStyle = new Style();
+        evenRowStyle.setAttributeValue(BACKGROUND_COLOR,
+                tableStyle.evenRowCellSelectionBgColor);
+        evenRowStyle.setAttributeValue(FOREGROUND_COLOR,
+                tableStyle.evenRowCellSelectionFgColor);
+        evenRowStyle.setAttributeValue(FONT, tableStyle.cellSelectionFont);
 
-		// Even/row row sensitive selection style
-		evenRowStyle = new Style();
-		evenRowStyle.setAttributeValue(BACKGROUND_COLOR, tableStyle.evenRowCellSelectionBgColor);
-		evenRowStyle.setAttributeValue(FOREGROUND_COLOR, tableStyle.evenRowCellSelectionFgColor);
-		evenRowStyle.setAttributeValue(FONT, tableStyle.cellSelectionFont);
+        oddRowStyle = new Style();
+        oddRowStyle.setAttributeValue(BACKGROUND_COLOR,
+                tableStyle.oddRowCellSelectionBgColor);
+        oddRowStyle.setAttributeValue(FOREGROUND_COLOR,
+                tableStyle.oddRowCellSelectionFgColor);
+        oddRowStyle.setAttributeValue(FONT, tableStyle.cellSelectionFont);
+    }
 
-		oddRowStyle = new Style();
-		oddRowStyle.setAttributeValue(BACKGROUND_COLOR, tableStyle.oddRowCellSelectionBgColor);
-		oddRowStyle.setAttributeValue(FOREGROUND_COLOR, tableStyle.oddRowCellSelectionFgColor);
-		oddRowStyle.setAttributeValue(FONT, tableStyle.cellSelectionFont);
-	}
+    @Override
+    protected void configureHeaderFullySelectedStyle(
+            IConfigRegistry configRegistry) {
+        Style fullySelectedStyle = new Style();
+        fullySelectedStyle.setAttributeValue(BACKGROUND_COLOR,
+                tableStyle.fullySelectedHeaderBgColor);
+        fullySelectedStyle.setAttributeValue(FOREGROUND_COLOR,
+                tableStyle.fullySelectedHeaderFgColor);
+        fullySelectedStyle.setAttributeValue(FONT,
+                tableStyle.fullySelectedHeaderFont);
 
-	@Override
-	protected void configureHeaderFullySelectedStyle(IConfigRegistry configRegistry) {
-		Style fullySelectedStyle = new Style();
-		fullySelectedStyle.setAttributeValue(BACKGROUND_COLOR, tableStyle.fullySelectedHeaderBgColor);
-		fullySelectedStyle.setAttributeValue(FOREGROUND_COLOR, tableStyle.fullySelectedHeaderFgColor);
-		fullySelectedStyle.setAttributeValue(FONT, tableStyle.fullySelectedHeaderFont);
+        configRegistry.registerConfigAttribute(CELL_STYLE, fullySelectedStyle,
+                SELECT, SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
+        configRegistry.registerConfigAttribute(CELL_STYLE, fullySelectedStyle,
+                SELECT, SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
 
-		configRegistry.registerConfigAttribute(CELL_STYLE, fullySelectedStyle, SELECT, SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
-		configRegistry.registerConfigAttribute(CELL_STYLE, fullySelectedStyle, SELECT, SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
-
-		configRegistry.registerConfigAttribute(CELL_STYLE, evenRowStyle, SELECT, EVEN_ROW_CONFIG_TYPE);
-		configRegistry.registerConfigAttribute(CELL_STYLE, oddRowStyle, SELECT, ODD_ROW_CONFIG_TYPE);
-	}
+        configRegistry.registerConfigAttribute(CELL_STYLE, evenRowStyle,
+                SELECT, EVEN_ROW_CONFIG_TYPE);
+        configRegistry.registerConfigAttribute(CELL_STYLE, oddRowStyle, SELECT,
+                ODD_ROW_CONFIG_TYPE);
+    }
 
 }

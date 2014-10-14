@@ -14,6 +14,6 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
 
 public interface ISpanningDataProvider extends IDataProvider {
 
-	public DataCell getCellByPosition(int columnPosition, int rowPosition);
-	
+    public DataCell getCellByPosition(int columnPosition, int rowPosition);
+
 }

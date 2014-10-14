@@ -16,14 +16,15 @@ import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 /**
  * Added by the {@link ColumnReorderLayer}
  */
-public class DefaultColumnReorderLayerConfiguration extends AggregateConfiguration {
+public class DefaultColumnReorderLayerConfiguration extends
+        AggregateConfiguration {
 
-	public DefaultColumnReorderLayerConfiguration() {
-		addColumnReorderUIBindings();
-	}
+    public DefaultColumnReorderLayerConfiguration() {
+        addColumnReorderUIBindings();
+    }
 
-	protected void addColumnReorderUIBindings() {
-		addConfiguration(new DefaultColumnReorderBindings());
-	}
+    protected void addColumnReorderUIBindings() {
+        addConfiguration(new DefaultColumnReorderBindings());
+    }
 
 }

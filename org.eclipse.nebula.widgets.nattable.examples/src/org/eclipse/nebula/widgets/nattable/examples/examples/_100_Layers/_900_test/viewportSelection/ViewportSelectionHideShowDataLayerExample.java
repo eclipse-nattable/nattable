@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._100_Layers._900_test.viewportSelection;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -22,14 +21,18 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class ViewportSelectionHideShowDataLayerExample extends AbstractNatExample {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new ViewportSelectionHideShowDataLayerExample());
-	}
+public class ViewportSelectionHideShowDataLayerExample extends
+        AbstractNatExample {
 
-	public Control createExampleControl(Composite parent) {
-		return new NatTable(parent, new ViewportLayer(new SelectionLayer(new ColumnHideShowLayer(new DataLayer(new DummyBodyDataProvider(500, 1000000))))));
-	}
-	
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner
+                .run(new ViewportSelectionHideShowDataLayerExample());
+    }
+
+    public Control createExampleControl(Composite parent) {
+        return new NatTable(parent, new ViewportLayer(new SelectionLayer(
+                new ColumnHideShowLayer(new DataLayer(
+                        new DummyBodyDataProvider(500, 1000000))))));
+    }
+
 }

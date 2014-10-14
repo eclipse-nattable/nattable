@@ -88,335 +88,371 @@ import ca.odell.glazedlists.TreeList;
  */
 public class _6042_TreeStructureGridExample extends AbstractNatExample {
 
-	public static final String MARRIED_LABEL = "marriedLabel";
-	public static final String DATE_LABEL = "dateLabel";
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _6042_TreeStructureGridExample());
-	}
+    public static final String MARRIED_LABEL = "marriedLabel";
+    public static final String DATE_LABEL = "dateLabel";
 
-	@Override
-	public String getDescription() {
-		return "This example shows how to create a tree within a grid."
-				+ " It creates a tree structure where the tree nodes are newly"
-				+ " added elements that contain all children. It also shows"
-				+ " how to create a multi level tree and how to exchange the"
-				+ " tree painter via configuration.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout());
-		
-		//create a new ConfigRegistry which will be needed for GlazedLists handling
-		ConfigRegistry configRegistry = new ConfigRegistry();
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new _6042_TreeStructureGridExample());
+    }
 
-		//property names of the Person class
-		String[] propertyNames = {"lastName", "firstName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows how to create a tree within a grid."
+                + " It creates a tree structure where the tree nodes are newly"
+                + " added elements that contain all children. It also shows"
+                + " how to create a multi level tree and how to exchange the"
+                + " tree painter via configuration.";
+    }
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+    @Override
+    public Control createExampleControl(Composite parent) {
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout());
 
-		IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = 
-				new ReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
-		
-		final BodyLayerStack bodyLayerStack = 
-				new BodyLayerStack(
-						PersonService.getPersonsWithAddress(50), columnPropertyAccessor, 
-						new PersonWithAddressTwoLevelTreeFormat());
-//						new PersonWithAddressTreeFormat());
+        // create a new ConfigRegistry which will be needed for GlazedLists
+        // handling
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-		//build the column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-		
-		//build the row header layer
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
-		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-		
-		//build the corner layer
-		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
-		
-		//build the grid layer
-		GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		//turn the auto configuration off as we want to add our header menu configuration
-		final NatTable natTable = new NatTable(container, gridLayer, false);
-		
-		//as the autoconfiguration of the NatTable is turned off, we have to add the 
-		//DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				//register a CheckBoxPainter as CellPainter for the married information
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.CELL_PAINTER, 
-						new CheckBoxPainter(), 
-						DisplayMode.NORMAL, 
-						MARRIED_LABEL);
-				
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.DISPLAY_CONVERTER, 
-						new DefaultDateDisplayConverter("MM/dd/yyyy"), 
-						DisplayMode.NORMAL, 
-						DATE_LABEL);
-				
-				//exchange the painter that is used to render the tree structure
-				//the following will use triangles instead of plus/minus icons to show the
-				//tree structure and expand/collapse state and adds padding between cell
-				//border and tree icons.
-				TreeImagePainter treeImagePainter = 
-						new TreeImagePainter(false, GUIHelper.getImage("right"), GUIHelper.getImage("right_down"), null);  //$NON-NLS-1$//$NON-NLS-2$
-				ICellPainter treeStructurePainter = new BackgroundPainter(new PaddingDecorator(
-						new IndentedTreeImagePainter(10, null, CellEdgeEnum.LEFT, treeImagePainter, false, 2, true), 0, 5, 0, 5, false));
+        // property names of the Person class
+        String[] propertyNames = { "lastName", "firstName", "gender",
+                "married", "birthday" };
 
-				configRegistry.registerConfigAttribute(
-						TreeConfigAttributes.TREE_STRUCTURE_PAINTER, 
-						treeStructurePainter,
-						DisplayMode.NORMAL);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
 
-			}
-		});
-		
-		natTable.configure();
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		
-		Composite buttonPanel = new Composite(container, SWT.NONE);
-		buttonPanel.setLayout(new RowLayout());
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
-		
-		Button collapseAllButton = new Button(buttonPanel, SWT.PUSH);
-		collapseAllButton.setText("Collapse All");
-		collapseAllButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new TreeCollapseAllCommand());
-			}
-		});
-		
-		Button expandAllButton = new Button(buttonPanel, SWT.PUSH);
-		expandAllButton.setText("Expand All");
-		expandAllButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new TreeExpandAllCommand());
-			}
-		});
-		
-		return container;
-	}
-	
-	/**
-	 * Always encapsulate the body layer stack in an AbstractLayerTransform to ensure that the
-	 * index transformations are performed in later commands.
-	 * @param <PersonWithAddress>
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	class BodyLayerStack extends AbstractLayerTransform {
-		
-		private final TreeList treeList;
-		
-		private final IRowDataProvider bodyDataProvider;
-		
-		private final SelectionLayer selectionLayer;
-		
-		public BodyLayerStack(List<PersonWithAddress> values, IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor,
-				TreeList.Format treeFormat) {
-			//wrapping of the list to show into GlazedLists
-			//see http://publicobject.com/glazedlists/ for further information
-			EventList<PersonWithAddress> eventList = GlazedLists.eventList(values);
-			TransformedList<PersonWithAddress, PersonWithAddress> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-			
-			//use the SortedList constructor with 'null' for the Comparator because the Comparator
-			//will be set by configuration
-			SortedList<PersonWithAddress> sortedList = new SortedList<PersonWithAddress>(rowObjectsGlazedList, null);
-			// wrap the SortedList with the TreeList
-			this.treeList = new TreeList(sortedList, treeFormat, TreeList.nodesStartExpanded());
-			
-			this.bodyDataProvider = 
-					new GlazedListsDataProvider<Object>(treeList, 
-							new PersonWithAddressTreeColumnPropertyAccessor(columnPropertyAccessor));
-			DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
-			
-			//simply apply labels for every column by index
-			bodyDataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
-				
-				@Override
-				public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-					Object rowObject = bodyDataProvider.getRowObject(rowPosition);
-					if (rowObject instanceof PersonWithAddress) {
-						if (columnPosition == 3) {
-							configLabels.addLabel(MARRIED_LABEL);
-						}
-						else if (columnPosition == 4) {
-							configLabels.addLabel(DATE_LABEL);
-						}
-					}
-				}
-			});
-			
-			//layer for event handling of GlazedLists and PropertyChanges
-			GlazedListsEventLayer<PersonWithAddress> glazedListsEventLayer = 
-				new GlazedListsEventLayer<PersonWithAddress>(bodyDataLayer, treeList);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<PersonWithAddress>(
+                propertyNames);
 
-			GlazedListTreeData<Object> treeData = new GlazedListTreeData<Object>(treeList) {
-				@Override
-				public String formatDataForDepth(int depth, Object object) {
-					if (object instanceof PersonWithAddress) {
-						return ((PersonWithAddress)object).getLastName();
-					}
-					return object.toString();
-				}
-			};
-			ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
-			
-			this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
-			
-			TreeLayer treeLayer = new TreeLayer(selectionLayer, treeRowModel);
-			ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
-			
-			setUnderlyingLayer(viewportLayer);
-		}
+        final BodyLayerStack bodyLayerStack = new BodyLayerStack(
+                PersonService.getPersonsWithAddress(50),
+                columnPropertyAccessor,
+                new PersonWithAddressTwoLevelTreeFormat());
+        // new PersonWithAddressTreeFormat());
 
-		public SelectionLayer getSelectionLayer() {
-			return selectionLayer;
-		}
-		
-		public TreeList<PersonWithAddress> getTreeList() {
-			return this.treeList;
-		}
+        // build the column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
-		public IDataProvider getBodyDataProvider() {
-			return bodyDataProvider;
-		}
-	}
+        // build the row header layer
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
-	
-	private class PersonWithAddressTreeColumnPropertyAccessor implements IColumnPropertyAccessor<Object> {
+        // build the corner layer
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                columnHeaderLayer);
 
-		private IColumnPropertyAccessor<PersonWithAddress> cpa;
-		
-		public PersonWithAddressTreeColumnPropertyAccessor(IColumnPropertyAccessor<PersonWithAddress> cpa) {
-			this.cpa = cpa;
-		}
-		
-		@Override
-		public Object getDataValue(Object rowObject, int columnIndex) {
-			if (rowObject instanceof PersonWithAddress) {
-				return this.cpa.getDataValue((PersonWithAddress)rowObject, columnIndex);
-			}
-			else if (columnIndex == 0) {
-				return rowObject;
-			}
-			return null;
-		}
+        // build the grid layer
+        GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
 
-		@Override
-		public void setDataValue(Object rowObject, int columnIndex, Object newValue) {
-			if (rowObject instanceof PersonWithAddress) {
-				this.cpa.setDataValue((PersonWithAddress)rowObject, columnIndex, newValue);
-			}
-		}
+        // turn the auto configuration off as we want to add our header menu
+        // configuration
+        final NatTable natTable = new NatTable(container, gridLayer, false);
 
-		@Override
-		public int getColumnCount() {
-			return this.cpa.getColumnCount();
-		}
+        // as the autoconfiguration of the NatTable is turned off, we have to
+        // add the
+        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
-		@Override
-		public String getColumnProperty(int columnIndex) {
-			return this.cpa.getColumnProperty(columnIndex);
-		}
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
 
-		@Override
-		public int getColumnIndex(String propertyName) {
-			return this.cpa.getColumnIndex(propertyName);
-		}
-		
-	}
-	
-	
-	@SuppressWarnings("unused")
-	private class PersonWithAddressTreeFormat implements TreeList.Format<Object> {
-		
-		@Override
-		public void getPath(List<Object> path, Object element) {
-			if (element instanceof PersonWithAddress) {
-				PersonWithAddress ele = (PersonWithAddress) element;
-				path.add(ele.getLastName());
-			}
-			path.add(element);
-		}
-		
-		@Override
-		public boolean allowsChildren(Object element) {
-			return true;
-		}
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                // register a CheckBoxPainter as CellPainter for the married
+                // information
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new CheckBoxPainter(), DisplayMode.NORMAL,
+                        MARRIED_LABEL);
 
-		@Override
-		public Comparator<? super Object> getComparator(int depth) {
-			return new Comparator<Object>() {
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultDateDisplayConverter("MM/dd/yyyy"),
+                        DisplayMode.NORMAL, DATE_LABEL);
 
-				@Override
-				public int compare(Object o1, Object o2) {
-					String e1 = (o1 instanceof PersonWithAddress) ? ((PersonWithAddress)o1).getLastName() : o1.toString();
-					String e2 = (o2 instanceof PersonWithAddress) ? ((PersonWithAddress)o2).getLastName() : o2.toString();
-					return e1.compareTo(e2);
-				}
-				
-			};
-		}
-	}
-	
-	private class PersonWithAddressTwoLevelTreeFormat implements TreeList.Format<Object> {
-		
-		@Override
-		public void getPath(List<Object> path, Object element) {
-			if (element instanceof PersonWithAddress) {
-				PersonWithAddress ele = (PersonWithAddress) element;
-				path.add(ele.getLastName());
-				path.add(ele.getFirstName());
-			}
-			path.add(element);
-		}
-		
-		@Override
-		public boolean allowsChildren(Object element) {
-			return true;
-		}
+                // exchange the painter that is used to render the tree
+                // structure
+                // the following will use triangles instead of plus/minus icons
+                // to show the
+                // tree structure and expand/collapse state and adds padding
+                // between cell
+                // border and tree icons.
+                TreeImagePainter treeImagePainter = new TreeImagePainter(
+                        false,
+                        GUIHelper.getImage("right"), GUIHelper.getImage("right_down"), null); //$NON-NLS-1$//$NON-NLS-2$
+                ICellPainter treeStructurePainter = new BackgroundPainter(
+                        new PaddingDecorator(new IndentedTreeImagePainter(10,
+                                null, CellEdgeEnum.LEFT, treeImagePainter,
+                                false, 2, true), 0, 5, 0, 5, false));
 
-		@Override
-		public Comparator<? super Object> getComparator(final int depth) {
-			return new Comparator<Object>() {
+                configRegistry.registerConfigAttribute(
+                        TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
+                        treeStructurePainter, DisplayMode.NORMAL);
 
-				@Override
-				public int compare(Object o1, Object o2) {
-					String e1 = (o1 instanceof PersonWithAddress) ? 
-							(depth == 0 ? ((PersonWithAddress)o1).getLastName() : ((PersonWithAddress)o1).getFirstName()) 
-								: o1.toString();
-					String e2 = (o2 instanceof PersonWithAddress) ? 
-							(depth == 0 ? ((PersonWithAddress)o2).getLastName() : ((PersonWithAddress)o2).getFirstName()) 
-								: o2.toString();
-					return e1.compareTo(e2);
-				}
-				
-			};
-		}
-	}
+            }
+        });
+
+        natTable.configure();
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Composite buttonPanel = new Composite(container, SWT.NONE);
+        buttonPanel.setLayout(new RowLayout());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
+
+        Button collapseAllButton = new Button(buttonPanel, SWT.PUSH);
+        collapseAllButton.setText("Collapse All");
+        collapseAllButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(new TreeCollapseAllCommand());
+            }
+        });
+
+        Button expandAllButton = new Button(buttonPanel, SWT.PUSH);
+        expandAllButton.setText("Expand All");
+        expandAllButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(new TreeExpandAllCommand());
+            }
+        });
+
+        return container;
+    }
+
+    /**
+     * Always encapsulate the body layer stack in an AbstractLayerTransform to
+     * ensure that the index transformations are performed in later commands.
+     * 
+     * @param <PersonWithAddress>
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    class BodyLayerStack extends AbstractLayerTransform {
+
+        private final TreeList treeList;
+
+        private final IRowDataProvider bodyDataProvider;
+
+        private final SelectionLayer selectionLayer;
+
+        public BodyLayerStack(
+                List<PersonWithAddress> values,
+                IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor,
+                TreeList.Format treeFormat) {
+            // wrapping of the list to show into GlazedLists
+            // see http://publicobject.com/glazedlists/ for further information
+            EventList<PersonWithAddress> eventList = GlazedLists
+                    .eventList(values);
+            TransformedList<PersonWithAddress, PersonWithAddress> rowObjectsGlazedList = GlazedLists
+                    .threadSafeList(eventList);
+
+            // use the SortedList constructor with 'null' for the Comparator
+            // because the Comparator
+            // will be set by configuration
+            SortedList<PersonWithAddress> sortedList = new SortedList<PersonWithAddress>(
+                    rowObjectsGlazedList, null);
+            // wrap the SortedList with the TreeList
+            this.treeList = new TreeList(sortedList, treeFormat,
+                    TreeList.nodesStartExpanded());
+
+            this.bodyDataProvider = new GlazedListsDataProvider<Object>(
+                    treeList, new PersonWithAddressTreeColumnPropertyAccessor(
+                            columnPropertyAccessor));
+            DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
+
+            // simply apply labels for every column by index
+            bodyDataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
+
+                @Override
+                public void accumulateConfigLabels(LabelStack configLabels,
+                        int columnPosition, int rowPosition) {
+                    Object rowObject = bodyDataProvider
+                            .getRowObject(rowPosition);
+                    if (rowObject instanceof PersonWithAddress) {
+                        if (columnPosition == 3) {
+                            configLabels.addLabel(MARRIED_LABEL);
+                        } else if (columnPosition == 4) {
+                            configLabels.addLabel(DATE_LABEL);
+                        }
+                    }
+                }
+            });
+
+            // layer for event handling of GlazedLists and PropertyChanges
+            GlazedListsEventLayer<PersonWithAddress> glazedListsEventLayer = new GlazedListsEventLayer<PersonWithAddress>(
+                    bodyDataLayer, treeList);
+
+            GlazedListTreeData<Object> treeData = new GlazedListTreeData<Object>(
+                    treeList) {
+                @Override
+                public String formatDataForDepth(int depth, Object object) {
+                    if (object instanceof PersonWithAddress) {
+                        return ((PersonWithAddress) object).getLastName();
+                    }
+                    return object.toString();
+                }
+            };
+            ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<Object>(
+                    treeData);
+
+            this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
+
+            TreeLayer treeLayer = new TreeLayer(selectionLayer, treeRowModel);
+            ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+
+            setUnderlyingLayer(viewportLayer);
+        }
+
+        public SelectionLayer getSelectionLayer() {
+            return selectionLayer;
+        }
+
+        public TreeList<PersonWithAddress> getTreeList() {
+            return this.treeList;
+        }
+
+        public IDataProvider getBodyDataProvider() {
+            return bodyDataProvider;
+        }
+    }
+
+    private class PersonWithAddressTreeColumnPropertyAccessor implements
+            IColumnPropertyAccessor<Object> {
+
+        private IColumnPropertyAccessor<PersonWithAddress> cpa;
+
+        public PersonWithAddressTreeColumnPropertyAccessor(
+                IColumnPropertyAccessor<PersonWithAddress> cpa) {
+            this.cpa = cpa;
+        }
+
+        @Override
+        public Object getDataValue(Object rowObject, int columnIndex) {
+            if (rowObject instanceof PersonWithAddress) {
+                return this.cpa.getDataValue((PersonWithAddress) rowObject,
+                        columnIndex);
+            } else if (columnIndex == 0) {
+                return rowObject;
+            }
+            return null;
+        }
+
+        @Override
+        public void setDataValue(Object rowObject, int columnIndex,
+                Object newValue) {
+            if (rowObject instanceof PersonWithAddress) {
+                this.cpa.setDataValue((PersonWithAddress) rowObject,
+                        columnIndex, newValue);
+            }
+        }
+
+        @Override
+        public int getColumnCount() {
+            return this.cpa.getColumnCount();
+        }
+
+        @Override
+        public String getColumnProperty(int columnIndex) {
+            return this.cpa.getColumnProperty(columnIndex);
+        }
+
+        @Override
+        public int getColumnIndex(String propertyName) {
+            return this.cpa.getColumnIndex(propertyName);
+        }
+
+    }
+
+    @SuppressWarnings("unused")
+    private class PersonWithAddressTreeFormat implements
+            TreeList.Format<Object> {
+
+        @Override
+        public void getPath(List<Object> path, Object element) {
+            if (element instanceof PersonWithAddress) {
+                PersonWithAddress ele = (PersonWithAddress) element;
+                path.add(ele.getLastName());
+            }
+            path.add(element);
+        }
+
+        @Override
+        public boolean allowsChildren(Object element) {
+            return true;
+        }
+
+        @Override
+        public Comparator<? super Object> getComparator(int depth) {
+            return new Comparator<Object>() {
+
+                @Override
+                public int compare(Object o1, Object o2) {
+                    String e1 = (o1 instanceof PersonWithAddress) ? ((PersonWithAddress) o1)
+                            .getLastName() : o1.toString();
+                    String e2 = (o2 instanceof PersonWithAddress) ? ((PersonWithAddress) o2)
+                            .getLastName() : o2.toString();
+                    return e1.compareTo(e2);
+                }
+
+            };
+        }
+    }
+
+    private class PersonWithAddressTwoLevelTreeFormat implements
+            TreeList.Format<Object> {
+
+        @Override
+        public void getPath(List<Object> path, Object element) {
+            if (element instanceof PersonWithAddress) {
+                PersonWithAddress ele = (PersonWithAddress) element;
+                path.add(ele.getLastName());
+                path.add(ele.getFirstName());
+            }
+            path.add(element);
+        }
+
+        @Override
+        public boolean allowsChildren(Object element) {
+            return true;
+        }
+
+        @Override
+        public Comparator<? super Object> getComparator(final int depth) {
+            return new Comparator<Object>() {
+
+                @Override
+                public int compare(Object o1, Object o2) {
+                    String e1 = (o1 instanceof PersonWithAddress) ? (depth == 0 ? ((PersonWithAddress) o1)
+                            .getLastName() : ((PersonWithAddress) o1)
+                            .getFirstName())
+                            : o1.toString();
+                    String e2 = (o2 instanceof PersonWithAddress) ? (depth == 0 ? ((PersonWithAddress) o2)
+                            .getLastName() : ((PersonWithAddress) o2)
+                            .getFirstName())
+                            : o2.toString();
+                    return e1.compareTo(e2);
+                }
+
+            };
+        }
+    }
 
 }

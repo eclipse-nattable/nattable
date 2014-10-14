@@ -57,116 +57,119 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Example that demonstrates how to implement a NatTable instance that shows
- * calculated values.
- * Also demonstrates the usage of the SummaryRow on updating the NatTable.
+ * calculated values. Also demonstrates the usage of the SummaryRow on updating
+ * the NatTable.
  * 
  * @author Dirk Fauth
  *
  */
 public class _5122_SummaryRowGridExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5122_SummaryRowGridExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _5122_SummaryRowGridExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example demonstrates how to add a summary row to the end of a grid.\n" +
-				"\n" +
-				"Features\n" +
-				"	Different style can be applied to the whole row\n" +
-				"	Different style can be applied to the individual cells in the summary row\n" +
-				"	Plug-in your own summary formulas via ISummaryProvider interface (Default is summation)";
-	}
+    @Override
+    public String getDescription() {
+        return "This example demonstrates how to add a summary row to the end of a grid.\n"
+                + "\n"
+                + "Features\n"
+                + "	Different style can be applied to the whole row\n"
+                + "	Different style can be applied to the individual cells in the summary row\n"
+                + "	Plug-in your own summary formulas via ISummaryProvider interface (Default is summation)";
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the NumberValues class
-		String[] propertyNames = {"columnOneNumber", "columnTwoNumber", "columnThreeNumber", "columnFourNumber", 
-				"columnFiveNumber"};
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
+     * (org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the NumberValues class
+        String[] propertyNames = { "columnOneNumber", "columnTwoNumber",
+                "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("columnOneNumber", "Column 1");
-		propertyToLabelMap.put("columnTwoNumber", "Column 2");
-		propertyToLabelMap.put("columnThreeNumber", "Column 3");
-		propertyToLabelMap.put("columnFourNumber", "Column 4");
-		propertyToLabelMap.put("columnFiveNumber", "Column 5");
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("columnOneNumber", "Column 1");
+        propertyToLabelMap.put("columnTwoNumber", "Column 2");
+        propertyToLabelMap.put("columnThreeNumber", "Column 3");
+        propertyToLabelMap.put("columnFourNumber", "Column 4");
+        propertyToLabelMap.put("columnFiveNumber", "Column 5");
 
-		IColumnPropertyAccessor<NumberValues> cpa = 
-				new ReflectiveColumnPropertyAccessor<NumberValues>(propertyNames);
-		IDataProvider dataProvider = 
-				new ListDataProvider<NumberValues>(createNumberValueList(), cpa);
+        IColumnPropertyAccessor<NumberValues> cpa = new ReflectiveColumnPropertyAccessor<NumberValues>(
+                propertyNames);
+        IDataProvider dataProvider = new ListDataProvider<NumberValues>(
+                createNumberValueList(), cpa);
 
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		
-		SummaryRowGridLayer gridLayer = new SummaryRowGridLayer(dataProvider, configRegistry, 
-				propertyNames, propertyToLabelMap);
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.configure();
+        SummaryRowGridLayer gridLayer = new SummaryRowGridLayer(dataProvider,
+                configRegistry, propertyNames, propertyToLabelMap);
 
-		return natTable;
-	}
-	
-	private List<NumberValues> createNumberValueList() {
-		List<NumberValues> result = new ArrayList<NumberValues>();
-		
-		for (int i = 0; i < 25; i++) {
-			NumberValues nv = new NumberValues();
-			nv.setColumnOneNumber(5);
-			nv.setColumnTwoNumber(4);
-			nv.setColumnThreeNumber(3);
-			nv.setColumnFourNumber(1);
-			nv.setColumnFiveNumber(1);
-			result.add(nv);
-			
-			nv = new NumberValues();
-			nv.setColumnOneNumber(1);
-			nv.setColumnTwoNumber(1);
-			nv.setColumnThreeNumber(2);
-			nv.setColumnFourNumber(2);
-			nv.setColumnFiveNumber(3);
-			result.add(nv);
-			
-			nv = new NumberValues();
-			nv.setColumnOneNumber(1);
-			nv.setColumnTwoNumber(2);
-			nv.setColumnThreeNumber(2);
-			nv.setColumnFourNumber(3);
-			nv.setColumnFiveNumber(3);
-			result.add(nv);
-			
-			nv = new NumberValues();
-			nv.setColumnOneNumber(1);
-			nv.setColumnTwoNumber(2);
-			nv.setColumnThreeNumber(4);
-			nv.setColumnFourNumber(4);
-			nv.setColumnFiveNumber(3);
-			result.add(nv);
-			
-			nv = new NumberValues();
-			nv.setColumnOneNumber(5);
-			nv.setColumnTwoNumber(4);
-			nv.setColumnThreeNumber(4);
-			nv.setColumnFourNumber(4);
-			nv.setColumnFiveNumber(7);
-			result.add(nv);
-		}
-			
-		return result;
-	}
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.configure();
+
+        return natTable;
+    }
+
+    private List<NumberValues> createNumberValueList() {
+        List<NumberValues> result = new ArrayList<NumberValues>();
+
+        for (int i = 0; i < 25; i++) {
+            NumberValues nv = new NumberValues();
+            nv.setColumnOneNumber(5);
+            nv.setColumnTwoNumber(4);
+            nv.setColumnThreeNumber(3);
+            nv.setColumnFourNumber(1);
+            nv.setColumnFiveNumber(1);
+            result.add(nv);
+
+            nv = new NumberValues();
+            nv.setColumnOneNumber(1);
+            nv.setColumnTwoNumber(1);
+            nv.setColumnThreeNumber(2);
+            nv.setColumnFourNumber(2);
+            nv.setColumnFiveNumber(3);
+            result.add(nv);
+
+            nv = new NumberValues();
+            nv.setColumnOneNumber(1);
+            nv.setColumnTwoNumber(2);
+            nv.setColumnThreeNumber(2);
+            nv.setColumnFourNumber(3);
+            nv.setColumnFiveNumber(3);
+            result.add(nv);
+
+            nv = new NumberValues();
+            nv.setColumnOneNumber(1);
+            nv.setColumnTwoNumber(2);
+            nv.setColumnThreeNumber(4);
+            nv.setColumnFourNumber(4);
+            nv.setColumnFiveNumber(3);
+            result.add(nv);
+
+            nv = new NumberValues();
+            nv.setColumnOneNumber(5);
+            nv.setColumnTwoNumber(4);
+            nv.setColumnThreeNumber(4);
+            nv.setColumnFourNumber(4);
+            nv.setColumnFiveNumber(7);
+            result.add(nv);
+        }
+
+        return result;
+    }
 }
 
-
 /**
- * The body layer stack for the {@link _5122_SummaryRowGridExample}.
- * Consists of
+ * The body layer stack for the {@link _5122_SummaryRowGridExample}. Consists of
  * <ol>
  * <li>ViewportLayer</li>
  * <li>SelectionLayer</li>
@@ -178,33 +181,37 @@ public class _5122_SummaryRowGridExample extends AbstractNatExample {
  */
 class SummaryRowBodyLayerStack extends AbstractLayerTransform {
 
-	private final DataLayer bodyDataLayer;
-	private final SummaryRowLayer summaryRowLayer;
-	private final ColumnReorderLayer columnReorderLayer;
-	private final ColumnHideShowLayer columnHideShowLayer;
-	private final SelectionLayer selectionLayer;
-	private final ViewportLayer viewportLayer;
+    private final DataLayer bodyDataLayer;
+    private final SummaryRowLayer summaryRowLayer;
+    private final ColumnReorderLayer columnReorderLayer;
+    private final ColumnHideShowLayer columnHideShowLayer;
+    private final SelectionLayer selectionLayer;
+    private final ViewportLayer viewportLayer;
 
-	public SummaryRowBodyLayerStack(IDataProvider dataProvider, ConfigRegistry configRegistry) {
-		bodyDataLayer = new DataLayer(dataProvider);
-		summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry, false);
-		summaryRowLayer.addConfiguration(new ExampleSummaryRowGridConfiguration(bodyDataLayer.getDataProvider()));
-		columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
-		columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-		selectionLayer = new SelectionLayer(columnHideShowLayer);
-		viewportLayer = new ViewportLayer(selectionLayer);
-		setUnderlyingLayer(viewportLayer);
+    public SummaryRowBodyLayerStack(IDataProvider dataProvider,
+            ConfigRegistry configRegistry) {
+        bodyDataLayer = new DataLayer(dataProvider);
+        summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry,
+                false);
+        summaryRowLayer
+                .addConfiguration(new ExampleSummaryRowGridConfiguration(
+                        bodyDataLayer.getDataProvider()));
+        columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
+        columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
+        selectionLayer = new SelectionLayer(columnHideShowLayer);
+        viewportLayer = new ViewportLayer(selectionLayer);
+        setUnderlyingLayer(viewportLayer);
 
-		registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
-	}
+        registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+    }
 
-	public DataLayer getDataLayer() {
-		return this.bodyDataLayer;
-	}
-	
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
+    public DataLayer getDataLayer() {
+        return this.bodyDataLayer;
+    }
+
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
 }
 
 /**
@@ -212,105 +219,115 @@ class SummaryRowBodyLayerStack extends AbstractLayerTransform {
  */
 class SummaryRowGridLayer extends GridLayer {
 
-	public SummaryRowGridLayer(IDataProvider dataProvider, ConfigRegistry configRegistry,
-			final String[] propertyNames, Map<String, String> propertyToLabelMap) {
-		super(true);
-		init(dataProvider, configRegistry, propertyNames, propertyToLabelMap);
-	}
+    public SummaryRowGridLayer(IDataProvider dataProvider,
+            ConfigRegistry configRegistry, final String[] propertyNames,
+            Map<String, String> propertyToLabelMap) {
+        super(true);
+        init(dataProvider, configRegistry, propertyNames, propertyToLabelMap);
+    }
 
+    private void init(IDataProvider dataProvider,
+            ConfigRegistry configRegistry, final String[] propertyNames,
+            Map<String, String> propertyToLabelMap) {
+        // Body
+        SummaryRowBodyLayerStack bodyLayer = new SummaryRowBodyLayerStack(
+                dataProvider, configRegistry);
 
-	private void init(IDataProvider dataProvider, ConfigRegistry configRegistry,
-			final String[] propertyNames, Map<String, String> propertyToLabelMap) {
-		// Body
-		SummaryRowBodyLayerStack bodyLayer = new SummaryRowBodyLayerStack(dataProvider, configRegistry);
-		
-		SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
+        SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
 
-		// Column header
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-				 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider), 
-				bodyLayer, selectionLayer);
-		
-		// Row header
-		// Adding the specialized DefaultSummaryRowHeaderDataProvider to indicate the summary row in the row header
-		IDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(
-				bodyLayer.getDataLayer().getDataProvider(), "\u2211");
-		final DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		//add a label to the row header summary row cell aswell, so it can be styled differently too
-		//in this case it will simply use the same styling as the summary row in the body
-		rowHeaderDataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
-			@Override
-			public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-				if ((rowPosition+1) == rowHeaderDataLayer.getRowCount()) {
-					configLabels.addLabel(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
-				}
-			}
-		});
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, selectionLayer);
-		
-		// Corner
-		ILayer cornerLayer = new CornerLayer(
-				new DataLayer(new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), 
-				rowHeaderLayer, columnHeaderLayer);
-		
-		setBodyLayer(bodyLayer);
-		setColumnHeaderLayer(columnHeaderLayer);
-		setRowHeaderLayer(rowHeaderLayer);
-		setCornerLayer(cornerLayer);
-	}
-	
-	
-	public DataLayer getBodyDataLayer() {
-		return ((SummaryRowBodyLayerStack)getBodyLayer()).getDataLayer();
-	}
+        // Column header
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider),
+                bodyLayer, selectionLayer);
+
+        // Row header
+        // Adding the specialized DefaultSummaryRowHeaderDataProvider to
+        // indicate the summary row in the row header
+        IDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(
+                bodyLayer.getDataLayer().getDataProvider(), "\u2211");
+        final DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        // add a label to the row header summary row cell aswell, so it can be
+        // styled differently too
+        // in this case it will simply use the same styling as the summary row
+        // in the body
+        rowHeaderDataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
+            @Override
+            public void accumulateConfigLabels(LabelStack configLabels,
+                    int columnPosition, int rowPosition) {
+                if ((rowPosition + 1) == rowHeaderDataLayer.getRowCount()) {
+                    configLabels
+                            .addLabel(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+                }
+            }
+        });
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayer, selectionLayer);
+
+        // Corner
+        ILayer cornerLayer = new CornerLayer(new DataLayer(
+                new DefaultCornerDataProvider(columnHeaderDataProvider,
+                        rowHeaderDataProvider)), rowHeaderLayer,
+                columnHeaderLayer);
+
+        setBodyLayer(bodyLayer);
+        setColumnHeaderLayer(columnHeaderLayer);
+        setRowHeaderLayer(rowHeaderLayer);
+        setCornerLayer(cornerLayer);
+    }
+
+    public DataLayer getBodyDataLayer() {
+        return ((SummaryRowBodyLayerStack) getBodyLayer()).getDataLayer();
+    }
 }
 
 class ExampleSummaryRowGridConfiguration extends DefaultSummaryRowConfiguration {
-	
-	private final IDataProvider dataProvider;
 
-	public ExampleSummaryRowGridConfiguration(IDataProvider dataProvider) {
-		this.dataProvider = dataProvider;
-		summaryRowBgColor = GUIHelper.COLOR_BLUE;
-		summaryRowFgColor = GUIHelper.COLOR_WHITE;
-	}
+    private final IDataProvider dataProvider;
 
-	@Override
-	public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
-		// Labels are applied to the summary row and cells by default to make configuration easier.
-		// See the Javadoc for the SummaryRowLayer
+    public ExampleSummaryRowGridConfiguration(IDataProvider dataProvider) {
+        this.dataProvider = dataProvider;
+        summaryRowBgColor = GUIHelper.COLOR_BLUE;
+        summaryRowFgColor = GUIHelper.COLOR_WHITE;
+    }
 
-		// Default summary provider
-		configRegistry.registerConfigAttribute(
-				SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-				new SummationSummaryProvider(dataProvider),
-				DisplayMode.NORMAL,
-				SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+    @Override
+    public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
+        // Labels are applied to the summary row and cells by default to make
+        // configuration easier.
+        // See the Javadoc for the SummaryRowLayer
 
-		// Average summary provider for column index 2
-		configRegistry.registerConfigAttribute(
-				SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-				new AverageSummaryProvider(),
-				DisplayMode.NORMAL,
-				SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
-	}
+        // Default summary provider
+        configRegistry.registerConfigAttribute(
+                SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                new SummationSummaryProvider(dataProvider), DisplayMode.NORMAL,
+                SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
-	/**
-	 * Custom summary provider which averages out the contents of the column
-	 */
-	class AverageSummaryProvider implements ISummaryProvider {
-		@Override
-		public Object summarize(int columnIndex) {
-			double total = 0;
-			int rowCount = dataProvider.getRowCount();
+        // Average summary provider for column index 2
+        configRegistry.registerConfigAttribute(
+                SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                new AverageSummaryProvider(), DisplayMode.NORMAL,
+                SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
+    }
 
-			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-				Object dataValue = dataProvider.getDataValue(columnIndex, rowIndex);
-				total = total + Double.parseDouble(dataValue.toString());
-			}
-			return "Avg: " + total / rowCount;
-		}
-	}
+    /**
+     * Custom summary provider which averages out the contents of the column
+     */
+    class AverageSummaryProvider implements ISummaryProvider {
+        @Override
+        public Object summarize(int columnIndex) {
+            double total = 0;
+            int rowCount = dataProvider.getRowCount();
+
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                Object dataValue = dataProvider.getDataValue(columnIndex,
+                        rowIndex);
+                total = total + Double.parseDouble(dataValue.toString());
+            }
+            return "Avg: " + total / rowCount;
+        }
+    }
 
 }

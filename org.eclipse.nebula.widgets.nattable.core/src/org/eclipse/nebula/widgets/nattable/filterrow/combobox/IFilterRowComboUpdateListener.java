@@ -11,16 +11,20 @@
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
 /**
- * Interface for listeners that listen to updates to the value cache of the FilterRowComboBoxDataProvider.
+ * Interface for listeners that listen to updates to the value cache of the
+ * FilterRowComboBoxDataProvider.
  * 
  * @author Dirk Fauth
  *
  */
 public interface IFilterRowComboUpdateListener {
 
-	/**
-	 * Handles the update of the value cache of the FilterRowComboBoxDataProvider
-	 * @param event The FilterRowComboUpdateEvent that should be handled
-	 */
-	void handleEvent(FilterRowComboUpdateEvent event);
+    /**
+     * Handles the update of the value cache of the
+     * FilterRowComboBoxDataProvider
+     * 
+     * @param event
+     *            The FilterRowComboUpdateEvent that should be handled
+     */
+    void handleEvent(FilterRowComboUpdateEvent event);
 }

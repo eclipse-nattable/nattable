@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
@@ -18,8 +17,8 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class ToggleFilterRowAction implements IKeyAction {
 
-	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new ToggleFilterRowCommand());
-	}
+    public void run(NatTable natTable, KeyEvent event) {
+        natTable.doCommand(new ToggleFilterRowCommand());
+    }
 
 }

@@ -40,111 +40,167 @@ import org.junit.Test;
 
 public class DisplayColumnStyleEditorCommandHandlerTest {
 
-	private ColumnOverrideLabelAccumulator labelAccumulatorFixture;
-	private NatTableFixture natTableFixture;
-	private DisplayColumnStyleEditorCommand commandFixture;
-	private DisplayColumnStyleEditorCommandHandler handlerUnderTest;
-	private IConfigRegistry configRegistryFixture;
-	
-	@Before
-	public void setup() {
-		labelAccumulatorFixture = new ColumnOverrideLabelAccumulator(new DataLayerFixture());
-		natTableFixture = new NatTableFixture();
-		configRegistryFixture = natTableFixture.getConfigRegistry();
-		commandFixture = new DisplayColumnStyleEditorCommand(natTableFixture, natTableFixture.getConfigRegistry(), 1, 1);
+    private ColumnOverrideLabelAccumulator labelAccumulatorFixture;
+    private NatTableFixture natTableFixture;
+    private DisplayColumnStyleEditorCommand commandFixture;
+    private DisplayColumnStyleEditorCommandHandler handlerUnderTest;
+    private IConfigRegistry configRegistryFixture;
 
-		final SelectionLayer selectionLayer = ((DummyGridLayerStack)natTableFixture.getLayer()).getBodyLayer().getSelectionLayer(); 
-		handlerUnderTest = new DisplayColumnStyleEditorCommandHandler(selectionLayer, labelAccumulatorFixture, configRegistryFixture);
-	}
+    @Before
+    public void setup() {
+        labelAccumulatorFixture = new ColumnOverrideLabelAccumulator(
+                new DataLayerFixture());
+        natTableFixture = new NatTableFixture();
+        configRegistryFixture = natTableFixture.getConfigRegistry();
+        commandFixture = new DisplayColumnStyleEditorCommand(natTableFixture,
+                natTableFixture.getConfigRegistry(), 1, 1);
 
-	@Test
-	public void doCommand() throws Exception {
-		handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(), new CellStyleFixture());
-		handlerUnderTest.applySelectedStyleToColumns(commandFixture, new int[]{0});
+        final SelectionLayer selectionLayer = ((DummyGridLayerStack) natTableFixture
+                .getLayer()).getBodyLayer().getSelectionLayer();
+        handlerUnderTest = new DisplayColumnStyleEditorCommandHandler(
+                selectionLayer, labelAccumulatorFixture, configRegistryFixture);
+    }
 
-		Style selectedStyle = (Style) configRegistryFixture.getConfigAttribute(CELL_STYLE, NORMAL, handlerUnderTest.getConfigLabel(0));
+    @Test
+    public void doCommand() throws Exception {
+        handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(),
+                new CellStyleFixture());
+        handlerUnderTest.applySelectedStyleToColumns(commandFixture,
+                new int[] { 0 });
 
-		assertEquals(CellStyleFixture.TEST_BG_COLOR, selectedStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-		assertEquals(CellStyleFixture.TEST_FG_COLOR, selectedStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+        Style selectedStyle = (Style) configRegistryFixture.getConfigAttribute(
+                CELL_STYLE, NORMAL, handlerUnderTest.getConfigLabel(0));
 
-		List<String> columnLableOverrides = handlerUnderTest.columnLabelAccumulator.getOverrides(Integer.valueOf(0));
-		assertEquals(1, columnLableOverrides.size());
-		assertEquals(USER_EDITED_COLUMN_STYLE_LABEL_PREFIX + "0", columnLableOverrides.get(0));
-	}
+        assertEquals(
+                CellStyleFixture.TEST_BG_COLOR,
+                selectedStyle
+                        .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        assertEquals(
+                CellStyleFixture.TEST_FG_COLOR,
+                selectedStyle
+                        .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 
-	@Test
-	public void parseColumnIndexFromKey() throws Exception {
-		int i = handlerUnderTest.parseColumnIndexFromKey(".BODY.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_3.horizontalAlignment");
-		assertEquals(3, i);
+        List<String> columnLableOverrides = handlerUnderTest.columnLabelAccumulator
+                .getOverrides(Integer.valueOf(0));
+        assertEquals(1, columnLableOverrides.size());
+        assertEquals(USER_EDITED_COLUMN_STYLE_LABEL_PREFIX + "0",
+                columnLableOverrides.get(0));
+    }
 
-		i = handlerUnderTest.parseColumnIndexFromKey(".BODY.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_12.horizontalAlignment");
-		assertEquals(12, i);
-	}
+    @Test
+    public void parseColumnIndexFromKey() throws Exception {
+        int i = handlerUnderTest
+                .parseColumnIndexFromKey(".BODY.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_3.horizontalAlignment");
+        assertEquals(3, i);
 
-	@Test
-	public void saveStateForMultipleLabels() throws Exception {
-		CellStyleFixture style1 = new CellStyleFixture(HorizontalAlignmentEnum.LEFT);
-		CellStyleFixture style2 = new CellStyleFixture(HorizontalAlignmentEnum.RIGHT);
+        i = handlerUnderTest
+                .parseColumnIndexFromKey(".BODY.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_12.horizontalAlignment");
+        assertEquals(12, i);
+    }
 
-		handlerUnderTest.stylesToPersist.put("label1", style1);
-		handlerUnderTest.stylesToPersist.put("label2", style2);
-		
-		PropertiesFixture propertiesFixture = new PropertiesFixture();
-		handlerUnderTest.saveState("prefix", propertiesFixture);
-		
-		assertEquals(HorizontalAlignmentEnum.LEFT.name(), propertiesFixture.getProperty("prefix.userDefinedColumnStyle.label1.style.horizontalAlignment"));
-		assertEquals(HorizontalAlignmentEnum.RIGHT.name(), propertiesFixture.getProperty("prefix.userDefinedColumnStyle.label2.style.horizontalAlignment"));
-	}
-	
-	@Test
-	public void shouldRemoveLabelFromPersistenceIfStyleIsCleared() throws Exception {
-		handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(), null);
-		handlerUnderTest.applySelectedStyleToColumns(commandFixture, new int[]{0});
+    @Test
+    public void saveStateForMultipleLabels() throws Exception {
+        CellStyleFixture style1 = new CellStyleFixture(
+                HorizontalAlignmentEnum.LEFT);
+        CellStyleFixture style2 = new CellStyleFixture(
+                HorizontalAlignmentEnum.RIGHT);
 
-		Style selectedStyle = (Style) configRegistryFixture.getConfigAttribute(CELL_STYLE, NORMAL, handlerUnderTest.getConfigLabel(0));
+        handlerUnderTest.stylesToPersist.put("label1", style1);
+        handlerUnderTest.stylesToPersist.put("label2", style2);
 
-		DefaultNatTableStyleConfiguration defaultStyle = new DefaultNatTableStyleConfiguration();
-		assertEquals(defaultStyle.bgColor, selectedStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-		assertEquals(defaultStyle.fgColor, selectedStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+        PropertiesFixture propertiesFixture = new PropertiesFixture();
+        handlerUnderTest.saveState("prefix", propertiesFixture);
 
-		Properties properties = new Properties();
-		handlerUnderTest.saveState("prefix", properties);
-		
-		assertEquals(0, properties.size());
-	}
-	
-	@Test
-	public void loadStateForMultipleLabels() throws Exception {
-		PropertiesFixture propertiesFixture = new PropertiesFixture()
-			.addStyleProperties("prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_0")
-			.addStyleProperties("prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_1");
+        assertEquals(
+                HorizontalAlignmentEnum.LEFT.name(),
+                propertiesFixture
+                        .getProperty("prefix.userDefinedColumnStyle.label1.style.horizontalAlignment"));
+        assertEquals(
+                HorizontalAlignmentEnum.RIGHT.name(),
+                propertiesFixture
+                        .getProperty("prefix.userDefinedColumnStyle.label2.style.horizontalAlignment"));
+    }
 
-		handlerUnderTest.loadState("prefix", propertiesFixture);
-		
-		Style style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE_FOR_INDEX_0");
-		assertEquals(HorizontalAlignmentEnum.LEFT, style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT));
+    @Test
+    public void shouldRemoveLabelFromPersistenceIfStyleIsCleared()
+            throws Exception {
+        handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(), null);
+        handlerUnderTest.applySelectedStyleToColumns(commandFixture,
+                new int[] { 0 });
 
-		style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE_FOR_INDEX_1");
-		assertEquals(VerticalAlignmentEnum.TOP, style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
-		
-	}
-	
-	@Test
-	public void loadStateForMultipleMixedLabels() throws Exception {
-		PropertiesFixture propertiesFixture = new PropertiesFixture()
-			.addStyleProperties("prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_0")
-			.addStyleProperties("prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_1")
-			.addStyleProperties("prefix.userDefinedColumnStyle.USER_EDITED_STYLE");
+        Style selectedStyle = (Style) configRegistryFixture.getConfigAttribute(
+                CELL_STYLE, NORMAL, handlerUnderTest.getConfigLabel(0));
 
-		handlerUnderTest.loadState("prefix", propertiesFixture);
-		
-		Style style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE_FOR_INDEX_0");
-		assertEquals(HorizontalAlignmentEnum.LEFT, style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT));
+        DefaultNatTableStyleConfiguration defaultStyle = new DefaultNatTableStyleConfiguration();
+        assertEquals(
+                defaultStyle.bgColor,
+                selectedStyle
+                        .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        assertEquals(
+                defaultStyle.fgColor,
+                selectedStyle
+                        .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 
-		style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE_FOR_INDEX_1");
-		assertEquals(VerticalAlignmentEnum.TOP, style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
-		
-		style = (Style) configRegistryFixture.getConfigAttribute(CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL, "USER_EDITED_STYLE");
-		assertEquals(VerticalAlignmentEnum.TOP, style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
-	}
+        Properties properties = new Properties();
+        handlerUnderTest.saveState("prefix", properties);
+
+        assertEquals(0, properties.size());
+    }
+
+    @Test
+    public void loadStateForMultipleLabels() throws Exception {
+        PropertiesFixture propertiesFixture = new PropertiesFixture()
+                .addStyleProperties(
+                        "prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_0")
+                .addStyleProperties(
+                        "prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_1");
+
+        handlerUnderTest.loadState("prefix", propertiesFixture);
+
+        Style style = (Style) configRegistryFixture.getConfigAttribute(
+                CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                "USER_EDITED_STYLE_FOR_INDEX_0");
+        assertEquals(
+                HorizontalAlignmentEnum.LEFT,
+                style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT));
+
+        style = (Style) configRegistryFixture.getConfigAttribute(
+                CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                "USER_EDITED_STYLE_FOR_INDEX_1");
+        assertEquals(VerticalAlignmentEnum.TOP,
+                style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
+
+    }
+
+    @Test
+    public void loadStateForMultipleMixedLabels() throws Exception {
+        PropertiesFixture propertiesFixture = new PropertiesFixture()
+                .addStyleProperties(
+                        "prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_0")
+                .addStyleProperties(
+                        "prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_1")
+                .addStyleProperties(
+                        "prefix.userDefinedColumnStyle.USER_EDITED_STYLE");
+
+        handlerUnderTest.loadState("prefix", propertiesFixture);
+
+        Style style = (Style) configRegistryFixture.getConfigAttribute(
+                CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                "USER_EDITED_STYLE_FOR_INDEX_0");
+        assertEquals(
+                HorizontalAlignmentEnum.LEFT,
+                style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT));
+
+        style = (Style) configRegistryFixture.getConfigAttribute(
+                CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                "USER_EDITED_STYLE_FOR_INDEX_1");
+        assertEquals(VerticalAlignmentEnum.TOP,
+                style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
+
+        style = (Style) configRegistryFixture.getConfigAttribute(
+                CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+                "USER_EDITED_STYLE");
+        assertEquals(VerticalAlignmentEnum.TOP,
+                style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
+    }
 }

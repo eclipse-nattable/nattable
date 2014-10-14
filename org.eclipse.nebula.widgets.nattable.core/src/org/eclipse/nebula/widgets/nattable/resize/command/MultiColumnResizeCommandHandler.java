@@ -19,34 +19,36 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 
-public class MultiColumnResizeCommandHandler extends AbstractLayerCommandHandler<MultiColumnResizeCommand> {
+public class MultiColumnResizeCommandHandler extends
+        AbstractLayerCommandHandler<MultiColumnResizeCommand> {
 
-	private final DataLayer dataLayer;
+    private final DataLayer dataLayer;
 
-	public MultiColumnResizeCommandHandler(DataLayer dataLayer) {
-		this.dataLayer = dataLayer;
-	}
+    public MultiColumnResizeCommandHandler(DataLayer dataLayer) {
+        this.dataLayer = dataLayer;
+    }
 
-	@Override
-	public Class<MultiColumnResizeCommand> getCommandClass() {
-		return MultiColumnResizeCommand.class;
-	}
+    @Override
+    public Class<MultiColumnResizeCommand> getCommandClass() {
+        return MultiColumnResizeCommand.class;
+    }
 
-	@Override
-	protected boolean doCommand(MultiColumnResizeCommand command) {
-		List<Integer> columnPositions = new ArrayList<Integer>();
+    @Override
+    protected boolean doCommand(MultiColumnResizeCommand command) {
+        List<Integer> columnPositions = new ArrayList<Integer>();
 
-		for (int columnPosition : command.getColumnPositions()) {
-			columnPositions.add(columnPosition);
-			dataLayer.setColumnWidthByPosition(columnPosition, command.getColumnWidth(columnPosition), false);
-		}
+        for (int columnPosition : command.getColumnPositions()) {
+            columnPositions.add(columnPosition);
+            dataLayer.setColumnWidthByPosition(columnPosition,
+                    command.getColumnWidth(columnPosition), false);
+        }
 
-		List<Range> ranges = PositionUtil.getRanges(columnPositions);
-		for (Range range : ranges) {
-			dataLayer.fireLayerEvent(new ColumnResizeEvent(dataLayer, range));
-		}
+        List<Range> ranges = PositionUtil.getRanges(columnPositions);
+        for (Range range : ranges) {
+            dataLayer.fireLayerEvent(new ColumnResizeEvent(dataLayer, range));
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 }

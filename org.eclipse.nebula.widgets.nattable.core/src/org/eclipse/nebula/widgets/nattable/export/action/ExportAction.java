@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
@@ -18,8 +17,9 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class ExportAction implements IKeyAction {
 
-	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(), natTable.getShell()));
-	}
+    public void run(NatTable natTable, KeyEvent event) {
+        natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(),
+                natTable.getShell()));
+    }
 
 }

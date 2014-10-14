@@ -16,29 +16,30 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-
 public class ScrollEvent extends StructuralRefreshEvent {
 
-	public ScrollEvent(ViewportLayer viewportLayer) {
-		super(viewportLayer);
-	}
-	
-	protected ScrollEvent(ScrollEvent event) {
-		super(event);
-	}
-	
-	public ScrollEvent cloneEvent() {
-		return new ScrollEvent(this);
-	}
-	
-	public Collection<StructuralDiff> getColumnDiffs() {
-		// TODO this is bogus - should have a horiz/vert scroll event instead that are multi col/row structural changes
-		return null;
-	}
-	
-	public Collection<StructuralDiff> getRowDiffs() {
-		// TODO this is bogus - should have a horiz/vert scroll event instead that are multi col/row structural changes
-		return null;
-	}
-	
+    public ScrollEvent(ViewportLayer viewportLayer) {
+        super(viewportLayer);
+    }
+
+    protected ScrollEvent(ScrollEvent event) {
+        super(event);
+    }
+
+    public ScrollEvent cloneEvent() {
+        return new ScrollEvent(this);
+    }
+
+    public Collection<StructuralDiff> getColumnDiffs() {
+        // TODO this is bogus - should have a horiz/vert scroll event instead
+        // that are multi col/row structural changes
+        return null;
+    }
+
+    public Collection<StructuralDiff> getRowDiffs() {
+        // TODO this is bogus - should have a horiz/vert scroll event instead
+        // that are multi col/row structural changes
+        return null;
+    }
+
 }

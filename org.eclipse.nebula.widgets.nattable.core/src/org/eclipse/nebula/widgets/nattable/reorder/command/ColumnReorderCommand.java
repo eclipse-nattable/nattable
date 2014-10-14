@@ -16,56 +16,64 @@ import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ColumnReorderCommand implements ILayerCommand {
-	
-	private ColumnPositionCoordinate fromColumnPositionCoordinate;
-	private ColumnPositionCoordinate toColumnPositionCoordinate;
-	private boolean reorderToLeftEdge;
-	
-	public ColumnReorderCommand(ILayer layer, int fromColumnPosition, int toColumnPosition) {
-		fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer, fromColumnPosition);
-		
-		if (toColumnPosition < layer.getColumnCount()) {
- 			reorderToLeftEdge = true;
-		} else {
-			reorderToLeftEdge = false;
-			toColumnPosition--;
-		}
-		
-		toColumnPositionCoordinate = new ColumnPositionCoordinate(layer, toColumnPosition);
-	}
-	
-	protected ColumnReorderCommand(ColumnReorderCommand command) {
-		this.fromColumnPositionCoordinate = command.fromColumnPositionCoordinate;
-		this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
-		this.reorderToLeftEdge = command.reorderToLeftEdge;
-	}
-	
-	public int getFromColumnPosition() {
-		return fromColumnPositionCoordinate.getColumnPosition();
-	}
-	
-	public int getToColumnPosition() {
-		return toColumnPositionCoordinate.getColumnPosition();
-	}
-	
-	public boolean isReorderToLeftEdge() {
-		return reorderToLeftEdge;
-	}
-	
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(fromColumnPositionCoordinate, targetLayer);
-		ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
-		if (targetFromColumnPositionCoordinate != null && targetToColumnPositionCoordinate != null) {
-			fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
-			toColumnPositionCoordinate = targetToColumnPositionCoordinate;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public ColumnReorderCommand cloneCommand() {
-		return new ColumnReorderCommand(this);
-	}
-	
+
+    private ColumnPositionCoordinate fromColumnPositionCoordinate;
+    private ColumnPositionCoordinate toColumnPositionCoordinate;
+    private boolean reorderToLeftEdge;
+
+    public ColumnReorderCommand(ILayer layer, int fromColumnPosition,
+            int toColumnPosition) {
+        fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+                fromColumnPosition);
+
+        if (toColumnPosition < layer.getColumnCount()) {
+            reorderToLeftEdge = true;
+        } else {
+            reorderToLeftEdge = false;
+            toColumnPosition--;
+        }
+
+        toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+                toColumnPosition);
+    }
+
+    protected ColumnReorderCommand(ColumnReorderCommand command) {
+        this.fromColumnPositionCoordinate = command.fromColumnPositionCoordinate;
+        this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
+        this.reorderToLeftEdge = command.reorderToLeftEdge;
+    }
+
+    public int getFromColumnPosition() {
+        return fromColumnPositionCoordinate.getColumnPosition();
+    }
+
+    public int getToColumnPosition() {
+        return toColumnPositionCoordinate.getColumnPosition();
+    }
+
+    public boolean isReorderToLeftEdge() {
+        return reorderToLeftEdge;
+    }
+
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil
+                .convertColumnPositionToTargetContext(
+                        fromColumnPositionCoordinate, targetLayer);
+        ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil
+                .convertColumnPositionToTargetContext(
+                        toColumnPositionCoordinate, targetLayer);
+        if (targetFromColumnPositionCoordinate != null
+                && targetToColumnPositionCoordinate != null) {
+            fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
+            toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public ColumnReorderCommand cloneCommand() {
+        return new ColumnReorderCommand(this);
+    }
+
 }

@@ -15,21 +15,21 @@ import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultRowHeaderStyleConfiguration;
 
 /**
- * Setup for the row header area to support row resizing and hover styling. 
+ * Setup for the row header area to support row resizing and hover styling.
  */
 public class RowHeaderHoverLayerConfiguration extends AggregateConfiguration {
 
-	public RowHeaderHoverLayerConfiguration(HoverLayer layer) {
-		addRowHeaderStyleConfig();
-		addRowHeaderUIBindings(layer);
-	}
+    public RowHeaderHoverLayerConfiguration(HoverLayer layer) {
+        addRowHeaderStyleConfig();
+        addRowHeaderUIBindings(layer);
+    }
 
-	protected void addRowHeaderStyleConfig() {
-		addConfiguration(new DefaultRowHeaderStyleConfiguration());
-	}
+    protected void addRowHeaderStyleConfig() {
+        addConfiguration(new DefaultRowHeaderStyleConfiguration());
+    }
 
-	protected void addRowHeaderUIBindings(HoverLayer layer) {
-		addConfiguration(new RowHeaderResizeHoverBindings(layer));
-	}
+    protected void addRowHeaderUIBindings(HoverLayer layer) {
+        addConfiguration(new RowHeaderResizeHoverBindings(layer));
+    }
 
 }

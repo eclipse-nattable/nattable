@@ -20,35 +20,38 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * Command handler for handling {@link EditCellCommand}s.
- * Will first check if putting the cell into edit mode is allowed. If it is
- * allowed it will call the {@link EditController} for activation of the edit
- * mode.
+ * Command handler for handling {@link EditCellCommand}s. Will first check if
+ * putting the cell into edit mode is allowed. If it is allowed it will call the
+ * {@link EditController} for activation of the edit mode.
  */
-public class EditCellCommandHandler extends AbstractLayerCommandHandler<EditCellCommand> {
+public class EditCellCommandHandler extends
+        AbstractLayerCommandHandler<EditCellCommand> {
 
-	public Class<EditCellCommand> getCommandClass() {
-		return EditCellCommand.class;
-	}
-	
-	@Override
-	public boolean doCommand(EditCellCommand command) {
-		ILayerCell cell = command.getCell();
-		Composite parent = command.getParent();
-		IConfigRegistry configRegistry = command.getConfigRegistry();
-		
-		//check if the cell is editable
-		IEditableRule rule = configRegistry.getConfigAttribute(
-				EditConfigAttributes.CELL_EDITABLE_RULE, 
-				DisplayMode.EDIT, cell.getConfigLabels().getLabels());
-		
-		if (rule.isEditable(cell, configRegistry)) {
-			EditController.editCell(cell, parent, cell.getDataValue(), configRegistry);
-		}
+    public Class<EditCellCommand> getCommandClass() {
+        return EditCellCommand.class;
+    }
 
-		//as commands by default are intended to be consumed by the handler, always
-		//return true, whether the activation of the edit mode was successfull or not
-		return true;
-	}
+    @Override
+    public boolean doCommand(EditCellCommand command) {
+        ILayerCell cell = command.getCell();
+        Composite parent = command.getParent();
+        IConfigRegistry configRegistry = command.getConfigRegistry();
+
+        // check if the cell is editable
+        IEditableRule rule = configRegistry.getConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE, DisplayMode.EDIT, cell
+                        .getConfigLabels().getLabels());
+
+        if (rule.isEditable(cell, configRegistry)) {
+            EditController.editCell(cell, parent, cell.getDataValue(),
+                    configRegistry);
+        }
+
+        // as commands by default are intended to be consumed by the handler,
+        // always
+        // return true, whether the activation of the edit mode was successfull
+        // or not
+        return true;
+    }
 
 }

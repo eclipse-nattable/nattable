@@ -15,28 +15,27 @@ import java.util.Collection;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 
-
 /**
  * This is a vanilla RowHideShowLayer to be used for testing Events.
  */
 public class BaseRowHideShowLayerFixture extends RowHideShowLayer {
 
-	public BaseRowHideShowLayerFixture(IUniqueIndexLayer underlyingLayer) {
-		super(underlyingLayer);
-	}
-	
-	@Override
-	public void hideRowPositions(Collection<Integer> rowPositions) {
-		super.hideRowPositions(rowPositions);
-	}
-	
-	@Override
-	public void showRowIndexes(Collection<Integer> rowIndexes) {
-		super.showRowIndexes(rowIndexes);
-	}
+    public BaseRowHideShowLayerFixture(IUniqueIndexLayer underlyingLayer) {
+        super(underlyingLayer);
+    }
 
-	@Override
-	public void showAllRows() {
-		super.showAllRows();
-	}
+    @Override
+    public void hideRowPositions(Collection<Integer> rowPositions) {
+        super.hideRowPositions(rowPositions);
+    }
+
+    @Override
+    public void showRowIndexes(Collection<Integer> rowIndexes) {
+        super.showRowIndexes(rowIndexes);
+    }
+
+    @Override
+    public void showAllRows() {
+        super.showAllRows();
+    }
 }

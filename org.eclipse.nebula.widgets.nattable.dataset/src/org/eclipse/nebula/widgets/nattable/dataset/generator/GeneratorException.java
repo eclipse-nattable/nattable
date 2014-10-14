@@ -13,10 +13,10 @@ package org.eclipse.nebula.widgets.nattable.dataset.generator;
 import java.lang.reflect.InvocationTargetException;
 
 public class GeneratorException extends InvocationTargetException {
-	
-	private static final long serialVersionUID = 1L;
 
-	public GeneratorException(Exception sourceException) {
-		super(sourceException);
-	}
+    private static final long serialVersionUID = 1L;
+
+    public GeneratorException(Exception sourceException) {
+        super(sourceException);
+    }
 }

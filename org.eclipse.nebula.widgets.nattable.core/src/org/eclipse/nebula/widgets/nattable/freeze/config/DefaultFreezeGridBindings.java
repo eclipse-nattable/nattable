@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.freeze.action.FreezeGridAction;
 import org.eclipse.nebula.widgets.nattable.freeze.action.UnFreezeGridAction;
@@ -20,8 +19,10 @@ import org.eclipse.swt.SWT;
 
 public class DefaultFreezeGridBindings extends AbstractUiBindingConfiguration {
 
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL | SWT.SHIFT, 'f'), new FreezeGridAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL | SWT.SHIFT, 'u'), new UnFreezeGridAction());
-	}
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL
+                | SWT.SHIFT, 'f'), new FreezeGridAction());
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL
+                | SWT.SHIFT, 'u'), new UnFreezeGridAction());
+    }
 }

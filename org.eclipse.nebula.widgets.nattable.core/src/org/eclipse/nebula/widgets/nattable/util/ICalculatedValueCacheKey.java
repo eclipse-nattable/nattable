@@ -7,15 +7,15 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
 /**
  * Marker interface for specifying a key for the {@link CalculatedValueCache}.
- * Remember to implement <code>equals()</code> and <code>hashCode()</code> so 
- * it works correctly!
+ * Remember to implement <code>equals()</code> and <code>hashCode()</code> so it
+ * works correctly!
  * 
  * @author Dirk Fauth
  *
  */
-public interface ICalculatedValueCacheKey { }
+public interface ICalculatedValueCacheKey {}

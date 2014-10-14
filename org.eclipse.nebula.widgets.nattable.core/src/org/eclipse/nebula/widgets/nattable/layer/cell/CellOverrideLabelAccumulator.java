@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.layer.cell;
 import java.io.Serializable;
 import java.util.List;
 
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
@@ -27,69 +26,80 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
  * Note: First Map's key is displayMode, inner Map's key is fieldName, the inner Map's value is cellValue
  */
 public class CellOverrideLabelAccumulator<T> extends AbstractOverrider {
-	private IRowDataProvider<T> dataProvider;
+    private IRowDataProvider<T> dataProvider;
 
-	public CellOverrideLabelAccumulator(IRowDataProvider<T> dataProvider) {
-		this.dataProvider = dataProvider;
-	}
+    public CellOverrideLabelAccumulator(IRowDataProvider<T> dataProvider) {
+        this.dataProvider = dataProvider;
+    }
 
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-		List<String> cellLabels = getConfigLabels(dataProvider.getDataValue(columnPosition, rowPosition), columnPosition);
-		if (cellLabels == null) {
-			return;
-		}
-		for (String configLabel : cellLabels) {
-			configLabels.addLabel(configLabel);
-		}
-	}
+    public void accumulateConfigLabels(LabelStack configLabels,
+            int columnPosition, int rowPosition) {
+        List<String> cellLabels = getConfigLabels(
+                dataProvider.getDataValue(columnPosition, rowPosition),
+                columnPosition);
+        if (cellLabels == null) {
+            return;
+        }
+        for (String configLabel : cellLabels) {
+            configLabels.addLabel(configLabel);
+        }
+    }
 
-	protected List<String> getConfigLabels(Object value, int col) {
-		CellValueOverrideKey key = new CellValueOverrideKey(value, col);
-		return getOverrides(key);
-	}
+    protected List<String> getConfigLabels(Object value, int col) {
+        CellValueOverrideKey key = new CellValueOverrideKey(value, col);
+        return getOverrides(key);
+    }
 
-	/**
-	 * Register a config label on the cell
-	 * @param cellValue data value of the cell. This is the backing data value, not the display value.
-	 * @param col column index of the cell
-	 * @param configLabel to apply. Styles for the cell have to be registered against this label.
-	 */
-	public void registerOverride(Object cellValue, int col, String configLabel) {
-		registerOverrides(new CellValueOverrideKey(cellValue, col), configLabel);
-	}
+    /**
+     * Register a config label on the cell
+     * 
+     * @param cellValue
+     *            data value of the cell. This is the backing data value, not
+     *            the display value.
+     * @param col
+     *            column index of the cell
+     * @param configLabel
+     *            to apply. Styles for the cell have to be registered against
+     *            this label.
+     */
+    public void registerOverride(Object cellValue, int col, String configLabel) {
+        registerOverrides(new CellValueOverrideKey(cellValue, col), configLabel);
+    }
 }
 
 /**
  * Class used as a key for storing cell labels in an internal map.
  */
 class CellValueOverrideKey implements Serializable {
-	private static final long serialVersionUID = 1L;
-	Object cellValue;
-	int col;
+    private static final long serialVersionUID = 1L;
+    Object cellValue;
+    int col;
 
-	CellValueOverrideKey(Object cellValue, int col) {
-		this.cellValue = cellValue;
-		this.col = col;
-	}
+    CellValueOverrideKey(Object cellValue, int col) {
+        this.cellValue = cellValue;
+        this.col = col;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof CellValueOverrideKey == false) {
-			return false;
-		}
-		if (this == obj) {
-			return true;
-		}
-		CellValueOverrideKey rhs = ((CellValueOverrideKey) obj);
-		return new EqualsBuilder().append(cellValue, rhs.cellValue).append(col, rhs.col).isEquals();
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CellValueOverrideKey == false) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        CellValueOverrideKey rhs = ((CellValueOverrideKey) obj);
+        return new EqualsBuilder().append(cellValue, rhs.cellValue)
+                .append(col, rhs.col).isEquals();
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(1, 3).append(cellValue).append(col).toHashCode();
-	}
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(1, 3).append(cellValue).append(col)
+                .toHashCode();
+    }
 
-	public String getComposite() {
-		return cellValue + String.valueOf(col);
-	}
+    public String getComposite() {
+        return cellValue + String.valueOf(col);
+    }
 }

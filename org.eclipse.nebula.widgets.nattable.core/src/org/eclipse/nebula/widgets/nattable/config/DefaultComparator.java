@@ -15,31 +15,31 @@ import java.util.Comparator;
 @SuppressWarnings("unchecked")
 public class DefaultComparator implements Comparator<Object> {
 
-	private static DefaultComparator singleton;
+    private static DefaultComparator singleton;
 
-	public static final DefaultComparator getInstance() {
-		if (singleton == null) {
-			singleton = new DefaultComparator();
-		}
-		return singleton;
-	}
+    public static final DefaultComparator getInstance() {
+        if (singleton == null) {
+            singleton = new DefaultComparator();
+        }
+        return singleton;
+    }
 
-	@Override
-	@SuppressWarnings("rawtypes")
-	public int compare(final Object o1, final Object o2) {
-		if (o1 == null) {
-			if (o2 == null) {
-				return 0;
-			} else {
-				return -1;
-			}
-		} else if (o2 == null) {
-			return 1;
-		} else if (o1 instanceof Comparable && o2 instanceof Comparable) {
-			return ((Comparable) o1).compareTo(o2);
-		} else {
-			return o1.toString().compareTo(o2.toString());
-		}
-	}
+    @Override
+    @SuppressWarnings("rawtypes")
+    public int compare(final Object o1, final Object o2) {
+        if (o1 == null) {
+            if (o2 == null) {
+                return 0;
+            } else {
+                return -1;
+            }
+        } else if (o2 == null) {
+            return 1;
+        } else if (o1 instanceof Comparable && o2 instanceof Comparable) {
+            return ((Comparable) o1).compareTo(o2);
+        } else {
+            return o1.toString().compareTo(o2.toString());
+        }
+    }
 
 }

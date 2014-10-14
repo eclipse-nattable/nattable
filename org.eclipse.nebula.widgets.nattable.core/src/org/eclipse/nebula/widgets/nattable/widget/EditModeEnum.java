@@ -11,21 +11,20 @@
 package org.eclipse.nebula.widgets.nattable.widget;
 
 /**
- * Enumeration for edit mode. Only specifies two possible values for
- * editing inline or in a dialog. It is needed to be able to add specific
- * behaviour or rendering dependent on the edit mode, e.g. adding a border
- * to editor controls showed in a dialog or adding move after commit
- * to inline editors.
+ * Enumeration for edit mode. Only specifies two possible values for editing
+ * inline or in a dialog. It is needed to be able to add specific behaviour or
+ * rendering dependent on the edit mode, e.g. adding a border to editor controls
+ * showed in a dialog or adding move after commit to inline editors.
  */
 public enum EditModeEnum {
 
-	/**
-	 * Edit mode for editing cells inline
-	 */
-	INLINE,
-	/**
-	 * Edit mode for editing cells in a subdialog
-	 */
-	DIALOG
-	
+    /**
+     * Edit mode for editing cells inline
+     */
+    INLINE,
+    /**
+     * Edit mode for editing cells in a subdialog
+     */
+    DIALOG
+
 }

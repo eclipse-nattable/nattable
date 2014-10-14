@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.builder.configuration;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.extension.builder.model.TableModel;
@@ -24,50 +23,50 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Menu;
 
-public class RightClickColumnHeaderMenuConfiguration extends AbstractUiBindingConfiguration {
+public class RightClickColumnHeaderMenuConfiguration extends
+        AbstractUiBindingConfiguration {
 
-	private final Menu colHeaderMenu;
+    private final Menu colHeaderMenu;
 
-	public RightClickColumnHeaderMenuConfiguration(NatTable natTable, TableModel tableModel) {
+    public RightClickColumnHeaderMenuConfiguration(NatTable natTable,
+            TableModel tableModel) {
 
-		PopupMenuBuilder builder = new PopupMenuBuilder(natTable)
-			.withHideColumnMenuItem()
-			.withShowAllColumnsMenuItem()
-			.withAutoResizeSelectedColumnsMenuItem()
-			.withColumnStyleEditor()
-			.withColumnRenameDialog();
+        PopupMenuBuilder builder = new PopupMenuBuilder(natTable)
+                .withHideColumnMenuItem().withShowAllColumnsMenuItem()
+                .withAutoResizeSelectedColumnsMenuItem()
+                .withColumnStyleEditor().withColumnRenameDialog();
 
-		if(tableModel.enableColumnCategories){
-			builder.withSeparator();
-			builder.withCategoriesBasedColumnChooser("Select columns");
-		}
-		if(tableModel.enableColumnGroups){
-			builder.withSeparator();
-			builder.withColumnChooserMenuItem();
-		}
+        if (tableModel.enableColumnCategories) {
+            builder.withSeparator();
+            builder.withCategoriesBasedColumnChooser("Select columns");
+        }
+        if (tableModel.enableColumnGroups) {
+            builder.withSeparator();
+            builder.withColumnChooserMenuItem();
+        }
 
-		if(tableModel.enableFilterRow){
-			builder.withSeparator();
-			builder.withClearAllFilters();
-			builder.withToggleFilterRow();
-		}
+        if (tableModel.enableFilterRow) {
+            builder.withSeparator();
+            builder.withClearAllFilters();
+            builder.withToggleFilterRow();
+        }
 
-		colHeaderMenu = builder.build();
-		addDisposeListeners(natTable);
-	}
+        colHeaderMenu = builder.build();
+        addDisposeListeners(natTable);
+    }
 
-	private void addDisposeListeners(NatTable natTable) {
-		natTable.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				colHeaderMenu.dispose();
-			}
-		});
-	}
+    private void addDisposeListeners(NatTable natTable) {
+        natTable.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                colHeaderMenu.dispose();
+            }
+        });
+    }
 
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerMouseDownBinding(
-				new MouseEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, 3),
-				new PopupMenuAction(colHeaderMenu));
-	}
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerMouseDownBinding(new MouseEventMatcher(
+                SWT.NONE, GridRegion.COLUMN_HEADER, 3), new PopupMenuAction(
+                colHeaderMenu));
+    }
 
 }

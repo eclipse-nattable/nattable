@@ -22,111 +22,132 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEve
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 
-
 /**
  * Event indicating that one or multiple columns are moved to a new position.
  */
 public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
-	private Collection<Range> beforeFromColumnPositionRanges;
+    private Collection<Range> beforeFromColumnPositionRanges;
 
-	private int beforeToColumnPosition;
-	private boolean reorderToLeftEdge;
+    private int beforeToColumnPosition;
+    private boolean reorderToLeftEdge;
 
-	public ColumnReorderEvent(ILayer layer, int beforeFromColumnPosition, int beforeToColumnPosition, boolean reorderToLeftEdge) {
-		this(layer, Arrays.asList(new Integer[] { Integer.valueOf(beforeFromColumnPosition) }), beforeToColumnPosition, reorderToLeftEdge);
-	}
+    public ColumnReorderEvent(ILayer layer, int beforeFromColumnPosition,
+            int beforeToColumnPosition, boolean reorderToLeftEdge) {
+        this(layer, Arrays.asList(new Integer[] { Integer
+                .valueOf(beforeFromColumnPosition) }), beforeToColumnPosition,
+                reorderToLeftEdge);
+    }
 
-	public ColumnReorderEvent(ILayer layer, List<Integer> beforeFromColumnPositions, int beforeToColumnPosition, boolean reorderToLeftEdge) {
-		super(layer);
-		this.beforeFromColumnPositionRanges = PositionUtil.getRanges(beforeFromColumnPositions);
-		this.reorderToLeftEdge = reorderToLeftEdge;
-		this.beforeToColumnPosition = beforeToColumnPosition;
+    public ColumnReorderEvent(ILayer layer,
+            List<Integer> beforeFromColumnPositions,
+            int beforeToColumnPosition, boolean reorderToLeftEdge) {
+        super(layer);
+        this.beforeFromColumnPositionRanges = PositionUtil
+                .getRanges(beforeFromColumnPositions);
+        this.reorderToLeftEdge = reorderToLeftEdge;
+        this.beforeToColumnPosition = beforeToColumnPosition;
 
-		List<Integer> allColumnPositions = new ArrayList<Integer>(beforeFromColumnPositions);
-		allColumnPositions.add(Integer.valueOf(beforeToColumnPosition));
-		setColumnPositionRanges(PositionUtil.getRanges(allColumnPositions));
-	}
+        List<Integer> allColumnPositions = new ArrayList<Integer>(
+                beforeFromColumnPositions);
+        allColumnPositions.add(Integer.valueOf(beforeToColumnPosition));
+        setColumnPositionRanges(PositionUtil.getRanges(allColumnPositions));
+    }
 
-	/**
-	 * Constructor for internal use to clone this event.
-	 * @param event The event out of which the new one should be created
-	 */
-	public ColumnReorderEvent(ColumnReorderEvent event) {
-		super(event);
-		this.beforeFromColumnPositionRanges = event.beforeFromColumnPositionRanges;
-		this.beforeToColumnPosition = event.beforeToColumnPosition;
-		this.reorderToLeftEdge = event.reorderToLeftEdge;
-	}
+    /**
+     * Constructor for internal use to clone this event.
+     * 
+     * @param event
+     *            The event out of which the new one should be created
+     */
+    public ColumnReorderEvent(ColumnReorderEvent event) {
+        super(event);
+        this.beforeFromColumnPositionRanges = event.beforeFromColumnPositionRanges;
+        this.beforeToColumnPosition = event.beforeToColumnPosition;
+        this.reorderToLeftEdge = event.reorderToLeftEdge;
+    }
 
-	public Collection<Range> getBeforeFromColumnPositionRanges() {
-		return beforeFromColumnPositionRanges;
-	}
+    public Collection<Range> getBeforeFromColumnPositionRanges() {
+        return beforeFromColumnPositionRanges;
+    }
 
-	public int getBeforeToColumnPosition() {
-		return beforeToColumnPosition;
-	}
-	
-	public boolean isReorderToLeftEdge() {
-		return reorderToLeftEdge;
-	}
+    public int getBeforeToColumnPosition() {
+        return beforeToColumnPosition;
+    }
 
-	@Override
-	public Collection<StructuralDiff> getColumnDiffs() {
-		Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
+    public boolean isReorderToLeftEdge() {
+        return reorderToLeftEdge;
+    }
 
-		Collection<Range> beforeFromColumnPositionRanges = getBeforeFromColumnPositionRanges();
+    @Override
+    public Collection<StructuralDiff> getColumnDiffs() {
+        Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
 
-		final int beforeToColumnPosition = (this.reorderToLeftEdge) ?
-				this.beforeToColumnPosition : (this.beforeToColumnPosition + 1);
-		int afterAddColumnPosition = beforeToColumnPosition;
-		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
-			if (beforeFromColumnPositionRange.start < beforeToColumnPosition) {
-				afterAddColumnPosition -= Math.min(beforeFromColumnPositionRange.end, beforeToColumnPosition) - beforeFromColumnPositionRange.start;
-			} else {
-				break;
-			}
-		}
-		int cumulativeAddSize = 0;
-		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
-			cumulativeAddSize += beforeFromColumnPositionRange.size();
-		}
+        Collection<Range> beforeFromColumnPositionRanges = getBeforeFromColumnPositionRanges();
 
-		int offset = 0;
-		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
-			int afterDeleteColumnPosition = beforeFromColumnPositionRange.start - offset;
-			if (afterAddColumnPosition < afterDeleteColumnPosition) {
-				afterDeleteColumnPosition += cumulativeAddSize;
-			}
-			columnDiffs.add(new StructuralDiff(DiffTypeEnum.DELETE, beforeFromColumnPositionRange, new Range(afterDeleteColumnPosition, afterDeleteColumnPosition)));
-			offset += beforeFromColumnPositionRange.size();
-		}
-		Range beforeAddRange = new Range(beforeToColumnPosition, beforeToColumnPosition);
-		offset = 0;
-		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
-			int size = beforeFromColumnPositionRange.size();
-			columnDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, beforeAddRange, new Range(afterAddColumnPosition + offset, afterAddColumnPosition + offset + size)));
-			offset += size;
-		}
+        final int beforeToColumnPosition = (this.reorderToLeftEdge) ? this.beforeToColumnPosition
+                : (this.beforeToColumnPosition + 1);
+        int afterAddColumnPosition = beforeToColumnPosition;
+        for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
+            if (beforeFromColumnPositionRange.start < beforeToColumnPosition) {
+                afterAddColumnPosition -= Math.min(
+                        beforeFromColumnPositionRange.end,
+                        beforeToColumnPosition)
+                        - beforeFromColumnPositionRange.start;
+            } else {
+                break;
+            }
+        }
+        int cumulativeAddSize = 0;
+        for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
+            cumulativeAddSize += beforeFromColumnPositionRange.size();
+        }
 
-		return columnDiffs;
-	}
+        int offset = 0;
+        for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
+            int afterDeleteColumnPosition = beforeFromColumnPositionRange.start
+                    - offset;
+            if (afterAddColumnPosition < afterDeleteColumnPosition) {
+                afterDeleteColumnPosition += cumulativeAddSize;
+            }
+            columnDiffs.add(new StructuralDiff(DiffTypeEnum.DELETE,
+                    beforeFromColumnPositionRange, new Range(
+                            afterDeleteColumnPosition,
+                            afterDeleteColumnPosition)));
+            offset += beforeFromColumnPositionRange.size();
+        }
+        Range beforeAddRange = new Range(beforeToColumnPosition,
+                beforeToColumnPosition);
+        offset = 0;
+        for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
+            int size = beforeFromColumnPositionRange.size();
+            columnDiffs.add(new StructuralDiff(DiffTypeEnum.ADD,
+                    beforeAddRange, new Range(afterAddColumnPosition + offset,
+                            afterAddColumnPosition + offset + size)));
+            offset += size;
+        }
 
-	@Override
-	public boolean convertToLocal(ILayer targetLayer) {
-		beforeFromColumnPositionRanges = targetLayer.underlyingToLocalColumnPositions(getLayer(), beforeFromColumnPositionRanges);
-		beforeToColumnPosition = targetLayer.underlyingToLocalColumnPosition(getLayer(), beforeToColumnPosition);
+        return columnDiffs;
+    }
 
-		if (beforeToColumnPosition >= 0) {
-			return super.convertToLocal(targetLayer);
-		} else {
-			return false;
-		}
-	}
+    @Override
+    public boolean convertToLocal(ILayer targetLayer) {
+        beforeFromColumnPositionRanges = targetLayer
+                .underlyingToLocalColumnPositions(getLayer(),
+                        beforeFromColumnPositionRanges);
+        beforeToColumnPosition = targetLayer.underlyingToLocalColumnPosition(
+                getLayer(), beforeToColumnPosition);
 
-	@Override
-	public ColumnReorderEvent cloneEvent() {
-		return new ColumnReorderEvent(this);
-	}
+        if (beforeToColumnPosition >= 0) {
+            return super.convertToLocal(targetLayer);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public ColumnReorderEvent cloneEvent() {
+        return new ColumnReorderEvent(this);
+    }
 
 }

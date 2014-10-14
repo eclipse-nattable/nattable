@@ -23,17 +23,17 @@ import org.eclipse.nebula.widgets.nattable.resize.config.DefaultRowResizeBinding
  */
 public class DefaultRowHeaderLayerConfiguration extends AggregateConfiguration {
 
-	public DefaultRowHeaderLayerConfiguration() {
-		addRowHeaderStyleConfig();
-		addRowHeaderUIBindings();
-	}
+    public DefaultRowHeaderLayerConfiguration() {
+        addRowHeaderStyleConfig();
+        addRowHeaderUIBindings();
+    }
 
-	protected void addRowHeaderStyleConfig() {
-		addConfiguration(new DefaultRowHeaderStyleConfiguration());
-	}
+    protected void addRowHeaderStyleConfig() {
+        addConfiguration(new DefaultRowHeaderStyleConfiguration());
+    }
 
-	protected void addRowHeaderUIBindings() {
-		addConfiguration(new DefaultRowResizeBindings());
-	}
+    protected void addRowHeaderUIBindings() {
+        addConfiguration(new DefaultRowResizeBindings());
+    }
 
 }

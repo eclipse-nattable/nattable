@@ -25,94 +25,100 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 
-
 /**
- * Adds functionality allowing the reordering of the the Column groups. 
+ * Adds functionality allowing the reordering of the the Column groups.
  */
-public class ColumnGroupReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
+public class ColumnGroupReorderLayer extends AbstractLayerTransform implements
+        IUniqueIndexLayer {
 
-	private IUniqueIndexLayer underlyingLayer;
-	
-	private final ColumnGroupModel model;
+    private IUniqueIndexLayer underlyingLayer;
 
-	private int reorderFromColumnPosition;
-	
-	public ColumnGroupReorderLayer(IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
-		setUnderlyingLayer(underlyingLayer);
-		this.underlyingLayer = underlyingLayer;
-		this.model = model;
-		
-		registerCommandHandlers();
-	}
-	
-	public boolean reorderColumnGroup(int fromColumnPosition, int toColumnPosition) {
-		int fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition);
-		
-		List<Integer> fromColumnPositions = getColumnGroupPositions(fromColumnIndex);
-		return underlyingLayer.doCommand(new MultiColumnReorderCommand(this, fromColumnPositions, toColumnPosition));
-	}
-	
-	public ColumnGroupModel getModel() {
-		return model;
-	}
-	
-	@Override
-	public ILayer getUnderlyingLayer() {
-		return super.getUnderlyingLayer();
-	}
-	
-	// Configuration
-	
-	@Override
-	protected void registerCommandHandlers() {
-		registerCommandHandler(new ReorderColumnGroupCommandHandler(this));
-		registerCommandHandler(new ReorderColumnGroupStartCommandHandler(this));
-		registerCommandHandler(new ReorderColumnGroupEndCommandHandler(this));
-		registerCommandHandler(new ReorderColumnsAndGroupsCommandHandler(this));
-		registerCommandHandler(new GroupColumnReorderCommandHandler(this));
-		registerCommandHandler(new GroupMultiColumnReorderCommandHandler(this));
-	}
-	
-	// Horizontal features
-	
-	// Columns
-	
-	public int getColumnPositionByIndex(int columnIndex) {
-		return underlyingLayer.getColumnPositionByIndex(columnIndex);
-	}
-	
-	// Vertical features
-	
-	// Rows
-	
-	public int getRowPositionByIndex(int rowIndex) {
-		return underlyingLayer.getRowPositionByIndex(rowIndex);
-	}
-	
-	// Column Groups
-	
-	/**
-	 * @return the column positions for all the columns in this group
-	 */
-	public List<Integer> getColumnGroupPositions(int fromColumnIndex) {
-		List<Integer> fromColumnIndexes = model.getColumnGroupByIndex(fromColumnIndex).getMembers();
-		List<Integer> fromColumnPositions = new ArrayList<Integer>();
-		
-		for (Integer columnIndex : fromColumnIndexes) {
-			fromColumnPositions.add(
-					Integer.valueOf(underlyingLayer.getColumnPositionByIndex(columnIndex.intValue())));
-		}
-		//These positions are actually consecutive but the Column Group does not know about the order 
-		Collections.sort(fromColumnPositions);
-		return fromColumnPositions;
-	}
-	
-	public int getReorderFromColumnPosition() {
-		return reorderFromColumnPosition;
-	}
+    private final ColumnGroupModel model;
 
-	public void setReorderFromColumnPosition(int fromColumnPosition) {
-		this.reorderFromColumnPosition = fromColumnPosition;
-	}
-	
+    private int reorderFromColumnPosition;
+
+    public ColumnGroupReorderLayer(IUniqueIndexLayer underlyingLayer,
+            ColumnGroupModel model) {
+        setUnderlyingLayer(underlyingLayer);
+        this.underlyingLayer = underlyingLayer;
+        this.model = model;
+
+        registerCommandHandlers();
+    }
+
+    public boolean reorderColumnGroup(int fromColumnPosition,
+            int toColumnPosition) {
+        int fromColumnIndex = underlyingLayer
+                .getColumnIndexByPosition(fromColumnPosition);
+
+        List<Integer> fromColumnPositions = getColumnGroupPositions(fromColumnIndex);
+        return underlyingLayer.doCommand(new MultiColumnReorderCommand(this,
+                fromColumnPositions, toColumnPosition));
+    }
+
+    public ColumnGroupModel getModel() {
+        return model;
+    }
+
+    @Override
+    public ILayer getUnderlyingLayer() {
+        return super.getUnderlyingLayer();
+    }
+
+    // Configuration
+
+    @Override
+    protected void registerCommandHandlers() {
+        registerCommandHandler(new ReorderColumnGroupCommandHandler(this));
+        registerCommandHandler(new ReorderColumnGroupStartCommandHandler(this));
+        registerCommandHandler(new ReorderColumnGroupEndCommandHandler(this));
+        registerCommandHandler(new ReorderColumnsAndGroupsCommandHandler(this));
+        registerCommandHandler(new GroupColumnReorderCommandHandler(this));
+        registerCommandHandler(new GroupMultiColumnReorderCommandHandler(this));
+    }
+
+    // Horizontal features
+
+    // Columns
+
+    public int getColumnPositionByIndex(int columnIndex) {
+        return underlyingLayer.getColumnPositionByIndex(columnIndex);
+    }
+
+    // Vertical features
+
+    // Rows
+
+    public int getRowPositionByIndex(int rowIndex) {
+        return underlyingLayer.getRowPositionByIndex(rowIndex);
+    }
+
+    // Column Groups
+
+    /**
+     * @return the column positions for all the columns in this group
+     */
+    public List<Integer> getColumnGroupPositions(int fromColumnIndex) {
+        List<Integer> fromColumnIndexes = model.getColumnGroupByIndex(
+                fromColumnIndex).getMembers();
+        List<Integer> fromColumnPositions = new ArrayList<Integer>();
+
+        for (Integer columnIndex : fromColumnIndexes) {
+            fromColumnPositions.add(Integer.valueOf(underlyingLayer
+                    .getColumnPositionByIndex(columnIndex.intValue())));
+        }
+        // These positions are actually consecutive but the Column Group does
+        // not know about the order
+        Collections.sort(fromColumnPositions);
+        return fromColumnPositions;
+    }
+
+    public int getReorderFromColumnPosition() {
+        return reorderFromColumnPosition;
+    }
+
+    public void setReorderFromColumnPosition(int fromColumnPosition) {
+        this.reorderFromColumnPosition = fromColumnPosition;
+    }
+
 }

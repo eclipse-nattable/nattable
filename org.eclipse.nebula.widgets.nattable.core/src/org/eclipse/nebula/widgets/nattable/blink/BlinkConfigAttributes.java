@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.blink;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 
 public class BlinkConfigAttributes {
-	
-	public static final ConfigAttribute<IBlinkingCellResolver> BLINK_RESOLVER = new ConfigAttribute<IBlinkingCellResolver>();
+
+    public static final ConfigAttribute<IBlinkingCellResolver> BLINK_RESOLVER = new ConfigAttribute<IBlinkingCellResolver>();
 
 }

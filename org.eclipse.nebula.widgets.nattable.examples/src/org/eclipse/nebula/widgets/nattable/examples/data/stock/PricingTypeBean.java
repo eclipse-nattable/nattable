@@ -17,39 +17,41 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
  * Bean representing the pricing type. Used as the canonical data source for the
  * combo box - used to test the canonical to display conversion
  */
-public class PricingTypeBean implements Comparable<PricingTypeBean>{
-	public String type;
+public class PricingTypeBean implements Comparable<PricingTypeBean> {
+    public String type;
 
-	public PricingTypeBean(String type) {
-		this.type = type;
-	}
+    public PricingTypeBean(String type) {
+        this.type = type;
+    }
 
-	@Override
-	public String toString() {
-		return type;
-	}
+    @Override
+    public String toString() {
+        return type;
+    }
 
-	/**
-	 * Format: Items displayed in the Combo &lt;-&gt; Canonical value
-	 */
-	public static IDisplayConverter getDisplayConverter() {
-		return new DisplayConverter() {
-			public Object canonicalToDisplayValue(Object canonicalValue) {
-				if (canonicalValue == null) {
-					return null;
-				} else {
-					return canonicalValue.toString().equals("MN") ? "Manual" : "Automatic";
-				}
-			}
+    /**
+     * Format: Items displayed in the Combo &lt;-&gt; Canonical value
+     */
+    public static IDisplayConverter getDisplayConverter() {
+        return new DisplayConverter() {
+            public Object canonicalToDisplayValue(Object canonicalValue) {
+                if (canonicalValue == null) {
+                    return null;
+                } else {
+                    return canonicalValue.toString().equals("MN") ? "Manual"
+                            : "Automatic";
+                }
+            }
 
-			public Object displayToCanonicalValue(Object displayValue) {
-				return displayValue.toString().equals("Manual") ? new PricingTypeBean("MN") : new PricingTypeBean("AT");
-			}
-		};
-	}
+            public Object displayToCanonicalValue(Object displayValue) {
+                return displayValue.toString().equals("Manual") ? new PricingTypeBean(
+                        "MN") : new PricingTypeBean("AT");
+            }
+        };
+    }
 
-	public int compareTo(PricingTypeBean o) {
-		return this.toString().compareTo(o.toString());
-	}
+    public int compareTo(PricingTypeBean o) {
+        return this.toString().compareTo(o.toString());
+    }
 
 }

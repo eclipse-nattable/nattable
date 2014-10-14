@@ -16,21 +16,22 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 
 public class CellDisplayConversionUtils {
 
-    public static String convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
-    	Object canonicalValue = cell.getDataValue();
-    	Object displayValue;
+    public static String convertDataType(ILayerCell cell,
+            IConfigRegistry configRegistry) {
+        Object canonicalValue = cell.getDataValue();
+        Object displayValue;
 
         IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
-                CellConfigAttributes.DISPLAY_CONVERTER,
-                cell.getDisplayMode(),
+                CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(),
                 cell.getConfigLabels().getLabels());
 
         if (displayConverter != null) {
-        	displayValue = displayConverter.canonicalToDisplayValue(cell, configRegistry, canonicalValue);
+            displayValue = displayConverter.canonicalToDisplayValue(cell,
+                    configRegistry, canonicalValue);
         } else {
-        	displayValue = canonicalValue;
+            displayValue = canonicalValue;
         }
-        
+
         return (displayValue == null) ? "" : String.valueOf(displayValue); //$NON-NLS-1$
     }
 }

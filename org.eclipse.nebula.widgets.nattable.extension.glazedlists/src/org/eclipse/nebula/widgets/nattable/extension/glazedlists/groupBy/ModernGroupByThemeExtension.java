@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
@@ -22,20 +22,22 @@ import org.eclipse.swt.graphics.FontData;
  */
 public class ModernGroupByThemeExtension extends DefaultGroupByThemeExtension {
 
-	{
-		FontData groupByFontData = GUIHelper.DEFAULT_FONT.getFontData()[0];
-		groupByFontData.setStyle(SWT.BOLD);
+    {
+        FontData groupByFontData = GUIHelper.DEFAULT_FONT.getFontData()[0];
+        groupByFontData.setStyle(SWT.BOLD);
 
-		this.groupByObjectFont = GUIHelper.getFont(groupByFontData);
-		this.groupByObjectCellPainter = new BackgroundPainter(new PaddingDecorator(new GroupByCellTextPainter(), 0, 5, 0, 5));
+        this.groupByObjectFont = GUIHelper.getFont(groupByFontData);
+        this.groupByObjectCellPainter = new BackgroundPainter(
+                new PaddingDecorator(new GroupByCellTextPainter(), 0, 5, 0, 5));
 
-		this.groupByObjectSelectionFont = GUIHelper.getFont(groupByFontData);
-		this.groupByObjectSelectionCellPainter = new BackgroundPainter(new PaddingDecorator(new GroupByCellTextPainter(), 0, 5, 0, 5));
-		
-		this.groupByHint = "Drag columns here to group by column values"; //$NON-NLS-1$
-		
-		FontData groupByHintFontData = GUIHelper.DEFAULT_FONT.getFontData()[0];
-		groupByHintFontData.setStyle(SWT.ITALIC);
-		this.groupByHintFont = GUIHelper.getFont(groupByHintFontData);
-	}
+        this.groupByObjectSelectionFont = GUIHelper.getFont(groupByFontData);
+        this.groupByObjectSelectionCellPainter = new BackgroundPainter(
+                new PaddingDecorator(new GroupByCellTextPainter(), 0, 5, 0, 5));
+
+        this.groupByHint = "Drag columns here to group by column values"; //$NON-NLS-1$
+
+        FontData groupByHintFontData = GUIHelper.DEFAULT_FONT.getFontData()[0];
+        groupByHintFontData.setStyle(SWT.ITALIC);
+        this.groupByHintFont = GUIHelper.getFont(groupByHintFontData);
+    }
 }

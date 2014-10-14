@@ -12,6 +12,6 @@ package org.eclipse.nebula.widgets.nattable.tree;
 
 public interface ITreeRowModelListener {
 
-	public void treeRowModelChanged();
-	
+    public void treeRowModelChanged();
+
 }

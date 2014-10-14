@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.columnCategories.gui;
 
 import java.util.List;
 
-
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node;
@@ -22,31 +21,32 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 public class ColumnCategoriesLabelProvider extends LabelProvider {
 
-	List<ColumnEntry> hiddenEntries;
-	
-	public ColumnCategoriesLabelProvider(List<ColumnEntry> hiddenEntries) {
-		this.hiddenEntries = hiddenEntries;
-	}
+    List<ColumnEntry> hiddenEntries;
 
-	@Override
-	public String getText(Object element) {
-		Node node = (Node) element;
-		switch (node.getType()) {
-		case CATEGORY:
-			return node.getData();
-		case COLUMN:
-			int index = Integer.parseInt(node.getData());
-			ColumnEntry columnEntry = ColumnChooserUtils.find(hiddenEntries, index);
-			if(ObjectUtils.isNull(columnEntry)){
-				System.err.println(
-						"Column index " + index + " is present " + //$NON-NLS-1$ //$NON-NLS-2$
-						"in the Column Categories model, " + //$NON-NLS-1$
-						"but not in the underlying data"); //$NON-NLS-1$
-				return String.valueOf(index);
-			}
-			return columnEntry.getLabel();
-		default:
-			return Messages.getString("Unknown"); //$NON-NLS-1$
-		}
-	}
+    public ColumnCategoriesLabelProvider(List<ColumnEntry> hiddenEntries) {
+        this.hiddenEntries = hiddenEntries;
+    }
+
+    @Override
+    public String getText(Object element) {
+        Node node = (Node) element;
+        switch (node.getType()) {
+            case CATEGORY:
+                return node.getData();
+            case COLUMN:
+                int index = Integer.parseInt(node.getData());
+                ColumnEntry columnEntry = ColumnChooserUtils.find(
+                        hiddenEntries, index);
+                if (ObjectUtils.isNull(columnEntry)) {
+                    System.err
+                            .println("Column index " + index + " is present " + //$NON-NLS-1$ //$NON-NLS-2$
+                                    "in the Column Categories model, " + //$NON-NLS-1$
+                                    "but not in the underlying data"); //$NON-NLS-1$
+                    return String.valueOf(index);
+                }
+                return columnEntry.getLabel();
+            default:
+                return Messages.getString("Unknown"); //$NON-NLS-1$
+        }
+    }
 }

@@ -42,93 +42,106 @@ import org.eclipse.swt.widgets.Control;
 
 public class _001_Two_level_column_groups extends AbstractNatExample {
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(800, 400, new _001_Two_level_column_groups());
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(800, 400,
+                new _001_Two_level_column_groups());
+    }
 
-	private final ColumnGroupModel columnGroupModel = new ColumnGroupModel();
-	private final ColumnGroupModel sndColumnGroupModel = new ColumnGroupModel();
-	
-	private ColumnHeaderLayer columnHeaderLayer;
+    private final ColumnGroupModel columnGroupModel = new ColumnGroupModel();
+    private final ColumnGroupModel sndColumnGroupModel = new ColumnGroupModel();
 
-	@Override
-	public Control createExampleControl(Composite parent) {
-		// Body
+    private ColumnHeaderLayer columnHeaderLayer;
 
-		String[] propertyNames = RowDataListFixture.getPropertyNames();
-		Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
-		DefaultBodyDataProvider<RowDataFixture> bodyDataProvider = new DefaultBodyDataProvider<RowDataFixture>(RowDataListFixture.getList(2000),
-				propertyNames);
-		ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(new DataLayer(bodyDataProvider), sndColumnGroupModel, columnGroupModel);
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // Body
 
-		// Column header
+        String[] propertyNames = RowDataListFixture.getPropertyNames();
+        Map<String, String> propertyToLabelMap = RowDataListFixture
+                .getPropertyToLabelMap();
+        DefaultBodyDataProvider<RowDataFixture> bodyDataProvider = new DefaultBodyDataProvider<RowDataFixture>(
+                RowDataListFixture.getList(2000), propertyNames);
+        ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(
+                new DataLayer(bodyDataProvider), sndColumnGroupModel,
+                columnGroupModel);
 
-		DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DefaultColumnHeaderDataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(defaultColumnHeaderDataProvider);
-		columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
-		ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(columnHeaderLayer, bodyLayer.getSelectionLayer(), columnGroupModel);
+        // Column header
 
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 1", 1,2);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 2", 4, 5,6,7);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 3", 8,9,10);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 4", 11,12,13);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 5", 14, 15, 16, 17);
-		columnGroupHeaderLayer.setGroupUnbreakable(4);
-		columnGroupHeaderLayer.setGroupUnbreakable(8);
-		columnGroupHeaderLayer.setGroupAsCollapsed(11);
-		
-		ColumnGroupGroupHeaderLayer sndGroup = new ColumnGroupGroupHeaderLayer(columnGroupHeaderLayer, bodyLayer.getSelectionLayer(), sndColumnGroupModel);
-		
-		sndGroup.addColumnsIndexesToGroup("GroupGroup 1", 1,2,3,4,5,6,7);
-		sndGroup.addColumnsIndexesToGroup("GroupGroup 2", 11,12,13,14,15,16,17);
+        DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DefaultColumnHeaderDataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                defaultColumnHeaderDataProvider);
+        columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
+        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                columnHeaderLayer, bodyLayer.getSelectionLayer(),
+                columnGroupModel);
 
-		sndGroup.setStaticColumnIndexesByGroup("GroupGroup 1", 1, 2);
-		
-		// Row header
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 1", 1, 2);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 2",
+                4, 5, 6, 7);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 3",
+                8, 9, 10);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 4", 11, 12, 13);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 5", 14, 15, 16,
+                17);
+        columnGroupHeaderLayer.setGroupUnbreakable(4);
+        columnGroupHeaderLayer.setGroupUnbreakable(8);
+        columnGroupHeaderLayer.setGroupAsCollapsed(11);
 
-		final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        ColumnGroupGroupHeaderLayer sndGroup = new ColumnGroupGroupHeaderLayer(
+                columnGroupHeaderLayer, bodyLayer.getSelectionLayer(),
+                sndColumnGroupModel);
 
-		// Corner
+        sndGroup.addColumnsIndexesToGroup("GroupGroup 1", 1, 2, 3, 4, 5, 6, 7);
+        sndGroup.addColumnsIndexesToGroup("GroupGroup 2", 11, 12, 13, 14, 15,
+                16, 17);
 
-		final DefaultCornerDataProvider cornerDataProvider =
-			new DefaultCornerDataProvider(defaultColumnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, sndGroup);
+        sndGroup.setStaticColumnIndexesByGroup("GroupGroup 1", 1, 2);
 
-		// Grid
-		GridLayer gridLayer = new GridLayer(
-				bodyLayer,
-				sndGroup,
-				rowHeaderLayer,
-				cornerLayer);
+        // Row header
 
+        final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
 
-		NatTable natTable = new NatTable(parent, gridLayer, false);
+        // Corner
 
-		// Register create column group command handler
+        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                defaultColumnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                sndGroup);
 
-		// Register column chooser
-		DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-				bodyLayer.getSelectionLayer(),
-				bodyLayer.getColumnHideShowLayer(),
-				columnHeaderLayer,
-				columnHeaderDataLayer,
-				columnGroupHeaderLayer,
-				columnGroupModel);
-		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
+        // Grid
+        GridLayer gridLayer = new GridLayer(bodyLayer, sndGroup,
+                rowHeaderLayer, cornerLayer);
 
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-			@Override
-			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-				return super.createColumnHeaderMenu(natTable).withColumnChooserMenuItem();
-			}
-		});
+        NatTable natTable = new NatTable(parent, gridLayer, false);
 
-		natTable.configure();
-		return natTable;
-	}
+        // Register create column group command handler
+
+        // Register column chooser
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
+                bodyLayer.getSelectionLayer(),
+                bodyLayer.getColumnHideShowLayer(), columnHeaderLayer,
+                columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel);
+        bodyLayer.registerCommandHandler(columnChooserCommandHandler);
+
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return super.createColumnHeaderMenu(natTable)
+                        .withColumnChooserMenuItem();
+            }
+        });
+
+        natTable.configure();
+        return natTable;
+    }
 
 }

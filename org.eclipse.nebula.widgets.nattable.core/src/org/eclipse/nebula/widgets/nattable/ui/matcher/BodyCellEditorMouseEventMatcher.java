@@ -25,57 +25,63 @@ import org.eclipse.swt.events.MouseEvent;
 @Deprecated
 public class BodyCellEditorMouseEventMatcher implements IMouseEventMatcher {
 
-	private Class<?> cellEditorClass;
-	private final int button;
-	
-	public BodyCellEditorMouseEventMatcher(Class<?> cellEditorClass) {
-		this(cellEditorClass, MouseEventMatcher.LEFT_BUTTON);
-	}
-	
-	public BodyCellEditorMouseEventMatcher(Class<?> cellEditorClass, int button) {
-		this.cellEditorClass = cellEditorClass;
-		this.button = button;
-	}
-	
-	@Override
-	public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
-		if (regionLabels != null && regionLabels.hasLabel(GridRegion.BODY) && event.button == button) {
-			ILayerCell cell = natTable.getCellByPosition(natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
-			
-			//Bug 407598: only perform a check if the click in the body region was performed on a cell
-			//cell == null can happen if the viewport is quite large and contains not enough cells to fill it.
-			if (cell != null) {
-				ICellEditor cellEditor = natTable.getConfigRegistry().getConfigAttribute(EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, cell.getConfigLabels().getLabels());
-				if (cellEditorClass.isInstance(cellEditor)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	@Override
+    private Class<?> cellEditorClass;
+    private final int button;
+
+    public BodyCellEditorMouseEventMatcher(Class<?> cellEditorClass) {
+        this(cellEditorClass, MouseEventMatcher.LEFT_BUTTON);
+    }
+
+    public BodyCellEditorMouseEventMatcher(Class<?> cellEditorClass, int button) {
+        this.cellEditorClass = cellEditorClass;
+        this.button = button;
+    }
+
+    @Override
+    public boolean matches(NatTable natTable, MouseEvent event,
+            LabelStack regionLabels) {
+        if (regionLabels != null && regionLabels.hasLabel(GridRegion.BODY)
+                && event.button == button) {
+            ILayerCell cell = natTable.getCellByPosition(
+                    natTable.getColumnPositionByX(event.x),
+                    natTable.getRowPositionByY(event.y));
+
+            // Bug 407598: only perform a check if the click in the body region
+            // was performed on a cell
+            // cell == null can happen if the viewport is quite large and
+            // contains not enough cells to fill it.
+            if (cell != null) {
+                ICellEditor cellEditor = natTable.getConfigRegistry()
+                        .getConfigAttribute(EditConfigAttributes.CELL_EDITOR,
+                                DisplayMode.EDIT,
+                                cell.getConfigLabels().getLabels());
+                if (cellEditorClass.isInstance(cellEditor)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean equals(Object obj) {
-		if (obj instanceof BodyCellEditorMouseEventMatcher == false) {
-			return false;
-		}
-		
-		if (this == obj) {
-			return true;
-		}
-		
-		BodyCellEditorMouseEventMatcher rhs = (BodyCellEditorMouseEventMatcher) obj;
-		
-		return new EqualsBuilder()
-			.append(cellEditorClass, rhs.cellEditorClass)
-			.isEquals();
-	}
-	
-	@Override
+        if (obj instanceof BodyCellEditorMouseEventMatcher == false) {
+            return false;
+        }
+
+        if (this == obj) {
+            return true;
+        }
+
+        BodyCellEditorMouseEventMatcher rhs = (BodyCellEditorMouseEventMatcher) obj;
+
+        return new EqualsBuilder().append(cellEditorClass, rhs.cellEditorClass)
+                .isEquals();
+    }
+
+    @Override
     public int hashCode() {
-		return new HashCodeBuilder(43, 21)
-			.append(cellEditorClass)
-			.toHashCode();
-	}
+        return new HashCodeBuilder(43, 21).append(cellEditorClass).toHashCode();
+    }
 
 }

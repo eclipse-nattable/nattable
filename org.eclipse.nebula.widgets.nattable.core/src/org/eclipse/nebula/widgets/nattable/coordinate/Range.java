@@ -19,73 +19,73 @@ import java.util.Set;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
- * Represents an Range of numbers.
- * Example a Range of selected rows: 1 - 100
- * Ranges are inclusive of their start value and not inclusive of their end value, i.e. start &lt;= x &lt; end
+ * Represents an Range of numbers. Example a Range of selected rows: 1 - 100
+ * Ranges are inclusive of their start value and not inclusive of their end
+ * value, i.e. start &lt;= x &lt; end
  */
 public class Range {
 
-	public int start = 0;
-	public int end = 0;
+    public int start = 0;
+    public int end = 0;
 
-	public Range(int start, int end) {
-		this.start = start;
-		this.end = end;
-	}
+    public Range(int start, int end) {
+        this.start = start;
+        this.end = end;
+    }
 
-	public int size() {
-		return end - start;
-	}
-	
-	/**
-	 * @return TRUE if the range contains the given row position
-	 */
-	public boolean contains(int position) {
-		return position >= start && position < end;
-	}
+    public int size() {
+        return end - start;
+    }
 
-	public boolean overlap(Range range) {
-		return
-				(start < end) &&  // this is a non-empty range
-				(range.start < range.end) &&  // range parameter is non-empty
-				(this.contains(range.start) || this.contains(range.end - 1) || range.contains(start) || range.contains(end - 1));
-	}
+    /**
+     * @return TRUE if the range contains the given row position
+     */
+    public boolean contains(int position) {
+        return position >= start && position < end;
+    }
 
-	public Set<Integer> getMembers() {
-		Set<Integer> members = new HashSet<Integer>();
-		for (int i = start; i < end; i++) {
-			members.add(Integer.valueOf(i));
-		}
-		return members;
-	}
+    public boolean overlap(Range range) {
+        return (start < end) && // this is a non-empty range
+                (range.start < range.end) && // range parameter is non-empty
+                (this.contains(range.start) || this.contains(range.end - 1)
+                        || range.contains(start) || range.contains(end - 1));
+    }
 
-	@Override
-	public String toString() {
-		return "Range[" + start + "," + end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	}
+    public Set<Integer> getMembers() {
+        Set<Integer> members = new HashSet<Integer>();
+        for (int i = start; i < end; i++) {
+            members.add(Integer.valueOf(i));
+        }
+        return members;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Range)) {
-			return false;
-		}
+    @Override
+    public String toString() {
+        return "Range[" + start + "," + end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
 
-		Range range2 = (Range) obj;
-		return (start == range2.start) && (end == range2.end);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Range)) {
+            return false;
+        }
 
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
-	}
+        Range range2 = (Range) obj;
+        return (start == range2.start) && (end == range2.end);
+    }
 
-	public static void sortByStart(List<Range> ranges) {
-		Collections.sort(ranges, new Comparator<Range>() {
-			public int compare(Range range1, Range range2) {
-				return Integer.valueOf(range1.start).compareTo(
-						Integer.valueOf(range2.start));
-			}
-		});
-	}
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    public static void sortByStart(List<Range> ranges) {
+        Collections.sort(ranges, new Comparator<Range>() {
+            public int compare(Range range1, Range range2) {
+                return Integer.valueOf(range1.start).compareTo(
+                        Integer.valueOf(range2.start));
+            }
+        });
+    }
 
 }

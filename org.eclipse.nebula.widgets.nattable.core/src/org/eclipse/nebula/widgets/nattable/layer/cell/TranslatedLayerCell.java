@@ -17,44 +17,46 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  */
 public class TranslatedLayerCell extends TransformedLayerCell {
 
-	private ILayer layer;
-	private int originColumnPosition;
-	private int originRowPosition;
-	private int columnPosition;
-	private int rowPosition;
+    private ILayer layer;
+    private int originColumnPosition;
+    private int originRowPosition;
+    private int columnPosition;
+    private int rowPosition;
 
-	public TranslatedLayerCell(ILayerCell cell, ILayer layer, int originColumnPosition, int originRowPosition, int columnPosition, int rowPosition) {
-		super(cell);
-		this.layer = layer;
-		this.originColumnPosition = originColumnPosition;
-		this.originRowPosition = originRowPosition;
-		this.columnPosition = columnPosition;
-		this.rowPosition = rowPosition;
-	}
-	
-	@Override
-	public ILayer getLayer() {
-		return layer;
-	}
-	
-	@Override
-	public int getOriginColumnPosition() {
-		return originColumnPosition;
-	}
-	
-	@Override
-	public int getOriginRowPosition() {
-		return originRowPosition;
-	}
-	
-	@Override
-	public int getColumnPosition() {
-		return columnPosition;
-	}
-	
-	@Override
-	public int getRowPosition() {
-		return rowPosition;
-	}
-	
+    public TranslatedLayerCell(ILayerCell cell, ILayer layer,
+            int originColumnPosition, int originRowPosition,
+            int columnPosition, int rowPosition) {
+        super(cell);
+        this.layer = layer;
+        this.originColumnPosition = originColumnPosition;
+        this.originRowPosition = originRowPosition;
+        this.columnPosition = columnPosition;
+        this.rowPosition = rowPosition;
+    }
+
+    @Override
+    public ILayer getLayer() {
+        return layer;
+    }
+
+    @Override
+    public int getOriginColumnPosition() {
+        return originColumnPosition;
+    }
+
+    @Override
+    public int getOriginRowPosition() {
+        return originRowPosition;
+    }
+
+    @Override
+    public int getColumnPosition() {
+        return columnPosition;
+    }
+
+    @Override
+    public int getRowPosition() {
+        return rowPosition;
+    }
+
 }

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.resize.action.AutoResizeRowAction;
 import org.eclipse.nebula.widgets.nattable.resize.action.RowResizeCursorAction;
@@ -24,16 +23,22 @@ import org.eclipse.swt.SWT;
 
 public class DefaultRowResizeBindings extends AbstractUiBindingConfiguration {
 
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		// Mouse move - Show resize cursor
-		uiBindingRegistry.registerFirstMouseMoveBinding(new RowResizeEventMatcher(SWT.NONE, 0), new RowResizeCursorAction());
-		uiBindingRegistry.registerMouseMoveBinding(new MouseEventMatcher(), new ClearCursorAction());
-		
-		// Row resize
-		uiBindingRegistry.registerFirstMouseDragMode(new RowResizeEventMatcher(SWT.NONE, 1), new RowResizeDragMode());
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        // Mouse move - Show resize cursor
+        uiBindingRegistry.registerFirstMouseMoveBinding(
+                new RowResizeEventMatcher(SWT.NONE, 0),
+                new RowResizeCursorAction());
+        uiBindingRegistry.registerMouseMoveBinding(new MouseEventMatcher(),
+                new ClearCursorAction());
 
-		uiBindingRegistry.registerDoubleClickBinding(new RowResizeEventMatcher(SWT.NONE, 1), new AutoResizeRowAction());
-		uiBindingRegistry.registerSingleClickBinding(new RowResizeEventMatcher(SWT.NONE, 1), new NoOpMouseAction());
-	}
-	
+        // Row resize
+        uiBindingRegistry.registerFirstMouseDragMode(new RowResizeEventMatcher(
+                SWT.NONE, 1), new RowResizeDragMode());
+
+        uiBindingRegistry.registerDoubleClickBinding(new RowResizeEventMatcher(
+                SWT.NONE, 1), new AutoResizeRowAction());
+        uiBindingRegistry.registerSingleClickBinding(new RowResizeEventMatcher(
+                SWT.NONE, 1), new NoOpMouseAction());
+    }
+
 }

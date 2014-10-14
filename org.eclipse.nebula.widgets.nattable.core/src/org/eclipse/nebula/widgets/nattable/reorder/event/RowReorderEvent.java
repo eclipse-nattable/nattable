@@ -27,122 +27,136 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
  */
 public class RowReorderEvent extends RowStructuralChangeEvent {
 
-	private Collection<Range> beforeFromRowPositionRanges;
+    private Collection<Range> beforeFromRowPositionRanges;
 
-	private int beforeToRowPosition;
-	private boolean reorderToTopEdge;
+    private int beforeToRowPosition;
+    private boolean reorderToTopEdge;
 
-	/**
-	 * @param layer
-	 * @param beforeFromRowPosition
-	 * @param beforeToRowPosition
-	 * @param reorderToTopEdge
-	 */
-	public RowReorderEvent(ILayer layer, 
-			int beforeFromRowPosition, int beforeToRowPosition, 
-			boolean reorderToTopEdge) {
-		
-		this(layer, Arrays.asList(
-				new Integer[] { Integer.valueOf(beforeFromRowPosition) }), beforeToRowPosition, reorderToTopEdge);
-	}
+    /**
+     * @param layer
+     * @param beforeFromRowPosition
+     * @param beforeToRowPosition
+     * @param reorderToTopEdge
+     */
+    public RowReorderEvent(ILayer layer, int beforeFromRowPosition,
+            int beforeToRowPosition, boolean reorderToTopEdge) {
 
-	/**
-	 * @param layer
-	 * @param beforeFromRowPositions
-	 * @param beforeToRowPosition
-	 * @param reorderToTopEdge
-	 */
-	public RowReorderEvent(ILayer layer, List<Integer> beforeFromRowPositions, 
-			int beforeToRowPosition, boolean reorderToTopEdge) {
-		super(layer);
-		this.beforeFromRowPositionRanges = PositionUtil.getRanges(beforeFromRowPositions);
-		this.reorderToTopEdge = reorderToTopEdge;
-		this.beforeToRowPosition = beforeToRowPosition;
+        this(layer, Arrays.asList(new Integer[] { Integer
+                .valueOf(beforeFromRowPosition) }), beforeToRowPosition,
+                reorderToTopEdge);
+    }
 
-		List<Integer> allRowPositions = new ArrayList<Integer>(beforeFromRowPositions);
-		allRowPositions.add(Integer.valueOf(beforeToRowPosition));
-		setRowPositionRanges(PositionUtil.getRanges(allRowPositions));
-	}
+    /**
+     * @param layer
+     * @param beforeFromRowPositions
+     * @param beforeToRowPosition
+     * @param reorderToTopEdge
+     */
+    public RowReorderEvent(ILayer layer, List<Integer> beforeFromRowPositions,
+            int beforeToRowPosition, boolean reorderToTopEdge) {
+        super(layer);
+        this.beforeFromRowPositionRanges = PositionUtil
+                .getRanges(beforeFromRowPositions);
+        this.reorderToTopEdge = reorderToTopEdge;
+        this.beforeToRowPosition = beforeToRowPosition;
 
-	/**
-	 * Constructor for internal use to clone this event.
-	 * @param event The event out of which the new one should be created
-	 */
-	public RowReorderEvent(RowReorderEvent event) {
-		super(event);
-		this.beforeFromRowPositionRanges = event.beforeFromRowPositionRanges;
-		this.beforeToRowPosition = event.beforeToRowPosition;
-		this.reorderToTopEdge = event.reorderToTopEdge;
-	}
+        List<Integer> allRowPositions = new ArrayList<Integer>(
+                beforeFromRowPositions);
+        allRowPositions.add(Integer.valueOf(beforeToRowPosition));
+        setRowPositionRanges(PositionUtil.getRanges(allRowPositions));
+    }
 
-	public Collection<Range> getBeforeFromRowPositionRanges() {
-		return this.beforeFromRowPositionRanges;
-	}
+    /**
+     * Constructor for internal use to clone this event.
+     * 
+     * @param event
+     *            The event out of which the new one should be created
+     */
+    public RowReorderEvent(RowReorderEvent event) {
+        super(event);
+        this.beforeFromRowPositionRanges = event.beforeFromRowPositionRanges;
+        this.beforeToRowPosition = event.beforeToRowPosition;
+        this.reorderToTopEdge = event.reorderToTopEdge;
+    }
 
-	public int getBeforeToRowPosition() {
-		return this.beforeToRowPosition;
-	}
-	
-	public boolean isReorderToTopEdge() {
-		return reorderToTopEdge;
-	}
+    public Collection<Range> getBeforeFromRowPositionRanges() {
+        return this.beforeFromRowPositionRanges;
+    }
 
-	@Override
-	public Collection<StructuralDiff> getRowDiffs() {
-		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
+    public int getBeforeToRowPosition() {
+        return this.beforeToRowPosition;
+    }
 
-		Collection<Range> beforeFromRowPositionRanges = getBeforeFromRowPositionRanges();
+    public boolean isReorderToTopEdge() {
+        return reorderToTopEdge;
+    }
 
-		final int beforeToRowPosition = (this.reorderToTopEdge) ?
-				this.beforeToRowPosition : (this.beforeToRowPosition + 1);
-		int afterAddRowPosition = beforeToRowPosition;
-		for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
-			if (beforeFromRowPositionRange.start < beforeToRowPosition) {
-				afterAddRowPosition -= Math.min(beforeFromRowPositionRange.end, beforeToRowPosition) - beforeFromRowPositionRange.start;
-			} else {
-				break;
-			}
-		}
-		int cumulativeAddSize = 0;
-		for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
-			cumulativeAddSize += beforeFromRowPositionRange.size();
-		}
+    @Override
+    public Collection<StructuralDiff> getRowDiffs() {
+        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 
-		int offset = 0;
-		for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
-			int afterDeleteRowPosition = beforeFromRowPositionRange.start - offset;
-			if (afterAddRowPosition < afterDeleteRowPosition) {
-				afterDeleteRowPosition += cumulativeAddSize;
-			}
-			rowDiffs.add(new StructuralDiff(DiffTypeEnum.DELETE, beforeFromRowPositionRange, new Range(afterDeleteRowPosition, afterDeleteRowPosition)));
-			offset += beforeFromRowPositionRange.size();
-		}
-		Range beforeAddRange = new Range(beforeToRowPosition, beforeToRowPosition);
-		offset = 0;
-		for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
-			int size = beforeFromRowPositionRange.size();
-			rowDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, beforeAddRange, new Range(afterAddRowPosition + offset, afterAddRowPosition + offset + size)));
-			offset += size;
-		}
+        Collection<Range> beforeFromRowPositionRanges = getBeforeFromRowPositionRanges();
 
-		return rowDiffs;
-	}
+        final int beforeToRowPosition = (this.reorderToTopEdge) ? this.beforeToRowPosition
+                : (this.beforeToRowPosition + 1);
+        int afterAddRowPosition = beforeToRowPosition;
+        for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
+            if (beforeFromRowPositionRange.start < beforeToRowPosition) {
+                afterAddRowPosition -= Math.min(beforeFromRowPositionRange.end,
+                        beforeToRowPosition) - beforeFromRowPositionRange.start;
+            } else {
+                break;
+            }
+        }
+        int cumulativeAddSize = 0;
+        for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
+            cumulativeAddSize += beforeFromRowPositionRange.size();
+        }
 
-	@Override
-	public boolean convertToLocal(ILayer targetLayer) {
-		beforeFromRowPositionRanges = targetLayer.underlyingToLocalRowPositions(getLayer(), beforeFromRowPositionRanges);
-		beforeToRowPosition = targetLayer.underlyingToLocalRowPosition(getLayer(), beforeToRowPosition);
+        int offset = 0;
+        for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
+            int afterDeleteRowPosition = beforeFromRowPositionRange.start
+                    - offset;
+            if (afterAddRowPosition < afterDeleteRowPosition) {
+                afterDeleteRowPosition += cumulativeAddSize;
+            }
+            rowDiffs.add(new StructuralDiff(DiffTypeEnum.DELETE,
+                    beforeFromRowPositionRange, new Range(
+                            afterDeleteRowPosition, afterDeleteRowPosition)));
+            offset += beforeFromRowPositionRange.size();
+        }
+        Range beforeAddRange = new Range(beforeToRowPosition,
+                beforeToRowPosition);
+        offset = 0;
+        for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
+            int size = beforeFromRowPositionRange.size();
+            rowDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, beforeAddRange,
+                    new Range(afterAddRowPosition + offset, afterAddRowPosition
+                            + offset + size)));
+            offset += size;
+        }
 
-		if (beforeToRowPosition >= 0) {
-			return super.convertToLocal(targetLayer);
-		} else {
-			return false;
-		}
-	}
+        return rowDiffs;
+    }
 
-	@Override
-	public RowReorderEvent cloneEvent() {
-		return new RowReorderEvent(this);
-	}
+    @Override
+    public boolean convertToLocal(ILayer targetLayer) {
+        beforeFromRowPositionRanges = targetLayer
+                .underlyingToLocalRowPositions(getLayer(),
+                        beforeFromRowPositionRanges);
+        beforeToRowPosition = targetLayer.underlyingToLocalRowPosition(
+                getLayer(), beforeToRowPosition);
+
+        if (beforeToRowPosition >= 0) {
+            return super.convertToLocal(targetLayer);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public RowReorderEvent cloneEvent() {
+        return new RowReorderEvent(this);
+    }
 
 }

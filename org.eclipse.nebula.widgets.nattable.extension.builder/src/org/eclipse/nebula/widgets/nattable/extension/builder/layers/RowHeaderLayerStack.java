@@ -20,29 +20,33 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 
+public class RowHeaderLayerStack<T extends TableRow> extends
+        AbstractLayerTransform {
 
-public class RowHeaderLayerStack<T extends TableRow> extends AbstractLayerTransform {
+    private final DefaultRowHeaderDataProvider dataProvider;
 
+    public RowHeaderLayerStack(BodyLayerStack<T> bodyLayer,
+            TableModel tableModel) {
+        TableStyle tableStyle = tableModel.tableStyle;
 
-	private final DefaultRowHeaderDataProvider dataProvider;
+        dataProvider = new DefaultRowHeaderDataProvider(
+                bodyLayer.getDataProvider());
 
-	public RowHeaderLayerStack(BodyLayerStack<T> bodyLayer, TableModel tableModel) {
-		TableStyle tableStyle = tableModel.tableStyle;
+        DataLayer rowHeaderDataLayer = new DataLayer(dataProvider,
+                tableStyle.rowHeaderWidth, tableStyle.defaultRowHeight);
+        rowHeaderDataLayer
+                .setDefaultColumnWidth(tableModel.tableStyle.rowHeaderWidth);
 
-		dataProvider = new DefaultRowHeaderDataProvider(bodyLayer.getDataProvider());
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
 
-		DataLayer rowHeaderDataLayer = new DataLayer(dataProvider, tableStyle.rowHeaderWidth, tableStyle.defaultRowHeight);
-		rowHeaderDataLayer.setDefaultColumnWidth(tableModel.tableStyle.rowHeaderWidth);
+        setUnderlyingLayer(rowHeaderLayer);
 
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        // Style config
+        rowHeaderLayer.addConfiguration(new RowHeaderConfiguration(tableStyle));
+    }
 
-		setUnderlyingLayer(rowHeaderLayer);
-
-		// Style config
-		rowHeaderLayer.addConfiguration(new RowHeaderConfiguration(tableStyle));
-	}
-
-	public IDataProvider getDataProvider() {
-		return dataProvider;
-	}
+    public IDataProvider getDataProvider() {
+        return dataProvider;
+    }
 }

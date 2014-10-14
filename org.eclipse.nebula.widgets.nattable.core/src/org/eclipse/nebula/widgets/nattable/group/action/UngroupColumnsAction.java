@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
@@ -18,7 +17,7 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class UngroupColumnsAction implements IKeyAction {
 
-	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new UngroupColumnCommand());
-	}
+    public void run(NatTable natTable, KeyEvent event) {
+        natTable.doCommand(new UngroupColumnCommand());
+    }
 }

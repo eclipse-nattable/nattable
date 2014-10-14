@@ -10,16 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowGroupsCommand;
 import org.eclipse.swt.events.MouseEvent;
 
 public class SelectRowGroupsAction extends AbstractMouseSelectionAction {
 
-	public void run(NatTable natTable, MouseEvent event) {
-		super.run(natTable, event);
-		natTable.doCommand(new SelectRowGroupsCommand(natTable, getGridColumnPosition(), getGridRowPosition(), isWithShiftMask(), isWithControlMask()));
-	}
+    public void run(NatTable natTable, MouseEvent event) {
+        super.run(natTable, event);
+        natTable.doCommand(new SelectRowGroupsCommand(natTable,
+                getGridColumnPosition(), getGridRowPosition(),
+                isWithShiftMask(), isWithControlMask()));
+    }
 
 }

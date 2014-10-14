@@ -68,146 +68,166 @@ import ca.odell.glazedlists.SortedList;
  */
 public class _602_GlazedListsSortingExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _602_GlazedListsSortingExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new _602_GlazedListsSortingExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return
-				"This example shows the usage of the SortHeaderLayer within a grid"
-				+ " that is using GlazedLists SortedList for sorting.\n" +
-				"\n" +
-				"Features:\n" +
-				"The contents of the grid are kept in sorted order as the rows are added/removed.\n" +
-				"Custom comparators can be applied to each column.\n" +
-				"Custom comparator applied to the 'Lastname' column that will always sort 'Simpson' at the top.\n" +
-				"Sorting is turned off for the 'Gender' column.\n" +
-				"\n" +
-				"Key bindings:\n" +
-				"Sort by left clicking on the column header.\n" +
-				"Add columns to the existing sort by (Alt + left click) on the column header\n";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows the usage of the SortHeaderLayer within a grid"
+                + " that is using GlazedLists SortedList for sorting.\n"
+                + "\n"
+                + "Features:\n"
+                + "The contents of the grid are kept in sorted order as the rows are added/removed.\n"
+                + "Custom comparators can be applied to each column.\n"
+                + "Custom comparator applied to the 'Lastname' column that will always sort 'Simpson' at the top.\n"
+                + "Sorting is turned off for the 'Gender' column.\n"
+                + "\n"
+                + "Key bindings:\n"
+                + "Sort by left clicking on the column header.\n"
+                + "Add columns to the existing sort by (Alt + left click) on the column header\n";
+    }
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
-		
-		//build the body layer stack 
-		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
-		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
-		//directly as body layer is also working.
-		
-		EventList<Person> persons = GlazedLists.eventList(PersonService.getPersons(10));
-		SortedList<Person> sortedList = new SortedList<Person>(persons, null);
-		
-		IColumnPropertyAccessor<Person> accessor = new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		IDataProvider bodyDataProvider = new ListDataProvider<Person>(sortedList, accessor);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		
-		GlazedListsEventLayer<Person> eventLayer = new GlazedListsEventLayer<Person>(bodyDataLayer, sortedList);
-		
-		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(eventLayer);
-		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-		SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		//build the column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
 
-		//add default column labels to the label stack
-		//need to be done on the column header data layer, otherwise the label stack does not
-		//contain the necessary labels at the time the comparator is searched
-		columnHeaderDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-		
-		ConfigRegistry configRegistry = new ConfigRegistry();
+        // build the body layer stack
+        // Usually you would create a new layer stack by extending
+        // AbstractIndexLayerTransform and
+        // setting the ViewportLayer as underlying layer. But in this case using
+        // the ViewportLayer
+        // directly as body layer is also working.
 
-		//add the SortHeaderLayer to the column header layer stack
-		//as we use GlazedLists, we use the GlazedListsSortModel which delegates
-		//the sorting to the SortedList
-		final SortHeaderLayer<Person> sortHeaderLayer = new SortHeaderLayer<Person>(
-				columnHeaderLayer, 
-				new GlazedListsSortModel<Person>(
-						sortedList, 
-						accessor, 
-						configRegistry, 
-						columnHeaderDataLayer));
-		
-		//build the row header layer
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
-		
-		//build the corner layer
-		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, sortHeaderLayer);
-		
-		//build the grid layer
-		GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		//turn the auto configuration off as we want to add our header menu configuration
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		
-		natTable.setConfigRegistry(configRegistry);
-		
-		//as the autoconfiguration of the NatTable is turned off, we have to add the 
-		//DefaultNatTableStyleConfiguration manually	
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		//override the default sort configuration and change the mouse bindings to sort on a single click
-		natTable.addConfiguration(new SingleClickSortConfiguration());
-		natTable.addConfiguration(new DebugMenuConfiguration(natTable));
-		
-		//add some custom sort configurations regarding comparators
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				// Register custom comparator for last name column
-				// when sorting via last name, Simpson will always win
-				configRegistry.registerConfigAttribute(
-						SortConfigAttributes.SORT_COMPARATOR,
-						new Comparator<String>() {
-							@Override
-							public int compare(String o1, String o2) {
-								
-								//check the sort order
-								boolean sortDesc = sortHeaderLayer.getSortModel().getSortDirection(1).equals(SortDirectionEnum.DESC);
-								if ("Simpson".equals(o1) && !"Simpson".equals(o2)) {
-									return sortDesc ? 1 : -1;
-								}
-								else if (!"Simpson".equals(o1) && "Simpson".equals(o2)) {
-									return sortDesc ? -1 : 1;
-								}
-								return o1.compareToIgnoreCase(o2);
-							}
-						},
-						DisplayMode.NORMAL,
-						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
-				
-				// Register null comparator to disable sorting for gender column
-				configRegistry.registerConfigAttribute(
-						SortConfigAttributes.SORT_COMPARATOR,
-						new NullComparator(),
-						DisplayMode.NORMAL,
-						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
-			}
-		});
-		
-		natTable.configure();
-		
-		return natTable;
-	}
+        EventList<Person> persons = GlazedLists.eventList(PersonService
+                .getPersons(10));
+        SortedList<Person> sortedList = new SortedList<Person>(persons, null);
+
+        IColumnPropertyAccessor<Person> accessor = new ReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
+        IDataProvider bodyDataProvider = new ListDataProvider<Person>(
+                sortedList, accessor);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+
+        GlazedListsEventLayer<Person> eventLayer = new GlazedListsEventLayer<Person>(
+                bodyDataLayer, sortedList);
+
+        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
+                eventLayer);
+        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
+                columnReorderLayer);
+        SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        // build the column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                viewportLayer, selectionLayer);
+
+        // add default column labels to the label stack
+        // need to be done on the column header data layer, otherwise the label
+        // stack does not
+        // contain the necessary labels at the time the comparator is searched
+        columnHeaderDataLayer
+                .setConfigLabelAccumulator(new ColumnLabelAccumulator());
+
+        ConfigRegistry configRegistry = new ConfigRegistry();
+
+        // add the SortHeaderLayer to the column header layer stack
+        // as we use GlazedLists, we use the GlazedListsSortModel which
+        // delegates
+        // the sorting to the SortedList
+        final SortHeaderLayer<Person> sortHeaderLayer = new SortHeaderLayer<Person>(
+                columnHeaderLayer, new GlazedListsSortModel<Person>(sortedList,
+                        accessor, configRegistry, columnHeaderDataLayer));
+
+        // build the row header layer
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer);
+
+        // build the corner layer
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                sortHeaderLayer);
+
+        // build the grid layer
+        GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer,
+                rowHeaderLayer, cornerLayer);
+
+        // turn the auto configuration off as we want to add our header menu
+        // configuration
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+
+        natTable.setConfigRegistry(configRegistry);
+
+        // as the autoconfiguration of the NatTable is turned off, we have to
+        // add the
+        // DefaultNatTableStyleConfiguration manually
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        // override the default sort configuration and change the mouse bindings
+        // to sort on a single click
+        natTable.addConfiguration(new SingleClickSortConfiguration());
+        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
+
+        // add some custom sort configurations regarding comparators
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                // Register custom comparator for last name column
+                // when sorting via last name, Simpson will always win
+                configRegistry.registerConfigAttribute(
+                        SortConfigAttributes.SORT_COMPARATOR,
+                        new Comparator<String>() {
+                            @Override
+                            public int compare(String o1, String o2) {
+
+                                // check the sort order
+                                boolean sortDesc = sortHeaderLayer
+                                        .getSortModel().getSortDirection(1)
+                                        .equals(SortDirectionEnum.DESC);
+                                if ("Simpson".equals(o1)
+                                        && !"Simpson".equals(o2)) {
+                                    return sortDesc ? 1 : -1;
+                                } else if (!"Simpson".equals(o1)
+                                        && "Simpson".equals(o2)) {
+                                    return sortDesc ? -1 : 1;
+                                }
+                                return o1.compareToIgnoreCase(o2);
+                            }
+                        }, DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
+
+                // Register null comparator to disable sorting for gender column
+                configRegistry.registerConfigAttribute(
+                        SortConfigAttributes.SORT_COMPARATOR,
+                        new NullComparator(), DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+            }
+        });
+
+        natTable.configure();
+
+        return natTable;
+    }
 
 }

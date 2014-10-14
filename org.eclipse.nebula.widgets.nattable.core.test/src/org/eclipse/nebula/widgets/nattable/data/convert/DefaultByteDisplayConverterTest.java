@@ -10,41 +10,42 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 
 public class DefaultByteDisplayConverterTest {
 
-	private DefaultByteDisplayConverter byteConverter = new DefaultByteDisplayConverter();
-	
-	@Test
-	public void testNonNullDataToDisplay() {
-		Assert.assertEquals("123", byteConverter.canonicalToDisplayValue(Byte.valueOf("123")));
-	}
-	
-	@Test
-	public void testNullDataToDisplay() {
-		Assert.assertEquals(null, byteConverter.canonicalToDisplayValue(null));
-	}
-	
-	@Test
-	public void testNonNullDisplayToData() {
-		Assert.assertEquals(Byte.valueOf("123"), byteConverter.displayToCanonicalValue("123"));
-	}
-	
-	@Test
-	public void testNullDisplayToData() {
-		Assert.assertEquals(null, byteConverter.displayToCanonicalValue(""));
-	}
+    private DefaultByteDisplayConverter byteConverter = new DefaultByteDisplayConverter();
 
-	@Test(expected=ConversionFailedException.class)
-	public void testConversionException() {
-		byteConverter.displayToCanonicalValue("abc");
-	}
+    @Test
+    public void testNonNullDataToDisplay() {
+        Assert.assertEquals("123",
+                byteConverter.canonicalToDisplayValue(Byte.valueOf("123")));
+    }
 
-	@Test(expected=ConversionFailedException.class)
-	public void testConversionExceptionTooBig() {
-		byteConverter.displayToCanonicalValue("129");
-	}
+    @Test
+    public void testNullDataToDisplay() {
+        Assert.assertEquals(null, byteConverter.canonicalToDisplayValue(null));
+    }
+
+    @Test
+    public void testNonNullDisplayToData() {
+        Assert.assertEquals(Byte.valueOf("123"),
+                byteConverter.displayToCanonicalValue("123"));
+    }
+
+    @Test
+    public void testNullDisplayToData() {
+        Assert.assertEquals(null, byteConverter.displayToCanonicalValue(""));
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionException() {
+        byteConverter.displayToCanonicalValue("abc");
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionExceptionTooBig() {
+        byteConverter.displayToCanonicalValue("129");
+    }
 }

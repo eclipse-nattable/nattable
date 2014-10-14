@@ -13,8 +13,8 @@ package org.eclipse.nebula.widgets.nattable.print.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
 /**
- * The viewport picks this up and moved to 0,0 so that
- * the entire grid can be printed.
+ * The viewport picks this up and moved to 0,0 so that the entire grid can be
+ * printed.
  */
 public class PrintEntireGridCommand extends AbstractContextFreeCommand {
 

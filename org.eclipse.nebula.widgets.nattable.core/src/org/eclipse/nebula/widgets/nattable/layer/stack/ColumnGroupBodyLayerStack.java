@@ -22,7 +22,8 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 /**
- * A pre-configured layer stack which includes the following layers (in that order):
+ * A pre-configured layer stack which includes the following layers (in that
+ * order):
  * <ol>
  * <li>ColumnReorderLayer</li>
  * <li>ColumnGroupReorderLayer</li>
@@ -34,47 +35,51 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
  */
 public class ColumnGroupBodyLayerStack extends AbstractIndexLayerTransform {
 
-	private ColumnReorderLayer columnReorderLayer;
-	private ColumnGroupReorderLayer columnGroupReorderLayer;
-	private ColumnHideShowLayer columnHideShowLayer;
-	private ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
-	private SelectionLayer selectionLayer;
-	private ViewportLayer viewportLayer;
+    private ColumnReorderLayer columnReorderLayer;
+    private ColumnGroupReorderLayer columnGroupReorderLayer;
+    private ColumnHideShowLayer columnHideShowLayer;
+    private ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
+    private SelectionLayer selectionLayer;
+    private ViewportLayer viewportLayer;
 
-	public ColumnGroupBodyLayerStack(IUniqueIndexLayer underlyingLayer, ColumnGroupModel... columnGroupModel) {
-		columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
-		columnGroupReorderLayer = new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel[columnGroupModel.length-1]);
-		columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
-		columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
-		selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-		viewportLayer = new ViewportLayer(selectionLayer);
-		setUnderlyingLayer(viewportLayer);
+    public ColumnGroupBodyLayerStack(IUniqueIndexLayer underlyingLayer,
+            ColumnGroupModel... columnGroupModel) {
+        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+        columnGroupReorderLayer = new ColumnGroupReorderLayer(
+                columnReorderLayer,
+                columnGroupModel[columnGroupModel.length - 1]);
+        columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
+        columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
+                columnHideShowLayer, columnGroupModel);
+        selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
+        viewportLayer = new ViewportLayer(selectionLayer);
+        setUnderlyingLayer(viewportLayer);
 
-		registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
-	}
+        registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+    }
 
-	public ColumnReorderLayer getColumnReorderLayer() {
-		return columnReorderLayer;
-	}
+    public ColumnReorderLayer getColumnReorderLayer() {
+        return columnReorderLayer;
+    }
 
-	public ColumnGroupReorderLayer getColumnGroupReorderLayer() {
-		return columnGroupReorderLayer;
-	}
+    public ColumnGroupReorderLayer getColumnGroupReorderLayer() {
+        return columnGroupReorderLayer;
+    }
 
-	public ColumnHideShowLayer getColumnHideShowLayer() {
-		return columnHideShowLayer;
-	}
+    public ColumnHideShowLayer getColumnHideShowLayer() {
+        return columnHideShowLayer;
+    }
 
-	public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
-		return columnGroupExpandCollapseLayer;
-	}
+    public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
+        return columnGroupExpandCollapseLayer;
+    }
 
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
 
-	public ViewportLayer getViewportLayer() {
-		return viewportLayer;
-	}
+    public ViewportLayer getViewportLayer() {
+        return viewportLayer;
+    }
 
 }

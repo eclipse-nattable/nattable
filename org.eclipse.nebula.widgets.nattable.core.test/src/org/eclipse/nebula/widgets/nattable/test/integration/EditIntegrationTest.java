@@ -72,547 +72,645 @@ import org.junit.Test;
 @SuppressWarnings("deprecation")
 public class EditIntegrationTest {
 
-	private static final String TEST_LABEL = "testLabel";
-	private static final String TEST_LABEL_2 = "testLabel2";
-
-	private static final int COLUMN_HEADER_ROW_COUNT = 1;
-	private static final int ROW_HEADER_COLUMN_COUNT = 1;
-
-	private NatTableFixture natTable;
-	private DummyGridLayerStack gridLayerStack;
-
-	@Before
-	public void setup() {
-		gridLayerStack = new DummyGridLayerStack(5, 5);
-		natTable = new NatTableFixture(gridLayerStack);
-
-		// Ensure no active editor (static) is present
-		// Although deprecated this needs to still work for backwards compatibility
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-
-	@After
-	public void tearDown() {
-		//ensure the editor is closed
-		natTable.commitAndCloseActiveCellEditor();
-		//as the test processing is too fast, we also need to unregister because the registry
-		//is only cleaned on disposal of the editor control, which might not happen in the tests
-		ActiveCellEditorRegistry.unregisterActiveCellEditor();
-	}
-	
-	@Test
-	public void testNotEditableByDefault() {
-		ILayerCell cell = natTable.getCellByPosition(4, 4);
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-
-	@Test
-	public void testEditorActivatedDuringInlineCellEdit() {
-		natTable.enableEditingOnAllCells();
-
-		ILayerCell cell = natTable.getCellByPosition(4, 4);
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-
-		ICellEditor cellEditor = natTable.getActiveCellEditor();
-		assertNotNull(cellEditor);
-		assertTrue(cellEditor instanceof TextCellEditor);
-		TextCellEditor textCellEditor = (TextCellEditor) cellEditor;
-		assertEquals("Col: 4, Row: 4", textCellEditor.getCanonicalValue());
-
-		Control control = cellEditor.getEditorControl();
-		assertNotNull(control);
-		assertTrue(control instanceof Text);
-	}
-
-	@Test
-	public void testEditorClosesWhenANewEditCommandIsFired() {
-		// Even rows are editable, Odd rows are not
-		natTable.getConfigRegistry().registerConfigAttribute(
-				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE,
-				DisplayMode.NORMAL, AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
-		natTable.getConfigRegistry().registerConfigAttribute(
-				EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE,
-				DisplayMode.NORMAL, AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
-
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), 
-				natTable.getCellByPosition(4, COLUMN_HEADER_ROW_COUNT + 2)));
-		assertNotNull(natTable.getActiveCellEditor());
-		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
-
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), 
-				natTable.getCellByPosition(4, COLUMN_HEADER_ROW_COUNT + 3)));
-		assertNotNull(natTable.getActiveCellEditor());
-		assertFalse(natTable.getActiveCellEditor().isClosed());
-		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
-		assertFalse(ActiveCellEditorRegistry.getActiveCellEditor().isClosed());
-	}
-
-	@Test
-	public void testEditorResize() {
-		natTable.enableEditingOnAllCells();
-
-		ILayerCell cell = natTable.getCellByPosition(4, 4);
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-		assertEquals(new Rectangle(340, 80, 99, 19), 
-				natTable.getActiveCellEditor().getEditorControl().getBounds());
-
-		natTable.doCommand(new ColumnResizeCommand(natTable, 2, 110));
-		assertEquals(new Rectangle(340, 80, 99, 19), 
-				natTable.getActiveCellEditor().getEditorControl().getBounds());
-
-		natTable.getActiveCellEditor().getEditorControl().notifyListeners(
-				SWT.FocusOut, null);
-		//ActiveCellEditor should be closed if a ColumnResizeCommand is executed and the editor loses focus
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-
-	@Test
-	public void testDataValidation() {
-		DummyGridLayerStack gridLayerStack = new DummyGridLayerStack(5, 5);
-		natTable = new NatTableFixture(gridLayerStack);
-
-		// Register custom validation
-		DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
-		natTable.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
-		natTable.registerLabelOnColumn(bodyDataLayer, 1, TEST_LABEL_2);
-
-		natTable.enableEditingOnAllCells();
-		natTable.getConfigRegistry().registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, IDataValidator.NEVER_VALID,
-																DisplayMode.EDIT, TEST_LABEL);
-		natTable.getConfigRegistry().registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, IDataValidator.ALWAYS_VALID,
-																DisplayMode.EDIT, TEST_LABEL_2);
-
-		ILayerCell cell = natTable.getCellByPosition(1, 1);
-		assertEquals("Col: 1, Row: 1", cell.getDataValue());
-
-		// Column index 0 never valid
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-		assertFalse(natTable.getActiveCellEditor().validateCanonicalValue(cell.getDataValue()));
-
-		cell = natTable.getCellByPosition(2, 1);
-		assertEquals("Col: 2, Row: 1", cell.getDataValue());
-
-		// Column index 1 always valid
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-		assertTrue(natTable.getActiveCellEditor().validateCanonicalValue(cell.getDataValue()));
-	}
-
-	@Test
-	public void navigationWithTab() throws Exception {
-		natTable.enableEditingOnAllCells();
-		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
-
-		// Edit cell
-		ILayerCell cell = natTable.getCellByPosition(1, 1);
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-
-		// Press tab - 3 times
-		Text textControl = ((Text) natTable.getActiveCellEditor().getEditorControl());
-		textControl.notifyListeners(SWT.Traverse, SWTUtils.keyEvent(SWT.TAB));
-
-		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.TAB));
-		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.TAB));
-		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.TAB));
-
-		// Verify new cell selection
-		PositionCoordinate lastSelectedCellPosition = gridLayerStack.getBodyLayer().getSelectionLayer().getSelectionAnchor();
-		assertEquals(4, lastSelectedCellPosition.columnPosition);
-		assertEquals(0, lastSelectedCellPosition.rowPosition);
-
-		// Verify that no cell is being edited
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-	@Test
-	public void testNavigationUsingTabButtonWhenAnInvalidValueIsEntered() throws InterruptedException {
-		natTable.enableEditingOnAllCells();
-
-		DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
-		natTable.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
-		natTable.getConfigRegistry().registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, getStartingWithCValidator(), DisplayMode.EDIT, TEST_LABEL);
-
-		// Start editing 1,1
-		ILayerCell cell = natTable.getCellByPosition(1, 1);
-		assertEquals("Col: 1, Row: 1", cell.getDataValue());
-		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
-
-		// Column position 1 - originally valid
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-		assertTrue(natTable.getActiveCellEditor().validateCanonicalValue(cell.getDataValue()));
-
-		// Set an invalid value in cell - AA
-		Text textControl = ((Text) natTable.getActiveCellEditor().getEditorControl());
-		textControl.setText("AA");
-		assertEquals("AA", natTable.getActiveCellEditor().getCanonicalValue());
-		assertFalse(natTable.getActiveCellEditor().validateCanonicalValue(
-				natTable.getActiveCellEditor().getCanonicalValue()));
-
-		// Press tab
-		textControl.notifyListeners(SWT.Traverse, SWTUtils.keyEvent(SWT.TAB));
-		assertEquals(textControl, natTable.getActiveCellEditor().getEditorControl());
-		assertEquals("AA", natTable.getActiveCellEditor().getCanonicalValue());
-		assertEquals(textControl, ActiveCellEditorRegistry.getActiveCellEditor().getEditorControl());
-		assertEquals("AA", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
-	}
-
-	@Test
-	public void directlyTypingInACellShoudlStartEditing() throws Exception {
-		// Press 'A'
-		natTable.enableEditingOnAllCells();
-		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
-		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('A'));
-
-		// Verify edit mode
-		assertNotNull(natTable.getActiveCellEditor());
-		assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
-		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
-		assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
-	}
-
-	@Test
-	public void mustCommitValidValuesOnPressingEnter() throws Exception {
-		natTable.enableEditingOnAllCells();
-
-		// Cell value is valid if starting with 'C'
-		DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
-		natTable.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
-		natTable.getConfigRegistry().registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR, getStartingWithCValidator(), DisplayMode.EDIT, TEST_LABEL);
-
-		// Enter 'A' in the cell
-		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
-		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('A'));
-		assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
-		assertFalse(natTable.getActiveCellEditor().validateCanonicalValue(
-				natTable.getActiveCellEditor().getCanonicalValue()));
-
-		// Press 'Enter'
-		natTable.getActiveCellEditor().getEditorControl().notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
-
-		// Value not committed
-		assertNotNull(natTable.getActiveCellEditor().getEditorControl());
-		assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
-		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor().getEditorControl());
-		assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
-
-		// Enter a valid value - 'C'
-		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('C'));
-		assertNotNull(natTable.getActiveCellEditor().getEditorControl());
-		assertEquals("C", natTable.getActiveCellEditor().getCanonicalValue());
-		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor().getEditorControl());
-		assertEquals("C", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
-
-		// Press 'Enter' again
-		natTable.getActiveCellEditor().getEditorControl().notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
-
-		// Value committed and editor closed
-		assertEquals("C", natTable.getCellByPosition(1, 1).getDataValue());
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-
-	@Test
-	public void clickingOnTheCheckBoxMustToggleItsValue() throws Exception {
-		DefaultGridLayer layerStack = new DefaultGridLayer(RowDataListFixture.getList(), RowDataListFixture.getPropertyNames(), RowDataListFixture.getPropertyToLabelMap());
-		natTable = new NatTableFixture(layerStack, 1200, 300, false);
-
-		// Enable editing
-		natTable.enableEditingOnAllCells();
-
-		// Calculate pixel value to click on
-		int columnIndex = RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.PUBLISH_FLAG_PROP_NAME);
-		int columnPosition = columnIndex + ROW_HEADER_COLUMN_COUNT ;
-		int startX = natTable.getStartXOfColumnPosition(columnPosition);
-		int columnWidth = natTable.getColumnWidthByPosition(columnPosition);
-		int startY = natTable.getStartYOfRowPosition(1);
-		int rowHeight = natTable.getRowHeightByPosition(1);
-
-		// Register check box for the publish flag column
-		DataLayer bodyDataLayer = (DataLayer) layerStack.getBodyDataLayer();
-		natTable.registerLabelOnColumn(bodyDataLayer, columnIndex, TEST_LABEL);
-		registerCheckBoxEditor(natTable.getConfigRegistry(), new CheckBoxPainter(), new CheckBoxCellEditor());
-
-		natTable.configure();
-
-		// Value before click
-		assertEquals(true, natTable.getDataValueByPosition(columnPosition, 1));
-
-		// Click on the check box
-		SWTUtils.leftClick(startX + (columnWidth / 2), startY + (rowHeight / 2), SWT.NONE, natTable);
-
-		// Value After click
-		assertEquals(false, natTable.getDataValueByPosition(columnPosition, 1));
-	}
-
-	@Test
-	public void pressingESCMustDiscardTheValueEnteredAndCloseControl() throws Exception {
-		natTable.enableEditingOnAllCells();
-
-		assertEquals("Col: 1, Row: 1", natTable.getDataValueByPosition(1, 1));
-
-		// Select cell, press A
-		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
-		SWTUtils.pressCharKey('A', natTable);
-
-		// Verify edit mode
-		assertNotNull(natTable.getActiveCellEditor());
-		assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
-		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
-		assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
-
-		// Press ESC
-		SWTUtils.pressKeyOnControl(SWT.ESC, natTable.getActiveCellEditor().getEditorControl());
-
-		// Verify state
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-		assertEquals("Col: 1, Row: 1", natTable.getDataValueByPosition(1, 1));
-	}
-
-	@Test
-	public void comboBoxShouldCommitWhenAValueIsSelectedByClickingOnIt() throws Exception {
-		if(SWTUtils.isRunningOnUnix()){
-			return;
-		}
-		DefaultGridLayer layerStack = new DefaultGridLayer(RowDataListFixture.getList(), RowDataListFixture.getPropertyNames(), RowDataListFixture.getPropertyToLabelMap());
-		natTable = new NatTableFixture(layerStack, 1200, 300, false);
-
-		// Enable editing
-		natTable.enableEditingOnAllCells();
-
-		// Calculate pixel value to click on
-		int columnIndex = RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME);
-		int columnPosition = columnIndex + ROW_HEADER_COLUMN_COUNT ;
-		int rowPosition = 0 + COLUMN_HEADER_ROW_COUNT;
-		int startX = natTable.getStartXOfColumnPosition(columnPosition);
-		int startY = natTable.getStartYOfRowPosition(1);
-
-		// Register combo box for the publish flag column
-		DataLayer bodyDataLayer = (DataLayer) layerStack.getBodyDataLayer();
-		natTable.registerLabelOnColumn(bodyDataLayer, columnIndex, TEST_LABEL);
-		registerComboBox(natTable.getConfigRegistry(),
-				new ComboBoxPainter(),
-				new ComboBoxCellEditor(Arrays.asList(new PricingTypeBean("MN"), new PricingTypeBean("AT"))));
-
-		natTable.configure();
-
-		//Original value
-		assertTrue(natTable.getDataValueByPosition(columnPosition, rowPosition) instanceof PricingTypeBean);
-		assertEquals("MN", natTable.getDataValueByPosition(columnPosition, rowPosition).toString());
-
-		// Click - expand combo
-		SWTUtils.leftClick(startX + 10, startY + 10, SWT.NONE, natTable);
-
-		NatCombo combo = (NatCombo) natTable.getActiveCellEditor().getEditorControl();
-		assertNotNull(combo);
-		assertTrue(natTable.getActiveCellEditor().getCanonicalValue() instanceof PricingTypeBean);
-		assertEquals("MN", natTable.getActiveCellEditor().getCanonicalValue().toString());
-		assertTrue(ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue() instanceof PricingTypeBean);
-		assertEquals("MN", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue().toString());
-
-		// Click - expand select value 'Automatic'
-		combo.select(1);
-		SWTUtils.leftClickOnCombo(startX + 10, startY + 35, SWT.NONE, combo);
-
-		assertTrue(natTable.getDataValueByPosition(columnPosition, rowPosition) instanceof PricingTypeBean);
-		assertEquals("AT", natTable.getDataValueByPosition(columnPosition, rowPosition).toString());
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-
-	@Test
-	public void openEditorForSpannedCellsShouldOpenInline() throws Exception {
-		CompositeLayer layer = new CompositeLayer(1, 1);
-		SelectionLayer selectionLayer = new SelectionLayer(new SpanningDataLayer(new DummySpanningBodyDataProvider(100, 100)));
-		layer.setChildLayer(GridRegion.BODY, new ViewportLayer(selectionLayer), 0, 0);
-		natTable = new NatTableFixture(layer, 1200, 300, false);
-
-		layer.addConfiguration(new DefaultEditBindings());
-		layer.addConfiguration(new DefaultEditConfiguration());
-		
-		natTable.enableEditingOnAllCells();
-
-		final boolean[] inlineFired = new boolean[1];
-		inlineFired[0] = false;
-		selectionLayer.addLayerListener(new ILayerListener() {
-			
-			@Override
-			public void handleLayerEvent(ILayerEvent event) {
-				if (event instanceof InlineCellEditEvent) {
-					inlineFired[0] = true;
-				}
-			}
-		});
-		
-		natTable.configure();
-		
-		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
-		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.F2));
-
-		// Verify edit mode
-		assertNotNull(natTable.getActiveCellEditor());
-		assertEquals("Col: 1, Row: 1", natTable.getActiveCellEditor().getCanonicalValue());
-		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
-		assertEquals("Col: 1, Row: 1", ActiveCellEditorRegistry.getActiveCellEditor().getCanonicalValue());
-
-		//verify that inline editing is used and not dialog
-		assertTrue("No InlineCellEditEvent fired", inlineFired[0]);
-	}
-
-	@Test
-	public void updateAllUnderlyingCellsIfSpanned() throws Exception {
-		CompositeLayer layer = new CompositeLayer(1, 1);
-		DummySpanningBodyDataProvider dataProvider = new DummySpanningBodyDataProvider(100, 100);
-		SelectionLayer selectionLayer = new SelectionLayer(new SpanningDataLayer(dataProvider));
-		layer.setChildLayer(GridRegion.BODY, new ViewportLayer(selectionLayer), 0, 0);
-		natTable = new NatTableFixture(layer, 1200, 300, false);
-
-		layer.addConfiguration(new DefaultEditBindings());
-		layer.addConfiguration(new DefaultEditConfiguration());
-		
-		natTable.enableEditingOnAllCells();
-
-		natTable.configure();
-		
-		assertEquals("Col: 1, Row: 1", dataProvider.getDataValue(0, 0));
-		assertEquals("Col: 1, Row: 2", dataProvider.getDataValue(0, 1));
-		assertEquals("Col: 2, Row: 1", dataProvider.getDataValue(1, 0));
-		assertEquals("Col: 2, Row: 2", dataProvider.getDataValue(1, 1));
-		
-		natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
-		natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('C'));
-
-		assertNotNull(natTable.getActiveCellEditor());
-
-		natTable.getActiveCellEditor().getEditorControl().notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
-
-		assertEquals("C", dataProvider.getDataValue(0, 0));
-		assertEquals("C", dataProvider.getDataValue(0, 1));
-		assertEquals("C", dataProvider.getDataValue(1, 0));
-		assertEquals("C", dataProvider.getDataValue(1, 1));
-	}
-
-	/**
-	 * Test case that ensures that the active editor is also available via the {@linkplain ActiveCellEditorRegistry}.
-	 * <p>
-	 * Ensures that the backward compatibility is not broken.
-	 * </p>
-	 */
-	@Test
-	public void testEditorRegisteredInActiveCellEditorRegistry() {
-		natTable.enableEditingOnAllCells();
-
-		ILayerCell cell = natTable.getCellByPosition(4, 4);
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-
-		assertNotNull(natTable.getActiveCellEditor());
-		assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
-		assertEquals(natTable.getActiveCellEditor(),ActiveCellEditorRegistry.getActiveCellEditor());
-
-		// Close the editor again
-		natTable.getActiveCellEditor().getEditorControl().notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-
-	/**
-	 * Test case that ensures that an editor, which is committed through the {@linkplain EditUtils}, is also removed
-	 * from the table.
-	 * <p>
-	 * Ensures that the backward compatibility is not broken.
-	 * </p>
-	 */
-	@Test
-	public void testEditorRemovedWhenCommitted() {
-		natTable.enableEditingOnAllCells();
-
-		ILayerCell cell = natTable.getCellByPosition(4, 4);
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-
-		Text editor = (Text) natTable.getActiveCellEditor().getEditorControl();
-		editor.setText("A");
-
-		// Close the again
-		EditUtils.commitAndCloseActiveEditor();
-
-		// check if value is saved and editor is gone
-		assertEquals("A",natTable.getCellByPosition(4, 4).getDataValue());
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-
-	/**
-	 * Test case that ensures that an editor, which is closed via API, is also removed
-	 * from the table.
-	 * <p>
-	 * Ensures that the backward compatibility is not broken.
-	 * </p>
-	 */
-	@Test
-	public void testEditorRemovedWhenClosed() {
-		natTable.enableEditingOnAllCells();
-
-		ILayerCell cell = natTable.getCellByPosition(4, 4);
-		natTable.doCommand(new EditCellCommand(natTable, natTable.getConfigRegistry(), cell));
-
-		// close the editor
-		ActiveCellEditorRegistry.getActiveCellEditor().close();
-
-		// check if editor is gone
-		assertNull(natTable.getActiveCellEditor());
-		assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
-	}
-
-	// *** Convenience methods ***.
-	// Mostly code from the EditableGridExample.
-	// The sane fixtures are used to ensure that the example keeps working without fail
-
-	private static void registerComboBox(ConfigRegistry configRegistry, ICellPainter comboBoxCellPainter, ICellEditor comboBoxCellEditor) {
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, comboBoxCellPainter, DisplayMode.NORMAL, TEST_LABEL);
-		configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor, DisplayMode.NORMAL, TEST_LABEL);
-		configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor, DisplayMode.EDIT, TEST_LABEL);
-
-		configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, getPricingTypeDisplayConverter(), DisplayMode.NORMAL, TEST_LABEL);
-	}
-
-	private static void registerCheckBoxEditor(ConfigRegistry configRegistry, ICellPainter checkBoxCellPainter, ICellEditor checkBoxCellEditor) {
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, checkBoxCellPainter, DisplayMode.NORMAL, TEST_LABEL);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new DefaultBooleanDisplayConverter(), DisplayMode.NORMAL, TEST_LABEL);
-		configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, checkBoxCellEditor, DisplayMode.NORMAL, TEST_LABEL);
-	}
-
-
-	private static IDisplayConverter getPricingTypeDisplayConverter() {
-		return new DisplayConverter() {
-			@Override
-			public Object canonicalToDisplayValue(Object canonicalValue) {
-				if (canonicalValue == null) {
-					return null;
-				} else {
-					return canonicalValue.toString().equals("MN") ? "Manual" : "Automatic";
-				}
-			}
-
-			@Override
-			public Object displayToCanonicalValue(Object displayValue) {
-				return displayValue.toString().equals("Manual") ? new PricingTypeBean("MN") : new PricingTypeBean("AT");
-			}
-		};
-	}
-
-	private IDataValidator getStartingWithCValidator() {
-		return new DataValidator() {
-			@Override
-			public boolean validate(int columnIndex, int rowIndex, Object newValue) {
-				String asString = newValue.toString();
-				return asString.startsWith("C");
-			}
-		};
-	}
+    private static final String TEST_LABEL = "testLabel";
+    private static final String TEST_LABEL_2 = "testLabel2";
+
+    private static final int COLUMN_HEADER_ROW_COUNT = 1;
+    private static final int ROW_HEADER_COLUMN_COUNT = 1;
+
+    private NatTableFixture natTable;
+    private DummyGridLayerStack gridLayerStack;
+
+    @Before
+    public void setup() {
+        gridLayerStack = new DummyGridLayerStack(5, 5);
+        natTable = new NatTableFixture(gridLayerStack);
+
+        // Ensure no active editor (static) is present
+        // Although deprecated this needs to still work for backwards
+        // compatibility
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    @After
+    public void tearDown() {
+        // ensure the editor is closed
+        natTable.commitAndCloseActiveCellEditor();
+        // as the test processing is too fast, we also need to unregister
+        // because the registry
+        // is only cleaned on disposal of the editor control, which might not
+        // happen in the tests
+        ActiveCellEditorRegistry.unregisterActiveCellEditor();
+    }
+
+    @Test
+    public void testNotEditableByDefault() {
+        ILayerCell cell = natTable.getCellByPosition(4, 4);
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    @Test
+    public void testEditorActivatedDuringInlineCellEdit() {
+        natTable.enableEditingOnAllCells();
+
+        ILayerCell cell = natTable.getCellByPosition(4, 4);
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+
+        ICellEditor cellEditor = natTable.getActiveCellEditor();
+        assertNotNull(cellEditor);
+        assertTrue(cellEditor instanceof TextCellEditor);
+        TextCellEditor textCellEditor = (TextCellEditor) cellEditor;
+        assertEquals("Col: 4, Row: 4", textCellEditor.getCanonicalValue());
+
+        Control control = cellEditor.getEditorControl();
+        assertNotNull(control);
+        assertTrue(control instanceof Text);
+    }
+
+    @Test
+    public void testEditorClosesWhenANewEditCommandIsFired() {
+        // Even rows are editable, Odd rows are not
+        natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL,
+                AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
+        natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                IEditableRule.NEVER_EDITABLE, DisplayMode.NORMAL,
+                AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
+
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), natTable.getCellByPosition(4,
+                COLUMN_HEADER_ROW_COUNT + 2)));
+        assertNotNull(natTable.getActiveCellEditor());
+        assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), natTable.getCellByPosition(4,
+                COLUMN_HEADER_ROW_COUNT + 3)));
+        assertNotNull(natTable.getActiveCellEditor());
+        assertFalse(natTable.getActiveCellEditor().isClosed());
+        assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+        assertFalse(ActiveCellEditorRegistry.getActiveCellEditor().isClosed());
+    }
+
+    @Test
+    public void testEditorResize() {
+        natTable.enableEditingOnAllCells();
+
+        ILayerCell cell = natTable.getCellByPosition(4, 4);
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+        assertEquals(new Rectangle(340, 80, 99, 19), natTable
+                .getActiveCellEditor().getEditorControl().getBounds());
+
+        natTable.doCommand(new ColumnResizeCommand(natTable, 2, 110));
+        assertEquals(new Rectangle(340, 80, 99, 19), natTable
+                .getActiveCellEditor().getEditorControl().getBounds());
+
+        natTable.getActiveCellEditor().getEditorControl()
+                .notifyListeners(SWT.FocusOut, null);
+        // ActiveCellEditor should be closed if a ColumnResizeCommand is
+        // executed and the editor loses focus
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    @Test
+    public void testDataValidation() {
+        DummyGridLayerStack gridLayerStack = new DummyGridLayerStack(5, 5);
+        natTable = new NatTableFixture(gridLayerStack);
+
+        // Register custom validation
+        DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
+        natTable.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
+        natTable.registerLabelOnColumn(bodyDataLayer, 1, TEST_LABEL_2);
+
+        natTable.enableEditingOnAllCells();
+        natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.DATA_VALIDATOR,
+                IDataValidator.NEVER_VALID, DisplayMode.EDIT, TEST_LABEL);
+        natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.DATA_VALIDATOR,
+                IDataValidator.ALWAYS_VALID, DisplayMode.EDIT, TEST_LABEL_2);
+
+        ILayerCell cell = natTable.getCellByPosition(1, 1);
+        assertEquals("Col: 1, Row: 1", cell.getDataValue());
+
+        // Column index 0 never valid
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+        assertFalse(natTable.getActiveCellEditor().validateCanonicalValue(
+                cell.getDataValue()));
+
+        cell = natTable.getCellByPosition(2, 1);
+        assertEquals("Col: 2, Row: 1", cell.getDataValue());
+
+        // Column index 1 always valid
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+        assertTrue(natTable.getActiveCellEditor().validateCanonicalValue(
+                cell.getDataValue()));
+    }
+
+    @Test
+    public void navigationWithTab() throws Exception {
+        natTable.enableEditingOnAllCells();
+        natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+
+        // Edit cell
+        ILayerCell cell = natTable.getCellByPosition(1, 1);
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+
+        // Press tab - 3 times
+        Text textControl = ((Text) natTable.getActiveCellEditor()
+                .getEditorControl());
+        textControl.notifyListeners(SWT.Traverse, SWTUtils.keyEvent(SWT.TAB));
+
+        natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.TAB));
+        natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.TAB));
+        natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.TAB));
+
+        // Verify new cell selection
+        PositionCoordinate lastSelectedCellPosition = gridLayerStack
+                .getBodyLayer().getSelectionLayer().getSelectionAnchor();
+        assertEquals(4, lastSelectedCellPosition.columnPosition);
+        assertEquals(0, lastSelectedCellPosition.rowPosition);
+
+        // Verify that no cell is being edited
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    @Test
+    public void testNavigationUsingTabButtonWhenAnInvalidValueIsEntered()
+            throws InterruptedException {
+        natTable.enableEditingOnAllCells();
+
+        DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
+        natTable.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
+        natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.DATA_VALIDATOR,
+                getStartingWithCValidator(), DisplayMode.EDIT, TEST_LABEL);
+
+        // Start editing 1,1
+        ILayerCell cell = natTable.getCellByPosition(1, 1);
+        assertEquals("Col: 1, Row: 1", cell.getDataValue());
+        natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+
+        // Column position 1 - originally valid
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+        assertTrue(natTable.getActiveCellEditor().validateCanonicalValue(
+                cell.getDataValue()));
+
+        // Set an invalid value in cell - AA
+        Text textControl = ((Text) natTable.getActiveCellEditor()
+                .getEditorControl());
+        textControl.setText("AA");
+        assertEquals("AA", natTable.getActiveCellEditor().getCanonicalValue());
+        assertFalse(natTable.getActiveCellEditor().validateCanonicalValue(
+                natTable.getActiveCellEditor().getCanonicalValue()));
+
+        // Press tab
+        textControl.notifyListeners(SWT.Traverse, SWTUtils.keyEvent(SWT.TAB));
+        assertEquals(textControl, natTable.getActiveCellEditor()
+                .getEditorControl());
+        assertEquals("AA", natTable.getActiveCellEditor().getCanonicalValue());
+        assertEquals(textControl, ActiveCellEditorRegistry
+                .getActiveCellEditor().getEditorControl());
+        assertEquals("AA", ActiveCellEditorRegistry.getActiveCellEditor()
+                .getCanonicalValue());
+    }
+
+    @Test
+    public void directlyTypingInACellShoudlStartEditing() throws Exception {
+        // Press 'A'
+        natTable.enableEditingOnAllCells();
+        natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+        natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('A'));
+
+        // Verify edit mode
+        assertNotNull(natTable.getActiveCellEditor());
+        assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
+        assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+        assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor()
+                .getCanonicalValue());
+    }
+
+    @Test
+    public void mustCommitValidValuesOnPressingEnter() throws Exception {
+        natTable.enableEditingOnAllCells();
+
+        // Cell value is valid if starting with 'C'
+        DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
+        natTable.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
+        natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.DATA_VALIDATOR,
+                getStartingWithCValidator(), DisplayMode.EDIT, TEST_LABEL);
+
+        // Enter 'A' in the cell
+        natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+        natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('A'));
+        assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
+        assertFalse(natTable.getActiveCellEditor().validateCanonicalValue(
+                natTable.getActiveCellEditor().getCanonicalValue()));
+
+        // Press 'Enter'
+        natTable.getActiveCellEditor().getEditorControl()
+                .notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
+
+        // Value not committed
+        assertNotNull(natTable.getActiveCellEditor().getEditorControl());
+        assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
+        assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor()
+                .getEditorControl());
+        assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor()
+                .getCanonicalValue());
+
+        // Enter a valid value - 'C'
+        natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('C'));
+        assertNotNull(natTable.getActiveCellEditor().getEditorControl());
+        assertEquals("C", natTable.getActiveCellEditor().getCanonicalValue());
+        assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor()
+                .getEditorControl());
+        assertEquals("C", ActiveCellEditorRegistry.getActiveCellEditor()
+                .getCanonicalValue());
+
+        // Press 'Enter' again
+        natTable.getActiveCellEditor().getEditorControl()
+                .notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
+
+        // Value committed and editor closed
+        assertEquals("C", natTable.getCellByPosition(1, 1).getDataValue());
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    @Test
+    public void clickingOnTheCheckBoxMustToggleItsValue() throws Exception {
+        DefaultGridLayer layerStack = new DefaultGridLayer(
+                RowDataListFixture.getList(),
+                RowDataListFixture.getPropertyNames(),
+                RowDataListFixture.getPropertyToLabelMap());
+        natTable = new NatTableFixture(layerStack, 1200, 300, false);
+
+        // Enable editing
+        natTable.enableEditingOnAllCells();
+
+        // Calculate pixel value to click on
+        int columnIndex = RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.PUBLISH_FLAG_PROP_NAME);
+        int columnPosition = columnIndex + ROW_HEADER_COLUMN_COUNT;
+        int startX = natTable.getStartXOfColumnPosition(columnPosition);
+        int columnWidth = natTable.getColumnWidthByPosition(columnPosition);
+        int startY = natTable.getStartYOfRowPosition(1);
+        int rowHeight = natTable.getRowHeightByPosition(1);
+
+        // Register check box for the publish flag column
+        DataLayer bodyDataLayer = (DataLayer) layerStack.getBodyDataLayer();
+        natTable.registerLabelOnColumn(bodyDataLayer, columnIndex, TEST_LABEL);
+        registerCheckBoxEditor(natTable.getConfigRegistry(),
+                new CheckBoxPainter(), new CheckBoxCellEditor());
+
+        natTable.configure();
+
+        // Value before click
+        assertEquals(true, natTable.getDataValueByPosition(columnPosition, 1));
+
+        // Click on the check box
+        SWTUtils.leftClick(startX + (columnWidth / 2),
+                startY + (rowHeight / 2), SWT.NONE, natTable);
+
+        // Value After click
+        assertEquals(false, natTable.getDataValueByPosition(columnPosition, 1));
+    }
+
+    @Test
+    public void pressingESCMustDiscardTheValueEnteredAndCloseControl()
+            throws Exception {
+        natTable.enableEditingOnAllCells();
+
+        assertEquals("Col: 1, Row: 1", natTable.getDataValueByPosition(1, 1));
+
+        // Select cell, press A
+        natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+        SWTUtils.pressCharKey('A', natTable);
+
+        // Verify edit mode
+        assertNotNull(natTable.getActiveCellEditor());
+        assertEquals("A", natTable.getActiveCellEditor().getCanonicalValue());
+        assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+        assertEquals("A", ActiveCellEditorRegistry.getActiveCellEditor()
+                .getCanonicalValue());
+
+        // Press ESC
+        SWTUtils.pressKeyOnControl(SWT.ESC, natTable.getActiveCellEditor()
+                .getEditorControl());
+
+        // Verify state
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+        assertEquals("Col: 1, Row: 1", natTable.getDataValueByPosition(1, 1));
+    }
+
+    @Test
+    public void comboBoxShouldCommitWhenAValueIsSelectedByClickingOnIt()
+            throws Exception {
+        if (SWTUtils.isRunningOnUnix()) {
+            return;
+        }
+        DefaultGridLayer layerStack = new DefaultGridLayer(
+                RowDataListFixture.getList(),
+                RowDataListFixture.getPropertyNames(),
+                RowDataListFixture.getPropertyToLabelMap());
+        natTable = new NatTableFixture(layerStack, 1200, 300, false);
+
+        // Enable editing
+        natTable.enableEditingOnAllCells();
+
+        // Calculate pixel value to click on
+        int columnIndex = RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME);
+        int columnPosition = columnIndex + ROW_HEADER_COLUMN_COUNT;
+        int rowPosition = 0 + COLUMN_HEADER_ROW_COUNT;
+        int startX = natTable.getStartXOfColumnPosition(columnPosition);
+        int startY = natTable.getStartYOfRowPosition(1);
+
+        // Register combo box for the publish flag column
+        DataLayer bodyDataLayer = (DataLayer) layerStack.getBodyDataLayer();
+        natTable.registerLabelOnColumn(bodyDataLayer, columnIndex, TEST_LABEL);
+        registerComboBox(
+                natTable.getConfigRegistry(),
+                new ComboBoxPainter(),
+                new ComboBoxCellEditor(Arrays.asList(new PricingTypeBean("MN"),
+                        new PricingTypeBean("AT"))));
+
+        natTable.configure();
+
+        // Original value
+        assertTrue(natTable.getDataValueByPosition(columnPosition, rowPosition) instanceof PricingTypeBean);
+        assertEquals("MN",
+                natTable.getDataValueByPosition(columnPosition, rowPosition)
+                        .toString());
+
+        // Click - expand combo
+        SWTUtils.leftClick(startX + 10, startY + 10, SWT.NONE, natTable);
+
+        NatCombo combo = (NatCombo) natTable.getActiveCellEditor()
+                .getEditorControl();
+        assertNotNull(combo);
+        assertTrue(natTable.getActiveCellEditor().getCanonicalValue() instanceof PricingTypeBean);
+        assertEquals("MN", natTable.getActiveCellEditor().getCanonicalValue()
+                .toString());
+        assertTrue(ActiveCellEditorRegistry.getActiveCellEditor()
+                .getCanonicalValue() instanceof PricingTypeBean);
+        assertEquals("MN", ActiveCellEditorRegistry.getActiveCellEditor()
+                .getCanonicalValue().toString());
+
+        // Click - expand select value 'Automatic'
+        combo.select(1);
+        SWTUtils.leftClickOnCombo(startX + 10, startY + 35, SWT.NONE, combo);
+
+        assertTrue(natTable.getDataValueByPosition(columnPosition, rowPosition) instanceof PricingTypeBean);
+        assertEquals("AT",
+                natTable.getDataValueByPosition(columnPosition, rowPosition)
+                        .toString());
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    @Test
+    public void openEditorForSpannedCellsShouldOpenInline() throws Exception {
+        CompositeLayer layer = new CompositeLayer(1, 1);
+        SelectionLayer selectionLayer = new SelectionLayer(
+                new SpanningDataLayer(new DummySpanningBodyDataProvider(100,
+                        100)));
+        layer.setChildLayer(GridRegion.BODY, new ViewportLayer(selectionLayer),
+                0, 0);
+        natTable = new NatTableFixture(layer, 1200, 300, false);
+
+        layer.addConfiguration(new DefaultEditBindings());
+        layer.addConfiguration(new DefaultEditConfiguration());
+
+        natTable.enableEditingOnAllCells();
+
+        final boolean[] inlineFired = new boolean[1];
+        inlineFired[0] = false;
+        selectionLayer.addLayerListener(new ILayerListener() {
+
+            @Override
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof InlineCellEditEvent) {
+                    inlineFired[0] = true;
+                }
+            }
+        });
+
+        natTable.configure();
+
+        natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+        natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.F2));
+
+        // Verify edit mode
+        assertNotNull(natTable.getActiveCellEditor());
+        assertEquals("Col: 1, Row: 1", natTable.getActiveCellEditor()
+                .getCanonicalValue());
+        assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+        assertEquals("Col: 1, Row: 1", ActiveCellEditorRegistry
+                .getActiveCellEditor().getCanonicalValue());
+
+        // verify that inline editing is used and not dialog
+        assertTrue("No InlineCellEditEvent fired", inlineFired[0]);
+    }
+
+    @Test
+    public void updateAllUnderlyingCellsIfSpanned() throws Exception {
+        CompositeLayer layer = new CompositeLayer(1, 1);
+        DummySpanningBodyDataProvider dataProvider = new DummySpanningBodyDataProvider(
+                100, 100);
+        SelectionLayer selectionLayer = new SelectionLayer(
+                new SpanningDataLayer(dataProvider));
+        layer.setChildLayer(GridRegion.BODY, new ViewportLayer(selectionLayer),
+                0, 0);
+        natTable = new NatTableFixture(layer, 1200, 300, false);
+
+        layer.addConfiguration(new DefaultEditBindings());
+        layer.addConfiguration(new DefaultEditConfiguration());
+
+        natTable.enableEditingOnAllCells();
+
+        natTable.configure();
+
+        assertEquals("Col: 1, Row: 1", dataProvider.getDataValue(0, 0));
+        assertEquals("Col: 1, Row: 2", dataProvider.getDataValue(0, 1));
+        assertEquals("Col: 2, Row: 1", dataProvider.getDataValue(1, 0));
+        assertEquals("Col: 2, Row: 2", dataProvider.getDataValue(1, 1));
+
+        natTable.doCommand(new SelectCellCommand(natTable, 1, 1, false, false));
+        natTable.notifyListeners(SWT.KeyDown, SWTUtils.keyEventWithChar('C'));
+
+        assertNotNull(natTable.getActiveCellEditor());
+
+        natTable.getActiveCellEditor().getEditorControl()
+                .notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
+
+        assertEquals("C", dataProvider.getDataValue(0, 0));
+        assertEquals("C", dataProvider.getDataValue(0, 1));
+        assertEquals("C", dataProvider.getDataValue(1, 0));
+        assertEquals("C", dataProvider.getDataValue(1, 1));
+    }
+
+    /**
+     * Test case that ensures that the active editor is also available via the
+     * {@linkplain ActiveCellEditorRegistry}.
+     * <p>
+     * Ensures that the backward compatibility is not broken.
+     * </p>
+     */
+    @Test
+    public void testEditorRegisteredInActiveCellEditorRegistry() {
+        natTable.enableEditingOnAllCells();
+
+        ILayerCell cell = natTable.getCellByPosition(4, 4);
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+
+        assertNotNull(natTable.getActiveCellEditor());
+        assertNotNull(ActiveCellEditorRegistry.getActiveCellEditor());
+        assertEquals(natTable.getActiveCellEditor(),
+                ActiveCellEditorRegistry.getActiveCellEditor());
+
+        // Close the editor again
+        natTable.getActiveCellEditor().getEditorControl()
+                .notifyListeners(SWT.KeyDown, SWTUtils.keyEvent(SWT.CR));
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    /**
+     * Test case that ensures that an editor, which is committed through the
+     * {@linkplain EditUtils}, is also removed from the table.
+     * <p>
+     * Ensures that the backward compatibility is not broken.
+     * </p>
+     */
+    @Test
+    public void testEditorRemovedWhenCommitted() {
+        natTable.enableEditingOnAllCells();
+
+        ILayerCell cell = natTable.getCellByPosition(4, 4);
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+
+        Text editor = (Text) natTable.getActiveCellEditor().getEditorControl();
+        editor.setText("A");
+
+        // Close the again
+        EditUtils.commitAndCloseActiveEditor();
+
+        // check if value is saved and editor is gone
+        assertEquals("A", natTable.getCellByPosition(4, 4).getDataValue());
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    /**
+     * Test case that ensures that an editor, which is closed via API, is also
+     * removed from the table.
+     * <p>
+     * Ensures that the backward compatibility is not broken.
+     * </p>
+     */
+    @Test
+    public void testEditorRemovedWhenClosed() {
+        natTable.enableEditingOnAllCells();
+
+        ILayerCell cell = natTable.getCellByPosition(4, 4);
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), cell));
+
+        // close the editor
+        ActiveCellEditorRegistry.getActiveCellEditor().close();
+
+        // check if editor is gone
+        assertNull(natTable.getActiveCellEditor());
+        assertNull(ActiveCellEditorRegistry.getActiveCellEditor());
+    }
+
+    // *** Convenience methods ***.
+    // Mostly code from the EditableGridExample.
+    // The sane fixtures are used to ensure that the example keeps working
+    // without fail
+
+    private static void registerComboBox(ConfigRegistry configRegistry,
+            ICellPainter comboBoxCellPainter, ICellEditor comboBoxCellEditor) {
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER, comboBoxCellPainter,
+                DisplayMode.NORMAL, TEST_LABEL);
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
+                DisplayMode.NORMAL, TEST_LABEL);
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
+                DisplayMode.EDIT, TEST_LABEL);
+
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.DISPLAY_CONVERTER,
+                getPricingTypeDisplayConverter(), DisplayMode.NORMAL,
+                TEST_LABEL);
+    }
+
+    private static void registerCheckBoxEditor(ConfigRegistry configRegistry,
+            ICellPainter checkBoxCellPainter, ICellEditor checkBoxCellEditor) {
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER, checkBoxCellPainter,
+                DisplayMode.NORMAL, TEST_LABEL);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.DISPLAY_CONVERTER,
+                new DefaultBooleanDisplayConverter(), DisplayMode.NORMAL,
+                TEST_LABEL);
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITOR, checkBoxCellEditor,
+                DisplayMode.NORMAL, TEST_LABEL);
+    }
+
+    private static IDisplayConverter getPricingTypeDisplayConverter() {
+        return new DisplayConverter() {
+            @Override
+            public Object canonicalToDisplayValue(Object canonicalValue) {
+                if (canonicalValue == null) {
+                    return null;
+                } else {
+                    return canonicalValue.toString().equals("MN") ? "Manual"
+                            : "Automatic";
+                }
+            }
+
+            @Override
+            public Object displayToCanonicalValue(Object displayValue) {
+                return displayValue.toString().equals("Manual") ? new PricingTypeBean(
+                        "MN") : new PricingTypeBean("AT");
+            }
+        };
+    }
+
+    private IDataValidator getStartingWithCValidator() {
+        return new DataValidator() {
+            @Override
+            public boolean validate(int columnIndex, int rowIndex,
+                    Object newValue) {
+                String asString = newValue.toString();
+                return asString.startsWith("C");
+            }
+        };
+    }
 
 }
-

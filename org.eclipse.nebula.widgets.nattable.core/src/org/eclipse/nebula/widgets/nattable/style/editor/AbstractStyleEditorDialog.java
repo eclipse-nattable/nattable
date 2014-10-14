@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -27,120 +26,135 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class AbstractStyleEditorDialog extends Dialog {
 
-	private boolean cancelPressed = false;
-	private Point location;
+    private boolean cancelPressed = false;
+    private Point location;
 
-	public AbstractStyleEditorDialog(Shell parent) {
-		super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-	}
+    public AbstractStyleEditorDialog(Shell parent) {
+        super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+    }
 
-	public void setLocation(Point location) {
+    public void setLocation(Point location) {
         this.location = new Point(location.x, location.y);
-	}
-	
+    }
+
     private void setLocation(Shell shell) {
         if (location != null) {
-            if (this.location.x < getParent().getDisplay().getBounds().x) { 
+            if (this.location.x < getParent().getDisplay().getBounds().x) {
                 this.location.x = getParent().getDisplay().getBounds().x;
-            } else if (this.location.x + shell.getBounds().width > getParent().getDisplay().getBounds().x + getParent().getDisplay().getBounds().width) {
-                this.location.x = getParent().getDisplay().getBounds().x + getParent().getDisplay().getBounds().width - shell.getBounds().width;
+            } else if (this.location.x + shell.getBounds().width > getParent()
+                    .getDisplay().getBounds().x
+                    + getParent().getDisplay().getBounds().width) {
+                this.location.x = getParent().getDisplay().getBounds().x
+                        + getParent().getDisplay().getBounds().width
+                        - shell.getBounds().width;
             }
-            if (this.location.y + shell.getBounds().height > getParent().getDisplay().getBounds().y + getParent().getDisplay().getBounds().height) {
-                this.location.y = getParent().getDisplay().getBounds().y + getParent().getDisplay().getBounds().height - shell.getBounds().height;
+            if (this.location.y + shell.getBounds().height > getParent()
+                    .getDisplay().getBounds().y
+                    + getParent().getDisplay().getBounds().height) {
+                this.location.y = getParent().getDisplay().getBounds().y
+                        + getParent().getDisplay().getBounds().height
+                        - shell.getBounds().height;
             }
             shell.setLocation(location);
         }
     }
 
-	/**
-	 * Create all widgets to be displayed in the editor
-	 */
-	protected abstract void initComponents(Shell shell);
+    /**
+     * Create all widgets to be displayed in the editor
+     */
+    protected abstract void initComponents(Shell shell);
 
-	/**
-	 * Initialize and display the SWT shell. This is a blocking call.
-	 */
-	public void open() {
-		Shell shell = new Shell(getParent(), getStyle());
-		shell.setImage(GUIHelper.getImage("preferences")); //$NON-NLS-1$
-		shell.setText(getText());
+    /**
+     * Initialize and display the SWT shell. This is a blocking call.
+     */
+    public void open() {
+        Shell shell = new Shell(getParent(), getStyle());
+        shell.setImage(GUIHelper.getImage("preferences")); //$NON-NLS-1$
+        shell.setText(getText());
 
-		initComponents(shell);
-		createButtons(shell);
+        initComponents(shell);
+        createButtons(shell);
 
-		shell.pack();
-		setLocation(shell);
-		shell.open();
-		Display display = shell.getDisplay();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-	}
+        shell.pack();
+        setLocation(shell);
+        shell.open();
+        Display display = shell.getDisplay();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+    }
 
-	/**
-	 * Create OK, Reset and Cancel buttons
-	 */
-	protected void createButtons(final Shell shell) {
-		Composite buttonPanel = new Composite(shell, SWT.NONE);
+    /**
+     * Create OK, Reset and Cancel buttons
+     */
+    protected void createButtons(final Shell shell) {
+        Composite buttonPanel = new Composite(shell, SWT.NONE);
 
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 3;
-		gridLayout.makeColumnsEqualWidth = false;
-		gridLayout.horizontalSpacing = 2;
-		buttonPanel.setLayout(gridLayout);
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 3;
+        gridLayout.makeColumnsEqualWidth = false;
+        gridLayout.horizontalSpacing = 2;
+        buttonPanel.setLayout(gridLayout);
 
-		Button okButton = new Button(buttonPanel, SWT.PUSH);
-		okButton.setText(Messages.getString("AbstractStyleEditorDialog.okButton")); //$NON-NLS-1$
-		okButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				doFormOK(shell);
-			}
-		});
-		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).minSize(70, 25).grab(true, true).applyTo(okButton);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
 
-		Button clearButton = new Button(buttonPanel, SWT.PUSH);
-		clearButton.setText(Messages.getString("AbstractStyleEditorDialog.clearButton")); //$NON-NLS-1$
-		clearButton.setToolTipText(Messages.getString("AbstractStyleEditorDialog.clearButtonTooltip")); //$NON-NLS-1$
-		clearButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				doFormClear(shell);
-			}
-		});
-		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).minSize(80, 25).grab(false, false).applyTo(clearButton);
+        Button okButton = new Button(buttonPanel, SWT.PUSH);
+        okButton.setText(Messages
+                .getString("AbstractStyleEditorDialog.okButton")); //$NON-NLS-1$
+        okButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                doFormOK(shell);
+            }
+        });
+        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
+                .minSize(70, 25).grab(true, true).applyTo(okButton);
 
-		Button cancelButton = new Button(buttonPanel, SWT.NONE);
-		cancelButton.setText(Messages.getString("AbstractStyleEditorDialog.cancelButton")); //$NON-NLS-1$
-		cancelButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				doFormCancel(shell);
-			}
-		});
-		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM).minSize(80, 25).grab(false, false).applyTo(cancelButton);
+        Button clearButton = new Button(buttonPanel, SWT.PUSH);
+        clearButton.setText(Messages
+                .getString("AbstractStyleEditorDialog.clearButton")); //$NON-NLS-1$
+        clearButton.setToolTipText(Messages
+                .getString("AbstractStyleEditorDialog.clearButtonTooltip")); //$NON-NLS-1$
+        clearButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                doFormClear(shell);
+            }
+        });
+        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
+                .minSize(80, 25).grab(false, false).applyTo(clearButton);
 
-		shell.setDefaultButton(okButton);
-	}
+        Button cancelButton = new Button(buttonPanel, SWT.NONE);
+        cancelButton.setText(Messages
+                .getString("AbstractStyleEditorDialog.cancelButton")); //$NON-NLS-1$
+        cancelButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                doFormCancel(shell);
+            }
+        });
+        GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
+                .minSize(80, 25).grab(false, false).applyTo(cancelButton);
 
-	/**
-	 * Respond to the OK button press. Read new state from the form.
-	 */
-	protected abstract void doFormOK(Shell shell);
+        shell.setDefaultButton(okButton);
+    }
 
-	protected void doFormCancel(Shell shell) {
-		cancelPressed = true;
-		shell.dispose();
-	}
+    /**
+     * Respond to the OK button press. Read new state from the form.
+     */
+    protected abstract void doFormOK(Shell shell);
 
-	protected void doFormClear(Shell shell) {
-		shell.dispose();
-	}
+    protected void doFormCancel(Shell shell) {
+        cancelPressed = true;
+        shell.dispose();
+    }
 
-	public boolean isCancelPressed(){
-		return cancelPressed;
-	}
+    protected void doFormClear(Shell shell) {
+        shell.dispose();
+    }
+
+    public boolean isCancelPressed() {
+        return cancelPressed;
+    }
 }

@@ -48,28 +48,32 @@ public class BorderStyleEditorPanel extends AbstractEditorPanel<BorderStyle> {
     public void initComponents() {
         GridLayout gridLayout = new GridLayout(2, false);
         gridLayout.marginLeft = 10;
-		setLayout(gridLayout);
+        setLayout(gridLayout);
 
-        new Label(this, NONE).setText(Messages.getString("BorderStyleEditorPanel.noBorder")); //$NON-NLS-1$
+        new Label(this, NONE).setText(Messages
+                .getString("BorderStyleEditorPanel.noBorder")); //$NON-NLS-1$
 
         noBordersCheckBox = new Button(this, CHECK);
         noBordersCheckBox.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                    boolean noBorder = noBordersCheckBox.getSelection();
-                    colorPicker.setEnabled(!noBorder);
-                    thicknessPicker.setEnabled(!noBorder);
-                    lineStylePicker.setEnabled(!noBorder);
+                boolean noBorder = noBordersCheckBox.getSelection();
+                colorPicker.setEnabled(!noBorder);
+                thicknessPicker.setEnabled(!noBorder);
+                lineStylePicker.setEnabled(!noBorder);
             }
         });
 
-        new Label(this, NONE).setText(Messages.getString("BorderStyleEditorPanel.color")); //$NON-NLS-1$
+        new Label(this, NONE).setText(Messages
+                .getString("BorderStyleEditorPanel.color")); //$NON-NLS-1$
         colorPicker = new ColorPicker(this, GUIHelper.COLOR_WIDGET_BORDER);
 
-        new Label(this, NONE).setText(Messages.getString("BorderStyleEditorPanel.lineStyle")); //$NON-NLS-1$
+        new Label(this, NONE).setText(Messages
+                .getString("BorderStyleEditorPanel.lineStyle")); //$NON-NLS-1$
         lineStylePicker = new LineStylePicker(this);
 
-        new Label(this, NONE).setText(Messages.getString("BorderStyleEditorPanel.thickness")); //$NON-NLS-1$
+        new Label(this, NONE).setText(Messages
+                .getString("BorderStyleEditorPanel.thickness")); //$NON-NLS-1$
         thicknessPicker = new BorderThicknessPicker(this);
 
         // By default, no border is selected and all controls are disabled

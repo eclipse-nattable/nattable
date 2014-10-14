@@ -15,11 +15,10 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 
-
 public class DefaultBodyDataProvider<T> extends ListDataProvider<T> {
 
-	public DefaultBodyDataProvider(List<T> rowData, String[] propertyNames) {
-		super(rowData, new ReflectiveColumnPropertyAccessor<T>(propertyNames));
-	}
-	
+    public DefaultBodyDataProvider(List<T> rowData, String[] propertyNames) {
+        super(rowData, new ReflectiveColumnPropertyAccessor<T>(propertyNames));
+    }
+
 }

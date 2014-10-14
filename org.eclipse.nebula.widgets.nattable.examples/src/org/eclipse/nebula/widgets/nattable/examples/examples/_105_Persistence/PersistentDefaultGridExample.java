@@ -15,13 +15,13 @@ import org.eclipse.nebula.widgets.nattable.examples.examples._000_Default_NatTab
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 
 public class PersistentDefaultGridExample extends PersistentNatExampleWrapper {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new PersistentDefaultGridExample());
-	}
-	
-	public PersistentDefaultGridExample() {
-		super(new _000_Default_NatTable());
-	}
-	
+
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new PersistentDefaultGridExample());
+    }
+
+    public PersistentDefaultGridExample() {
+        super(new _000_Default_NatTable());
+    }
+
 }

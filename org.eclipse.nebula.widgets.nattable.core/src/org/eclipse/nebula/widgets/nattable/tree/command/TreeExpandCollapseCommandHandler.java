@@ -13,23 +13,24 @@ package org.eclipse.nebula.widgets.nattable.tree.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 
-public class TreeExpandCollapseCommandHandler extends AbstractLayerCommandHandler<TreeExpandCollapseCommand> {
+public class TreeExpandCollapseCommandHandler extends
+        AbstractLayerCommandHandler<TreeExpandCollapseCommand> {
 
-	private final TreeLayer treeLayer;
+    private final TreeLayer treeLayer;
 
-	public TreeExpandCollapseCommandHandler(TreeLayer treeLayer) {
-		this.treeLayer = treeLayer;
-	}
-	
-	public Class<TreeExpandCollapseCommand> getCommandClass() {
-		return TreeExpandCollapseCommand.class;
-	}
+    public TreeExpandCollapseCommandHandler(TreeLayer treeLayer) {
+        this.treeLayer = treeLayer;
+    }
 
-	@Override
-	protected boolean doCommand(TreeExpandCollapseCommand command) {
-		int parentIndex = command.getParentIndex();
-		this.treeLayer.expandOrCollapseIndex(parentIndex);
-		return true;
-	}
+    public Class<TreeExpandCollapseCommand> getCommandClass() {
+        return TreeExpandCollapseCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(TreeExpandCollapseCommand command) {
+        int parentIndex = command.getParentIndex();
+        this.treeLayer.expandOrCollapseIndex(parentIndex);
+        return true;
+    }
 
 }

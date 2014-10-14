@@ -15,8 +15,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent
 
 public class FilterAppliedEvent extends RowStructuralRefreshEvent {
 
-	public FilterAppliedEvent(ILayer layer) {
-		super(layer);
-	}
+    public FilterAppliedEvent(ILayer layer) {
+        super(layer);
+    }
 
 }

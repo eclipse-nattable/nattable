@@ -18,32 +18,33 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 /**
  * Command for showing hidden columns again via index.
  */
-public class MultiColumnShowCommand extends AbstractContextFreeCommand{
+public class MultiColumnShowCommand extends AbstractContextFreeCommand {
 
-	/**
-	 * The indexes of the columns that should be showed again.
-	 */
-	private final Collection<Integer> columnIndexes;
+    /**
+     * The indexes of the columns that should be showed again.
+     */
+    private final Collection<Integer> columnIndexes;
 
-	/**
-	 * 
-	 * @param columnIndexes The indexes of the columns that should be showed again.
-	 */
-	public MultiColumnShowCommand(Collection<Integer> columnIndexes) {
-		this.columnIndexes = columnIndexes;
-	}
+    /**
+     * 
+     * @param columnIndexes
+     *            The indexes of the columns that should be showed again.
+     */
+    public MultiColumnShowCommand(Collection<Integer> columnIndexes) {
+        this.columnIndexes = columnIndexes;
+    }
 
-	/**
-	 * 
-	 * @return The indexes of the columns that should be showed again.
-	 */
-	public Collection<Integer> getColumnIndexes() {
-		return columnIndexes;
-	}
+    /**
+     * 
+     * @return The indexes of the columns that should be showed again.
+     */
+    public Collection<Integer> getColumnIndexes() {
+        return columnIndexes;
+    }
 
-	
-	@Override
-	public MultiColumnShowCommand cloneCommand() {
-		return new MultiColumnShowCommand(new ArrayList<Integer>(this.columnIndexes));
-	}
+    @Override
+    public MultiColumnShowCommand cloneCommand() {
+        return new MultiColumnShowCommand(new ArrayList<Integer>(
+                this.columnIndexes));
+    }
 }

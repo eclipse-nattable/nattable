@@ -27,124 +27,135 @@ import org.eclipse.nebula.widgets.nattable.tickupdate.ITickUpdateHandler;
 import org.eclipse.nebula.widgets.nattable.tickupdate.TickUpdateConfigAttributes;
 
 /**
- * The command handler that will handle {@link TickUpdateCommand}s on selected cells.
+ * The command handler that will handle {@link TickUpdateCommand}s on selected
+ * cells.
  */
-public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUpdateCommand> {
+public class TickUpdateCommandHandler extends
+        AbstractLayerCommandHandler<TickUpdateCommand> {
 
-	private static final Log log = LogFactory.getLog(TickUpdateCommandHandler.class);
-	
-	/**
-	 * The {@link SelectionLayer} needed to retrieve the selected cells on
-	 * which the tick update should be processed.
-	 */
-	private SelectionLayer selectionLayer;
+    private static final Log log = LogFactory
+            .getLog(TickUpdateCommandHandler.class);
 
-	/**
-	 * @param selectionLayer The {@link SelectionLayer} needed to retrieve the selected cells on
-	 * 			which the tick update should be processed.
-	 */
-	public TickUpdateCommandHandler(SelectionLayer selectionLayer) {
-		this.selectionLayer = selectionLayer;
-	}
+    /**
+     * The {@link SelectionLayer} needed to retrieve the selected cells on which
+     * the tick update should be processed.
+     */
+    private SelectionLayer selectionLayer;
 
-	@Override
-	public boolean doCommand(TickUpdateCommand command) {
-		PositionCoordinate[] selectedPositions = selectionLayer.getSelectedCellPositions();
-		IConfigRegistry configRegistry = command.getConfigRegistry();
-		
-		// Tick update for multiple cells in selection 
-		if (selectedPositions.length > 1) {
-			// Can all cells be updated ?
-			if (EditUtils.allCellsEditable(selectionLayer, configRegistry)
-					&& EditUtils.isEditorSame(selectionLayer, configRegistry) 
-					&& EditUtils.isConverterSame(selectionLayer, configRegistry)) {
-				for (PositionCoordinate position : selectedPositions) {
-					updateSingleCell(command, position);
-				}
-			}
-		} else {
-			// Tick update for single selected cell
-			updateSingleCell(command, selectionLayer.getLastSelectedCellPosition());
-		}
+    /**
+     * @param selectionLayer
+     *            The {@link SelectionLayer} needed to retrieve the selected
+     *            cells on which the tick update should be processed.
+     */
+    public TickUpdateCommandHandler(SelectionLayer selectionLayer) {
+        this.selectionLayer = selectionLayer;
+    }
 
-		return true;
-	}
+    @Override
+    public boolean doCommand(TickUpdateCommand command) {
+        PositionCoordinate[] selectedPositions = selectionLayer
+                .getSelectedCellPositions();
+        IConfigRegistry configRegistry = command.getConfigRegistry();
 
-	/**
-	 * Will calculate the new value after tick update processing for the cell at the given coordinates,
-	 * trying to update the value represented by that cell. The update will only be processed if the
-	 * new value is valid. 
-	 * @param command The command to process
- 	 * @param selectedPosition The coordinates of the cell on which the tick update
- 	 * 			should be executed
-	 */
-	private void updateSingleCell(TickUpdateCommand command, PositionCoordinate selectedPosition) {
-		ILayerCell cell = selectionLayer.getCellByPosition(
-				selectedPosition.columnPosition, selectedPosition.rowPosition);
-		
-		IConfigRegistry configRegistry = command.getConfigRegistry();
-		
-		IEditableRule editableRule = configRegistry.getConfigAttribute(
-				EditConfigAttributes.CELL_EDITABLE_RULE, 
-				DisplayMode.EDIT,
-				cell.getConfigLabels().getLabels());
-		
-		IDataValidator validator = configRegistry.getConfigAttribute(
-				EditConfigAttributes.DATA_VALIDATOR, 
-				DisplayMode.EDIT, 
-				cell.getConfigLabels().getLabels());
-		
-		if (editableRule.isEditable(cell, configRegistry)) {
-			//process the tick update
-			Object newValue = getNewCellValue(command, cell);
-			//validate the value
-			try {
-				if (validator == null || validator.validate(cell, configRegistry, newValue)) {
-					selectionLayer.doCommand(new UpdateDataCommand(
-							selectionLayer,
-							selectedPosition.columnPosition, 
-							selectedPosition.rowPosition,
-							newValue));
-				}
-				else {
-					log.warn("Tick update failed for cell at " + selectedPosition + " and value " + newValue //$NON-NLS-1$ //$NON-NLS-2$
-							+ ". New value is not valid!"); //$NON-NLS-1$
-				}
-			}
-			catch (Exception e) {
-				log.warn("Tick update failed for cell at " + selectedPosition + " and value " + newValue //$NON-NLS-1$ //$NON-NLS-2$
-						+ ". " + e.getLocalizedMessage()); //$NON-NLS-1$
-			}
-		}
-	}
+        // Tick update for multiple cells in selection
+        if (selectedPositions.length > 1) {
+            // Can all cells be updated ?
+            if (EditUtils.allCellsEditable(selectionLayer, configRegistry)
+                    && EditUtils.isEditorSame(selectionLayer, configRegistry)
+                    && EditUtils
+                            .isConverterSame(selectionLayer, configRegistry)) {
+                for (PositionCoordinate position : selectedPositions) {
+                    updateSingleCell(command, position);
+                }
+            }
+        } else {
+            // Tick update for single selected cell
+            updateSingleCell(command,
+                    selectionLayer.getLastSelectedCellPosition());
+        }
 
-	/**
-	 * Will calculate the new value for the given cell after tick update is processed.
-	 * @param command The command to process
-	 * @param cell The cell on which the command should be processed
-	 * @return The processed value after the command was executed on the current cell value
-	 */
-	private Object getNewCellValue(TickUpdateCommand command, ILayerCell cell) {
-		ITickUpdateHandler tickUpdateHandler = command.getConfigRegistry().getConfigAttribute(
-				TickUpdateConfigAttributes.UPDATE_HANDLER,
-				DisplayMode.EDIT, 
-				cell.getConfigLabels().getLabels());
+        return true;
+    }
 
-		Object dataValue = cell.getDataValue();
+    /**
+     * Will calculate the new value after tick update processing for the cell at
+     * the given coordinates, trying to update the value represented by that
+     * cell. The update will only be processed if the new value is valid.
+     * 
+     * @param command
+     *            The command to process
+     * @param selectedPosition
+     *            The coordinates of the cell on which the tick update should be
+     *            executed
+     */
+    private void updateSingleCell(TickUpdateCommand command,
+            PositionCoordinate selectedPosition) {
+        ILayerCell cell = selectionLayer.getCellByPosition(
+                selectedPosition.columnPosition, selectedPosition.rowPosition);
 
-		if (tickUpdateHandler != null && tickUpdateHandler.isApplicableFor(dataValue)) {
-			if (command.isIncrement()) {
-				return tickUpdateHandler.getIncrementedValue(dataValue);
-			} else {
-				return tickUpdateHandler.getDecrementedValue(dataValue);
-			}
-		} else {
-			return dataValue;
-		}
-	}
+        IConfigRegistry configRegistry = command.getConfigRegistry();
 
-	@Override
-	public Class<TickUpdateCommand> getCommandClass() {
-		return TickUpdateCommand.class;
-	}
+        IEditableRule editableRule = configRegistry.getConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE, DisplayMode.EDIT, cell
+                        .getConfigLabels().getLabels());
+
+        IDataValidator validator = configRegistry.getConfigAttribute(
+                EditConfigAttributes.DATA_VALIDATOR, DisplayMode.EDIT, cell
+                        .getConfigLabels().getLabels());
+
+        if (editableRule.isEditable(cell, configRegistry)) {
+            // process the tick update
+            Object newValue = getNewCellValue(command, cell);
+            // validate the value
+            try {
+                if (validator == null
+                        || validator.validate(cell, configRegistry, newValue)) {
+                    selectionLayer.doCommand(new UpdateDataCommand(
+                            selectionLayer, selectedPosition.columnPosition,
+                            selectedPosition.rowPosition, newValue));
+                } else {
+                    log.warn("Tick update failed for cell at " + selectedPosition + " and value " + newValue //$NON-NLS-1$ //$NON-NLS-2$
+                            + ". New value is not valid!"); //$NON-NLS-1$
+                }
+            } catch (Exception e) {
+                log.warn("Tick update failed for cell at " + selectedPosition + " and value " + newValue //$NON-NLS-1$ //$NON-NLS-2$
+                        + ". " + e.getLocalizedMessage()); //$NON-NLS-1$
+            }
+        }
+    }
+
+    /**
+     * Will calculate the new value for the given cell after tick update is
+     * processed.
+     * 
+     * @param command
+     *            The command to process
+     * @param cell
+     *            The cell on which the command should be processed
+     * @return The processed value after the command was executed on the current
+     *         cell value
+     */
+    private Object getNewCellValue(TickUpdateCommand command, ILayerCell cell) {
+        ITickUpdateHandler tickUpdateHandler = command.getConfigRegistry()
+                .getConfigAttribute(TickUpdateConfigAttributes.UPDATE_HANDLER,
+                        DisplayMode.EDIT, cell.getConfigLabels().getLabels());
+
+        Object dataValue = cell.getDataValue();
+
+        if (tickUpdateHandler != null
+                && tickUpdateHandler.isApplicableFor(dataValue)) {
+            if (command.isIncrement()) {
+                return tickUpdateHandler.getIncrementedValue(dataValue);
+            } else {
+                return tickUpdateHandler.getDecrementedValue(dataValue);
+            }
+        } else {
+            return dataValue;
+        }
+    }
+
+    @Override
+    public Class<TickUpdateCommand> getCommandClass() {
+        return TickUpdateCommand.class;
+    }
 }

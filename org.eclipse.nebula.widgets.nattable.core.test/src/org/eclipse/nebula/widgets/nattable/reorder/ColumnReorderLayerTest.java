@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -34,270 +33,285 @@ import org.junit.Test;
 
 public class ColumnReorderLayerTest {
 
-	private IUniqueIndexLayer underlyingLayer;
-	private ColumnReorderLayer columnReorderLayer;
+    private IUniqueIndexLayer underlyingLayer;
+    private ColumnReorderLayer columnReorderLayer;
 
-	@Before
-	public void setUp() {
-		underlyingLayer = new BaseDataLayerFixture(4,4);
-		columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
-	}
+    @Before
+    public void setUp() {
+        underlyingLayer = new BaseDataLayerFixture(4, 4);
+        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+    }
 
-	@Test
-	public void reorderViewableColumnsRightToLeft() throws Exception {
-		// 0 1 2 3
-		assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
-		assertEquals(3, columnReorderLayer.getColumnIndexByPosition(3));
+    @Test
+    public void reorderViewableColumnsRightToLeft() throws Exception {
+        // 0 1 2 3
+        assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
+        assertEquals(3, columnReorderLayer.getColumnIndexByPosition(3));
 
-		// 3 0 1 2
-		columnReorderLayer.reorderColumnPosition(3, 0);
-		assertEquals(1, columnReorderLayer.getColumnPositionByIndex(0));
-		assertEquals(0, columnReorderLayer.getColumnPositionByIndex(3));
+        // 3 0 1 2
+        columnReorderLayer.reorderColumnPosition(3, 0);
+        assertEquals(1, columnReorderLayer.getColumnPositionByIndex(0));
+        assertEquals(0, columnReorderLayer.getColumnPositionByIndex(3));
 
-		assertEquals(3, columnReorderLayer.getColumnIndexByPosition(0));
-		assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
+        assertEquals(3, columnReorderLayer.getColumnIndexByPosition(0));
+        assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
 
-		// 0 1 3 2
-		columnReorderLayer.reorderColumnPosition(0, 3);
-		assertEquals(0, columnReorderLayer.getColumnPositionByIndex(0));
-		assertEquals(1, columnReorderLayer.getColumnPositionByIndex(1));
-		assertEquals(2, columnReorderLayer.getColumnPositionByIndex(3));
-		assertEquals(3, columnReorderLayer.getColumnPositionByIndex(2));
+        // 0 1 3 2
+        columnReorderLayer.reorderColumnPosition(0, 3);
+        assertEquals(0, columnReorderLayer.getColumnPositionByIndex(0));
+        assertEquals(1, columnReorderLayer.getColumnPositionByIndex(1));
+        assertEquals(2, columnReorderLayer.getColumnPositionByIndex(3));
+        assertEquals(3, columnReorderLayer.getColumnPositionByIndex(2));
 
-		assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
-		assertEquals(1, columnReorderLayer.getColumnIndexByPosition(1));
-		assertEquals(3, columnReorderLayer.getColumnIndexByPosition(2));
-		assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
-	}
+        assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
+        assertEquals(1, columnReorderLayer.getColumnIndexByPosition(1));
+        assertEquals(3, columnReorderLayer.getColumnIndexByPosition(2));
+        assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
+    }
 
-	@Test
-	/**
-	 * 	Index		1	2	3	0
-	 *          --------------------
-	 *  Position 	0 	1	2	3
-	 */
-	public void reorderViewableColumnsLeftToRightByPosition() throws Exception {
-		// Moving to the end
-		columnReorderLayer.reorderColumnPosition(0, 4);
+    @Test
+    /**
+     * 	Index		1	2	3	0
+     *          --------------------
+     *  Position 	0 	1	2	3
+     */
+    public void reorderViewableColumnsLeftToRightByPosition() throws Exception {
+        // Moving to the end
+        columnReorderLayer.reorderColumnPosition(0, 4);
 
-		assertEquals(2, columnReorderLayer.getColumnPositionByIndex(3));
-		assertEquals(3, columnReorderLayer.getColumnPositionByIndex(0));
+        assertEquals(2, columnReorderLayer.getColumnPositionByIndex(3));
+        assertEquals(3, columnReorderLayer.getColumnPositionByIndex(0));
 
-		assertEquals(0, columnReorderLayer.getColumnIndexByPosition(3));
-		assertEquals(1, columnReorderLayer.getColumnIndexByPosition(0));
-	}
+        assertEquals(0, columnReorderLayer.getColumnIndexByPosition(3));
+        assertEquals(1, columnReorderLayer.getColumnIndexByPosition(0));
+    }
 
-	@SuppressWarnings("boxing")
-	@Test
-	/**
-	 * 	Index		2 	0	1	3
-	 *          --------------------
-	 *  Position 	0 	1	2	3
-	 */
-	public void reorderMultipleColumnsLeftToRight() throws Exception {
-		List<Integer> fromColumnPositions = Arrays.asList(new Integer[]{0, 1});
+    @SuppressWarnings("boxing")
+    @Test
+    /**
+     * 	Index		2 	0	1	3
+     *          --------------------
+     *  Position 	0 	1	2	3
+     */
+    public void reorderMultipleColumnsLeftToRight() throws Exception {
+        List<Integer> fromColumnPositions = Arrays
+                .asList(new Integer[] { 0, 1 });
 
-		columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 3);
+        columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
+                3);
 
-		assertEquals(2, columnReorderLayer.getColumnIndexByPosition(0));
-		assertEquals(0, columnReorderLayer.getColumnIndexByPosition(1));
-		assertEquals(1, columnReorderLayer.getColumnIndexByPosition(2));
-		assertEquals(3, columnReorderLayer.getColumnIndexByPosition(3));
-	}
-	@SuppressWarnings("boxing")
-	@Test
-	/**
-	 * 	Index		2 	3	0	1
-	 *          --------------------
-	 *  Position 	0 	1	2	3
-	 */
-	public void reorderMultipleColumnsLeftToRightToTheEnd() throws Exception {
-		List<Integer> fromColumnPositions = Arrays.asList(new Integer[]{0, 1});
+        assertEquals(2, columnReorderLayer.getColumnIndexByPosition(0));
+        assertEquals(0, columnReorderLayer.getColumnIndexByPosition(1));
+        assertEquals(1, columnReorderLayer.getColumnIndexByPosition(2));
+        assertEquals(3, columnReorderLayer.getColumnIndexByPosition(3));
+    }
 
-		columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 4);
+    @SuppressWarnings("boxing")
+    @Test
+    /**
+     * 	Index		2 	3	0	1
+     *          --------------------
+     *  Position 	0 	1	2	3
+     */
+    public void reorderMultipleColumnsLeftToRightToTheEnd() throws Exception {
+        List<Integer> fromColumnPositions = Arrays
+                .asList(new Integer[] { 0, 1 });
 
-		assertEquals(2, columnReorderLayer.getColumnIndexByPosition(0));
-		assertEquals(3, columnReorderLayer.getColumnIndexByPosition(1));
-		assertEquals(0, columnReorderLayer.getColumnIndexByPosition(2));
-		assertEquals(1, columnReorderLayer.getColumnIndexByPosition(3));
-	}
+        columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
+                4);
 
-	@Test
-	/**
-	 * 	Index		0	1	3	2
-	 *          --------------------
-	 *  Position 	0 	1	2	3
-	 */
-	public void reorderViewableColumnsRightToLeftByPosition() throws Exception {
-		columnReorderLayer.reorderColumnPosition(3, 2);
+        assertEquals(2, columnReorderLayer.getColumnIndexByPosition(0));
+        assertEquals(3, columnReorderLayer.getColumnIndexByPosition(1));
+        assertEquals(0, columnReorderLayer.getColumnIndexByPosition(2));
+        assertEquals(1, columnReorderLayer.getColumnIndexByPosition(3));
+    }
 
-		assertEquals(2, columnReorderLayer.getColumnPositionByIndex(3));
-		assertEquals(0, columnReorderLayer.getColumnPositionByIndex(0));
+    @Test
+    /**
+     * 	Index		0	1	3	2
+     *          --------------------
+     *  Position 	0 	1	2	3
+     */
+    public void reorderViewableColumnsRightToLeftByPosition() throws Exception {
+        columnReorderLayer.reorderColumnPosition(3, 2);
 
-		assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
-		assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
-	}
+        assertEquals(2, columnReorderLayer.getColumnPositionByIndex(3));
+        assertEquals(0, columnReorderLayer.getColumnPositionByIndex(0));
 
-	@SuppressWarnings("boxing")
-	@Test
-	/**
-	 * 	Index		2	3	0	1
-	 *          --------------------
-	 *  Position 	0 	1	2	3
-	 */
-	public void reorderMultipleColumnsRightToLeft() throws Exception {
-		List<Integer> fromColumnPositions = Arrays.asList(new Integer[]{2, 3});
+        assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
+        assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
+    }
 
-		columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 0);
+    @SuppressWarnings("boxing")
+    @Test
+    /**
+     * 	Index		2	3	0	1
+     *          --------------------
+     *  Position 	0 	1	2	3
+     */
+    public void reorderMultipleColumnsRightToLeft() throws Exception {
+        List<Integer> fromColumnPositions = Arrays
+                .asList(new Integer[] { 2, 3 });
 
-		assertEquals(2, columnReorderLayer.getColumnIndexByPosition(0));
-		assertEquals(3, columnReorderLayer.getColumnIndexByPosition(1));
-		assertEquals(0, columnReorderLayer.getColumnIndexByPosition(2));
-		assertEquals(1, columnReorderLayer.getColumnIndexByPosition(3));
-	}
+        columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
+                0);
 
-	@SuppressWarnings("boxing")
-	@Test
-	/**
-	 * 	Index		2	3	0	1 ... 20
-	 *          --------------------
-	 *  Position 	0 	1	2	3 ... 20
-	 */
-	public void reorderMultipleColumnsLargeArrayToEdges() throws Exception {
+        assertEquals(2, columnReorderLayer.getColumnIndexByPosition(0));
+        assertEquals(3, columnReorderLayer.getColumnIndexByPosition(1));
+        assertEquals(0, columnReorderLayer.getColumnIndexByPosition(2));
+        assertEquals(1, columnReorderLayer.getColumnIndexByPosition(3));
+    }
 
-		ColumnReorderLayer reorderLayer = new ColumnReorderLayer(new BaseDataLayerFixture(20, 20));
+    @SuppressWarnings("boxing")
+    @Test
+    /**
+     * 	Index		2	3	0	1 ... 20
+     *          --------------------
+     *  Position 	0 	1	2	3 ... 20
+     */
+    public void reorderMultipleColumnsLargeArrayToEdges() throws Exception {
 
-		List<Integer> fromColumnPositions = Arrays.asList(new Integer[]{10, 11, 12, 13});
+        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(
+                new BaseDataLayerFixture(20, 20));
 
-		reorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 0);
+        List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 10,
+                11, 12, 13 });
 
-		assertEquals(10, reorderLayer.getColumnIndexByPosition(0));
-		assertEquals(11, reorderLayer.getColumnIndexByPosition(1));
-		assertEquals(12, reorderLayer.getColumnIndexByPosition(2));
-		assertEquals(13, reorderLayer.getColumnIndexByPosition(3));
-		assertEquals(0, reorderLayer.getColumnIndexByPosition(4));
+        reorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 0);
 
-		fromColumnPositions = Arrays.asList(new Integer[]{8, 9, 10, 11});
+        assertEquals(10, reorderLayer.getColumnIndexByPosition(0));
+        assertEquals(11, reorderLayer.getColumnIndexByPosition(1));
+        assertEquals(12, reorderLayer.getColumnIndexByPosition(2));
+        assertEquals(13, reorderLayer.getColumnIndexByPosition(3));
+        assertEquals(0, reorderLayer.getColumnIndexByPosition(4));
 
-		reorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 8);
+        fromColumnPositions = Arrays.asList(new Integer[] { 8, 9, 10, 11 });
 
-		assertEquals(4, reorderLayer.getColumnIndexByPosition(8));
-		assertEquals(5, reorderLayer.getColumnIndexByPosition(9));
-		assertEquals(6, reorderLayer.getColumnIndexByPosition(10));
-		assertEquals(7, reorderLayer.getColumnIndexByPosition(11));
+        reorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 8);
 
-		fromColumnPositions = Arrays.asList(new Integer[]{8, 9, 10, 11});
+        assertEquals(4, reorderLayer.getColumnIndexByPosition(8));
+        assertEquals(5, reorderLayer.getColumnIndexByPosition(9));
+        assertEquals(6, reorderLayer.getColumnIndexByPosition(10));
+        assertEquals(7, reorderLayer.getColumnIndexByPosition(11));
 
-		reorderLayer.reorderMultipleColumnPositions(fromColumnPositions, reorderLayer.getColumnCount());
+        fromColumnPositions = Arrays.asList(new Integer[] { 8, 9, 10, 11 });
 
-		/*System.out.println("\n"); // See output for idea on what is going on
-		for (int i = 0; i < reorderLayer.getColumnCount(); i++)
-			System.out.println(i  + "\t" + reorderLayer.getColumnIndexByPosition(i));*/
+        reorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
+                reorderLayer.getColumnCount());
 
-		assertEquals(7, reorderLayer.getColumnIndexByPosition(19));
-		assertEquals(6, reorderLayer.getColumnIndexByPosition(18));
-		assertEquals(5, reorderLayer.getColumnIndexByPosition(17));
-		assertEquals(4, reorderLayer.getColumnIndexByPosition(16));
-	}
+        /*
+         * System.out.println("\n"); // See output for idea on what is going on
+         * for (int i = 0; i < reorderLayer.getColumnCount(); i++)
+         * System.out.println(i + "\t" +
+         * reorderLayer.getColumnIndexByPosition(i));
+         */
 
-	@Test
-	public void commandPassedOnToParentIfCannotBeHandled() throws Exception {
-		ColumnReorderLayer reorderLayer = new ColumnReorderLayer(new DataLayerFixture());
-		assertFalse(reorderLayer.doCommand(new LayerCommandFixture()));
-	}
+        assertEquals(7, reorderLayer.getColumnIndexByPosition(19));
+        assertEquals(6, reorderLayer.getColumnIndexByPosition(18));
+        assertEquals(5, reorderLayer.getColumnIndexByPosition(17));
+        assertEquals(4, reorderLayer.getColumnIndexByPosition(16));
+    }
 
-	@Test
-	public void canHandleColumnReorderCommand() throws Exception {
-		ColumnReorderLayer reorderLayer = new ColumnReorderLayer(new DataLayerFixture());
-		ColumnReorderCommand reorderCommand = new ColumnReorderCommand(reorderLayer, 0, 2);
-		assertTrue(reorderLayer.doCommand(reorderCommand));
-	}
+    @Test
+    public void commandPassedOnToParentIfCannotBeHandled() throws Exception {
+        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(
+                new DataLayerFixture());
+        assertFalse(reorderLayer.doCommand(new LayerCommandFixture()));
+    }
 
-	@Test
-	public void getWidthForReorderedColumns() throws Exception {
-		underlyingLayer = new DataLayerFixture();
-		columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+    @Test
+    public void canHandleColumnReorderCommand() throws Exception {
+        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(
+                new DataLayerFixture());
+        ColumnReorderCommand reorderCommand = new ColumnReorderCommand(
+                reorderLayer, 0, 2);
+        assertTrue(reorderLayer.doCommand(reorderCommand));
+    }
 
-		// 0 1 2 3 4 - see DataLayerFixture
-		columnReorderLayer.reorderColumnPosition(0, 5);
+    @Test
+    public void getWidthForReorderedColumns() throws Exception {
+        underlyingLayer = new DataLayerFixture();
+        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
 
-		// 1 2 3 4 0
-		Assert.assertEquals(100, columnReorderLayer.getColumnWidthByPosition(0));
-		Assert.assertEquals(35, columnReorderLayer.getColumnWidthByPosition(1));
-		Assert.assertEquals(100, columnReorderLayer.getColumnWidthByPosition(2));
-		Assert.assertEquals(80, columnReorderLayer.getColumnWidthByPosition(3));
-		Assert.assertEquals(150, columnReorderLayer.getColumnWidthByPosition(4));
-	}
+        // 0 1 2 3 4 - see DataLayerFixture
+        columnReorderLayer.reorderColumnPosition(0, 5);
 
-	@SuppressWarnings("boxing")
-	@Test
-	public void getWidthForMultipleColumnsReordering() throws Exception {
-		underlyingLayer = new DataLayerFixture();
-		columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+        // 1 2 3 4 0
+        Assert.assertEquals(100, columnReorderLayer.getColumnWidthByPosition(0));
+        Assert.assertEquals(35, columnReorderLayer.getColumnWidthByPosition(1));
+        Assert.assertEquals(100, columnReorderLayer.getColumnWidthByPosition(2));
+        Assert.assertEquals(80, columnReorderLayer.getColumnWidthByPosition(3));
+        Assert.assertEquals(150, columnReorderLayer.getColumnWidthByPosition(4));
+    }
 
-		// 0 1 2 3 4 - see DataLayerFixture
-		columnReorderLayer.reorderMultipleColumnPositions(Arrays.asList(1, 2), 5);
+    @SuppressWarnings("boxing")
+    @Test
+    public void getWidthForMultipleColumnsReordering() throws Exception {
+        underlyingLayer = new DataLayerFixture();
+        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
 
-		// 0 3 4 1 2
-		assertEquals(150, columnReorderLayer.getColumnWidthByPosition(0));
-		assertEquals(100, columnReorderLayer.getColumnWidthByPosition(1));
-		assertEquals(80, columnReorderLayer.getColumnWidthByPosition(2));
-		assertEquals(100, columnReorderLayer.getColumnWidthByPosition(3));
-		assertEquals(35, columnReorderLayer.getColumnWidthByPosition(4));
-	}
+        // 0 1 2 3 4 - see DataLayerFixture
+        columnReorderLayer.reorderMultipleColumnPositions(Arrays.asList(1, 2),
+                5);
 
-	@Test
-	public void getStartXForReorderedColumn() throws Exception {
-		underlyingLayer = new DataLayerFixture();
-		columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+        // 0 3 4 1 2
+        assertEquals(150, columnReorderLayer.getColumnWidthByPosition(0));
+        assertEquals(100, columnReorderLayer.getColumnWidthByPosition(1));
+        assertEquals(80, columnReorderLayer.getColumnWidthByPosition(2));
+        assertEquals(100, columnReorderLayer.getColumnWidthByPosition(3));
+        assertEquals(35, columnReorderLayer.getColumnWidthByPosition(4));
+    }
 
-		// 0 1 2 3 4 - see DataLayerFixture
-		columnReorderLayer.reorderColumnPosition(0, 5);
+    @Test
+    public void getStartXForReorderedColumn() throws Exception {
+        underlyingLayer = new DataLayerFixture();
+        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
 
-		// Index: 1 2 3 4 0 Width: 100 35 100 80 150
-		assertEquals(0, columnReorderLayer.getStartXOfColumnPosition(0));
-		assertEquals(100, columnReorderLayer.getStartXOfColumnPosition(1));
-		assertEquals(135, columnReorderLayer.getStartXOfColumnPosition(2));
-		assertEquals(235, columnReorderLayer.getStartXOfColumnPosition(3));
-		assertEquals(315, columnReorderLayer.getStartXOfColumnPosition(4));
-	}
+        // 0 1 2 3 4 - see DataLayerFixture
+        columnReorderLayer.reorderColumnPosition(0, 5);
 
-	@Test
-	public void getConfigLabelsByPosition() throws Exception {
-		DataLayer underlyingLayer = new DataLayerFixture();
-		columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
-		ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(underlyingLayer);
-		registerCellStyleAccumulators(underlyingLayer, columnLabelAccumulator);
+        // Index: 1 2 3 4 0 Width: 100 35 100 80 150
+        assertEquals(0, columnReorderLayer.getStartXOfColumnPosition(0));
+        assertEquals(100, columnReorderLayer.getStartXOfColumnPosition(1));
+        assertEquals(135, columnReorderLayer.getStartXOfColumnPosition(2));
+        assertEquals(235, columnReorderLayer.getStartXOfColumnPosition(3));
+        assertEquals(315, columnReorderLayer.getStartXOfColumnPosition(4));
+    }
 
-		columnLabelAccumulator.registerColumnOverrides(4, "INDEX_4_LABEL");
+    @Test
+    public void getConfigLabelsByPosition() throws Exception {
+        DataLayer underlyingLayer = new DataLayerFixture();
+        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
+                underlyingLayer);
+        registerCellStyleAccumulators(underlyingLayer, columnLabelAccumulator);
 
-		List<String> labelsForIndex4 = columnReorderLayer.getConfigLabelsByPosition(4, 0).getLabels();
-		assertEquals(2, labelsForIndex4.size());
-		assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
-		assertEquals("EVEN_BODY", labelsForIndex4.get(1));
+        columnLabelAccumulator.registerColumnOverrides(4, "INDEX_4_LABEL");
 
-		// 0 1 2 3 4 - see DataLayerFixture
-		columnReorderLayer.reorderColumnPosition(0, 5);
+        List<String> labelsForIndex4 = columnReorderLayer
+                .getConfigLabelsByPosition(4, 0).getLabels();
+        assertEquals(2, labelsForIndex4.size());
+        assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
+        assertEquals("EVEN_BODY", labelsForIndex4.get(1));
 
-		// Index: 1 2 3 4 0 Width: 100 35 100 80 150
-		labelsForIndex4 = columnReorderLayer.getConfigLabelsByPosition(3, 0).getLabels();
-		assertEquals(2, labelsForIndex4.size());
-		assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
-		assertEquals("EVEN_BODY", labelsForIndex4.get(1));
-	}
+        // 0 1 2 3 4 - see DataLayerFixture
+        columnReorderLayer.reorderColumnPosition(0, 5);
 
-	private void registerCellStyleAccumulators(DataLayer bodyDataLayer, ColumnOverrideLabelAccumulator columnLabelAccumulator) {
-		AggregrateConfigLabelAccumulator aggregrateConfigLabelAccumulator = new AggregrateConfigLabelAccumulator();
-		aggregrateConfigLabelAccumulator.add(columnLabelAccumulator, new AlternatingRowConfigLabelAccumulator());
-		bodyDataLayer.setConfigLabelAccumulator(aggregrateConfigLabelAccumulator);
-	}
+        // Index: 1 2 3 4 0 Width: 100 35 100 80 150
+        labelsForIndex4 = columnReorderLayer.getConfigLabelsByPosition(3, 0)
+                .getLabels();
+        assertEquals(2, labelsForIndex4.size());
+        assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
+        assertEquals("EVEN_BODY", labelsForIndex4.get(1));
+    }
+
+    private void registerCellStyleAccumulators(DataLayer bodyDataLayer,
+            ColumnOverrideLabelAccumulator columnLabelAccumulator) {
+        AggregrateConfigLabelAccumulator aggregrateConfigLabelAccumulator = new AggregrateConfigLabelAccumulator();
+        aggregrateConfigLabelAccumulator.add(columnLabelAccumulator,
+                new AlternatingRowConfigLabelAccumulator());
+        bodyDataLayer
+                .setConfigLabelAccumulator(aggregrateConfigLabelAccumulator);
+    }
 
 }
-
-
-
-
-
-
-
-

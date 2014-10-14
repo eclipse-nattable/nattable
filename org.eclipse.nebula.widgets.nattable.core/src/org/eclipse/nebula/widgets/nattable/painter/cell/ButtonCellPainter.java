@@ -29,93 +29,107 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * Paints a button and simulates a button click. It also notifies its listeners when it is clicked.  
+ * Paints a button and simulates a button click. It also notifies its listeners
+ * when it is clicked.
  */
-public class ButtonCellPainter extends AbstractCellPainter implements IMouseAction {
-	private final ICellPainter buttonRaisedPainter;
-	private final ICellPainter buttonPressedPainter;
+public class ButtonCellPainter extends AbstractCellPainter implements
+        IMouseAction {
+    private final ICellPainter buttonRaisedPainter;
+    private final ICellPainter buttonPressedPainter;
 
-	private int buttonFlashTime = 150;
+    private int buttonFlashTime = 150;
 
-	private int columnPosClicked;
-	private int rowPosClicked;
-	private boolean recentlyClicked;
-	private final List<IMouseAction> clickLiseners = new ArrayList<IMouseAction>();
+    private int columnPosClicked;
+    private int rowPosClicked;
+    private boolean recentlyClicked;
+    private final List<IMouseAction> clickLiseners = new ArrayList<IMouseAction>();
 
-	/**
-	 * @param interiorPainter to paint the contents of the cell. 
-	 * 	This will be decorated with a button like look and feel. 
-	 */
-	public ButtonCellPainter(ICellPainter interiorPainter) {
-		this.buttonPressedPainter = new BeveledBorderDecorator(interiorPainter, false);
-		this.buttonRaisedPainter = new BeveledBorderDecorator(interiorPainter);
-	}
+    /**
+     * @param interiorPainter
+     *            to paint the contents of the cell. This will be decorated with
+     *            a button like look and feel.
+     */
+    public ButtonCellPainter(ICellPainter interiorPainter) {
+        this.buttonPressedPainter = new BeveledBorderDecorator(interiorPainter,
+                false);
+        this.buttonRaisedPainter = new BeveledBorderDecorator(interiorPainter);
+    }
 
-	/**
-	 * @param buttonRaisedPainter cell painter to use for painting the button raised state.
-	 * @param buttonPressedPainter cell painter to use for painting the button pressed state.
-	 */
-	public ButtonCellPainter(ICellPainter buttonRaisedPainter, ICellPainter buttonPressedPainter) {
-		this.buttonRaisedPainter = buttonRaisedPainter;
-		this.buttonPressedPainter = buttonPressedPainter;
-	}
+    /**
+     * @param buttonRaisedPainter
+     *            cell painter to use for painting the button raised state.
+     * @param buttonPressedPainter
+     *            cell painter to use for painting the button pressed state.
+     */
+    public ButtonCellPainter(ICellPainter buttonRaisedPainter,
+            ICellPainter buttonPressedPainter) {
+        this.buttonRaisedPainter = buttonRaisedPainter;
+        this.buttonPressedPainter = buttonPressedPainter;
+    }
 
-	public void paintCell(final ILayerCell cell, final GC gc, final Rectangle bounds, final IConfigRegistry configRegistry) {
-		if (recentlyClicked && columnPosClicked == cell.getColumnPosition() && rowPosClicked == cell.getRowPosition()){
-			buttonPressedPainter.paintCell(cell, gc, bounds, configRegistry);
-		} else {
-			buttonRaisedPainter.paintCell(cell, gc, bounds, configRegistry);
-		}
-	}
+    public void paintCell(final ILayerCell cell, final GC gc,
+            final Rectangle bounds, final IConfigRegistry configRegistry) {
+        if (recentlyClicked && columnPosClicked == cell.getColumnPosition()
+                && rowPosClicked == cell.getRowPosition()) {
+            buttonPressedPainter.paintCell(cell, gc, bounds, configRegistry);
+        } else {
+            buttonRaisedPainter.paintCell(cell, gc, bounds, configRegistry);
+        }
+    }
 
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-		return cell.getBounds().height;
-	}
+    public int getPreferredHeight(ILayerCell cell, GC gc,
+            IConfigRegistry configRegistry) {
+        return cell.getBounds().height;
+    }
 
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-		return cell.getBounds().width;
-	}
+    public int getPreferredWidth(ILayerCell cell, GC gc,
+            IConfigRegistry configRegistry) {
+        return cell.getBounds().width;
+    }
 
-	private TimerTask getButtonFlashTimerTask(final ILayer layer){
-		return new TimerTask() {
-			@Override
-			public void run() {
-				recentlyClicked = false;
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						layer.fireLayerEvent(new CellVisualChangeEvent(layer, columnPosClicked, rowPosClicked));
-					}
-				});
-			}
-		};
-	}
+    private TimerTask getButtonFlashTimerTask(final ILayer layer) {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                recentlyClicked = false;
+                Display.getDefault().asyncExec(new Runnable() {
+                    public void run() {
+                        layer.fireLayerEvent(new CellVisualChangeEvent(layer,
+                                columnPosClicked, rowPosClicked));
+                    }
+                });
+            }
+        };
+    }
 
-	/**
-	 * Respond to mouse click. Simulate button press.
-	 */
-	public void run(final NatTable natTable, MouseEvent event) {
-		NatEventData eventData = (NatEventData) event.data;
-		columnPosClicked = eventData.getColumnPosition();
-		rowPosClicked = eventData.getRowPosition();
-		recentlyClicked = true;
+    /**
+     * Respond to mouse click. Simulate button press.
+     */
+    public void run(final NatTable natTable, MouseEvent event) {
+        NatEventData eventData = (NatEventData) event.data;
+        columnPosClicked = eventData.getColumnPosition();
+        rowPosClicked = eventData.getRowPosition();
+        recentlyClicked = true;
 
-		new Timer().schedule(getButtonFlashTimerTask(natTable), buttonFlashTime);
-		natTable.fireLayerEvent(new CellVisualChangeEvent(natTable, columnPosClicked, rowPosClicked));
+        new Timer()
+                .schedule(getButtonFlashTimerTask(natTable), buttonFlashTime);
+        natTable.fireLayerEvent(new CellVisualChangeEvent(natTable,
+                columnPosClicked, rowPosClicked));
 
-		for (IMouseAction listener : clickLiseners) {
-			listener.run(natTable, event);
-		}
-	}
+        for (IMouseAction listener : clickLiseners) {
+            listener.run(natTable, event);
+        }
+    }
 
-	public void addClickListener(IMouseAction mouseAction){
-		clickLiseners.add(mouseAction);
-	}
+    public void addClickListener(IMouseAction mouseAction) {
+        clickLiseners.add(mouseAction);
+    }
 
-	public void removeClickListener(IMouseAction mouseAction){
-		clickLiseners.remove(mouseAction);
-	}
+    public void removeClickListener(IMouseAction mouseAction) {
+        clickLiseners.remove(mouseAction);
+    }
 
-	public void setButtonFlashTime(int flashTimeInMS) {
-		buttonFlashTime = flashTimeInMS;
-	}
+    public void setButtonFlashTime(int flashTimeInMS) {
+        buttonFlashTime = flashTimeInMS;
+    }
 }

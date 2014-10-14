@@ -22,66 +22,71 @@ import org.eclipse.nebula.widgets.nattable.columnCategories.Node;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
 
 /**
- * Provides data to the tree viewer representation of Column categories.
- * Data is in the form of {@link Node} objects exposed from the {@link ColumnCategoriesModel}
+ * Provides data to the tree viewer representation of Column categories. Data is
+ * in the form of {@link Node} objects exposed from the
+ * {@link ColumnCategoriesModel}
  */
 public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 
-	private final ColumnCategoriesModel model;
-	private List<String> hiddenIndexes = new ArrayList<String>();
+    private final ColumnCategoriesModel model;
+    private List<String> hiddenIndexes = new ArrayList<String>();
 
-	public AvailableColumnCategoriesProvider(ColumnCategoriesModel model) {
-		this.model = model;
-	}
+    public AvailableColumnCategoriesProvider(ColumnCategoriesModel model) {
+        this.model = model;
+    }
 
-	/**
-	 * Hide the given {@link ColumnEntry} (ies) i.e. do not show them in the viewer. 
-	 * @param entriesToHide the entries to hide
-	 */
-	public void hideEntries(List<ColumnEntry> entriesToHide) {
-		for (ColumnEntry hiddenColumnEntry : entriesToHide) {
-			hiddenIndexes.add(String.valueOf(hiddenColumnEntry.getIndex()));
-		}
-	}
+    /**
+     * Hide the given {@link ColumnEntry} (ies) i.e. do not show them in the
+     * viewer.
+     * 
+     * @param entriesToHide
+     *            the entries to hide
+     */
+    public void hideEntries(List<ColumnEntry> entriesToHide) {
+        for (ColumnEntry hiddenColumnEntry : entriesToHide) {
+            hiddenIndexes.add(String.valueOf(hiddenColumnEntry.getIndex()));
+        }
+    }
 
-	public Object[] getChildren(Object parentElement) {
-		return getFilteredChildren(castToNode(parentElement).getChildren()).toArray();
-	}
+    public Object[] getChildren(Object parentElement) {
+        return getFilteredChildren(castToNode(parentElement).getChildren())
+                .toArray();
+    }
 
-	public Object getParent(Object element) {
-		return castToNode(element).getParent();
-	}
+    public Object getParent(Object element) {
+        return castToNode(element).getParent();
+    }
 
-	public boolean hasChildren(Object element) {
-		return getChildren(element).length > 0;
-	}
+    public boolean hasChildren(Object element) {
+        return getChildren(element).length > 0;
+    }
 
-	public Object[] getElements(Object inputElement) {
-		return isNull(model.getRootCategory())
-				? new Object[]{}
-				: getFilteredChildren(model.getRootCategory().getChildren()).toArray();
-	}
-	
-	private List<Node> getFilteredChildren(List<Node> allChildren) {
-		List<Node> children = new ArrayList<Node>(allChildren);
-		for (Node child : allChildren) {
-			if (hiddenIndexes.contains(child.getData())) {
-				children.remove(child);
-			}
-		}
-		return children;
-	}
+    public Object[] getElements(Object inputElement) {
+        return isNull(model.getRootCategory()) ? new Object[] {}
+                : getFilteredChildren(model.getRootCategory().getChildren())
+                        .toArray();
+    }
 
-	private Node castToNode(Object element) {
-		return (Node) element;
-	}
+    private List<Node> getFilteredChildren(List<Node> allChildren) {
+        List<Node> children = new ArrayList<Node>(allChildren);
+        for (Node child : allChildren) {
+            if (hiddenIndexes.contains(child.getData())) {
+                children.remove(child);
+            }
+        }
+        return children;
+    }
 
-	public void dispose() {
-		// No op.
-	}
+    private Node castToNode(Object element) {
+        return (Node) element;
+    }
 
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// No op.
-	}
+    public void dispose() {
+        // No op.
+    }
+
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        // No op.
+    }
 
 }

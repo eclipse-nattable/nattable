@@ -14,22 +14,21 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
-
 public class PersistableFixture implements IPersistable {
-	
-	public Properties loadedProperties;
-	public Properties savedProperties;
-	public boolean stateLoaded = false;
-	public boolean stateSaved = false;
 
-	public void loadState(String prefix, Properties properties) {
-		this.stateLoaded = true;
-		this.loadedProperties = properties;
-	}
+    public Properties loadedProperties;
+    public Properties savedProperties;
+    public boolean stateLoaded = false;
+    public boolean stateSaved = false;
 
-	public void saveState(String prefix, Properties properties) {
-		this.stateSaved = true;
-		this.savedProperties = properties;
-	}
+    public void loadState(String prefix, Properties properties) {
+        this.stateLoaded = true;
+        this.loadedProperties = properties;
+    }
+
+    public void saveState(String prefix, Properties properties) {
+        this.stateSaved = true;
+        this.savedProperties = properties;
+    }
 
 }

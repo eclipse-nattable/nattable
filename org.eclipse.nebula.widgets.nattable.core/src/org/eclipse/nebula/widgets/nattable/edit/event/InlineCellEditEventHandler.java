@@ -17,39 +17,43 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 
 /**
- * Event handler for handling {@link InlineCellEditEvent}s.
- * Used to activate editors for inline editing.
+ * Event handler for handling {@link InlineCellEditEvent}s. Used to activate
+ * editors for inline editing.
  * 
  * @see InlineCellEditEvent
  * @see EditSelectionCommandHandler
  */
-public class InlineCellEditEventHandler implements ILayerEventHandler<InlineCellEditEvent> {
-	
-	/**
-	 * The layer this event handler is associated with. Needed for the conversion of 
-	 * cell position coordinates.Usually this is a grid layer because this is the main 
-	 * cause for this event handler is needed.
-	 */
-	private final ILayer layer;
+public class InlineCellEditEventHandler implements
+        ILayerEventHandler<InlineCellEditEvent> {
 
-	/**
-	 * @param layer The layer this event handler is associated with. Needed for 
-	 * 			the conversion of cell position coordinates.
-	 */
-	public InlineCellEditEventHandler(ILayer layer) {
-		this.layer = layer;
-	}
+    /**
+     * The layer this event handler is associated with. Needed for the
+     * conversion of cell position coordinates.Usually this is a grid layer
+     * because this is the main cause for this event handler is needed.
+     */
+    private final ILayer layer;
 
-	@Override
-	public Class<InlineCellEditEvent> getLayerEventClass() {
-		return InlineCellEditEvent.class;
-	}
+    /**
+     * @param layer
+     *            The layer this event handler is associated with. Needed for
+     *            the conversion of cell position coordinates.
+     */
+    public InlineCellEditEventHandler(ILayer layer) {
+        this.layer = layer;
+    }
 
-	@Override
-	public void handleLayerEvent(InlineCellEditEvent event) {
-		if (event.convertToLocal(layer)) {
-			ILayerCell cell = layer.getCellByPosition(event.getColumnPosition(), event.getRowPosition());
-			EditController.editCell(cell, event.getParent(), event.getInitialValue(), event.getConfigRegistry());
-		}
-	}
+    @Override
+    public Class<InlineCellEditEvent> getLayerEventClass() {
+        return InlineCellEditEvent.class;
+    }
+
+    @Override
+    public void handleLayerEvent(InlineCellEditEvent event) {
+        if (event.convertToLocal(layer)) {
+            ILayerCell cell = layer.getCellByPosition(
+                    event.getColumnPosition(), event.getRowPosition());
+            EditController.editCell(cell, event.getParent(),
+                    event.getInitialValue(), event.getConfigRegistry());
+        }
+    }
 }

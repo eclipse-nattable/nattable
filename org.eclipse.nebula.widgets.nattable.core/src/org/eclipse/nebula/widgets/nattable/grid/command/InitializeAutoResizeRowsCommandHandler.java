@@ -15,32 +15,35 @@ import org.eclipse.nebula.widgets.nattable.resize.command.AutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
-public class InitializeAutoResizeRowsCommandHandler extends AbstractLayerCommandHandler<InitializeAutoResizeRowsCommand> {
+public class InitializeAutoResizeRowsCommandHandler extends
+        AbstractLayerCommandHandler<InitializeAutoResizeRowsCommand> {
 
-	private SelectionLayer selectionLayer;
+    private SelectionLayer selectionLayer;
 
-	public InitializeAutoResizeRowsCommandHandler(SelectionLayer selectionLayer) {
-		super();
-		this.selectionLayer = selectionLayer;
-	}
+    public InitializeAutoResizeRowsCommandHandler(SelectionLayer selectionLayer) {
+        super();
+        this.selectionLayer = selectionLayer;
+    }
 
-	public Class<InitializeAutoResizeRowsCommand> getCommandClass() {
-		return InitializeAutoResizeRowsCommand.class;
-	}
+    public Class<InitializeAutoResizeRowsCommand> getCommandClass() {
+        return InitializeAutoResizeRowsCommand.class;
+    }
 
-	@Override
-	protected boolean doCommand(InitializeAutoResizeRowsCommand initCommand) {
-		int rowPosition = initCommand.getRowPosition();
-		
-		if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
-			initCommand.setSelectedRowPositions(selectionLayer.getFullySelectedRowPositions());
-		} else {
-			initCommand.setSelectedRowPositions(new int[] { rowPosition });
-		}
+    @Override
+    protected boolean doCommand(InitializeAutoResizeRowsCommand initCommand) {
+        int rowPosition = initCommand.getRowPosition();
 
-		// Fire command carrying the selected columns
-		initCommand.getSourceLayer().doCommand(new AutoResizeRowsCommand(initCommand));
-		return true;
-	}
+        if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
+            initCommand.setSelectedRowPositions(selectionLayer
+                    .getFullySelectedRowPositions());
+        } else {
+            initCommand.setSelectedRowPositions(new int[] { rowPosition });
+        }
+
+        // Fire command carrying the selected columns
+        initCommand.getSourceLayer().doCommand(
+                new AutoResizeRowsCommand(initCommand));
+        return true;
+    }
 
 }

@@ -30,109 +30,109 @@ import org.eclipse.swt.events.MouseTrackListener;
  * different modes to be grouped together and isolated from each other.
  */
 public class ModeSupport implements KeyListener, MouseListener,
-		MouseMoveListener, MouseTrackListener, FocusListener {
+        MouseMoveListener, MouseTrackListener, FocusListener {
 
-	private Map<String, IModeEventHandler> modeEventHandlerMap = new HashMap<String, IModeEventHandler>();
+    private Map<String, IModeEventHandler> modeEventHandlerMap = new HashMap<String, IModeEventHandler>();
 
-	private IModeEventHandler currentModeEventHandler;
+    private IModeEventHandler currentModeEventHandler;
 
-	public ModeSupport(NatTable natTable) {
-		natTable.addKeyListener(this);
-		natTable.addMouseListener(this);
-		natTable.addMouseMoveListener(this);
-		natTable.addMouseTrackListener(this);
-		natTable.addFocusListener(this);
-	}
+    public ModeSupport(NatTable natTable) {
+        natTable.addKeyListener(this);
+        natTable.addMouseListener(this);
+        natTable.addMouseMoveListener(this);
+        natTable.addMouseTrackListener(this);
+        natTable.addFocusListener(this);
+    }
 
-	/**
-	 * Register an event handler to handle events for a given mode.
-	 * 
-	 * @param mode
-	 *            The mode.
-	 * @param modeEventHandler
-	 *            An IModeEventHandler instance that will handle events in the
-	 *            given mode.
-	 * 
-	 * @see IModeEventHandler
-	 */
-	public void registerModeEventHandler(String mode,
-			IModeEventHandler modeEventHandler) {
-		modeEventHandlerMap.put(mode, modeEventHandler);
-	}
+    /**
+     * Register an event handler to handle events for a given mode.
+     * 
+     * @param mode
+     *            The mode.
+     * @param modeEventHandler
+     *            An IModeEventHandler instance that will handle events in the
+     *            given mode.
+     * 
+     * @see IModeEventHandler
+     */
+    public void registerModeEventHandler(String mode,
+            IModeEventHandler modeEventHandler) {
+        modeEventHandlerMap.put(mode, modeEventHandler);
+    }
 
-	/**
-	 * Switch to the given mode.
-	 * 
-	 * @param mode
-	 *            The target mode to switch to.
-	 */
-	public void switchMode(String mode) {
-		if (currentModeEventHandler != null) {
-			currentModeEventHandler.cleanup();
-		}
-		currentModeEventHandler = modeEventHandlerMap.get(mode);
-	}
-	
-	public void switchMode(IModeEventHandler modeEventHandler) {
-		if (currentModeEventHandler != null) {
-			currentModeEventHandler.cleanup();
-		}
-		currentModeEventHandler = modeEventHandler;
-	}
+    /**
+     * Switch to the given mode.
+     * 
+     * @param mode
+     *            The target mode to switch to.
+     */
+    public void switchMode(String mode) {
+        if (currentModeEventHandler != null) {
+            currentModeEventHandler.cleanup();
+        }
+        currentModeEventHandler = modeEventHandlerMap.get(mode);
+    }
 
-	@Override
-	public void keyPressed(KeyEvent event) {
-		currentModeEventHandler.keyPressed(event);
-	}
+    public void switchMode(IModeEventHandler modeEventHandler) {
+        if (currentModeEventHandler != null) {
+            currentModeEventHandler.cleanup();
+        }
+        currentModeEventHandler = modeEventHandler;
+    }
 
-	@Override
-	public void keyReleased(KeyEvent event) {
-		currentModeEventHandler.keyReleased(event);
-	}
+    @Override
+    public void keyPressed(KeyEvent event) {
+        currentModeEventHandler.keyPressed(event);
+    }
 
-	@Override
-	public void mouseDoubleClick(MouseEvent event) {
-		currentModeEventHandler.mouseDoubleClick(event);
-	}
+    @Override
+    public void keyReleased(KeyEvent event) {
+        currentModeEventHandler.keyReleased(event);
+    }
 
-	@Override
-	public void mouseDown(MouseEvent event) {
-		currentModeEventHandler.mouseDown(event);
-	}
+    @Override
+    public void mouseDoubleClick(MouseEvent event) {
+        currentModeEventHandler.mouseDoubleClick(event);
+    }
 
-	@Override
-	public void mouseUp(MouseEvent event) {
-		currentModeEventHandler.mouseUp(event);
-	}
+    @Override
+    public void mouseDown(MouseEvent event) {
+        currentModeEventHandler.mouseDown(event);
+    }
 
-	@Override
-	public void mouseMove(MouseEvent event) {
-		currentModeEventHandler.mouseMove(event);
-	}
-	
-	@Override
-	public void mouseEnter(MouseEvent e) {
-		currentModeEventHandler.mouseEnter(e);
-	}
-	
-	@Override
-	public void mouseExit(MouseEvent e) {
-		currentModeEventHandler.mouseExit(e);
-	}
-	
-	@Override
-	public void mouseHover(MouseEvent e) {
-		currentModeEventHandler.mouseHover(e);
-	}
+    @Override
+    public void mouseUp(MouseEvent event) {
+        currentModeEventHandler.mouseUp(event);
+    }
 
-	@Override
-	public void focusGained(FocusEvent event) {
-		currentModeEventHandler.focusGained(event);
-	}
+    @Override
+    public void mouseMove(MouseEvent event) {
+        currentModeEventHandler.mouseMove(event);
+    }
 
-	@Override
-	public void focusLost(FocusEvent event) {
-		currentModeEventHandler.focusLost(event);
-	}
+    @Override
+    public void mouseEnter(MouseEvent e) {
+        currentModeEventHandler.mouseEnter(e);
+    }
+
+    @Override
+    public void mouseExit(MouseEvent e) {
+        currentModeEventHandler.mouseExit(e);
+    }
+
+    @Override
+    public void mouseHover(MouseEvent e) {
+        currentModeEventHandler.mouseHover(e);
+    }
+
+    @Override
+    public void focusGained(FocusEvent event) {
+        currentModeEventHandler.focusGained(event);
+    }
+
+    @Override
+    public void focusLost(FocusEvent event) {
+        currentModeEventHandler.focusLost(event);
+    }
 
 }

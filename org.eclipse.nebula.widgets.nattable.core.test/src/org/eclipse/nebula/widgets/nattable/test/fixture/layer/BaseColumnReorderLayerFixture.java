@@ -14,16 +14,18 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 
 /**
- * This fixture provides a base vanilla ColumnReorderLayer.  In order to keep a test's scope narrow, this class exposes the  
- * reorderColumnPositions method, this way we can reorder during testing without having to use commands.
+ * This fixture provides a base vanilla ColumnReorderLayer. In order to keep a
+ * test's scope narrow, this class exposes the reorderColumnPositions method,
+ * this way we can reorder during testing without having to use commands.
  */
-public class BaseColumnReorderLayerFixture extends ColumnReorderLayer{
+public class BaseColumnReorderLayerFixture extends ColumnReorderLayer {
 
-	public BaseColumnReorderLayerFixture(IUniqueIndexLayer underlyingLayer) {
-		super(underlyingLayer);
-	}
-	
-	public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition) {
-		super.reorderColumnPosition(fromColumnPosition, toColumnPosition);
-	}
+    public BaseColumnReorderLayerFixture(IUniqueIndexLayer underlyingLayer) {
+        super(underlyingLayer);
+    }
+
+    public void reorderColumnPosition(int fromColumnPosition,
+            int toColumnPosition) {
+        super.reorderColumnPosition(fromColumnPosition, toColumnPosition);
+    }
 }

@@ -18,73 +18,87 @@ import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
-
 public class MultiColumnReorderCommand implements ILayerCommand {
 
-	private List<ColumnPositionCoordinate> fromColumnPositionCoordinates;
-	private ColumnPositionCoordinate toColumnPositionCoordinate;
-	private boolean reorderToLeftEdge;
+    private List<ColumnPositionCoordinate> fromColumnPositionCoordinates;
+    private ColumnPositionCoordinate toColumnPositionCoordinate;
+    private boolean reorderToLeftEdge;
 
-	public MultiColumnReorderCommand(ILayer layer, List<Integer> fromColumnPositions, int toColumnPosition) {
-		this(layer, fromColumnPositions, toColumnPosition < layer.getColumnCount() ? toColumnPosition : toColumnPosition - 1, toColumnPosition < layer.getColumnCount());
-	}
-	
-	public MultiColumnReorderCommand(ILayer layer, List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
-		fromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>();
-		for (Integer fromColumnPosition : fromColumnPositions) {
-			fromColumnPositionCoordinates.add(new ColumnPositionCoordinate(layer, fromColumnPosition.intValue()));
-		}
-		
-		toColumnPositionCoordinate = new ColumnPositionCoordinate(layer, toColumnPosition);
-		
-		this.reorderToLeftEdge = reorderToLeftEdge;
-	}
+    public MultiColumnReorderCommand(ILayer layer,
+            List<Integer> fromColumnPositions, int toColumnPosition) {
+        this(layer, fromColumnPositions, toColumnPosition < layer
+                .getColumnCount() ? toColumnPosition : toColumnPosition - 1,
+                toColumnPosition < layer.getColumnCount());
+    }
 
-	protected MultiColumnReorderCommand(MultiColumnReorderCommand command) {
-		this.fromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>(command.fromColumnPositionCoordinates);
-		this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
-		this.reorderToLeftEdge = command.reorderToLeftEdge;
-	}
+    public MultiColumnReorderCommand(ILayer layer,
+            List<Integer> fromColumnPositions, int toColumnPosition,
+            boolean reorderToLeftEdge) {
+        fromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>();
+        for (Integer fromColumnPosition : fromColumnPositions) {
+            fromColumnPositionCoordinates.add(new ColumnPositionCoordinate(
+                    layer, fromColumnPosition.intValue()));
+        }
 
-	public List<Integer> getFromColumnPositions() {
-		List<Integer> fromColumnPositions = new ArrayList<Integer>();
-		for (ColumnPositionCoordinate fromColumnPositionCoordinate : fromColumnPositionCoordinates) {
-			fromColumnPositions.add(Integer.valueOf(fromColumnPositionCoordinate.getColumnPosition()));
-		}
-		return fromColumnPositions;
-	}
+        toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+                toColumnPosition);
 
-	public int getToColumnPosition() {
-		return toColumnPositionCoordinate.getColumnPosition();
-	}
-	
-	public boolean isReorderToLeftEdge() {
-		return reorderToLeftEdge;
-	}
+        this.reorderToLeftEdge = reorderToLeftEdge;
+    }
 
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		List<ColumnPositionCoordinate> convertedFromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>();
-		
-		for (ColumnPositionCoordinate fromColumnPositionCoordinate : fromColumnPositionCoordinates) {
-			ColumnPositionCoordinate convertedFromColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(fromColumnPositionCoordinate, targetLayer);
-			if (convertedFromColumnPositionCoordinate != null) {
-				convertedFromColumnPositionCoordinates.add(convertedFromColumnPositionCoordinate);
-			}
-		}
-		
-		ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
-		
-		if (convertedFromColumnPositionCoordinates.size() > 0 && targetToColumnPositionCoordinate != null) {
-			fromColumnPositionCoordinates = convertedFromColumnPositionCoordinates;
-			toColumnPositionCoordinate = targetToColumnPositionCoordinate;
-			return true;
-		} else {
-			return false;
-		}
-	}
+    protected MultiColumnReorderCommand(MultiColumnReorderCommand command) {
+        this.fromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>(
+                command.fromColumnPositionCoordinates);
+        this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
+        this.reorderToLeftEdge = command.reorderToLeftEdge;
+    }
 
-	public MultiColumnReorderCommand cloneCommand() {
-		return new MultiColumnReorderCommand(this);
-	}
+    public List<Integer> getFromColumnPositions() {
+        List<Integer> fromColumnPositions = new ArrayList<Integer>();
+        for (ColumnPositionCoordinate fromColumnPositionCoordinate : fromColumnPositionCoordinates) {
+            fromColumnPositions.add(Integer
+                    .valueOf(fromColumnPositionCoordinate.getColumnPosition()));
+        }
+        return fromColumnPositions;
+    }
+
+    public int getToColumnPosition() {
+        return toColumnPositionCoordinate.getColumnPosition();
+    }
+
+    public boolean isReorderToLeftEdge() {
+        return reorderToLeftEdge;
+    }
+
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        List<ColumnPositionCoordinate> convertedFromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>();
+
+        for (ColumnPositionCoordinate fromColumnPositionCoordinate : fromColumnPositionCoordinates) {
+            ColumnPositionCoordinate convertedFromColumnPositionCoordinate = LayerCommandUtil
+                    .convertColumnPositionToTargetContext(
+                            fromColumnPositionCoordinate, targetLayer);
+            if (convertedFromColumnPositionCoordinate != null) {
+                convertedFromColumnPositionCoordinates
+                        .add(convertedFromColumnPositionCoordinate);
+            }
+        }
+
+        ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil
+                .convertColumnPositionToTargetContext(
+                        toColumnPositionCoordinate, targetLayer);
+
+        if (convertedFromColumnPositionCoordinates.size() > 0
+                && targetToColumnPositionCoordinate != null) {
+            fromColumnPositionCoordinates = convertedFromColumnPositionCoordinates;
+            toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public MultiColumnReorderCommand cloneCommand() {
+        return new MultiColumnReorderCommand(this);
+    }
 
 }

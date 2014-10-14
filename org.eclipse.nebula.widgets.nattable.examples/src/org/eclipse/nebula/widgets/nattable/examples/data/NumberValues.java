@@ -11,97 +11,96 @@
 package org.eclipse.nebula.widgets.nattable.examples.data;
 
 public class NumberValues {
-	private int columnOneNumber;
-	private int columnTwoNumber;
-	private int columnThreeNumber;
-	private int columnFourNumber;
-	private int columnFiveNumber;
-	private int columnSixNumber;
-	private int columnSevenNumber;
-	private int columnEightNumber;
-	private int columnNineNumber;
-	private int columnTenNumber;
+    private int columnOneNumber;
+    private int columnTwoNumber;
+    private int columnThreeNumber;
+    private int columnFourNumber;
+    private int columnFiveNumber;
+    private int columnSixNumber;
+    private int columnSevenNumber;
+    private int columnEightNumber;
+    private int columnNineNumber;
+    private int columnTenNumber;
 
-	public NumberValues() {
-	}
+    public NumberValues() {}
 
-	public int getColumnOneNumber() {
-		return columnOneNumber;
-	}
+    public int getColumnOneNumber() {
+        return columnOneNumber;
+    }
 
-	public void setColumnOneNumber(int columnOneNumber) {
-		this.columnOneNumber = columnOneNumber;
-	}
+    public void setColumnOneNumber(int columnOneNumber) {
+        this.columnOneNumber = columnOneNumber;
+    }
 
-	public int getColumnTwoNumber() {
-		return columnTwoNumber;
-	}
+    public int getColumnTwoNumber() {
+        return columnTwoNumber;
+    }
 
-	public void setColumnTwoNumber(int columnTwoNumber) {
-		this.columnTwoNumber = columnTwoNumber;
-	}
+    public void setColumnTwoNumber(int columnTwoNumber) {
+        this.columnTwoNumber = columnTwoNumber;
+    }
 
-	public int getColumnThreeNumber() {
-		return columnThreeNumber;
-	}
+    public int getColumnThreeNumber() {
+        return columnThreeNumber;
+    }
 
-	public void setColumnThreeNumber(int columnThreeNumber) {
-		this.columnThreeNumber = columnThreeNumber;
-	}
+    public void setColumnThreeNumber(int columnThreeNumber) {
+        this.columnThreeNumber = columnThreeNumber;
+    }
 
-	public int getColumnFourNumber() {
-		return columnFourNumber;
-	}
+    public int getColumnFourNumber() {
+        return columnFourNumber;
+    }
 
-	public void setColumnFourNumber(int columnFourNumber) {
-		this.columnFourNumber = columnFourNumber;
-	}
+    public void setColumnFourNumber(int columnFourNumber) {
+        this.columnFourNumber = columnFourNumber;
+    }
 
-	public int getColumnFiveNumber() {
-		return columnFiveNumber;
-	}
+    public int getColumnFiveNumber() {
+        return columnFiveNumber;
+    }
 
-	public void setColumnFiveNumber(int columnFiveNumber) {
-		this.columnFiveNumber = columnFiveNumber;
-	}
+    public void setColumnFiveNumber(int columnFiveNumber) {
+        this.columnFiveNumber = columnFiveNumber;
+    }
 
-	public int getColumnSixNumber() {
-		return columnSixNumber;
-	}
+    public int getColumnSixNumber() {
+        return columnSixNumber;
+    }
 
-	public void setColumnSixNumber(int columnSixNumber) {
-		this.columnSixNumber = columnSixNumber;
-	}
+    public void setColumnSixNumber(int columnSixNumber) {
+        this.columnSixNumber = columnSixNumber;
+    }
 
-	public int getColumnSevenNumber() {
-		return columnSevenNumber;
-	}
+    public int getColumnSevenNumber() {
+        return columnSevenNumber;
+    }
 
-	public void setColumnSevenNumber(int columnSevenNumber) {
-		this.columnSevenNumber = columnSevenNumber;
-	}
+    public void setColumnSevenNumber(int columnSevenNumber) {
+        this.columnSevenNumber = columnSevenNumber;
+    }
 
-	public int getColumnEightNumber() {
-		return columnEightNumber;
-	}
+    public int getColumnEightNumber() {
+        return columnEightNumber;
+    }
 
-	public void setColumnEightNumber(int columnEightNumber) {
-		this.columnEightNumber = columnEightNumber;
-	}
+    public void setColumnEightNumber(int columnEightNumber) {
+        this.columnEightNumber = columnEightNumber;
+    }
 
-	public int getColumnNineNumber() {
-		return columnNineNumber;
-	}
+    public int getColumnNineNumber() {
+        return columnNineNumber;
+    }
 
-	public void setColumnNineNumber(int columnNineNumber) {
-		this.columnNineNumber = columnNineNumber;
-	}
+    public void setColumnNineNumber(int columnNineNumber) {
+        this.columnNineNumber = columnNineNumber;
+    }
 
-	public int getColumnTenNumber() {
-		return columnTenNumber;
-	}
+    public int getColumnTenNumber() {
+        return columnTenNumber;
+    }
 
-	public void setColumnTenNumber(int columnTenNumber) {
-		this.columnTenNumber = columnTenNumber;
-	}
+    public void setColumnTenNumber(int columnTenNumber) {
+        this.columnTenNumber = columnTenNumber;
+    }
 }

@@ -15,59 +15,61 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Selection model that holds markers such as anchors and last selection properties in order to
- * keep them up-to-date after underlying data has changed.
+ * Selection model that holds markers such as anchors and last selection
+ * properties in order to keep them up-to-date after underlying data has
+ * changed.
  */
 public interface IMarkerSelectionModel extends ISelectionModel {
 
-	/**
-	 * @return point of the anchor expressed in position coordinates
-	 */
-	Point getSelectionAnchor();
+    /**
+     * @return point of the anchor expressed in position coordinates
+     */
+    Point getSelectionAnchor();
 
-	/**
-	 * @return point of the last selected cell expressed in position coordinates
-	 */
-	Point getLastSelectedCell();
+    /**
+     * @return point of the last selected cell expressed in position coordinates
+     */
+    Point getLastSelectedCell();
 
-	/**
-	 * @return rectangle of the last selected region expressed in position coordinates
-	 */
-	Rectangle getLastSelectedRegion();
+    /**
+     * @return rectangle of the last selected region expressed in position
+     *         coordinates
+     */
+    Rectangle getLastSelectedRegion();
 
-	/**
-	 * @param position
-	 *            coordinate of the anchor
-	 */
-	void setSelectionAnchor(Point position);
+    /**
+     * @param position
+     *            coordinate of the anchor
+     */
+    void setSelectionAnchor(Point position);
 
-	/**
-	 * @param position
-	 *            coordinate of the last selected
-	 */
-	void setLastSelectedCell(Point position);
+    /**
+     * @param position
+     *            coordinate of the last selected
+     */
+    void setLastSelectedCell(Point position);
 
-	/**
-	 * Will set the Rectangle object of the last selected region to be the same as the parameter
-	 * object region.
-	 *
-	 * @param region
-	 *            the last selection position region
-	 */
-	void setLastSelectedRegion(Rectangle region);
+    /**
+     * Will set the Rectangle object of the last selected region to be the same
+     * as the parameter object region.
+     *
+     * @param region
+     *            the last selection position region
+     */
+    void setLastSelectedRegion(Rectangle region);
 
-	/**
-	 * Will copy the information of the parameters to the already existing Rectangle object of
-	 * last selected region.
-	 *
-	 * @param x
-	 *            origin of the last selection position region
-	 * @param y
-	 *            origin of the last selection position region
-	 * @param width
-	 *            of the last selection position region
-	 * @param height
-	 *            of the last selection position region
-	 */
-	void setLastSelectedRegion(int x, int y, int width, int height);
+    /**
+     * Will copy the information of the parameters to the already existing
+     * Rectangle object of last selected region.
+     *
+     * @param x
+     *            origin of the last selection position region
+     * @param y
+     *            origin of the last selection position region
+     * @param width
+     *            of the last selection position region
+     * @param height
+     *            of the last selection position region
+     */
+    void setLastSelectedRegion(int x, int y, int width, int height);
 }

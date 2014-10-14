@@ -15,15 +15,16 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 
-
 public class CellStyleProxy extends StyleProxy {
 
-	public CellStyleProxy(IConfigRegistry configRegistry, String targetDisplayMode, List<String> configLabels) {
-		super(CellConfigAttributes.CELL_STYLE, configRegistry, targetDisplayMode, configLabels);
-	}
+    public CellStyleProxy(IConfigRegistry configRegistry,
+            String targetDisplayMode, List<String> configLabels) {
+        super(CellConfigAttributes.CELL_STYLE, configRegistry,
+                targetDisplayMode, configLabels);
+    }
 
-	public <T> void setAttributeValue(ConfigAttribute<T> styleAttribute, T value) {
-		throw new UnsupportedOperationException("Not implemented yet"); //$NON-NLS-1$
-	}
+    public <T> void setAttributeValue(ConfigAttribute<T> styleAttribute, T value) {
+        throw new UnsupportedOperationException("Not implemented yet"); //$NON-NLS-1$
+    }
 
 }

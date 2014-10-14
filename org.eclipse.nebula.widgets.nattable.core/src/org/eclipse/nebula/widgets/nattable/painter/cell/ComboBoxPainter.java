@@ -17,22 +17,22 @@ import org.eclipse.swt.graphics.Image;
 
 public class ComboBoxPainter extends CellPainterWrapper {
 
-	/**
-	 * Create a new {@link ComboBoxPainter} with the default image.
-	 */
-	public ComboBoxPainter() {
-		this(GUIHelper.getImage("down_2")); //$NON-NLS-1$
-	}
-	
-	/**
-	 * Create a new {@link ComboBoxPainter} with the given {@link Image} as the image 
-	 * marking the cell as a combo control.
-	 * @param comboImage The image marking the cell as a combo control
-	 */
-	public ComboBoxPainter(Image comboImage) {
-		setWrappedPainter(
-				new CellPainterDecorator(
-						new TextPainter(), CellEdgeEnum.RIGHT, 
-						new ImagePainter(comboImage)));
-	}
+    /**
+     * Create a new {@link ComboBoxPainter} with the default image.
+     */
+    public ComboBoxPainter() {
+        this(GUIHelper.getImage("down_2")); //$NON-NLS-1$
+    }
+
+    /**
+     * Create a new {@link ComboBoxPainter} with the given {@link Image} as the
+     * image marking the cell as a combo control.
+     * 
+     * @param comboImage
+     *            The image marking the cell as a combo control
+     */
+    public ComboBoxPainter(Image comboImage) {
+        setWrappedPainter(new CellPainterDecorator(new TextPainter(),
+                CellEdgeEnum.RIGHT, new ImagePainter(comboImage)));
+    }
 }

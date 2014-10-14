@@ -22,50 +22,52 @@ import org.eclipse.nebula.widgets.nattable.Messages;
  */
 public abstract class NumericDisplayConverter extends DisplayConverter {
 
-	protected NumberFormat nf = NumberFormat.getInstance();
+    protected NumberFormat nf = NumberFormat.getInstance();
 
-	@Override
-	public Object canonicalToDisplayValue(Object canonicalValue) {
-		try {
-			if (isNotNull(canonicalValue)) {
-				return this.nf.format(canonicalValue);
-			}
-			return null;
-		} catch (Exception e) {
-			return canonicalValue;
-		}
-	}
+    @Override
+    public Object canonicalToDisplayValue(Object canonicalValue) {
+        try {
+            if (isNotNull(canonicalValue)) {
+                return this.nf.format(canonicalValue);
+            }
+            return null;
+        } catch (Exception e) {
+            return canonicalValue;
+        }
+    }
 
-	@Override
-	public Object displayToCanonicalValue(Object displayValue) {
-		try {
-			if (isNotNull(displayValue) && isNotEmpty(displayValue.toString())) {
-				return convertToNumericValue(displayValue.toString().trim());
-			}
-			return null;
-		} catch (Exception e) {
-			throw new ConversionFailedException(
-					Messages.getString("NumericDisplayConverter.failure", //$NON-NLS-1$
-							new Object[] {displayValue}), e);
-		}
-	}
-	
-	protected abstract Object convertToNumericValue(String value);
-	
-	/**
-	 * 
-	 * @return The {@link NumberFormat} that is used to format numeric values.
-	 */
-	public NumberFormat getNumberFormat() {
-		return nf;
-	}
+    @Override
+    public Object displayToCanonicalValue(Object displayValue) {
+        try {
+            if (isNotNull(displayValue) && isNotEmpty(displayValue.toString())) {
+                return convertToNumericValue(displayValue.toString().trim());
+            }
+            return null;
+        } catch (Exception e) {
+            throw new ConversionFailedException(Messages.getString(
+                    "NumericDisplayConverter.failure", //$NON-NLS-1$
+                    new Object[] { displayValue }), e);
+        }
+    }
 
-	/**
-	 * 
-	 * @param nf The {@link NumberFormat} that should be used to format numeric values.
-	 */
-	public void setNumberFormat(NumberFormat nf) {
-		this.nf = nf;
-	}
-	
+    protected abstract Object convertToNumericValue(String value);
+
+    /**
+     * 
+     * @return The {@link NumberFormat} that is used to format numeric values.
+     */
+    public NumberFormat getNumberFormat() {
+        return nf;
+    }
+
+    /**
+     * 
+     * @param nf
+     *            The {@link NumberFormat} that should be used to format numeric
+     *            values.
+     */
+    public void setNumberFormat(NumberFormat nf) {
+        this.nf = nf;
+    }
+
 }

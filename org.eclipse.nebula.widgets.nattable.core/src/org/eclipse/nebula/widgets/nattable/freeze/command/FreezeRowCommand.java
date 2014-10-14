@@ -19,85 +19,104 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * 
  * @author Dirk Fauth
  */
-public class FreezeRowCommand extends AbstractRowCommand implements IFreezeCommand {
+public class FreezeRowCommand extends AbstractRowCommand implements
+        IFreezeCommand {
 
-	/**
-	 * Indicates whether this command should toggle the frozen state between
-	 * frozen and unfrozen, or if it should always result in a frozen state.	 
-	 */
-	private boolean toggle;
-	
-	/**
-	 * Indicates whether this command should override a current frozen state
-	 * or if it should be skipped if a frozen state is already applied.
-	 */
-	private boolean overrideFreeze;
+    /**
+     * Indicates whether this command should toggle the frozen state between
+     * frozen and unfrozen, or if it should always result in a frozen state.
+     */
+    private boolean toggle;
 
-	/**
-	 * Creates a FreezeRowCommand for the given row position related to the given layer,
-	 * that doesn't toggle or override a current frozen state.
-	 * @param layer The layer to which the row position matches.
-	 * @param rowPosition The row position that will be the bottom
-	 * 			row in the frozen part.
-	 */
-	public FreezeRowCommand(ILayer layer, int rowPosition) {
-		this(layer, rowPosition, false);
-	}
+    /**
+     * Indicates whether this command should override a current frozen state or
+     * if it should be skipped if a frozen state is already applied.
+     */
+    private boolean overrideFreeze;
 
-	/**
-	 * Creates a FreezeRowCommand for the given row position related to the given layer,
-	 * that doesn't override a current frozen state.
-	 * If it should toggle the current frozen state can be specified by parameter.
-	 * @param layer The layer to which the row position matches.
-	 * @param rowPosition The row position that will be the bottom
-	 * 			row in the frozen part.
-	 * @param toggle whether this command should toggle the frozen state between
-	 * 			frozen and unfrozen, or if it should always result in a frozen state.
-	 */
-	public FreezeRowCommand(ILayer layer, int rowPosition, boolean toggle) {
-		this(layer, rowPosition, toggle, false);
-	}
+    /**
+     * Creates a FreezeRowCommand for the given row position related to the
+     * given layer, that doesn't toggle or override a current frozen state.
+     * 
+     * @param layer
+     *            The layer to which the row position matches.
+     * @param rowPosition
+     *            The row position that will be the bottom row in the frozen
+     *            part.
+     */
+    public FreezeRowCommand(ILayer layer, int rowPosition) {
+        this(layer, rowPosition, false);
+    }
 
-	/**
-	 * Creates a FreezeRowCommand for the given row position related to the given layer.
-	 * If it should toggle or override the current frozen state can be specified by parameter.
-	 * @param layer The layer to which the row position matches.
-	 * @param rowPosition The row position that will be the bottom
-	 * 			row in the frozen part.
-	 * @param toggle whether this command should toggle the frozen state between
-	 * 			frozen and unfrozen, or if it should always result in a frozen state.
-	 * @param overrideFreeze whether this command should override a current frozen state
-	 * 			or if it should be skipped if a frozen state is already applied.
-	 */
-	public FreezeRowCommand(ILayer layer, int rowPosition, boolean toggle, boolean overrideFreeze) {
-		super(layer, rowPosition);
-		this.toggle = toggle;
-		this.overrideFreeze = overrideFreeze;
-	}
-	
-	/**
-	 * Constructor used for cloning the command.
-	 * @param command The command which is the base for the new cloned instance.
-	 */
-	protected FreezeRowCommand(FreezeRowCommand command) {
-		super(command);
-		this.toggle = command.toggle;
-		this.overrideFreeze = command.overrideFreeze;
-	}
+    /**
+     * Creates a FreezeRowCommand for the given row position related to the
+     * given layer, that doesn't override a current frozen state. If it should
+     * toggle the current frozen state can be specified by parameter.
+     * 
+     * @param layer
+     *            The layer to which the row position matches.
+     * @param rowPosition
+     *            The row position that will be the bottom row in the frozen
+     *            part.
+     * @param toggle
+     *            whether this command should toggle the frozen state between
+     *            frozen and unfrozen, or if it should always result in a frozen
+     *            state.
+     */
+    public FreezeRowCommand(ILayer layer, int rowPosition, boolean toggle) {
+        this(layer, rowPosition, toggle, false);
+    }
 
-	@Override
-	public boolean isToggle() {
-		return toggle;
-	}
-	
-	@Override
-	public boolean isOverrideFreeze() {
-		return overrideFreeze;
-	}
+    /**
+     * Creates a FreezeRowCommand for the given row position related to the
+     * given layer. If it should toggle or override the current frozen state can
+     * be specified by parameter.
+     * 
+     * @param layer
+     *            The layer to which the row position matches.
+     * @param rowPosition
+     *            The row position that will be the bottom row in the frozen
+     *            part.
+     * @param toggle
+     *            whether this command should toggle the frozen state between
+     *            frozen and unfrozen, or if it should always result in a frozen
+     *            state.
+     * @param overrideFreeze
+     *            whether this command should override a current frozen state or
+     *            if it should be skipped if a frozen state is already applied.
+     */
+    public FreezeRowCommand(ILayer layer, int rowPosition, boolean toggle,
+            boolean overrideFreeze) {
+        super(layer, rowPosition);
+        this.toggle = toggle;
+        this.overrideFreeze = overrideFreeze;
+    }
 
-	@Override
-	public ILayerCommand cloneCommand() {
-		return new FreezeRowCommand(this);
-	}
+    /**
+     * Constructor used for cloning the command.
+     * 
+     * @param command
+     *            The command which is the base for the new cloned instance.
+     */
+    protected FreezeRowCommand(FreezeRowCommand command) {
+        super(command);
+        this.toggle = command.toggle;
+        this.overrideFreeze = command.overrideFreeze;
+    }
+
+    @Override
+    public boolean isToggle() {
+        return toggle;
+    }
+
+    @Override
+    public boolean isOverrideFreeze() {
+        return overrideFreeze;
+    }
+
+    @Override
+    public ILayerCommand cloneCommand() {
+        return new FreezeRowCommand(this);
+    }
 
 }

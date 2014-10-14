@@ -14,13 +14,12 @@ import java.util.Random;
 
 import org.eclipse.nebula.widgets.nattable.dataset.generator.IValueGenerator;
 
-
 public class UniqueLongValueGenerator implements IValueGenerator {
 
-	private static long value = 0;
-	
-	public Object newValue(Random random) {
-		return Long.valueOf(value++);
-	}
+    private static long value = 0;
+
+    public Object newValue(Random random) {
+        return Long.valueOf(value++);
+    }
 
 }

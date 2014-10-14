@@ -20,26 +20,28 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class CellSelectionTest {
-	private GridLayerFixture gridLayer;
-	
-	@Before
-	public void setUp() {
-		gridLayer = new GridLayerFixture();
-		gridLayer.doCommand(new InitializeClientAreaCommandFixture());
-	}
-	
-	@Test
-	public void willSelectBodyCellAndShouldHaveColumnHeaderSelected() {
-		// Select body cell
-		// The cell position is a grid layer position
-		gridLayer.doCommand(new SelectCellCommand(gridLayer, 2, 2, false, false));
-		
-		// Get body layer cell corresponding to the selected body cell
-		ILayer bodyLayer = gridLayer.getBodyLayer();
-		// The column position is 1 because it takes into account the offset of the row header
-		ILayerCell cell = bodyLayer.getCellByPosition(1, 1);
-		
-		// Assert the cell is in selected state
-		Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
-	}
+    private GridLayerFixture gridLayer;
+
+    @Before
+    public void setUp() {
+        gridLayer = new GridLayerFixture();
+        gridLayer.doCommand(new InitializeClientAreaCommandFixture());
+    }
+
+    @Test
+    public void willSelectBodyCellAndShouldHaveColumnHeaderSelected() {
+        // Select body cell
+        // The cell position is a grid layer position
+        gridLayer
+                .doCommand(new SelectCellCommand(gridLayer, 2, 2, false, false));
+
+        // Get body layer cell corresponding to the selected body cell
+        ILayer bodyLayer = gridLayer.getBodyLayer();
+        // The column position is 1 because it takes into account the offset of
+        // the row header
+        ILayerCell cell = bodyLayer.getCellByPosition(1, 1);
+
+        // Assert the cell is in selected state
+        Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
+    }
 }

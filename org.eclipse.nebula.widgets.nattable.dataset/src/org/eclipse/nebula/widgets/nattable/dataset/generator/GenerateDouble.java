@@ -18,8 +18,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface GenerateDouble {
-	
-	int floor() default 0;
-	int range();
-	
+
+    int floor() default 0;
+
+    int range();
+
 }

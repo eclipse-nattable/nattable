@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.swt.SWT;
@@ -25,12 +24,14 @@ public class HorizontalAlignmentPicker extends Composite {
 
     private final Combo combo;
 
-    public HorizontalAlignmentPicker(Composite parent, HorizontalAlignmentEnum alignment) {
+    public HorizontalAlignmentPicker(Composite parent,
+            HorizontalAlignmentEnum alignment) {
         super(parent, SWT.NONE);
         setLayout(new RowLayout());
 
         combo = new Combo(this, SWT.READ_ONLY | SWT.DROP_DOWN);
-        combo.setItems(new String[] { Messages.getString("HorizontalAlignmentPicker.center"), Messages.getString("HorizontalAlignmentPicker.left"), Messages.getString("HorizontalAlignmentPicker.right") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        combo.setItems(new String[] {
+                Messages.getString("HorizontalAlignmentPicker.center"), Messages.getString("HorizontalAlignmentPicker.left"), Messages.getString("HorizontalAlignmentPicker.right") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         update(alignment);
     }
@@ -59,7 +60,8 @@ public class HorizontalAlignmentPicker extends Composite {
     }
 
     public void setSelectedAlignment(HorizontalAlignmentEnum horizontalAlignment) {
-        if (horizontalAlignment == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        if (horizontalAlignment == null)
+            throw new IllegalArgumentException("null"); //$NON-NLS-1$
         update(horizontalAlignment);
     }
 }

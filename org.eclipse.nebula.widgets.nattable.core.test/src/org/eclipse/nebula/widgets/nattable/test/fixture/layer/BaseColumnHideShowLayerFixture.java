@@ -15,27 +15,26 @@ import java.util.Collection;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 
-
 /**
  * This is a vanilla ColumnHideShowLayer to be used for testing Events.
  */
 public class BaseColumnHideShowLayerFixture extends ColumnHideShowLayer {
 
-	public BaseColumnHideShowLayerFixture(IUniqueIndexLayer underlyingLayer) {
-		super(underlyingLayer);
-	}
-	
-	@Override
-	public void hideColumnPositions(Collection<Integer> columnPositions) {
-		super.hideColumnPositions(columnPositions);
-	}
-	
-	@Override
-	public void showColumnIndexes(Collection<Integer> columnIndexes) {
-		super.showColumnIndexes(columnIndexes);
-	}
+    public BaseColumnHideShowLayerFixture(IUniqueIndexLayer underlyingLayer) {
+        super(underlyingLayer);
+    }
 
-	public void showAllColumns() {
-		super.showAllColumns();
-	}
+    @Override
+    public void hideColumnPositions(Collection<Integer> columnPositions) {
+        super.hideColumnPositions(columnPositions);
+    }
+
+    @Override
+    public void showColumnIndexes(Collection<Integer> columnIndexes) {
+        super.showColumnIndexes(columnIndexes);
+    }
+
+    public void showAllColumns() {
+        super.showAllColumns();
+    }
 }

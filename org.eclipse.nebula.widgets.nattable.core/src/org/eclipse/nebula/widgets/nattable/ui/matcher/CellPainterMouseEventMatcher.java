@@ -24,50 +24,62 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class CellPainterMouseEventMatcher extends MouseEventMatcher {
 
-	private ICellPainter targetCellPainter;
-	private Class<? extends ICellPainter> targetCellPainterClass;
+    private ICellPainter targetCellPainter;
+    private Class<? extends ICellPainter> targetCellPainterClass;
 
-	public CellPainterMouseEventMatcher(String regionName, int button, ICellPainter targetCellPainter) {
-		super(regionName, button);
-		this.targetCellPainter = targetCellPainter;
-	}
-	
-	public CellPainterMouseEventMatcher(String regionName, int button, Class<? extends ICellPainter> targetCellPainterClass) {
-		super(regionName, button);
-		this.targetCellPainterClass = targetCellPainterClass;
-	}
+    public CellPainterMouseEventMatcher(String regionName, int button,
+            ICellPainter targetCellPainter) {
+        super(regionName, button);
+        this.targetCellPainter = targetCellPainter;
+    }
 
-	@Override
-    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
-		if (super.matches(natTable, event, regionLabels)) {
-			int columnPosition = natTable.getColumnPositionByX(event.x);
-			int rowPosition = natTable.getRowPositionByY(event.y);
-			
-			ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
-			
-			//Bug 407598: only perform a check if the click in the body region was performed on a cell
-			//cell == null can happen if the viewport is quite large and contains not enough cells to fill it.
-			if (cell != null) {
-				IConfigRegistry configRegistry = natTable.getConfigRegistry();
-				ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
-				
-				GC gc = new GC(natTable.getDisplay());
-				try {
-					Rectangle adjustedCellBounds = natTable.getLayerPainter().adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
-					
-					ICellPainter clickedCellPainter = cellPainter.getCellPainterAt(event.x, event.y, cell, gc, adjustedCellBounds, configRegistry);
-					if (clickedCellPainter != null) {
-						if (	(targetCellPainter != null && targetCellPainter == clickedCellPainter) ||
-								(targetCellPainterClass != null && targetCellPainterClass.isInstance(clickedCellPainter))) {
-							return true;
-						}
-					}
-				} finally {
-					gc.dispose();
-				}
-			}
-		}
-		return false;
-	}
+    public CellPainterMouseEventMatcher(String regionName, int button,
+            Class<? extends ICellPainter> targetCellPainterClass) {
+        super(regionName, button);
+        this.targetCellPainterClass = targetCellPainterClass;
+    }
+
+    @Override
+    public boolean matches(NatTable natTable, MouseEvent event,
+            LabelStack regionLabels) {
+        if (super.matches(natTable, event, regionLabels)) {
+            int columnPosition = natTable.getColumnPositionByX(event.x);
+            int rowPosition = natTable.getRowPositionByY(event.y);
+
+            ILayerCell cell = natTable.getCellByPosition(columnPosition,
+                    rowPosition);
+
+            // Bug 407598: only perform a check if the click in the body region
+            // was performed on a cell
+            // cell == null can happen if the viewport is quite large and
+            // contains not enough cells to fill it.
+            if (cell != null) {
+                IConfigRegistry configRegistry = natTable.getConfigRegistry();
+                ICellPainter cellPainter = cell.getLayer().getCellPainter(
+                        columnPosition, rowPosition, cell, configRegistry);
+
+                GC gc = new GC(natTable.getDisplay());
+                try {
+                    Rectangle adjustedCellBounds = natTable.getLayerPainter()
+                            .adjustCellBounds(columnPosition, rowPosition,
+                                    cell.getBounds());
+
+                    ICellPainter clickedCellPainter = cellPainter
+                            .getCellPainterAt(event.x, event.y, cell, gc,
+                                    adjustedCellBounds, configRegistry);
+                    if (clickedCellPainter != null) {
+                        if ((targetCellPainter != null && targetCellPainter == clickedCellPainter)
+                                || (targetCellPainterClass != null && targetCellPainterClass
+                                        .isInstance(clickedCellPainter))) {
+                            return true;
+                        }
+                    }
+                } finally {
+                    gc.dispose();
+                }
+            }
+        }
+        return false;
+    }
 
 }

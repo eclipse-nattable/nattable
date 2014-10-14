@@ -14,9 +14,8 @@ import java.util.Comparator;
 
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 
-
 public interface SortConfigAttributes {
-	
-	public static final ConfigAttribute<Comparator<?>> SORT_COMPARATOR = new ConfigAttribute<Comparator<?>>();
+
+    public static final ConfigAttribute<Comparator<?>> SORT_COMPARATOR = new ConfigAttribute<Comparator<?>>();
 
 }

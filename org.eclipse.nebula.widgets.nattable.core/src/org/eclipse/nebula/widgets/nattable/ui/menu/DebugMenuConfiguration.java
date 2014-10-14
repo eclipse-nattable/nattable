@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
@@ -22,24 +21,22 @@ import org.eclipse.swt.widgets.Menu;
 
 public class DebugMenuConfiguration extends AbstractUiBindingConfiguration {
 
-	private final Menu debugMenu;
+    private final Menu debugMenu;
 
-	public DebugMenuConfiguration(NatTable natTable) {
-		debugMenu = new PopupMenuBuilder(natTable)
-								.withInspectLabelsMenuItem()
-								.build();
+    public DebugMenuConfiguration(NatTable natTable) {
+        debugMenu = new PopupMenuBuilder(natTable).withInspectLabelsMenuItem()
+                .build();
 
-		natTable.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				debugMenu.dispose();
-			}
-		});
-	}
+        natTable.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                debugMenu.dispose();
+            }
+        });
+    }
 
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerMouseDownBinding(
-				new MouseEventMatcher(SWT.NONE, null, 3),
-				new PopupMenuAction(debugMenu));
-	}
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerMouseDownBinding(new MouseEventMatcher(
+                SWT.NONE, null, 3), new PopupMenuAction(debugMenu));
+    }
 
 }

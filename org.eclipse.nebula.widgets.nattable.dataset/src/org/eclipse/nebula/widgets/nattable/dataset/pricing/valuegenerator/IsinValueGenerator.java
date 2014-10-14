@@ -15,21 +15,16 @@ import java.util.Random;
 
 import org.eclipse.nebula.widgets.nattable.dataset.valuegenerator.UniqueLongValueGenerator;
 
-
 public class IsinValueGenerator extends UniqueLongValueGenerator {
-	
-	private DecimalFormat format = new DecimalFormat("0000000000");
-	
-	private String[] prefixes = new String[] {
-			"DE",
-			"FR",
-			"IT",
-			"XS"
-	};
-	
-	@Override
-	public Object newValue(Random random) {
-		return prefixes[random.nextInt(prefixes.length)] + format.format(super.newValue(random));
-	}
+
+    private DecimalFormat format = new DecimalFormat("0000000000");
+
+    private String[] prefixes = new String[] { "DE", "FR", "IT", "XS" };
+
+    @Override
+    public Object newValue(Random random) {
+        return prefixes[random.nextInt(prefixes.length)]
+                + format.format(super.newValue(random));
+    }
 
 }

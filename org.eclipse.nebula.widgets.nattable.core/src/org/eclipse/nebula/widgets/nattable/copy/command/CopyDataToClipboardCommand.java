@@ -15,27 +15,26 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 
 public class CopyDataToClipboardCommand extends AbstractContextFreeCommand {
 
-	private final String cellDelimeter;
-	private final String rowDelimeter;
-	private final IConfigRegistry configRegistry;
-	
-	
-	public CopyDataToClipboardCommand(String cellDelimeter, String rowDelimeter, IConfigRegistry configRegistry) {
-		this.cellDelimeter = cellDelimeter;
-		this.rowDelimeter = rowDelimeter;
-		this.configRegistry = configRegistry;
-	}
-	
-	
-	public String getCellDelimeter() {
-		return cellDelimeter;
-	}
-	
-	public String getRowDelimeter() {
-		return rowDelimeter;
-	}
-	
-	public IConfigRegistry getConfigRegistry() {
-		return configRegistry;
-	}
+    private final String cellDelimeter;
+    private final String rowDelimeter;
+    private final IConfigRegistry configRegistry;
+
+    public CopyDataToClipboardCommand(String cellDelimeter,
+            String rowDelimeter, IConfigRegistry configRegistry) {
+        this.cellDelimeter = cellDelimeter;
+        this.rowDelimeter = rowDelimeter;
+        this.configRegistry = configRegistry;
+    }
+
+    public String getCellDelimeter() {
+        return cellDelimeter;
+    }
+
+    public String getRowDelimeter() {
+        return rowDelimeter;
+    }
+
+    public IConfigRegistry getConfigRegistry() {
+        return configRegistry;
+    }
 }

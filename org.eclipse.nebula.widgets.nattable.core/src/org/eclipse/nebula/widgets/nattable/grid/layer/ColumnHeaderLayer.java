@@ -29,141 +29,163 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
  */
 public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 
-	private final SelectionLayer selectionLayer;
+    private final SelectionLayer selectionLayer;
 
-	protected RenameColumnHelper renameColumnHelper;
+    protected RenameColumnHelper renameColumnHelper;
 
-	/**
-	 * Creates a column header layer using the default configuration and painter
-	 * 
-	 * @param baseLayer
-	 *            The data provider for this layer
-	 * @param horizontalLayerDependency
-	 *            The layer to link the horizontal dimension to, typically the body layer
-	 * @param selectionLayer
-	 *            The selection layer required to respond to selection events
-	 */
-	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, SelectionLayer selectionLayer) {
-		this(baseLayer, horizontalLayerDependency, selectionLayer, true);
-	}
+    /**
+     * Creates a column header layer using the default configuration and painter
+     * 
+     * @param baseLayer
+     *            The data provider for this layer
+     * @param horizontalLayerDependency
+     *            The layer to link the horizontal dimension to, typically the
+     *            body layer
+     * @param selectionLayer
+     *            The selection layer required to respond to selection events
+     */
+    public ColumnHeaderLayer(IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency, SelectionLayer selectionLayer) {
+        this(baseLayer, horizontalLayerDependency, selectionLayer, true);
+    }
 
-	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, SelectionLayer selectionLayer, boolean useDefaultConfiguration) {
-		this(baseLayer, horizontalLayerDependency, selectionLayer, useDefaultConfiguration, null);
-	}
+    public ColumnHeaderLayer(IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency, SelectionLayer selectionLayer,
+            boolean useDefaultConfiguration) {
+        this(baseLayer, horizontalLayerDependency, selectionLayer,
+                useDefaultConfiguration, null);
+    }
 
-	/**
-	 * @param baseLayer
-	 *            The data provider for this layer
-	 * @param horizontalLayerDependency
-	 *            The layer to link the horizontal dimension to, typically the body layer
-	 * @param selectionLayer
-	 *            The selection layer required to respond to selection events
-	 * @param useDefaultConfiguration
-	 *            If default configuration should be applied to this layer
-	 * @param layerPainter
-	 *            The painter for this layer or <code>null</code> to use the painter of the base layer
-	 */
-	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency,
-			SelectionLayer selectionLayer, boolean useDefaultConfiguration, ILayerPainter layerPainter) {
-		super(baseLayer, horizontalLayerDependency, baseLayer);
-		if (selectionLayer == null) {
-			throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
-		}
+    /**
+     * @param baseLayer
+     *            The data provider for this layer
+     * @param horizontalLayerDependency
+     *            The layer to link the horizontal dimension to, typically the
+     *            body layer
+     * @param selectionLayer
+     *            The selection layer required to respond to selection events
+     * @param useDefaultConfiguration
+     *            If default configuration should be applied to this layer
+     * @param layerPainter
+     *            The painter for this layer or <code>null</code> to use the
+     *            painter of the base layer
+     */
+    public ColumnHeaderLayer(IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency, SelectionLayer selectionLayer,
+            boolean useDefaultConfiguration, ILayerPainter layerPainter) {
+        super(baseLayer, horizontalLayerDependency, baseLayer);
+        if (selectionLayer == null) {
+            throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
+        }
 
-		this.selectionLayer = selectionLayer;
-		this.layerPainter = layerPainter;
+        this.selectionLayer = selectionLayer;
+        this.layerPainter = layerPainter;
 
-		this.renameColumnHelper = new RenameColumnHelper(this);
-		registerPersistable(renameColumnHelper);
+        this.renameColumnHelper = new RenameColumnHelper(this);
+        registerPersistable(renameColumnHelper);
 
-		selectionLayer.addLayerListener(new ColumnHeaderSelectionListener(this));
-		registerCommandHandlers();
+        selectionLayer
+                .addLayerListener(new ColumnHeaderSelectionListener(this));
+        registerCommandHandlers();
 
-		if (useDefaultConfiguration) {
-			addConfiguration(new DefaultColumnHeaderLayerConfiguration());
-		}
-	}
+        if (useDefaultConfiguration) {
+            addConfiguration(new DefaultColumnHeaderLayerConfiguration());
+        }
+    }
 
-	@Override
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, selectionLayer);
-		String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
-		if (selectionLayer.isColumnPositionSelected(selectionLayerColumnPosition)) {
-			if (DisplayMode.HOVER.equals(displayMode)) {
-				return DisplayMode.SELECT_HOVER;
-			}
-			return DisplayMode.SELECT;
-		}
-		return displayMode;
-	}
+    @Override
+    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+        int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(
+                this, columnPosition, selectionLayer);
+        String displayMode = super.getDisplayModeByPosition(columnPosition,
+                rowPosition);
+        if (selectionLayer
+                .isColumnPositionSelected(selectionLayerColumnPosition)) {
+            if (DisplayMode.HOVER.equals(displayMode)) {
+                return DisplayMode.SELECT_HOVER;
+            }
+            return DisplayMode.SELECT;
+        }
+        return displayMode;
+    }
 
-	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
+    @Override
+    public LabelStack getConfigLabelsByPosition(int columnPosition,
+            int rowPosition) {
+        LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition,
+                rowPosition);
 
-		final int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, selectionLayer);
-		if (selectionLayer.isColumnPositionFullySelected(selectionLayerColumnPosition)) {
-			labelStack.addLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
-		}
+        final int selectionLayerColumnPosition = LayerUtil
+                .convertColumnPosition(this, columnPosition, selectionLayer);
+        if (selectionLayer
+                .isColumnPositionFullySelected(selectionLayerColumnPosition)) {
+            labelStack
+                    .addLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
+        }
 
-		return labelStack;
-	}
+        return labelStack;
+    }
 
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
 
-	@Override
-	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
-		if (isColumnRenamed(columnIndex)) {
-			return getRenamedColumnLabelByIndex(columnIndex);
-		}
-		return super.getDataValueByPosition(columnPosition, rowPosition);
-	}
-	
-	// Configuration
-	
-	@Override
-	protected void registerCommandHandlers() {
-		registerCommandHandler(new RenameColumnHeaderCommandHandler(this));
-		registerCommandHandler(new DisplayColumnRenameDialogCommandHandler(this));
-	}
+    @Override
+    public Object getDataValueByPosition(int columnPosition, int rowPosition) {
+        int columnIndex = getColumnIndexByPosition(columnPosition);
+        if (isColumnRenamed(columnIndex)) {
+            return getRenamedColumnLabelByIndex(columnIndex);
+        }
+        return super.getDataValueByPosition(columnPosition, rowPosition);
+    }
 
-	// Column header renaming
+    // Configuration
 
-	/**
-	 * @return column header as defined by the data source
-	 */
-	public String getOriginalColumnLabel(int columnPosition) {
-		Object dataValue = super.getDataValueByPosition(columnPosition, 0);
-		return dataValue != null ? dataValue.toString() : ""; //$NON-NLS-1$
-	}
+    @Override
+    protected void registerCommandHandlers() {
+        registerCommandHandler(new RenameColumnHeaderCommandHandler(this));
+        registerCommandHandler(new DisplayColumnRenameDialogCommandHandler(this));
+    }
 
-	/**
-	 * @return renamed column header if the column has been renamed, NULL otherwise
-	 */
-	public String getRenamedColumnLabel(int columnPosition) {
-		int index = getColumnIndexByPosition(columnPosition);
-		return getRenamedColumnLabelByIndex(index);
-	}
+    // Column header renaming
 
-	/**
-	 * @return renamed column header if the column has been renamed, NULL otherwise
-	 */
-	public String getRenamedColumnLabelByIndex(int columnIndex) {
-		return renameColumnHelper.getRenamedColumnLabel(columnIndex);
-	}
+    /**
+     * @return column header as defined by the data source
+     */
+    public String getOriginalColumnLabel(int columnPosition) {
+        Object dataValue = super.getDataValueByPosition(columnPosition, 0);
+        return dataValue != null ? dataValue.toString() : ""; //$NON-NLS-1$
+    }
 
-	/**
-	 * @return TRUE if the column at the given index has been given a custom name by the user.
-	 */
-	public boolean isColumnRenamed(int columnIndex) {
-		return renameColumnHelper.isColumnRenamed(columnIndex);
-	}
+    /**
+     * @return renamed column header if the column has been renamed, NULL
+     *         otherwise
+     */
+    public String getRenamedColumnLabel(int columnPosition) {
+        int index = getColumnIndexByPosition(columnPosition);
+        return getRenamedColumnLabelByIndex(index);
+    }
 
-    public boolean renameColumnPosition(int columnPosition, String customColumnName) {
-        boolean renamed = renameColumnHelper.renameColumnPosition(columnPosition, customColumnName);
+    /**
+     * @return renamed column header if the column has been renamed, NULL
+     *         otherwise
+     */
+    public String getRenamedColumnLabelByIndex(int columnIndex) {
+        return renameColumnHelper.getRenamedColumnLabel(columnIndex);
+    }
+
+    /**
+     * @return TRUE if the column at the given index has been given a custom
+     *         name by the user.
+     */
+    public boolean isColumnRenamed(int columnIndex) {
+        return renameColumnHelper.isColumnRenamed(columnIndex);
+    }
+
+    public boolean renameColumnPosition(int columnPosition,
+            String customColumnName) {
+        boolean renamed = renameColumnHelper.renameColumnPosition(
+                columnPosition, customColumnName);
         if (renamed) {
             fireLayerEvent(new RenameColumnHeaderEvent(this, columnPosition));
         }
@@ -171,11 +193,12 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     public boolean renameColumnIndex(int columnIndex, String customColumnName) {
-        boolean renamed = renameColumnHelper.renameColumnIndex(columnIndex, customColumnName);
+        boolean renamed = renameColumnHelper.renameColumnIndex(columnIndex,
+                customColumnName);
         if (renamed) {
             fireLayerEvent(new RenameColumnHeaderEvent(this, columnIndex));
         }
         return renamed;
     }
-    
+
 }

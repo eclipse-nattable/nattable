@@ -16,11 +16,13 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class ContextualDataValidator implements IDataValidator {
 
-	public boolean validate(int columnIndex, int rowIndex, Object newValue) {
-		throw new NotImplementedException(this.getClass().getName() 
-				+ " is a ContextualDataValidator and has therefore to be called with context informations."); //$NON-NLS-1$
-	}
+    public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+        throw new NotImplementedException(
+                this.getClass().getName()
+                        + " is a ContextualDataValidator and has therefore to be called with context informations."); //$NON-NLS-1$
+    }
 
-	public abstract boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue);
+    public abstract boolean validate(ILayerCell cell,
+            IConfigRegistry configRegistry, Object newValue);
 
 }

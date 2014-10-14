@@ -12,6 +12,6 @@ package org.eclipse.nebula.widgets.nattable.group.model;
 
 public interface IRowGroupModelListener {
 
-	public void rowGroupModelChanged();
-	
+    public void rowGroupModelChanged();
+
 }

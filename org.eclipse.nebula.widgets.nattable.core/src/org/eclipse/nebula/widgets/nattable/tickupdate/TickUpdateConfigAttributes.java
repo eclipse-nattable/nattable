@@ -18,15 +18,17 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
  */
 public class TickUpdateConfigAttributes {
 
-	/**
-	 * The configuration attribute for registering the {@link ITickUpdateHandler} to use.
-	 */
-	public static final ConfigAttribute<ITickUpdateHandler> UPDATE_HANDLER = new ConfigAttribute<ITickUpdateHandler>();
-	
-	/**
-	 * The configuration attribute to configure how the tick updates should be usable in the 
-	 * {@link TickUpdateCellEditDialog}. If there is no value registered for this attribute
-	 * the dialog will be opened with this value set to <code>false</code>.
-	 */
-	public static final ConfigAttribute<Boolean> USE_ADJUST_BY = new ConfigAttribute<Boolean>();
+    /**
+     * The configuration attribute for registering the
+     * {@link ITickUpdateHandler} to use.
+     */
+    public static final ConfigAttribute<ITickUpdateHandler> UPDATE_HANDLER = new ConfigAttribute<ITickUpdateHandler>();
+
+    /**
+     * The configuration attribute to configure how the tick updates should be
+     * usable in the {@link TickUpdateCellEditDialog}. If there is no value
+     * registered for this attribute the dialog will be opened with this value
+     * set to <code>false</code>.
+     */
+    public static final ConfigAttribute<Boolean> USE_ADJUST_BY = new ConfigAttribute<Boolean>();
 }

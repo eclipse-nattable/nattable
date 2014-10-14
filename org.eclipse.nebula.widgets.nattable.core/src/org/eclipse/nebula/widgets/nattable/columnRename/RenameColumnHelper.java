@@ -20,31 +20,32 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.util.PersistenceUtils;
 
-
 public class RenameColumnHelper implements IPersistable {
 
-	public static final String PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS = ".renamedColumnHeaders"; //$NON-NLS-1$
+    public static final String PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS = ".renamedColumnHeaders"; //$NON-NLS-1$
 
-	private final ColumnHeaderLayer columnHeaderLayer;
+    private final ColumnHeaderLayer columnHeaderLayer;
 
-	/** Tracks the renamed labels provided by the users */
-	protected Map<Integer, String> renamedColumnsLabelsByIndex = new TreeMap<Integer, String>();
+    /** Tracks the renamed labels provided by the users */
+    protected Map<Integer, String> renamedColumnsLabelsByIndex = new TreeMap<Integer, String>();
 
-	public RenameColumnHelper(ColumnHeaderLayer columnHeaderLayer) {
-		this.columnHeaderLayer = columnHeaderLayer;
-	}
-
-	/**
-	 * Rename the column at the given position.
-	 * Note: This does not change the underlying column name.
-	 *
-	 * @return <code>true</code> if the column at the given position was successfully changed.
-	 */
-    public boolean renameColumnPosition(int columnPosition, String customColumnName) {
-        int index = columnHeaderLayer.getColumnIndexByPosition(columnPosition);
-        return renameColumnIndex(index,customColumnName);
+    public RenameColumnHelper(ColumnHeaderLayer columnHeaderLayer) {
+        this.columnHeaderLayer = columnHeaderLayer;
     }
-    
+
+    /**
+     * Rename the column at the given position. Note: This does not change the
+     * underlying column name.
+     *
+     * @return <code>true</code> if the column at the given position was
+     *         successfully changed.
+     */
+    public boolean renameColumnPosition(int columnPosition,
+            String customColumnName) {
+        int index = columnHeaderLayer.getColumnIndexByPosition(columnPosition);
+        return renameColumnIndex(index, customColumnName);
+    }
+
     public boolean renameColumnIndex(int index, String customColumnName) {
         if (index >= 0) {
             if (customColumnName == null) {
@@ -56,44 +57,49 @@ public class RenameColumnHelper implements IPersistable {
         }
         return false;
     }
-	
-	/**
-	 * @return the custom label for this column as specified by the user
-	 * 	Null if the columns is not renamed
-	 */
-	public String getRenamedColumnLabel(int columnIndex) {
-		return renamedColumnsLabelsByIndex.get(columnIndex);
-	}
 
-	/**
-	 * @return TRUE if the column has been renamed
-	 */
-	public boolean isColumnRenamed(int columnIndex) {
-		return renamedColumnsLabelsByIndex.get(columnIndex) != null;
-	}
+    /**
+     * @return the custom label for this column as specified by the user Null if
+     *         the columns is not renamed
+     */
+    public String getRenamedColumnLabel(int columnIndex) {
+        return renamedColumnsLabelsByIndex.get(columnIndex);
+    }
 
-	public boolean isAnyColumnRenamed() {
-		return renamedColumnsLabelsByIndex.size() > 0;
-	}
+    /**
+     * @return TRUE if the column has been renamed
+     */
+    public boolean isColumnRenamed(int columnIndex) {
+        return renamedColumnsLabelsByIndex.get(columnIndex) != null;
+    }
 
-	@Override
-	public void loadState(String prefix, Properties properties) {
-		Object property = properties.get(prefix + PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS);
+    public boolean isAnyColumnRenamed() {
+        return renamedColumnsLabelsByIndex.size() > 0;
+    }
 
-		try {
-			renamedColumnsLabelsByIndex = PersistenceUtils.parseString(property);
-		} catch (Exception e) {
-			System.err.println("Error while restoring renamed column headers: " + e.getMessage()); //$NON-NLS-1$
-			System.err.println("Skipping restore."); //$NON-NLS-1$
-			renamedColumnsLabelsByIndex.clear();
-		}
-	}
+    @Override
+    public void loadState(String prefix, Properties properties) {
+        Object property = properties.get(prefix
+                + PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS);
 
-	@Override
-	public void saveState(String prefix, Properties properties) {
-		String string = PersistenceUtils.mapAsString(renamedColumnsLabelsByIndex);
-		if (!isEmpty(string)) {
-			properties.put(prefix + PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS, string);
-		}
-	}
+        try {
+            renamedColumnsLabelsByIndex = PersistenceUtils
+                    .parseString(property);
+        } catch (Exception e) {
+            System.err
+                    .println("Error while restoring renamed column headers: " + e.getMessage()); //$NON-NLS-1$
+            System.err.println("Skipping restore."); //$NON-NLS-1$
+            renamedColumnsLabelsByIndex.clear();
+        }
+    }
+
+    @Override
+    public void saveState(String prefix, Properties properties) {
+        String string = PersistenceUtils
+                .mapAsString(renamedColumnsLabelsByIndex);
+        if (!isEmpty(string)) {
+            properties.put(prefix + PERSISTENCE_KEY_RENAMED_COLUMN_HEADERS,
+                    string);
+        }
+    }
 }

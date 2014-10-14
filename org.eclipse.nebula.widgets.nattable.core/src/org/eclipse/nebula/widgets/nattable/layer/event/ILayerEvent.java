@@ -15,24 +15,29 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
- * Event fired by the {@link ILayerCommandHandler} classes (usually to signal to handling of a {@link ILayerCommand}).
- * Every layer in the grid is given a chance to respond to an event via {@link ILayer#handleLayerEvent(ILayerEvent)}.
+ * Event fired by the {@link ILayerCommandHandler} classes (usually to signal to
+ * handling of a {@link ILayerCommand}). Every layer in the grid is given a
+ * chance to respond to an event via
+ * {@link ILayer#handleLayerEvent(ILayerEvent)}.
  * 
- *  @see ILayerEventHandler
+ * @see ILayerEventHandler
  */
 public interface ILayerEvent {
 
-	/**
-	 * Convert the column/row positions carried by the event to the layer about to
-	 * handle the event.
-	 * @param localLayer layer about to receive the event
-	 * @return TRUE if successfully converted, FALSE otherwise
-	 */
-	public boolean convertToLocal(ILayer localLayer);
+    /**
+     * Convert the column/row positions carried by the event to the layer about
+     * to handle the event.
+     * 
+     * @param localLayer
+     *            layer about to receive the event
+     * @return TRUE if successfully converted, FALSE otherwise
+     */
+    public boolean convertToLocal(ILayer localLayer);
 
-	/**
-	 * @return A cloned copy of the event. This cloned copy is provided to each listener.
-	 */
-	public ILayerEvent cloneEvent();
-	
+    /**
+     * @return A cloned copy of the event. This cloned copy is provided to each
+     *         listener.
+     */
+    public ILayerEvent cloneEvent();
+
 }

@@ -14,10 +14,10 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class EditableRule implements IEditableRule {
 
-	public abstract boolean isEditable(int columnIndex, int rowIndex);
+    public abstract boolean isEditable(int columnIndex, int rowIndex);
 
-	public boolean isEditable(ILayerCell cell, IConfigRegistry configRegistry) {
-		return isEditable(cell.getColumnIndex(), cell.getRowIndex());
-	}
+    public boolean isEditable(ILayerCell cell, IConfigRegistry configRegistry) {
+        return isEditable(cell.getColumnIndex(), cell.getRowIndex());
+    }
 
 }

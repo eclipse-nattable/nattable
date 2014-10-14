@@ -13,34 +13,35 @@ package org.eclipse.nebula.widgets.nattable.test.performance;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 
 public class InternalDataProvider implements IDataProvider {
-	private Object[][] data;
-	private int numRows;
-	private int numCols;
+    private Object[][] data;
+    private int numRows;
+    private int numCols;
 
-//	public InternalDataProvider(TableDataProvider tableData) {
-//		this(tableData.getData(), tableData.getColumnCount(), tableData.getRowCount());
-//	}
-	
-	public InternalDataProvider(Object[][] data, int numCols, int numRows) {
-		this.data = data;
-		this.numRows = numRows;
-		this.numCols = numCols;
-	}
+    // public InternalDataProvider(TableDataProvider tableData) {
+    // this(tableData.getData(), tableData.getColumnCount(),
+    // tableData.getRowCount());
+    // }
 
-	public int getColumnCount() {
-		return numCols;
-	}
+    public InternalDataProvider(Object[][] data, int numCols, int numRows) {
+        this.data = data;
+        this.numRows = numRows;
+        this.numCols = numCols;
+    }
 
-	public int getRowCount() {
-		return numRows;
-	}
+    public int getColumnCount() {
+        return numCols;
+    }
 
-	public Object getDataValue(int columnIndex, int rowIndex) {
-		return data[columnIndex][rowIndex];
-	}
-	
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-		throw new UnsupportedOperationException();
-	}
-	
+    public int getRowCount() {
+        return numRows;
+    }
+
+    public Object getDataValue(int columnIndex, int rowIndex) {
+        return data[columnIndex][rowIndex];
+    }
+
+    public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+        throw new UnsupportedOperationException();
+    }
+
 }

@@ -15,30 +15,32 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.LayerPrinter;
 
 /**
- * ILayerCommandHandler for handling the PrintCommand.
- * Simply delegates to the 
+ * ILayerCommandHandler for handling the PrintCommand. Simply delegates to the
  */
-public class PrintCommandHandler extends AbstractLayerCommandHandler<PrintCommand> {
+public class PrintCommandHandler extends
+        AbstractLayerCommandHandler<PrintCommand> {
 
-	private final ILayer layer;
+    private final ILayer layer;
 
-	/**
-	 * @param layer The layer that should be printed. 
-	 * 			Usually the top most layer to print, e.g. the GridLayer.
-	 */
-	public PrintCommandHandler(ILayer layer) {
-		this.layer = layer;
-	}
+    /**
+     * @param layer
+     *            The layer that should be printed. Usually the top most layer
+     *            to print, e.g. the GridLayer.
+     */
+    public PrintCommandHandler(ILayer layer) {
+        this.layer = layer;
+    }
 
-	@Override
-	public boolean doCommand(PrintCommand command) {
-		new LayerPrinter(layer, command.getConfigRegistry()).print(command.getShell());
-		return true;
-	}
+    @Override
+    public boolean doCommand(PrintCommand command) {
+        new LayerPrinter(layer, command.getConfigRegistry()).print(command
+                .getShell());
+        return true;
+    }
 
-	@Override
-	public Class<PrintCommand> getCommandClass() {
-		return PrintCommand.class;
-	}
+    @Override
+    public Class<PrintCommand> getCommandClass() {
+        return PrintCommand.class;
+    }
 
 }

@@ -14,21 +14,22 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 /**
- * Adds the Java class name of the cell's data value as a label.   
+ * Adds the Java class name of the cell's data value as a label.
  */
 public class ClassNameConfigLabelAccumulator implements IConfigLabelAccumulator {
 
-	private IRowDataProvider<?> dataProvider;
-	
-	public ClassNameConfigLabelAccumulator(IRowDataProvider<?> dataProvider) {
-		this.dataProvider = dataProvider;
-	}
-	
-	public void accumulateConfigLabels(LabelStack configLabel, int columnPosition, int rowPosition) {
-		Object value = dataProvider.getDataValue(columnPosition, rowPosition);
-		if (value != null) {
-			configLabel.addLabel(value.getClass().getName());
-		}
-	}
+    private IRowDataProvider<?> dataProvider;
+
+    public ClassNameConfigLabelAccumulator(IRowDataProvider<?> dataProvider) {
+        this.dataProvider = dataProvider;
+    }
+
+    public void accumulateConfigLabels(LabelStack configLabel,
+            int columnPosition, int rowPosition) {
+        Object value = dataProvider.getDataValue(columnPosition, rowPosition);
+        if (value != null) {
+            configLabel.addLabel(value.getClass().getName());
+        }
+    }
 
 }

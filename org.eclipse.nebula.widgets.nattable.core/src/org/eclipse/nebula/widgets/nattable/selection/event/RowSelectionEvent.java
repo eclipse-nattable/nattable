@@ -17,42 +17,45 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
+public class RowSelectionEvent extends RowVisualChangeEvent implements
+        ISelectionEvent {
 
-public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectionEvent {
+    private final SelectionLayer selectionLayer;
+    private int rowPositionToMoveIntoViewport;
 
-	private final SelectionLayer selectionLayer;
-	private int rowPositionToMoveIntoViewport;
+    public RowSelectionEvent(SelectionLayer selectionLayer,
+            Collection<Integer> rowPositions, int rowPositionToMoveIntoViewport) {
+        super(selectionLayer, PositionUtil.getRanges(rowPositions));
+        this.selectionLayer = selectionLayer;
+        this.rowPositionToMoveIntoViewport = rowPositionToMoveIntoViewport;
+    }
 
-	public RowSelectionEvent(SelectionLayer selectionLayer, Collection<Integer> rowPositions, int rowPositionToMoveIntoViewport) {
-		super(selectionLayer, PositionUtil.getRanges(rowPositions));
-		this.selectionLayer = selectionLayer;
-		this.rowPositionToMoveIntoViewport = rowPositionToMoveIntoViewport;
-	}
-	
-	// Copy constructor
-	protected RowSelectionEvent(RowSelectionEvent event) {
-		super(event);
-		this.selectionLayer = event.selectionLayer;
-		this.rowPositionToMoveIntoViewport = event.rowPositionToMoveIntoViewport;
-	}
-	
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
-	
-	public int getRowPositionToMoveIntoViewport() {
-		return rowPositionToMoveIntoViewport;
-	}
-	
-	@Override
-	public boolean convertToLocal(ILayer localLayer) {
-		rowPositionToMoveIntoViewport = localLayer.underlyingToLocalRowPosition(getLayer(), rowPositionToMoveIntoViewport);
-		
-		return super.convertToLocal(localLayer);
-	}
-	
-	public RowSelectionEvent cloneEvent() {
-		return new RowSelectionEvent(this);
-	}
-	
+    // Copy constructor
+    protected RowSelectionEvent(RowSelectionEvent event) {
+        super(event);
+        this.selectionLayer = event.selectionLayer;
+        this.rowPositionToMoveIntoViewport = event.rowPositionToMoveIntoViewport;
+    }
+
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
+
+    public int getRowPositionToMoveIntoViewport() {
+        return rowPositionToMoveIntoViewport;
+    }
+
+    @Override
+    public boolean convertToLocal(ILayer localLayer) {
+        rowPositionToMoveIntoViewport = localLayer
+                .underlyingToLocalRowPosition(getLayer(),
+                        rowPositionToMoveIntoViewport);
+
+        return super.convertToLocal(localLayer);
+    }
+
+    public RowSelectionEvent cloneEvent() {
+        return new RowSelectionEvent(this);
+    }
+
 }

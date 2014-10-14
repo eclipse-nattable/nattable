@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -85,275 +84,308 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
 
-public class _807_SortableFilterableColumnGroupExample extends AbstractNatExample {
+public class _807_SortableFilterableColumnGroupExample extends
+        AbstractNatExample {
 
-	private final ColumnGroupModel columnGroupModel = new ColumnGroupModel();
-	private final ColumnGroupModel sndColumnGroupModel = new ColumnGroupModel();
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _807_SortableFilterableColumnGroupExample());
-	}
+    private final ColumnGroupModel columnGroupModel = new ColumnGroupModel();
+    private final ColumnGroupModel sndColumnGroupModel = new ColumnGroupModel();
 
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//create a new ConfigRegistry which will be needed for GlazedLists handling
-		ConfigRegistry configRegistry = new ConfigRegistry();
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _807_SortableFilterableColumnGroupExample());
+    }
 
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", 
-				"address.street", "address.housenumber", "address.postalCode", "address.city", 
-				"age", "birthday", "money",
-				"description", "favouriteFood", "favouriteDrinks"};
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // create a new ConfigRegistry which will be needed for GlazedLists
+        // handling
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("address.street", "Street");
-		propertyToLabelMap.put("address.housenumber", "Housenumber");
-		propertyToLabelMap.put("address.postalCode", "Postalcode");
-		propertyToLabelMap.put("address.city", "City");
-		propertyToLabelMap.put("age", "Age");
-		propertyToLabelMap.put("birthday", "Birthday");
-		propertyToLabelMap.put("money", "Money");
-		propertyToLabelMap.put("description", "Description");
-		propertyToLabelMap.put("favouriteFood", "Food");
-		propertyToLabelMap.put("favouriteDrinks", "Drinks");
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "address.street", "address.housenumber",
+                "address.postalCode", "address.city", "age", "birthday",
+                "money", "description", "favouriteFood", "favouriteDrinks" };
 
-		IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor = 
-				new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("address.street", "Street");
+        propertyToLabelMap.put("address.housenumber", "Housenumber");
+        propertyToLabelMap.put("address.postalCode", "Postalcode");
+        propertyToLabelMap.put("address.city", "City");
+        propertyToLabelMap.put("age", "Age");
+        propertyToLabelMap.put("birthday", "Birthday");
+        propertyToLabelMap.put("money", "Money");
+        propertyToLabelMap.put("description", "Description");
+        propertyToLabelMap.put("favouriteFood", "Food");
+        propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
-		BodyLayerStack<ExtendedPersonWithAddress> bodyLayer = 
-				new BodyLayerStack<ExtendedPersonWithAddress>(PersonService.getExtendedPersonsWithAddress(10), 
-						columnPropertyAccessor, 
-						sndColumnGroupModel, columnGroupModel);
+        IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(
+                propertyNames);
 
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
-		
-		SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = 
-				new SortHeaderLayer<ExtendedPersonWithAddress>(columnHeaderLayer, 
-					new GlazedListsSortModel<ExtendedPersonWithAddress>(bodyLayer.getSortedList(), 
-							columnPropertyAccessor, configRegistry, columnHeaderDataLayer));
-		
-		ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(sortHeaderLayer, bodyLayer.getSelectionLayer(), columnGroupModel);
+        BodyLayerStack<ExtendedPersonWithAddress> bodyLayer = new BodyLayerStack<ExtendedPersonWithAddress>(
+                PersonService.getExtendedPersonsWithAddress(10),
+                columnPropertyAccessor, sndColumnGroupModel, columnGroupModel);
 
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Person", 0, 1, 2, 3);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Address", 4, 5, 6, 7);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Facts", 8, 9, 10);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Personal", 11, 12, 13);
-		
-		columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Person", 0, 1);
-		columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Address", 4, 5, 6);
-		
-		ColumnGroupGroupHeaderLayer sndGroup = 
-				new ColumnGroupGroupHeaderLayer(columnGroupHeaderLayer, bodyLayer.getSelectionLayer(), sndColumnGroupModel);
-		
-		sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4, 5, 6, 7);
-		sndGroup.addColumnsIndexesToGroup("Additional Information", 8, 9, 10, 11, 12, 13);
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DataLayer(
+                columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+                columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
-		sndGroup.setStaticColumnIndexesByGroup("PersonWithAddress", 0, 1);
-		
-		//	Note: The column header layer is wrapped in a filter row composite.
-		//	This plugs in the filter row functionality
-		FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer =
-			new FilterRowHeaderComposite<ExtendedPersonWithAddress>(
-					new DefaultGlazedListsFilterStrategy<ExtendedPersonWithAddress>(bodyLayer.getFilterList(), columnPropertyAccessor, configRegistry),
-					sndGroup, columnHeaderDataLayer.getDataProvider(), configRegistry
-			);
+        SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = new SortHeaderLayer<ExtendedPersonWithAddress>(
+                columnHeaderLayer,
+                new GlazedListsSortModel<ExtendedPersonWithAddress>(
+                        bodyLayer.getSortedList(), columnPropertyAccessor,
+                        configRegistry, columnHeaderDataLayer));
 
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayer.getBodyDataProvider());
-		DataLayer rowHeaderDataLayer = new DataLayer(rowHeaderDataProvider);
-		rowHeaderDataLayer.setDefaultColumnWidth(40);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                sortHeaderLayer, bodyLayer.getSelectionLayer(),
+                columnGroupModel);
 
-		ILayer cornerLayer = new CornerLayer(
-				new DataLayer(
-						new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), 
-						rowHeaderLayer, filterRowHeaderLayer);
-		
-		GridLayer gridLayer = new GridLayer(bodyLayer, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Person", 0, 1, 2, 3);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Address", 4, 5, 6, 7);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Facts", 8, 9, 10);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Personal", 11, 12, 13);
 
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		//add filter row configuration
-		natTable.addConfiguration(new FilterRowConfiguration());
-		
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-			@Override
-			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-				return super.createColumnHeaderMenu(natTable)
-						.withColumnChooserMenuItem();
-			}
-		});
-		
-		// Column group header menu
-		final Menu columnGroupHeaderMenu =
-				new PopupMenuBuilder(natTable)
-					.withMenuItemProvider(ColumnGroupMenuItemProviders.renameColumnGroupMenuItemProvider())
-					.withMenuItemProvider(ColumnGroupMenuItemProviders.removeColumnGroupMenuItemProvider())
-					.build();
-		
-		natTable.addConfiguration(new AbstractUiBindingConfiguration() {
-			@Override
-			public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-				uiBindingRegistry.registerFirstMouseDownBinding(
-						new MouseEventMatcher(SWT.NONE, GridRegion.COLUMN_GROUP_HEADER, MouseEventMatcher.RIGHT_BUTTON),
-						new PopupMenuAction(columnGroupHeaderMenu));
-			}
-		});
-		
-		// Register column chooser
-		DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-				bodyLayer.getSelectionLayer(),
-				bodyLayer.getColumnHideShowLayer(),
-				columnHeaderLayer,
-				columnHeaderDataLayer,
-				columnGroupHeaderLayer,
-				columnGroupModel);
-		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
-		
-		natTable.configure();
+        columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Person", 0, 1);
+        columnGroupHeaderLayer
+                .setStaticColumnIndexesByGroup("Address", 4, 5, 6);
 
-		return natTable;
-	}
-	
-	
-	class BodyLayerStack<T> extends AbstractLayerTransform {
-		
-		private final SortedList<T> sortedList;
-		private final FilterList<T> filterList;
-		
-		private final IDataProvider bodyDataProvider;
+        ColumnGroupGroupHeaderLayer sndGroup = new ColumnGroupGroupHeaderLayer(
+                columnGroupHeaderLayer, bodyLayer.getSelectionLayer(),
+                sndColumnGroupModel);
 
-		private ColumnReorderLayer columnReorderLayer;
-		private ColumnGroupReorderLayer columnGroupReorderLayer;
-		private ColumnHideShowLayer columnHideShowLayer;
-		private ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
-		private SelectionLayer selectionLayer;
-		private ViewportLayer viewportLayer;
+        sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4,
+                5, 6, 7);
+        sndGroup.addColumnsIndexesToGroup("Additional Information", 8, 9, 10,
+                11, 12, 13);
 
-		public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor, 
-				ColumnGroupModel... columnGroupModel) {
-			//wrapping of the list to show into GlazedLists
-			//see http://publicobject.com/glazedlists/ for further information
-			EventList<T> eventList = GlazedLists.eventList(values);
-			TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-			
-			//use the SortedList constructor with 'null' for the Comparator because the Comparator
-			//will be set by configuration
-			this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
-			// wrap the SortedList with the FilterList
-			this.filterList = new FilterList<T>(getSortedList());
-			
-			this.bodyDataProvider = 
-				new ListDataProvider<T>(filterList, columnPropertyAccessor);
-			DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
-			
-			//layer for event handling of GlazedLists and PropertyChanges
-			GlazedListsEventLayer<T> glazedListsEventLayer = 
-				new GlazedListsEventLayer<T>(bodyDataLayer, filterList);
+        sndGroup.setStaticColumnIndexesByGroup("PersonWithAddress", 0, 1);
 
-			columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
-			columnGroupReorderLayer = new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel[columnGroupModel.length-1]);
-			columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
-			columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
-			selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-			viewportLayer = new ViewportLayer(selectionLayer);
-			
-			final FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
-		    final CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
+        // Note: The column header layer is wrapped in a filter row composite.
+        // This plugs in the filter row functionality
+        FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer = new FilterRowHeaderComposite<ExtendedPersonWithAddress>(
+                new DefaultGlazedListsFilterStrategy<ExtendedPersonWithAddress>(
+                        bodyLayer.getFilterList(), columnPropertyAccessor,
+                        configRegistry), sndGroup, columnHeaderDataLayer
+                        .getDataProvider(), configRegistry);
 
-			setUnderlyingLayer(compositeFreezeLayer);
-		}
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyLayer.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer = new DataLayer(rowHeaderDataProvider);
+        rowHeaderDataLayer.setDefaultColumnWidth(40);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
 
-		public SortedList<T> getSortedList() {
-			return sortedList;
-		}
-		
-		public FilterList<T> getFilterList() {
-			return filterList;
-		}
+        ILayer cornerLayer = new CornerLayer(new DataLayer(
+                new DefaultCornerDataProvider(columnHeaderDataProvider,
+                        rowHeaderDataProvider)), rowHeaderLayer,
+                filterRowHeaderLayer);
 
-		public IDataProvider getBodyDataProvider() {
-			return bodyDataProvider;
-		}
+        GridLayer gridLayer = new GridLayer(bodyLayer, filterRowHeaderLayer,
+                rowHeaderLayer, cornerLayer);
 
-		public ColumnReorderLayer getColumnReorderLayer() {
-			return columnReorderLayer;
-		}
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        // add filter row configuration
+        natTable.addConfiguration(new FilterRowConfiguration());
 
-		public ColumnGroupReorderLayer getColumnGroupReorderLayer() {
-			return columnGroupReorderLayer;
-		}
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return super.createColumnHeaderMenu(natTable)
+                        .withColumnChooserMenuItem();
+            }
+        });
 
-		public ColumnHideShowLayer getColumnHideShowLayer() {
-			return columnHideShowLayer;
-		}
+        // Column group header menu
+        final Menu columnGroupHeaderMenu = new PopupMenuBuilder(natTable)
+                .withMenuItemProvider(
+                        ColumnGroupMenuItemProviders
+                                .renameColumnGroupMenuItemProvider())
+                .withMenuItemProvider(
+                        ColumnGroupMenuItemProviders
+                                .removeColumnGroupMenuItemProvider()).build();
 
-		public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
-			return columnGroupExpandCollapseLayer;
-		}
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerFirstMouseDownBinding(
+                        new MouseEventMatcher(SWT.NONE,
+                                GridRegion.COLUMN_GROUP_HEADER,
+                                MouseEventMatcher.RIGHT_BUTTON),
+                        new PopupMenuAction(columnGroupHeaderMenu));
+            }
+        });
 
-		public SelectionLayer getSelectionLayer() {
-			return selectionLayer;
-		}
+        // Register column chooser
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
+                bodyLayer.getSelectionLayer(),
+                bodyLayer.getColumnHideShowLayer(), columnHeaderLayer,
+                columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel);
+        bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
-		public ViewportLayer getViewportLayer() {
-			return viewportLayer;
-		}
+        natTable.configure();
 
-	}
+        return natTable;
+    }
 
-	/**
-	 * The configuration to enable the edit mode for the grid and additional
-	 * edit configurations like converters and validators.
-	 * 
-	 * @author Dirk Fauth
-	 */
-	class FilterRowConfiguration extends AbstractRegistryConfiguration {
+    class BodyLayerStack<T> extends AbstractLayerTransform {
 
-		@Override
-		public void configureRegistry(IConfigRegistry configRegistry) {
+        private final SortedList<T> sortedList;
+        private final FilterList<T> filterList;
 
-			//register the FilterRowTextCellEditor in the first column which immediately commits on key press
-			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-					new FilterRowTextCellEditor(), 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
-			
-			//register a combo box cell editor for the gender column in the filter row
-			//the label is set automatically to the value of 
-			//FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column position
-			ICellEditor comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(Gender.FEMALE, Gender.MALE));
-			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-					comboBoxCellEditor, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.GENDER_COLUMN_POSITION);
+        private final IDataProvider bodyDataProvider;
 
-			
-			//register a combo box cell editor for the married column in the filter row
-			//the label is set automatically to the value of 
-			//FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column position
-			comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(Boolean.TRUE, Boolean.FALSE));
-			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-					comboBoxCellEditor, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.MARRIED_COLUMN_POSITION);
-			
-			configRegistry.registerConfigAttribute(
-					FilterRowConfigAttributes.TEXT_MATCHING_MODE, 
-					TextMatchingMode.EXACT, 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + DataModelConstants.GENDER_COLUMN_POSITION);
+        private ColumnReorderLayer columnReorderLayer;
+        private ColumnGroupReorderLayer columnGroupReorderLayer;
+        private ColumnHideShowLayer columnHideShowLayer;
+        private ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
+        private SelectionLayer selectionLayer;
+        private ViewportLayer viewportLayer;
 
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.TEXT_DELIMITER, "&"); //$NON-NLS-1$
+        public BodyLayerStack(List<T> values,
+                IColumnPropertyAccessor<T> columnPropertyAccessor,
+                ColumnGroupModel... columnGroupModel) {
+            // wrapping of the list to show into GlazedLists
+            // see http://publicobject.com/glazedlists/ for further information
+            EventList<T> eventList = GlazedLists.eventList(values);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
+                    .threadSafeList(eventList);
 
-		}
+            // use the SortedList constructor with 'null' for the Comparator
+            // because the Comparator
+            // will be set by configuration
+            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            // wrap the SortedList with the FilterList
+            this.filterList = new FilterList<T>(getSortedList());
 
-	}
+            this.bodyDataProvider = new ListDataProvider<T>(filterList,
+                    columnPropertyAccessor);
+            DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
+
+            // layer for event handling of GlazedLists and PropertyChanges
+            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
+                    bodyDataLayer, filterList);
+
+            columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
+            columnGroupReorderLayer = new ColumnGroupReorderLayer(
+                    columnReorderLayer,
+                    columnGroupModel[columnGroupModel.length - 1]);
+            columnHideShowLayer = new ColumnHideShowLayer(
+                    columnGroupReorderLayer);
+            columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
+                    columnHideShowLayer, columnGroupModel);
+            selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
+            viewportLayer = new ViewportLayer(selectionLayer);
+
+            final FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+            final CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(
+                    freezeLayer, viewportLayer, selectionLayer);
+
+            setUnderlyingLayer(compositeFreezeLayer);
+        }
+
+        public SortedList<T> getSortedList() {
+            return sortedList;
+        }
+
+        public FilterList<T> getFilterList() {
+            return filterList;
+        }
+
+        public IDataProvider getBodyDataProvider() {
+            return bodyDataProvider;
+        }
+
+        public ColumnReorderLayer getColumnReorderLayer() {
+            return columnReorderLayer;
+        }
+
+        public ColumnGroupReorderLayer getColumnGroupReorderLayer() {
+            return columnGroupReorderLayer;
+        }
+
+        public ColumnHideShowLayer getColumnHideShowLayer() {
+            return columnHideShowLayer;
+        }
+
+        public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
+            return columnGroupExpandCollapseLayer;
+        }
+
+        public SelectionLayer getSelectionLayer() {
+            return selectionLayer;
+        }
+
+        public ViewportLayer getViewportLayer() {
+            return viewportLayer;
+        }
+
+    }
+
+    /**
+     * The configuration to enable the edit mode for the grid and additional
+     * edit configurations like converters and validators.
+     * 
+     * @author Dirk Fauth
+     */
+    class FilterRowConfiguration extends AbstractRegistryConfiguration {
+
+        @Override
+        public void configureRegistry(IConfigRegistry configRegistry) {
+
+            // register the FilterRowTextCellEditor in the first column which
+            // immediately commits on key press
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    new FilterRowTextCellEditor(), DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
+
+            // register a combo box cell editor for the gender column in the
+            // filter row
+            // the label is set automatically to the value of
+            // FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column
+            // position
+            ICellEditor comboBoxCellEditor = new ComboBoxCellEditor(
+                    Arrays.asList(Gender.FEMALE, Gender.MALE));
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.GENDER_COLUMN_POSITION);
+
+            // register a combo box cell editor for the married column in the
+            // filter row
+            // the label is set automatically to the value of
+            // FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column
+            // position
+            comboBoxCellEditor = new ComboBoxCellEditor(Arrays.asList(
+                    Boolean.TRUE, Boolean.FALSE));
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.MARRIED_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                    TextMatchingMode.EXACT, DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.GENDER_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.TEXT_DELIMITER, "&"); //$NON-NLS-1$
+
+        }
+
+    }
 }

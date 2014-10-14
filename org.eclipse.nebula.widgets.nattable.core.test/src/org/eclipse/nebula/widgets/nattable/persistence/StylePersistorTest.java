@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
 
-
 import org.eclipse.nebula.widgets.nattable.persistence.ColorPersistor;
 import org.eclipse.nebula.widgets.nattable.persistence.StylePersistor;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
@@ -42,77 +41,97 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class StylePersistorTest {
-	private static final String TEST_PREFIX = "TEST_PREFIX";
-	private PropertiesFixture propertiesFixture;
+    private static final String TEST_PREFIX = "TEST_PREFIX";
+    private PropertiesFixture propertiesFixture;
 
-	@Before
-	public void setup() {
-		propertiesFixture = new PropertiesFixture().addStyleProperties(TEST_PREFIX);
-	}
+    @Before
+    public void setup() {
+        propertiesFixture = new PropertiesFixture()
+                .addStyleProperties(TEST_PREFIX);
+    }
 
-	@Test
-	public void persistColorToProperties() throws Exception {
-		StylePersistor.saveColor(TEST_PREFIX, propertiesFixture, CellStyleFixture.TEST_BG_COLOR);
+    @Test
+    public void persistColorToProperties() throws Exception {
+        StylePersistor.saveColor(TEST_PREFIX, propertiesFixture,
+                CellStyleFixture.TEST_BG_COLOR);
 
-		assertEquals("255,255,255", propertiesFixture.getProperty(TEST_PREFIX + DOT + ColorPersistor.STYLE_PERSISTENCE_PREFIX));
-	}
+        assertEquals(
+                "255,255,255",
+                propertiesFixture.getProperty(TEST_PREFIX + DOT
+                        + ColorPersistor.STYLE_PERSISTENCE_PREFIX));
+    }
 
-	@Test
-	public void persistStyleSettingsToProperties() throws Exception {
-		Properties properties = new Properties();
-		StylePersistor.saveStyle(TEST_PREFIX, properties, new CellStyleFixture());
+    @Test
+    public void persistStyleSettingsToProperties() throws Exception {
+        Properties properties = new Properties();
+        StylePersistor.saveStyle(TEST_PREFIX, properties,
+                new CellStyleFixture());
 
-		String expectedPrefix = TEST_PREFIX + DOT + STYLE_PERSISTENCE_PREFIX + DOT;
+        String expectedPrefix = TEST_PREFIX + DOT + STYLE_PERSISTENCE_PREFIX
+                + DOT;
 
-		assertEquals("255,255,255", properties.getProperty(expectedPrefix + BG_COLOR_PREFIX + DOT + ColorPersistor.STYLE_PERSISTENCE_PREFIX));
-		assertEquals("0,0,0", properties.getProperty(expectedPrefix + FG_COLOR_PREFIX + DOT + ColorPersistor.STYLE_PERSISTENCE_PREFIX));
+        assertEquals(
+                "255,255,255",
+                properties.getProperty(expectedPrefix + BG_COLOR_PREFIX + DOT
+                        + ColorPersistor.STYLE_PERSISTENCE_PREFIX));
+        assertEquals(
+                "0,0,0",
+                properties.getProperty(expectedPrefix + FG_COLOR_PREFIX + DOT
+                        + ColorPersistor.STYLE_PERSISTENCE_PREFIX));
 
-		assertEquals("LEFT", properties.getProperty(expectedPrefix + H_ALIGNMENT_PREFIX));
-		assertEquals("MIDDLE", properties.getProperty(expectedPrefix + V_ALIGNMENT_PREFIX));
+        assertEquals("LEFT",
+                properties.getProperty(expectedPrefix + H_ALIGNMENT_PREFIX));
+        assertEquals("MIDDLE",
+                properties.getProperty(expectedPrefix + V_ALIGNMENT_PREFIX));
 
-		assertEquals(CellStyleFixture.TEST_FONT.getFontData()[0].toString(), properties.getProperty(expectedPrefix + FONT_PREFIX));
-		assertEquals(CellStyleFixture.TEST_BORDER_STYLE.toString(), properties.getProperty(expectedPrefix + BORDER_PREFIX));
-	}
+        assertEquals(CellStyleFixture.TEST_FONT.getFontData()[0].toString(),
+                properties.getProperty(expectedPrefix + FONT_PREFIX));
+        assertEquals(CellStyleFixture.TEST_BORDER_STYLE.toString(),
+                properties.getProperty(expectedPrefix + BORDER_PREFIX));
+    }
 
-	@Test
-	public void loadPersistedColorSettings() throws Exception {
-		Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
+    @Test
+    public void loadPersistedColorSettings() throws Exception {
+        Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
 
-		Color fgColor = style.getAttributeValue(FOREGROUND_COLOR);
-		assertEquals("RGB {100, 110, 120}", fgColor.getRGB().toString());
+        Color fgColor = style.getAttributeValue(FOREGROUND_COLOR);
+        assertEquals("RGB {100, 110, 120}", fgColor.getRGB().toString());
 
-		Color bgColor = style.getAttributeValue(BACKGROUND_COLOR);
-		assertEquals("RGB {200, 210, 220}", bgColor.getRGB().toString());
-	}
+        Color bgColor = style.getAttributeValue(BACKGROUND_COLOR);
+        assertEquals("RGB {200, 210, 220}", bgColor.getRGB().toString());
+    }
 
-	@Test
-	public void loadPersistedAlignmentSettings() throws Exception {
-		Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
+    @Test
+    public void loadPersistedAlignmentSettings() throws Exception {
+        Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
 
-		HorizontalAlignmentEnum expecetdHAlign = style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
-		assertEquals(HorizontalAlignmentEnum.LEFT, expecetdHAlign);
+        HorizontalAlignmentEnum expecetdHAlign = style
+                .getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
+        assertEquals(HorizontalAlignmentEnum.LEFT, expecetdHAlign);
 
-		VerticalAlignmentEnum expecetdVAlign = style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
-		assertEquals(VerticalAlignmentEnum.TOP, expecetdVAlign);
-	}
+        VerticalAlignmentEnum expecetdVAlign = style
+                .getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
+        assertEquals(VerticalAlignmentEnum.TOP, expecetdVAlign);
+    }
 
-	@Test
-	public void loadFontSettings() throws Exception {
-		Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
+    @Test
+    public void loadFontSettings() throws Exception {
+        Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
 
-		Font font = style.getAttributeValue(CellStyleAttributes.FONT);
-		assertTrue(font.getFontData()[0].toString().contains("|Tahoma|8.25|"));
-	}
+        Font font = style.getAttributeValue(CellStyleAttributes.FONT);
+        assertTrue(font.getFontData()[0].toString().contains("|Tahoma|8.25|"));
+    }
 
-	@Test
-	public void loadBorderStyleSettings() throws Exception {
-		Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
+    @Test
+    public void loadBorderStyleSettings() throws Exception {
+        Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
 
-		BorderStyle borderStyle = style.getAttributeValue(CellStyleAttributes.BORDER_STYLE);
-		assertEquals(2, borderStyle.getThickness());
-		assertEquals(100, borderStyle.getColor().getRed());
-		assertEquals(110, borderStyle.getColor().getGreen());
-		assertEquals(120, borderStyle.getColor().getBlue());
-		assertEquals(LineStyleEnum.DASHDOTDOT, borderStyle.getLineStyle());
-	}
+        BorderStyle borderStyle = style
+                .getAttributeValue(CellStyleAttributes.BORDER_STYLE);
+        assertEquals(2, borderStyle.getThickness());
+        assertEquals(100, borderStyle.getColor().getRed());
+        assertEquals(110, borderStyle.getColor().getGreen());
+        assertEquals(120, borderStyle.getColor().getBlue());
+        assertEquals(LineStyleEnum.DASHDOTDOT, borderStyle.getLineStyle());
+    }
 }

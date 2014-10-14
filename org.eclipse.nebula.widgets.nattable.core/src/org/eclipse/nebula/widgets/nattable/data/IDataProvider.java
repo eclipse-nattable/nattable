@@ -20,27 +20,28 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
  */
 public interface IDataProvider {
 
-	/**
-	 * Gets the value at the given column and row index.
-	 *
-	 * @param columnIndex
-	 * @param rowIndex
-	 * @return the data value associated with the specified cell
-	 */
-	public Object getDataValue(int columnIndex, int rowIndex);
+    /**
+     * Gets the value at the given column and row index.
+     *
+     * @param columnIndex
+     * @param rowIndex
+     * @return the data value associated with the specified cell
+     */
+    public Object getDataValue(int columnIndex, int rowIndex);
 
-	/**
-	 * Sets the value at the given column and row index. Optional operation. Should throw UnsupportedOperationException
-	 * if this operation is not supported.
-	 *
-	 * @param columnIndex
-	 * @param rowIndex
-	 * @param newValue
-	 */
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue);
+    /**
+     * Sets the value at the given column and row index. Optional operation.
+     * Should throw UnsupportedOperationException if this operation is not
+     * supported.
+     *
+     * @param columnIndex
+     * @param rowIndex
+     * @param newValue
+     */
+    public void setDataValue(int columnIndex, int rowIndex, Object newValue);
 
-	public int getColumnCount();
+    public int getColumnCount();
 
-	public int getRowCount();
+    public int getRowCount();
 
 }

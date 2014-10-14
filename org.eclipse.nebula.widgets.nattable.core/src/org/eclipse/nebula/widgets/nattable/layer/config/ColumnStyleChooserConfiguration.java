@@ -21,23 +21,25 @@ import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnSty
  * Registers the {@link DisplayColumnStyleEditorCommandHandler}
  * 
  */
-public class ColumnStyleChooserConfiguration extends AbstractRegistryConfiguration {
+public class ColumnStyleChooserConfiguration extends
+        AbstractRegistryConfiguration {
 
-	private AbstractLayer bodyLayer;
-	private ColumnOverrideLabelAccumulator labelAccumulator;
-	private final SelectionLayer selectionLayer;
+    private AbstractLayer bodyLayer;
+    private ColumnOverrideLabelAccumulator labelAccumulator;
+    private final SelectionLayer selectionLayer;
 
-	public ColumnStyleChooserConfiguration(AbstractLayer bodyLayer, SelectionLayer selectionLayer) {
-		this.bodyLayer = bodyLayer;
-		this.selectionLayer = selectionLayer;
-		labelAccumulator = new ColumnOverrideLabelAccumulator(bodyLayer);
-		bodyLayer.setConfigLabelAccumulator(labelAccumulator);
-	}
+    public ColumnStyleChooserConfiguration(AbstractLayer bodyLayer,
+            SelectionLayer selectionLayer) {
+        this.bodyLayer = bodyLayer;
+        this.selectionLayer = selectionLayer;
+        labelAccumulator = new ColumnOverrideLabelAccumulator(bodyLayer);
+        bodyLayer.setConfigLabelAccumulator(labelAccumulator);
+    }
 
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		DisplayColumnStyleEditorCommandHandler columnChooserCommandHandler =
-			new DisplayColumnStyleEditorCommandHandler(selectionLayer, labelAccumulator, configRegistry);
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        DisplayColumnStyleEditorCommandHandler columnChooserCommandHandler = new DisplayColumnStyleEditorCommandHandler(
+                selectionLayer, labelAccumulator, configRegistry);
 
-		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
-	}
+        bodyLayer.registerCommandHandler(columnChooserCommandHandler);
+    }
 }

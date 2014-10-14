@@ -18,40 +18,46 @@ import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Painter that is used to paint the cells of the filter row.
- * In detail it is a {@link TextPainter} that is wrapped and decorated with 
- * an {@link ImagePainter} to indicate filter states.
+ * Painter that is used to paint the cells of the filter row. In detail it is a
+ * {@link TextPainter} that is wrapped and decorated with an
+ * {@link ImagePainter} to indicate filter states.
  */
 public class FilterRowPainter extends CellPainterWrapper {
 
-	/**
-	 * The {@link ImagePainter} that is used to paint the icon in the filter row cells.
-	 */
-	private final ImagePainter filterIconPainter;
-	
-	/**
-	 * Creates a {@link FilterRowPainter} that uses the default {@link FilterIconPainter}.
-	 */
-	public FilterRowPainter() {
-		this(new FilterIconPainter());
-	}
-	
-	/**
-	 * Creates a {@link FilterRowPainter} that uses the given {@link Image} as filter icon
-	 * painter.
-	 * @param filterIconPainter The {@link ImagePainter} that should be used to paint the
-	 * 			icon in the filter row cells.
-	 */
-	public FilterRowPainter(ImagePainter filterIconPainter) {
-		this.filterIconPainter = filterIconPainter;
-		setWrappedPainter(new CellPainterDecorator(new TextPainter(), CellEdgeEnum.RIGHT, filterIconPainter));
-	}
+    /**
+     * The {@link ImagePainter} that is used to paint the icon in the filter row
+     * cells.
+     */
+    private final ImagePainter filterIconPainter;
 
-	/**
-	 * 
-	 * @return The {@link ImagePainter} that is used to paint the icon in the filter row cells.
-	 */
-	public ImagePainter getFilterIconPainter() {
-		return this.filterIconPainter;
-	}
+    /**
+     * Creates a {@link FilterRowPainter} that uses the default
+     * {@link FilterIconPainter}.
+     */
+    public FilterRowPainter() {
+        this(new FilterIconPainter());
+    }
+
+    /**
+     * Creates a {@link FilterRowPainter} that uses the given {@link Image} as
+     * filter icon painter.
+     * 
+     * @param filterIconPainter
+     *            The {@link ImagePainter} that should be used to paint the icon
+     *            in the filter row cells.
+     */
+    public FilterRowPainter(ImagePainter filterIconPainter) {
+        this.filterIconPainter = filterIconPainter;
+        setWrappedPainter(new CellPainterDecorator(new TextPainter(),
+                CellEdgeEnum.RIGHT, filterIconPainter));
+    }
+
+    /**
+     * 
+     * @return The {@link ImagePainter} that is used to paint the icon in the
+     *         filter row cells.
+     */
+    public ImagePainter getFilterIconPainter() {
+        return this.filterIconPainter;
+    }
 }

@@ -45,77 +45,81 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _771_ExcelExportExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _771_ExcelExportExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new _771_ExcelExportExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows how to trigger an export for a NatTable.\n"
-				+ "You can also use the [Ctrl] + [E] to trigger the export via key bindings.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.marginHeight = 5;
-		layout.marginWidth = 5;
-		panel.setLayout(layout);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
-		
-		Composite gridPanel = new Composite(panel, SWT.NONE);
-		gridPanel.setLayout(layout);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
-		
-		Composite buttonPanel = new Composite(panel, SWT.NONE);
-		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
+    @Override
+    public String getDescription() {
+        return "This example shows how to trigger an export for a NatTable.\n"
+                + "You can also use the [Ctrl] + [E] to trigger the export via key bindings.";
+    }
 
-		
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public Control createExampleControl(Composite parent) {
+        Composite panel = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 5;
+        layout.marginWidth = 5;
+        panel.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+        Composite gridPanel = new Composite(panel, SWT.NONE);
+        gridPanel.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
 
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(10), propertyNames);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
-		
-		viewportLayer.setRegionName(GridRegion.BODY);
-		
-		//add the ExportCommandHandler to the ViewportLayer in order to make exporting work
-		viewportLayer.registerCommandHandler(new ExportCommandHandler(viewportLayer));
-		
-		final NatTable natTable = new NatTable(gridPanel, viewportLayer, false);
-		
-		//adding this configuration adds the styles and the painters to use
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new DefaultExportBindings());
-		
-		natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
-		
-		natTable.configure();
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		
-		Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
-		addColumnButton.setText("Export");
-		addColumnButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new ExportCommand(natTable.getConfigRegistry(), natTable.getShell()));
-			}
-		});
+        Composite buttonPanel = new Composite(panel, SWT.NONE);
+        buttonPanel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
-		return panel;
-	}
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
+
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
+
+        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
+                PersonService.getPersons(10), propertyNames);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        viewportLayer.setRegionName(GridRegion.BODY);
+
+        // add the ExportCommandHandler to the ViewportLayer in order to make
+        // exporting work
+        viewportLayer.registerCommandHandler(new ExportCommandHandler(
+                viewportLayer));
+
+        final NatTable natTable = new NatTable(gridPanel, viewportLayer, false);
+
+        // adding this configuration adds the styles and the painters to use
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new DefaultExportBindings());
+
+        natTable.addOverlayPainter(new NatTableBorderOverlayPainter());
+
+        natTable.configure();
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
+        addColumnButton.setText("Export");
+        addColumnButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(new ExportCommand(natTable
+                        .getConfigRegistry(), natTable.getShell()));
+            }
+        });
+
+        return panel;
+    }
 
 }

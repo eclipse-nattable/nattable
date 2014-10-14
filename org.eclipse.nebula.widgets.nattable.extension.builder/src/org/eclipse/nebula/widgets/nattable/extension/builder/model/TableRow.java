@@ -12,12 +12,12 @@ package org.eclipse.nebula.widgets.nattable.extension.builder.model;
 
 public interface TableRow {
 
-	public Object getIdentifier();
+    public Object getIdentifier();
 
-	public Object getData();
+    public Object getData();
 
-	public Object getValue(int columnIndex);
+    public Object getValue(int columnIndex);
 
-	public void setValue(int columnIndex, Object value);
+    public void setValue(int columnIndex, Object value);
 
 }

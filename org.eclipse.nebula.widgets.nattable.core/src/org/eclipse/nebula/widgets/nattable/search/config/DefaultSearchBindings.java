@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.search.action.SearchAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
@@ -19,7 +18,8 @@ import org.eclipse.swt.SWT;
 
 public class DefaultSearchBindings extends AbstractUiBindingConfiguration {
 
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL, 'f'), new SearchAction());
-	}
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerKeyBinding(
+                new KeyEventMatcher(SWT.CTRL, 'f'), new SearchAction());
+    }
 }

@@ -32,53 +32,57 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Simple example showing the NatGridLayerPainter which renders grid lines
- * at the remainder space.
+ * Simple example showing the NatGridLayerPainter which renders grid lines at
+ * the remainder space.
  * 
  * @author Dirk Fauth
  *
  */
 public class _4221_NatGridLayerPainterExample extends AbstractNatExample {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _4221_NatGridLayerPainterExample());
-	}
 
-	@Override
-	public String getDescription() {
-		return "This example shows the NatGridLayerPainter which renders grid lines"
-				+ " to the remainder space.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		parent.setLayout(new GridLayout());
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _4221_NatGridLayerPainterExample());
+    }
 
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows the NatGridLayerPainter which renders grid lines"
+                + " to the remainder space.";
+    }
 
-		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
-				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		
-		IDataProvider bodyDataProvider = new ListDataProvider<Person>(
-				PersonService.getPersons(10), columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		
-		//use different style bits to avoid rendering of inactive scrollbars for small table
-		//Note: The enabling/disabling and showing of the scrollbars is handled by the ViewportLayer.
-		//		Without the ViewportLayer the scrollbars will always be visible with the default
-		//		style bits of NatTable.
-		final NatTable natTable = new NatTable(
-				parent, 
-				SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER, 
-				bodyDataLayer);
-		natTable.setBackground(GUIHelper.COLOR_WHITE);
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		
-		natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
-		
-		return natTable;
-	}
+    @Override
+    public Control createExampleControl(Composite parent) {
+        parent.setLayout(new GridLayout());
+
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
+
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
+
+        IDataProvider bodyDataProvider = new ListDataProvider<Person>(
+                PersonService.getPersons(10), columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+
+        // use different style bits to avoid rendering of inactive scrollbars
+        // for small table
+        // Note: The enabling/disabling and showing of the scrollbars is handled
+        // by the ViewportLayer.
+        // Without the ViewportLayer the scrollbars will always be visible with
+        // the default
+        // style bits of NatTable.
+        final NatTable natTable = new NatTable(parent, SWT.NO_REDRAW_RESIZE
+                | SWT.DOUBLE_BUFFERED | SWT.BORDER, bodyDataLayer);
+        natTable.setBackground(GUIHelper.COLOR_WHITE);
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        natTable.setLayerPainter(new NatGridLayerPainter(natTable,
+                DataLayer.DEFAULT_ROW_HEIGHT));
+
+        return natTable;
+    }
 
 }

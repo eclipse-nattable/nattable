@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.columnCategories;
 
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.columnCategories.IColumnCategoriesDialogListener;
 import org.eclipse.nebula.widgets.nattable.columnCategories.gui.ColumnCategoriesDialog;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -23,29 +22,32 @@ import org.eclipse.swt.widgets.Shell;
 
 public class ColumnCategoriesDialogRunner {
 
-	public static void main(String[] args) {
-		ColumnCategoriesDialog dialog = new ColumnCategoriesDialog(
-				new Shell(),
-				new ColumnCategoriesModelFixture(),
-				ColumnEntriesFixture.getEntriesWithEvenIndexes(),
-				ColumnEntriesFixture.getEntriesWithOddIndexes());
+    public static void main(String[] args) {
+        ColumnCategoriesDialog dialog = new ColumnCategoriesDialog(new Shell(),
+                new ColumnCategoriesModelFixture(),
+                ColumnEntriesFixture.getEntriesWithEvenIndexes(),
+                ColumnEntriesFixture.getEntriesWithOddIndexes());
 
-		dialog.addListener(new Listener());
-		dialog.open();
-	}
+        dialog.addListener(new Listener());
+        dialog.open();
+    }
 }
 
 class Listener implements IColumnCategoriesDialogListener {
 
-	public void itemsRemoved(List<Integer> removedColumnPositions) {
-		System.out.println("Removed positions: " + ObjectUtils.toString(removedColumnPositions));
-	}
+    public void itemsRemoved(List<Integer> removedColumnPositions) {
+        System.out.println("Removed positions: "
+                + ObjectUtils.toString(removedColumnPositions));
+    }
 
-	public void itemsSelected(List<Integer> addedColumnIndexes) {
-		System.out.println("Added indexes: " + ObjectUtils.toString(addedColumnIndexes));
-	}
+    public void itemsSelected(List<Integer> addedColumnIndexes) {
+        System.out.println("Added indexes: "
+                + ObjectUtils.toString(addedColumnIndexes));
+    }
 
-	public void itemsMoved(MoveDirectionEnum direction, List<Integer> toPositions) {
-		System.out.println("Moved: " + direction + ", Positions: " + ObjectUtils.toString(toPositions));
-	}
+    public void itemsMoved(MoveDirectionEnum direction,
+            List<Integer> toPositions) {
+        System.out.println("Moved: " + direction + ", Positions: "
+                + ObjectUtils.toString(toPositions));
+    }
 }

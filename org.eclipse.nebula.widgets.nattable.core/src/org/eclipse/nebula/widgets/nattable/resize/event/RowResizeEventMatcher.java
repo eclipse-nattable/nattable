@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.event;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -22,25 +21,28 @@ import org.eclipse.swt.graphics.Point;
 
 public class RowResizeEventMatcher extends MouseEventMatcher {
 
-	public RowResizeEventMatcher(int stateMask, int button) {
-		this(stateMask, GridRegion.ROW_HEADER, button);
-	}
+    public RowResizeEventMatcher(int stateMask, int button) {
+        this(stateMask, GridRegion.ROW_HEADER, button);
+    }
 
-	public RowResizeEventMatcher(int stateMask, String eventRegion, int button) {
-		super(stateMask, eventRegion, button);
-	}
+    public RowResizeEventMatcher(int stateMask, String eventRegion, int button) {
+        super(stateMask, eventRegion, button);
+    }
 
-	@Override
-    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
-		return super.matches(natTable, event, regionLabels) && indexIsResizable(natTable, event);
-	}
+    @Override
+    public boolean matches(NatTable natTable, MouseEvent event,
+            LabelStack regionLabels) {
+        return super.matches(natTable, event, regionLabels)
+                && indexIsResizable(natTable, event);
+    }
 
-	private boolean indexIsResizable(ILayer natLayer, MouseEvent event) {
-		int rowPosition = CellEdgeDetectUtil.getRowPositionToResize(natLayer, new Point(event.x, event.y));
-		if (rowPosition < 0) {
-			return false;
-		} else {
-			return natLayer.isRowPositionResizable(rowPosition);
-		}
-	}
+    private boolean indexIsResizable(ILayer natLayer, MouseEvent event) {
+        int rowPosition = CellEdgeDetectUtil.getRowPositionToResize(natLayer,
+                new Point(event.x, event.y));
+        if (rowPosition < 0) {
+            return false;
+        } else {
+            return natLayer.isRowPositionResizable(rowPosition);
+        }
+    }
 }

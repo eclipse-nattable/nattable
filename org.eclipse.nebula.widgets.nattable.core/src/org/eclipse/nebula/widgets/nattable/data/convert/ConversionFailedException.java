@@ -13,26 +13,25 @@ package org.eclipse.nebula.widgets.nattable.data.convert;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
 
 /**
- * Exception for handling conversion failures.
- * As the API should not be modified for the handling of this exception,
- * it is a RuntimeException.
- * To make use of this exception it can be thrown on conversion errors within
- * {@link IDisplayConverter#displayToCanonicalValue(Object)}. 
- * The handling of this exception is done within {@link AbstractCellEditor}
- * where the message is stored and showed within a dialog on trying to commit.
+ * Exception for handling conversion failures. As the API should not be modified
+ * for the handling of this exception, it is a RuntimeException. To make use of
+ * this exception it can be thrown on conversion errors within
+ * {@link IDisplayConverter#displayToCanonicalValue(Object)}. The handling of
+ * this exception is done within {@link AbstractCellEditor} where the message is
+ * stored and showed within a dialog on trying to commit.
  * 
  * @author Dirk Fauth
  *
  */
 public class ConversionFailedException extends RuntimeException {
 
-	private static final long serialVersionUID = -755775784924211402L;
+    private static final long serialVersionUID = -755775784924211402L;
 
-	public ConversionFailedException(String message) {
-		super(message);
-	}
-	
-	public ConversionFailedException(String message, Throwable t) {
-		super(message, t);
-	}
+    public ConversionFailedException(String message) {
+        super(message);
+    }
+
+    public ConversionFailedException(String message, Throwable t) {
+        super(message, t);
+    }
 }

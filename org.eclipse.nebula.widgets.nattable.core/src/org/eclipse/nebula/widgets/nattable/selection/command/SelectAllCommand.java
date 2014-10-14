@@ -12,5 +12,4 @@ package org.eclipse.nebula.widgets.nattable.selection.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
-public class SelectAllCommand extends AbstractContextFreeCommand {
-}
+public class SelectAllCommand extends AbstractContextFreeCommand {}

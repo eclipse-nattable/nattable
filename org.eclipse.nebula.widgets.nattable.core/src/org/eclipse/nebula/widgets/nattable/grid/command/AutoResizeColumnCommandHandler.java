@@ -24,87 +24,102 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
  * This command is triggered by the {@link InitializeAutoResizeColumnsCommand}.
- * The selected columns picked from the {@link SelectionLayer} by the above command.
- * This handler runs as a second step. 
+ * The selected columns picked from the {@link SelectionLayer} by the above
+ * command. This handler runs as a second step.
  * <p>
- * This handler assumes that the target layer is the NatTable itself on calling doCommand()
+ * This handler assumes that the target layer is the NatTable itself on calling
+ * doCommand()
  */
-public class AutoResizeColumnCommandHandler implements ILayerCommandHandler<AutoResizeColumnsCommand> {
+public class AutoResizeColumnCommandHandler implements
+        ILayerCommandHandler<AutoResizeColumnsCommand> {
 
-	/**
-	 * The layer on which the command should be fired. 
-	 * Usually this will be the GridLayer
-	 */
-	protected final ILayer commandLayer;
-	/**
-	 * The layer to use for calculation of the column positions.
-	 * Needs to be a layer at a lower position in the layer composition.
-	 * Typically the body layer stack.
-	 */
-	protected final ILayer positionLayer;
+    /**
+     * The layer on which the command should be fired. Usually this will be the
+     * GridLayer
+     */
+    protected final ILayer commandLayer;
+    /**
+     * The layer to use for calculation of the column positions. Needs to be a
+     * layer at a lower position in the layer composition. Typically the body
+     * layer stack.
+     */
+    protected final ILayer positionLayer;
 
-	/**
-	 * 
-	 * @param commandLayer The layer on which the command should be fired. 
-	 * 			Usually this will be the GridLayer.
-	 * @param positionLayer The layer to use for calculation of the column positions.
-	 * 			Needs to be a layer at a lower position in the layer composition.
-	 * 			Typically the body layer stack.
-	 */
-	public AutoResizeColumnCommandHandler(ILayer commandLayer, ILayer positionLayer) {
-		this.commandLayer = commandLayer;
-		this.positionLayer = positionLayer;
-	}
+    /**
+     * 
+     * @param commandLayer
+     *            The layer on which the command should be fired. Usually this
+     *            will be the GridLayer.
+     * @param positionLayer
+     *            The layer to use for calculation of the column positions.
+     *            Needs to be a layer at a lower position in the layer
+     *            composition. Typically the body layer stack.
+     */
+    public AutoResizeColumnCommandHandler(ILayer commandLayer,
+            ILayer positionLayer) {
+        this.commandLayer = commandLayer;
+        this.positionLayer = positionLayer;
+    }
 
-	/**
-	 * 
-	 * @param gridLayer The {@link GridLayer} to which this command handler should be registered
-	 */
-	public AutoResizeColumnCommandHandler(GridLayer gridLayer) {
-		this.commandLayer = gridLayer;
-		this.positionLayer = gridLayer.getBodyLayer();
-	}
+    /**
+     * 
+     * @param gridLayer
+     *            The {@link GridLayer} to which this command handler should be
+     *            registered
+     */
+    public AutoResizeColumnCommandHandler(GridLayer gridLayer) {
+        this.commandLayer = gridLayer;
+        this.positionLayer = gridLayer.getBodyLayer();
+    }
 
-	@Override
-	public Class<AutoResizeColumnsCommand> getCommandClass() {
-		return AutoResizeColumnsCommand.class;
-	}
+    @Override
+    public Class<AutoResizeColumnsCommand> getCommandClass() {
+        return AutoResizeColumnsCommand.class;
+    }
 
-	@Override
-	public boolean doCommand(ILayer targetLayer, AutoResizeColumnsCommand command) {
-		// Need to resize selected columns even if they are outside the viewport
-		// As this command is triggered by the InitialAutoResizeCommand we know that the targetLayer is the 
-		// NatTable itself
-		targetLayer.doCommand(new TurnViewportOffCommand());
+    @Override
+    public boolean doCommand(ILayer targetLayer,
+            AutoResizeColumnsCommand command) {
+        // Need to resize selected columns even if they are outside the viewport
+        // As this command is triggered by the InitialAutoResizeCommand we know
+        // that the targetLayer is the
+        // NatTable itself
+        targetLayer.doCommand(new TurnViewportOffCommand());
 
-		int[] columnPositions = ObjectUtils.asIntArray(command.getColumnPositions());
-		int[] gridColumnPositions = convertFromPositionToCommandLayer(columnPositions);
+        int[] columnPositions = ObjectUtils.asIntArray(command
+                .getColumnPositions());
+        int[] gridColumnPositions = convertFromPositionToCommandLayer(columnPositions);
 
-		int[] gridColumnWidths = MaxCellBoundsHelper.getPreferredColumnWidths(
-                                                         command.getConfigRegistry(), 
-                                                         command.getGCFactory(), 
-                                                         commandLayer,
-                                                         gridColumnPositions);
+        int[] gridColumnWidths = MaxCellBoundsHelper.getPreferredColumnWidths(
+                command.getConfigRegistry(), command.getGCFactory(),
+                commandLayer, gridColumnPositions);
 
-		commandLayer.doCommand(new MultiColumnResizeCommand(commandLayer, gridColumnPositions, gridColumnWidths));
-		targetLayer.doCommand(new TurnViewportOnCommand());
+        commandLayer.doCommand(new MultiColumnResizeCommand(commandLayer,
+                gridColumnPositions, gridColumnWidths));
+        targetLayer.doCommand(new TurnViewportOnCommand());
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Translates the column positions the layer stack upwards as the resulting {@link MultiColumnResizeCommand}
-	 * will be fired on the command layer which is on top of the position layer.
-	 * @param columnPositions The column positions to convert to the positions in the command layer
-	 * @return The translated column positions for the local command layer.
-	 */
-	protected int[] convertFromPositionToCommandLayer(int[] columnPositions) {
-		int[] commandLayerColumnPositions = new int[columnPositions.length];
+    /**
+     * Translates the column positions the layer stack upwards as the resulting
+     * {@link MultiColumnResizeCommand} will be fired on the command layer which
+     * is on top of the position layer.
+     * 
+     * @param columnPositions
+     *            The column positions to convert to the positions in the
+     *            command layer
+     * @return The translated column positions for the local command layer.
+     */
+    protected int[] convertFromPositionToCommandLayer(int[] columnPositions) {
+        int[] commandLayerColumnPositions = new int[columnPositions.length];
 
-		for (int i = 0; i < columnPositions.length; i++) {
-			commandLayerColumnPositions[i] = commandLayer.underlyingToLocalColumnPosition(positionLayer, columnPositions[i]);
-		}
-		return commandLayerColumnPositions;
-	}
+        for (int i = 0; i < columnPositions.length; i++) {
+            commandLayerColumnPositions[i] = commandLayer
+                    .underlyingToLocalColumnPosition(positionLayer,
+                            columnPositions[i]);
+        }
+        return commandLayerColumnPositions;
+    }
 
 }

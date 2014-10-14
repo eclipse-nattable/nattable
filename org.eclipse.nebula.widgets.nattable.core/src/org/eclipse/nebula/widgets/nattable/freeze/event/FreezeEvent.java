@@ -16,27 +16,26 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 
-
 public class FreezeEvent extends StructuralRefreshEvent {
 
-	public FreezeEvent(ILayer layer) {
-		super(layer);
-	}
-	
-	protected FreezeEvent(FreezeEvent event) {
-		super(event);
-	}
-	
-	public FreezeEvent cloneEvent() {
-		return new FreezeEvent(this);
-	}
-	
-	public Collection<StructuralDiff> getColumnDiffs() {
-		return null;
-	}
-	
-	public Collection<StructuralDiff> getRowDiffs() {
-		return null;
-	}
-	
+    public FreezeEvent(ILayer layer) {
+        super(layer);
+    }
+
+    protected FreezeEvent(FreezeEvent event) {
+        super(event);
+    }
+
+    public FreezeEvent cloneEvent() {
+        return new FreezeEvent(this);
+    }
+
+    public Collection<StructuralDiff> getColumnDiffs() {
+        return null;
+    }
+
+    public Collection<StructuralDiff> getRowDiffs() {
+        return null;
+    }
+
 }

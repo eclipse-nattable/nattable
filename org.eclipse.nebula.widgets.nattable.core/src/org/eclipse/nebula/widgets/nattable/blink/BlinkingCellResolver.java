@@ -15,10 +15,11 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class BlinkingCellResolver implements IBlinkingCellResolver {
 
-	public abstract String[] resolve(Object oldValue, Object newValue);
+    public abstract String[] resolve(Object oldValue, Object newValue);
 
-	public String[] resolve(ILayerCell cell, IConfigRegistry configRegistry, Object oldValue, Object newValue) {
-		return resolve(oldValue, newValue);
-	}
+    public String[] resolve(ILayerCell cell, IConfigRegistry configRegistry,
+            Object oldValue, Object newValue) {
+        return resolve(oldValue, newValue);
+    }
 
 }

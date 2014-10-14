@@ -13,25 +13,28 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 
-public class ReorderColumnGroupStartCommandHandler extends AbstractLayerCommandHandler<ReorderColumnGroupStartCommand> {
+public class ReorderColumnGroupStartCommandHandler extends
+        AbstractLayerCommandHandler<ReorderColumnGroupStartCommand> {
 
-	private final ColumnGroupReorderLayer columnGroupReorderLayer;
+    private final ColumnGroupReorderLayer columnGroupReorderLayer;
 
-	public ReorderColumnGroupStartCommandHandler(ColumnGroupReorderLayer columnGroupReorderLayer) {
-		this.columnGroupReorderLayer = columnGroupReorderLayer;
-	}
-	
-	public Class<ReorderColumnGroupStartCommand> getCommandClass() {
-		return ReorderColumnGroupStartCommand.class;
-	}
+    public ReorderColumnGroupStartCommandHandler(
+            ColumnGroupReorderLayer columnGroupReorderLayer) {
+        this.columnGroupReorderLayer = columnGroupReorderLayer;
+    }
 
-	@Override
-	protected boolean doCommand(ReorderColumnGroupStartCommand command) {
-		int fromColumnPosition = command.getFromColumnPosition();
-		
-		columnGroupReorderLayer.setReorderFromColumnPosition(fromColumnPosition);
-		
-		return true;
-	}
+    public Class<ReorderColumnGroupStartCommand> getCommandClass() {
+        return ReorderColumnGroupStartCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(ReorderColumnGroupStartCommand command) {
+        int fromColumnPosition = command.getFromColumnPosition();
+
+        columnGroupReorderLayer
+                .setReorderFromColumnPosition(fromColumnPosition);
+
+        return true;
+    }
 
 }

@@ -17,35 +17,38 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
-
 /**
  * @see ColumnOverrideLabelAccumulator
- * @param <T> type of the bean used as the data source for a row 
+ * @param <T>
+ *            type of the bean used as the data source for a row
  */
 public class RowOverrideLabelAccumulator<T> extends AbstractOverrider {
-	
-	private IRowDataProvider<T> dataProvider;
-	private IRowIdAccessor<T> idAccessor;
 
-	public RowOverrideLabelAccumulator(IRowDataProvider<T> dataProvider, IRowIdAccessor<T> idAccessor) {
-		this.dataProvider = dataProvider;
-		this.idAccessor = idAccessor;
-	}
-	
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-		T rowObject = dataProvider.getRowObject(rowPosition);
-		Serializable rowId = idAccessor.getRowId(rowObject);
-		List<String> overrides = getOverrides(rowId);
-		if (overrides != null) {
-			for (String configLabel : overrides) {
-				configLabels.addLabel(configLabel);
-			}
-		}
-	}
+    private IRowDataProvider<T> dataProvider;
+    private IRowIdAccessor<T> idAccessor;
 
-	public void registerOverrides(int rowIndex, String...configLabels) {
-		Serializable id = idAccessor.getRowId(dataProvider.getRowObject(rowIndex));
-		registerOverrides(id, configLabels);
-	}
-	
+    public RowOverrideLabelAccumulator(IRowDataProvider<T> dataProvider,
+            IRowIdAccessor<T> idAccessor) {
+        this.dataProvider = dataProvider;
+        this.idAccessor = idAccessor;
+    }
+
+    public void accumulateConfigLabels(LabelStack configLabels,
+            int columnPosition, int rowPosition) {
+        T rowObject = dataProvider.getRowObject(rowPosition);
+        Serializable rowId = idAccessor.getRowId(rowObject);
+        List<String> overrides = getOverrides(rowId);
+        if (overrides != null) {
+            for (String configLabel : overrides) {
+                configLabels.addLabel(configLabel);
+            }
+        }
+    }
+
+    public void registerOverrides(int rowIndex, String... configLabels) {
+        Serializable id = idAccessor.getRowId(dataProvider
+                .getRowObject(rowIndex));
+        registerOverrides(id, configLabels);
+    }
+
 }

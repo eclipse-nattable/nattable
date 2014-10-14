@@ -13,22 +13,23 @@ package org.eclipse.nebula.widgets.nattable.blink.command;
 import org.eclipse.nebula.widgets.nattable.blink.BlinkLayer;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 
-public class BlinkTimerEnableCommandHandler extends AbstractLayerCommandHandler<BlinkTimerEnableCommand> {
+public class BlinkTimerEnableCommandHandler extends
+        AbstractLayerCommandHandler<BlinkTimerEnableCommand> {
 
-	private final BlinkLayer<?> blinkLayer;
+    private final BlinkLayer<?> blinkLayer;
 
-	public BlinkTimerEnableCommandHandler(BlinkLayer<?> blinkLayer) {
-		this.blinkLayer = blinkLayer;
-	}
-	
-	public Class<BlinkTimerEnableCommand> getCommandClass() {
-		return BlinkTimerEnableCommand.class;
-	}
+    public BlinkTimerEnableCommandHandler(BlinkLayer<?> blinkLayer) {
+        this.blinkLayer = blinkLayer;
+    }
 
-	@Override
-	protected boolean doCommand(BlinkTimerEnableCommand command) {
-		blinkLayer.setBlinkingEnabled(command.isEnableBlinkTimer());
-		return true;
-	}
+    public Class<BlinkTimerEnableCommand> getCommandClass() {
+        return BlinkTimerEnableCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(BlinkTimerEnableCommand command) {
+        blinkLayer.setBlinkingEnabled(command.isEnableBlinkTimer());
+        return true;
+    }
 
 }

@@ -12,22 +12,23 @@ package org.eclipse.nebula.widgets.nattable.selection.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
-public abstract class AbstractSelectionCommand extends AbstractContextFreeCommand {
-	
-	private boolean shiftMask;
-	private boolean controlMask;
+public abstract class AbstractSelectionCommand extends
+        AbstractContextFreeCommand {
 
-	public AbstractSelectionCommand(boolean shiftMask, boolean controlMask) {
-		this.shiftMask = shiftMask;
-		this.controlMask = controlMask;
-	}
-	
-	public boolean isShiftMask() {
-		return shiftMask;
-	}
-	
-	public boolean isControlMask() {
-		return controlMask;
-	}
-	
+    private boolean shiftMask;
+    private boolean controlMask;
+
+    public AbstractSelectionCommand(boolean shiftMask, boolean controlMask) {
+        this.shiftMask = shiftMask;
+        this.controlMask = controlMask;
+    }
+
+    public boolean isShiftMask() {
+        return shiftMask;
+    }
+
+    public boolean isControlMask() {
+        return controlMask;
+    }
+
 }

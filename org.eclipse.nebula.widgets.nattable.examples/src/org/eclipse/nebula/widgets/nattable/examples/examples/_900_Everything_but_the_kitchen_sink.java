@@ -85,305 +85,332 @@ import ca.odell.glazedlists.SortedList;
 
 public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(1000, 800, new PersistentNatExampleWrapper(new _900_Everything_but_the_kitchen_sink()));
-	}
-	
-	@Override
-	public String getDescription() {
-		return "The example with everything. Well, not quite everything, but a lot.";
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(1000, 800,
+                new PersistentNatExampleWrapper(
+                        new _900_Everything_but_the_kitchen_sink()));
+    }
 
-	private static final String BLINK_UP_CONFIG_LABEL = "blinkUpConfigLabel";
-	private static final String BLINK_DOWN_CONFIG_LABEL = "blinkDownConfigLabel";
+    @Override
+    public String getDescription() {
+        return "The example with everything. Well, not quite everything, but a lot.";
+    }
 
-	private EventList<BlinkingRowDataFixture> baseEventList;
-	private PropertyChangeListener propertyChangeListener;
-	private ListDataProvider<BlinkingRowDataFixture> bodyDataProvider;
-	private NatTable natTable;
-	private ScheduledExecutorService scheduledThreadPool;
+    private static final String BLINK_UP_CONFIG_LABEL = "blinkUpConfigLabel";
+    private static final String BLINK_DOWN_CONFIG_LABEL = "blinkDownConfigLabel";
 
-	public Control createExampleControl(Composite parent) {
-		final String[] propertyNames = RowDataListFixture.getPropertyNames();
-		final Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
+    private EventList<BlinkingRowDataFixture> baseEventList;
+    private PropertyChangeListener propertyChangeListener;
+    private ListDataProvider<BlinkingRowDataFixture> bodyDataProvider;
+    private NatTable natTable;
+    private ScheduledExecutorService scheduledThreadPool;
 
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		ColumnGroupModel columnGroupModel = new ColumnGroupModel();
+    public Control createExampleControl(Composite parent) {
+        final String[] propertyNames = RowDataListFixture.getPropertyNames();
+        final Map<String, String> propertyToLabelMap = RowDataListFixture
+                .getPropertyToLabelMap();
 
-		// Body
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        ColumnGroupModel columnGroupModel = new ColumnGroupModel();
 
-		LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<BlinkingRowDataFixture>();
-		baseEventList = GlazedLists.threadSafeList(GlazedLists.eventList(rowData));
-		ObservableElementList<BlinkingRowDataFixture> observableElementList = new ObservableElementList<BlinkingRowDataFixture>(
-				baseEventList, GlazedLists.beanConnector(BlinkingRowDataFixture.class));
-		FilterList<BlinkingRowDataFixture> filterList = new FilterList<BlinkingRowDataFixture>(observableElementList);
-		SortedList<BlinkingRowDataFixture> sortedList = new SortedList<BlinkingRowDataFixture>(filterList, null);
+        // Body
 
-		FullFeaturedBodyLayerStack<BlinkingRowDataFixture> bodyLayer =
-			new FullFeaturedBodyLayerStack<BlinkingRowDataFixture>(
-				sortedList,
-				BlinkingRowDataFixture.rowIdAccessor,
-				propertyNames,
-				configRegistry,
-				columnGroupModel);
+        LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<BlinkingRowDataFixture>();
+        baseEventList = GlazedLists.threadSafeList(GlazedLists
+                .eventList(rowData));
+        ObservableElementList<BlinkingRowDataFixture> observableElementList = new ObservableElementList<BlinkingRowDataFixture>(
+                baseEventList,
+                GlazedLists.beanConnector(BlinkingRowDataFixture.class));
+        FilterList<BlinkingRowDataFixture> filterList = new FilterList<BlinkingRowDataFixture>(
+                observableElementList);
+        SortedList<BlinkingRowDataFixture> sortedList = new SortedList<BlinkingRowDataFixture>(
+                filterList, null);
 
-		bodyDataProvider = bodyLayer.getBodyDataProvider();
-		propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
+        FullFeaturedBodyLayerStack<BlinkingRowDataFixture> bodyLayer = new FullFeaturedBodyLayerStack<BlinkingRowDataFixture>(
+                sortedList, BlinkingRowDataFixture.rowIdAccessor,
+                propertyNames, configRegistry, columnGroupModel);
 
-		//    blinking
-		registerBlinkingConfigCells(configRegistry);
+        bodyDataProvider = bodyLayer.getBodyDataProvider();
+        propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
 
-		// Column header
-		FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> columnHeaderLayer =
-			new FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture>(
-	              sortedList,
-	              filterList,
-	              propertyNames,
-	              propertyToLabelMap,
-	              bodyLayer,
-	              bodyLayer.getSelectionLayer(),
-	              columnGroupModel,
-	              configRegistry);
+        // blinking
+        registerBlinkingConfigCells(configRegistry);
 
-		//    column groups
-		setUpColumnGroups(columnHeaderLayer);
+        // Column header
+        FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> columnHeaderLayer = new FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture>(
+                sortedList, filterList, propertyNames, propertyToLabelMap,
+                bodyLayer, bodyLayer.getSelectionLayer(), columnGroupModel,
+                configRegistry);
 
-		// Row header
-		final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		rowHeaderDataLayer.setDefaultColumnWidth(50);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        // column groups
+        setUpColumnGroups(columnHeaderLayer);
 
-		// Corner
-		final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderLayer.getColumnHeaderDataProvider(), rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
+        // Row header
+        final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        rowHeaderDataLayer.setDefaultColumnWidth(50);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
 
-		// Grid
-		GridLayer gridLayer = new GridLayer(
-				bodyLayer,
-				columnHeaderLayer,
-				rowHeaderLayer,
-				cornerLayer
-		);
+        // Corner
+        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderLayer.getColumnHeaderDataProvider(),
+                rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                columnHeaderLayer);
 
-		natTable = new NatTable(parent, gridLayer, false);
+        // Grid
+        GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
 
-		natTable.setConfigRegistry(configRegistry);
+        natTable = new NatTable(parent, gridLayer, false);
 
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		//    Popup menu
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-			@Override
-			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-				return super.createColumnHeaderMenu(natTable).withColumnChooserMenuItem();
-			}
-		});
-		
-		natTable.addConfiguration(new SingleClickSortConfiguration());
+        natTable.setConfigRegistry(configRegistry);
 
-		//    Editing
-		ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyLayer.getBodyDataLayer());
-		bodyLayer.getBodyDataLayer().setConfigLabelAccumulator(columnLabelAccumulator);
-		natTable.addConfiguration(EditableGridExample.editableGridConfiguration(columnLabelAccumulator, bodyDataProvider));
-		natTable.addConfiguration(new FilterRowGridExample.FilterRowCustomConfiguration());
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        // Popup menu
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return super.createColumnHeaderMenu(natTable)
+                        .withColumnChooserMenuItem();
+            }
+        });
 
-		
-		//    Column chooser
-		DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-				bodyLayer.getSelectionLayer(),
-				bodyLayer.getColumnHideShowLayer(),
-				columnHeaderLayer.getColumnHeaderLayer(),
-				columnHeaderLayer.getColumnHeaderDataLayer(),
-				columnHeaderLayer.getColumnGroupHeaderLayer(),
-				columnGroupModel);
-		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
+        natTable.addConfiguration(new SingleClickSortConfiguration());
 
-		// Summary row configuration
-		natTable.addConfiguration(new MySummaryRow<BlinkingRowDataFixture>(bodyDataProvider));
-		natTable.configure();
+        // Editing
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
+                bodyLayer.getBodyDataLayer());
+        bodyLayer.getBodyDataLayer().setConfigLabelAccumulator(
+                columnLabelAccumulator);
+        natTable.addConfiguration(EditableGridExample
+                .editableGridConfiguration(columnLabelAccumulator,
+                        bodyDataProvider));
+        natTable.addConfiguration(new FilterRowGridExample.FilterRowCustomConfiguration());
 
-		return natTable;
-	}
+        // Column chooser
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
+                bodyLayer.getSelectionLayer(),
+                bodyLayer.getColumnHideShowLayer(),
+                columnHeaderLayer.getColumnHeaderLayer(),
+                columnHeaderLayer.getColumnHeaderDataLayer(),
+                columnHeaderLayer.getColumnGroupHeaderLayer(), columnGroupModel);
+        bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
-	private void setUpColumnGroups(FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> headerLayer) {
-		headerLayer.getColumnGroupHeaderLayer().addColumnsIndexesToGroup("TestGroup", 1,2);
-		headerLayer.getColumnGroupHeaderLayer().addColumnsIndexesToGroup("TestGroup1", 5,6,7);
-		headerLayer.getColumnGroupHeaderLayer().setGroupUnbreakable(5);
-		headerLayer.getColumnGroupHeaderLayer().setGroupAsCollapsed(5);
-	}
+        // Summary row configuration
+        natTable.addConfiguration(new MySummaryRow<BlinkingRowDataFixture>(
+                bodyDataProvider));
+        natTable.configure();
 
-	@Override
-	public void onStart() {
-		Display.getDefault().asyncExec( new Runnable() {
-			public void run() {
-				scheduledThreadPool = Executors.newScheduledThreadPool(1);
-				System.out.println("Starting data load.");
-				scheduledThreadPool.schedule(new DataLoader(propertyChangeListener, baseEventList), 100L, TimeUnit.MILLISECONDS);
-				scheduledThreadPool.scheduleAtFixedRate(new DataUpdater(bodyDataProvider), 100L, 5000L, TimeUnit.MILLISECONDS);
-			}
-		});
-	}
+        return natTable;
+    }
 
-	@Override
-	public void onStop() {
-		if (isNotNull(scheduledThreadPool)) {
-			scheduledThreadPool.shutdownNow();
-		}
-	}
+    private void setUpColumnGroups(
+            FullFeaturedColumnHeaderLayerStack<BlinkingRowDataFixture> headerLayer) {
+        headerLayer.getColumnGroupHeaderLayer().addColumnsIndexesToGroup(
+                "TestGroup", 1, 2);
+        headerLayer.getColumnGroupHeaderLayer().addColumnsIndexesToGroup(
+                "TestGroup1", 5, 6, 7);
+        headerLayer.getColumnGroupHeaderLayer().setGroupUnbreakable(5);
+        headerLayer.getColumnGroupHeaderLayer().setGroupAsCollapsed(5);
+    }
 
-	private void registerBlinkingConfigCells(ConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(BlinkConfigAttributes.BLINK_RESOLVER, getBlinkResolver(), DisplayMode.NORMAL);
+    @Override
+    public void onStart() {
+        Display.getDefault().asyncExec(new Runnable() {
+            public void run() {
+                scheduledThreadPool = Executors.newScheduledThreadPool(1);
+                System.out.println("Starting data load.");
+                scheduledThreadPool.schedule(new DataLoader(
+                        propertyChangeListener, baseEventList), 100L,
+                        TimeUnit.MILLISECONDS);
+                scheduledThreadPool.scheduleAtFixedRate(new DataUpdater(
+                        bodyDataProvider), 100L, 5000L, TimeUnit.MILLISECONDS);
+            }
+        });
+    }
 
-		// Styles
-		Style cellStyle = new Style();
-		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_GREEN);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, BLINK_UP_CONFIG_LABEL);
+    @Override
+    public void onStop() {
+        if (isNotNull(scheduledThreadPool)) {
+            scheduledThreadPool.shutdownNow();
+        }
+    }
 
-		cellStyle = new Style();
-		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_RED);
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, BLINK_DOWN_CONFIG_LABEL);
-	}
+    private void registerBlinkingConfigCells(ConfigRegistry configRegistry) {
+        configRegistry.registerConfigAttribute(
+                BlinkConfigAttributes.BLINK_RESOLVER, getBlinkResolver(),
+                DisplayMode.NORMAL);
 
-	private IBlinkingCellResolver getBlinkResolver() {
-		return new BlinkingCellResolver() {
-			private final String[] configLabels = new String[1];
+        // Styles
+        Style cellStyle = new Style();
+        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                GUIHelper.COLOR_GREEN);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                cellStyle, DisplayMode.NORMAL, BLINK_UP_CONFIG_LABEL);
 
-			public String[] resolve(Object oldValue, Object newValue) {
-				double old = ((Double) oldValue).doubleValue();
-				double latest = ((Double) newValue).doubleValue();
-				configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL : BLINK_DOWN_CONFIG_LABEL);
-				return configLabels;
-			}
-		};
-	}
+        cellStyle = new Style();
+        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                GUIHelper.COLOR_RED);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                cellStyle, DisplayMode.NORMAL, BLINK_DOWN_CONFIG_LABEL);
+    }
 
-	private final Random random = new Random();
-	private static final int DATASET_SIZE = 52000;
+    private IBlinkingCellResolver getBlinkResolver() {
+        return new BlinkingCellResolver() {
+            private final String[] configLabels = new String[1];
 
-	/**
-	 * Initial data load. Loads data in batches.
-	 *
-	 *	Note: It is a significantly more efficient to do the load in batches
-	 * 	i.e using {@link List#addAll(java.util.Collection)} instead of adding objects
-	 * 	individually.
-	 *
-	 *  @See https://sourceforge.net/projects/nattable/forums/forum/744994/topic/3410065
-	 */
-	class DataLoader implements Runnable {
-		private final PropertyChangeListener changeListener;
-		private final EventList<BlinkingRowDataFixture> list;
-		private final String waitMsg = "Loading data. Please wait... ";
-		private WaitDialog dialog;
+            public String[] resolve(Object oldValue, Object newValue) {
+                double old = ((Double) oldValue).doubleValue();
+                double latest = ((Double) newValue).doubleValue();
+                configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
+                        : BLINK_DOWN_CONFIG_LABEL);
+                return configLabels;
+            }
+        };
+    }
 
-		public DataLoader(PropertyChangeListener changeListener, EventList<BlinkingRowDataFixture> baseEventList) {
-			this.changeListener = changeListener;
-			this.list = baseEventList;
-		}
+    private final Random random = new Random();
+    private static final int DATASET_SIZE = 52000;
 
-		public void run() {
-			try {
-				// Display wait dialog
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						final Image icon = new Image(Display.getDefault(), getClass().getResourceAsStream("waiting.gif"));
-						dialog = new WaitDialog(natTable.getShell(), SWT.NONE, waitMsg, icon);
-						dialog.setBlockOnOpen(true);
-						dialog.open();
-					}
-				});
+    /**
+     * Initial data load. Loads data in batches.
+     *
+     * Note: It is a significantly more efficient to do the load in batches i.e
+     * using {@link List#addAll(java.util.Collection)} instead of adding objects
+     * individually.
+     *
+     * @See https://sourceforge.net/projects/nattable/forums/forum/744994/topic/
+     *      3410065
+     */
+    class DataLoader implements Runnable {
+        private final PropertyChangeListener changeListener;
+        private final EventList<BlinkingRowDataFixture> list;
+        private final String waitMsg = "Loading data. Please wait... ";
+        private WaitDialog dialog;
 
-				// Load data
-				while(list.size() < DATASET_SIZE){
-					//	Add to buffer
-					List<BlinkingRowDataFixture> buffer = new ArrayList<BlinkingRowDataFixture>();
-					for (int i = 0; i < 100; i++) {
-						buffer.addAll(BlinkingRowDataFixture.getList(changeListener));
-					}
-					//	Load as a batch
-					list.addAll(buffer);
-					//	Update wait dialog
-					Display.getDefault().syncExec(new Runnable() {
-						public void run() {
-							dialog.setMsg(waitMsg + list.size());
-						}
-					});
-				}
+        public DataLoader(PropertyChangeListener changeListener,
+                EventList<BlinkingRowDataFixture> baseEventList) {
+            this.changeListener = changeListener;
+            this.list = baseEventList;
+        }
 
-				// Close wait dialog
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						dialog.close();
-					}
-				});
-			} catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
-		}
-	}
+        public void run() {
+            try {
+                // Display wait dialog
+                Display.getDefault().asyncExec(new Runnable() {
+                    public void run() {
+                        final Image icon = new Image(Display.getDefault(),
+                                getClass().getResourceAsStream("waiting.gif"));
+                        dialog = new WaitDialog(natTable.getShell(), SWT.NONE,
+                                waitMsg, icon);
+                        dialog.setBlockOnOpen(true);
+                        dialog.open();
+                    }
+                });
 
-	public Runnable runWithBusyIndicator(final Runnable runnable) {
-		return new Runnable() {
-			public void run() {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						BusyIndicator.showWhile(Display.getDefault(), runnable);
-					}
-				});
-			}
-		};
-	}
+                // Load data
+                while (list.size() < DATASET_SIZE) {
+                    // Add to buffer
+                    List<BlinkingRowDataFixture> buffer = new ArrayList<BlinkingRowDataFixture>();
+                    for (int i = 0; i < 100; i++) {
+                        buffer.addAll(BlinkingRowDataFixture
+                                .getList(changeListener));
+                    }
+                    // Load as a batch
+                    list.addAll(buffer);
+                    // Update wait dialog
+                    Display.getDefault().syncExec(new Runnable() {
+                        public void run() {
+                            dialog.setMsg(waitMsg + list.size());
+                        }
+                    });
+                }
 
-	/**
-	 * Pumps data updates to drive blinking
-	 */
-	class DataUpdater implements Runnable {
-		ListDataProvider<BlinkingRowDataFixture> dataProvider;
-		int counter = 0;
-		DataUpdater(ListDataProvider<BlinkingRowDataFixture> dataProvider) {
-			this.dataProvider = dataProvider;
-		}
-		public void run() {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					for (int i = 0; i < 5; i++) {
-						int index = RandomUtils.nextInt(13);
-						int nextAsk = random.nextInt(1000);
+                // Close wait dialog
+                Display.getDefault().asyncExec(new Runnable() {
+                    public void run() {
+                        dialog.close();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+    }
 
-						if (dataProvider.getRowCount() > index) {
-    						BlinkingRowDataFixture rowObject = dataProvider.getRowObject(index);
-    						//System.out.println("Ask: "+rowObject.getAsk_price()+" --> "+nextAsk);
-    						rowObject.setAsk_price(nextAsk);
-    						rowObject.setBid_price(-1 * nextAsk);
-						}
-					}
-				}
-			});
-		}
-	}
+    public Runnable runWithBusyIndicator(final Runnable runnable) {
+        return new Runnable() {
+            public void run() {
+                Display.getDefault().asyncExec(new Runnable() {
+                    public void run() {
+                        BusyIndicator.showWhile(Display.getDefault(), runnable);
+                    }
+                });
+            }
+        };
+    }
 
-	class MySummaryRow<T> extends DefaultSummaryRowConfiguration implements IConfiguration {
+    /**
+     * Pumps data updates to drive blinking
+     */
+    class DataUpdater implements Runnable {
+        ListDataProvider<BlinkingRowDataFixture> dataProvider;
+        int counter = 0;
 
-		private IRowDataProvider<T> dataProvider;
-		
-		public MySummaryRow(IRowDataProvider<T> dataProvider) {
-			this.dataProvider = dataProvider;
-		}
+        DataUpdater(ListDataProvider<BlinkingRowDataFixture> dataProvider) {
+            this.dataProvider = dataProvider;
+        }
 
-		@Override
-		public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
-			// Add summaries to ask price column
-			configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-					new SummationSummaryProvider(dataProvider),
-					DisplayMode.NORMAL,
-					SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + getColumnIndexOfProperty(ASK_PRICE_PROP_NAME));
+        public void run() {
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    for (int i = 0; i < 5; i++) {
+                        int index = RandomUtils.nextInt(13);
+                        int nextAsk = random.nextInt(1000);
 
-			// No Summary by default
-			configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-					ISummaryProvider.NONE,
-					DisplayMode.NORMAL,
-					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
-		}
-	}
-	
+                        if (dataProvider.getRowCount() > index) {
+                            BlinkingRowDataFixture rowObject = dataProvider
+                                    .getRowObject(index);
+                            // System.out.println("Ask: "+rowObject.getAsk_price()+" --> "+nextAsk);
+                            rowObject.setAsk_price(nextAsk);
+                            rowObject.setBid_price(-1 * nextAsk);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    class MySummaryRow<T> extends DefaultSummaryRowConfiguration implements
+            IConfiguration {
+
+        private IRowDataProvider<T> dataProvider;
+
+        public MySummaryRow(IRowDataProvider<T> dataProvider) {
+            this.dataProvider = dataProvider;
+        }
+
+        @Override
+        public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
+            // Add summaries to ask price column
+            configRegistry.registerConfigAttribute(
+                    SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                    new SummationSummaryProvider(dataProvider),
+                    DisplayMode.NORMAL,
+                    SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX
+                            + getColumnIndexOfProperty(ASK_PRICE_PROP_NAME));
+
+            // No Summary by default
+            configRegistry.registerConfigAttribute(
+                    SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                    ISummaryProvider.NONE, DisplayMode.NORMAL,
+                    SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+        }
+    }
+
 }

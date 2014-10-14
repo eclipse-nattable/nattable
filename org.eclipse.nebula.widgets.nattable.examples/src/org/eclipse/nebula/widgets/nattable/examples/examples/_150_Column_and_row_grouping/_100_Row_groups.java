@@ -46,101 +46,116 @@ import org.eclipse.swt.widgets.Control;
 
 public class _100_Row_groups extends AbstractNatExample {
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(800, 400, new _100_Row_groups());
-	}
-	
-	@Override
-	public String getDescription() {
-		return
-				"This example demonstrates row grouping functionality:\n" +
-				"\n" +
-				"* EXPAND/COLLAPSE A ROW GROUP by double-clicking on the row group header.";
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(800, 400, new _100_Row_groups());
+    }
 
-	@Override
-	public Control createExampleControl(Composite parent) {
-		// Body
+    @Override
+    public String getDescription() {
+        return "This example demonstrates row grouping functionality:\n"
+                + "\n"
+                + "* EXPAND/COLLAPSE A ROW GROUP by double-clicking on the row group header.";
+    }
 
-		String[] propertyNames = RowGroupDataListFixture.getPropertyNames();
-		Map<String, String> propertyToLabelMap = RowGroupDataListFixture.getPropertyToLabelMap();
-		
-		DefaultBodyDataProvider<RowGroupDataFixture> bodyDataProvider = new DefaultBodyDataProvider<RowGroupDataFixture>(RowGroupDataListFixture.getList(2000), propertyNames);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		
-		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-		
-		RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(columnHideShowLayer);		
-		RowGroupModel<RowGroupDataFixture> rowGroupModel = new RowGroupModel<RowGroupDataFixture>();
-		rowGroupModel.setDataProvider(bodyDataProvider);
-		RowGroupExpandCollapseLayer<RowGroupDataFixture> rowExpandCollapseLayer = new RowGroupExpandCollapseLayer<RowGroupDataFixture>(rowHideShowLayer, rowGroupModel);
-		
-		SelectionLayer selectionLayer = new SelectionLayer(rowExpandCollapseLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
-		
-		// Column header
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // Body
 
-		DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DefaultColumnHeaderDataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(defaultColumnHeaderDataProvider);
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
-		
-		// Row header
-		
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer, false);
-		rowHeaderLayer.addConfiguration(new RowHeaderConfiguration());
-		
-		RowGroupHeaderLayer<RowGroupDataFixture> rowGroupHeaderLayer = new RowGroupHeaderLayer<RowGroupDataFixture>(rowHeaderLayer, selectionLayer, rowGroupModel);
-		rowGroupHeaderLayer.setColumnWidth(20);
-		
-		// Create a group of rows for the model.
-		RowGroup<RowGroupDataFixture> rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 1", true);		
-		rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(1));
-		rowGroup.addMemberRow(bodyDataProvider.getRowObject(2));
-		rowGroupModel.addRowGroup(rowGroup);
-		
-		rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 2", true);		
-		rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(11));
-		rowGroup.addMemberRow(bodyDataProvider.getRowObject(12));
-		rowGroup.addMemberRow(bodyDataProvider.getRowObject(13));
-		rowGroupModel.addRowGroup(rowGroup);
-		
-		rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 3", false);		
-		rowGroup.addMemberRow(bodyDataProvider.getRowObject(18));
-		rowGroup.addMemberRow(bodyDataProvider.getRowObject(19));
-		rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(20));
-		rowGroupModel.addRowGroup(rowGroup);
-		
-		// Corner
+        String[] propertyNames = RowGroupDataListFixture.getPropertyNames();
+        Map<String, String> propertyToLabelMap = RowGroupDataListFixture
+                .getPropertyToLabelMap();
 
-		final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(defaultColumnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowGroupHeaderLayer, columnHeaderLayer);
+        DefaultBodyDataProvider<RowGroupDataFixture> bodyDataProvider = new DefaultBodyDataProvider<RowGroupDataFixture>(
+                RowGroupDataListFixture.getList(2000), propertyNames);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
-		// Grid
-		GridLayer gridLayer = new GridLayer(
-				viewportLayer,
-				columnHeaderLayer,
-				rowGroupHeaderLayer,
-				cornerLayer);
+        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
+                bodyDataLayer);
+        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
+                columnReorderLayer);
 
+        RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(
+                columnHideShowLayer);
+        RowGroupModel<RowGroupDataFixture> rowGroupModel = new RowGroupModel<RowGroupDataFixture>();
+        rowGroupModel.setDataProvider(bodyDataProvider);
+        RowGroupExpandCollapseLayer<RowGroupDataFixture> rowExpandCollapseLayer = new RowGroupExpandCollapseLayer<RowGroupDataFixture>(
+                rowHideShowLayer, rowGroupModel);
 
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+        SelectionLayer selectionLayer = new SelectionLayer(
+                rowExpandCollapseLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-		natTable.configure();
-		return natTable;
-	}
-	
-	private class RowHeaderConfiguration extends DefaultRowHeaderLayerConfiguration {		
-		@Override
-		protected void addRowHeaderUIBindings() {
-			// We're suppressing the row resize bindings.
-		}
-	}
+        // Column header
+
+        DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DefaultColumnHeaderDataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                defaultColumnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+                columnHeaderDataLayer, viewportLayer, selectionLayer);
+
+        // Row header
+
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer, false);
+        rowHeaderLayer.addConfiguration(new RowHeaderConfiguration());
+
+        RowGroupHeaderLayer<RowGroupDataFixture> rowGroupHeaderLayer = new RowGroupHeaderLayer<RowGroupDataFixture>(
+                rowHeaderLayer, selectionLayer, rowGroupModel);
+        rowGroupHeaderLayer.setColumnWidth(20);
+
+        // Create a group of rows for the model.
+        RowGroup<RowGroupDataFixture> rowGroup = new RowGroup<RowGroupDataFixture>(
+                rowGroupModel, "Group 1", true);
+        rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(1));
+        rowGroup.addMemberRow(bodyDataProvider.getRowObject(2));
+        rowGroupModel.addRowGroup(rowGroup);
+
+        rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 2",
+                true);
+        rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(11));
+        rowGroup.addMemberRow(bodyDataProvider.getRowObject(12));
+        rowGroup.addMemberRow(bodyDataProvider.getRowObject(13));
+        rowGroupModel.addRowGroup(rowGroup);
+
+        rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 3",
+                false);
+        rowGroup.addMemberRow(bodyDataProvider.getRowObject(18));
+        rowGroup.addMemberRow(bodyDataProvider.getRowObject(19));
+        rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(20));
+        rowGroupModel.addRowGroup(rowGroup);
+
+        // Corner
+
+        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                defaultColumnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer,
+                rowGroupHeaderLayer, columnHeaderLayer);
+
+        // Grid
+        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
+                rowGroupHeaderLayer, cornerLayer);
+
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+
+        natTable.configure();
+        return natTable;
+    }
+
+    private class RowHeaderConfiguration extends
+            DefaultRowHeaderLayerConfiguration {
+        @Override
+        protected void addRowHeaderUIBindings() {
+            // We're suppressing the row resize bindings.
+        }
+    }
 
 }

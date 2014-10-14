@@ -11,33 +11,33 @@
 package org.eclipse.nebula.widgets.nattable.sort;
 
 public enum SortDirectionEnum {
-	ASC("Ascending"), //$NON-NLS-1$
-	DESC("Ascending"), //$NON-NLS-1$
-	NONE("Unsorted"); //$NON-NLS-1$
+    ASC("Ascending"), //$NON-NLS-1$
+    DESC("Ascending"), //$NON-NLS-1$
+    NONE("Unsorted"); //$NON-NLS-1$
 
-	private final String description;
+    private final String description;
 
-	private SortDirectionEnum(String description) {
-		this.description = description;
-	}
+    private SortDirectionEnum(String description) {
+        this.description = description;
+    }
 
-	/**
-	 * @return the sorting state to go to from the current one.
-	 */
-	public SortDirectionEnum getNextSortDirection() {
-		switch (this) {
-		case NONE:
-			return SortDirectionEnum.ASC;
-		case ASC:
-			return SortDirectionEnum.DESC;
-		case DESC:
-			return SortDirectionEnum.NONE;
-		default:
-			return SortDirectionEnum.NONE;
-		}
-	}
+    /**
+     * @return the sorting state to go to from the current one.
+     */
+    public SortDirectionEnum getNextSortDirection() {
+        switch (this) {
+            case NONE:
+                return SortDirectionEnum.ASC;
+            case ASC:
+                return SortDirectionEnum.DESC;
+            case DESC:
+                return SortDirectionEnum.NONE;
+            default:
+                return SortDirectionEnum.NONE;
+        }
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 }

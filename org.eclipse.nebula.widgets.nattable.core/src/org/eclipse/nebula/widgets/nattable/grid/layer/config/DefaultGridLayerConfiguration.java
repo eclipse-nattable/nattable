@@ -25,34 +25,36 @@ import org.eclipse.nebula.widgets.nattable.print.config.DefaultPrintBindings;
  */
 public class DefaultGridLayerConfiguration extends AggregateConfiguration {
 
-	public DefaultGridLayerConfiguration(CompositeLayer gridLayer) {
-		addAlternateRowColoringConfig(gridLayer);
-		addEditingHandlerConfig();
-		addEditingUIConfig();
-		addPrintUIBindings();
-		addExcelExportUIBindings();
-	}
+    public DefaultGridLayerConfiguration(CompositeLayer gridLayer) {
+        addAlternateRowColoringConfig(gridLayer);
+        addEditingHandlerConfig();
+        addEditingUIConfig();
+        addPrintUIBindings();
+        addExcelExportUIBindings();
+    }
 
-	protected void addExcelExportUIBindings() {
-		addConfiguration(new DefaultExportBindings());
-	}
+    protected void addExcelExportUIBindings() {
+        addConfiguration(new DefaultExportBindings());
+    }
 
-	protected void addPrintUIBindings() {
-		addConfiguration(new DefaultPrintBindings());
-	}
+    protected void addPrintUIBindings() {
+        addConfiguration(new DefaultPrintBindings());
+    }
 
-	protected void addEditingUIConfig() {
-		addConfiguration(new DefaultEditBindings());
-	}
+    protected void addEditingUIConfig() {
+        addConfiguration(new DefaultEditBindings());
+    }
 
-	protected void addEditingHandlerConfig() {
-		addConfiguration(new DefaultEditConfiguration());
-	}
+    protected void addEditingHandlerConfig() {
+        addConfiguration(new DefaultEditConfiguration());
+    }
 
-	protected void addAlternateRowColoringConfig(CompositeLayer gridLayer) {
-		addConfiguration(new DefaultRowStyleConfiguration());
-		gridLayer.setConfigLabelAccumulatorForRegion(GridRegion.BODY, 
-				new AlternatingRowConfigLabelAccumulator(gridLayer.getChildLayerByRegionName(GridRegion.BODY)));
-	}
+    protected void addAlternateRowColoringConfig(CompositeLayer gridLayer) {
+        addConfiguration(new DefaultRowStyleConfiguration());
+        gridLayer.setConfigLabelAccumulatorForRegion(
+                GridRegion.BODY,
+                new AlternatingRowConfigLabelAccumulator(gridLayer
+                        .getChildLayerByRegionName(GridRegion.BODY)));
+    }
 
 }

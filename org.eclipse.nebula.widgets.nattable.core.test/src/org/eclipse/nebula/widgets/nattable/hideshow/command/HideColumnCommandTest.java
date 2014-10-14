@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
@@ -20,28 +19,29 @@ import org.junit.Test;
 
 public class HideColumnCommandTest {
 
-	private ColumnHideShowLayer columnHideShowLayer;
-	
-	@Before
-	public void setup() {
-		columnHideShowLayer = new ColumnHideShowLayer(new DataLayerFixture());
-	}
-	
-	@Test
-	public void testHideColumnCommand() {
-		int columnPosition = 2;
-		ILayerCommand hideColumnCommand = new MultiColumnHideCommand(columnHideShowLayer, columnPosition);
-		
-		Assert.assertEquals(5, columnHideShowLayer.getColumnCount());
-		
-		columnHideShowLayer.doCommand(hideColumnCommand);
-		
-		Assert.assertEquals(4, columnHideShowLayer.getColumnCount());
-		
-		Assert.assertEquals(0, columnHideShowLayer.getColumnIndexByPosition(0));
-		Assert.assertEquals(1, columnHideShowLayer.getColumnIndexByPosition(1));
-		Assert.assertEquals(3, columnHideShowLayer.getColumnIndexByPosition(2));
-		Assert.assertEquals(4, columnHideShowLayer.getColumnIndexByPosition(3));
-	}
-	
+    private ColumnHideShowLayer columnHideShowLayer;
+
+    @Before
+    public void setup() {
+        columnHideShowLayer = new ColumnHideShowLayer(new DataLayerFixture());
+    }
+
+    @Test
+    public void testHideColumnCommand() {
+        int columnPosition = 2;
+        ILayerCommand hideColumnCommand = new MultiColumnHideCommand(
+                columnHideShowLayer, columnPosition);
+
+        Assert.assertEquals(5, columnHideShowLayer.getColumnCount());
+
+        columnHideShowLayer.doCommand(hideColumnCommand);
+
+        Assert.assertEquals(4, columnHideShowLayer.getColumnCount());
+
+        Assert.assertEquals(0, columnHideShowLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(1, columnHideShowLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(3, columnHideShowLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(4, columnHideShowLayer.getColumnIndexByPosition(3));
+    }
+
 }

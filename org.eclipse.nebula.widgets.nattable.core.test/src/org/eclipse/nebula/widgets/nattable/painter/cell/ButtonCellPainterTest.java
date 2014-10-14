@@ -25,57 +25,62 @@ import org.junit.Test;
 
 public class ButtonCellPainterTest {
 
-	private ButtonCellPainter buttonCellPainter;
-	private CellPainterFixture buttonRaisedPainter;
-	private CellPainterFixture buttonPressedPainter;
-	private NatTableFixture natTable;
-	private ILayerCell cellFixture;
-	private GC gcFixture;
-	private MouseEvent mouseClickEvent;
+    private ButtonCellPainter buttonCellPainter;
+    private CellPainterFixture buttonRaisedPainter;
+    private CellPainterFixture buttonPressedPainter;
+    private NatTableFixture natTable;
+    private ILayerCell cellFixture;
+    private GC gcFixture;
+    private MouseEvent mouseClickEvent;
 
-	@Before
-	public void setup() {
-		buttonRaisedPainter = new CellPainterFixture();
-		buttonPressedPainter = new CellPainterFixture();
-		buttonCellPainter = new ButtonCellPainter(buttonRaisedPainter, buttonPressedPainter);
-		buttonCellPainter.setButtonFlashTime(500);
+    @Before
+    public void setup() {
+        buttonRaisedPainter = new CellPainterFixture();
+        buttonPressedPainter = new CellPainterFixture();
+        buttonCellPainter = new ButtonCellPainter(buttonRaisedPainter,
+                buttonPressedPainter);
+        buttonCellPainter.setButtonFlashTime(500);
 
-		natTable = new NatTableFixture();
-		cellFixture = new LayerCell(natTable, 1, 5);
-		gcFixture = new GC(natTable);
+        natTable = new NatTableFixture();
+        cellFixture = new LayerCell(natTable, 1, 5);
+        gcFixture = new GC(natTable);
 
-		mouseClickEvent = new MouseEvent(SWTUtils.getLeftClickEvent(100, 100, 0, natTable));
-		mouseClickEvent.data = NatEventData.createInstanceFromEvent(mouseClickEvent);
-	}
+        mouseClickEvent = new MouseEvent(SWTUtils.getLeftClickEvent(100, 100,
+                0, natTable));
+        mouseClickEvent.data = NatEventData
+                .createInstanceFromEvent(mouseClickEvent);
+    }
 
-	@Test
-	public void shouldPaintButtonPressedOnMouseClick() throws Exception {
-		// Initial paint call
-		buttonCellPainter.paintCell(cellFixture, gcFixture, cellFixture.getBounds(), natTable.getConfigRegistry());
+    @Test
+    public void shouldPaintButtonPressedOnMouseClick() throws Exception {
+        // Initial paint call
+        buttonCellPainter.paintCell(cellFixture, gcFixture,
+                cellFixture.getBounds(), natTable.getConfigRegistry());
 
-		Assert.assertTrue(buttonRaisedPainter.isPainted());
-		Assert.assertFalse(buttonPressedPainter.isPainted());
+        Assert.assertTrue(buttonRaisedPainter.isPainted());
+        Assert.assertFalse(buttonPressedPainter.isPainted());
 
-		// Mouse clicked
-		buttonCellPainter.run(natTable, mouseClickEvent);
-		buttonCellPainter.paintCell(cellFixture, gcFixture, cellFixture.getBounds(), natTable.getConfigRegistry());
+        // Mouse clicked
+        buttonCellPainter.run(natTable, mouseClickEvent);
+        buttonCellPainter.paintCell(cellFixture, gcFixture,
+                cellFixture.getBounds(), natTable.getConfigRegistry());
 
-		// Should be painted in pressed state
-		Assert.assertTrue(buttonPressedPainter.isPainted());
-	}
+        // Should be painted in pressed state
+        Assert.assertTrue(buttonPressedPainter.isPainted());
+    }
 
-	@Test
-	public void shouldNotifyListeners() throws Exception {
-		MouseActionFixture mouseAction = new MouseActionFixture();
-		buttonCellPainter.addClickListener(mouseAction);
+    @Test
+    public void shouldNotifyListeners() throws Exception {
+        MouseActionFixture mouseAction = new MouseActionFixture();
+        buttonCellPainter.addClickListener(mouseAction);
 
-		buttonCellPainter.run(natTable, mouseClickEvent);
-		Assert.assertTrue(mouseAction.isActionInvoked());
+        buttonCellPainter.run(natTable, mouseClickEvent);
+        Assert.assertTrue(mouseAction.isActionInvoked());
 
-		buttonCellPainter.removeClickListener(mouseAction);
-		mouseAction.reset();
+        buttonCellPainter.removeClickListener(mouseAction);
+        mouseAction.reset();
 
-		buttonCellPainter.run(natTable, mouseClickEvent);
-		Assert.assertFalse(mouseAction.isActionInvoked());
-	}
+        buttonCellPainter.run(natTable, mouseClickEvent);
+        Assert.assertFalse(mouseAction.isActionInvoked());
+    }
 }

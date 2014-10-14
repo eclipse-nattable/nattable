@@ -39,195 +39,200 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class FilterRowDataProviderTest {
 
-	private FilterRowDataProvider<RowDataFixture> dataProvider;
-	private DataLayerFixture columnHeaderLayer;
-	private FilterList<RowDataFixture> filterList;
-	private ConfigRegistry configRegistry;
+    private FilterRowDataProvider<RowDataFixture> dataProvider;
+    private DataLayerFixture columnHeaderLayer;
+    private FilterList<RowDataFixture> filterList;
+    private ConfigRegistry configRegistry;
 
-	@Before
-	public void setup() {
-		columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
+    @Before
+    public void setup() {
+        columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
 
-		configRegistry = new ConfigRegistry();
-		new DefaultNatTableStyleConfiguration().configureRegistry(configRegistry);
-		new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
+        configRegistry = new ConfigRegistry();
+        new DefaultNatTableStyleConfiguration()
+                .configureRegistry(configRegistry);
+        new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
 
-		filterList = new FilterList<RowDataFixture>(GlazedLists.eventList(RowDataListFixture.getList()));
+        filterList = new FilterList<RowDataFixture>(
+                GlazedLists.eventList(RowDataListFixture.getList()));
 
-		dataProvider = new FilterRowDataProvider<RowDataFixture>(
-				new DefaultGlazedListsFilterStrategy<RowDataFixture>(
-						filterList,
-					new ReflectiveColumnPropertyAccessor<RowDataFixture>(RowDataListFixture.getPropertyNames()),
-					configRegistry
-				),
-				columnHeaderLayer, columnHeaderLayer.getDataProvider(), configRegistry);
-	}
+        dataProvider = new FilterRowDataProvider<RowDataFixture>(
+                new DefaultGlazedListsFilterStrategy<RowDataFixture>(
+                        filterList,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()),
+                        configRegistry), columnHeaderLayer,
+                columnHeaderLayer.getDataProvider(), configRegistry);
+    }
 
-	@Test
-	public void setDataValue() {
-		assertNull(dataProvider.getDataValue(1, 1));
+    @Test
+    public void setDataValue() {
+        assertNull(dataProvider.getDataValue(1, 1));
 
-		dataProvider.setDataValue(1, 1, "testValue");
-		assertEquals("testValue", dataProvider.getDataValue(1, 1));
-	}
+        dataProvider.setDataValue(1, 1, "testValue");
+        assertEquals("testValue", dataProvider.getDataValue(1, 1));
+    }
 
-	@Test
-	public void settingTextValueAppliesTextFilter() {
-		// original size
-		assertEquals(13, filterList.size());
+    @Test
+    public void settingTextValueAppliesTextFilter() {
+        // original size
+        assertEquals(13, filterList.size());
 
-		// Apply filter
-		dataProvider.setDataValue(1, 1, "ford");
+        // Apply filter
+        dataProvider.setDataValue(1, 1, "ford");
 
-		// list filtered
-		assertEquals(1, filterList.size());
+        // list filtered
+        assertEquals(1, filterList.size());
 
-		// remove filter
-		dataProvider.setDataValue(1, 1, null);
+        // remove filter
+        dataProvider.setDataValue(1, 1, null);
 
-		assertEquals(13, filterList.size());
-	}
+        assertEquals(13, filterList.size());
+    }
 
-	@Test
-	public void settingThresholdValuesUpdatedFilter() {
-		// Since we are triggering object comparison, we must provide the right type
-		configRegistry.registerConfigAttribute(
-				FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-				new DefaultDoubleDisplayConverter(),
-				DisplayMode.NORMAL,
-				FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
-		// We also have to set the text matching mode
-		configRegistry.registerConfigAttribute(
-				FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-				TextMatchingMode.REGULAR_EXPRESSION,
-				DisplayMode.NORMAL,
-				FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
+    @Test
+    public void settingThresholdValuesUpdatedFilter() {
+        // Since we are triggering object comparison, we must provide the right
+        // type
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                new DefaultDoubleDisplayConverter(), DisplayMode.NORMAL,
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
+        // We also have to set the text matching mode
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                TextMatchingMode.REGULAR_EXPRESSION, DisplayMode.NORMAL,
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
 
-		assertEquals(13, filterList.size());
+        assertEquals(13, filterList.size());
 
-		// Index 5, 'bid' column
-		dataProvider.setDataValue(5, 1, ">20");
+        // Index 5, 'bid' column
+        dataProvider.setDataValue(5, 1, ">20");
 
-		assertEquals(6, filterList.size());
-	}
-	
-	@Test
-	public void settingAValueFiresUpdateEvent() {
-		final LayerListenerFixture listener = new LayerListenerFixture();
-		columnHeaderLayer.addLayerListener(listener);
-		dataProvider.setDataValue(3, 1, "testValue");
+        assertEquals(6, filterList.size());
+    }
 
-		assertEquals(1, listener.getEventsCount());
-		assertNotNull(listener.getReceivedEvent(FilterAppliedEvent.class));
-	}
+    @Test
+    public void settingAValueFiresUpdateEvent() {
+        final LayerListenerFixture listener = new LayerListenerFixture();
+        columnHeaderLayer.addLayerListener(listener);
+        dataProvider.setDataValue(3, 1, "testValue");
 
-	@Test
-	public void persistence() {
-		dataProvider.setDataValue(1, 1, "testValue");
-		dataProvider.setDataValue(2, 1, "testValue");
-		dataProvider.setDataValue(3, 1, "testValue");
-		dataProvider.setDataValue(2, 1, null); // clear filter
+        assertEquals(1, listener.getEventsCount());
+        assertNotNull(listener.getReceivedEvent(FilterAppliedEvent.class));
+    }
 
-		Properties properties = new Properties();
+    @Test
+    public void persistence() {
+        dataProvider.setDataValue(1, 1, "testValue");
+        dataProvider.setDataValue(2, 1, "testValue");
+        dataProvider.setDataValue(3, 1, "testValue");
+        dataProvider.setDataValue(2, 1, null); // clear filter
 
-		// save state
-		dataProvider.saveState("prefix", properties);
-		String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+        Properties properties = new Properties();
 
-		assertEquals("1:testValue|3:testValue|", persistedProperty);
+        // save state
+        dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix"
+                + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
 
-		// reset state
-		setup();
+        assertEquals("1:testValue|3:testValue|", persistedProperty);
 
-		// load state
-		dataProvider.loadState("prefix", properties);
+        // reset state
+        setup();
 
-		assertEquals("testValue", dataProvider.getDataValue(1, 1));
-		assertEquals(null, dataProvider.getDataValue(2, 1));
-		assertEquals("testValue", dataProvider.getDataValue(3, 1));
-	}
+        // load state
+        dataProvider.loadState("prefix", properties);
 
-	@Test
-	public void shouldRecoverFromCorruptPersistedState() {
-		Properties properties = new Properties();
+        assertEquals("testValue", dataProvider.getDataValue(1, 1));
+        assertEquals(null, dataProvider.getDataValue(2, 1));
+        assertEquals("testValue", dataProvider.getDataValue(3, 1));
+    }
 
-		properties.put("prefix.filterTokens", "XX");
-		dataProvider.loadState("prefix", properties);
+    @Test
+    public void shouldRecoverFromCorruptPersistedState() {
+        Properties properties = new Properties();
 
-		assertEquals(null, dataProvider.getDataValue(1, 1));
-		assertEquals(null, dataProvider.getDataValue(2, 1));
-		assertEquals(null, dataProvider.getDataValue(3, 1));
-	}
-	
-	@Test 
-	public void shouldRemoveNonFilteredColumnsWhenLoadingState() {
-		dataProvider.setDataValue(1, 1, "testValue");
-		dataProvider.setDataValue(2, 1, "testValue");
-		
-		Properties properties = new Properties();
-		
-		// save state
-		dataProvider.saveState("prefix", properties);
-		
-		// load a different configuration
-		Properties differentState = new Properties();
-		differentState.put("prefix.filterTokens", "2:newTestValue|3:newTestValue");
-		
-		dataProvider.loadState("prefix", differentState);
-		
-		assertNull("Filter on column 1 has not been removed", dataProvider.getDataValue(1, 1));
-		assertEquals("newTestValue", dataProvider.getDataValue(2, 1));
-		assertEquals("newTestValue", dataProvider.getDataValue(3, 1));
-	}
+        properties.put("prefix.filterTokens", "XX");
+        dataProvider.loadState("prefix", properties);
 
-	@Test
-	public void testRegularExpressionWithPipes() {
-		configRegistry.registerConfigAttribute(
-				FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-				TextMatchingMode.REGULAR_EXPRESSION,
-				DisplayMode.NORMAL,
-				FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
+        assertEquals(null, dataProvider.getDataValue(1, 1));
+        assertEquals(null, dataProvider.getDataValue(2, 1));
+        assertEquals(null, dataProvider.getDataValue(3, 1));
+    }
 
-		assertEquals(13, filterList.size());
+    @Test
+    public void shouldRemoveNonFilteredColumnsWhenLoadingState() {
+        dataProvider.setDataValue(1, 1, "testValue");
+        dataProvider.setDataValue(2, 1, "testValue");
 
-		dataProvider.setDataValue(1, 1, "(D|E|F){1}.*");
+        Properties properties = new Properties();
 
-		assertEquals(3, filterList.size());
-	}
+        // save state
+        dataProvider.saveState("prefix", properties);
 
-	@Test
-	public void testPersistenceRegularExpressionWithPipes() {
-		configRegistry.registerConfigAttribute(
-				FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-				TextMatchingMode.REGULAR_EXPRESSION,
-				DisplayMode.NORMAL,
-				FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
+        // load a different configuration
+        Properties differentState = new Properties();
+        differentState.put("prefix.filterTokens",
+                "2:newTestValue|3:newTestValue");
 
-		assertEquals(13, filterList.size());
+        dataProvider.loadState("prefix", differentState);
 
-		dataProvider.setDataValue(1, 1, "(D|E|F){1}.*");
+        assertNull("Filter on column 1 has not been removed",
+                dataProvider.getDataValue(1, 1));
+        assertEquals("newTestValue", dataProvider.getDataValue(2, 1));
+        assertEquals("newTestValue", dataProvider.getDataValue(3, 1));
+    }
 
-		assertEquals(3, filterList.size());
-		
-		Properties properties = new Properties();
+    @Test
+    public void testRegularExpressionWithPipes() {
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                TextMatchingMode.REGULAR_EXPRESSION, DisplayMode.NORMAL,
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
 
-		// save state
-		dataProvider.saveState("prefix", properties);
-		String persistedProperty = properties.getProperty("prefix" + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+        assertEquals(13, filterList.size());
 
-		//check that the pipe character in the regular expression was replaced for persistence
-		assertEquals("1:(D" 
-				+ FilterRowDataProvider.PIPE_REPLACEMENT + "E" 
-				+ FilterRowDataProvider.PIPE_REPLACEMENT + "F){1}.*|", persistedProperty);
+        dataProvider.setDataValue(1, 1, "(D|E|F){1}.*");
 
-		// reset state
-		setup();
-		assertEquals(13, filterList.size());
+        assertEquals(3, filterList.size());
+    }
 
-		// load state
-		dataProvider.loadState("prefix", properties);
+    @Test
+    public void testPersistenceRegularExpressionWithPipes() {
+        configRegistry.registerConfigAttribute(
+                FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                TextMatchingMode.REGULAR_EXPRESSION, DisplayMode.NORMAL,
+                FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 1);
 
-		//after loading the state, the pipes in the regular expression need to be restored correctly
-		assertEquals("(D|E|F){1}.*", dataProvider.getDataValue(1, 1));
-	}
+        assertEquals(13, filterList.size());
+
+        dataProvider.setDataValue(1, 1, "(D|E|F){1}.*");
+
+        assertEquals(3, filterList.size());
+
+        Properties properties = new Properties();
+
+        // save state
+        dataProvider.saveState("prefix", properties);
+        String persistedProperty = properties.getProperty("prefix"
+                + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
+
+        // check that the pipe character in the regular expression was replaced
+        // for persistence
+        assertEquals("1:(D" + FilterRowDataProvider.PIPE_REPLACEMENT + "E"
+                + FilterRowDataProvider.PIPE_REPLACEMENT + "F){1}.*|",
+                persistedProperty);
+
+        // reset state
+        setup();
+        assertEquals(13, filterList.size());
+
+        // load state
+        dataProvider.loadState("prefix", properties);
+
+        // after loading the state, the pipes in the regular expression need to
+        // be restored correctly
+        assertEquals("(D|E|F){1}.*", dataProvider.getDataValue(1, 1));
+    }
 }

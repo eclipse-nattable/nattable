@@ -14,26 +14,28 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
-public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISelectionEvent {
+public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements
+        ISelectionEvent {
 
-	private final SelectionLayer selectionLayer;
-	
-	public ColumnSelectionEvent(SelectionLayer selectionLayer, int columnPosition) {
-		super(selectionLayer, new Range(columnPosition, columnPosition + 1));
-		this.selectionLayer = selectionLayer;
-	}
-	
-	protected ColumnSelectionEvent(ColumnSelectionEvent event) {
-		super(event);
-		this.selectionLayer = event.selectionLayer;
-	}
-	
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
-	
-	public ColumnSelectionEvent cloneEvent() {
-		return new ColumnSelectionEvent(this);
-	}
-	
+    private final SelectionLayer selectionLayer;
+
+    public ColumnSelectionEvent(SelectionLayer selectionLayer,
+            int columnPosition) {
+        super(selectionLayer, new Range(columnPosition, columnPosition + 1));
+        this.selectionLayer = selectionLayer;
+    }
+
+    protected ColumnSelectionEvent(ColumnSelectionEvent event) {
+        super(event);
+        this.selectionLayer = event.selectionLayer;
+    }
+
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
+
+    public ColumnSelectionEvent cloneEvent() {
+        return new ColumnSelectionEvent(this);
+    }
+
 }

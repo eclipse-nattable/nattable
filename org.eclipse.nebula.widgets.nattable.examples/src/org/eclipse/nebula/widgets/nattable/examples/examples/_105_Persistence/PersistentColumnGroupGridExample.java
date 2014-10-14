@@ -14,14 +14,16 @@ import org.eclipse.nebula.widgets.nattable.examples.PersistentNatExampleWrapper;
 import org.eclipse.nebula.widgets.nattable.examples.examples._150_Column_and_row_grouping._000_Column_groups;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 
-public class PersistentColumnGroupGridExample extends PersistentNatExampleWrapper {
-	
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(800, 400, new PersistentColumnGroupGridExample());
-	}
-	
-	public PersistentColumnGroupGridExample() {
-		super(new _000_Column_groups());
-	}
-	
+public class PersistentColumnGroupGridExample extends
+        PersistentNatExampleWrapper {
+
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(800, 400,
+                new PersistentColumnGroupGridExample());
+    }
+
+    public PersistentColumnGroupGridExample() {
+        super(new _000_Column_groups());
+    }
+
 }

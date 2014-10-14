@@ -10,14 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze;
 
-
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.swt.graphics.Color;
 
 public interface IFreezeConfigAttributes {
-	
-	
-	ConfigAttribute<Color> SEPARATOR_COLOR = new ConfigAttribute<Color>();
-	
-	
+
+    ConfigAttribute<Color> SEPARATOR_COLOR = new ConfigAttribute<Color>();
+
 }

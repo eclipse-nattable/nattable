@@ -20,7 +20,7 @@ public class RangeTest {
     public void testAdjacentRangeOverlap() {
         assertFalse(new Range(0, 1).overlap(new Range(1, 2)));
     }
-    
+
     @Test
     public void testEmptyRangeOverlap() {
         assertFalse(new Range(0, 1).overlap(new Range(1, 1)));

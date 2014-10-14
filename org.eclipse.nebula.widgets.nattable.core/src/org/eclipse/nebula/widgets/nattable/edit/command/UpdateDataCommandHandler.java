@@ -19,47 +19,54 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 
 /**
- * {@link ILayerCommandHandler} that handles {@link UpdateDataCommand}s by updating
- * the data model. It is usually directly registered to the {@link DataLayer} this
- * command handler is associated with.
+ * {@link ILayerCommandHandler} that handles {@link UpdateDataCommand}s by
+ * updating the data model. It is usually directly registered to the
+ * {@link DataLayer} this command handler is associated with.
  */
-public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<UpdateDataCommand> {
+public class UpdateDataCommandHandler extends
+        AbstractLayerCommandHandler<UpdateDataCommand> {
 
-	private static final Log log = LogFactory.getLog(UpdateDataCommandHandler.class);
+    private static final Log log = LogFactory
+            .getLog(UpdateDataCommandHandler.class);
 
-	/**
-	 * The {@link DataLayer} on which the data model updates should be executed.
-	 */
-	private final DataLayer dataLayer;
-	
-	/**
-	 * @param dataLayer The {@link DataLayer} on which the data model updates should be executed.
-	 */
-	public UpdateDataCommandHandler(DataLayer dataLayer) {
-		this.dataLayer = dataLayer;
-	}
-	
-	@Override
-	public Class<UpdateDataCommand> getCommandClass() {
-		return UpdateDataCommand.class;
-	}
+    /**
+     * The {@link DataLayer} on which the data model updates should be executed.
+     */
+    private final DataLayer dataLayer;
 
-	@Override
-	protected boolean doCommand(UpdateDataCommand command) {
-		try {
-			int columnPosition = command.getColumnPosition();
-			int rowPosition = command.getRowPosition();
-			if (!ObjectUtils.equals(
-					dataLayer.getDataValueByPosition(columnPosition, rowPosition), command.getNewValue())) {
-				dataLayer.setDataValueByPosition(columnPosition, rowPosition, command.getNewValue());
-				dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer, columnPosition, rowPosition));
-				
-				//TODO implement a new event which is a mix of PropertyUpdateEvent and CellVisualChangeEvent
-			}
-			return true;
-		} catch(Exception e) {
-			log.error("Failed to update value to: "+command.getNewValue(), e); //$NON-NLS-1$
-			return false;
-		}
-	}
+    /**
+     * @param dataLayer
+     *            The {@link DataLayer} on which the data model updates should
+     *            be executed.
+     */
+    public UpdateDataCommandHandler(DataLayer dataLayer) {
+        this.dataLayer = dataLayer;
+    }
+
+    @Override
+    public Class<UpdateDataCommand> getCommandClass() {
+        return UpdateDataCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(UpdateDataCommand command) {
+        try {
+            int columnPosition = command.getColumnPosition();
+            int rowPosition = command.getRowPosition();
+            if (!ObjectUtils.equals(dataLayer.getDataValueByPosition(
+                    columnPosition, rowPosition), command.getNewValue())) {
+                dataLayer.setDataValueByPosition(columnPosition, rowPosition,
+                        command.getNewValue());
+                dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer,
+                        columnPosition, rowPosition));
+
+                // TODO implement a new event which is a mix of
+                // PropertyUpdateEvent and CellVisualChangeEvent
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("Failed to update value to: " + command.getNewValue(), e); //$NON-NLS-1$
+            return false;
+        }
+    }
 }

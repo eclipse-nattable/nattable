@@ -19,25 +19,27 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
 
-public class GroupByDataLayerConfiguration extends AbstractRegistryConfiguration {
+public class GroupByDataLayerConfiguration extends
+        AbstractRegistryConfiguration {
 
-	@Override
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		//register a TextPainter to ensure that the GroupBy objects are rendered as text
-		//even if in the first column by default another painter is registered
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.CELL_PAINTER,
-				new BackgroundPainter(new GroupByCellTextPainter()),
-				DisplayMode.NORMAL,
-				GroupByDataLayer.GROUP_BY_OBJECT
-		);
-		
-		//register a converter for group by summary values that renders ... in case there is
-		//no summary value calculated yet
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.DISPLAY_CONVERTER, new SummaryDisplayConverter(
-						new DefaultDisplayConverter(), IGroupBySummaryProvider.DEFAULT_SUMMARY_VALUE), 
-				DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_SUMMARY);
-	}
-	
+    @Override
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        // register a TextPainter to ensure that the GroupBy objects are
+        // rendered as text
+        // even if in the first column by default another painter is registered
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER, new BackgroundPainter(
+                        new GroupByCellTextPainter()), DisplayMode.NORMAL,
+                GroupByDataLayer.GROUP_BY_OBJECT);
+
+        // register a converter for group by summary values that renders ... in
+        // case there is
+        // no summary value calculated yet
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.DISPLAY_CONVERTER,
+                new SummaryDisplayConverter(new DefaultDisplayConverter(),
+                        IGroupBySummaryProvider.DEFAULT_SUMMARY_VALUE),
+                DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_SUMMARY);
+    }
+
 }

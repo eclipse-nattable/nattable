@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.freeze.command.UnFreezeGridCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
@@ -18,7 +17,7 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class UnFreezeGridAction implements IKeyAction {
 
-	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new UnFreezeGridCommand());
-	}
+    public void run(NatTable natTable, KeyEvent event) {
+        natTable.doCommand(new UnFreezeGridCommand());
+    }
 }

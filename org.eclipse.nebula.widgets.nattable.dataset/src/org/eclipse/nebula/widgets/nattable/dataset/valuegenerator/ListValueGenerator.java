@@ -16,22 +16,20 @@ import java.util.Random;
 
 import org.eclipse.nebula.widgets.nattable.dataset.generator.IValueGenerator;
 
+public class ListValueGenerator<T> implements IValueGenerator {
+    private final List<T> values;
+    private final int nullLoadFactor;
 
-public class ListValueGenerator<T> implements IValueGenerator
-{
-	private final List<T> values;
-	private final int nullLoadFactor;
+    public ListValueGenerator(int nullLoadFactor, T... values) {
 
-	public ListValueGenerator(int nullLoadFactor, T... values) {
-		
-		this.nullLoadFactor = nullLoadFactor;
-		this.values = Arrays.asList(values);
-	}
-	
-	public Object newValue(Random random) {
-		
-		final int choice = random.nextInt(values.size() + nullLoadFactor);
-		return choice >= values.size() ? null : values.get(choice);
-	}
+        this.nullLoadFactor = nullLoadFactor;
+        this.values = Arrays.asList(values);
+    }
+
+    public Object newValue(Random random) {
+
+        final int choice = random.nextInt(values.size() + nullLoadFactor);
+        return choice >= values.size() ? null : values.get(choice);
+    }
 
 }

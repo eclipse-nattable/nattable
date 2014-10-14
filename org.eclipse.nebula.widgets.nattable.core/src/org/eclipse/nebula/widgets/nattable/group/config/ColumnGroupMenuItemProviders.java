@@ -25,53 +25,64 @@ import org.eclipse.swt.widgets.MenuItem;
 
 public class ColumnGroupMenuItemProviders {
 
-	public static IMenuItemProvider renameColumnGroupMenuItemProvider() {
-		return renameColumnGroupMenuItemProvider(Messages.getString("ColumnGroups.renameColumnGroup")); //$NON-NLS-1$
-	}
-	
-	public static IMenuItemProvider renameColumnGroupMenuItemProvider(final String menuLabel) {
-		return new IMenuItemProvider() {
+    public static IMenuItemProvider renameColumnGroupMenuItemProvider() {
+        return renameColumnGroupMenuItemProvider(Messages
+                .getString("ColumnGroups.renameColumnGroup")); //$NON-NLS-1$
+    }
 
-			public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
-				MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
-				columnStyleEditor.setText(menuLabel);
-				columnStyleEditor.setEnabled(true);
+    public static IMenuItemProvider renameColumnGroupMenuItemProvider(
+            final String menuLabel) {
+        return new IMenuItemProvider() {
 
-				columnStyleEditor.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						NatEventData natEventData = MenuItemProviders.getNatEventData(e);
-						int columnPosition = natEventData.getColumnPosition();
-						natTable.doCommand(new DisplayColumnGroupRenameDialogCommand(natTable, columnPosition));
-					}
-				});
-			}
-		};
-	}
+            public void addMenuItem(final NatTable natTable,
+                    final Menu popupMenu) {
+                MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
+                columnStyleEditor.setText(menuLabel);
+                columnStyleEditor.setEnabled(true);
 
-	public static IMenuItemProvider removeColumnGroupMenuItemProvider() {
-		return removeColumnGroupMenuItemProvider(Messages.getString("ColumnGroups.removeColumnGroup")); //$NON-NLS-1$
-	}
-	
-	public static IMenuItemProvider removeColumnGroupMenuItemProvider(final String menuLabel) {
-		return new IMenuItemProvider() {
+                columnStyleEditor.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        NatEventData natEventData = MenuItemProviders
+                                .getNatEventData(e);
+                        int columnPosition = natEventData.getColumnPosition();
+                        natTable.doCommand(new DisplayColumnGroupRenameDialogCommand(
+                                natTable, columnPosition));
+                    }
+                });
+            }
+        };
+    }
 
-			public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
-				MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
-				columnStyleEditor.setText(menuLabel);
-				columnStyleEditor.setEnabled(true);
+    public static IMenuItemProvider removeColumnGroupMenuItemProvider() {
+        return removeColumnGroupMenuItemProvider(Messages
+                .getString("ColumnGroups.removeColumnGroup")); //$NON-NLS-1$
+    }
 
-				columnStyleEditor.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						NatEventData natEventData = MenuItemProviders.getNatEventData(e);
-						int columnPosition = natEventData.getColumnPosition();
-						int columnIndex = natEventData.getNatTable().getColumnIndexByPosition(columnPosition);
-						natTable.doCommand(new RemoveColumnGroupCommand(columnIndex));
-					}
-				});
-			}
-		};
-	}
+    public static IMenuItemProvider removeColumnGroupMenuItemProvider(
+            final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            public void addMenuItem(final NatTable natTable,
+                    final Menu popupMenu) {
+                MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
+                columnStyleEditor.setText(menuLabel);
+                columnStyleEditor.setEnabled(true);
+
+                columnStyleEditor.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        NatEventData natEventData = MenuItemProviders
+                                .getNatEventData(e);
+                        int columnPosition = natEventData.getColumnPosition();
+                        int columnIndex = natEventData.getNatTable()
+                                .getColumnIndexByPosition(columnPosition);
+                        natTable.doCommand(new RemoveColumnGroupCommand(
+                                columnIndex));
+                    }
+                });
+            }
+        };
+    }
 
 }

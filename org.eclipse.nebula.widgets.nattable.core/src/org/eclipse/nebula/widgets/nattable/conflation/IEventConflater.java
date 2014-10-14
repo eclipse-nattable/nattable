@@ -13,21 +13,20 @@ package org.eclipse.nebula.widgets.nattable.conflation;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 
 /**
- * A Conflater queues events and periodically runs a task to 
- * handle those Events. This prevents the table from
- * being overwhelmed by ultra fast updates.
+ * A Conflater queues events and periodically runs a task to handle those
+ * Events. This prevents the table from being overwhelmed by ultra fast updates.
  */
 public interface IEventConflater {
 
-	public abstract void addEvent(ILayerEvent event);
+    public abstract void addEvent(ILayerEvent event);
 
-	public abstract void clearQueue();
+    public abstract void clearQueue();
 
-	/**
-	 * @return Number of events currently waiting to be handled
-	 */
-	public abstract int getCount();
-	
-	public Runnable getConflaterTask();
+    /**
+     * @return Number of events currently waiting to be handled
+     */
+    public abstract int getCount();
+
+    public Runnable getConflaterTask();
 
 }

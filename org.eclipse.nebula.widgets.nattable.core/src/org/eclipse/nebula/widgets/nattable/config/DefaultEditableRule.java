@@ -12,14 +12,14 @@ package org.eclipse.nebula.widgets.nattable.config;
 
 public class DefaultEditableRule extends EditableRule {
 
-	private boolean defaultEditable;
-	
-	public DefaultEditableRule(boolean defaultEditable) {
-		this.defaultEditable = defaultEditable;
-	}
-	
-	public boolean isEditable(int columnIndex, int rowIndex) {
-		return defaultEditable;
-	}
+    private boolean defaultEditable;
+
+    public DefaultEditableRule(boolean defaultEditable) {
+        this.defaultEditable = defaultEditable;
+    }
+
+    public boolean isEditable(int columnIndex, int rowIndex) {
+        return defaultEditable;
+    }
 
 }

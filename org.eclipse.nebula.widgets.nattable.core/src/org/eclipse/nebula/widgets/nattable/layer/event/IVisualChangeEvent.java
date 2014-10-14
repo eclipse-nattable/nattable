@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.layer.event;
 
 import java.util.Collection;
 
-
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -24,16 +23,16 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public interface IVisualChangeEvent extends ILayerEvent {
 
-	/**
-	 * @return the layer that the visible change event is originating from.
-	 */
-	public ILayer getLayer();
-	
-	/**
-	 * @return the position rectangles that have changed and need to be redrawn.
-	 * If no rectangles are returned, then the receiver should assume that the
-	 * entire layer is changed and will need to be redrawn.
-	 */
-	public Collection<Rectangle> getChangedPositionRectangles();
-	
+    /**
+     * @return the layer that the visible change event is originating from.
+     */
+    public ILayer getLayer();
+
+    /**
+     * @return the position rectangles that have changed and need to be redrawn.
+     *         If no rectangles are returned, then the receiver should assume
+     *         that the entire layer is changed and will need to be redrawn.
+     */
+    public Collection<Rectangle> getChangedPositionRectangles();
+
 }

@@ -18,54 +18,64 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * ILayerPainter implementation that is rendering the background of the space that is
- * available for the NatTable instance. It uses the Color that is configured via 
- * {@link org.eclipse.swt.widgets.Control#setBackground(org.eclipse.swt.graphics.Color)}.
- * It then calls the ILayerPainter of the underlying layers in the layer stack and
- * calls all registered IOverlayPainter at the end, to render the overlays correctly.
+ * ILayerPainter implementation that is rendering the background of the space
+ * that is available for the NatTable instance. It uses the Color that is
+ * configured via
+ * {@link org.eclipse.swt.widgets.Control#setBackground(org.eclipse.swt.graphics.Color)}
+ * . It then calls the ILayerPainter of the underlying layers in the layer stack
+ * and calls all registered IOverlayPainter at the end, to render the overlays
+ * correctly.
  */
 public class NatLayerPainter implements ILayerPainter {
 
-	private final NatTable natTable;
+    private final NatTable natTable;
 
-	public NatLayerPainter(NatTable natTable) {
-		this.natTable = natTable;
-	}
-	
-	@Override
-	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-		try {
-			paintBackground(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
-			
-			gc.setForeground(natTable.getForeground());
+    public NatLayerPainter(NatTable natTable) {
+        this.natTable = natTable;
+    }
 
-			ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
-			layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
+    @Override
+    public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset,
+            Rectangle rectangle, IConfigRegistry configRegistry) {
+        try {
+            paintBackground(natLayer, gc, xOffset, yOffset, rectangle,
+                    configRegistry);
 
-			paintOverlays(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			System.err.println("Error while painting table: " + e.getMessage()); //$NON-NLS-1$
-		}
-	}
-	
-	protected void paintBackground(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-		gc.setBackground(natTable.getBackground());
+            gc.setForeground(natTable.getForeground());
 
-		// Clean Background
-		gc.fillRectangle(rectangle);
-	}
-	
-	protected void paintOverlays(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-		for (IOverlayPainter overlayPainter : natTable.getOverlayPainters()) {
-			overlayPainter.paintOverlay(gc, natTable);
-		}
-	}
+            ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
+            layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle,
+                    configRegistry);
 
-	@Override
-	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
-		ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
-		return layerPainter.adjustCellBounds(columnPosition, rowPosition, cellBounds);
-	}
+            paintOverlays(natLayer, gc, xOffset, yOffset, rectangle,
+                    configRegistry);
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            System.err.println("Error while painting table: " + e.getMessage()); //$NON-NLS-1$
+        }
+    }
+
+    protected void paintBackground(ILayer natLayer, GC gc, int xOffset,
+            int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+        gc.setBackground(natTable.getBackground());
+
+        // Clean Background
+        gc.fillRectangle(rectangle);
+    }
+
+    protected void paintOverlays(ILayer natLayer, GC gc, int xOffset,
+            int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+        for (IOverlayPainter overlayPainter : natTable.getOverlayPainters()) {
+            overlayPainter.paintOverlay(gc, natTable);
+        }
+    }
+
+    @Override
+    public Rectangle adjustCellBounds(int columnPosition, int rowPosition,
+            Rectangle cellBounds) {
+        ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
+        return layerPainter.adjustCellBounds(columnPosition, rowPosition,
+                cellBounds);
+    }
 
 }

@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.extension.glazedlists;
 
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
@@ -32,52 +31,59 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class GlazedListsEventLayerTest {
 
-	private EventList<RowDataFixture> listFixture;
-	private GlazedListsEventLayer<RowDataFixture> layerUnderTest;
-	private LayerListenerFixture listenerFixture;
+    private EventList<RowDataFixture> listFixture;
+    private GlazedListsEventLayer<RowDataFixture> layerUnderTest;
+    private LayerListenerFixture listenerFixture;
 
-	@Before
-	public void setup() {
-		listFixture = GlazedLists.eventList(RowDataListFixture.getList());
+    @Before
+    public void setup() {
+        listFixture = GlazedLists.eventList(RowDataListFixture.getList());
 
-		layerUnderTest = new GlazedListsEventLayer<RowDataFixture>(new DataLayerFixture(), listFixture);
-		layerUnderTest.setTestMode(true);
+        layerUnderTest = new GlazedListsEventLayer<RowDataFixture>(
+                new DataLayerFixture(), listFixture);
+        layerUnderTest.setTestMode(true);
 
-		listenerFixture = new LayerListenerFixture();
-		layerUnderTest.addLayerListener(listenerFixture);
-	}
+        listenerFixture = new LayerListenerFixture();
+        layerUnderTest.addLayerListener(listenerFixture);
+    }
 
-	@Ignore // This is failing in hudson, but works fine locally. Ignoring for now.
-	@Test
-	public void shouldConflateEvents() throws Exception {
-		listFixture.add(RowDataFixture.getInstance("T1", "A"));
-		Thread.sleep(100);
+    @Ignore
+    // This is failing in hudson, but works fine locally. Ignoring for now.
+    @Test
+    public void shouldConflateEvents() throws Exception {
+        listFixture.add(RowDataFixture.getInstance("T1", "A"));
+        Thread.sleep(100);
 
-		listFixture.add(RowDataFixture.getInstance("T2", "A"));
-		Thread.sleep(100);
+        listFixture.add(RowDataFixture.getInstance("T2", "A"));
+        Thread.sleep(100);
 
-		Assert.assertNotNull(listenerFixture.getReceivedEvent(RowStructuralRefreshEvent.class));
-	}
+        Assert.assertNotNull(listenerFixture
+                .getReceivedEvent(RowStructuralRefreshEvent.class));
+    }
 
-	@Test
-	public void shouldShutConflaterThreadDownWhenNatTableIsDisposed() throws Exception {
-		Assert.assertFalse(layerUnderTest.isDisposed());
+    @Test
+    public void shouldShutConflaterThreadDownWhenNatTableIsDisposed()
+            throws Exception {
+        Assert.assertFalse(layerUnderTest.isDisposed());
 
-		listFixture.add(RowDataFixture.getInstance("T1", "A"));
-		Thread.sleep(100);
+        listFixture.add(RowDataFixture.getInstance("T1", "A"));
+        Thread.sleep(100);
 
-		listFixture.add(RowDataFixture.getInstance("T2", "A"));
-		Thread.sleep(100);
+        listFixture.add(RowDataFixture.getInstance("T2", "A"));
+        Thread.sleep(100);
 
-		layerUnderTest.doCommand(new DisposeResourcesCommand());
-		Assert.assertTrue(layerUnderTest.isDisposed());
-	}
+        layerUnderTest.doCommand(new DisposeResourcesCommand());
+        Assert.assertTrue(layerUnderTest.isDisposed());
+    }
 
-	@Test
-	public void propertyChangeEventshouldBePropagatedImmediately() throws Exception {
-		List<BlinkingRowDataFixture> list = BlinkingRowDataFixture.getList(layerUnderTest);
-		list.get(0).setAsk_price(100.0F);
+    @Test
+    public void propertyChangeEventshouldBePropagatedImmediately()
+            throws Exception {
+        List<BlinkingRowDataFixture> list = BlinkingRowDataFixture
+                .getList(layerUnderTest);
+        list.get(0).setAsk_price(100.0F);
 
-		Assert.assertNotNull(listenerFixture.getReceivedEvent(PropertyUpdateEvent.class));
-	}
+        Assert.assertNotNull(listenerFixture
+                .getReceivedEvent(PropertyUpdateEvent.class));
+    }
 }

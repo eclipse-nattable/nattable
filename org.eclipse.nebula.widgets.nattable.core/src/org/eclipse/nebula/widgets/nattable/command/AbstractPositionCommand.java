@@ -15,37 +15,41 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public abstract class AbstractPositionCommand implements ILayerCommand {
 
-	private PositionCoordinate positionCoordinate;
-	
-	protected AbstractPositionCommand(ILayer layer, int columnPosition, int rowPosition) {
-		positionCoordinate = new PositionCoordinate(layer, columnPosition, rowPosition);
-	}
-	
-	protected AbstractPositionCommand(AbstractPositionCommand command) {
-		this.positionCoordinate = command.positionCoordinate;
-	}
-	
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		PositionCoordinate targetPositionCoordinate = LayerCommandUtil.convertPositionToTargetContext(positionCoordinate, targetLayer);
-		if (targetPositionCoordinate != null) {
-			positionCoordinate = targetPositionCoordinate;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public int getColumnPosition() {
-		return positionCoordinate.getColumnPosition();
-	}
-	
-	public int getRowPosition() {
-		return positionCoordinate.getRowPosition();
-	}
-	
-	@Override
-	public String toString() {
-		return this.getClass().getSimpleName() + " columnPosition=" + positionCoordinate.getColumnPosition() + ", rowPosition=" + positionCoordinate.getRowPosition(); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+    private PositionCoordinate positionCoordinate;
+
+    protected AbstractPositionCommand(ILayer layer, int columnPosition,
+            int rowPosition) {
+        positionCoordinate = new PositionCoordinate(layer, columnPosition,
+                rowPosition);
+    }
+
+    protected AbstractPositionCommand(AbstractPositionCommand command) {
+        this.positionCoordinate = command.positionCoordinate;
+    }
+
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        PositionCoordinate targetPositionCoordinate = LayerCommandUtil
+                .convertPositionToTargetContext(positionCoordinate, targetLayer);
+        if (targetPositionCoordinate != null) {
+            positionCoordinate = targetPositionCoordinate;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public int getColumnPosition() {
+        return positionCoordinate.getColumnPosition();
+    }
+
+    public int getRowPosition() {
+        return positionCoordinate.getRowPosition();
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName()
+                + " columnPosition=" + positionCoordinate.getColumnPosition() + ", rowPosition=" + positionCoordinate.getRowPosition(); //$NON-NLS-1$ //$NON-NLS-2$
+    }
 
 }

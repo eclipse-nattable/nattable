@@ -14,12 +14,12 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.IMouseEventMatcher;
 import org.eclipse.swt.events.MouseEvent;
 
 /**
- * This class is used to check a mouse event against the {@link DisplayMode} of the cell at the mouse event's position. Optionally, the matcher can be chained with an additional
- * {@link IMouseEventMatcher} (results are and'ed).
+ * This class is used to check a mouse event against the {@link DisplayMode} of
+ * the cell at the mouse event's position. Optionally, the matcher can be
+ * chained with an additional {@link IMouseEventMatcher} (results are and'ed).
  */
 public class DisplayModeMouseEventMatcher implements IMouseEventMatcher {
 
@@ -27,21 +27,28 @@ public class DisplayModeMouseEventMatcher implements IMouseEventMatcher {
     private final IMouseEventMatcher aggregate;
 
     /**
-     * Creates a {@link DisplayModeMouseEventMatcher} that checks only if the specified display mode matches.
+     * Creates a {@link DisplayModeMouseEventMatcher} that checks only if the
+     * specified display mode matches.
      *
-     * @param displayMode the {@link DisplayMode} to be matched.
+     * @param displayMode
+     *            the {@link DisplayMode} to be matched.
      */
     public DisplayModeMouseEventMatcher(String displayMode) {
         this(displayMode, null);
     }
 
     /**
-     * Creates a {@link DisplayModeMouseEventMatcher} that checks if the specified display mode matches and the aggregate matcher.
+     * Creates a {@link DisplayModeMouseEventMatcher} that checks if the
+     * specified display mode matches and the aggregate matcher.
      *
-     * @param displayMode the {@link DisplayMode} to be matched.
-     * @param aggregate (optional) an additional {@link IMouseEventMatcher} to be chained with the result of this matcher (results are and'ed).
+     * @param displayMode
+     *            the {@link DisplayMode} to be matched.
+     * @param aggregate
+     *            (optional) an additional {@link IMouseEventMatcher} to be
+     *            chained with the result of this matcher (results are and'ed).
      */
-    public DisplayModeMouseEventMatcher(String displayMode, IMouseEventMatcher aggregate) {
+    public DisplayModeMouseEventMatcher(String displayMode,
+            IMouseEventMatcher aggregate) {
         if (displayMode == null || displayMode.length() == 0) {
             throw new IllegalArgumentException("displayMode must not be blank."); //$NON-NLS-1$
         }
@@ -51,13 +58,19 @@ public class DisplayModeMouseEventMatcher implements IMouseEventMatcher {
     }
 
     @Override
-    public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
-        ILayerCell cell = natTable.getCellByPosition(natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
+    public boolean matches(NatTable natTable, MouseEvent event,
+            LabelStack regionLabels) {
+        ILayerCell cell = natTable.getCellByPosition(
+                natTable.getColumnPositionByX(event.x),
+                natTable.getRowPositionByY(event.y));
 
         if (cell != null) {
-            boolean displayModeMatches = displayMode.equals(cell.getDisplayMode());
-            if (aggregate != null) {
-                return displayModeMatches && aggregate.matches(natTable, event, regionLabels);
+            boolean displayModeMatches = this.displayMode.equals(cell
+                    .getDisplayMode());
+            if (this.aggregate != null) {
+                return displayModeMatches
+                        && this.aggregate
+                                .matches(natTable, event, regionLabels);
             }
             return displayModeMatches;
         }
@@ -66,17 +79,24 @@ public class DisplayModeMouseEventMatcher implements IMouseEventMatcher {
     }
 
     /**
-     * @param displayMode the {@link DisplayMode} to be matched.
-     * @param aggregate (optional) an additional {@link IMouseEventMatcher} to be chained with the result of this matcher (results are and'ed).
-     * @return a {@link DisplayModeMouseEventMatcher} that checks if the specified display mode matches and the aggregate matcher.
+     * @param displayMode
+     *            the {@link DisplayMode} to be matched.
+     * @param aggregate
+     *            (optional) an additional {@link IMouseEventMatcher} to be
+     *            chained with the result of this matcher (results are and'ed).
+     * @return a {@link DisplayModeMouseEventMatcher} that checks if the
+     *         specified display mode matches and the aggregate matcher.
      */
-    public static DisplayModeMouseEventMatcher displayMode(String displayMode, IMouseEventMatcher aggregate) {
+    public static DisplayModeMouseEventMatcher displayMode(String displayMode,
+            IMouseEventMatcher aggregate) {
         return new DisplayModeMouseEventMatcher(displayMode, aggregate);
     }
 
     /**
-     * @param displayMode the {@link DisplayMode} to be matched.
-     * @return a {@link DisplayModeMouseEventMatcher} that checks only if the specified display mode matches.
+     * @param displayMode
+     *            the {@link DisplayMode} to be matched.
+     * @return a {@link DisplayModeMouseEventMatcher} that checks only if the
+     *         specified display mode matches.
      */
     public static DisplayModeMouseEventMatcher displayMode(String displayMode) {
         return displayMode(displayMode, null);

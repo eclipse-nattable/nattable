@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 
-
 /**
  * Object interested in receiving events related to a {@link ILayer}.
  */
@@ -20,8 +19,10 @@ public interface ILayerListener {
 
     /**
      * Handle an event notification from an {@link ILayer}
-     * @param event the event
+     * 
+     * @param event
+     *            the event
      */
     public void handleLayerEvent(ILayerEvent event);
-    
+
 }

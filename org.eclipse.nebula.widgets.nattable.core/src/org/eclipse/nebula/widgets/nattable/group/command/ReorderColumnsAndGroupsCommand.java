@@ -15,18 +15,18 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCommand;
 
-
 /**
- * Reorder single multiple columns and column groups in one shot.
- *    - Needed by the column chooser  
+ * Reorder single multiple columns and column groups in one shot. - Needed by
+ * the column chooser
  */
 public class ReorderColumnsAndGroupsCommand extends MultiColumnReorderCommand {
 
-	/**
-	 * If any of the fromColumnPositions contain a group 
-	 *    - the group will be moved.
-	 */
-	public ReorderColumnsAndGroupsCommand(ILayer layer, List<Integer> fromColumnPositions, int toColumnPositions) {
-		super(layer, fromColumnPositions, toColumnPositions);
-	}
+    /**
+     * If any of the fromColumnPositions contain a group - the group will be
+     * moved.
+     */
+    public ReorderColumnsAndGroupsCommand(ILayer layer,
+            List<Integer> fromColumnPositions, int toColumnPositions) {
+        super(layer, fromColumnPositions, toColumnPositions);
+    }
 }

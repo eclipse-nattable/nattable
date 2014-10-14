@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.style.editor;
 
 import static org.eclipse.swt.SWT.NONE;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
@@ -31,13 +30,13 @@ public class BorderThicknessPicker extends Composite {
         setLayout(new RowLayout());
 
         combo = new Combo(this, SWT.READ_ONLY | SWT.DROP_DOWN);
-        combo.setItems(new String[] { 
-        		Messages.getString("BorderThicknessPicker.thin"),  //$NON-NLS-1$
-        		Messages.getString("BorderThicknessPicker.thick"),  //$NON-NLS-1$
-        		Messages.getString("BorderThicknessPicker.veryThick")}); //$NON-NLS-1$
+        combo.setItems(new String[] {
+                Messages.getString("BorderThicknessPicker.thin"), //$NON-NLS-1$
+                Messages.getString("BorderThicknessPicker.thick"), //$NON-NLS-1$
+                Messages.getString("BorderThicknessPicker.veryThick") }); //$NON-NLS-1$
         combo.select(0);
     }
-    
+
     @Override
     public void setEnabled(boolean b) {
         combo.setEnabled(b);
@@ -45,18 +44,26 @@ public class BorderThicknessPicker extends Composite {
 
     public int getSelectedThickness() {
         int idx = combo.getSelectionIndex();
-        if (idx == 0) return 1;
-        else if (idx == 1) return 3;
-        else if (idx == 2) return 6;
-        else throw new IllegalStateException("never happen"); //$NON-NLS-1$
+        if (idx == 0)
+            return 1;
+        else if (idx == 1)
+            return 3;
+        else if (idx == 2)
+            return 6;
+        else
+            throw new IllegalStateException("never happen"); //$NON-NLS-1$
     }
-    
+
     public void setSelectedThickness(int thickness) {
-        if (thickness < 0) throw new IllegalArgumentException("negative number"); //$NON-NLS-1$
+        if (thickness < 0)
+            throw new IllegalArgumentException("negative number"); //$NON-NLS-1$
         int idx = 0;
-        if (thickness < 3) idx = 0;
-        else if (thickness < 6) idx = 1;
-        else if (thickness > 6) idx = 2;
+        if (thickness < 3)
+            idx = 0;
+        else if (thickness < 6)
+            idx = 1;
+        else if (thickness > 6)
+            idx = 2;
         combo.select(idx);
     }
 }

@@ -15,31 +15,36 @@ import org.eclipse.nebula.widgets.nattable.resize.command.AutoResizeColumnsComma
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
-public class InitializeAutoResizeColumnsCommandHandler extends AbstractLayerCommandHandler<InitializeAutoResizeColumnsCommand> {
+public class InitializeAutoResizeColumnsCommandHandler extends
+        AbstractLayerCommandHandler<InitializeAutoResizeColumnsCommand> {
 
-	private SelectionLayer selectionLayer;
+    private SelectionLayer selectionLayer;
 
-	public InitializeAutoResizeColumnsCommandHandler(SelectionLayer selectionLayer) {
-		super();
-		this.selectionLayer = selectionLayer;
-	}
+    public InitializeAutoResizeColumnsCommandHandler(
+            SelectionLayer selectionLayer) {
+        super();
+        this.selectionLayer = selectionLayer;
+    }
 
-	public Class<InitializeAutoResizeColumnsCommand> getCommandClass() {
-		return InitializeAutoResizeColumnsCommand.class;
-	}
+    public Class<InitializeAutoResizeColumnsCommand> getCommandClass() {
+        return InitializeAutoResizeColumnsCommand.class;
+    }
 
-	@Override
-	protected boolean doCommand(InitializeAutoResizeColumnsCommand initCommand) {
-		int columnPosition = initCommand.getColumnPosition();
-		if (selectionLayer.isColumnPositionFullySelected(columnPosition)) {
-			initCommand.setSelectedColumnPositions(selectionLayer.getFullySelectedColumnPositions());
-		} else {
-			initCommand.setSelectedColumnPositions(new int[] { columnPosition });
-		}
+    @Override
+    protected boolean doCommand(InitializeAutoResizeColumnsCommand initCommand) {
+        int columnPosition = initCommand.getColumnPosition();
+        if (selectionLayer.isColumnPositionFullySelected(columnPosition)) {
+            initCommand.setSelectedColumnPositions(selectionLayer
+                    .getFullySelectedColumnPositions());
+        } else {
+            initCommand
+                    .setSelectedColumnPositions(new int[] { columnPosition });
+        }
 
-		// Fire command carrying the selected columns
-		initCommand.getSourceLayer().doCommand(new AutoResizeColumnsCommand(initCommand));
-		return true;
-	}
+        // Fire command carrying the selected columns
+        initCommand.getSourceLayer().doCommand(
+                new AutoResizeColumnsCommand(initCommand));
+        return true;
+    }
 
 }

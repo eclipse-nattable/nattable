@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._700_AdditionalFunctions;
 
 import java.io.Serializable;
@@ -59,200 +59,201 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _781_DragAndDropExample extends AbstractNatExample {
 
-	private NatTable firstNatTable;
-	private NatTable secondNatTable;
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _781_DragAndDropExample());
-	}
+    private NatTable firstNatTable;
+    private NatTable secondNatTable;
 
-	@Override
-	public String getDescription() {
-		return "This example shows how add Drag&Drop support to NatTable instances.\n"
-				+ "You can drag rows from one NatTable instance to the other.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(2, true));
-		
-		//create two data lists with consecutive id's
-		List<Person> data = PersonService.getPersons(20);
-		List<Person> subData1 = new ArrayList<Person>(); 
-		for (int i = 0; i < 10; i++) {
-			Person p = data.get(i);
-			subData1.add(p);
-		}
-		List<Person> subData2 = new ArrayList<Person>(); 
-		for (int i = 10; i < 20; i++) {
-			Person p = data.get(i);
-			subData2.add(p);
-		}
-		
-		firstNatTable = createTable(container, subData1);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(firstNatTable);
-		
-		secondNatTable = createTable(container, subData2);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(secondNatTable);
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400, new _781_DragAndDropExample());
+    }
 
-		return container;
-	}
+    @Override
+    public String getDescription() {
+        return "This example shows how add Drag&Drop support to NatTable instances.\n"
+                + "You can drag rows from one NatTable instance to the other.";
+    }
 
-	
-	private NatTable createTable(Composite parent, List<Person> data) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName"};
+    @Override
+    public Control createExampleControl(Composite parent) {
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout(2, true));
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
+        // create two data lists with consecutive id's
+        List<Person> data = PersonService.getPersons(20);
+        List<Person> subData1 = new ArrayList<Person>();
+        for (int i = 0; i < 10; i++) {
+            Person p = data.get(i);
+            subData1.add(p);
+        }
+        List<Person> subData2 = new ArrayList<Person>();
+        for (int i = 10; i < 20; i++) {
+            Person p = data.get(i);
+            subData2.add(p);
+        }
 
-		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
-				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		
-		IRowDataProvider<Person> bodyDataProvider = 
-				new ListDataProvider<Person>(data, columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		ColumnReorderLayer reorderLayer = new ColumnReorderLayer(bodyDataLayer);
-		final SelectionLayer selectionLayer = new SelectionLayer(reorderLayer);
-		
-		//set row selection model with single selection enabled
-		selectionLayer.setSelectionModel(
-				new RowSelectionModel<Person>(selectionLayer, bodyDataProvider, new IRowIdAccessor<Person>() {
+        firstNatTable = createTable(container, subData1);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(firstNatTable);
 
-			@Override
-			public Serializable getRowId(Person rowObject) {
-				return rowObject.getId();
-			}
-			
-		}, false));
+        secondNatTable = createTable(container, subData2);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(secondNatTable);
 
-		
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        return container;
+    }
 
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-				new DataLayer(new DummyColumnHeaderDataProvider(bodyDataProvider)),
-				viewportLayer, 
-				selectionLayer);
-			
-		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
-		compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+    private NatTable createTable(Composite parent, List<Person> data) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName" };
 
-		NatTable natTable = new NatTable(parent, compositeLayer);
-		
-		//add DnD support
-		DragAndDropSupport dndSupport = new DragAndDropSupport(natTable, selectionLayer, data);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
+
+        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(
+                data, columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(bodyDataLayer);
+        final SelectionLayer selectionLayer = new SelectionLayer(reorderLayer);
+
+        // set row selection model with single selection enabled
+        selectionLayer.setSelectionModel(new RowSelectionModel<Person>(
+                selectionLayer, bodyDataProvider, new IRowIdAccessor<Person>() {
+
+                    @Override
+                    public Serializable getRowId(Person rowObject) {
+                        return rowObject.getId();
+                    }
+
+                }, false));
+
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(
+                new DummyColumnHeaderDataProvider(bodyDataProvider)),
+                viewportLayer, selectionLayer);
+
+        CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
+                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+
+        NatTable natTable = new NatTable(parent, compositeLayer);
+
+        // add DnD support
+        DragAndDropSupport dndSupport = new DragAndDropSupport(natTable,
+                selectionLayer, data);
         Transfer[] transfer = { TextTransfer.getInstance() };
         natTable.addDragSupport(DND.DROP_COPY, transfer, dndSupport);
         natTable.addDropSupport(DND.DROP_COPY, transfer, dndSupport);
-		
-		//adding a full border
-		natTable.addOverlayPainter(new NatTableBorderOverlayPainter(natTable.getConfigRegistry()));
 
-		return natTable;
-	}
-	
-	
-	class DragAndDropSupport implements DragSourceListener, DropTargetListener {
+        // adding a full border
+        natTable.addOverlayPainter(new NatTableBorderOverlayPainter(natTable
+                .getConfigRegistry()));
 
-		private final NatTable natTable;
-		private final SelectionLayer selectionLayer;
-		private final List<Person> data;
-		
-		private Person draggedPerson;
-		
-		private static final String DATA_SEPARATOR = "|";
-		private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-		
-		public DragAndDropSupport(NatTable natTable, SelectionLayer selectionLayer, List<Person> data) {
-			this.natTable = natTable;
-			this.selectionLayer = selectionLayer;
-			this.data = data;
-		}
+        return natTable;
+    }
 
-		@Override
-		public void dragStart(DragSourceEvent event) {
-			if (this.selectionLayer.getSelectedRowCount() == 0) {
-				event.doit = false;
-			}
-			else if (!this.natTable.getRegionLabelsByXY(event.x, event.y).hasLabel(GridRegion.BODY)) {
-	            event.doit = false;
-	        }
-		}
+    class DragAndDropSupport implements DragSourceListener, DropTargetListener {
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public void dragSetData(DragSourceEvent event) {
-			//we know that we use the RowSelectionModel with single selection
-			List<Person> selection = ((RowSelectionModel<Person>)this.selectionLayer.getSelectionModel()).getSelectedRowObjects();
-			
-			if (!selection.isEmpty()) {
-				draggedPerson = selection.get(0);
-				StringBuilder builder = new StringBuilder();
-				builder.append(draggedPerson.getId())
-					.append(DATA_SEPARATOR)
-					.append(draggedPerson.getFirstName())
-					.append(DATA_SEPARATOR)
-					.append(draggedPerson.getLastName())
-					.append(DATA_SEPARATOR)
-					.append(draggedPerson.getGender())
-					.append(DATA_SEPARATOR)
-					.append(draggedPerson.isMarried())
-					.append(DATA_SEPARATOR)
-					.append(sdf.format(draggedPerson.getBirthday()));
-				event.data = builder.toString();
-			}
-		}
+        private final NatTable natTable;
+        private final SelectionLayer selectionLayer;
+        private final List<Person> data;
 
-		@Override
-		public void dragFinished(DragSourceEvent event) {
-			this.data.remove(draggedPerson);
-			this.draggedPerson = null;
-			
-			//clear selection
-			this.selectionLayer.clear();
-			
-			this.natTable.refresh();
-		}
+        private Person draggedPerson;
 
-		@Override
-		public void dragEnter(DropTargetEvent event) {
-			event.detail = DND.DROP_COPY;
-		}
+        private static final String DATA_SEPARATOR = "|";
+        private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
-		@Override
-		public void dragLeave(DropTargetEvent event) { }
+        public DragAndDropSupport(NatTable natTable,
+                SelectionLayer selectionLayer, List<Person> data) {
+            this.natTable = natTable;
+            this.selectionLayer = selectionLayer;
+            this.data = data;
+        }
 
-		@Override
-		public void dragOperationChanged(DropTargetEvent event) { }
+        @Override
+        public void dragStart(DragSourceEvent event) {
+            if (this.selectionLayer.getSelectedRowCount() == 0) {
+                event.doit = false;
+            } else if (!this.natTable.getRegionLabelsByXY(event.x, event.y)
+                    .hasLabel(GridRegion.BODY)) {
+                event.doit = false;
+            }
+        }
 
-		@Override
-		public void dragOver(DropTargetEvent event) { }
+        @SuppressWarnings("unchecked")
+        @Override
+        public void dragSetData(DragSourceEvent event) {
+            // we know that we use the RowSelectionModel with single selection
+            List<Person> selection = ((RowSelectionModel<Person>) this.selectionLayer
+                    .getSelectionModel()).getSelectedRowObjects();
 
-		@Override
-		public void drop(DropTargetEvent event) {
-			String[] data = (event.data != null ? event.data.toString().split("\\"+DATA_SEPARATOR) : new String[] {});
-			
-			if (data.length > 0) {
-				Person p = new Person(Integer.valueOf(data[0]));
-				p.setFirstName(data[1]);
-				p.setLastName(data[2]);
-				p.setGender(Gender.valueOf(data[3]));
-				p.setMarried(Boolean.valueOf(data[4]));
-				try {
-					p.setBirthday(sdf.parse(data[5]));
-				} catch (ParseException e) { }
-				
-				this.data.add(p);
-				this.natTable.refresh();
-			}
-		}
+            if (!selection.isEmpty()) {
+                draggedPerson = selection.get(0);
+                StringBuilder builder = new StringBuilder();
+                builder.append(draggedPerson.getId()).append(DATA_SEPARATOR)
+                        .append(draggedPerson.getFirstName())
+                        .append(DATA_SEPARATOR)
+                        .append(draggedPerson.getLastName())
+                        .append(DATA_SEPARATOR)
+                        .append(draggedPerson.getGender())
+                        .append(DATA_SEPARATOR)
+                        .append(draggedPerson.isMarried())
+                        .append(DATA_SEPARATOR)
+                        .append(sdf.format(draggedPerson.getBirthday()));
+                event.data = builder.toString();
+            }
+        }
 
-		@Override
-		public void dropAccept(DropTargetEvent event) { }
-		
-	}
+        @Override
+        public void dragFinished(DragSourceEvent event) {
+            this.data.remove(draggedPerson);
+            this.draggedPerson = null;
+
+            // clear selection
+            this.selectionLayer.clear();
+
+            this.natTable.refresh();
+        }
+
+        @Override
+        public void dragEnter(DropTargetEvent event) {
+            event.detail = DND.DROP_COPY;
+        }
+
+        @Override
+        public void dragLeave(DropTargetEvent event) {}
+
+        @Override
+        public void dragOperationChanged(DropTargetEvent event) {}
+
+        @Override
+        public void dragOver(DropTargetEvent event) {}
+
+        @Override
+        public void drop(DropTargetEvent event) {
+            String[] data = (event.data != null ? event.data.toString().split(
+                    "\\" + DATA_SEPARATOR) : new String[] {});
+
+            if (data.length > 0) {
+                Person p = new Person(Integer.valueOf(data[0]));
+                p.setFirstName(data[1]);
+                p.setLastName(data[2]);
+                p.setGender(Gender.valueOf(data[3]));
+                p.setMarried(Boolean.valueOf(data[4]));
+                try {
+                    p.setBirthday(sdf.parse(data[5]));
+                } catch (ParseException e) {}
+
+                this.data.add(p);
+                this.natTable.refresh();
+            }
+        }
+
+        @Override
+        public void dropAccept(DropTargetEvent event) {}
+
+    }
 }

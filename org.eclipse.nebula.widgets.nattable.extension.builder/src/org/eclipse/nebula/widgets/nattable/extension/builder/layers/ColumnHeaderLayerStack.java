@@ -38,107 +38,119 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
 
-public class ColumnHeaderLayerStack<T extends TableRow> extends AbstractLayerTransform {
+public class ColumnHeaderLayerStack<T extends TableRow> extends
+        AbstractLayerTransform {
 
-	private final ColumnHeaderLayer columnHeaderLayer;
-	private ColumnGroupHeaderLayer columnGroupHeaderLayer;
-	private SortHeaderLayer<T> sortableColumnHeaderLayer;
-	private final IDataProvider columnHeaderDataProvider;
-	private final DataLayer columnHeaderDataLayer;
-	private AggregrateConfigLabelAccumulator aggregateLabelAccumulator;
-	private FilterRowHeaderComposite<T> filterRowHeaderLayer;
+    private final ColumnHeaderLayer columnHeaderLayer;
+    private ColumnGroupHeaderLayer columnGroupHeaderLayer;
+    private SortHeaderLayer<T> sortableColumnHeaderLayer;
+    private final IDataProvider columnHeaderDataProvider;
+    private final DataLayer columnHeaderDataLayer;
+    private AggregrateConfigLabelAccumulator aggregateLabelAccumulator;
+    private FilterRowHeaderComposite<T> filterRowHeaderLayer;
 
-	public ColumnHeaderLayerStack(SortedList<T> sortedList,
-									FilterList<T> filterList,
-									TableModel tableModel,
-									BodyLayerStack<T> bodyLayer,
-									IColumnPropertyAccessor<T> columnAccessor,
-									IConfigRegistry configRegistry) {
+    public ColumnHeaderLayerStack(SortedList<T> sortedList,
+            FilterList<T> filterList, TableModel tableModel,
+            BodyLayerStack<T> bodyLayer,
+            IColumnPropertyAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry) {
 
-		String[] propertyNames = TableColumnUtils.getPropertyNames(tableModel.columnProperties);
-		Map<String, String> propertyToLabelMap = TableColumnUtils.getPropertyToLabelMap(tableModel.columnProperties);
-		SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
+        String[] propertyNames = TableColumnUtils
+                .getPropertyNames(tableModel.columnProperties);
+        Map<String, String> propertyToLabelMap = TableColumnUtils
+                .getPropertyToLabelMap(tableModel.columnProperties);
+        SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
 
-		columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
 
-		columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider, tableModel.tableStyle.defaultColumnWidth, tableModel.tableStyle.columnHeaderHeight);
+        columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider,
+                tableModel.tableStyle.defaultColumnWidth,
+                tableModel.tableStyle.columnHeaderHeight);
 
-		columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, selectionLayer, false);
+        columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                bodyLayer, selectionLayer, false);
 
-		GlazedListsSortModel<T> sortModel = new GlazedListsSortModel<T>(sortedList, columnAccessor, configRegistry, columnHeaderDataLayer);
+        GlazedListsSortModel<T> sortModel = new GlazedListsSortModel<T>(
+                sortedList, columnAccessor, configRegistry,
+                columnHeaderDataLayer);
 
-		if(tableModel.enableColumnGroups) {
-			columnGroupHeaderLayer = new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer, tableModel.columnGroupModel, false);
-			columnGroupHeaderLayer.setRowHeight(tableModel.tableStyle.columnGroupHeaderHeight);
-			sortableColumnHeaderLayer = new SortHeaderLayer<T>(columnGroupHeaderLayer, sortModel, false);
-		} else {
-			sortableColumnHeaderLayer = new SortHeaderLayer<T>(columnHeaderLayer, sortModel, false);
-		}
+        if (tableModel.enableColumnGroups) {
+            columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                    columnHeaderLayer, selectionLayer,
+                    tableModel.columnGroupModel, false);
+            columnGroupHeaderLayer
+                    .setRowHeight(tableModel.tableStyle.columnGroupHeaderHeight);
+            sortableColumnHeaderLayer = new SortHeaderLayer<T>(
+                    columnGroupHeaderLayer, sortModel, false);
+        } else {
+            sortableColumnHeaderLayer = new SortHeaderLayer<T>(
+                    columnHeaderLayer, sortModel, false);
+        }
 
-		if(tableModel.enableFilterRow){
-			filterRowHeaderLayer =
-				new FilterRowHeaderComposite<T>(
-						new DefaultGlazedListsFilterStrategy<T>(
-								filterList,
-								columnAccessor,
-								configRegistry
-						),
-						sortableColumnHeaderLayer, columnHeaderDataProvider, configRegistry
-				);
-			setUnderlyingLayer(filterRowHeaderLayer);
-		} else {
-			setUnderlyingLayer(sortableColumnHeaderLayer);
-		}
+        if (tableModel.enableFilterRow) {
+            filterRowHeaderLayer = new FilterRowHeaderComposite<T>(
+                    new DefaultGlazedListsFilterStrategy<T>(filterList,
+                            columnAccessor, configRegistry),
+                    sortableColumnHeaderLayer, columnHeaderDataProvider,
+                    configRegistry);
+            setUnderlyingLayer(filterRowHeaderLayer);
+        } else {
+            setUnderlyingLayer(sortableColumnHeaderLayer);
+        }
 
-		setupAggregateLabelAccumulator();
+        setupAggregateLabelAccumulator();
 
-		// ** Configure **
-		//	Sorting
-		sortableColumnHeaderLayer.addConfiguration(new SortConfiguration());
+        // ** Configure **
+        // Sorting
+        sortableColumnHeaderLayer.addConfiguration(new SortConfiguration());
 
-		//	Column groups
-		if(tableModel.enableColumnGroups){
-			columnGroupHeaderLayer.addConfiguration(new ColumnGroupConfiguration(tableModel.columnGroupModel, tableModel));
-		}
+        // Column groups
+        if (tableModel.enableColumnGroups) {
+            columnGroupHeaderLayer
+                    .addConfiguration(new ColumnGroupConfiguration(
+                            tableModel.columnGroupModel, tableModel));
+        }
 
-		columnHeaderLayer.addConfiguration(new ColumnHeaderConfiguration(tableModel.tableStyle));
-	}
+        columnHeaderLayer.addConfiguration(new ColumnHeaderConfiguration(
+                tableModel.tableStyle));
+    }
 
-	private void setupAggregateLabelAccumulator() {
-		aggregateLabelAccumulator = new AggregrateConfigLabelAccumulator();
-		getDataLayer().setConfigLabelAccumulator(aggregateLabelAccumulator);
-	}
+    private void setupAggregateLabelAccumulator() {
+        aggregateLabelAccumulator = new AggregrateConfigLabelAccumulator();
+        getDataLayer().setConfigLabelAccumulator(aggregateLabelAccumulator);
+    }
 
-	public void addLabelAccumulator(IConfigLabelAccumulator accumulator){
-		aggregateLabelAccumulator.add(accumulator);
-	}
+    public void addLabelAccumulator(IConfigLabelAccumulator accumulator) {
+        aggregateLabelAccumulator.add(accumulator);
+    }
 
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		super.setClientAreaProvider(clientAreaProvider);
-	}
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        super.setClientAreaProvider(clientAreaProvider);
+    }
 
-	public ColumnGroupHeaderLayer getColumnGroupHeaderLayer() {
-		return columnGroupHeaderLayer;
-	}
+    public ColumnGroupHeaderLayer getColumnGroupHeaderLayer() {
+        return columnGroupHeaderLayer;
+    }
 
-	public ColumnHeaderLayer getColumnHeaderLayer() {
-		return columnHeaderLayer;
-	}
+    public ColumnHeaderLayer getColumnHeaderLayer() {
+        return columnHeaderLayer;
+    }
 
-	public IDataProvider getDataProvider() {
-		return columnHeaderDataProvider;
-	}
+    public IDataProvider getDataProvider() {
+        return columnHeaderDataProvider;
+    }
 
-	public DataLayer getDataLayer() {
-		return columnHeaderDataLayer;
-	}
+    public DataLayer getDataLayer() {
+        return columnHeaderDataLayer;
+    }
 
-	public SortHeaderLayer<T> getSortHeaderLayer() {
-		return sortableColumnHeaderLayer;
-	}
+    public SortHeaderLayer<T> getSortHeaderLayer() {
+        return sortableColumnHeaderLayer;
+    }
 
-	public FilterRowHeaderComposite<T> getFilterRowHeaderLayer() {
-		return filterRowHeaderLayer;
-	}
+    public FilterRowHeaderComposite<T> getFilterRowHeaderLayer() {
+        return filterRowHeaderLayer;
+    }
 }

@@ -14,6 +14,6 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 
 public interface ISearchStrategy {
 
-	public PositionCoordinate executeSearch(Object valueToMatch);
-	
+    public PositionCoordinate executeSearch(Object valueToMatch);
+
 }

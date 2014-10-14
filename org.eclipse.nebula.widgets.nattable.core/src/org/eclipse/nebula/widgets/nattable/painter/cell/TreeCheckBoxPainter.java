@@ -19,54 +19,58 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 
 public abstract class TreeCheckBoxPainter extends ImagePainter {
-	
-	private final Image checkedImg;
-	private final Image semicheckedImg;
-	private final Image uncheckedImg;
 
-	public TreeCheckBoxPainter() {
-		this(
-				GUIHelper.getImage("checked"), //$NON-NLS-1$
-				GUIHelper.getImage("semichecked"), //$NON-NLS-1$
-				GUIHelper.getImage("unchecked") //$NON-NLS-1$
-		);
-	}
+    private final Image checkedImg;
+    private final Image semicheckedImg;
+    private final Image uncheckedImg;
 
-	public TreeCheckBoxPainter(Image checkedImg, Image semicheckedImage, Image uncheckedImg) {
-		this.checkedImg = checkedImg;
-		this.semicheckedImg = semicheckedImage;
-		this.uncheckedImg = uncheckedImg;
-	}
+    public TreeCheckBoxPainter() {
+        this(GUIHelper.getImage("checked"), //$NON-NLS-1$
+                GUIHelper.getImage("semichecked"), //$NON-NLS-1$
+                GUIHelper.getImage("unchecked") //$NON-NLS-1$
+        );
+    }
 
-	public int getPreferredWidth(boolean checked) {
-		return checked ? checkedImg.getBounds().width : uncheckedImg.getBounds().width;
-	}
+    public TreeCheckBoxPainter(Image checkedImg, Image semicheckedImage,
+            Image uncheckedImg) {
+        this.checkedImg = checkedImg;
+        this.semicheckedImg = semicheckedImage;
+        this.uncheckedImg = uncheckedImg;
+    }
 
-	public int getPreferredHeight(boolean checked) {
-		return checked ? checkedImg.getBounds().height : uncheckedImg.getBounds().height;
-	}
+    public int getPreferredWidth(boolean checked) {
+        return checked ? checkedImg.getBounds().width : uncheckedImg
+                .getBounds().width;
+    }
 
-	public void paintIconImage(GC gc, Rectangle rectangle, int yOffset, boolean checked) {
-		Image checkBoxImage = checked ? checkedImg : uncheckedImg;
+    public int getPreferredHeight(boolean checked) {
+        return checked ? checkedImg.getBounds().height : uncheckedImg
+                .getBounds().height;
+    }
 
-		// Center image
-		int x = rectangle.x + (rectangle.width / 2) - (checkBoxImage.getBounds().width/2);
+    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset,
+            boolean checked) {
+        Image checkBoxImage = checked ? checkedImg : uncheckedImg;
 
-		gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
-	}
+        // Center image
+        int x = rectangle.x + (rectangle.width / 2)
+                - (checkBoxImage.getBounds().width / 2);
 
-	@Override
-	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-		switch (getCheckBoxState(cell)) {
-		case CHECKED:
-			return checkedImg;
-		case SEMICHECKED:
-			return semicheckedImg;
-		default:
-			return uncheckedImg;
-		}
-	}
-	
-	protected abstract CheckBoxStateEnum getCheckBoxState(ILayerCell cell);
+        gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
+    }
+
+    @Override
+    protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
+        switch (getCheckBoxState(cell)) {
+            case CHECKED:
+                return checkedImg;
+            case SEMICHECKED:
+                return semicheckedImg;
+            default:
+                return uncheckedImg;
+        }
+    }
+
+    protected abstract CheckBoxStateEnum getCheckBoxState(ILayerCell cell);
 
 }

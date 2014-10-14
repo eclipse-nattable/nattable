@@ -16,16 +16,16 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 
 public interface IEditor {
 
-	public enum Type {
-		TEXT, COMBO, CHECKBOX, NONE
-	};
+    public enum Type {
+        TEXT, COMBO, CHECKBOX, NONE
+    };
 
-	public Type getType();
+    public Type getType();
 
-	public IDataValidator getValidator();
+    public IDataValidator getValidator();
 
-	public IEditableRule getEditableRule();
+    public IEditableRule getEditableRule();
 
-	public ICellEditor getCellEditor();
+    public ICellEditor getCellEditor();
 
 }

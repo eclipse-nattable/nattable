@@ -17,66 +17,66 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class InvertedLayerCell implements ILayerCell {
 
-	private final ILayerCell layerCell;
+    private final ILayerCell layerCell;
 
-	public InvertedLayerCell(ILayerCell layerCell) {
-		this.layerCell = layerCell;
-	}
+    public InvertedLayerCell(ILayerCell layerCell) {
+        this.layerCell = layerCell;
+    }
 
-	public int getOriginColumnPosition() {
-		return layerCell.getOriginRowPosition();
-	}
+    public int getOriginColumnPosition() {
+        return layerCell.getOriginRowPosition();
+    }
 
-	public int getOriginRowPosition() {
-		return layerCell.getOriginColumnPosition();
-	}
+    public int getOriginRowPosition() {
+        return layerCell.getOriginColumnPosition();
+    }
 
-	public ILayer getLayer() {
-		return layerCell.getLayer();
-	}
+    public ILayer getLayer() {
+        return layerCell.getLayer();
+    }
 
-	public int getColumnPosition() {
-		return layerCell.getRowPosition();
-	}
+    public int getColumnPosition() {
+        return layerCell.getRowPosition();
+    }
 
-	public int getRowPosition() {
-		return layerCell.getColumnPosition();
-	}
+    public int getRowPosition() {
+        return layerCell.getColumnPosition();
+    }
 
-	public int getColumnIndex() {
-		return layerCell.getRowIndex();
-	}
+    public int getColumnIndex() {
+        return layerCell.getRowIndex();
+    }
 
-	public int getRowIndex() {
-		return layerCell.getColumnIndex();
-	}
+    public int getRowIndex() {
+        return layerCell.getColumnIndex();
+    }
 
-	public int getColumnSpan() {
-		return layerCell.getRowSpan();
-	}
+    public int getColumnSpan() {
+        return layerCell.getRowSpan();
+    }
 
-	public int getRowSpan() {
-		return layerCell.getColumnSpan();
-	}
+    public int getRowSpan() {
+        return layerCell.getColumnSpan();
+    }
 
-	public boolean isSpannedCell() {
-		return layerCell.isSpannedCell();
-	}
+    public boolean isSpannedCell() {
+        return layerCell.isSpannedCell();
+    }
 
-	public String getDisplayMode() {
-		return layerCell.getDisplayMode();
-	}
+    public String getDisplayMode() {
+        return layerCell.getDisplayMode();
+    }
 
-	public LabelStack getConfigLabels() {
-		return layerCell.getConfigLabels();
-	}
+    public LabelStack getConfigLabels() {
+        return layerCell.getConfigLabels();
+    }
 
-	public Object getDataValue() {
-		return layerCell.getDataValue();
-	}
+    public Object getDataValue() {
+        return layerCell.getDataValue();
+    }
 
-	public Rectangle getBounds() {
-		return InvertUtil.invertRectangle(layerCell.getBounds());
-	}
-	
+    public Rectangle getBounds() {
+        return InvertUtil.invertRectangle(layerCell.getBounds());
+    }
+
 }

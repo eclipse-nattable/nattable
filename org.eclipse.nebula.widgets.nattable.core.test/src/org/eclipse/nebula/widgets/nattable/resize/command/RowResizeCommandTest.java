@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
@@ -20,24 +19,25 @@ import org.junit.Test;
 
 public class RowResizeCommandTest {
 
-	private DataLayer dataLayer;
-	
-	@Before
-	public void setup() {
-		dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
-	}
-	
-	@Test
-	public void testHandleRowResizeCommand() {
-		Assert.assertEquals(20, dataLayer.getRowHeightByPosition(3));
-		
-		int rowPosition = 3;
-		int newHeight = 50;
-		RowResizeCommand rowResizeCommand = new RowResizeCommand(dataLayer, rowPosition, newHeight);
-		
-		dataLayer.doCommand(rowResizeCommand);
-		
-		Assert.assertEquals(50, dataLayer.getRowHeightByPosition(3));
-	}
-	
+    private DataLayer dataLayer;
+
+    @Before
+    public void setup() {
+        dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
+    }
+
+    @Test
+    public void testHandleRowResizeCommand() {
+        Assert.assertEquals(20, dataLayer.getRowHeightByPosition(3));
+
+        int rowPosition = 3;
+        int newHeight = 50;
+        RowResizeCommand rowResizeCommand = new RowResizeCommand(dataLayer,
+                rowPosition, newHeight);
+
+        dataLayer.doCommand(rowResizeCommand);
+
+        Assert.assertEquals(50, dataLayer.getRowHeightByPosition(3));
+    }
+
 }

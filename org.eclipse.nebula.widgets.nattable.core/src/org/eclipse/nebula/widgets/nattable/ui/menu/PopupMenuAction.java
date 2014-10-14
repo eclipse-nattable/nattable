@@ -10,22 +10,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Menu;
 
 public class PopupMenuAction implements IMouseAction {
-	
-	private Menu menu;
-	
-	public PopupMenuAction(Menu menu) {
-		this.menu = menu;
-	}
-	
-	public void run(NatTable natTable, MouseEvent event) {
-		menu.setData(event.data);
-		menu.setVisible(true);
-	}
+
+    private Menu menu;
+
+    public PopupMenuAction(Menu menu) {
+        this.menu = menu;
+    }
+
+    public void run(NatTable natTable, MouseEvent event) {
+        menu.setData(event.data);
+        menu.setVisible(true);
+    }
 }

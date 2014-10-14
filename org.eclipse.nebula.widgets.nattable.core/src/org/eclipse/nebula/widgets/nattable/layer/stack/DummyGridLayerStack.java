@@ -19,20 +19,24 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 
 public class DummyGridLayerStack extends DefaultGridLayer {
 
-	public DummyGridLayerStack() {
-		this(20, 20);
-	}
-	
-	public DummyGridLayerStack(int columnCount, int rowCount) {
-		this(new DummyBodyDataProvider(columnCount, rowCount));
-	}
-	
-	public DummyGridLayerStack(IDataProvider bodyDataProvider) {
-		super(true);
-		IDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(bodyDataProvider);
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		
-		init(bodyDataProvider, columnHeaderDataProvider, rowHeaderDataProvider, cornerDataProvider);
-	}
+    public DummyGridLayerStack() {
+        this(20, 20);
+    }
+
+    public DummyGridLayerStack(int columnCount, int rowCount) {
+        this(new DummyBodyDataProvider(columnCount, rowCount));
+    }
+
+    public DummyGridLayerStack(IDataProvider bodyDataProvider) {
+        super(true);
+        IDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(
+                bodyDataProvider);
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+
+        init(bodyDataProvider, columnHeaderDataProvider, rowHeaderDataProvider,
+                cornerDataProvider);
+    }
 }

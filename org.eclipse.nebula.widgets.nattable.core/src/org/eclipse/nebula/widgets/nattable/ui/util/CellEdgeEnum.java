@@ -11,13 +11,5 @@
 package org.eclipse.nebula.widgets.nattable.ui.util;
 
 public enum CellEdgeEnum {
-	LEFT,
-	RIGHT,
-	TOP,
-	BOTTOM,
-	TOP_LEFT,
-	TOP_RIGHT,
-	BOTTOM_LEFT,
-	BOTTOM_RIGHT,
-	NONE
+    LEFT, RIGHT, TOP, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, NONE
 }

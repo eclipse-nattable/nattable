@@ -45,64 +45,65 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _5033_GridLayerExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5033_GridLayerExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400, new _5033_GridLayerExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows the usage of the GridLayer. It is a specialised CompositeLayer "
-				+ "that has four regions: CORNER, COLUMN HEADER, ROW HEADER and BODY.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows the usage of the GridLayer. It is a specialised CompositeLayer "
+                + "that has four regions: CORNER, COLUMN HEADER, ROW HEADER and BODY.";
+    }
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
-				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		
-		final List<Person> data = PersonService.getPersons(10);
-		
-		//create the body layer stack
-		IDataProvider bodyDataProvider = new ListDataProvider<Person>(data, columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
 
-		//create the column header layer stack
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-				new DataLayer(columnHeaderDataProvider),
-				viewportLayer, 
-				selectionLayer);
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
 
-		//create the row header layer stack
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(
-				new DataLayer(rowHeaderDataProvider, 40, 20), 
-				viewportLayer, 
-				selectionLayer);
-		
-		//create the corner layer stack
-		ILayer cornerLayer = new CornerLayer(
-				new DataLayer(new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), 
-				rowHeaderLayer, 
-				columnHeaderLayer);
-		
-		//create the grid layer composed with the prior created layer stacks
-		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		return new NatTable(parent, gridLayer);
-	}
+        final List<Person> data = PersonService.getPersons(10);
+
+        // create the body layer stack
+        IDataProvider bodyDataProvider = new ListDataProvider<Person>(data,
+                columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        // create the column header layer stack
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(
+                columnHeaderDataProvider), viewportLayer, selectionLayer);
+
+        // create the row header layer stack
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(new DataLayer(
+                rowHeaderDataProvider, 40, 20), viewportLayer, selectionLayer);
+
+        // create the corner layer stack
+        ILayer cornerLayer = new CornerLayer(new DataLayer(
+                new DefaultCornerDataProvider(columnHeaderDataProvider,
+                        rowHeaderDataProvider)), rowHeaderLayer,
+                columnHeaderLayer);
+
+        // create the grid layer composed with the prior created layer stacks
+        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
+
+        return new NatTable(parent, gridLayer);
+    }
 
 }

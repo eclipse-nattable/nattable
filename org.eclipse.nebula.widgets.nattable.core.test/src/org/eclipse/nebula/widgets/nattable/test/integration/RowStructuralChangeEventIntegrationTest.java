@@ -46,180 +46,188 @@ import org.junit.Test;
  */
 public class RowStructuralChangeEventIntegrationTest {
 
-	List<String> contents;	
-	private IUniqueIndexLayer underlyingLayer;
-	private RowReorderLayer rowReorderLayer;
-	private RowHideShowLayer rowHideShowLayer;
-	private SelectionLayer selectionLayer;
-	private ViewportLayer viewportLayer;
-	
-	private NatTable natTable;
+    List<String> contents;
+    private IUniqueIndexLayer underlyingLayer;
+    private RowReorderLayer rowReorderLayer;
+    private RowHideShowLayer rowHideShowLayer;
+    private SelectionLayer selectionLayer;
+    private ViewportLayer viewportLayer;
 
-	@Before
-	public void setUp() {
-		contents = new ArrayList<String>(Arrays.asList("one", "two", "three", "four", "five"));
-		IDataProvider bodyDataProvider = new ListDataProvider<String>(contents, new IColumnAccessor<String>() {
+    private NatTable natTable;
 
-			@Override
-			public Object getDataValue(String rowObject, int columnIndex) {
-				return rowObject;
-			}
+    @Before
+    public void setUp() {
+        contents = new ArrayList<String>(Arrays.asList("one", "two", "three",
+                "four", "five"));
+        IDataProvider bodyDataProvider = new ListDataProvider<String>(contents,
+                new IColumnAccessor<String>() {
 
-			@Override
-			public void setDataValue(String rowObject, int columnIndex, Object newValue) {
-				// ignore
-			}
+                    @Override
+                    public Object getDataValue(String rowObject, int columnIndex) {
+                        return rowObject;
+                    }
 
-			@Override
-			public int getColumnCount() {
-				return 1;
-			}
-		});
-		underlyingLayer = new DataLayer(bodyDataProvider);
-		rowReorderLayer = new RowReorderLayer(underlyingLayer);
-		rowHideShowLayer = new RowHideShowLayer(rowReorderLayer);
-		
-		selectionLayer = new SelectionLayer(rowHideShowLayer);
-		viewportLayer = new ViewportLayer(selectionLayer);
-		
-		IDataProvider colDataProvider = new DummyColumnHeaderDataProvider(bodyDataProvider);
-		ColumnHeaderLayer colHeader = new ColumnHeaderLayer(
-				new DataLayer(colDataProvider), viewportLayer, selectionLayer);
-		
-		IDataProvider rowDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(
-				new DataLayer(rowDataProvider), viewportLayer, selectionLayer);
-		
-		CornerLayer cornerLayer = new CornerLayer(
-				new DataLayer(new DefaultCornerDataProvider(colDataProvider, rowDataProvider)), rowHeaderLayer, colHeader);
+                    @Override
+                    public void setDataValue(String rowObject, int columnIndex,
+                            Object newValue) {
+                        // ignore
+                    }
 
-		GridLayer grid = new GridLayer(viewportLayer, colHeader, rowHeaderLayer, cornerLayer);
-		natTable = new NatTable(new Shell(), grid);
-		natTable.setSize(600, 400);
-	}
+                    @Override
+                    public int getColumnCount() {
+                        return 1;
+                    }
+                });
+        underlyingLayer = new DataLayer(bodyDataProvider);
+        rowReorderLayer = new RowReorderLayer(underlyingLayer);
+        rowHideShowLayer = new RowHideShowLayer(rowReorderLayer);
 
-	@Test
-	public void testInit() {
-		//test start order: 0 1 2 3 4
-		assertEquals(0, viewportLayer.getRowIndexByPosition(0));
-		assertEquals(1, viewportLayer.getRowIndexByPosition(1));
-		assertEquals(2, viewportLayer.getRowIndexByPosition(2));
-		assertEquals(3, viewportLayer.getRowIndexByPosition(3));
-		assertEquals(4, viewportLayer.getRowIndexByPosition(4));
-		
-		assertEquals("one", viewportLayer.getDataValueByPosition(0, 0));
-		assertEquals("two", viewportLayer.getDataValueByPosition(0, 1));
-		assertEquals("three", viewportLayer.getDataValueByPosition(0, 2));
-		assertEquals("four", viewportLayer.getDataValueByPosition(0, 3));
-		assertEquals("five", viewportLayer.getDataValueByPosition(0, 4));
-	}
-	
-	@Test
-	public void testReorder() {
-		testInit();
-		
-		//reorder to inverse order: 4 3 2 1 0
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 0));
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 1));
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 2));
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 3));
+        selectionLayer = new SelectionLayer(rowHideShowLayer);
+        viewportLayer = new ViewportLayer(selectionLayer);
 
-		assertEquals(4, viewportLayer.getRowIndexByPosition(0));
-		assertEquals(3, viewportLayer.getRowIndexByPosition(1));
-		assertEquals(2, viewportLayer.getRowIndexByPosition(2));
-		assertEquals(1, viewportLayer.getRowIndexByPosition(3));
-		assertEquals(0, viewportLayer.getRowIndexByPosition(4));
-		
-		assertEquals("five", viewportLayer.getDataValueByPosition(0, 0));
-		assertEquals("four", viewportLayer.getDataValueByPosition(0, 1));
-		assertEquals("three", viewportLayer.getDataValueByPosition(0, 2));
-		assertEquals("two", viewportLayer.getDataValueByPosition(0, 3));
-		assertEquals("one", viewportLayer.getDataValueByPosition(0, 4));
-	}
-	
-	@Test
-	public void testHideShow() {
-		testInit();
-		
-		//hide row at position 2: 0 1 3 4 
-		natTable.doCommand(new RowHideCommand(viewportLayer, 2));
-		
-		assertEquals(4, viewportLayer.getRowCount());
-		
-		assertEquals(0, viewportLayer.getRowIndexByPosition(0));
-		assertEquals(1, viewportLayer.getRowIndexByPosition(1));
-		assertEquals(3, viewportLayer.getRowIndexByPosition(2));
-		assertEquals(4, viewportLayer.getRowIndexByPosition(3));
-		assertEquals(-1, viewportLayer.getRowIndexByPosition(4));
-		
-		assertEquals("one", viewportLayer.getDataValueByPosition(0, 0));
-		assertEquals("two", viewportLayer.getDataValueByPosition(0, 1));
-		assertEquals("four", viewportLayer.getDataValueByPosition(0, 2));
-		assertEquals("five", viewportLayer.getDataValueByPosition(0, 3));
-	}
-	
-	@Test
-	public void testReorderHide() {
-		testInit();
-		
-		//reorder to inverse order: 4 3 2 1 0
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 0));
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 1));
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 2));
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 3));
-		
-		//hide row at position 2: 0 1 3 4 
-		natTable.doCommand(new RowHideCommand(viewportLayer, 2));
-		
-		assertEquals(4, viewportLayer.getRowCount());
-		
-		assertEquals(4, viewportLayer.getRowIndexByPosition(0));
-		assertEquals(3, viewportLayer.getRowIndexByPosition(1));
-		assertEquals(1, viewportLayer.getRowIndexByPosition(2));
-		assertEquals(0, viewportLayer.getRowIndexByPosition(3));
-		assertEquals(-1, viewportLayer.getRowIndexByPosition(4));
-		
-		assertEquals("five", viewportLayer.getDataValueByPosition(0, 0));
-		assertEquals("four", viewportLayer.getDataValueByPosition(0, 1));
-		assertEquals("two", viewportLayer.getDataValueByPosition(0, 2));
-		assertEquals("one", viewportLayer.getDataValueByPosition(0, 3));
-	}
-	
-	@Test
-	public void testHideReorder() {
-		testInit();
-		
-		//hide row at position 2: 0 1 3 4 
-		natTable.doCommand(new RowHideCommand(viewportLayer, 2));
-		
-		//reorder to inverse order: 4 3 1 0
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 3, 0));
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 3, 1));
-		natTable.doCommand(new RowReorderCommand(viewportLayer, 3, 2));
-		
-		assertEquals(4, viewportLayer.getRowCount());
-		
-		assertEquals(4, viewportLayer.getRowIndexByPosition(0));
-		assertEquals(3, viewportLayer.getRowIndexByPosition(1));
-		assertEquals(1, viewportLayer.getRowIndexByPosition(2));
-		assertEquals(0, viewportLayer.getRowIndexByPosition(3));
-		assertEquals(-1, viewportLayer.getRowIndexByPosition(4));
-		
-		assertEquals("five", viewportLayer.getDataValueByPosition(0, 0));
-		assertEquals("four", viewportLayer.getDataValueByPosition(0, 1));
-		assertEquals("two", viewportLayer.getDataValueByPosition(0, 2));
-		assertEquals("one", viewportLayer.getDataValueByPosition(0, 3));
-	}
-	
-	@Test
-	public void testDeleteLastRow() {
-		testInit();
-		
-		//delete last row
-		int index = contents.size()-1;
-		contents.remove(index);
-		underlyingLayer.fireLayerEvent(new RowDeleteEvent(underlyingLayer, index));
+        IDataProvider colDataProvider = new DummyColumnHeaderDataProvider(
+                bodyDataProvider);
+        ColumnHeaderLayer colHeader = new ColumnHeaderLayer(new DataLayer(
+                colDataProvider), viewportLayer, selectionLayer);
 
-		assertEquals(4, viewportLayer.getRowCount());
-	}
+        IDataProvider rowDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(new DataLayer(
+                rowDataProvider), viewportLayer, selectionLayer);
+
+        CornerLayer cornerLayer = new CornerLayer(
+                new DataLayer(new DefaultCornerDataProvider(colDataProvider,
+                        rowDataProvider)), rowHeaderLayer, colHeader);
+
+        GridLayer grid = new GridLayer(viewportLayer, colHeader,
+                rowHeaderLayer, cornerLayer);
+        natTable = new NatTable(new Shell(), grid);
+        natTable.setSize(600, 400);
+    }
+
+    @Test
+    public void testInit() {
+        // test start order: 0 1 2 3 4
+        assertEquals(0, viewportLayer.getRowIndexByPosition(0));
+        assertEquals(1, viewportLayer.getRowIndexByPosition(1));
+        assertEquals(2, viewportLayer.getRowIndexByPosition(2));
+        assertEquals(3, viewportLayer.getRowIndexByPosition(3));
+        assertEquals(4, viewportLayer.getRowIndexByPosition(4));
+
+        assertEquals("one", viewportLayer.getDataValueByPosition(0, 0));
+        assertEquals("two", viewportLayer.getDataValueByPosition(0, 1));
+        assertEquals("three", viewportLayer.getDataValueByPosition(0, 2));
+        assertEquals("four", viewportLayer.getDataValueByPosition(0, 3));
+        assertEquals("five", viewportLayer.getDataValueByPosition(0, 4));
+    }
+
+    @Test
+    public void testReorder() {
+        testInit();
+
+        // reorder to inverse order: 4 3 2 1 0
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 0));
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 1));
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 2));
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 3));
+
+        assertEquals(4, viewportLayer.getRowIndexByPosition(0));
+        assertEquals(3, viewportLayer.getRowIndexByPosition(1));
+        assertEquals(2, viewportLayer.getRowIndexByPosition(2));
+        assertEquals(1, viewportLayer.getRowIndexByPosition(3));
+        assertEquals(0, viewportLayer.getRowIndexByPosition(4));
+
+        assertEquals("five", viewportLayer.getDataValueByPosition(0, 0));
+        assertEquals("four", viewportLayer.getDataValueByPosition(0, 1));
+        assertEquals("three", viewportLayer.getDataValueByPosition(0, 2));
+        assertEquals("two", viewportLayer.getDataValueByPosition(0, 3));
+        assertEquals("one", viewportLayer.getDataValueByPosition(0, 4));
+    }
+
+    @Test
+    public void testHideShow() {
+        testInit();
+
+        // hide row at position 2: 0 1 3 4
+        natTable.doCommand(new RowHideCommand(viewportLayer, 2));
+
+        assertEquals(4, viewportLayer.getRowCount());
+
+        assertEquals(0, viewportLayer.getRowIndexByPosition(0));
+        assertEquals(1, viewportLayer.getRowIndexByPosition(1));
+        assertEquals(3, viewportLayer.getRowIndexByPosition(2));
+        assertEquals(4, viewportLayer.getRowIndexByPosition(3));
+        assertEquals(-1, viewportLayer.getRowIndexByPosition(4));
+
+        assertEquals("one", viewportLayer.getDataValueByPosition(0, 0));
+        assertEquals("two", viewportLayer.getDataValueByPosition(0, 1));
+        assertEquals("four", viewportLayer.getDataValueByPosition(0, 2));
+        assertEquals("five", viewportLayer.getDataValueByPosition(0, 3));
+    }
+
+    @Test
+    public void testReorderHide() {
+        testInit();
+
+        // reorder to inverse order: 4 3 2 1 0
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 0));
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 1));
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 2));
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 4, 3));
+
+        // hide row at position 2: 0 1 3 4
+        natTable.doCommand(new RowHideCommand(viewportLayer, 2));
+
+        assertEquals(4, viewportLayer.getRowCount());
+
+        assertEquals(4, viewportLayer.getRowIndexByPosition(0));
+        assertEquals(3, viewportLayer.getRowIndexByPosition(1));
+        assertEquals(1, viewportLayer.getRowIndexByPosition(2));
+        assertEquals(0, viewportLayer.getRowIndexByPosition(3));
+        assertEquals(-1, viewportLayer.getRowIndexByPosition(4));
+
+        assertEquals("five", viewportLayer.getDataValueByPosition(0, 0));
+        assertEquals("four", viewportLayer.getDataValueByPosition(0, 1));
+        assertEquals("two", viewportLayer.getDataValueByPosition(0, 2));
+        assertEquals("one", viewportLayer.getDataValueByPosition(0, 3));
+    }
+
+    @Test
+    public void testHideReorder() {
+        testInit();
+
+        // hide row at position 2: 0 1 3 4
+        natTable.doCommand(new RowHideCommand(viewportLayer, 2));
+
+        // reorder to inverse order: 4 3 1 0
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 3, 0));
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 3, 1));
+        natTable.doCommand(new RowReorderCommand(viewportLayer, 3, 2));
+
+        assertEquals(4, viewportLayer.getRowCount());
+
+        assertEquals(4, viewportLayer.getRowIndexByPosition(0));
+        assertEquals(3, viewportLayer.getRowIndexByPosition(1));
+        assertEquals(1, viewportLayer.getRowIndexByPosition(2));
+        assertEquals(0, viewportLayer.getRowIndexByPosition(3));
+        assertEquals(-1, viewportLayer.getRowIndexByPosition(4));
+
+        assertEquals("five", viewportLayer.getDataValueByPosition(0, 0));
+        assertEquals("four", viewportLayer.getDataValueByPosition(0, 1));
+        assertEquals("two", viewportLayer.getDataValueByPosition(0, 2));
+        assertEquals("one", viewportLayer.getDataValueByPosition(0, 3));
+    }
+
+    @Test
+    public void testDeleteLastRow() {
+        testInit();
+
+        // delete last row
+        int index = contents.size() - 1;
+        contents.remove(index);
+        underlyingLayer.fireLayerEvent(new RowDeleteEvent(underlyingLayer,
+                index));
+
+        assertEquals(4, viewportLayer.getRowCount());
+    }
 }

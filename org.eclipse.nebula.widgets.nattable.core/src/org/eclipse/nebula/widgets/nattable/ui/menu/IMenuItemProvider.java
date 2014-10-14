@@ -10,18 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.widgets.Menu;
 
 public interface IMenuItemProvider {
-	
-	/**
-	 * Add an item to the popup menu.
-	 * 
-	 * @param natTable active table instance.
-	 * @param popupMenu the SWT {@link Menu} which popus up. 
-	 */
-	public void addMenuItem(final NatTable natTable, final Menu popupMenu);
+
+    /**
+     * Add an item to the popup menu.
+     * 
+     * @param natTable
+     *            active table instance.
+     * @param popupMenu
+     *            the SWT {@link Menu} which popus up.
+     */
+    public void addMenuItem(final NatTable natTable, final Menu popupMenu);
 
 }

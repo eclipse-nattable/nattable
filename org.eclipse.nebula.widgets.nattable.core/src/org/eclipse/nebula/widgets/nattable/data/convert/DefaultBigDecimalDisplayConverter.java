@@ -17,19 +17,20 @@ import java.text.ParseException;
 /**
  * Converts the display value to a {@link BigDecimal} and vice versa.
  */
-public class DefaultBigDecimalDisplayConverter extends DecimalNumericDisplayConverter {
+public class DefaultBigDecimalDisplayConverter extends
+        DecimalNumericDisplayConverter {
 
-	public DefaultBigDecimalDisplayConverter() {
-		this.nf.setMinimumFractionDigits(0);
-		((DecimalFormat)this.nf).setParseBigDecimal(true);
-	}
+    public DefaultBigDecimalDisplayConverter() {
+        this.nf.setMinimumFractionDigits(0);
+        ((DecimalFormat) this.nf).setParseBigDecimal(true);
+    }
 
-	@Override
-	protected Object convertToNumericValue(String value) {
-		try {
-			return this.nf.parse(value);
-		} catch (ParseException e) {
-			throw new NumberFormatException(e.getMessage());
-		}
-	}
+    @Override
+    protected Object convertToNumericValue(String value) {
+        try {
+            return this.nf.parse(value);
+        } catch (ParseException e) {
+            throw new NumberFormatException(e.getMessage());
+        }
+    }
 }

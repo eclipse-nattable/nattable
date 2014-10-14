@@ -14,19 +14,19 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.event.AbstractContextFreeEvent;
 
 public class SearchEvent extends AbstractContextFreeEvent {
-	
-	private final PositionCoordinate cellCoordinate;
 
-	public SearchEvent(PositionCoordinate cellCoordinate) {
-		this.cellCoordinate = cellCoordinate;
-	}
-	
-	public PositionCoordinate getCellCoordinate() {
-		return cellCoordinate;
-	}
-	
-	public SearchEvent cloneEvent() {
-		return new SearchEvent(cellCoordinate);
-	}
-	
+    private final PositionCoordinate cellCoordinate;
+
+    public SearchEvent(PositionCoordinate cellCoordinate) {
+        this.cellCoordinate = cellCoordinate;
+    }
+
+    public PositionCoordinate getCellCoordinate() {
+        return cellCoordinate;
+    }
+
+    public SearchEvent cloneEvent() {
+        return new SearchEvent(cellCoordinate);
+    }
+
 }

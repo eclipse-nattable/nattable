@@ -22,112 +22,132 @@ import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Specialisation of NatLayerPainter that fills the background with grid lines
- * to create the same look and feel as native table controls. It is possible
- * to specify the grid line color directly or via ConfigRegistry
- * {@link CellConfigAttributes#GRID_LINE_COLOR}, where the ConfigRegistry entry 
+ * to create the same look and feel as native table controls. It is possible to
+ * specify the grid line color directly or via ConfigRegistry
+ * {@link CellConfigAttributes#GRID_LINE_COLOR}, where the ConfigRegistry entry
  * will win over direct configuration.
  * <p>
  * If there should be several fake rows rendered, you need to set the default
  * row height that should be used for rendering the fake row lines. Otherwise
- * this will be skipped and only the column lines will be rendered to the bottom.
+ * this will be skipped and only the column lines will be rendered to the
+ * bottom.
  * </p>
  */
 public class NatGridLayerPainter extends NatLayerPainter {
 
-	private final Color gridColor;
-	
-	private int defaultRowHeight = 0;
+    private final Color gridColor;
 
-	/**
-	 * @param natTable The NatTable instance for which the NatGridLayerPainter
-	 * 			should render the background. 
-	 */
-	public NatGridLayerPainter(NatTable natTable) {
-		this(natTable, GUIHelper.COLOR_GRAY);
-	}
-	
-	/**
-	 * @param natTable The NatTable instance for which the NatGridLayerPainter
-	 * 			should render the background. 
-	 * @param gridColor The Color that should be used to render the grid lines.
-	 * 			Note that an entry for {@link CellConfigAttributes#GRID_LINE_COLOR}
-	 * 			will override this value at runtime.
-	 */
-	public NatGridLayerPainter(NatTable natTable, Color gridColor) {
-		super(natTable);
-		this.gridColor = gridColor;
-	}
-	
-	/**
-	 * @param natTable The NatTable instance for which the NatGridLayerPainter
-	 * 			should render the background. 
-	 * @param defaultRowHeight The row height that should be used to render fake 
-	 * 			rows to the bottom. Setting a value of 0 will avoid rendering
-	 * 			fake row lines.
-	 */
-	public NatGridLayerPainter(NatTable natTable, int defaultRowHeight) {
-		this(natTable, GUIHelper.COLOR_GRAY, defaultRowHeight);
-	}
-	
-	/**
-	 * @param natTable The NatTable instance for which the NatGridLayerPainter
-	 * 			should render the background. 
-	 * @param gridColor The Color that should be used to render the grid lines.
-	 * 			Note that an entry for {@link CellConfigAttributes#GRID_LINE_COLOR}
-	 * 			will override this value at runtime.
-	 * @param defaultRowHeight The row height that should be used to render fake 
-	 * 			rows to the bottom. Setting a value of 0 will avoid rendering
-	 * 			fake row lines.
-	 */
-	public NatGridLayerPainter(NatTable natTable, Color gridColor, int defaultRowHeight) {
-		super(natTable);
-		this.gridColor = gridColor;
-		this.defaultRowHeight = defaultRowHeight;
-	}
-	
-	@Override
-	protected void paintBackground(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-		super.paintBackground(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
-		
-		Color gColor = configRegistry.getConfigAttribute(
-				CellConfigAttributes.GRID_LINE_COLOR, DisplayMode.NORMAL);
-		gc.setForeground(gColor != null ? gColor : gridColor);
-		
-		drawHorizontalLines(natLayer, gc, rectangle);
-		drawVerticalLines(natLayer, gc, rectangle);
-	}
-	
-	private void drawHorizontalLines(ILayer natLayer, GC gc, Rectangle rectangle) {
-		int endX = rectangle.x + rectangle.width;
-		
-		int rowPositionByY = natLayer.getRowPositionByY(rectangle.y + rectangle.height);
-		int maxRowPosition = rowPositionByY > 0 ? Math.min(natLayer.getRowCount(), rowPositionByY) : natLayer.getRowCount();
-		
-		int y = 0;
-		for (int rowPosition = natLayer.getRowPositionByY(rectangle.y); rowPosition < maxRowPosition; rowPosition++) {
-			y = natLayer.getStartYOfRowPosition(rowPosition) + natLayer.getRowHeightByPosition(rowPosition) - 1;
-			gc.drawLine(rectangle.x, y, endX, y);
-		}
-		
-		//render fake row lines to the bottom
-		if (defaultRowHeight > 0) {
-			int endY = rectangle.y + rectangle.height;
-			while (y < endY) {
-				y += defaultRowHeight;
-				gc.drawLine(rectangle.x, y, endX, y);
-			}
-		}
-	}
+    private int defaultRowHeight = 0;
 
-	private void drawVerticalLines(ILayer natLayer, GC gc, Rectangle rectangle) {
-		int endY = rectangle.y + rectangle.height;
-		
-		int columnPositionByX = natLayer.getColumnPositionByX(rectangle.x + rectangle.width);
-		int maxColumnPosition = columnPositionByX > 0 ? Math.min(natLayer.getColumnCount(), columnPositionByX) : natLayer.getColumnCount();
-		for (int columnPosition = natLayer.getColumnPositionByX(rectangle.x); columnPosition < maxColumnPosition; columnPosition++) {
-			int x = natLayer.getStartXOfColumnPosition(columnPosition) + natLayer.getColumnWidthByPosition(columnPosition) - 1;
-			gc.drawLine(x, rectangle.y, x, endY);
-		}
-	}
+    /**
+     * @param natTable
+     *            The NatTable instance for which the NatGridLayerPainter should
+     *            render the background.
+     */
+    public NatGridLayerPainter(NatTable natTable) {
+        this(natTable, GUIHelper.COLOR_GRAY);
+    }
+
+    /**
+     * @param natTable
+     *            The NatTable instance for which the NatGridLayerPainter should
+     *            render the background.
+     * @param gridColor
+     *            The Color that should be used to render the grid lines. Note
+     *            that an entry for {@link CellConfigAttributes#GRID_LINE_COLOR}
+     *            will override this value at runtime.
+     */
+    public NatGridLayerPainter(NatTable natTable, Color gridColor) {
+        super(natTable);
+        this.gridColor = gridColor;
+    }
+
+    /**
+     * @param natTable
+     *            The NatTable instance for which the NatGridLayerPainter should
+     *            render the background.
+     * @param defaultRowHeight
+     *            The row height that should be used to render fake rows to the
+     *            bottom. Setting a value of 0 will avoid rendering fake row
+     *            lines.
+     */
+    public NatGridLayerPainter(NatTable natTable, int defaultRowHeight) {
+        this(natTable, GUIHelper.COLOR_GRAY, defaultRowHeight);
+    }
+
+    /**
+     * @param natTable
+     *            The NatTable instance for which the NatGridLayerPainter should
+     *            render the background.
+     * @param gridColor
+     *            The Color that should be used to render the grid lines. Note
+     *            that an entry for {@link CellConfigAttributes#GRID_LINE_COLOR}
+     *            will override this value at runtime.
+     * @param defaultRowHeight
+     *            The row height that should be used to render fake rows to the
+     *            bottom. Setting a value of 0 will avoid rendering fake row
+     *            lines.
+     */
+    public NatGridLayerPainter(NatTable natTable, Color gridColor,
+            int defaultRowHeight) {
+        super(natTable);
+        this.gridColor = gridColor;
+        this.defaultRowHeight = defaultRowHeight;
+    }
+
+    @Override
+    protected void paintBackground(ILayer natLayer, GC gc, int xOffset,
+            int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+        super.paintBackground(natLayer, gc, xOffset, yOffset, rectangle,
+                configRegistry);
+
+        Color gColor = configRegistry.getConfigAttribute(
+                CellConfigAttributes.GRID_LINE_COLOR, DisplayMode.NORMAL);
+        gc.setForeground(gColor != null ? gColor : gridColor);
+
+        drawHorizontalLines(natLayer, gc, rectangle);
+        drawVerticalLines(natLayer, gc, rectangle);
+    }
+
+    private void drawHorizontalLines(ILayer natLayer, GC gc, Rectangle rectangle) {
+        int endX = rectangle.x + rectangle.width;
+
+        int rowPositionByY = natLayer.getRowPositionByY(rectangle.y
+                + rectangle.height);
+        int maxRowPosition = rowPositionByY > 0 ? Math.min(
+                natLayer.getRowCount(), rowPositionByY) : natLayer
+                .getRowCount();
+
+        int y = 0;
+        for (int rowPosition = natLayer.getRowPositionByY(rectangle.y); rowPosition < maxRowPosition; rowPosition++) {
+            y = natLayer.getStartYOfRowPosition(rowPosition)
+                    + natLayer.getRowHeightByPosition(rowPosition) - 1;
+            gc.drawLine(rectangle.x, y, endX, y);
+        }
+
+        // render fake row lines to the bottom
+        if (defaultRowHeight > 0) {
+            int endY = rectangle.y + rectangle.height;
+            while (y < endY) {
+                y += defaultRowHeight;
+                gc.drawLine(rectangle.x, y, endX, y);
+            }
+        }
+    }
+
+    private void drawVerticalLines(ILayer natLayer, GC gc, Rectangle rectangle) {
+        int endY = rectangle.y + rectangle.height;
+
+        int columnPositionByX = natLayer.getColumnPositionByX(rectangle.x
+                + rectangle.width);
+        int maxColumnPosition = columnPositionByX > 0 ? Math.min(
+                natLayer.getColumnCount(), columnPositionByX) : natLayer
+                .getColumnCount();
+        for (int columnPosition = natLayer.getColumnPositionByX(rectangle.x); columnPosition < maxColumnPosition; columnPosition++) {
+            int x = natLayer.getStartXOfColumnPosition(columnPosition)
+                    + natLayer.getColumnWidthByPosition(columnPosition) - 1;
+            gc.drawLine(x, rectangle.y, x, endY);
+        }
+    }
 
 }

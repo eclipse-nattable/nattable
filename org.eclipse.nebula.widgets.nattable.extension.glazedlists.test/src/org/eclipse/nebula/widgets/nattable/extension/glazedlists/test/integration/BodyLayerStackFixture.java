@@ -29,72 +29,76 @@ import ca.odell.glazedlists.EventList;
 
 public class BodyLayerStackFixture<T> extends AbstractLayerTransform {
 
-	private final ColumnReorderLayer columnReorderLayer;
-	private final ColumnGroupReorderLayer columnGroupReorderLayer;
-	private final ColumnHideShowLayer columnHideShowLayer;
-	private final ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
-	private final SelectionLayer selectionLayer;
-	private final ViewportLayer viewportLayer;
-	private final DataLayer bodyDataLayer;
-	private final ListDataProvider<T> bodyDataProvider;
-	private final GlazedListsEventLayer<T> glazedListsEventLayer;
+    private final ColumnReorderLayer columnReorderLayer;
+    private final ColumnGroupReorderLayer columnGroupReorderLayer;
+    private final ColumnHideShowLayer columnHideShowLayer;
+    private final ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
+    private final SelectionLayer selectionLayer;
+    private final ViewportLayer viewportLayer;
+    private final DataLayer bodyDataLayer;
+    private final ListDataProvider<T> bodyDataProvider;
+    private final GlazedListsEventLayer<T> glazedListsEventLayer;
 
-	public BodyLayerStackFixture(EventList<T> eventList,
-							IColumnPropertyAccessor<T> columnPropertyAccessor,
-							IConfigRegistry configRegistry) {
+    public BodyLayerStackFixture(EventList<T> eventList,
+            IColumnPropertyAccessor<T> columnPropertyAccessor,
+            IConfigRegistry configRegistry) {
 
-		bodyDataProvider = new ListDataProvider<T>(eventList, columnPropertyAccessor);
+        bodyDataProvider = new ListDataProvider<T>(eventList,
+                columnPropertyAccessor);
 
-		bodyDataLayer = new DataLayer(bodyDataProvider);
+        bodyDataLayer = new DataLayer(bodyDataProvider);
 
-		glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, eventList);
-		glazedListsEventLayer.setTestMode(true);
+        glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer,
+                eventList);
+        glazedListsEventLayer.setTestMode(true);
 
-		ColumnGroupModel columnGroupModel = new ColumnGroupModel();
-		columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
-		columnGroupReorderLayer = new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
-		columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
-		columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
-		selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-		viewportLayer = new ViewportLayer(selectionLayer);
+        ColumnGroupModel columnGroupModel = new ColumnGroupModel();
+        columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
+        columnGroupReorderLayer = new ColumnGroupReorderLayer(
+                columnReorderLayer, columnGroupModel);
+        columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
+        columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
+                columnHideShowLayer, columnGroupModel);
+        selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
+        viewportLayer = new ViewportLayer(selectionLayer);
 
-		setUnderlyingLayer(viewportLayer);
-	}
+        setUnderlyingLayer(viewportLayer);
+    }
 
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		super.setClientAreaProvider(clientAreaProvider);
-	}
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        super.setClientAreaProvider(clientAreaProvider);
+    }
 
-	public ColumnReorderLayer getColumnReorderLayer() {
-		return columnReorderLayer;
-	}
+    public ColumnReorderLayer getColumnReorderLayer() {
+        return columnReorderLayer;
+    }
 
-	public ColumnHideShowLayer getColumnHideShowLayer() {
-		return columnHideShowLayer;
-	}
+    public ColumnHideShowLayer getColumnHideShowLayer() {
+        return columnHideShowLayer;
+    }
 
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
 
-	public ViewportLayer getViewportLayer() {
-		return viewportLayer;
-	}
+    public ViewportLayer getViewportLayer() {
+        return viewportLayer;
+    }
 
-	public DataLayer getBodyDataLayer() {
-		return bodyDataLayer;
-	}
+    public DataLayer getBodyDataLayer() {
+        return bodyDataLayer;
+    }
 
-	public ListDataProvider<T> getBodyDataProvider() {
-		return bodyDataProvider;
-	}
+    public ListDataProvider<T> getBodyDataProvider() {
+        return bodyDataProvider;
+    }
 
-	public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
-		return columnGroupExpandCollapseLayer;
-	}
+    public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
+        return columnGroupExpandCollapseLayer;
+    }
 
-	public GlazedListsEventLayer<T> getGlazedListEventsLayer() {
-		return glazedListsEventLayer;
-	}
+    public GlazedListsEventLayer<T> getGlazedListEventsLayer() {
+        return glazedListsEventLayer;
+    }
 }

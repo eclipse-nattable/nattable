@@ -43,76 +43,80 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _761_PrintExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _761_PrintExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new _761_PrintExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows how to trigger printing a NatTable.\n"
-				+ "You can also use the [Ctrl] + [P] to trigger printing via key binding.\n"
-				+ "Note that this example adds the printing functionality manually. If you "
-				+ "are using a GridLayer in your composition, the ability to print is added "
-				+ "by default with the corresponding default configurations.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		panel.setLayout(layout);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
-		
-		Composite gridPanel = new Composite(panel, SWT.NONE);
-		gridPanel.setLayout(layout);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
-		
-		Composite buttonPanel = new Composite(panel, SWT.NONE);
-		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
+    @Override
+    public String getDescription() {
+        return "This example shows how to trigger printing a NatTable.\n"
+                + "You can also use the [Ctrl] + [P] to trigger printing via key binding.\n"
+                + "Note that this example adds the printing functionality manually. If you "
+                + "are using a GridLayer in your composition, the ability to print is added "
+                + "by default with the corresponding default configurations.";
+    }
 
-		
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public Control createExampleControl(Composite parent) {
+        Composite panel = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        panel.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+        Composite gridPanel = new Composite(panel, SWT.NONE);
+        gridPanel.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
 
-		IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(PersonService.getPersons(100), propertyNames);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
-		
-		//add the PrintCommandHandler to the ViewportLayer in order to make printing work
-		viewportLayer.registerCommandHandler(new PrintCommandHandler(viewportLayer));
-		
-		final NatTable natTable = new NatTable(gridPanel, viewportLayer, false);
-		
-		//adding this configuration adds the styles and the painters to use
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new DefaultPrintBindings());
-		
-		natTable.configure();
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		
-		Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
-		addColumnButton.setText("Print");
-		addColumnButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				natTable.doCommand(new PrintCommand(natTable.getConfigRegistry(), natTable.getShell()));
-			}
-		});
+        Composite buttonPanel = new Composite(panel, SWT.NONE);
+        buttonPanel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
-		return panel;
-	}
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
+
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
+
+        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
+                PersonService.getPersons(100), propertyNames);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        // add the PrintCommandHandler to the ViewportLayer in order to make
+        // printing work
+        viewportLayer.registerCommandHandler(new PrintCommandHandler(
+                viewportLayer));
+
+        final NatTable natTable = new NatTable(gridPanel, viewportLayer, false);
+
+        // adding this configuration adds the styles and the painters to use
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new DefaultPrintBindings());
+
+        natTable.configure();
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
+        addColumnButton.setText("Print");
+        addColumnButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(new PrintCommand(natTable
+                        .getConfigRegistry(), natTable.getShell()));
+            }
+        });
+
+        return panel;
+    }
 
 }

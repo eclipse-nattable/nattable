@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -21,73 +20,78 @@ import org.junit.Test;
 
 public class DefaultFloatDisplayConverterTest {
 
-	private DefaultFloatDisplayConverter floatConverter = new DefaultFloatDisplayConverter();
-	
-	private static Locale defaultLocale;
-	
-	@BeforeClass
-	public static void setup() {
-		defaultLocale = Locale.getDefault();
-		Locale.setDefault(new Locale("en"));
-	}
-	
-	@AfterClass
-	public static void tearDown() {
-		Locale.setDefault(defaultLocale);
-	}
-	
-	@Test
-	public void testNonNullDataToDisplay() {
-		Assert.assertEquals("123.0", floatConverter.canonicalToDisplayValue(Float.valueOf("123")));
-		Assert.assertEquals("23.5", floatConverter.canonicalToDisplayValue(Float.valueOf("23.5")));
-	}
-	
-	@Test
-	public void testNullDataToDisplay() {
-		Assert.assertNull(floatConverter.canonicalToDisplayValue(null));
-	}
-	
-	@Test
-	public void testNonNullDisplayToData() {
-		Assert.assertEquals(Float.valueOf("123"), floatConverter.displayToCanonicalValue("123"));
-		Assert.assertEquals(Float.valueOf("23.5"), floatConverter.displayToCanonicalValue("23.5"));
-	}
-	
-	@Test
-	public void testNullDisplayToData() {
-		Assert.assertNull(floatConverter.displayToCanonicalValue(""));
-	}
+    private DefaultFloatDisplayConverter floatConverter = new DefaultFloatDisplayConverter();
 
-	@Test(expected=ConversionFailedException.class)
-	public void testConversionException() {
-		floatConverter.displayToCanonicalValue("abc");
-	}
-	
-	@Test
-	public void testLocalizedDisplayConversion() {
-		NumberFormat original = floatConverter.getNumberFormat();
-		NumberFormat localized = NumberFormat.getInstance(Locale.GERMAN);
-		localized.setMinimumFractionDigits(1);
-		localized.setMaximumFractionDigits(2);
+    private static Locale defaultLocale;
 
-		floatConverter.setNumberFormat(localized);
-		Assert.assertEquals("123,0", floatConverter.canonicalToDisplayValue(Float.valueOf("123")));
-		
-		floatConverter.setNumberFormat(original);
-	}
-	
-	@Test
-	public void testLocalizedCanonicalConversion() {
-		NumberFormat original = floatConverter.getNumberFormat();
-		NumberFormat localized = NumberFormat.getInstance(Locale.GERMAN);
-		localized.setMinimumFractionDigits(1);
-		localized.setMaximumFractionDigits(2);
+    @BeforeClass
+    public static void setup() {
+        defaultLocale = Locale.getDefault();
+        Locale.setDefault(new Locale("en"));
+    }
 
-		floatConverter.setNumberFormat(localized);
-		Object result = floatConverter.displayToCanonicalValue("123,5");
-		Assert.assertTrue(result instanceof Float);
-		Assert.assertEquals(123.5f, result);
-		
-		floatConverter.setNumberFormat(original);
-	}
+    @AfterClass
+    public static void tearDown() {
+        Locale.setDefault(defaultLocale);
+    }
+
+    @Test
+    public void testNonNullDataToDisplay() {
+        Assert.assertEquals("123.0",
+                floatConverter.canonicalToDisplayValue(Float.valueOf("123")));
+        Assert.assertEquals("23.5",
+                floatConverter.canonicalToDisplayValue(Float.valueOf("23.5")));
+    }
+
+    @Test
+    public void testNullDataToDisplay() {
+        Assert.assertNull(floatConverter.canonicalToDisplayValue(null));
+    }
+
+    @Test
+    public void testNonNullDisplayToData() {
+        Assert.assertEquals(Float.valueOf("123"),
+                floatConverter.displayToCanonicalValue("123"));
+        Assert.assertEquals(Float.valueOf("23.5"),
+                floatConverter.displayToCanonicalValue("23.5"));
+    }
+
+    @Test
+    public void testNullDisplayToData() {
+        Assert.assertNull(floatConverter.displayToCanonicalValue(""));
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionException() {
+        floatConverter.displayToCanonicalValue("abc");
+    }
+
+    @Test
+    public void testLocalizedDisplayConversion() {
+        NumberFormat original = floatConverter.getNumberFormat();
+        NumberFormat localized = NumberFormat.getInstance(Locale.GERMAN);
+        localized.setMinimumFractionDigits(1);
+        localized.setMaximumFractionDigits(2);
+
+        floatConverter.setNumberFormat(localized);
+        Assert.assertEquals("123,0",
+                floatConverter.canonicalToDisplayValue(Float.valueOf("123")));
+
+        floatConverter.setNumberFormat(original);
+    }
+
+    @Test
+    public void testLocalizedCanonicalConversion() {
+        NumberFormat original = floatConverter.getNumberFormat();
+        NumberFormat localized = NumberFormat.getInstance(Locale.GERMAN);
+        localized.setMinimumFractionDigits(1);
+        localized.setMaximumFractionDigits(2);
+
+        floatConverter.setNumberFormat(localized);
+        Object result = floatConverter.displayToCanonicalValue("123,5");
+        Assert.assertTrue(result instanceof Float);
+        Assert.assertEquals(123.5f, result);
+
+        floatConverter.setNumberFormat(original);
+    }
 }

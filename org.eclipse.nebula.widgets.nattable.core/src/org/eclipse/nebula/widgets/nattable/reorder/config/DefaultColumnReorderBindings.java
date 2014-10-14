@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.action.ColumnReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.AggregateDragMode;
@@ -20,12 +19,16 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
 
 /**
- * Column reorder bindings. Added by {@link DefaultColumnReorderLayerConfiguration}
+ * Column reorder bindings. Added by
+ * {@link DefaultColumnReorderLayerConfiguration}
  */
-public class DefaultColumnReorderBindings extends AbstractUiBindingConfiguration {
+public class DefaultColumnReorderBindings extends
+        AbstractUiBindingConfiguration {
 
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.columnHeaderLeftClick(SWT.NONE), new AggregateDragMode(new CellDragMode(), new ColumnReorderDragMode()));
-	}
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerMouseDragMode(MouseEventMatcher
+                .columnHeaderLeftClick(SWT.NONE), new AggregateDragMode(
+                new CellDragMode(), new ColumnReorderDragMode()));
+    }
 
 }

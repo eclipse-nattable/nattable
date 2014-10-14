@@ -17,45 +17,47 @@ import org.junit.Test;
 
 public class ReflectiveColumnAccessorTest {
 
-	private TestBean testBean1;
-	private ReflectiveColumnPropertyAccessor<TestBean> accessor;
+    private TestBean testBean1;
+    private ReflectiveColumnPropertyAccessor<TestBean> accessor;
 
-	@Before
-	public void setup() {
-		testBean1 = new TestBean("One", true, 100.00F);
-		
-		accessor = new ReflectiveColumnPropertyAccessor<TestBean>(new String[] {
-				"stringField", "booleanField", "floatField" });
-	}
+    @Before
+    public void setup() {
+        testBean1 = new TestBean("One", true, 100.00F);
 
-	@Test
-	public void getterInvocations() throws Exception {
-		Assert.assertEquals("One", accessor.getDataValue(testBean1, 0));
-		Assert.assertEquals(Boolean.TRUE, accessor.getDataValue(testBean1, 1));
-		Assert.assertEquals(Float.valueOf(100.00f), accessor.getDataValue(testBean1, 2));
-	}
+        accessor = new ReflectiveColumnPropertyAccessor<TestBean>(new String[] {
+                "stringField", "booleanField", "floatField" });
+    }
 
-	class TestBean {
-		private String stringField;
-		private boolean booleanField;
-		private float floatField;
+    @Test
+    public void getterInvocations() throws Exception {
+        Assert.assertEquals("One", accessor.getDataValue(testBean1, 0));
+        Assert.assertEquals(Boolean.TRUE, accessor.getDataValue(testBean1, 1));
+        Assert.assertEquals(Float.valueOf(100.00f),
+                accessor.getDataValue(testBean1, 2));
+    }
 
-		public TestBean(String stringField, boolean booleanField, float floatField) {
-			this.stringField = stringField;
-			this.booleanField = booleanField;
-			this.floatField = floatField;
-		}
+    class TestBean {
+        private String stringField;
+        private boolean booleanField;
+        private float floatField;
 
-		public String getStringField() {
-			return stringField;
-		}
+        public TestBean(String stringField, boolean booleanField,
+                float floatField) {
+            this.stringField = stringField;
+            this.booleanField = booleanField;
+            this.floatField = floatField;
+        }
 
-		public boolean isBooleanField() {
-			return booleanField;
-		}
+        public String getStringField() {
+            return stringField;
+        }
 
-		public float getFloatField() {
-			return floatField;
-		}
-	}
+        public boolean isBooleanField() {
+            return booleanField;
+        }
+
+        public float getFloatField() {
+            return floatField;
+        }
+    }
 }

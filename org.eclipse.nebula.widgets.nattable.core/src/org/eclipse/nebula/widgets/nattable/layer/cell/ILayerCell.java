@@ -15,33 +15,33 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.swt.graphics.Rectangle;
 
 public interface ILayerCell {
-	
-	public int getOriginColumnPosition();
-	
-	public int getOriginRowPosition();
-	
-	public ILayer getLayer();
-	
-	public int getColumnPosition();
-	
-	public int getRowPosition();
-	
-	public int getColumnIndex();
-	
-	public int getRowIndex();
-	
-	public int getColumnSpan();
-	
-	public int getRowSpan();
-	
-	public boolean isSpannedCell();
 
-	public String getDisplayMode();
+    public int getOriginColumnPosition();
 
-	public LabelStack getConfigLabels();
+    public int getOriginRowPosition();
 
-	public Object getDataValue();
+    public ILayer getLayer();
 
-	public Rectangle getBounds();
+    public int getColumnPosition();
+
+    public int getRowPosition();
+
+    public int getColumnIndex();
+
+    public int getRowIndex();
+
+    public int getColumnSpan();
+
+    public int getRowSpan();
+
+    public boolean isSpannedCell();
+
+    public String getDisplayMode();
+
+    public LabelStack getConfigLabels();
+
+    public Object getDataValue();
+
+    public Rectangle getBounds();
 
 }

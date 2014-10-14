@@ -16,34 +16,34 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class IndexCoordinateTest {
-	
-	private IndexCoordinate i1;
-	private IndexCoordinate i2;
 
-	@Before
-	public void setup() {
-		i1 = new IndexCoordinate(1, 2);
-		i2 = new IndexCoordinate(1, 2);
-	}
-	
-	@Test
-	public void testIdentity() {
-		Assert.assertEquals(i1, i1);
-	}
+    private IndexCoordinate i1;
+    private IndexCoordinate i2;
 
-	@Test
-	public void testEquals() {
-		Assert.assertEquals(i1, i2);
-	}
-	
-	@Test
-	public void testIdentityHashCode() {
-		Assert.assertEquals(i1.hashCode(), i1.hashCode());
-	}
-	
-	@Test
-	public void testHashCode() {
-		Assert.assertEquals(i1.hashCode(), i2.hashCode());
-	}
-	
+    @Before
+    public void setup() {
+        i1 = new IndexCoordinate(1, 2);
+        i2 = new IndexCoordinate(1, 2);
+    }
+
+    @Test
+    public void testIdentity() {
+        Assert.assertEquals(i1, i1);
+    }
+
+    @Test
+    public void testEquals() {
+        Assert.assertEquals(i1, i2);
+    }
+
+    @Test
+    public void testIdentityHashCode() {
+        Assert.assertEquals(i1.hashCode(), i1.hashCode());
+    }
+
+    @Test
+    public void testHashCode() {
+        Assert.assertEquals(i1.hashCode(), i2.hashCode());
+    }
+
 }

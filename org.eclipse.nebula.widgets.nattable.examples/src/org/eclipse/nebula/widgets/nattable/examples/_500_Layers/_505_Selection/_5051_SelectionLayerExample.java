@@ -34,37 +34,41 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _5051_SelectionLayerExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5051_SelectionLayerExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _5051_SelectionLayerExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows a simple composition using a SelectionLayer.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday", 
-				"address.street", "address.housenumber", "address.postalCode", "address.city"};
+    @Override
+    public String getDescription() {
+        return "This example shows a simple composition using a SelectionLayer.";
+    }
 
-		IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = 
-				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
-		
-		IDataProvider bodyDataProvider = new ListDataProvider<PersonWithAddress>(
-				PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
-		
-		//as the selection mouse bindings are registered for the region label GridRegion.BODY
-		//we need to set that region label to the viewport so the selection via mouse is working correctly
-		viewportLayer.setRegionName(GridRegion.BODY);
-		
-		NatTable natTable = new NatTable(parent, viewportLayer);
-		
-		return natTable;
-	}
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday", "address.street", "address.housenumber",
+                "address.postalCode", "address.city" };
+
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(
+                propertyNames);
+
+        IDataProvider bodyDataProvider = new ListDataProvider<PersonWithAddress>(
+                PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        // as the selection mouse bindings are registered for the region label
+        // GridRegion.BODY
+        // we need to set that region label to the viewport so the selection via
+        // mouse is working correctly
+        viewportLayer.setRegionName(GridRegion.BODY);
+
+        NatTable natTable = new NatTable(parent, viewportLayer);
+
+        return natTable;
+    }
 
 }

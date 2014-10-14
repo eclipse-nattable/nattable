@@ -13,30 +13,35 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 
-public class ReorderColumnGroupEndCommandHandler extends AbstractLayerCommandHandler<ReorderColumnGroupEndCommand> {
+public class ReorderColumnGroupEndCommandHandler extends
+        AbstractLayerCommandHandler<ReorderColumnGroupEndCommand> {
 
-	private final ColumnGroupReorderLayer columnGroupReorderLayer;
+    private final ColumnGroupReorderLayer columnGroupReorderLayer;
 
-	public ReorderColumnGroupEndCommandHandler(ColumnGroupReorderLayer columnGroupReorderLayer) {
-		this.columnGroupReorderLayer = columnGroupReorderLayer;
-	}
-	
-	@Override
-	public Class<ReorderColumnGroupEndCommand> getCommandClass() {
-		return ReorderColumnGroupEndCommand.class;
-	}
+    public ReorderColumnGroupEndCommandHandler(
+            ColumnGroupReorderLayer columnGroupReorderLayer) {
+        this.columnGroupReorderLayer = columnGroupReorderLayer;
+    }
 
-	@Override
-	protected boolean doCommand(ReorderColumnGroupEndCommand command) {
-		int toColumnPosition = command.getToColumnPosition();
-		
-		//Bug 437744
-		//if not reorderToLeftEdge we increase toColumnPosition by 1
-		//as the following processing is calculating the reorderToLeftEdge 
-		//value out of the given toColumnPosition and the column count
-		if (!command.isReorderToLeftEdge()) toColumnPosition++;
-		
-		return columnGroupReorderLayer.reorderColumnGroup(columnGroupReorderLayer.getReorderFromColumnPosition(), toColumnPosition);
-	}
+    @Override
+    public Class<ReorderColumnGroupEndCommand> getCommandClass() {
+        return ReorderColumnGroupEndCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(ReorderColumnGroupEndCommand command) {
+        int toColumnPosition = command.getToColumnPosition();
+
+        // Bug 437744
+        // if not reorderToLeftEdge we increase toColumnPosition by 1
+        // as the following processing is calculating the reorderToLeftEdge
+        // value out of the given toColumnPosition and the column count
+        if (!command.isReorderToLeftEdge())
+            toColumnPosition++;
+
+        return columnGroupReorderLayer.reorderColumnGroup(
+                columnGroupReorderLayer.getReorderFromColumnPosition(),
+                toColumnPosition);
+    }
 
 }

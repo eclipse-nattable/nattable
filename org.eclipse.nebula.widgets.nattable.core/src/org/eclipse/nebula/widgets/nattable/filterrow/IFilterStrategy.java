@@ -14,10 +14,12 @@ import java.util.Map;
 
 public interface IFilterStrategy<T> {
 
-	/**
-	 * Apply the filter(s) specified by the entered filter text. 
-	 * @param filterIndexToObjectMap A Map of column indexes to filter text Strings.
-	 */
-	void applyFilter(Map<Integer, Object> filterIndexToObjectMap);
+    /**
+     * Apply the filter(s) specified by the entered filter text.
+     * 
+     * @param filterIndexToObjectMap
+     *            A Map of column indexes to filter text Strings.
+     */
+    void applyFilter(Map<Integer, Object> filterIndexToObjectMap);
 
 }

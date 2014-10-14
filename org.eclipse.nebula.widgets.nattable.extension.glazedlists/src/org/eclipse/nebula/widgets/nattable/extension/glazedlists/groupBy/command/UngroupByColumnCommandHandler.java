@@ -17,33 +17,38 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
 /**
- * The {@link ILayerCommandHandler} for handling {@link UngroupByColumnIndexCommand}s.
+ * The {@link ILayerCommandHandler} for handling
+ * {@link UngroupByColumnIndexCommand}s.
  */
-public class UngroupByColumnCommandHandler extends AbstractLayerCommandHandler<UngroupByColumnIndexCommand> {
+public class UngroupByColumnCommandHandler extends
+        AbstractLayerCommandHandler<UngroupByColumnIndexCommand> {
 
-	private final GroupByHeaderLayer groupByHeaderLayer;
-	
-	/**
-	 * @param groupByHeaderLayer The {@link GroupByHeaderLayer} to which this
-	 * 			command handler is registered to. Is needed to modify the {@link GroupByModel}
-	 * 			and fire the update events.
-	 */
-	public UngroupByColumnCommandHandler(GroupByHeaderLayer groupByHeaderLayer) {
-		this.groupByHeaderLayer = groupByHeaderLayer;
-	}
-	
-	@Override
-	protected boolean doCommand(UngroupByColumnIndexCommand command) {
-		int columnIndex = command.getGroupByColumnIndex();
-		if (groupByHeaderLayer.getGroupByModel().removeGroupByColumnIndex(columnIndex)) {
-			groupByHeaderLayer.fireLayerEvent(new VisualRefreshEvent(groupByHeaderLayer));
-		}
-		return true;
-	}
-	
-	@Override
-	public Class<UngroupByColumnIndexCommand> getCommandClass() {
-		return UngroupByColumnIndexCommand.class;
-	}
+    private final GroupByHeaderLayer groupByHeaderLayer;
+
+    /**
+     * @param groupByHeaderLayer
+     *            The {@link GroupByHeaderLayer} to which this command handler
+     *            is registered to. Is needed to modify the {@link GroupByModel}
+     *            and fire the update events.
+     */
+    public UngroupByColumnCommandHandler(GroupByHeaderLayer groupByHeaderLayer) {
+        this.groupByHeaderLayer = groupByHeaderLayer;
+    }
+
+    @Override
+    protected boolean doCommand(UngroupByColumnIndexCommand command) {
+        int columnIndex = command.getGroupByColumnIndex();
+        if (groupByHeaderLayer.getGroupByModel().removeGroupByColumnIndex(
+                columnIndex)) {
+            groupByHeaderLayer.fireLayerEvent(new VisualRefreshEvent(
+                    groupByHeaderLayer));
+        }
+        return true;
+    }
+
+    @Override
+    public Class<UngroupByColumnIndexCommand> getCommandClass() {
+        return UngroupByColumnIndexCommand.class;
+    }
 
 }

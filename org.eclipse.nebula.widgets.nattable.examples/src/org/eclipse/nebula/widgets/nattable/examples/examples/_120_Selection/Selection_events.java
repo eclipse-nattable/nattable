@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.examples.examples._120_Selection;
 
 import java.io.Serializable;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -39,90 +38,101 @@ import org.eclipse.swt.widgets.Control;
 
 public class Selection_events extends AbstractNatExample {
 
-	private NatTable nattable;
-	private SelectionExampleGridLayer gridLayer;
+    private NatTable nattable;
+    private SelectionExampleGridLayer gridLayer;
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new Selection_events());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new Selection_events());
+    }
 
-	@Override
-	public String getDescription() {
-		return
-				"Row, row header, column, column header and cell selection is built into the table by default. " +
-				"Events are fired by the tables when any selection occurs. These can be hooked up " +
-				"to trigger business actions as required."; 
-	}
-	
-	public Control createExampleControl(Composite parent) {
-		gridLayer = new SelectionExampleGridLayer();
-		nattable = new NatTable(parent, gridLayer, false);
+    @Override
+    public String getDescription() {
+        return "Row, row header, column, column header and cell selection is built into the table by default. "
+                + "Events are fired by the tables when any selection occurs. These can be hooked up "
+                + "to trigger business actions as required.";
+    }
 
-		nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		nattable.addConfiguration(new HeaderMenuConfiguration(nattable));
-		nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
+    public Control createExampleControl(Composite parent) {
+        gridLayer = new SelectionExampleGridLayer();
+        nattable = new NatTable(parent, gridLayer, false);
 
-		// Custom selection configuration
-		SelectionLayer selectionLayer = gridLayer.getSelectionLayer();
-		selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(selectionLayer, gridLayer.getBodyDataProvider(), new IRowIdAccessor<RowDataFixture>() {
+        nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        nattable.addConfiguration(new HeaderMenuConfiguration(nattable));
+        nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
 
-			public Serializable getRowId(RowDataFixture rowObject) {
-				return rowObject.getSecurity_id();
-			}
-			
-		}));
-		
-		selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<RowDataFixture>());
-		nattable.addConfiguration(new RowOnlySelectionBindings());
+        // Custom selection configuration
+        SelectionLayer selectionLayer = gridLayer.getSelectionLayer();
+        selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
+                selectionLayer, gridLayer.getBodyDataProvider(),
+                new IRowIdAccessor<RowDataFixture>() {
 
-		nattable.configure();
+                    public Serializable getRowId(RowDataFixture rowObject) {
+                        return rowObject.getSecurity_id();
+                    }
 
-		addCustomSelectionBehaviour();
+                }));
 
-		// Layout widgets
-		parent.setLayout(new GridLayout(1, true));
-		nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-		setupTextArea(parent);
+        selectionLayer
+                .addConfiguration(new RowOnlySelectionConfiguration<RowDataFixture>());
+        nattable.addConfiguration(new RowOnlySelectionBindings());
 
-		return nattable;
-	}
+        nattable.configure();
 
-	private void addCustomSelectionBehaviour() {
-		nattable.addLayerListener(new ILayerListener() {
+        addCustomSelectionBehaviour();
 
-			// Default selection behavior selects cells by default.
-			public void handleLayerEvent(ILayerEvent event) {
-				if (event instanceof CellSelectionEvent) {
-					CellSelectionEvent cellEvent = (CellSelectionEvent) event;
-					log("Selected cell: [" +
-							cellEvent.getRowPosition() + ", " +
-							cellEvent.getColumnPosition() + "], " +
-							nattable.getDataValueByPosition(cellEvent.getColumnPosition(), cellEvent.getRowPosition()));
-				}
-			}
-		});
+        // Layout widgets
+        parent.setLayout(new GridLayout(1, true));
+        nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
+                true));
+        setupTextArea(parent);
 
-		// Events are fired whenever selection occurs. These can be use to trigger
-		// external actions as required. Also you can use this data to pull out
-		// the backing data from the IRowDataProvider. Example:
-		// 		rowDataProvider.getRowObject(natTable.getRowIndexByPosition(selectedRowPosition));
-		nattable.addLayerListener(new ILayerListener(){
-			public void handleLayerEvent(ILayerEvent event) {
-				if(event instanceof RowSelectionEvent){
-					RowSelectionEvent rowEvent = (RowSelectionEvent) event;
-					log("Selected Row: " + ObjectUtils.toString(rowEvent.getRowPositionRanges()));
-				}
-			}
-		});
+        return nattable;
+    }
 
-		nattable.addLayerListener(new ILayerListener(){
-			public void handleLayerEvent(ILayerEvent event) {
-				if(event instanceof ColumnSelectionEvent){
-					ColumnSelectionEvent columnEvent = (ColumnSelectionEvent) event;
-					log("Selected Column: "	+ columnEvent.getColumnPositionRanges());
-				}
-			}
-		});
-	}
+    private void addCustomSelectionBehaviour() {
+        nattable.addLayerListener(new ILayerListener() {
+
+            // Default selection behavior selects cells by default.
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof CellSelectionEvent) {
+                    CellSelectionEvent cellEvent = (CellSelectionEvent) event;
+                    log("Selected cell: ["
+                            + cellEvent.getRowPosition()
+                            + ", "
+                            + cellEvent.getColumnPosition()
+                            + "], "
+                            + nattable.getDataValueByPosition(
+                                    cellEvent.getColumnPosition(),
+                                    cellEvent.getRowPosition()));
+                }
+            }
+        });
+
+        // Events are fired whenever selection occurs. These can be use to
+        // trigger
+        // external actions as required. Also you can use this data to pull out
+        // the backing data from the IRowDataProvider. Example:
+        // rowDataProvider.getRowObject(natTable.getRowIndexByPosition(selectedRowPosition));
+        nattable.addLayerListener(new ILayerListener() {
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof RowSelectionEvent) {
+                    RowSelectionEvent rowEvent = (RowSelectionEvent) event;
+                    log("Selected Row: "
+                            + ObjectUtils.toString(rowEvent
+                                    .getRowPositionRanges()));
+                }
+            }
+        });
+
+        nattable.addLayerListener(new ILayerListener() {
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof ColumnSelectionEvent) {
+                    ColumnSelectionEvent columnEvent = (ColumnSelectionEvent) event;
+                    log("Selected Column: "
+                            + columnEvent.getColumnPositionRanges());
+                }
+            }
+        });
+    }
 
 }

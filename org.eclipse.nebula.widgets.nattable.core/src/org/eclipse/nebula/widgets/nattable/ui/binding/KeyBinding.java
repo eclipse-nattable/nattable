@@ -15,21 +15,21 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.IKeyEventMatcher;
 
 public class KeyBinding {
 
-	private IKeyEventMatcher keyEventMatcher;
-	
-	private IKeyAction action;
-	
-	public KeyBinding(IKeyEventMatcher keyEventMatcher, IKeyAction action) {
-		this.keyEventMatcher = keyEventMatcher;
-		this.action = action;
-	}
-	
-	public IKeyEventMatcher getKeyEventMatcher() {
-		return keyEventMatcher;
-	}
-	
-	public IKeyAction getAction() {
-		return action;
-	}
-	
+    private IKeyEventMatcher keyEventMatcher;
+
+    private IKeyAction action;
+
+    public KeyBinding(IKeyEventMatcher keyEventMatcher, IKeyAction action) {
+        this.keyEventMatcher = keyEventMatcher;
+        this.action = action;
+    }
+
+    public IKeyEventMatcher getKeyEventMatcher() {
+        return keyEventMatcher;
+    }
+
+    public IKeyAction getAction() {
+        return action;
+    }
+
 }

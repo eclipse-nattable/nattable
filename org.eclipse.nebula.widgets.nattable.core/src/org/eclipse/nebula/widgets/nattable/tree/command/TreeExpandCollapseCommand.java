@@ -15,18 +15,18 @@ import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseComman
 
 public class TreeExpandCollapseCommand extends AbstractContextFreeCommand {
 
-	private final int parentIndex;
+    private final int parentIndex;
 
-	public TreeExpandCollapseCommand(int parentIndex) {
-		this.parentIndex = parentIndex;
-	}
+    public TreeExpandCollapseCommand(int parentIndex) {
+        this.parentIndex = parentIndex;
+    }
 
-	protected TreeExpandCollapseCommand(TreeExpandCollapseCommand command) {
-		this.parentIndex = command.parentIndex;
-	}
+    protected TreeExpandCollapseCommand(TreeExpandCollapseCommand command) {
+        this.parentIndex = command.parentIndex;
+    }
 
-	public int getParentIndex() {
-		return this.parentIndex;
-	}
-	
+    public int getParentIndex() {
+        return this.parentIndex;
+    }
+
 }

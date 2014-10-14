@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.event;
 
 import java.util.ArrayList;
@@ -26,56 +26,70 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
  */
 public class ColumnInsertEvent extends ColumnStructuralChangeEvent {
 
-	/**
-	 * Creates a new ColumnInsertEvent based on the given information.
-	 * @param layer The ILayer to which the given column position matches.
-	 * @param columnPosition The column position of the column that was inserted.
-	 */
-	public ColumnInsertEvent(ILayer layer, int columnPosition) {
-		this(layer, new Range(columnPosition, columnPosition + 1));
-	}
-	
-	/**
-	 * Creates a new ColumnInsertEvent based on the given information.
-	 * @param layer The ILayer to which the given column positions match.
-	 * @param columnPositionRanges The column position ranges for the columns that were inserted.
-	 */
-	public ColumnInsertEvent(ILayer layer, Range... columnPositionRanges) {
-		this(layer, Arrays.asList(columnPositionRanges));
-	}
+    /**
+     * Creates a new ColumnInsertEvent based on the given information.
+     * 
+     * @param layer
+     *            The ILayer to which the given column position matches.
+     * @param columnPosition
+     *            The column position of the column that was inserted.
+     */
+    public ColumnInsertEvent(ILayer layer, int columnPosition) {
+        this(layer, new Range(columnPosition, columnPosition + 1));
+    }
 
-	/**
-	 * Creates a new ColumnInsertEvent based on the given information.
-	 * @param layer The ILayer to which the given column positions match.
-	 * @param columnPositionRanges The column position ranges for the columns that were inserted.
-	 */
-	public ColumnInsertEvent(ILayer layer, Collection<Range> columnPositionRanges) {
-		super(layer, columnPositionRanges);
-	}
+    /**
+     * Creates a new ColumnInsertEvent based on the given information.
+     * 
+     * @param layer
+     *            The ILayer to which the given column positions match.
+     * @param columnPositionRanges
+     *            The column position ranges for the columns that were inserted.
+     */
+    public ColumnInsertEvent(ILayer layer, Range... columnPositionRanges) {
+        this(layer, Arrays.asList(columnPositionRanges));
+    }
 
-	/**
-	 * Creates a new ColumnInsertEvent based on the given instance.
-	 * Mainly needed for cloning.
-	 * @param event The ColumnInsertEvent out of which the new instance should be created.
-	 */
-	protected ColumnInsertEvent(ColumnStructuralChangeEvent event) {
-		super(event);
-	}
+    /**
+     * Creates a new ColumnInsertEvent based on the given information.
+     * 
+     * @param layer
+     *            The ILayer to which the given column positions match.
+     * @param columnPositionRanges
+     *            The column position ranges for the columns that were inserted.
+     */
+    public ColumnInsertEvent(ILayer layer,
+            Collection<Range> columnPositionRanges) {
+        super(layer, columnPositionRanges);
+    }
 
-	@Override
-	public Collection<StructuralDiff> getColumnDiffs() {
-		Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
-		
-		for (Range range : getColumnPositionRanges()) {
-			columnDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, new Range(range.start, range.start), range));
-		}
-		
-		return columnDiffs;
-	}
+    /**
+     * Creates a new ColumnInsertEvent based on the given instance. Mainly
+     * needed for cloning.
+     * 
+     * @param event
+     *            The ColumnInsertEvent out of which the new instance should be
+     *            created.
+     */
+    protected ColumnInsertEvent(ColumnStructuralChangeEvent event) {
+        super(event);
+    }
 
-	@Override
-	public ColumnInsertEvent cloneEvent() {
-		return new ColumnInsertEvent(this);
-	}
+    @Override
+    public Collection<StructuralDiff> getColumnDiffs() {
+        Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
+
+        for (Range range : getColumnPositionRanges()) {
+            columnDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, new Range(
+                    range.start, range.start), range));
+        }
+
+        return columnDiffs;
+    }
+
+    @Override
+    public ColumnInsertEvent cloneEvent() {
+        return new ColumnInsertEvent(this);
+    }
 
 }

@@ -32,72 +32,66 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
 
-public class FullFeaturedColumnHeaderLayerStack<T> extends AbstractLayerTransform {
+public class FullFeaturedColumnHeaderLayerStack<T> extends
+        AbstractLayerTransform {
 
-	private final ColumnHeaderLayer columnHeaderLayer;
-	private final ColumnGroupHeaderLayer columnGroupHeaderLayer;
-	private final SortHeaderLayer<T> sortableColumnHeaderLayer;
-	private final IDataProvider columnHeaderDataProvider;
-	private final DefaultColumnHeaderDataLayer columnHeaderDataLayer;
+    private final ColumnHeaderLayer columnHeaderLayer;
+    private final ColumnGroupHeaderLayer columnGroupHeaderLayer;
+    private final SortHeaderLayer<T> sortableColumnHeaderLayer;
+    private final IDataProvider columnHeaderDataProvider;
+    private final DefaultColumnHeaderDataLayer columnHeaderDataLayer;
 
-	public FullFeaturedColumnHeaderLayerStack(SortedList<T> sortedList,
-												FilterList<T> filterList,
-												String[] propertyNames,
-												Map<String, String> propertyToLabelMap,
-												ILayer bodyLayer,
-												SelectionLayer selectionLayer,
-												ColumnGroupModel columnGroupModel,
-												IConfigRegistry configRegistry) {
+    public FullFeaturedColumnHeaderLayerStack(SortedList<T> sortedList,
+            FilterList<T> filterList, String[] propertyNames,
+            Map<String, String> propertyToLabelMap, ILayer bodyLayer,
+            SelectionLayer selectionLayer, ColumnGroupModel columnGroupModel,
+            IConfigRegistry configRegistry) {
 
-		columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
 
-		columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
 
-		columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, selectionLayer);
-		
-		final ReflectiveColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(propertyNames);
-		sortableColumnHeaderLayer = new SortHeaderLayer<T>(
-				columnHeaderLayer,
-				new GlazedListsSortModel<T>(
-						sortedList,
-						columnPropertyAccessor,
-						configRegistry,
-						columnHeaderDataLayer
-						)
-				);
+        columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                bodyLayer, selectionLayer);
 
-		columnGroupHeaderLayer = new ColumnGroupHeaderLayer(sortableColumnHeaderLayer, selectionLayer, columnGroupModel);
+        final ReflectiveColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
+                propertyNames);
+        sortableColumnHeaderLayer = new SortHeaderLayer<T>(columnHeaderLayer,
+                new GlazedListsSortModel<T>(sortedList, columnPropertyAccessor,
+                        configRegistry, columnHeaderDataLayer));
 
-		FilterRowHeaderComposite<T> composite =
-			new FilterRowHeaderComposite<T>(
-					new DefaultGlazedListsFilterStrategy<T>(
-							filterList,
-							columnPropertyAccessor,
-							configRegistry
-					),
-					columnGroupHeaderLayer, columnHeaderDataProvider, configRegistry);
+        columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                sortableColumnHeaderLayer, selectionLayer, columnGroupModel);
 
-		setUnderlyingLayer(composite);
-	}
+        FilterRowHeaderComposite<T> composite = new FilterRowHeaderComposite<T>(
+                new DefaultGlazedListsFilterStrategy<T>(filterList,
+                        columnPropertyAccessor, configRegistry),
+                columnGroupHeaderLayer, columnHeaderDataProvider,
+                configRegistry);
 
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		super.setClientAreaProvider(clientAreaProvider);
-	}
+        setUnderlyingLayer(composite);
+    }
 
-	public ColumnGroupHeaderLayer getColumnGroupHeaderLayer() {
-		return columnGroupHeaderLayer;
-	}
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        super.setClientAreaProvider(clientAreaProvider);
+    }
 
-	public ColumnHeaderLayer getColumnHeaderLayer() {
-		return columnHeaderLayer;
-	}
+    public ColumnGroupHeaderLayer getColumnGroupHeaderLayer() {
+        return columnGroupHeaderLayer;
+    }
 
-	public IDataProvider getColumnHeaderDataProvider() {
-		return columnHeaderDataProvider;
-	}
+    public ColumnHeaderLayer getColumnHeaderLayer() {
+        return columnHeaderLayer;
+    }
 
-	public DefaultColumnHeaderDataLayer getColumnHeaderDataLayer() {
-		return columnHeaderDataLayer;
-	}
+    public IDataProvider getColumnHeaderDataProvider() {
+        return columnHeaderDataProvider;
+    }
+
+    public DefaultColumnHeaderDataLayer getColumnHeaderDataLayer() {
+        return columnHeaderDataLayer;
+    }
 }

@@ -14,35 +14,35 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 
 public class GroupByColumnAccessor<T> implements IColumnAccessor<Object> {
 
-	protected final IColumnAccessor<T> columnAccessor;
-	
-	public GroupByColumnAccessor(IColumnAccessor<T> columnAccessor) {
-		this.columnAccessor = columnAccessor;
-	}
+    protected final IColumnAccessor<T> columnAccessor;
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Object getDataValue(Object rowObject, int columnIndex) {
-		if (rowObject instanceof GroupByObject) {
-			GroupByObject groupByObject = (GroupByObject) rowObject;
-			return groupByObject.getValue();
-		} else {
-			return columnAccessor.getDataValue((T) rowObject, columnIndex);
-		}
-	}
+    public GroupByColumnAccessor(IColumnAccessor<T> columnAccessor) {
+        this.columnAccessor = columnAccessor;
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void setDataValue(Object rowObject, int columnIndex, Object newValue) {
-		if (rowObject instanceof GroupByObject) {
-			// do nothing
-		} else {
-			columnAccessor.setDataValue((T) rowObject, columnIndex, newValue);
-		}
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getDataValue(Object rowObject, int columnIndex) {
+        if (rowObject instanceof GroupByObject) {
+            GroupByObject groupByObject = (GroupByObject) rowObject;
+            return groupByObject.getValue();
+        } else {
+            return columnAccessor.getDataValue((T) rowObject, columnIndex);
+        }
+    }
 
-	@Override
-	public int getColumnCount() {
-		return columnAccessor.getColumnCount();
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public void setDataValue(Object rowObject, int columnIndex, Object newValue) {
+        if (rowObject instanceof GroupByObject) {
+            // do nothing
+        } else {
+            columnAccessor.setDataValue((T) rowObject, columnIndex, newValue);
+        }
+    }
+
+    @Override
+    public int getColumnCount() {
+        return columnAccessor.getColumnCount();
+    }
 }

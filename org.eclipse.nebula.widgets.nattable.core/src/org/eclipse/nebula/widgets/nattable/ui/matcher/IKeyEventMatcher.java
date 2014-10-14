@@ -17,6 +17,6 @@ import org.eclipse.swt.events.KeyEvent;
  */
 public interface IKeyEventMatcher {
 
-	public boolean matches(KeyEvent event);
-	
+    public boolean matches(KeyEvent event);
+
 }

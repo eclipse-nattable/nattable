@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node.Type;
@@ -27,25 +26,29 @@ import org.junit.Test;
 
 public class ColumnCategoriesLabelProviderTest {
 
-	private List<ColumnEntry> hiddenEntries;
-	private ColumnCategoriesLabelProvider labelProvider;
+    private List<ColumnEntry> hiddenEntries;
+    private ColumnCategoriesLabelProvider labelProvider;
 
-	@Before
-	public void setup() {
-		hiddenEntries = ColumnEntriesFixture.getEntriesWithEvenIndexes();
-		labelProvider = new ColumnCategoriesLabelProvider(hiddenEntries);
-	}
-	
-	@Test
-	public void shouldReturnLabelForCategoriesFromTheModel() throws Exception {
-		assertEquals(CATEGORY_B1_LABEL, labelProvider.getText(new Node(CATEGORY_B1_LABEL, Type.CATEGORY)));
-		assertEquals(Messages.getString("Unknown"), labelProvider.getText(new Node("2")));
-	}
-	
-	@Test
-	public void shouldReturnLabelsFromIndexesFromTheColumnEntry() throws Exception {
-		assertEquals("Index2", labelProvider.getText(new Node("2", Type.COLUMN)));
-		assertEquals("11", labelProvider.getText(new Node("11", Type.COLUMN)));
-	}
+    @Before
+    public void setup() {
+        hiddenEntries = ColumnEntriesFixture.getEntriesWithEvenIndexes();
+        labelProvider = new ColumnCategoriesLabelProvider(hiddenEntries);
+    }
+
+    @Test
+    public void shouldReturnLabelForCategoriesFromTheModel() throws Exception {
+        assertEquals(CATEGORY_B1_LABEL, labelProvider.getText(new Node(
+                CATEGORY_B1_LABEL, Type.CATEGORY)));
+        assertEquals(Messages.getString("Unknown"),
+                labelProvider.getText(new Node("2")));
+    }
+
+    @Test
+    public void shouldReturnLabelsFromIndexesFromTheColumnEntry()
+            throws Exception {
+        assertEquals("Index2",
+                labelProvider.getText(new Node("2", Type.COLUMN)));
+        assertEquals("11", labelProvider.getText(new Node("11", Type.COLUMN)));
+    }
 
 }

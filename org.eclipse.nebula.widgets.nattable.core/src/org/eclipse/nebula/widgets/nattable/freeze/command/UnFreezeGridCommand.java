@@ -15,21 +15,29 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 /**
  * Simple command to unfreeze a frozen state.
  */
-public class UnFreezeGridCommand extends AbstractContextFreeCommand implements IFreezeCommand {
+public class UnFreezeGridCommand extends AbstractContextFreeCommand implements
+        IFreezeCommand {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.freeze.command.IFreezeCommand#isToggle()
-	 */
-	@Override
-	public boolean isToggle() {
-		return false;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.nebula.widgets.nattable.freeze.command.IFreezeCommand#isToggle
+     * ()
+     */
+    @Override
+    public boolean isToggle() {
+        return false;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.freeze.command.IFreezeCommand#isOverrideFreeze()
-	 */
-	@Override
-	public boolean isOverrideFreeze() {
-		return false;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.nebula.widgets.nattable.freeze.command.IFreezeCommand#
+     * isOverrideFreeze()
+     */
+    @Override
+    public boolean isOverrideFreeze() {
+        return false;
+    }
 }

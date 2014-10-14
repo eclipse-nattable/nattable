@@ -15,15 +15,15 @@ import org.eclipse.nebula.widgets.nattable.selection.command.ScrollSelectionComm
 
 public class ScrollSelectionCommandFixture extends ScrollSelectionCommand {
 
-	public static final MoveDirectionEnum DEFAULT_DIRECTION = MoveDirectionEnum.DOWN;
-	public static final boolean DEFAULT_SHIFT_MASK = false;
-	public static final boolean DEFAULT_CTRL_MASK = false;
-	
-	public ScrollSelectionCommandFixture() {
-		super(DEFAULT_DIRECTION, DEFAULT_SHIFT_MASK, DEFAULT_CTRL_MASK);
-	}
+    public static final MoveDirectionEnum DEFAULT_DIRECTION = MoveDirectionEnum.DOWN;
+    public static final boolean DEFAULT_SHIFT_MASK = false;
+    public static final boolean DEFAULT_CTRL_MASK = false;
 
-	public ScrollSelectionCommandFixture(MoveDirectionEnum direction) {
-		super(direction, DEFAULT_SHIFT_MASK, DEFAULT_CTRL_MASK);
-	}
+    public ScrollSelectionCommandFixture() {
+        super(DEFAULT_DIRECTION, DEFAULT_SHIFT_MASK, DEFAULT_CTRL_MASK);
+    }
+
+    public ScrollSelectionCommandFixture(MoveDirectionEnum direction) {
+        super(direction, DEFAULT_SHIFT_MASK, DEFAULT_CTRL_MASK);
+    }
 }

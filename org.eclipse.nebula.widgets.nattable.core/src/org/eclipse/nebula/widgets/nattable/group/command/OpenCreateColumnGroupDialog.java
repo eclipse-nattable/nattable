@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.command;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.nebula.widgets.nattable.group.gui.CreateColumnGroupDialog;
@@ -19,29 +18,32 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-public class OpenCreateColumnGroupDialog extends AbstractContextFreeCommand implements IColumnGroupCommand {
-	
-	private final CreateColumnGroupDialog dialog;
-	private final MessageBox messageBox;
+public class OpenCreateColumnGroupDialog extends AbstractContextFreeCommand
+        implements IColumnGroupCommand {
 
-	public OpenCreateColumnGroupDialog(Shell parentShell) {
-		this.dialog = CreateColumnGroupDialog.createColumnGroupDialog(parentShell);
-		 messageBox = new MessageBox(parentShell, SWT.INHERIT_DEFAULT | SWT.ICON_ERROR | SWT.OK);
-	}
-	
-	public CreateColumnGroupDialog getDialog() {
-		return dialog;
-	}
+    private final CreateColumnGroupDialog dialog;
+    private final MessageBox messageBox;
 
-	public void openDialog(ILayer contextLayer) {
-		dialog.setContextLayer(contextLayer);
-		dialog.open();
-	}
-	
-	public void openErrorBox(String errMessage) {		
-		messageBox.setText(Messages.getString("ErrorDialog.title")); //$NON-NLS-1$
-		messageBox.setMessage(errMessage);
-		messageBox.open();
-	}
-	
+    public OpenCreateColumnGroupDialog(Shell parentShell) {
+        this.dialog = CreateColumnGroupDialog
+                .createColumnGroupDialog(parentShell);
+        messageBox = new MessageBox(parentShell, SWT.INHERIT_DEFAULT
+                | SWT.ICON_ERROR | SWT.OK);
+    }
+
+    public CreateColumnGroupDialog getDialog() {
+        return dialog;
+    }
+
+    public void openDialog(ILayer contextLayer) {
+        dialog.setContextLayer(contextLayer);
+        dialog.open();
+    }
+
+    public void openErrorBox(String errMessage) {
+        messageBox.setText(Messages.getString("ErrorDialog.title")); //$NON-NLS-1$
+        messageBox.setMessage(errMessage);
+        messageBox.open();
+    }
+
 }

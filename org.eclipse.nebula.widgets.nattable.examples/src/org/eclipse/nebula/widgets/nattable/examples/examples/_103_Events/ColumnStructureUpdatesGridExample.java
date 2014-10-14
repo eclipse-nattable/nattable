@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.examples.examples._103_Events;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -40,78 +39,85 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class ColumnStructureUpdatesGridExample extends AbstractNatExample {
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(new ColumnStructureUpdatesGridExample());
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(new ColumnStructureUpdatesGridExample());
+    }
 
-	private EventList<PricingDataBean> rowObjectsGlazedList;
+    private EventList<PricingDataBean> rowObjectsGlazedList;
 
-	/**
-	 * NOTE - Glazed {@link EventList} class is thread ready but not thread
-	 * safe.
-	 */
-	public Control createExampleControl(Composite parent) {
+    /**
+     * NOTE - Glazed {@link EventList} class is thread ready but not thread
+     * safe.
+     */
+    public Control createExampleControl(Composite parent) {
 
-		EventList<PricingDataBean> eventList = GlazedLists.eventList(PricingDataBeanGenerator.getData(10));
-		rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-		Map<String, String> propertyToLabelMap = populateColHeaderPropertiesToLabelsMap();
-		String[] propertyNames = propertyToLabelMap.keySet().toArray(ArrayUtil.STRING_TYPE_ARRAY);
+        EventList<PricingDataBean> eventList = GlazedLists
+                .eventList(PricingDataBeanGenerator.getData(10));
+        rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+        Map<String, String> propertyToLabelMap = populateColHeaderPropertiesToLabelsMap();
+        String[] propertyNames = propertyToLabelMap.keySet().toArray(
+                ArrayUtil.STRING_TYPE_ARRAY);
 
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		final ColumnStructureUpdatesExampleGridLayer<PricingDataBean> glazedListsGridLayer = new ColumnStructureUpdatesExampleGridLayer<PricingDataBean>(
-				rowObjectsGlazedList, propertyNames, propertyToLabelMap, configRegistry, true);
-		final NatTable natTable = new NatTable(parent, glazedListsGridLayer, false);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.setConfigRegistry(configRegistry);
-		natTable.getConfigRegistry().registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
-				IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT, "ODD_BODY");
-		natTable.getConfigRegistry().registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
-				IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT, "EVEN_BODY");
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        final ColumnStructureUpdatesExampleGridLayer<PricingDataBean> glazedListsGridLayer = new ColumnStructureUpdatesExampleGridLayer<PricingDataBean>(
+                rowObjectsGlazedList, propertyNames, propertyToLabelMap,
+                configRegistry, true);
+        final NatTable natTable = new NatTable(parent, glazedListsGridLayer,
+                false);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.setConfigRegistry(configRegistry);
+        natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT, "ODD_BODY");
+        natTable.getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT, "EVEN_BODY");
 
-		natTable.configure();
-		glazedListsGridLayer.bodyDataProvider.setColumnCount(2);
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
-		Button button = new Button(composite, SWT.PUSH);
-		button.setText("Clear list, add 6 items, Change column count");
-		button.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
+        natTable.configure();
+        glazedListsGridLayer.bodyDataProvider.setColumnCount(2);
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayout(new GridLayout(2, false));
+        Button button = new Button(composite, SWT.PUSH);
+        button.setText("Clear list, add 6 items, Change column count");
+        button.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent e) {}
 
-			public void widgetSelected(SelectionEvent e) {
-				rowObjectsGlazedList.getReadWriteLock().writeLock().lock();
-				try {
-					rowObjectsGlazedList.clear();
-					rowObjectsGlazedList.add(new PricingDataBean());
-					glazedListsGridLayer.bodyDataProvider.setColumnCount(8);
-					rowObjectsGlazedList.add(new PricingDataBean());
-					rowObjectsGlazedList.add(new PricingDataBean());
-					rowObjectsGlazedList.add(new PricingDataBean());
-					rowObjectsGlazedList.add(new PricingDataBean());
-					rowObjectsGlazedList.add(new PricingDataBean());
-					rowObjectsGlazedList.add(new PricingDataBean());
-					rowObjectsGlazedList.add(new PricingDataBean());
-					rowObjectsGlazedList.add(new PricingDataBean());
-					rowObjectsGlazedList.add(new PricingDataBean());
-				} finally {
-					rowObjectsGlazedList.getReadWriteLock().writeLock().unlock();
-				}
-			}
-		});
-		return natTable;
-	}
+            public void widgetSelected(SelectionEvent e) {
+                rowObjectsGlazedList.getReadWriteLock().writeLock().lock();
+                try {
+                    rowObjectsGlazedList.clear();
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    glazedListsGridLayer.bodyDataProvider.setColumnCount(8);
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                    rowObjectsGlazedList.add(new PricingDataBean());
+                } finally {
+                    rowObjectsGlazedList.getReadWriteLock().writeLock()
+                            .unlock();
+                }
+            }
+        });
+        return natTable;
+    }
 
-	@Override
-	public String getDescription() {
-		return "Column structure updates";
-	}
+    @Override
+    public String getDescription() {
+        return "Column structure updates";
+    }
 
-	private Map<String, String> populateColHeaderPropertiesToLabelsMap() {
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		ColumnHeaders[] columnHeaders = ColumnHeaders.values();
-		for (int i = 0; i < columnHeaders.length; i++) {
-			propertyToLabelMap.put(columnHeaders[i].getProperty(), columnHeaders[i].getLabel());
-		}
-		return propertyToLabelMap;
-	}
+    private Map<String, String> populateColHeaderPropertiesToLabelsMap() {
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        ColumnHeaders[] columnHeaders = ColumnHeaders.values();
+        for (int i = 0; i < columnHeaders.length; i++) {
+            propertyToLabelMap.put(columnHeaders[i].getProperty(),
+                    columnHeaders[i].getLabel());
+        }
+        return propertyToLabelMap;
+    }
 }

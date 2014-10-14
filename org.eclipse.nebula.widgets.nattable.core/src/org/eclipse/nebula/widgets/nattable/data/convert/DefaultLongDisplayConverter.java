@@ -15,9 +15,9 @@ package org.eclipse.nebula.widgets.nattable.data.convert;
  */
 public class DefaultLongDisplayConverter extends NumericDisplayConverter {
 
-	@Override
-	protected Object convertToNumericValue(String value) {
-		return Long.valueOf(value);
-	}
+    @Override
+    protected Object convertToNumericValue(String value) {
+        return Long.valueOf(value);
+    }
 
 }

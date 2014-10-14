@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.command;
 
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.swt.widgets.Composite;
 
@@ -20,14 +19,14 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class InitializeGridCommand extends AbstractContextFreeCommand {
 
-	private final Composite tableComposite;
+    private final Composite tableComposite;
 
-	public InitializeGridCommand(Composite tableComposite) {
-		this.tableComposite = tableComposite;
-	}
+    public InitializeGridCommand(Composite tableComposite) {
+        this.tableComposite = tableComposite;
+    }
 
-	public Composite getTableComposite() {
-		return tableComposite;
-	}
+    public Composite getTableComposite() {
+        return tableComposite;
+    }
 
 }

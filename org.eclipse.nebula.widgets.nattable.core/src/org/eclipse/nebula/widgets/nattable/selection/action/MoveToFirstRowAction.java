@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -19,14 +18,15 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class MoveToFirstRowAction extends AbstractKeySelectAction {
 
-	public MoveToFirstRowAction() {
-		super(MoveDirectionEnum.UP, false, false);
-	}
+    public MoveToFirstRowAction() {
+        super(MoveDirectionEnum.UP, false, false);
+    }
 
-	@Override
-	public void run(NatTable natTable, KeyEvent event) {
-		super.run(natTable, event);
-		natTable.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, SelectionLayer.MOVE_ALL, isShiftMask(), isControlMask()));
-	}
+    @Override
+    public void run(NatTable natTable, KeyEvent event) {
+        super.run(natTable, event);
+        natTable.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP,
+                SelectionLayer.MOVE_ALL, isShiftMask(), isControlMask()));
+    }
 
 }

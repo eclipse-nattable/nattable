@@ -34,57 +34,52 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
  */
 public class DefaultTreeLayerConfiguration implements IConfiguration {
 
-	public static final String TREE_COLLAPSED_CONFIG_TYPE = "TREE_COLLAPSED"; //$NON-NLS-1$
-	public static final String TREE_EXPANDED_CONFIG_TYPE = "TREE_EXPANDED"; //$NON-NLS-1$
-	public static final String TREE_LEAF_CONFIG_TYPE = "TREE_LEAF"; //$NON-NLS-1$
-	public static final String TREE_DEPTH_CONFIG_TYPE = "TREE_DEPTH_"; //$NON-NLS-1$
-	
-	private TreeLayer treeLayer;
+    public static final String TREE_COLLAPSED_CONFIG_TYPE = "TREE_COLLAPSED"; //$NON-NLS-1$
+    public static final String TREE_EXPANDED_CONFIG_TYPE = "TREE_EXPANDED"; //$NON-NLS-1$
+    public static final String TREE_LEAF_CONFIG_TYPE = "TREE_LEAF"; //$NON-NLS-1$
+    public static final String TREE_DEPTH_CONFIG_TYPE = "TREE_DEPTH_"; //$NON-NLS-1$
 
-	/**
+    private TreeLayer treeLayer;
+
+    /**
 	 * 
 	 */
-	public DefaultTreeLayerConfiguration(TreeLayer treeLayer) {
-		this.treeLayer = treeLayer;
-	}
+    public DefaultTreeLayerConfiguration(TreeLayer treeLayer) {
+        this.treeLayer = treeLayer;
+    }
 
-	@Override
-	public void configureLayer(ILayer layer) {
-	}
+    @Override
+    public void configureLayer(ILayer layer) {}
 
-	@Override
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.CELL_STYLE,
-				new Style() {{
-					setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,  HorizontalAlignmentEnum.LEFT);
-				}},
-				DisplayMode.NORMAL,
-				TreeLayer.TREE_COLUMN_CELL);
-		configRegistry.registerConfigAttribute(
-				ExportConfigAttributes.EXPORT_FORMATTER,
-				new TreeExportFormatter(treeLayer.getModel()),
-				DisplayMode.NORMAL,
-				TreeLayer.TREE_COLUMN_CELL);
-	}
+    @Override
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                new Style() {
+                    {
+                        setAttributeValue(
+                                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+                                HorizontalAlignmentEnum.LEFT);
+                    }
+                }, DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+        configRegistry.registerConfigAttribute(
+                ExportConfigAttributes.EXPORT_FORMATTER,
+                new TreeExportFormatter(treeLayer.getModel()),
+                DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+    }
 
-	@Override
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		TreeExpandCollapseAction treeExpandCollapseAction = new TreeExpandCollapseAction();
-		CellPainterMouseEventMatcher treeImagePainterMouseEventMatcher = 
-				new CellPainterMouseEventMatcher(
-						GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, TreeImagePainter.class);
-		
-		uiBindingRegistry.registerFirstSingleClickBinding(
-				treeImagePainterMouseEventMatcher,
-				treeExpandCollapseAction
-		);
-		
-		// Obscure any mouse down bindings for this image painter
-		uiBindingRegistry.registerFirstMouseDownBinding(
-				treeImagePainterMouseEventMatcher,
-				new NoOpMouseAction()
-		);
-	}
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        TreeExpandCollapseAction treeExpandCollapseAction = new TreeExpandCollapseAction();
+        CellPainterMouseEventMatcher treeImagePainterMouseEventMatcher = new CellPainterMouseEventMatcher(
+                GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON,
+                TreeImagePainter.class);
+
+        uiBindingRegistry.registerFirstSingleClickBinding(
+                treeImagePainterMouseEventMatcher, treeExpandCollapseAction);
+
+        // Obscure any mouse down bindings for this image painter
+        uiBindingRegistry.registerFirstMouseDownBinding(
+                treeImagePainterMouseEventMatcher, new NoOpMouseAction());
+    }
 
 }

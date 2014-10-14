@@ -14,8 +14,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public abstract class AbstractUiBindingConfiguration implements IConfiguration {
 
-	public void configureLayer(ILayer layer) {}
-	
-	public void configureRegistry(IConfigRegistry configRegistry) {}
-	
+    public void configureLayer(ILayer layer) {}
+
+    public void configureRegistry(IConfigRegistry configRegistry) {}
+
 }

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-
 import java.math.BigInteger;
 
 import org.junit.Assert;
@@ -18,30 +17,32 @@ import org.junit.Test;
 
 public class DefaultBigIntegerDisplayConverterTest {
 
-	private DefaultBigIntegerDisplayConverter bigIntConverter = new DefaultBigIntegerDisplayConverter();
-	
-	@Test
-	public void testNonNullDataToDisplay() {
-		Assert.assertEquals("123", bigIntConverter.canonicalToDisplayValue(new BigInteger("123")));
-	}
-	
-	@Test
-	public void testNullDataToDisplay() {
-		Assert.assertEquals(null, bigIntConverter.canonicalToDisplayValue(null));
-	}
-	
-	@Test
-	public void testNonNullDisplayToData() {
-		Assert.assertEquals(new BigInteger("123"), bigIntConverter.displayToCanonicalValue("123"));
-	}
-	
-	@Test
-	public void testNullDisplayToData() {
-		Assert.assertEquals(null, bigIntConverter.displayToCanonicalValue(""));
-	}
+    private DefaultBigIntegerDisplayConverter bigIntConverter = new DefaultBigIntegerDisplayConverter();
 
-	@Test(expected=ConversionFailedException.class)
-	public void testConversionException() {
-		bigIntConverter.displayToCanonicalValue("abc");
-	}
+    @Test
+    public void testNonNullDataToDisplay() {
+        Assert.assertEquals("123",
+                bigIntConverter.canonicalToDisplayValue(new BigInteger("123")));
+    }
+
+    @Test
+    public void testNullDataToDisplay() {
+        Assert.assertEquals(null, bigIntConverter.canonicalToDisplayValue(null));
+    }
+
+    @Test
+    public void testNonNullDisplayToData() {
+        Assert.assertEquals(new BigInteger("123"),
+                bigIntConverter.displayToCanonicalValue("123"));
+    }
+
+    @Test
+    public void testNullDisplayToData() {
+        Assert.assertEquals(null, bigIntConverter.displayToCanonicalValue(""));
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionException() {
+        bigIntConverter.displayToCanonicalValue("abc");
+    }
 }

@@ -23,68 +23,64 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 
-
 public class SortModelFixture implements ISortModel {
-	List<Integer> sortedColumnIndexes;
-	List<Integer> sortOrder;
-	List<SortDirectionEnum> sortDirection;
-	Map<Integer, List<Comparator>> columnComparators = new HashMap<Integer, List<Comparator>>();
+    List<Integer> sortedColumnIndexes;
+    List<Integer> sortOrder;
+    List<SortDirectionEnum> sortDirection;
+    Map<Integer, List<Comparator>> columnComparators = new HashMap<Integer, List<Comparator>>();
 
-	public SortModelFixture() {
-		this(Arrays.asList(0, 5, 6, 3),
-				Arrays.asList(6, 5, 3, 0),
-				Arrays.asList(ASC, DESC, ASC, DESC));
-	}
+    public SortModelFixture() {
+        this(Arrays.asList(0, 5, 6, 3), Arrays.asList(6, 5, 3, 0), Arrays
+                .asList(ASC, DESC, ASC, DESC));
+    }
 
-	public SortModelFixture(List<Integer> sortedColumnIndexes,
-								List<Integer> sortOrder,
-								List<SortDirectionEnum> sortDirection) {
-		this.sortedColumnIndexes = sortedColumnIndexes;
-		this.sortOrder = sortOrder;
-		this.sortDirection = sortDirection;
-	}
+    public SortModelFixture(List<Integer> sortedColumnIndexes,
+            List<Integer> sortOrder, List<SortDirectionEnum> sortDirection) {
+        this.sortedColumnIndexes = sortedColumnIndexes;
+        this.sortOrder = sortOrder;
+        this.sortDirection = sortDirection;
+    }
 
-	public static SortModelFixture getEmptyModel() {
-		return new SortModelFixture(
-				new ArrayList<Integer>(),
-				new ArrayList<Integer>(),
-				new ArrayList<SortDirectionEnum>());
-	}
+    public static SortModelFixture getEmptyModel() {
+        return new SortModelFixture(new ArrayList<Integer>(),
+                new ArrayList<Integer>(), new ArrayList<SortDirectionEnum>());
+    }
 
-	public List<Integer> getSortedColumnIndexes() {
-		return sortedColumnIndexes;
-	}
-	
-	public boolean isColumnIndexSorted(int columnIndex) {
-		return sortedColumnIndexes.contains(columnIndex);
-	}
+    public List<Integer> getSortedColumnIndexes() {
+        return sortedColumnIndexes;
+    }
 
-	public int getSortOrder(int columnIndex) {
-		if (sortedColumnIndexes.contains(columnIndex)) {
-			return sortOrder.indexOf(columnIndex);
-		}
-		return -1;
-	}
+    public boolean isColumnIndexSorted(int columnIndex) {
+        return sortedColumnIndexes.contains(columnIndex);
+    }
 
-	public SortDirectionEnum getSortDirection(int columnIndex) {
-		if (sortedColumnIndexes.contains(columnIndex)) {
-			return sortDirection.get(sortOrder.indexOf(columnIndex));
-		}
-		return SortDirectionEnum.NONE;
-	}
-	
-	public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
-		return columnComparators.get(columnIndex);
-	}
+    public int getSortOrder(int columnIndex) {
+        if (sortedColumnIndexes.contains(columnIndex)) {
+            return sortOrder.indexOf(columnIndex);
+        }
+        return -1;
+    }
 
-	public void sort(int columnIndex, SortDirectionEnum direction, boolean accumulate) {
-		sortedColumnIndexes.add(columnIndex);
-		sortOrder.add(columnIndex);
-		sortDirection.add(direction);
-	}
+    public SortDirectionEnum getSortDirection(int columnIndex) {
+        if (sortedColumnIndexes.contains(columnIndex)) {
+            return sortDirection.get(sortOrder.indexOf(columnIndex));
+        }
+        return SortDirectionEnum.NONE;
+    }
 
-	public void clear() {
-		// No op
-	}
+    public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
+        return columnComparators.get(columnIndex);
+    }
+
+    public void sort(int columnIndex, SortDirectionEnum direction,
+            boolean accumulate) {
+        sortedColumnIndexes.add(columnIndex);
+        sortOrder.add(columnIndex);
+        sortDirection.add(direction);
+    }
+
+    public void clear() {
+        // No op
+    }
 
 }

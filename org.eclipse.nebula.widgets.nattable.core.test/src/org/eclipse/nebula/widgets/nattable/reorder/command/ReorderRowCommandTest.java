@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.command;
 
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
@@ -20,26 +19,27 @@ import org.junit.Test;
 
 public class ReorderRowCommandTest {
 
-	private RowReorderLayer rowReorderLayer;
-	
-	@Before
-	public void setup() {
-		rowReorderLayer = new RowReorderLayer(new DataLayerFixture());
-	}
-	
-	@Test
-	public void testReorderRowCommand() {
-		int fromRowPosition = 4;
-		int toRowPosition = 1;
-		ILayerCommand reorderRowCommand = new RowReorderCommand(rowReorderLayer, fromRowPosition, toRowPosition);
+    private RowReorderLayer rowReorderLayer;
 
-		rowReorderLayer.doCommand(reorderRowCommand);
-		
-		Assert.assertEquals(0, rowReorderLayer.getRowIndexByPosition(0));
-		Assert.assertEquals(4, rowReorderLayer.getRowIndexByPosition(1));
-		Assert.assertEquals(1, rowReorderLayer.getRowIndexByPosition(2));
-		Assert.assertEquals(2, rowReorderLayer.getRowIndexByPosition(3));
-		Assert.assertEquals(3, rowReorderLayer.getRowIndexByPosition(4));
-	}
-	
+    @Before
+    public void setup() {
+        rowReorderLayer = new RowReorderLayer(new DataLayerFixture());
+    }
+
+    @Test
+    public void testReorderRowCommand() {
+        int fromRowPosition = 4;
+        int toRowPosition = 1;
+        ILayerCommand reorderRowCommand = new RowReorderCommand(
+                rowReorderLayer, fromRowPosition, toRowPosition);
+
+        rowReorderLayer.doCommand(reorderRowCommand);
+
+        Assert.assertEquals(0, rowReorderLayer.getRowIndexByPosition(0));
+        Assert.assertEquals(4, rowReorderLayer.getRowIndexByPosition(1));
+        Assert.assertEquals(1, rowReorderLayer.getRowIndexByPosition(2));
+        Assert.assertEquals(2, rowReorderLayer.getRowIndexByPosition(3));
+        Assert.assertEquals(3, rowReorderLayer.getRowIndexByPosition(4));
+    }
+
 }

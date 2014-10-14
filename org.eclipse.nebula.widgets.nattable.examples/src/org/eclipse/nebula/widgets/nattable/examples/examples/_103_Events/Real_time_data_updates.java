@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -51,191 +50,210 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 
 /**
- * Example to demonstrate rows being added/deleted as the backing data source is updated.
+ * Example to demonstrate rows being added/deleted as the backing data source is
+ * updated.
  */
 public class Real_time_data_updates extends AbstractNatExample {
 
-	private int updatesPerSecond = 1;
-	private final int defaultDatasetSize = 20;
+    private int updatesPerSecond = 1;
+    private final int defaultDatasetSize = 20;
 
-	private ScheduledExecutorService scheduledThreadPool;
-	private NatTable nattable;
-	private EventList<RowDataFixture> eventList;
+    private ScheduledExecutorService scheduledThreadPool;
+    private NatTable nattable;
+    private EventList<RowDataFixture> eventList;
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(500, 700, new Real_time_data_updates());
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(500, 700, new Real_time_data_updates());
+    }
 
-	@Override
-	public String getDescription() {
-		return
-				"Grid demonstrates data being added/removed. You can experiment with different data set sizes and update speeds.\n" +
-				"Select row by clicking on row header. Row selection is preserved when data is updated and sorted.";
-	}
-	
-	/**
-	 * @see GlazedListsGridLayer to see the required stack setup. Basically the {@link DataLayer} needs to be wrapped up with a {@link GlazedListsEventLayer}
-	 *      and the backing list needs to be an {@link EventList}
-	 */
-	public Control createExampleControl(Composite parent) {
-		eventList = GlazedLists.eventList(RowDataListFixture.getList(defaultDatasetSize));
+    @Override
+    public String getDescription() {
+        return "Grid demonstrates data being added/removed. You can experiment with different data set sizes and update speeds.\n"
+                + "Select row by clicking on row header. Row selection is preserved when data is updated and sorted.";
+    }
 
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<RowDataFixture>(eventList, RowDataListFixture.getPropertyNames(),
-				RowDataListFixture.getPropertyToLabelMap(), configRegistry);
+    /**
+     * @see GlazedListsGridLayer to see the required stack setup. Basically the
+     *      {@link DataLayer} needs to be wrapped up with a
+     *      {@link GlazedListsEventLayer} and the backing list needs to be an
+     *      {@link EventList}
+     */
+    public Control createExampleControl(Composite parent) {
+        eventList = GlazedLists.eventList(RowDataListFixture
+                .getList(defaultDatasetSize));
 
-		nattable = new NatTable(parent, glazedListsGridLayer, false);
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<RowDataFixture>(
+                eventList, RowDataListFixture.getPropertyNames(),
+                RowDataListFixture.getPropertyToLabelMap(), configRegistry);
 
-		nattable.setConfigRegistry(configRegistry);
-		nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		nattable.addConfiguration(new SingleClickSortConfiguration());
+        nattable = new NatTable(parent, glazedListsGridLayer, false);
 
-		SelectionLayer selectionLayer = glazedListsGridLayer.getBodyLayerStack().getSelectionLayer();
-		ListDataProvider<RowDataFixture> bodyDataProvider = glazedListsGridLayer.getBodyDataProvider();
+        nattable.setConfigRegistry(configRegistry);
+        nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        nattable.addConfiguration(new SingleClickSortConfiguration());
 
-		// Select complete rows
-		RowOnlySelectionConfiguration<RowDataFixture> selectionConfig = new RowOnlySelectionConfiguration<RowDataFixture>();
-		selectionLayer.addConfiguration(selectionConfig);
-		nattable.addConfiguration(new RowOnlySelectionBindings());
+        SelectionLayer selectionLayer = glazedListsGridLayer
+                .getBodyLayerStack().getSelectionLayer();
+        ListDataProvider<RowDataFixture> bodyDataProvider = glazedListsGridLayer
+                .getBodyDataProvider();
 
-		// Preserve selection on updates and sort
-		selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(selectionLayer, bodyDataProvider, new IRowIdAccessor<RowDataFixture>() {
+        // Select complete rows
+        RowOnlySelectionConfiguration<RowDataFixture> selectionConfig = new RowOnlySelectionConfiguration<RowDataFixture>();
+        selectionLayer.addConfiguration(selectionConfig);
+        nattable.addConfiguration(new RowOnlySelectionBindings());
 
-			public Serializable getRowId(RowDataFixture rowObject) {
-				return rowObject.getSecurity_id();
-			}
-			
-		}));
-		nattable.configure();
+        // Preserve selection on updates and sort
+        selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
+                selectionLayer, bodyDataProvider,
+                new IRowIdAccessor<RowDataFixture>() {
 
-		// Layout widgets
-		parent.setLayout(new GridLayout(1, true));
-		nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+                    public Serializable getRowId(RowDataFixture rowObject) {
+                        return rowObject.getSecurity_id();
+                    }
 
-		setupTextArea(parent);
-		setupButtons(parent);
+                }));
+        nattable.configure();
 
-		return nattable;
-	}
+        // Layout widgets
+        parent.setLayout(new GridLayout(1, true));
+        nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
+                true));
 
-	@Override
-	public void onStart() {
-		scheduledThreadPool = Executors.newScheduledThreadPool(1);
-		scheduledThreadPool.scheduleAtFixedRate(new ListEventsPublisher(), 100L, 1000L / updatesPerSecond, MILLISECONDS);
-	}
+        setupTextArea(parent);
+        setupButtons(parent);
 
-	@Override
-	public void onStop() {
-		scheduledThreadPool.shutdown();
-		nattable.dispose();
-	}
+        return nattable;
+    }
 
-	/**
-	 * Utility class to make periodic modifications to the EventList. Each time its run, it randomly either removes an element or adds one.
-	 */
-	class ListEventsPublisher implements Runnable {
-		public void run() {
+    @Override
+    public void onStart() {
+        scheduledThreadPool = Executors.newScheduledThreadPool(1);
+        scheduledThreadPool.scheduleAtFixedRate(new ListEventsPublisher(),
+                100L, 1000L / updatesPerSecond, MILLISECONDS);
+    }
 
-			Display.getDefault().asyncExec(new Runnable(){
-				public void run() {
-					try {
-						eventList.getReadWriteLock().writeLock().lock();
+    @Override
+    public void onStop() {
+        scheduledThreadPool.shutdown();
+        nattable.dispose();
+    }
 
-						// Delete a random entry
-						int elementIndexToRemove = getRandomNumber(eventList.size() - 1);
-						elementIndexToRemove = elementIndexToRemove < 0 ? 0 : elementIndexToRemove;
+    /**
+     * Utility class to make periodic modifications to the EventList. Each time
+     * its run, it randomly either removes an element or adds one.
+     */
+    class ListEventsPublisher implements Runnable {
+        public void run() {
 
-						// Random decision
-						boolean removeElements = (getRandomNumber(1000) % 2) == 0;
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    try {
+                        eventList.getReadWriteLock().writeLock().lock();
 
-						if (removeElements) {
-							final RowDataFixture remove = eventList.remove(elementIndexToRemove);
-							log("Removed record: " + remove.getSecurity_id());
-						} else {
-							final RowDataFixture added = RowDataFixture.getInstance("Added by test", ("AAA"));
-							eventList.add(added);
-							log("Added record: " + added.getSecurity_id());
-						}
-					} catch (Exception e) {
-						log("Ignoring exception: " + e.getMessage());
-					} finally {
-						eventList.getReadWriteLock().writeLock().unlock();
-					}
-				}
-			});
-		}
-	}
+                        // Delete a random entry
+                        int elementIndexToRemove = getRandomNumber(eventList
+                                .size() - 1);
+                        elementIndexToRemove = elementIndexToRemove < 0 ? 0
+                                : elementIndexToRemove;
 
-	/**
-	 * Adds the 'clear' button at the bottom
-	 */
-	private void setupButtons(Composite parent) {
-		Composite buttonComposite = new Composite(parent, SWT.NONE);
-		buttonComposite.setLayout(new GridLayout(3, false));
-		buttonComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+                        // Random decision
+                        boolean removeElements = (getRandomNumber(1000) % 2) == 0;
 
-		new Label(buttonComposite, SWT.NONE).setText("Clear and add records");
+                        if (removeElements) {
+                            final RowDataFixture remove = eventList
+                                    .remove(elementIndexToRemove);
+                            log("Removed record: " + remove.getSecurity_id());
+                        } else {
+                            final RowDataFixture added = RowDataFixture
+                                    .getInstance("Added by test", ("AAA"));
+                            eventList.add(added);
+                            log("Added record: " + added.getSecurity_id());
+                        }
+                    } catch (Exception e) {
+                        log("Ignoring exception: " + e.getMessage());
+                    } finally {
+                        eventList.getReadWriteLock().writeLock().unlock();
+                    }
+                }
+            });
+        }
+    }
 
-		final Text clearText = new Text(buttonComposite, SWT.BORDER);
-		clearText.setText(Integer.toString(defaultDatasetSize));
-		clearText.setLayoutData(new GridData(100, 14));
-		clearText.setSize(100, 20);
+    /**
+     * Adds the 'clear' button at the bottom
+     */
+    private void setupButtons(Composite parent) {
+        Composite buttonComposite = new Composite(parent, SWT.NONE);
+        buttonComposite.setLayout(new GridLayout(3, false));
+        buttonComposite.setLayoutData(new GridData(GridData.FILL,
+                GridData.FILL, true, false));
 
-		Button clearButton = new Button(buttonComposite, SWT.PUSH);
-		clearButton.setText("Apply");
-		clearButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				final Integer newRecordCount = Integer.valueOf(clearText.getText());
-				try{
-					eventList.getReadWriteLock().writeLock().lock();
-					eventList.clear();
-					eventList.addAll(RowDataListFixture.getList(newRecordCount));
-				} finally {
-					eventList.getReadWriteLock().writeLock().unlock();
-					log(">> List cleared. Added " + newRecordCount + " new records.");
-				}
-			}
-		});
+        new Label(buttonComposite, SWT.NONE).setText("Clear and add records");
 
-		new Label(buttonComposite, SWT.PUSH).setText("Updates/sec");
+        final Text clearText = new Text(buttonComposite, SWT.BORDER);
+        clearText.setText(Integer.toString(defaultDatasetSize));
+        clearText.setLayoutData(new GridData(100, 14));
+        clearText.setSize(100, 20);
 
-		final Text updateSpeedText = new Text(buttonComposite, SWT.BORDER);
-		updateSpeedText.setLayoutData(new GridData(100, 14));
-		updateSpeedText.setText(Integer.toString(updatesPerSecond));
+        Button clearButton = new Button(buttonComposite, SWT.PUSH);
+        clearButton.setText("Apply");
+        clearButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                final Integer newRecordCount = Integer.valueOf(clearText
+                        .getText());
+                try {
+                    eventList.getReadWriteLock().writeLock().lock();
+                    eventList.clear();
+                    eventList.addAll(RowDataListFixture.getList(newRecordCount));
+                } finally {
+                    eventList.getReadWriteLock().writeLock().unlock();
+                    log(">> List cleared. Added " + newRecordCount
+                            + " new records.");
+                }
+            }
+        });
 
-		Button updateSpeedButton = new Button(buttonComposite, SWT.PUSH);
-		updateSpeedButton.setText("Apply");
-		updateSpeedButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				updatesPerSecond = Integer.parseInt(updateSpeedText.getText());
-				log(">> Update speed: " + updatesPerSecond);
-				scheduledThreadPool.shutdownNow();
-				onStart();
-			}
-		});
+        new Label(buttonComposite, SWT.PUSH).setText("Updates/sec");
 
-		final Button pauseButton = new Button(buttonComposite, SWT.PUSH);
-		pauseButton.setLayoutData(new GridData(100, 20));
-		pauseButton.setText("Pause updates");
-		pauseButton.addSelectionListener(new SelectionAdapter() {
-			boolean updatesPaused = false;
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(updatesPaused) {
-					log(">> Starting updates");
-					updatesPaused = false;
-					pauseButton.setText("Pause updates");
-					onStart();
-				} else {
-					log(">> Pausing updates");
-					updatesPaused = true;
-					pauseButton.setText("Start updates");
-					scheduledThreadPool.shutdownNow();
-				}
-			}
-		});
+        final Text updateSpeedText = new Text(buttonComposite, SWT.BORDER);
+        updateSpeedText.setLayoutData(new GridData(100, 14));
+        updateSpeedText.setText(Integer.toString(updatesPerSecond));
 
-	}
+        Button updateSpeedButton = new Button(buttonComposite, SWT.PUSH);
+        updateSpeedButton.setText("Apply");
+        updateSpeedButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updatesPerSecond = Integer.parseInt(updateSpeedText.getText());
+                log(">> Update speed: " + updatesPerSecond);
+                scheduledThreadPool.shutdownNow();
+                onStart();
+            }
+        });
+
+        final Button pauseButton = new Button(buttonComposite, SWT.PUSH);
+        pauseButton.setLayoutData(new GridData(100, 20));
+        pauseButton.setText("Pause updates");
+        pauseButton.addSelectionListener(new SelectionAdapter() {
+            boolean updatesPaused = false;
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (updatesPaused) {
+                    log(">> Starting updates");
+                    updatesPaused = false;
+                    pauseButton.setText("Pause updates");
+                    onStart();
+                } else {
+                    log(">> Pausing updates");
+                    updatesPaused = true;
+                    pauseButton.setText("Start updates");
+                    scheduledThreadPool.shutdownNow();
+                }
+            }
+        });
+
+    }
 }

@@ -10,24 +10,24 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Specifies the rectangular area available to an {@link ILayer}
- * Note: All layers get the client area from {@link NatTable} which implements this interface. 
+ * Specifies the rectangular area available to an {@link ILayer} Note: All
+ * layers get the client area from {@link NatTable} which implements this
+ * interface.
  * 
  * @see ILayer#getClientAreaProvider()
  */
 public interface IClientAreaProvider {
 
-	IClientAreaProvider DEFAULT = new IClientAreaProvider() {
-		public Rectangle getClientArea() {
-			return new Rectangle(0, 0, 0, 0);
-		}
-	};
+    IClientAreaProvider DEFAULT = new IClientAreaProvider() {
+        public Rectangle getClientArea() {
+            return new Rectangle(0, 0, 0, 0);
+        }
+    };
 
-	public Rectangle getClientArea();
+    public Rectangle getClientArea();
 }

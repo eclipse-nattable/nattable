@@ -17,40 +17,40 @@ import org.eclipse.swt.widgets.Listener;
  */
 public interface IScroller<T> {
 
-	T getUnderlying();
-	
-	boolean isDisposed();
+    T getUnderlying();
 
-	void addListener(int eventType, Listener listener);
+    boolean isDisposed();
 
-	void removeListener(int eventType, Listener listener);
+    void addListener(int eventType, Listener listener);
 
-	int getSelection();
+    void removeListener(int eventType, Listener listener);
 
-	void setSelection(int value);
+    int getSelection();
 
-	int getMaximum();
-	
-	void setMaximum(int value);
+    void setSelection(int value);
 
-	int getPageIncrement();
-	
-	void setPageIncrement(int value);
+    int getMaximum();
 
-	int getThumb();
-	
-	void setThumb(int value);
+    void setMaximum(int value);
 
-	int getIncrement();
-	
-	void setIncrement(int value);
+    int getPageIncrement();
 
-	boolean getEnabled();
-	
-	void setEnabled(boolean b);
+    void setPageIncrement(int value);
 
-	boolean getVisible();
-	
-	void setVisible(boolean b);
+    int getThumb();
+
+    void setThumb(int value);
+
+    int getIncrement();
+
+    void setIncrement(int value);
+
+    boolean getEnabled();
+
+    void setEnabled(boolean b);
+
+    boolean getVisible();
+
+    void setVisible(boolean b);
 
 }

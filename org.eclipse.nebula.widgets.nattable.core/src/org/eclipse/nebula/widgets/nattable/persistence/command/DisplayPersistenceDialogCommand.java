@@ -19,24 +19,25 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
  */
 public class DisplayPersistenceDialogCommand extends AbstractContextFreeCommand {
 
-	/**
-	 * The NatTable instance to call the PersistenceDialog for.
-	 */
-	private final NatTable natTable;
+    /**
+     * The NatTable instance to call the PersistenceDialog for.
+     */
+    private final NatTable natTable;
 
-	/**
-	 * 
-	 * @param natTable The NatTable instance to call the PersistenceDialog for.
-	 */
-	public DisplayPersistenceDialogCommand(NatTable natTable) {
-		this.natTable = natTable;
-	}
+    /**
+     * 
+     * @param natTable
+     *            The NatTable instance to call the PersistenceDialog for.
+     */
+    public DisplayPersistenceDialogCommand(NatTable natTable) {
+        this.natTable = natTable;
+    }
 
-	/**
-	 * @return The NatTable instance to call the PersistenceDialog for.
-	 */
-	public NatTable getNatTable() {
-		return natTable;
-	}
+    /**
+     * @return The NatTable instance to call the PersistenceDialog for.
+     */
+    public NatTable getNatTable() {
+        return natTable;
+    }
 
 }

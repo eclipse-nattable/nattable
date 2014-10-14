@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._100_Layers._101_Header;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -26,24 +25,30 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class RowHeaderSelectionDataLayerExample extends AbstractNatExample {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new RowHeaderSelectionDataLayerExample());
-	}
 
-	public Control createExampleControl(Composite parent) {
-		DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(1000000, 1000000);
-		SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(bodyDataProvider));
-		
-		DataLayer rowHeaderDataLayer = new DataLayer(new DefaultRowHeaderDataProvider(bodyDataProvider));
-		rowHeaderDataLayer.setDefaultColumnWidth(40);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, selectionLayer, selectionLayer);
-		
-		CompositeLayer compositeLayer = new CompositeLayer(2, 1);
-		compositeLayer.setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0, 0);
-		compositeLayer.setChildLayer(GridRegion.BODY, selectionLayer, 1, 0);
-		
-		return new NatTable(parent, compositeLayer);
-	}
-	
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner
+                .run(new RowHeaderSelectionDataLayerExample());
+    }
+
+    public Control createExampleControl(Composite parent) {
+        DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(
+                1000000, 1000000);
+        SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(
+                bodyDataProvider));
+
+        DataLayer rowHeaderDataLayer = new DataLayer(
+                new DefaultRowHeaderDataProvider(bodyDataProvider));
+        rowHeaderDataLayer.setDefaultColumnWidth(40);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                selectionLayer, selectionLayer);
+
+        CompositeLayer compositeLayer = new CompositeLayer(2, 1);
+        compositeLayer.setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0,
+                0);
+        compositeLayer.setChildLayer(GridRegion.BODY, selectionLayer, 1, 0);
+
+        return new NatTable(parent, compositeLayer);
+    }
+
 }

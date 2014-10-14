@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -23,146 +23,185 @@ import org.eclipse.swt.graphics.GC;
  * <p>
  * This is necessary because by default the left and the top borders are not
  * rendered so it is possible to create composite stacks that do not create
- * double sized borders (e.g. between row header and body). Mainly the issue 
+ * double sized borders (e.g. between row header and body). Mainly the issue
  * results because of several offset calculations all over the NatTable
  * rendering code.
  * <p>
- * For completeness this painter is also able to render the right and the bottom border
- * to ensure that the border has the same color around the NatTable without changing
- * the grid line color.
+ * For completeness this painter is also able to render the right and the bottom
+ * border to ensure that the border has the same color around the NatTable
+ * without changing the grid line color.
  * 
  * @author Dirk Fauth
  *
  */
 public class NatTableBorderOverlayPainter implements IOverlayPainter {
 
-	/**
-	 * The color that should be used to render the border around the NatTable.
-	 */
-	private final Color borderColor;
-	
-	/**
-	 * Flag to specify whether to render all border lines or only the left and the top border.
-	 * By default only the left and the top border lines are rendered as the right and the
-	 * bottom border lines are already rendered by existing painters.
-	 */
-	private final boolean renderAllBorderLines;
-	
-	/**
-	 * The IConfigRegistry that should be used to retrieve the color to use for rendering
-	 * the border. If set to <code>null</code>, the configured color will be used.
-	 */
-	private final IConfigRegistry configRegistry;
-	
-	/**
-	 * Creates a NatTableBorderOverlayPainter that paints gray border lines to the top and to 
-	 * the left.
-	 */
-	public NatTableBorderOverlayPainter() {
-		this(GUIHelper.COLOR_GRAY);
-	}
-	
-	/**
-	 * Creates a NatTableBorderOverlayPainter that paints by default gray border lines to the 
-	 * top and to the left.
-	 * @param configRegistry The IConfigRegistry to dynamically load the grid line color. If a
-	 * 			configuration value is found, it will be used instead of the gray default color.
-	 */
-	public NatTableBorderOverlayPainter(IConfigRegistry configRegistry) {
-		this(GUIHelper.COLOR_GRAY, configRegistry);
-	}
+    /**
+     * The color that should be used to render the border around the NatTable.
+     */
+    private final Color borderColor;
 
-	/**
-	 * Creates a NatTableBorderOverlayPainter that paints gray border lines.
-	 * @param renderAllBorderLines <code>true</code> if all border lines should be rendered,
-	 * 			<code>false</code> if only the left and the top border line need to be rendered.
-	 */
-	public NatTableBorderOverlayPainter(final boolean renderAllBorderLines) {
-		this(GUIHelper.COLOR_GRAY, renderAllBorderLines);
-	}
+    /**
+     * Flag to specify whether to render all border lines or only the left and
+     * the top border. By default only the left and the top border lines are
+     * rendered as the right and the bottom border lines are already rendered by
+     * existing painters.
+     */
+    private final boolean renderAllBorderLines;
 
-	/**
-	 * Creates a NatTableBorderOverlayPainter that paints gray border lines by default.
-	 * @param renderAllBorderLines <code>true</code> if all border lines should be rendered,
-	 * 			<code>false</code> if only the left and the top border line need to be rendered.
-	 * @param configRegistry The IConfigRegistry to dynamically load the grid line color. If a
-	 * 			configuration value is found, it will be used instead of the gray default color.
-	 */
-	public NatTableBorderOverlayPainter(final boolean renderAllBorderLines, IConfigRegistry configRegistry) {
-		this(GUIHelper.COLOR_GRAY, renderAllBorderLines, configRegistry);
-	}
+    /**
+     * The IConfigRegistry that should be used to retrieve the color to use for
+     * rendering the border. If set to <code>null</code>, the configured color
+     * will be used.
+     */
+    private final IConfigRegistry configRegistry;
 
-	/**
-	 * Creates a NatTableBorderOverlayPainter that paints border lines to the top and to the left.
-	 * @param borderColor The color that should be used to render the border lines.
-	 */
-	public NatTableBorderOverlayPainter(final Color borderColor) {
-		this(borderColor, false);
-	}
+    /**
+     * Creates a NatTableBorderOverlayPainter that paints gray border lines to
+     * the top and to the left.
+     */
+    public NatTableBorderOverlayPainter() {
+        this(GUIHelper.COLOR_GRAY);
+    }
 
-	/**
-	 * Creates a NatTableBorderOverlayPainter that paints border lines to the top and to the left.
-	 * @param borderColor The default color that should be used to render the border lines.
-	 * @param configRegistry The IConfigRegistry to dynamically load the grid line color. If a
-	 * 			configuration value is found, it will be used instead of the given default color.
-	 */
-	public NatTableBorderOverlayPainter(final Color borderColor, IConfigRegistry configRegistry) {
-		this(borderColor, false, configRegistry);
-	}
+    /**
+     * Creates a NatTableBorderOverlayPainter that paints by default gray border
+     * lines to the top and to the left.
+     * 
+     * @param configRegistry
+     *            The IConfigRegistry to dynamically load the grid line color.
+     *            If a configuration value is found, it will be used instead of
+     *            the gray default color.
+     */
+    public NatTableBorderOverlayPainter(IConfigRegistry configRegistry) {
+        this(GUIHelper.COLOR_GRAY, configRegistry);
+    }
 
-	/**
-	 * Creates a NatTableBorderOverlayPainter that paints border lines.
-	 * @param borderColor The color that should be used to render the border lines.
-	 * @param renderAllBorderLines <code>true</code> if all border lines should be rendered,
-	 * 			<code>false</code> if only the left and the top border line need to be rendered.
-	 */
-	public NatTableBorderOverlayPainter(final Color borderColor, final boolean renderAllBorderLines) {
-		this(borderColor, renderAllBorderLines, null);
-	}
+    /**
+     * Creates a NatTableBorderOverlayPainter that paints gray border lines.
+     * 
+     * @param renderAllBorderLines
+     *            <code>true</code> if all border lines should be rendered,
+     *            <code>false</code> if only the left and the top border line
+     *            need to be rendered.
+     */
+    public NatTableBorderOverlayPainter(final boolean renderAllBorderLines) {
+        this(GUIHelper.COLOR_GRAY, renderAllBorderLines);
+    }
 
-	/**
-	 * Creates a NatTableBorderOverlayPainter that paints border lines.
-	 * @param borderColor The color that should be used to render the border lines.
-	 * @param renderAllBorderLines <code>true</code> if all border lines should be rendered,
-	 * 			<code>false</code> if only the left and the top border line need to be rendered.
-	 */
-	public NatTableBorderOverlayPainter(final Color borderColor, final boolean renderAllBorderLines, IConfigRegistry configRegistry) {
-		this.borderColor = borderColor;
-		this.renderAllBorderLines = renderAllBorderLines;
-		this.configRegistry = configRegistry;
-	}
+    /**
+     * Creates a NatTableBorderOverlayPainter that paints gray border lines by
+     * default.
+     * 
+     * @param renderAllBorderLines
+     *            <code>true</code> if all border lines should be rendered,
+     *            <code>false</code> if only the left and the top border line
+     *            need to be rendered.
+     * @param configRegistry
+     *            The IConfigRegistry to dynamically load the grid line color.
+     *            If a configuration value is found, it will be used instead of
+     *            the gray default color.
+     */
+    public NatTableBorderOverlayPainter(final boolean renderAllBorderLines,
+            IConfigRegistry configRegistry) {
+        this(GUIHelper.COLOR_GRAY, renderAllBorderLines, configRegistry);
+    }
 
-	@Override
-	public void paintOverlay(GC gc, ILayer layer) {
-		Color beforeColor = gc.getForeground();
-		
-		gc.setForeground(getBorderColor());
-		
-		gc.drawLine(0, 0, 0, layer.getHeight()-1);
-		gc.drawLine(0, 0, layer.getWidth()-1, 0);
+    /**
+     * Creates a NatTableBorderOverlayPainter that paints border lines to the
+     * top and to the left.
+     * 
+     * @param borderColor
+     *            The color that should be used to render the border lines.
+     */
+    public NatTableBorderOverlayPainter(final Color borderColor) {
+        this(borderColor, false);
+    }
 
-		if (this.renderAllBorderLines) {
-			gc.drawLine(layer.getWidth()-1, 0, layer.getWidth()-1, layer.getHeight()-1);
-			gc.drawLine(0, layer.getHeight()-1, layer.getWidth()-1, layer.getHeight()-1);
-		}
-		
-		gc.setForeground(beforeColor);
-	}
+    /**
+     * Creates a NatTableBorderOverlayPainter that paints border lines to the
+     * top and to the left.
+     * 
+     * @param borderColor
+     *            The default color that should be used to render the border
+     *            lines.
+     * @param configRegistry
+     *            The IConfigRegistry to dynamically load the grid line color.
+     *            If a configuration value is found, it will be used instead of
+     *            the given default color.
+     */
+    public NatTableBorderOverlayPainter(final Color borderColor,
+            IConfigRegistry configRegistry) {
+        this(borderColor, false, configRegistry);
+    }
 
-	/**
-	 * Checks if a IConfigRegistry is set to this NatTableBorderOverlayPainter and will try
-	 * to extract the configuration value for {@link CellConfigAttributes#GRID_LINE_COLOR}.
-	 * If there is no IConfigRegistry set or there is no value for the attribute in the
-	 * set IConfigRegistry, the Color set as member will be used.
-	 * @return The Color that will be used to render the grid lines.
-	 */
-	protected Color getBorderColor() {
-		if (this.configRegistry != null) {
-			Color bColor = configRegistry.getConfigAttribute(
-					CellConfigAttributes.GRID_LINE_COLOR, DisplayMode.NORMAL);
-			if (bColor != null)
-				return bColor;
-		}
-		return this.borderColor;
-	}
+    /**
+     * Creates a NatTableBorderOverlayPainter that paints border lines.
+     * 
+     * @param borderColor
+     *            The color that should be used to render the border lines.
+     * @param renderAllBorderLines
+     *            <code>true</code> if all border lines should be rendered,
+     *            <code>false</code> if only the left and the top border line
+     *            need to be rendered.
+     */
+    public NatTableBorderOverlayPainter(final Color borderColor,
+            final boolean renderAllBorderLines) {
+        this(borderColor, renderAllBorderLines, null);
+    }
+
+    /**
+     * Creates a NatTableBorderOverlayPainter that paints border lines.
+     * 
+     * @param borderColor
+     *            The color that should be used to render the border lines.
+     * @param renderAllBorderLines
+     *            <code>true</code> if all border lines should be rendered,
+     *            <code>false</code> if only the left and the top border line
+     *            need to be rendered.
+     */
+    public NatTableBorderOverlayPainter(final Color borderColor,
+            final boolean renderAllBorderLines, IConfigRegistry configRegistry) {
+        this.borderColor = borderColor;
+        this.renderAllBorderLines = renderAllBorderLines;
+        this.configRegistry = configRegistry;
+    }
+
+    @Override
+    public void paintOverlay(GC gc, ILayer layer) {
+        Color beforeColor = gc.getForeground();
+
+        gc.setForeground(getBorderColor());
+
+        gc.drawLine(0, 0, 0, layer.getHeight() - 1);
+        gc.drawLine(0, 0, layer.getWidth() - 1, 0);
+
+        if (this.renderAllBorderLines) {
+            gc.drawLine(layer.getWidth() - 1, 0, layer.getWidth() - 1,
+                    layer.getHeight() - 1);
+            gc.drawLine(0, layer.getHeight() - 1, layer.getWidth() - 1,
+                    layer.getHeight() - 1);
+        }
+
+        gc.setForeground(beforeColor);
+    }
+
+    /**
+     * Checks if a IConfigRegistry is set to this NatTableBorderOverlayPainter
+     * and will try to extract the configuration value for
+     * {@link CellConfigAttributes#GRID_LINE_COLOR}. If there is no
+     * IConfigRegistry set or there is no value for the attribute in the set
+     * IConfigRegistry, the Color set as member will be used.
+     * 
+     * @return The Color that will be used to render the grid lines.
+     */
+    protected Color getBorderColor() {
+        if (this.configRegistry != null) {
+            Color bColor = configRegistry.getConfigAttribute(
+                    CellConfigAttributes.GRID_LINE_COLOR, DisplayMode.NORMAL);
+            if (bColor != null)
+                return bColor;
+        }
+        return this.borderColor;
+    }
 }

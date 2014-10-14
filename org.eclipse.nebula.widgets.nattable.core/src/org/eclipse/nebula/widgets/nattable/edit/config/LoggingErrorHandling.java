@@ -18,48 +18,54 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractEditErrorHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IEditErrorHandler;
 
-
 /**
- * Error handling strategy that simply writes conversion/validation errors to the log. 
+ * Error handling strategy that simply writes conversion/validation errors to
+ * the log.
  * 
  * @author Dirk Fauth
  *
  */
 public class LoggingErrorHandling extends AbstractEditErrorHandler {
 
-	private static final Log log = LogFactory.getLog(LoggingErrorHandling.class);
+    private static final Log log = LogFactory
+            .getLog(LoggingErrorHandling.class);
 
-	/**
-	 * Create a new {@link LoggingErrorHandling} with no underlying {@link IEditErrorHandler}
-	 */
-	public LoggingErrorHandling() {
-		super(null);
-	}
-	
-	/**
-	 * Create a new {@link LoggingErrorHandling} using the given {@link IEditErrorHandler} as
-	 * the underlying to allow chaining of error handling.
-	 * @param underlyingErrorHandler The underlying {@link IEditErrorHandler}
-	 */
-	public LoggingErrorHandling(IEditErrorHandler underlyingErrorHandler) {
-		super(underlyingErrorHandler);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * After the error is handled by its underlying {@link IEditErrorHandler},
-	 * the error will be logged as a warning.
-	 */
-	@Override
-	public void displayError(ICellEditor cellEditor, Exception e) {
-		super.displayError(cellEditor, e);
-		//for ConversionFailedException and ValidationFailedException we only want to log the corresponding
-		//message. Otherwise we need the whole stack trace to find unexpected exceptions
-		if (!(e instanceof ConversionFailedException) && !(e instanceof ValidationFailedException)) {
-			log.warn("Error whilst converting/validating cell value", e); //$NON-NLS-1$
-		}
-		else {
-			log.warn("Error whilst converting/validating cell value: " + e.getLocalizedMessage()); //$NON-NLS-1$
-		}
-	}
+    /**
+     * Create a new {@link LoggingErrorHandling} with no underlying
+     * {@link IEditErrorHandler}
+     */
+    public LoggingErrorHandling() {
+        super(null);
+    }
+
+    /**
+     * Create a new {@link LoggingErrorHandling} using the given
+     * {@link IEditErrorHandler} as the underlying to allow chaining of error
+     * handling.
+     * 
+     * @param underlyingErrorHandler
+     *            The underlying {@link IEditErrorHandler}
+     */
+    public LoggingErrorHandling(IEditErrorHandler underlyingErrorHandler) {
+        super(underlyingErrorHandler);
+    }
+
+    /**
+     * {@inheritDoc} After the error is handled by its underlying
+     * {@link IEditErrorHandler}, the error will be logged as a warning.
+     */
+    @Override
+    public void displayError(ICellEditor cellEditor, Exception e) {
+        super.displayError(cellEditor, e);
+        // for ConversionFailedException and ValidationFailedException we only
+        // want to log the corresponding
+        // message. Otherwise we need the whole stack trace to find unexpected
+        // exceptions
+        if (!(e instanceof ConversionFailedException)
+                && !(e instanceof ValidationFailedException)) {
+            log.warn("Error whilst converting/validating cell value", e); //$NON-NLS-1$
+        } else {
+            log.warn("Error whilst converting/validating cell value: " + e.getLocalizedMessage()); //$NON-NLS-1$
+        }
+    }
 }

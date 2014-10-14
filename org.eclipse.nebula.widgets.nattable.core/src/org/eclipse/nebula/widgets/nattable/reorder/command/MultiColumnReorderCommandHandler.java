@@ -15,28 +15,30 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 
+public class MultiColumnReorderCommandHandler extends
+        AbstractLayerCommandHandler<MultiColumnReorderCommand> {
 
-public class MultiColumnReorderCommandHandler extends AbstractLayerCommandHandler<MultiColumnReorderCommand> {
+    private final ColumnReorderLayer columnReorderLayer;
 
-	private final ColumnReorderLayer columnReorderLayer;
+    public MultiColumnReorderCommandHandler(
+            ColumnReorderLayer columnReorderLayer) {
+        this.columnReorderLayer = columnReorderLayer;
+    }
 
-	public MultiColumnReorderCommandHandler(ColumnReorderLayer columnReorderLayer) {
-		this.columnReorderLayer = columnReorderLayer;
-	}
-	
-	public Class<MultiColumnReorderCommand> getCommandClass() {
-		return MultiColumnReorderCommand.class;
-	}
+    public Class<MultiColumnReorderCommand> getCommandClass() {
+        return MultiColumnReorderCommand.class;
+    }
 
-	@Override
-	protected boolean doCommand(MultiColumnReorderCommand command) {
-		List<Integer> fromColumnPositions = command.getFromColumnPositions();
-		int toColumnPosition = command.getToColumnPosition();
-		boolean reorderToLeftEdge = command.isReorderToLeftEdge();
-		
-		columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition, reorderToLeftEdge);
-		
-		return true;
-	}
+    @Override
+    protected boolean doCommand(MultiColumnReorderCommand command) {
+        List<Integer> fromColumnPositions = command.getFromColumnPositions();
+        int toColumnPosition = command.getToColumnPosition();
+        boolean reorderToLeftEdge = command.isReorderToLeftEdge();
+
+        columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
+                toColumnPosition, reorderToLeftEdge);
+
+        return true;
+    }
 
 }

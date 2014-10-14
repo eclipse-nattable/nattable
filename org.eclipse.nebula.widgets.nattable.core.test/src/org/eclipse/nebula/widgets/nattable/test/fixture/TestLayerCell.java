@@ -21,47 +21,50 @@ import org.junit.Ignore;
 @Ignore
 public class TestLayerCell extends LayerCell {
 
-	public TestLayerCell(ILayer layer, int columnPosition, int rowPosition) {
-		super(layer, columnPosition, rowPosition);
-	}
-	
-	public TestLayerCell(ILayer layer, int columnPosition, int rowPosition, DataCell cell) {
-		super(layer, columnPosition, rowPosition, cell);
-	}
+    public TestLayerCell(ILayer layer, int columnPosition, int rowPosition) {
+        super(layer, columnPosition, rowPosition);
+    }
 
-	public TestLayerCell(ILayer layer, int originColumnPosition, int originRowPosition, int columnPosition, int rowPosition, int columnSpan, int rowSpan) {
-		super(layer, originColumnPosition, originRowPosition, columnPosition, rowPosition, columnSpan, rowSpan);
-	}
-	
-	public TestLayerCell(ILayerCell cell) {
-		super(cell.getLayer(), cell.getOriginColumnPosition(), cell.getOriginRowPosition(), cell.getColumnPosition(), cell.getRowPosition(), cell.getColumnSpan(), cell.getRowSpan());
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof ILayerCell == false) {
-			return false;
-		}
-		if (this == obj) {
-			return true;
-		}
-		ILayerCell rhs = (ILayerCell) obj;
-		return new EqualsBuilder()
-			.append(getOriginColumnPosition(), rhs.getOriginColumnPosition())
-			.append(getOriginRowPosition(), rhs.getOriginRowPosition())
-			.append(getColumnSpan(), rhs.getColumnSpan())
-			.append(getRowSpan(), rhs.getRowSpan())
-			.isEquals();
-	}
+    public TestLayerCell(ILayer layer, int columnPosition, int rowPosition,
+            DataCell cell) {
+        super(layer, columnPosition, rowPosition, cell);
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(771, 855)
-			.append(getOriginColumnPosition())
-			.append(getOriginRowPosition())
-			.append(getColumnSpan())
-			.append(getRowSpan())
-			.toHashCode();
-	}
-	
+    public TestLayerCell(ILayer layer, int originColumnPosition,
+            int originRowPosition, int columnPosition, int rowPosition,
+            int columnSpan, int rowSpan) {
+        super(layer, originColumnPosition, originRowPosition, columnPosition,
+                rowPosition, columnSpan, rowSpan);
+    }
+
+    public TestLayerCell(ILayerCell cell) {
+        super(cell.getLayer(), cell.getOriginColumnPosition(), cell
+                .getOriginRowPosition(), cell.getColumnPosition(), cell
+                .getRowPosition(), cell.getColumnSpan(), cell.getRowSpan());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ILayerCell == false) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        ILayerCell rhs = (ILayerCell) obj;
+        return new EqualsBuilder()
+                .append(getOriginColumnPosition(),
+                        rhs.getOriginColumnPosition())
+                .append(getOriginRowPosition(), rhs.getOriginRowPosition())
+                .append(getColumnSpan(), rhs.getColumnSpan())
+                .append(getRowSpan(), rhs.getRowSpan()).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(771, 855).append(getOriginColumnPosition())
+                .append(getOriginRowPosition()).append(getColumnSpan())
+                .append(getRowSpan()).toHashCode();
+    }
+
 }

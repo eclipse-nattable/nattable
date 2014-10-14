@@ -16,23 +16,24 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class DisplayColumnStyleEditorCommand extends AbstractContextFreeCommand {
 
-	public final int columnPosition;
-	public final int rowPosition;
-	private final ILayer layer;
-	private final IConfigRegistry configRegistry;
+    public final int columnPosition;
+    public final int rowPosition;
+    private final ILayer layer;
+    private final IConfigRegistry configRegistry;
 
-	public DisplayColumnStyleEditorCommand(ILayer natLayer, IConfigRegistry configRegistry, int columnPosition, int rowPosition) {
-		this.layer = natLayer;
-		this.configRegistry = configRegistry;
-		this.columnPosition = columnPosition;
-		this.rowPosition = rowPosition;
-	}
-	
-	public ILayer getNattableLayer() {
-		return layer;
-	}
+    public DisplayColumnStyleEditorCommand(ILayer natLayer,
+            IConfigRegistry configRegistry, int columnPosition, int rowPosition) {
+        this.layer = natLayer;
+        this.configRegistry = configRegistry;
+        this.columnPosition = columnPosition;
+        this.rowPosition = rowPosition;
+    }
 
-	public IConfigRegistry getConfigRegistry() {
-		return configRegistry;
-	}
+    public ILayer getNattableLayer() {
+        return layer;
+    }
+
+    public IConfigRegistry getConfigRegistry() {
+        return configRegistry;
+    }
 }

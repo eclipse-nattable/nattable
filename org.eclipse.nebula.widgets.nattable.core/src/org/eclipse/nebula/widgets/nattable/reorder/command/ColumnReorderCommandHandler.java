@@ -13,27 +13,29 @@ package org.eclipse.nebula.widgets.nattable.reorder.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 
-public class ColumnReorderCommandHandler extends AbstractLayerCommandHandler<ColumnReorderCommand> {
+public class ColumnReorderCommandHandler extends
+        AbstractLayerCommandHandler<ColumnReorderCommand> {
 
-	private final ColumnReorderLayer columnReorderLayer;
+    private final ColumnReorderLayer columnReorderLayer;
 
-	public ColumnReorderCommandHandler(ColumnReorderLayer columnReorderLayer) {
-		this.columnReorderLayer = columnReorderLayer;
-	}
-	
-	public Class<ColumnReorderCommand> getCommandClass() {
-		return ColumnReorderCommand.class;
-	}
+    public ColumnReorderCommandHandler(ColumnReorderLayer columnReorderLayer) {
+        this.columnReorderLayer = columnReorderLayer;
+    }
 
-	@Override
-	protected boolean doCommand(ColumnReorderCommand command) {
-		int fromColumnPosition = command.getFromColumnPosition();
-		int toColumnPosition = command.getToColumnPosition();
-		boolean reorderToLeftEdge = command.isReorderToLeftEdge();
-		
-		columnReorderLayer.reorderColumnPosition(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
-		
-		return true;
-	}
+    public Class<ColumnReorderCommand> getCommandClass() {
+        return ColumnReorderCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(ColumnReorderCommand command) {
+        int fromColumnPosition = command.getFromColumnPosition();
+        int toColumnPosition = command.getToColumnPosition();
+        boolean reorderToLeftEdge = command.isReorderToLeftEdge();
+
+        columnReorderLayer.reorderColumnPosition(fromColumnPosition,
+                toColumnPosition, reorderToLeftEdge);
+
+        return true;
+    }
 
 }

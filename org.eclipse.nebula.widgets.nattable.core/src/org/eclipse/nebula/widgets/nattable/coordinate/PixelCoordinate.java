@@ -16,25 +16,25 @@ package org.eclipse.nebula.widgets.nattable.coordinate;
  */
 public class PixelCoordinate {
 
-	private final int x;
-	private final int y;
-	
-	public PixelCoordinate(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-	
-	public int getX() {
-		return x;
-	}
-	
-	public int getY() {
-		return y;
-	}
-	
-	@Override
-	public String toString() {
-		return "[" + getClass().getName() + " x: " + x + ", y: " + y + "]";    //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
-	}
-	
+    private final int x;
+    private final int y;
+
+    public PixelCoordinate(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + getClass().getName() + " x: " + x + ", y: " + y + "]"; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
+    }
+
 }

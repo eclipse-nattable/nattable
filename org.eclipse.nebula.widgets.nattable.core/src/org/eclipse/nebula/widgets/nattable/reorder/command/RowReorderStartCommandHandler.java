@@ -13,26 +13,27 @@ package org.eclipse.nebula.widgets.nattable.reorder.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 
-public class RowReorderStartCommandHandler extends AbstractLayerCommandHandler<RowReorderStartCommand> {
+public class RowReorderStartCommandHandler extends
+        AbstractLayerCommandHandler<RowReorderStartCommand> {
 
-	private final RowReorderLayer rowReorderLayer;
+    private final RowReorderLayer rowReorderLayer;
 
-	public RowReorderStartCommandHandler(RowReorderLayer rowReorderLayer) {
-		this.rowReorderLayer = rowReorderLayer;
-	}
-	
-	@Override
-	public Class<RowReorderStartCommand> getCommandClass() {
-		return RowReorderStartCommand.class;
-	}
+    public RowReorderStartCommandHandler(RowReorderLayer rowReorderLayer) {
+        this.rowReorderLayer = rowReorderLayer;
+    }
 
-	@Override
-	protected boolean doCommand(RowReorderStartCommand command) {
-		int fromRowPosition = command.getFromRowPosition();
-		
-		rowReorderLayer.setReorderFromRowPosition(fromRowPosition);
-		
-		return true;
-	}
+    @Override
+    public Class<RowReorderStartCommand> getCommandClass() {
+        return RowReorderStartCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(RowReorderStartCommand command) {
+        int fromRowPosition = command.getFromRowPosition();
+
+        rowReorderLayer.setReorderFromRowPosition(fromRowPosition);
+
+        return true;
+    }
 
 }

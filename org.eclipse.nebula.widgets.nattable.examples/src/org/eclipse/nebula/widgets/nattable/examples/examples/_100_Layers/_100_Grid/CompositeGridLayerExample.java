@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._100_Layers._100_Grid;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -32,30 +31,42 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class CompositeGridLayerExample extends AbstractNatExample {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new CompositeGridLayerExample());
-	}
 
-	public Control createExampleControl(Composite parent) {
-		DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(500, 1000000);
-		SelectionLayer selectionLayer = new SelectionLayer(new ColumnHideShowLayer(new ColumnReorderLayer(new DataLayer(bodyDataProvider))));
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new CompositeGridLayerExample());
+    }
 
-		DummyColumnHeaderDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(bodyDataProvider);
-		DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
+    public Control createExampleControl(Composite parent) {
+        DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(500,
+                1000000);
+        SelectionLayer selectionLayer = new SelectionLayer(
+                new ColumnHideShowLayer(new ColumnReorderLayer(new DataLayer(
+                        bodyDataProvider))));
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DataLayer rowHeaderDataLayer = new DataLayer(rowHeaderDataProvider);
-		rowHeaderDataLayer.setDefaultColumnWidth(40);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
+        DummyColumnHeaderDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(
+                bodyDataProvider);
+        DataLayer columnHeaderDataLayer = new DataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                viewportLayer, selectionLayer);
 
-		ILayer cornerLayer = new CornerLayer(new DataLayer(new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), rowHeaderLayer, columnHeaderLayer);
-		
-		GridLayer compositeLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		return new NatTable(parent, compositeLayer);
-	}
-	
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DataLayer rowHeaderDataLayer = new DataLayer(rowHeaderDataProvider);
+        rowHeaderDataLayer.setDefaultColumnWidth(40);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer);
+
+        ILayer cornerLayer = new CornerLayer(new DataLayer(
+                new DefaultCornerDataProvider(columnHeaderDataProvider,
+                        rowHeaderDataProvider)), rowHeaderLayer,
+                columnHeaderLayer);
+
+        GridLayer compositeLayer = new GridLayer(viewportLayer,
+                columnHeaderLayer, rowHeaderLayer, cornerLayer);
+
+        return new NatTable(parent, compositeLayer);
+    }
+
 }

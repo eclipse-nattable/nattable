@@ -15,22 +15,24 @@ import static java.util.Arrays.asList;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 
-public class ColumnHideCommandHandler extends AbstractLayerCommandHandler<ColumnHideCommand> {
+public class ColumnHideCommandHandler extends
+        AbstractLayerCommandHandler<ColumnHideCommand> {
 
-	private final ColumnHideShowLayer columnHideShowLayer;
+    private final ColumnHideShowLayer columnHideShowLayer;
 
-	public ColumnHideCommandHandler(ColumnHideShowLayer columnHideShowLayer) {
-		this.columnHideShowLayer = columnHideShowLayer;
-	}
+    public ColumnHideCommandHandler(ColumnHideShowLayer columnHideShowLayer) {
+        this.columnHideShowLayer = columnHideShowLayer;
+    }
 
-	public Class<ColumnHideCommand> getCommandClass() {
-		return ColumnHideCommand.class;
-	}
+    public Class<ColumnHideCommand> getCommandClass() {
+        return ColumnHideCommand.class;
+    }
 
-	@Override
-	protected boolean doCommand(ColumnHideCommand command) {
-		columnHideShowLayer.hideColumnPositions(asList(command.getColumnPosition()));
-		return true;
-	}
+    @Override
+    protected boolean doCommand(ColumnHideCommand command) {
+        columnHideShowLayer.hideColumnPositions(asList(command
+                .getColumnPosition()));
+        return true;
+    }
 
 }

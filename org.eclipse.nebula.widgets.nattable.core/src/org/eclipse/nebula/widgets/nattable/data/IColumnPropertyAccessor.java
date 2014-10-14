@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data;
 
-public interface IColumnPropertyAccessor<T> extends IColumnAccessor<T>, IColumnPropertyResolver {
+public interface IColumnPropertyAccessor<T> extends IColumnAccessor<T>,
+        IColumnPropertyResolver {
 
 }

@@ -15,15 +15,16 @@ import java.text.ParseException;
 /**
  * Converts the display value to a float and vice versa.
  */
-public class DefaultFloatDisplayConverter extends DecimalNumericDisplayConverter {
+public class DefaultFloatDisplayConverter extends
+        DecimalNumericDisplayConverter {
 
-	@Override
-	protected Object convertToNumericValue(String value) {
-		try {
-			return this.nf.parse(value).floatValue();
-		} catch (ParseException e) {
-			throw new NumberFormatException(e.getMessage());
-		}
-	}
+    @Override
+    protected Object convertToNumericValue(String value) {
+        try {
+            return this.nf.parse(value).floatValue();
+        } catch (ParseException e) {
+            throw new NumberFormatException(e.getMessage());
+        }
+    }
 
 }

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._101_Data;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -33,110 +32,117 @@ import org.eclipse.swt.widgets.Control;
 
 public class Creating_a_summary_row extends AbstractNatExample {
 
-	private IDataProvider myDataProvider;
+    private IDataProvider myDataProvider;
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new Creating_a_summary_row());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400, new Creating_a_summary_row());
+    }
 
-	@Override
-	public String getDescription() {
-		return
-				"Grid demonstrates adding a Summary row at the end of the table.\n" +
-				"\n" +
-				"Features\n" +
-				"	Different style can be applied to the whole row\n" +
-				"	Different style can be applied to the individual cells in the summary row\n" +
-				"	Plug-in your own summary formulas via ISummaryProvider interface (Default is summation)";
-	}
-	
-	public Control createExampleControl(Composite parent) {
-		myDataProvider = new IDataProvider() {
+    @Override
+    public String getDescription() {
+        return "Grid demonstrates adding a Summary row at the end of the table.\n"
+                + "\n"
+                + "Features\n"
+                + "	Different style can be applied to the whole row\n"
+                + "	Different style can be applied to the individual cells in the summary row\n"
+                + "	Plug-in your own summary formulas via ISummaryProvider interface (Default is summation)";
+    }
 
-			public int getColumnCount() {
-				return 4;
-			}
+    public Control createExampleControl(Composite parent) {
+        myDataProvider = new IDataProvider() {
 
-			public int getRowCount() {
-				return 10;
-			}
+            public int getColumnCount() {
+                return 4;
+            }
 
-			public Object getDataValue(int columnIndex, int rowIndex) {
-				if(columnIndex >= getColumnCount() || rowIndex >= getRowCount()){
-					throw new RuntimeException("Data value requested is out of bounds");
-				}
-				return (columnIndex % 2 == 0) ? 10 : "Apple";
-			}
+            public int getRowCount() {
+                return 10;
+            }
 
-			public void setDataValue(int columnIndex, int rowIndex, Object newValue) {}
-		};
+            public Object getDataValue(int columnIndex, int rowIndex) {
+                if (columnIndex >= getColumnCount()
+                        || rowIndex >= getRowCount()) {
+                    throw new RuntimeException(
+                            "Data value requested is out of bounds");
+                }
+                return (columnIndex % 2 == 0) ? 10 : "Apple";
+            }
 
-		IConfigRegistry configRegistry = new ConfigRegistry();
-		IUniqueIndexLayer dataLayer = new DataLayer(myDataProvider);
+            public void setDataValue(int columnIndex, int rowIndex,
+                    Object newValue) {}
+        };
 
-		// Plug in the SummaryRowLayer
-		IUniqueIndexLayer summaryRowLayer = new SummaryRowLayer(dataLayer, configRegistry, false);
-		ViewportLayer viewportLayer = new ViewportLayer(summaryRowLayer);
+        IConfigRegistry configRegistry = new ConfigRegistry();
+        IUniqueIndexLayer dataLayer = new DataLayer(myDataProvider);
 
-		NatTable natTable = new NatTable(parent, viewportLayer, false);
+        // Plug in the SummaryRowLayer
+        IUniqueIndexLayer summaryRowLayer = new SummaryRowLayer(dataLayer,
+                configRegistry, false);
+        ViewportLayer viewportLayer = new ViewportLayer(summaryRowLayer);
 
-		// Configure custom summary formula for a column
-		natTable.addConfiguration(new MySummaryRowConfig(myDataProvider));
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.setConfigRegistry(configRegistry);
-		natTable.configure();
+        NatTable natTable = new NatTable(parent, viewportLayer, false);
 
-		return natTable;
-	}
+        // Configure custom summary formula for a column
+        natTable.addConfiguration(new MySummaryRowConfig(myDataProvider));
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.setConfigRegistry(configRegistry);
+        natTable.configure();
 
-	/**
-	 * Custom summary provider which averages out the contents of the column
-	 */
-	class AverageSummaryProvider implements ISummaryProvider {
-		public Object summarize(int columnIndex) {
-			int total = 0;
-			int rowCount = myDataProvider.getRowCount();
+        return natTable;
+    }
 
-			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-				Object dataValue = myDataProvider.getDataValue(columnIndex, rowIndex);
-				total = total + Integer.parseInt(dataValue.toString());
-			}
-			return "Average: " + total / rowCount;
-		}
-	}
+    /**
+     * Custom summary provider which averages out the contents of the column
+     */
+    class AverageSummaryProvider implements ISummaryProvider {
+        public Object summarize(int columnIndex) {
+            int total = 0;
+            int rowCount = myDataProvider.getRowCount();
 
-	/**
-	 * Override the DefaultSummaryRowConfiguration for customizing the summary row style and/or summary formulas
-	 */
-	class MySummaryRowConfig extends DefaultSummaryRowConfiguration {
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                Object dataValue = myDataProvider.getDataValue(columnIndex,
+                        rowIndex);
+                total = total + Integer.parseInt(dataValue.toString());
+            }
+            return "Average: " + total / rowCount;
+        }
+    }
 
-		private final IDataProvider myDataProvider;
+    /**
+     * Override the DefaultSummaryRowConfiguration for customizing the summary
+     * row style and/or summary formulas
+     */
+    class MySummaryRowConfig extends DefaultSummaryRowConfiguration {
 
-		public MySummaryRowConfig(IDataProvider myDataProvider) {
-			this.myDataProvider = myDataProvider;
-			summaryRowBgColor = GUIHelper.COLOR_BLUE;
-			summaryRowFgColor = GUIHelper.COLOR_WHITE;
-		}
+        private final IDataProvider myDataProvider;
 
-		@Override
-		public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
-			// Labels are applied to the summary row and cells by default to make configuration easier.
-			// See the Javadoc for the SummaryRowLayer
+        public MySummaryRowConfig(IDataProvider myDataProvider) {
+            this.myDataProvider = myDataProvider;
+            summaryRowBgColor = GUIHelper.COLOR_BLUE;
+            summaryRowFgColor = GUIHelper.COLOR_WHITE;
+        }
 
-			// Default summary provider
-			configRegistry.registerConfigAttribute(
-					SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-					new SummationSummaryProvider(myDataProvider),
-					DisplayMode.NORMAL,
-					SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+        @Override
+        public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
+            // Labels are applied to the summary row and cells by default to
+            // make configuration easier.
+            // See the Javadoc for the SummaryRowLayer
 
-			// Average summary provider for column index 2
-			configRegistry.registerConfigAttribute(
-					SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-					new AverageSummaryProvider(),
-					DisplayMode.NORMAL,
-					SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 2);
-		}
-	}
+            // Default summary provider
+            configRegistry.registerConfigAttribute(
+                    SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                    new SummationSummaryProvider(myDataProvider),
+                    DisplayMode.NORMAL,
+                    SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+
+            // Average summary provider for column index 2
+            configRegistry
+                    .registerConfigAttribute(
+                            SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                            new AverageSummaryProvider(),
+                            DisplayMode.NORMAL,
+                            SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 2);
+        }
+    }
 
 }

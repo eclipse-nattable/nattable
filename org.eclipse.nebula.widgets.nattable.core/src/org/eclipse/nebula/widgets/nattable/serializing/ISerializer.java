@@ -11,5 +11,5 @@
 package org.eclipse.nebula.widgets.nattable.serializing;
 
 public interface ISerializer {
-	public void serialize();
+    public void serialize();
 }

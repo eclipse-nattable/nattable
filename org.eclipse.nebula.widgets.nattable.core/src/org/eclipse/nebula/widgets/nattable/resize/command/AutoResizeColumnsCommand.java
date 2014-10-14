@@ -26,33 +26,34 @@ import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 
 public class AutoResizeColumnsCommand extends AbstractMultiColumnCommand {
 
-	private final IConfigRegistry configRegistry;
-	private final GCFactory gcFactory;
+    private final IConfigRegistry configRegistry;
+    private final GCFactory gcFactory;
 
-	public AutoResizeColumnsCommand(InitializeAutoResizeColumnsCommand initCommand) {
-		super(initCommand.getSourceLayer(), initCommand.getColumnPositions());
-		this.configRegistry = initCommand.getConfigRegistry();
-		this.gcFactory = initCommand.getGCFactory();
-	}
+    public AutoResizeColumnsCommand(
+            InitializeAutoResizeColumnsCommand initCommand) {
+        super(initCommand.getSourceLayer(), initCommand.getColumnPositions());
+        this.configRegistry = initCommand.getConfigRegistry();
+        this.gcFactory = initCommand.getGCFactory();
+    }
 
-	protected AutoResizeColumnsCommand(AutoResizeColumnsCommand command) {
-		super(command);
-		this.configRegistry = command.configRegistry;
-		this.gcFactory = command.gcFactory;
-	}
+    protected AutoResizeColumnsCommand(AutoResizeColumnsCommand command) {
+        super(command);
+        this.configRegistry = command.configRegistry;
+        this.gcFactory = command.gcFactory;
+    }
 
-	public ILayerCommand cloneCommand() {
-		return new AutoResizeColumnsCommand(this);
-	}
+    public ILayerCommand cloneCommand() {
+        return new AutoResizeColumnsCommand(this);
+    }
 
-	// Accessors
+    // Accessors
 
-	public GCFactory getGCFactory() {
-		return gcFactory;
-	}
+    public GCFactory getGCFactory() {
+        return gcFactory;
+    }
 
-	public IConfigRegistry getConfigRegistry() {
-		return configRegistry;
-	}
-	
+    public IConfigRegistry getConfigRegistry() {
+        return configRegistry;
+    }
+
 }

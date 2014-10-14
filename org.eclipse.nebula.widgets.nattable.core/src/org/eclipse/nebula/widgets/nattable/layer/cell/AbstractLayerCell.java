@@ -14,61 +14,65 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.swt.graphics.Rectangle;
 
 public abstract class AbstractLayerCell implements ILayerCell {
-	
-	private boolean isDisplayModeCached = false;
-	private String displayMode = null;
 
-	private boolean isConfigLabelsCached = false;
-	private LabelStack configLabels = null;
+    private boolean isDisplayModeCached = false;
+    private String displayMode = null;
 
-	private boolean isDataValueCached = false;
-	private Object dataValue = null;
+    private boolean isConfigLabelsCached = false;
+    private LabelStack configLabels = null;
 
-	private boolean isBoundsCached = false;
-	private Rectangle bounds = null;
-	
-	public boolean isSpannedCell() {
-		return getColumnSpan() > 1 || getRowSpan() > 1;
-	}
+    private boolean isDataValueCached = false;
+    private Object dataValue = null;
 
-	public String getDisplayMode() {
-		if (!isDisplayModeCached) {
-			isDisplayModeCached = true;
+    private boolean isBoundsCached = false;
+    private Rectangle bounds = null;
 
-			displayMode = getLayer().getDisplayModeByPosition(getColumnPosition(), getRowPosition());
-		}
+    public boolean isSpannedCell() {
+        return getColumnSpan() > 1 || getRowSpan() > 1;
+    }
 
-		return displayMode;
-	}
+    public String getDisplayMode() {
+        if (!isDisplayModeCached) {
+            isDisplayModeCached = true;
 
-	public LabelStack getConfigLabels() {
-		if (!isConfigLabelsCached) {
-			isConfigLabelsCached = true;
+            displayMode = getLayer().getDisplayModeByPosition(
+                    getColumnPosition(), getRowPosition());
+        }
 
-			configLabels = getLayer().getConfigLabelsByPosition(getColumnPosition(), getRowPosition());
-		}
+        return displayMode;
+    }
 
-		return configLabels;
-	}
+    public LabelStack getConfigLabels() {
+        if (!isConfigLabelsCached) {
+            isConfigLabelsCached = true;
 
-	public Object getDataValue() {
-		if (!isDataValueCached) {
-			isDataValueCached = true;
+            configLabels = getLayer().getConfigLabelsByPosition(
+                    getColumnPosition(), getRowPosition());
+        }
 
-			dataValue = getLayer().getDataValueByPosition(getColumnPosition(), getRowPosition());
-		}
+        return configLabels;
+    }
 
-		return dataValue;
-	}
+    public Object getDataValue() {
+        if (!isDataValueCached) {
+            isDataValueCached = true;
 
-	public Rectangle getBounds() {
-		if (!isBoundsCached) {
-			isBoundsCached = true;
+            dataValue = getLayer().getDataValueByPosition(getColumnPosition(),
+                    getRowPosition());
+        }
 
-			bounds = getLayer().getBoundsByPosition(getColumnPosition(), getRowPosition());
-		}
+        return dataValue;
+    }
 
-		return bounds;
-	}
+    public Rectangle getBounds() {
+        if (!isBoundsCached) {
+            isBoundsCached = true;
+
+            bounds = getLayer().getBoundsByPosition(getColumnPosition(),
+                    getRowPosition());
+        }
+
+        return bounds;
+    }
 
 }

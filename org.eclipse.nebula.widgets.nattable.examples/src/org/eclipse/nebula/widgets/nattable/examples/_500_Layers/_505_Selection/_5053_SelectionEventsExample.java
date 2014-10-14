@@ -49,122 +49,136 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Example showing custom selection event handling in a NatTable grid composition.
+ * Example showing custom selection event handling in a NatTable grid
+ * composition.
  * 
  * @author Dirk Fauth
  *
  */
 public class _5053_SelectionEventsExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5053_SelectionEventsExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _5053_SelectionEventsExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows custom selection event handling in a NatTable grid composition."
-				+ " There is different handling for cell, column and row selection.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows custom selection event handling in a NatTable grid composition."
+                + " There is different handling for cell, column and row selection.";
+    }
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
-				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		
-		final List<Person> data = PersonService.getPersons(10);
-		
-		//create the body layer stack
-		final IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(data, columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
 
-		//create the column header layer stack
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-				new DataLayer(columnHeaderDataProvider),
-				viewportLayer, 
-				selectionLayer);
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
 
-		//create the row header layer stack
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(
-				new DefaultRowHeaderDataLayer(new DefaultRowHeaderDataProvider(bodyDataProvider)), 
-				viewportLayer, 
-				selectionLayer);
-		
-		//create the corner layer stack
-		ILayer cornerLayer = new CornerLayer(
-				new DataLayer(new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), 
-				rowHeaderLayer, 
-				columnHeaderLayer);
-		
-		//create the grid layer composed with the prior created layer stacks
-		GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		final NatTable natTable = new NatTable(parent, gridLayer);
-		
-		// Events are fired whenever selection occurs. These can be use to trigger
-		// external actions as required.
-		//
-		// This adds a custom ILayerListener that will listen and handle selection events on NatTable level
-		natTable.addLayerListener(new ILayerListener() {
+        final List<Person> data = PersonService.getPersons(10);
 
-			// Default selection behavior selects cells by default.
-			@Override
-			public void handleLayerEvent(ILayerEvent event) {
-				if (event instanceof CellSelectionEvent) {
-					CellSelectionEvent cellEvent = (CellSelectionEvent) event;
-					log("Selected cell: [" +
-							cellEvent.getRowPosition() + ", " +
-							cellEvent.getColumnPosition() + "], " +
-							natTable.getDataValueByPosition(cellEvent.getColumnPosition(), cellEvent.getRowPosition()));
-				}
-				else if (event instanceof ColumnSelectionEvent) {
-					ColumnSelectionEvent columnEvent = (ColumnSelectionEvent) event;
-					log("Selected Column: "	+ columnEvent.getColumnPositionRanges());
-				}
-				else if (event instanceof RowSelectionEvent) {
-					//directly ask the SelectionLayer about the selected rows and access the data via IRowDataProvider
-					Collection<Range> selections = selectionLayer.getSelectedRowPositions();
-					StringBuilder builder = new StringBuilder("Selected Persons: ")
-						.append(selectionLayer.getSelectedRowPositions())
-						.append("[");
-					for (Range r : selections) {
-						for (int i = r.start; i < r.end; i++) {
-							Person p = bodyDataProvider.getRowObject(i);
-							if (p != null) {
-								if (!builder.toString().endsWith("[")) {
-									builder.append(", ");
-								}
-								builder.append(p.getFirstName()).append(" ").append(p.getLastName());
-							}
-						}
-					}
-					builder.append("]");
-					log(builder.toString());
-				}
-			}
-		});
+        // create the body layer stack
+        final IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(
+                data, columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-		// Layout widgets
-		parent.setLayout(new GridLayout(1, true));
-		natTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-		// add a log area to the example to show the log entries
-		setupTextArea(parent);
-		
-		return natTable;
-	}
+        // create the column header layer stack
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(
+                columnHeaderDataProvider), viewportLayer, selectionLayer);
+
+        // create the row header layer stack
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(
+                new DefaultRowHeaderDataLayer(new DefaultRowHeaderDataProvider(
+                        bodyDataProvider)), viewportLayer, selectionLayer);
+
+        // create the corner layer stack
+        ILayer cornerLayer = new CornerLayer(new DataLayer(
+                new DefaultCornerDataProvider(columnHeaderDataProvider,
+                        rowHeaderDataProvider)), rowHeaderLayer,
+                columnHeaderLayer);
+
+        // create the grid layer composed with the prior created layer stacks
+        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
+
+        final NatTable natTable = new NatTable(parent, gridLayer);
+
+        // Events are fired whenever selection occurs. These can be use to
+        // trigger
+        // external actions as required.
+        //
+        // This adds a custom ILayerListener that will listen and handle
+        // selection events on NatTable level
+        natTable.addLayerListener(new ILayerListener() {
+
+            // Default selection behavior selects cells by default.
+            @Override
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof CellSelectionEvent) {
+                    CellSelectionEvent cellEvent = (CellSelectionEvent) event;
+                    log("Selected cell: ["
+                            + cellEvent.getRowPosition()
+                            + ", "
+                            + cellEvent.getColumnPosition()
+                            + "], "
+                            + natTable.getDataValueByPosition(
+                                    cellEvent.getColumnPosition(),
+                                    cellEvent.getRowPosition()));
+                } else if (event instanceof ColumnSelectionEvent) {
+                    ColumnSelectionEvent columnEvent = (ColumnSelectionEvent) event;
+                    log("Selected Column: "
+                            + columnEvent.getColumnPositionRanges());
+                } else if (event instanceof RowSelectionEvent) {
+                    // directly ask the SelectionLayer about the selected rows
+                    // and access the data via IRowDataProvider
+                    Collection<Range> selections = selectionLayer
+                            .getSelectedRowPositions();
+                    StringBuilder builder = new StringBuilder(
+                            "Selected Persons: ").append(
+                            selectionLayer.getSelectedRowPositions()).append(
+                            "[");
+                    for (Range r : selections) {
+                        for (int i = r.start; i < r.end; i++) {
+                            Person p = bodyDataProvider.getRowObject(i);
+                            if (p != null) {
+                                if (!builder.toString().endsWith("[")) {
+                                    builder.append(", ");
+                                }
+                                builder.append(p.getFirstName()).append(" ")
+                                        .append(p.getLastName());
+                            }
+                        }
+                    }
+                    builder.append("]");
+                    log(builder.toString());
+                }
+            }
+        });
+
+        // Layout widgets
+        parent.setLayout(new GridLayout(1, true));
+        natTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
+                true));
+        // add a log area to the example to show the log entries
+        setupTextArea(parent);
+
+        return natTable;
+    }
 
 }

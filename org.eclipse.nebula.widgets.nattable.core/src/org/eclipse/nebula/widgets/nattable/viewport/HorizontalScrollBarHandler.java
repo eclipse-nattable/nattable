@@ -17,7 +17,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ScrollBar;
 
-
 /**
  * Listener for the Horizontal scroll bar events on the Viewport Layer. State is
  * exposed to this class from the viewport, since it works in close conjnuction
@@ -25,56 +24,61 @@ import org.eclipse.swt.widgets.ScrollBar;
  */
 public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 
-	public HorizontalScrollBarHandler(ViewportLayer viewportLayer, ScrollBar scrollBar) {
-		this(viewportLayer, new ScrollBarScroller(scrollBar));
-	}
-	
-	public HorizontalScrollBarHandler(ViewportLayer viewportLayer, IScroller<?> scroller) {
-		super(viewportLayer, scroller);
-		
-	}
+    public HorizontalScrollBarHandler(ViewportLayer viewportLayer,
+            ScrollBar scrollBar) {
+        this(viewportLayer, new ScrollBarScroller(scrollBar));
+    }
 
-	@Override
-	int getViewportOrigin() {
-		return viewportLayer.getOrigin().getX();
-	}
-	
-	@Override
-	int getViewportMinimumOrigin() {
-		return viewportLayer.getMinimumOrigin().getX();
-	}
+    public HorizontalScrollBarHandler(ViewportLayer viewportLayer,
+            IScroller<?> scroller) {
+        super(viewportLayer, scroller);
 
-	@Override
-	void setViewportOrigin(int x) {
-		viewportLayer.setOriginX(x);
-	}
-	
-	@Override
-	MoveDirectionEnum scrollDirectionForEventDetail(int eventDetail){
-		return (eventDetail == SWT.PAGE_UP || eventDetail == SWT.ARROW_UP )	? LEFT : RIGHT;
-	}
-	
-	@Override
-	boolean keepScrolling() {
-		return !viewportLayer.isLastColumnCompletelyDisplayed();
-	}
-	
-	@Override
-	int getViewportWindowSpan() {
-		return viewportLayer.getClientAreaWidth();
-	}
+    }
 
-	@Override
-	int getScrollableLayerSpan() {
-		if (viewportLayer.getMaxWidth() >= 0 && viewportLayer.getMaxWidth() < scrollableLayer.getWidth()) {
-			return viewportLayer.getMaxWidth();
-		} else {
-			return scrollableLayer.getWidth();
-		}
-	}
-	
-	@Override
-	int getScrollIncrement() {
-		return viewportLayer.getColumnCount() > 0 ? viewportLayer.getColumnWidthByPosition(0) : 0;
-	}
+    @Override
+    int getViewportOrigin() {
+        return viewportLayer.getOrigin().getX();
+    }
+
+    @Override
+    int getViewportMinimumOrigin() {
+        return viewportLayer.getMinimumOrigin().getX();
+    }
+
+    @Override
+    void setViewportOrigin(int x) {
+        viewportLayer.setOriginX(x);
+    }
+
+    @Override
+    MoveDirectionEnum scrollDirectionForEventDetail(int eventDetail) {
+        return (eventDetail == SWT.PAGE_UP || eventDetail == SWT.ARROW_UP) ? LEFT
+                : RIGHT;
+    }
+
+    @Override
+    boolean keepScrolling() {
+        return !viewportLayer.isLastColumnCompletelyDisplayed();
+    }
+
+    @Override
+    int getViewportWindowSpan() {
+        return viewportLayer.getClientAreaWidth();
+    }
+
+    @Override
+    int getScrollableLayerSpan() {
+        if (viewportLayer.getMaxWidth() >= 0
+                && viewportLayer.getMaxWidth() < scrollableLayer.getWidth()) {
+            return viewportLayer.getMaxWidth();
+        } else {
+            return scrollableLayer.getWidth();
+        }
+    }
+
+    @Override
+    int getScrollIncrement() {
+        return viewportLayer.getColumnCount() > 0 ? viewportLayer
+                .getColumnWidthByPosition(0) : 0;
+    }
 }

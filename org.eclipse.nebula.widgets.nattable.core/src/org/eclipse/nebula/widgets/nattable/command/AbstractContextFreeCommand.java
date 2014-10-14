@@ -13,13 +13,13 @@ package org.eclipse.nebula.widgets.nattable.command;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public abstract class AbstractContextFreeCommand implements ILayerCommand {
-	
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		return true;
-	}
-	
-	public AbstractContextFreeCommand cloneCommand() {
-		return this;
-	}
-	
+
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        return true;
+    }
+
+    public AbstractContextFreeCommand cloneCommand() {
+        return this;
+    }
+
 }

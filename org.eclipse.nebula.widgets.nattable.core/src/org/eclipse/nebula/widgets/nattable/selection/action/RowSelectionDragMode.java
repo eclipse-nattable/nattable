@@ -15,16 +15,18 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionBindings;
 
 /**
- * Selects the entire row when the mouse is dragged on the body.
- * <i>Multiple</i> rows are selected as the user drags.
+ * Selects the entire row when the mouse is dragged on the body. <i>Multiple</i>
+ * rows are selected as the user drags.
  *
  * @see RowOnlySelectionBindings
  */
 public class RowSelectionDragMode extends CellSelectionDragMode {
 
-	@Override
-	public void fireSelectionCommand(NatTable natTable, int columnPosition,	int rowPosition, boolean shiftMask, boolean controlMask) {
-		natTable.doCommand(new SelectRowsCommand(natTable, columnPosition, rowPosition, shiftMask, controlMask));
-	}
+    @Override
+    public void fireSelectionCommand(NatTable natTable, int columnPosition,
+            int rowPosition, boolean shiftMask, boolean controlMask) {
+        natTable.doCommand(new SelectRowsCommand(natTable, columnPosition,
+                rowPosition, shiftMask, controlMask));
+    }
 
 }

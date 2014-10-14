@@ -15,16 +15,16 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ShowRowInViewportCommand extends AbstractRowCommand {
 
-	public ShowRowInViewportCommand(ILayer layer, int rowPosition) {
-		super(layer, rowPosition);
-	}
-	
-	protected ShowRowInViewportCommand(ShowRowInViewportCommand command) {
-		super(command);
-	}
-	
-	public ShowRowInViewportCommand cloneCommand() {
-		return new ShowRowInViewportCommand(this);
-	}
-	
+    public ShowRowInViewportCommand(ILayer layer, int rowPosition) {
+        super(layer, rowPosition);
+    }
+
+    protected ShowRowInViewportCommand(ShowRowInViewportCommand command) {
+        super(command);
+    }
+
+    public ShowRowInViewportCommand cloneCommand() {
+        return new ShowRowInViewportCommand(this);
+    }
+
 }

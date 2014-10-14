@@ -26,357 +26,396 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 
-
 /**
  * <p>
- * A DimensionallyDependentLayer is a layer whose horizontal and vertical dimensions are dependent on the horizontal and
- * vertical dimensions of other layers. A DimensionallyDependentLayer takes three constructor parameters: the horizontal
- * layer that the DimensionallyDependentLayer's horizontal dimension is linked to, the vertical layer that the
- * DimensionallyDependentLayer is linked to, and a base layer to which all non-dimensionally related ILayer method calls
- * will be delegated to (e.g. command, event methods)
+ * A DimensionallyDependentLayer is a layer whose horizontal and vertical
+ * dimensions are dependent on the horizontal and vertical dimensions of other
+ * layers. A DimensionallyDependentLayer takes three constructor parameters: the
+ * horizontal layer that the DimensionallyDependentLayer's horizontal dimension
+ * is linked to, the vertical layer that the DimensionallyDependentLayer is
+ * linked to, and a base layer to which all non-dimensionally related ILayer
+ * method calls will be delegated to (e.g. command, event methods)
  * </p>
  * <p>
- * Prime examples of dimensionally dependent layers are the column header and row header layers. For example, the column
- * header layer's horizontal dimension is linked to the body layer's horizontal dimension. This means that whatever
- * columns are shown in the body area will also be shown in the column header area, and vice versa. Note that the column
- * header layer maintains its own vertical dimension, however, so it's vertical layer dependency would be a separate
- * data layer. The same is true for the row header layer, only with the vertical instead of the horizontal dimension.
- * The constructors for the column header and row header layers would therefore look something like this:
+ * Prime examples of dimensionally dependent layers are the column header and
+ * row header layers. For example, the column header layer's horizontal
+ * dimension is linked to the body layer's horizontal dimension. This means that
+ * whatever columns are shown in the body area will also be shown in the column
+ * header area, and vice versa. Note that the column header layer maintains its
+ * own vertical dimension, however, so it's vertical layer dependency would be a
+ * separate data layer. The same is true for the row header layer, only with the
+ * vertical instead of the horizontal dimension. The constructors for the column
+ * header and row header layers would therefore look something like this:
  * </p>
+ * 
  * <pre>
- * ILayer columnHeaderLayer = new DimensionallyDependentLayer(columnHeaderRowDataLayer, bodyLayer, columnHeaderRowDataLayer);
- * ILayer rowHeaderLayer = new DimensionallyDependentLayer(rowHeaderColumnDataLayer, bodyLayer, rowHeaderColumnDataLayer);
+ * ILayer columnHeaderLayer = new DimensionallyDependentLayer(
+ *         columnHeaderRowDataLayer, bodyLayer, columnHeaderRowDataLayer);
+ * ILayer rowHeaderLayer = new DimensionallyDependentLayer(
+ *         rowHeaderColumnDataLayer, bodyLayer, rowHeaderColumnDataLayer);
  * </pre>
  */
 public class DimensionallyDependentLayer extends AbstractLayer {
 
-	private final IUniqueIndexLayer baseLayer;
-	private ILayer horizontalLayerDependency;
-	private ILayer verticalLayerDependency;
-	private IClientAreaProvider clientAreaProvider;
+    private final IUniqueIndexLayer baseLayer;
+    private ILayer horizontalLayerDependency;
+    private ILayer verticalLayerDependency;
+    private IClientAreaProvider clientAreaProvider;
 
-	protected DimensionallyDependentLayer(IUniqueIndexLayer baseLayer) {
-		this.baseLayer = baseLayer;
-		this.baseLayer.addLayerListener(this);
-	}
+    protected DimensionallyDependentLayer(IUniqueIndexLayer baseLayer) {
+        this.baseLayer = baseLayer;
+        this.baseLayer.addLayerListener(this);
+    }
 
-	public DimensionallyDependentLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, ILayer verticalLayerDependency) {
-		this.baseLayer = baseLayer;
-		this.baseLayer.addLayerListener(this);
-		
-		setHorizontalLayerDependency(horizontalLayerDependency);
-		setVerticalLayerDependency(verticalLayerDependency);
-	}
+    public DimensionallyDependentLayer(IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency, ILayer verticalLayerDependency) {
+        this.baseLayer = baseLayer;
+        this.baseLayer.addLayerListener(this);
 
-	// Persistence
+        setHorizontalLayerDependency(horizontalLayerDependency);
+        setVerticalLayerDependency(verticalLayerDependency);
+    }
 
-	@Override
-	public void saveState(String prefix, Properties properties) {
-		super.saveState(prefix, properties);
-		baseLayer.saveState(prefix, properties);
-	}
+    // Persistence
 
-	@Override
-	public void loadState(String prefix, Properties properties) {
-		super.loadState(prefix, properties);
-		baseLayer.loadState(prefix, properties);
-	}
+    @Override
+    public void saveState(String prefix, Properties properties) {
+        super.saveState(prefix, properties);
+        baseLayer.saveState(prefix, properties);
+    }
 
-	// Configuration
-	
-	@Override
-	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
-		baseLayer.configure(configRegistry, uiBindingRegistry);
-		super.configure(configRegistry, uiBindingRegistry);
-	}
+    @Override
+    public void loadState(String prefix, Properties properties) {
+        super.loadState(prefix, properties);
+        baseLayer.loadState(prefix, properties);
+    }
 
-	// Dependent layer accessors
+    // Configuration
 
-	public void setHorizontalLayerDependency(ILayer horizontalLayerDependency) {
-		this.horizontalLayerDependency = horizontalLayerDependency;
-		
-//		this.horizontalLayerDependency.addLayerListener(new ILayerListener() {
-//
-//			@Override
-//			public void handleLayerEvent(ILayerEvent event) {
-//				if (event instanceof IStructuralChangeEvent) {
-//					// TODO refresh horizontal structure
-//				}
-//			}
-//
-//		});
-	}
+    @Override
+    public void configure(ConfigRegistry configRegistry,
+            UiBindingRegistry uiBindingRegistry) {
+        baseLayer.configure(configRegistry, uiBindingRegistry);
+        super.configure(configRegistry, uiBindingRegistry);
+    }
 
-	public void setVerticalLayerDependency(ILayer verticalLayerDependency) {
-		this.verticalLayerDependency = verticalLayerDependency;
-		
-//		this.verticalLayerDependency.addLayerListener(new ILayerListener() {
-//
-//			@Override
-//			public void handleLayerEvent(ILayerEvent event) {
-//				if (event instanceof IStructuralChangeEvent) {
-//					// TODO refresh vertical structure
-//				}
-//			}
-//
-//		});
-	}
+    // Dependent layer accessors
 
-	public ILayer getHorizontalLayerDependency() {
-		return horizontalLayerDependency;
-	}
+    public void setHorizontalLayerDependency(ILayer horizontalLayerDependency) {
+        this.horizontalLayerDependency = horizontalLayerDependency;
 
-	public ILayer getVerticalLayerDependency() {
-		return verticalLayerDependency;
-	}
+        // this.horizontalLayerDependency.addLayerListener(new ILayerListener()
+        // {
+        //
+        // @Override
+        // public void handleLayerEvent(ILayerEvent event) {
+        // if (event instanceof IStructuralChangeEvent) {
+        // // TODO refresh horizontal structure
+        // }
+        // }
+        //
+        // });
+    }
 
-	public IUniqueIndexLayer getBaseLayer() {
-		return baseLayer;
-	}
+    public void setVerticalLayerDependency(ILayer verticalLayerDependency) {
+        this.verticalLayerDependency = verticalLayerDependency;
 
-	// Commands
-	
-	@Override
-	public boolean doCommand(ILayerCommand command) {
-		// Invoke command handler(s) on the Dimensionally dependent layer
-		ILayerCommand clonedCommand = command.cloneCommand();
-		if (super.doCommand(clonedCommand)) {
-			return true;
-		}
-		
-		clonedCommand = command.cloneCommand();
-		if (horizontalLayerDependency.doCommand(clonedCommand)) {
-			return true;
-		}
+        // this.verticalLayerDependency.addLayerListener(new ILayerListener() {
+        //
+        // @Override
+        // public void handleLayerEvent(ILayerEvent event) {
+        // if (event instanceof IStructuralChangeEvent) {
+        // // TODO refresh vertical structure
+        // }
+        // }
+        //
+        // });
+    }
 
-		clonedCommand = command.cloneCommand();
-		if (verticalLayerDependency.doCommand(clonedCommand)) {
-			return true;
-		}
+    public ILayer getHorizontalLayerDependency() {
+        return horizontalLayerDependency;
+    }
 
-		return baseLayer.doCommand(command);
-	}
+    public ILayer getVerticalLayerDependency() {
+        return verticalLayerDependency;
+    }
 
-	// Events
+    public IUniqueIndexLayer getBaseLayer() {
+        return baseLayer;
+    }
 
-	@Override
-	public ILayerPainter getLayerPainter() {
-		return (layerPainter != null) ? layerPainter : baseLayer.getLayerPainter();
-	}
+    // Commands
 
-	// Horizontal features
+    @Override
+    public boolean doCommand(ILayerCommand command) {
+        // Invoke command handler(s) on the Dimensionally dependent layer
+        ILayerCommand clonedCommand = command.cloneCommand();
+        if (super.doCommand(clonedCommand)) {
+            return true;
+        }
 
-	// Columns
+        clonedCommand = command.cloneCommand();
+        if (horizontalLayerDependency.doCommand(clonedCommand)) {
+            return true;
+        }
 
-	@Override
-	public int getColumnCount() {
-		return horizontalLayerDependency.getColumnCount();
-	}
+        clonedCommand = command.cloneCommand();
+        if (verticalLayerDependency.doCommand(clonedCommand)) {
+            return true;
+        }
 
-	@Override
-	public int getPreferredColumnCount() {
-		return horizontalLayerDependency.getPreferredColumnCount();
-	}
+        return baseLayer.doCommand(command);
+    }
 
-	@Override
-	public int getColumnIndexByPosition(int columnPosition) {
-		return horizontalLayerDependency.getColumnIndexByPosition(columnPosition);
-	}
+    // Events
 
-	@Override
-	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		return horizontalLayerDependency.localToUnderlyingColumnPosition(localColumnPosition);
-	}
+    @Override
+    public ILayerPainter getLayerPainter() {
+        return (layerPainter != null) ? layerPainter : baseLayer
+                .getLayerPainter();
+    }
 
-	@Override
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-		if (sourceUnderlyingLayer == horizontalLayerDependency) {
-			return underlyingColumnPosition;
-		}
-		return horizontalLayerDependency.underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPosition);
-	}
-	
-	@Override
-	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
-		if (sourceUnderlyingLayer == horizontalLayerDependency) {
-			return underlyingColumnPositionRanges;
-		}
-		return horizontalLayerDependency.underlyingToLocalColumnPositions(sourceUnderlyingLayer, underlyingColumnPositionRanges);
-	}
+    // Horizontal features
 
-	// Width
+    // Columns
 
-	@Override
-	public int getWidth() {
-		return horizontalLayerDependency.getWidth();
-	}
+    @Override
+    public int getColumnCount() {
+        return horizontalLayerDependency.getColumnCount();
+    }
 
-	@Override
-	public int getPreferredWidth() {
-		return horizontalLayerDependency.getPreferredWidth();
-	}
+    @Override
+    public int getPreferredColumnCount() {
+        return horizontalLayerDependency.getPreferredColumnCount();
+    }
 
-	@Override
-	public int getColumnWidthByPosition(int columnPosition) {
-		return horizontalLayerDependency.getColumnWidthByPosition(columnPosition);
-	}
+    @Override
+    public int getColumnIndexByPosition(int columnPosition) {
+        return horizontalLayerDependency
+                .getColumnIndexByPosition(columnPosition);
+    }
 
-	// Column resize
+    @Override
+    public int localToUnderlyingColumnPosition(int localColumnPosition) {
+        return horizontalLayerDependency
+                .localToUnderlyingColumnPosition(localColumnPosition);
+    }
 
-	@Override
-	public boolean isColumnPositionResizable(int columnPosition) {
-		return horizontalLayerDependency.isColumnPositionResizable(columnPosition);
-	}
+    @Override
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
+            int underlyingColumnPosition) {
+        if (sourceUnderlyingLayer == horizontalLayerDependency) {
+            return underlyingColumnPosition;
+        }
+        return horizontalLayerDependency.underlyingToLocalColumnPosition(
+                sourceUnderlyingLayer, underlyingColumnPosition);
+    }
 
-	// X
+    @Override
+    public Collection<Range> underlyingToLocalColumnPositions(
+            ILayer sourceUnderlyingLayer,
+            Collection<Range> underlyingColumnPositionRanges) {
+        if (sourceUnderlyingLayer == horizontalLayerDependency) {
+            return underlyingColumnPositionRanges;
+        }
+        return horizontalLayerDependency.underlyingToLocalColumnPositions(
+                sourceUnderlyingLayer, underlyingColumnPositionRanges);
+    }
 
-	@Override
-	public int getColumnPositionByX(int x) {
-		return horizontalLayerDependency.getColumnPositionByX(x);
-	}
+    // Width
 
-	@Override
-	public int getStartXOfColumnPosition(int columnPosition) {
-		return horizontalLayerDependency.getStartXOfColumnPosition(columnPosition);
-	}
-	
-	// Underlying
+    @Override
+    public int getWidth() {
+        return horizontalLayerDependency.getWidth();
+    }
 
-	@Override
-	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
-		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
-		underlyingLayers.add(baseLayer);
-		return underlyingLayers;
-	}
+    @Override
+    public int getPreferredWidth() {
+        return horizontalLayerDependency.getPreferredWidth();
+    }
 
-	// Vertical features
+    @Override
+    public int getColumnWidthByPosition(int columnPosition) {
+        return horizontalLayerDependency
+                .getColumnWidthByPosition(columnPosition);
+    }
 
-	// Rows
+    // Column resize
 
-	@Override
-	public int getRowCount() {
-		return verticalLayerDependency.getRowCount();
-	}
+    @Override
+    public boolean isColumnPositionResizable(int columnPosition) {
+        return horizontalLayerDependency
+                .isColumnPositionResizable(columnPosition);
+    }
 
-	@Override
-	public int getPreferredRowCount() {
-		return verticalLayerDependency.getPreferredRowCount();
-	}
+    // X
 
-	@Override
-	public int getRowIndexByPosition(int rowPosition) {
-		return verticalLayerDependency.getRowIndexByPosition(rowPosition);
-	}
+    @Override
+    public int getColumnPositionByX(int x) {
+        return horizontalLayerDependency.getColumnPositionByX(x);
+    }
 
-	@Override
-	public int localToUnderlyingRowPosition(int localRowPosition) {
-		return verticalLayerDependency.localToUnderlyingRowPosition(localRowPosition);
-	}
+    @Override
+    public int getStartXOfColumnPosition(int columnPosition) {
+        return horizontalLayerDependency
+                .getStartXOfColumnPosition(columnPosition);
+    }
 
-	@Override
-	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
-		if (sourceUnderlyingLayer == verticalLayerDependency) {
-			return underlyingRowPosition;
-		}
-		return verticalLayerDependency.underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPosition);
-	}
-	
-	@Override
-	public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
-		if (sourceUnderlyingLayer == verticalLayerDependency) {
-			return underlyingRowPositionRanges;
-		}
-		return verticalLayerDependency.underlyingToLocalRowPositions(sourceUnderlyingLayer, underlyingRowPositionRanges);
-	}
+    // Underlying
 
-	// Height
+    @Override
+    public Collection<ILayer> getUnderlyingLayersByColumnPosition(
+            int columnPosition) {
+        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        underlyingLayers.add(baseLayer);
+        return underlyingLayers;
+    }
 
-	@Override
-	public int getHeight() {
-		return verticalLayerDependency.getHeight();
-	}
+    // Vertical features
 
-	@Override
-	public int getPreferredHeight() {
-		return verticalLayerDependency.getPreferredHeight();
-	}
+    // Rows
 
-	@Override
-	public int getRowHeightByPosition(int rowPosition) {
-		return verticalLayerDependency.getRowHeightByPosition(rowPosition);
-	}
+    @Override
+    public int getRowCount() {
+        return verticalLayerDependency.getRowCount();
+    }
 
-	// Row resize
+    @Override
+    public int getPreferredRowCount() {
+        return verticalLayerDependency.getPreferredRowCount();
+    }
 
-	@Override
-	public boolean isRowPositionResizable(int rowPosition) {
-		return verticalLayerDependency.isRowPositionResizable(rowPosition);
-	}
+    @Override
+    public int getRowIndexByPosition(int rowPosition) {
+        return verticalLayerDependency.getRowIndexByPosition(rowPosition);
+    }
 
-	// Y
+    @Override
+    public int localToUnderlyingRowPosition(int localRowPosition) {
+        return verticalLayerDependency
+                .localToUnderlyingRowPosition(localRowPosition);
+    }
 
-	@Override
-	public int getRowPositionByY(int y) {
-		return verticalLayerDependency.getRowPositionByY(y);
-	}
+    @Override
+    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
+            int underlyingRowPosition) {
+        if (sourceUnderlyingLayer == verticalLayerDependency) {
+            return underlyingRowPosition;
+        }
+        return verticalLayerDependency.underlyingToLocalRowPosition(
+                sourceUnderlyingLayer, underlyingRowPosition);
+    }
 
-	@Override
-	public int getStartYOfRowPosition(int rowPosition) {
-		return verticalLayerDependency.getStartYOfRowPosition(rowPosition);
-	}
-	
-	// Underlying
+    @Override
+    public Collection<Range> underlyingToLocalRowPositions(
+            ILayer sourceUnderlyingLayer,
+            Collection<Range> underlyingRowPositionRanges) {
+        if (sourceUnderlyingLayer == verticalLayerDependency) {
+            return underlyingRowPositionRanges;
+        }
+        return verticalLayerDependency.underlyingToLocalRowPositions(
+                sourceUnderlyingLayer, underlyingRowPositionRanges);
+    }
 
-	@Override
-	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
-		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
-		underlyingLayers.add(baseLayer);
-		return underlyingLayers;
-	}
+    // Height
 
-	// Cell features
+    @Override
+    public int getHeight() {
+        return verticalLayerDependency.getHeight();
+    }
 
-	@Override
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		int baseColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, baseLayer);
-		int baseRowPosition = LayerUtil.convertRowPosition(this, rowPosition, baseLayer);
-		return baseLayer.getDisplayModeByPosition(baseColumnPosition, baseRowPosition);
-	}
+    @Override
+    public int getPreferredHeight() {
+        return verticalLayerDependency.getPreferredHeight();
+    }
 
-	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		int baseColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, baseLayer);
-		int baseRowPosition = LayerUtil.convertRowPosition(this, rowPosition, baseLayer);
-		return baseLayer.getConfigLabelsByPosition(baseColumnPosition, baseRowPosition);
-	}
+    @Override
+    public int getRowHeightByPosition(int rowPosition) {
+        return verticalLayerDependency.getRowHeightByPosition(rowPosition);
+    }
 
-	@Override
-	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-		int baseColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, baseLayer);
-		int baseRowPosition = LayerUtil.convertRowPosition(this, rowPosition, baseLayer);
-		return baseLayer.getDataValueByPosition(baseColumnPosition, baseRowPosition);
-	}
+    // Row resize
 
-	// IRegionResolver
+    @Override
+    public boolean isRowPositionResizable(int rowPosition) {
+        return verticalLayerDependency.isRowPositionResizable(rowPosition);
+    }
 
-	@Override
-	public LabelStack getRegionLabelsByXY(int x, int y) {
-		return baseLayer.getRegionLabelsByXY(x, y);
-	}
+    // Y
 
-	@Override
-	public IClientAreaProvider getClientAreaProvider() {
-		return clientAreaProvider;
-	}
+    @Override
+    public int getRowPositionByY(int y) {
+        return verticalLayerDependency.getRowPositionByY(y);
+    }
 
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		this.clientAreaProvider = clientAreaProvider;
-	}
+    @Override
+    public int getStartYOfRowPosition(int rowPosition) {
+        return verticalLayerDependency.getStartYOfRowPosition(rowPosition);
+    }
 
-	@Override
-	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
-		return baseLayer;
-	}
+    // Underlying
+
+    @Override
+    public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
+        Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
+        underlyingLayers.add(baseLayer);
+        return underlyingLayers;
+    }
+
+    // Cell features
+
+    @Override
+    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
+        int baseColumnPosition = LayerUtil.convertColumnPosition(this,
+                columnPosition, baseLayer);
+        int baseRowPosition = LayerUtil.convertRowPosition(this, rowPosition,
+                baseLayer);
+        return baseLayer.getDisplayModeByPosition(baseColumnPosition,
+                baseRowPosition);
+    }
+
+    @Override
+    public LabelStack getConfigLabelsByPosition(int columnPosition,
+            int rowPosition) {
+        int baseColumnPosition = LayerUtil.convertColumnPosition(this,
+                columnPosition, baseLayer);
+        int baseRowPosition = LayerUtil.convertRowPosition(this, rowPosition,
+                baseLayer);
+        return baseLayer.getConfigLabelsByPosition(baseColumnPosition,
+                baseRowPosition);
+    }
+
+    @Override
+    public Object getDataValueByPosition(int columnPosition, int rowPosition) {
+        int baseColumnPosition = LayerUtil.convertColumnPosition(this,
+                columnPosition, baseLayer);
+        int baseRowPosition = LayerUtil.convertRowPosition(this, rowPosition,
+                baseLayer);
+        return baseLayer.getDataValueByPosition(baseColumnPosition,
+                baseRowPosition);
+    }
+
+    // IRegionResolver
+
+    @Override
+    public LabelStack getRegionLabelsByXY(int x, int y) {
+        return baseLayer.getRegionLabelsByXY(x, y);
+    }
+
+    @Override
+    public IClientAreaProvider getClientAreaProvider() {
+        return clientAreaProvider;
+    }
+
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        this.clientAreaProvider = clientAreaProvider;
+    }
+
+    @Override
+    public ILayer getUnderlyingLayerByPosition(int columnPosition,
+            int rowPosition) {
+        return baseLayer;
+    }
 
 }

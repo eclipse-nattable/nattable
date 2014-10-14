@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
@@ -24,23 +23,24 @@ import org.eclipse.swt.SWT;
 
 public class DefaultExportBindings implements IConfiguration {
 
-	@Override
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL, 'e'), new ExportAction());
-	}
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerKeyBinding(
+                new KeyEventMatcher(SWT.CTRL, 'e'), new ExportAction());
+    }
 
-	@Override
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(
-				ExportConfigAttributes.EXPORTER, new ExcelExporter());
-		configRegistry.registerConfigAttribute(
-				ExportConfigAttributes.EXPORT_FORMATTER, new DefaultExportFormatter());
-		configRegistry.registerConfigAttribute(
-				ExportConfigAttributes.DATE_FORMAT, "m/d/yy h:mm"); //$NON-NLS-1$
-	}
+    @Override
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        configRegistry.registerConfigAttribute(ExportConfigAttributes.EXPORTER,
+                new ExcelExporter());
+        configRegistry.registerConfigAttribute(
+                ExportConfigAttributes.EXPORT_FORMATTER,
+                new DefaultExportFormatter());
+        configRegistry.registerConfigAttribute(
+                ExportConfigAttributes.DATE_FORMAT, "m/d/yy h:mm"); //$NON-NLS-1$
+    }
 
-	@Override
-	public void configureLayer(ILayer layer) {
-	}
+    @Override
+    public void configureLayer(ILayer layer) {}
 
 }

@@ -15,17 +15,18 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 
 public class ReorderColumnGroupCommand extends ColumnReorderCommand {
 
-	public ReorderColumnGroupCommand(ILayer layer, int fromColumnPosition, int toColumnPosition) {
-		super(layer, fromColumnPosition, toColumnPosition);
-	}
+    public ReorderColumnGroupCommand(ILayer layer, int fromColumnPosition,
+            int toColumnPosition) {
+        super(layer, fromColumnPosition, toColumnPosition);
+    }
 
-	public ReorderColumnGroupCommand(ReorderColumnGroupCommand command) {
-		super(command);
-	}
+    public ReorderColumnGroupCommand(ReorderColumnGroupCommand command) {
+        super(command);
+    }
 
-	@Override
-	public ReorderColumnGroupCommand cloneCommand() {
-		return new ReorderColumnGroupCommand(this);
-	}
+    @Override
+    public ReorderColumnGroupCommand cloneCommand() {
+        return new ReorderColumnGroupCommand(this);
+    }
 
 }

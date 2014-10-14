@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.GC;
@@ -18,48 +17,59 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public abstract class CellPainterWrapper extends AbstractCellPainter {
 
-	private ICellPainter wrappedPainter;
+    private ICellPainter wrappedPainter;
 
-	public CellPainterWrapper() {}
+    public CellPainterWrapper() {}
 
-	public CellPainterWrapper(ICellPainter painter) {
-		this.wrappedPainter = painter;
-	}
+    public CellPainterWrapper(ICellPainter painter) {
+        this.wrappedPainter = painter;
+    }
 
-	public void setWrappedPainter(ICellPainter painter) {
-		this.wrappedPainter = painter;
-	}
+    public void setWrappedPainter(ICellPainter painter) {
+        this.wrappedPainter = painter;
+    }
 
-	public ICellPainter getWrappedPainter() {
-		return wrappedPainter;
-	}
+    public ICellPainter getWrappedPainter() {
+        return wrappedPainter;
+    }
 
-	public Rectangle getWrappedPainterBounds(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
-		return bounds;
-	}
+    public Rectangle getWrappedPainterBounds(ILayerCell cell, GC gc,
+            Rectangle bounds, IConfigRegistry configRegistry) {
+        return bounds;
+    }
 
-	@Override
-	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-		Rectangle wrappedPainterBounds = getWrappedPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
-		if (wrappedPainter != null && wrappedPainterBounds.contains(x, y)) {
-			return getWrappedPainter().getCellPainterAt(x, y, cell, gc, wrappedPainterBounds, configRegistry);
-		} else {
-			return super.getCellPainterAt(x, y, cell, gc, adjustedCellBounds, configRegistry);
-		}
-	}
+    @Override
+    public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc,
+            Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+        Rectangle wrappedPainterBounds = getWrappedPainterBounds(cell, gc,
+                adjustedCellBounds, configRegistry);
+        if (wrappedPainter != null && wrappedPainterBounds.contains(x, y)) {
+            return getWrappedPainter().getCellPainterAt(x, y, cell, gc,
+                    wrappedPainterBounds, configRegistry);
+        } else {
+            return super.getCellPainterAt(x, y, cell, gc, adjustedCellBounds,
+                    configRegistry);
+        }
+    }
 
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-		return wrappedPainter != null ? wrappedPainter.getPreferredWidth(cell, gc, configRegistry) : 0;
-	}
+    public int getPreferredWidth(ILayerCell cell, GC gc,
+            IConfigRegistry configRegistry) {
+        return wrappedPainter != null ? wrappedPainter.getPreferredWidth(cell,
+                gc, configRegistry) : 0;
+    }
 
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-		return wrappedPainter != null ? wrappedPainter.getPreferredHeight(cell, gc, configRegistry) : 0;
-	}
+    public int getPreferredHeight(ILayerCell cell, GC gc,
+            IConfigRegistry configRegistry) {
+        return wrappedPainter != null ? wrappedPainter.getPreferredHeight(cell,
+                gc, configRegistry) : 0;
+    }
 
-	public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-		if (wrappedPainter != null) {
-			wrappedPainter.paintCell(cell, gc, adjustedCellBounds, configRegistry);
-		}
-	}
+    public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds,
+            IConfigRegistry configRegistry) {
+        if (wrappedPainter != null) {
+            wrappedPainter.paintCell(cell, gc, adjustedCellBounds,
+                    configRegistry);
+        }
+    }
 
 }

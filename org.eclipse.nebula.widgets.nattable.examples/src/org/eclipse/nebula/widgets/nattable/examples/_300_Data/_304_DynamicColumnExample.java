@@ -46,174 +46,180 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Example that shows how to create a custom IColumnPropertyAccessor that supports
- * dynamic column creation at runtime.
+ * Example that shows how to create a custom IColumnPropertyAccessor that
+ * supports dynamic column creation at runtime.
  * 
  * @author Dirk Fauth
  *
  */
 public class _304_DynamicColumnExample extends AbstractNatExample {
 
-	private List<String> columns = new ArrayList<String>();
-	
-	private List<Map<String, String>> values =new ArrayList<Map<String, String>>();
+    private List<String> columns = new ArrayList<String>();
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 650, new _304_DynamicColumnExample());
-	}
+    private List<Map<String, String>> values = new ArrayList<Map<String, String>>();
 
-	@Override
-	public String getDescription() {
-		return "This example shows how to create a custom IColumnPropertyAccessor that supports"
-				+ " dynamic column creation at runtime.";
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 650,
+                new _304_DynamicColumnExample());
+    }
 
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//start with 3 columns
-		columns.add("Column_0");
-		columns.add("Column_1");
-		columns.add("Column_2");
+    @Override
+    public String getDescription() {
+        return "This example shows how to create a custom IColumnPropertyAccessor that supports"
+                + " dynamic column creation at runtime.";
+    }
 
-		values.add(createValueRow("Homer"));
-		values.add(createValueRow("Marge"));
-		values.add(createValueRow("Bart"));
-		values.add(createValueRow("Lisa"));
-		values.add(createValueRow("Maggie"));
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // start with 3 columns
+        columns.add("Column_0");
+        columns.add("Column_1");
+        columns.add("Column_2");
 
-		
-		Composite panel = new Composite(parent, SWT.NONE);
-		panel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
-		
-		Composite gridPanel = new Composite(panel, SWT.NONE);
-		gridPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
-		
-		Composite buttonPanel = new Composite(panel, SWT.NONE);
-		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
+        values.add(createValueRow("Homer"));
+        values.add(createValueRow("Marge"));
+        values.add(createValueRow("Bart"));
+        values.add(createValueRow("Lisa"));
+        values.add(createValueRow("Maggie"));
 
-		ConfigRegistry configRegistry = new ConfigRegistry();
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 
-		//create the body layer stack
-		IDataProvider bodyDataProvider = new ListDataProvider<Map<String, String>>(values, new MyColumnPropertyAccessor());
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		DefaultBodyLayerStack bodyLayerStack = new DefaultBodyLayerStack(bodyDataLayer);
+        Composite gridPanel = new Composite(panel, SWT.NONE);
+        gridPanel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
 
-		//create the column header layer stack
-		IDataProvider columnHeaderDataProvider = new SimpleColumnHeaderDataProvider();
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-				new DataLayer(columnHeaderDataProvider),
-				bodyLayerStack.getViewportLayer(), 
-				bodyLayerStack.getSelectionLayer());
+        Composite buttonPanel = new Composite(panel, SWT.NONE);
+        buttonPanel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
 
-		//create the row header layer stack
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(
-				new DefaultRowHeaderDataLayer(new DefaultRowHeaderDataProvider(bodyDataProvider)), 
-				bodyLayerStack.getViewportLayer(), 
-				bodyLayerStack.getSelectionLayer());
-		
-		//create the corner layer stack
-		ILayer cornerLayer = new CornerLayer(
-				new DataLayer(new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), 
-				rowHeaderLayer, 
-				columnHeaderLayer);
-		
-		//create the grid layer composed with the prior created layer stacks
-		GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		final NatTable natTable = new NatTable(gridPanel, gridLayer, false);
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
-		natTable.addConfiguration(new SingleClickSortConfiguration());
-		natTable.configure();
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		
-		Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
-		addColumnButton.setText("Add Column");
-		addColumnButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String newColumn = "Column_" + columns.size();
-				columns.add(newColumn);
-				
-				for (Map<String, String> value : values) {
-					String prefix = value.get("Column_0");
-					prefix = prefix.substring(0, prefix.indexOf("_"));
-					value.put(newColumn, prefix + "_" + (columns.size()-1));
-				}
-				
-				bodyDataLayer.fireLayerEvent(
-						new ColumnInsertEvent(bodyDataLayer, columns.size()-1));
-			}
-		});
-		
-		return panel;
-	}
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-	private Map<String, String> createValueRow(String value) {
-		Map<String, String> valueRow = new HashMap<String, String>();
-		
-		for (int i = 0; i < columns.size(); i++) {
-			String column = columns.get(i);
-			valueRow.put(column, value + "_" + i);
-		}
-		
-		return valueRow;
-	}
-	
-	class MyColumnPropertyAccessor implements IColumnPropertyAccessor<Map<String, String>> {
-		
-		@Override
-		public Object getDataValue(Map<String, String> rowObject, int columnIndex) {
-			return rowObject.get(getColumnProperty(columnIndex));
-		}
-		
-		@Override
-		public void setDataValue(Map<String, String> rowObject, int columnIndex, Object newValue) {
-			rowObject.put(getColumnProperty(columnIndex), newValue.toString());
-		}
-		
-		@Override
-		public int getColumnCount() {
-			return columns.size();
-		}
-		
-		@Override
-		public String getColumnProperty(int columnIndex) {
-			return columns.get(columnIndex);
-		}
-		
-		@Override
-		public int getColumnIndex(String propertyName) {
-			return columns.indexOf(propertyName);
-		}
-	}
+        // create the body layer stack
+        IDataProvider bodyDataProvider = new ListDataProvider<Map<String, String>>(
+                values, new MyColumnPropertyAccessor());
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        DefaultBodyLayerStack bodyLayerStack = new DefaultBodyLayerStack(
+                bodyDataLayer);
 
-	class SimpleColumnHeaderDataProvider implements IDataProvider {
+        // create the column header layer stack
+        IDataProvider columnHeaderDataProvider = new SimpleColumnHeaderDataProvider();
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(
+                columnHeaderDataProvider), bodyLayerStack.getViewportLayer(),
+                bodyLayerStack.getSelectionLayer());
 
-		@Override
-		public Object getDataValue(int columnIndex, int rowIndex) {
-			return "Column " + (columnIndex + 1); //$NON-NLS-1$
-		}
+        // create the row header layer stack
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(
+                new DefaultRowHeaderDataLayer(new DefaultRowHeaderDataProvider(
+                        bodyDataProvider)), bodyLayerStack.getViewportLayer(),
+                bodyLayerStack.getSelectionLayer());
 
-		@Override
-		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-			throw new UnsupportedOperationException();
-		}
+        // create the corner layer stack
+        ILayer cornerLayer = new CornerLayer(new DataLayer(
+                new DefaultCornerDataProvider(columnHeaderDataProvider,
+                        rowHeaderDataProvider)), rowHeaderLayer,
+                columnHeaderLayer);
 
-		@Override
-		public int getColumnCount() {
-			return columns.size();
-		}
+        // create the grid layer composed with the prior created layer stacks
+        GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
 
-		@Override
-		public int getRowCount() {
-			return 1;
-		}
-		
-	}
+        final NatTable natTable = new NatTable(gridPanel, gridLayer, false);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+        natTable.addConfiguration(new SingleClickSortConfiguration());
+        natTable.configure();
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Button addColumnButton = new Button(buttonPanel, SWT.PUSH);
+        addColumnButton.setText("Add Column");
+        addColumnButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String newColumn = "Column_" + columns.size();
+                columns.add(newColumn);
+
+                for (Map<String, String> value : values) {
+                    String prefix = value.get("Column_0");
+                    prefix = prefix.substring(0, prefix.indexOf("_"));
+                    value.put(newColumn, prefix + "_" + (columns.size() - 1));
+                }
+
+                bodyDataLayer.fireLayerEvent(new ColumnInsertEvent(
+                        bodyDataLayer, columns.size() - 1));
+            }
+        });
+
+        return panel;
+    }
+
+    private Map<String, String> createValueRow(String value) {
+        Map<String, String> valueRow = new HashMap<String, String>();
+
+        for (int i = 0; i < columns.size(); i++) {
+            String column = columns.get(i);
+            valueRow.put(column, value + "_" + i);
+        }
+
+        return valueRow;
+    }
+
+    class MyColumnPropertyAccessor implements
+            IColumnPropertyAccessor<Map<String, String>> {
+
+        @Override
+        public Object getDataValue(Map<String, String> rowObject,
+                int columnIndex) {
+            return rowObject.get(getColumnProperty(columnIndex));
+        }
+
+        @Override
+        public void setDataValue(Map<String, String> rowObject,
+                int columnIndex, Object newValue) {
+            rowObject.put(getColumnProperty(columnIndex), newValue.toString());
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columns.size();
+        }
+
+        @Override
+        public String getColumnProperty(int columnIndex) {
+            return columns.get(columnIndex);
+        }
+
+        @Override
+        public int getColumnIndex(String propertyName) {
+            return columns.indexOf(propertyName);
+        }
+    }
+
+    class SimpleColumnHeaderDataProvider implements IDataProvider {
+
+        @Override
+        public Object getDataValue(int columnIndex, int rowIndex) {
+            return "Column " + (columnIndex + 1); //$NON-NLS-1$
+        }
+
+        @Override
+        public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columns.size();
+        }
+
+        @Override
+        public int getRowCount() {
+            return 1;
+        }
+
+    }
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,301 +37,344 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.MultiColumnReorderCom
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultColumnReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 
-
 /**
- * Adds functionality for reordering column(s)
- * Also responsible for saving/loading the column order state.
- * 
+ * Adds functionality for reordering column(s) Also responsible for
+ * saving/loading the column order state.
+ *
  * @see DefaultColumnReorderLayerConfiguration
  */
-public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
+public class ColumnReorderLayer extends AbstractLayerTransform implements
+IUniqueIndexLayer {
 
-	public static final String PERSISTENCE_KEY_COLUMN_INDEX_ORDER = ".columnIndexOrder"; //$NON-NLS-1$
+    public static final String PERSISTENCE_KEY_COLUMN_INDEX_ORDER = ".columnIndexOrder"; //$NON-NLS-1$
 
-	private final IUniqueIndexLayer underlyingLayer;
+    private final IUniqueIndexLayer underlyingLayer;
 
-	// Position X in the List contains the index of column at position X
-	protected final List<Integer> columnIndexOrder = new ArrayList<Integer>();
+    // Position X in the List contains the index of column at position X
+    protected final List<Integer> columnIndexOrder = new ArrayList<Integer>();
 
-	private final Map<Integer, Integer> startXCache = new HashMap<Integer, Integer>();
+    private final Map<Integer, Integer> startXCache = new HashMap<Integer, Integer>();
 
-	private int reorderFromColumnPosition;
+    private int reorderFromColumnPosition;
 
-	public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer) {
-		this(underlyingLayer, true);
-	}
+    public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer) {
+        this(underlyingLayer, true);
+    }
 
-	public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer, boolean useDefaultConfiguration) {
-		super(underlyingLayer);
-		this.underlyingLayer = underlyingLayer;
+    public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer,
+            boolean useDefaultConfiguration) {
+        super(underlyingLayer);
+        this.underlyingLayer = underlyingLayer;
 
-		populateIndexOrder();
+        populateIndexOrder();
 
-		registerCommandHandlers();
+        registerCommandHandlers();
 
-		if (useDefaultConfiguration) {
-			addConfiguration(new DefaultColumnReorderLayerConfiguration());
-		}
-	}
+        if (useDefaultConfiguration) {
+            addConfiguration(new DefaultColumnReorderLayerConfiguration());
+        }
+    }
 
-	@Override
-	public void handleLayerEvent(ILayerEvent event) {
-		if (event instanceof IStructuralChangeEvent) {
-			IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
-			if (structuralChangeEvent.isHorizontalStructureChanged()) {
-				Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getColumnDiffs();
-				if (structuralDiffs == null) {
-					// Assume everything changed
-					columnIndexOrder.clear();
-					populateIndexOrder();
-				} else {
-					// only react on ADD or DELETE and not on CHANGE
-					StructuralChangeEventHelper.handleColumnDelete(structuralDiffs, underlyingLayer, columnIndexOrder, true);
-					StructuralChangeEventHelper.handleColumnInsert(structuralDiffs, underlyingLayer, columnIndexOrder, true);
-				}
-				invalidateCache();
-			}
-		}
-		super.handleLayerEvent(event);
-	}
-	
-	// Configuration
-	
-	@Override
-	protected void registerCommandHandlers() {
-		registerCommandHandler(new ColumnReorderCommandHandler(this));
-		registerCommandHandler(new ColumnReorderStartCommandHandler(this));
-		registerCommandHandler(new ColumnReorderEndCommandHandler(this));
-		registerCommandHandler(new MultiColumnReorderCommandHandler(this));
-	}
+    @Override
+    public void handleLayerEvent(ILayerEvent event) {
+        if (event instanceof IStructuralChangeEvent) {
+            IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
+            if (structuralChangeEvent.isHorizontalStructureChanged()) {
+                Collection<StructuralDiff> structuralDiffs = structuralChangeEvent
+                        .getColumnDiffs();
+                if (structuralDiffs == null) {
+                    // Assume everything changed
+                    this.columnIndexOrder.clear();
+                    populateIndexOrder();
+                } else {
+                    // only react on ADD or DELETE and not on CHANGE
+                    StructuralChangeEventHelper.handleColumnDelete(
+                            structuralDiffs, this.underlyingLayer,
+                            this.columnIndexOrder, true);
+                    StructuralChangeEventHelper.handleColumnInsert(
+                            structuralDiffs, this.underlyingLayer,
+                            this.columnIndexOrder, true);
+                }
+                invalidateCache();
+            }
+        }
+        super.handleLayerEvent(event);
+    }
 
-	// Persistence
+    // Configuration
 
-	@Override
-	public void saveState(String prefix, Properties properties) {
-		super.saveState(prefix, properties);
-		if (columnIndexOrder.size() > 0) {
-			StringBuilder strBuilder = new StringBuilder();
-			for (Integer index : columnIndexOrder) {
-				strBuilder.append(index);
-				strBuilder.append(',');
-			}
-			properties.setProperty(prefix + PERSISTENCE_KEY_COLUMN_INDEX_ORDER, strBuilder.toString());
-		}
-	}
+    @Override
+    protected void registerCommandHandlers() {
+        registerCommandHandler(new ColumnReorderCommandHandler(this));
+        registerCommandHandler(new ColumnReorderStartCommandHandler(this));
+        registerCommandHandler(new ColumnReorderEndCommandHandler(this));
+        registerCommandHandler(new MultiColumnReorderCommandHandler(this));
+    }
 
-	@Override
-	public void loadState(String prefix, Properties properties) {
-		super.loadState(prefix, properties);
-		String property = properties.getProperty(prefix + PERSISTENCE_KEY_COLUMN_INDEX_ORDER);
+    // Persistence
 
-		if (property != null) {
-			List<Integer> newColumnIndexOrder = new ArrayList<Integer>();
-			StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
-			while (tok.hasMoreTokens()) {
-				String index = tok.nextToken();
-				newColumnIndexOrder.add(Integer.valueOf(index));
-			}
-			
-			if (isRestoredStateValid(newColumnIndexOrder)){
-				columnIndexOrder.clear();
-				columnIndexOrder.addAll(newColumnIndexOrder);
-			}
-			
-		}
-		invalidateCache();
-		fireLayerEvent(new ColumnStructuralRefreshEvent(this));
-	}
+    @Override
+    public void saveState(String prefix, Properties properties) {
+        super.saveState(prefix, properties);
+        if (this.columnIndexOrder.size() > 0) {
+            StringBuilder strBuilder = new StringBuilder();
+            for (Integer index : this.columnIndexOrder) {
+                strBuilder.append(index);
+                strBuilder.append(',');
+            }
+            properties.setProperty(prefix + PERSISTENCE_KEY_COLUMN_INDEX_ORDER,
+                    strBuilder.toString());
+        }
+    }
 
-	/**
-	 * Ensure that columns haven't changed in the underlying data source
-	 * @param newColumnIndexOrder restored from the properties file.
-	 */
-	protected boolean isRestoredStateValid(List<Integer> newColumnIndexOrder) {
-		if (newColumnIndexOrder.size() != getColumnCount()){
-			System.err.println(
-				"Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
-				"is not the same as the number of columns in the data source (" + getColumnCount() + ").\n" + //$NON-NLS-1$ //$NON-NLS-2$
-				"Skipping restore of column ordering"); //$NON-NLS-1$
-			return false;
-		}
-		
-		for (Integer index : newColumnIndexOrder) {
-			if(!columnIndexOrder.contains(index)){
-				System.err.println(
-					"Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
-					"Skipping restore of column ordering"); //$NON-NLS-1$
-				return false;
-			}
-		}
-		return true;
-	}
+    @Override
+    public void loadState(String prefix, Properties properties) {
+        super.loadState(prefix, properties);
+        String property = properties.getProperty(prefix
+                + PERSISTENCE_KEY_COLUMN_INDEX_ORDER);
 
-	// Columns
+        if (property != null) {
+            List<Integer> newColumnIndexOrder = new ArrayList<Integer>();
+            StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
+            while (tok.hasMoreTokens()) {
+                String index = tok.nextToken();
+                newColumnIndexOrder.add(Integer.valueOf(index));
+            }
 
-	public List<Integer> getColumnIndexOrder() {
-		return columnIndexOrder;
-	}
+            if (isRestoredStateValid(newColumnIndexOrder)) {
+                this.columnIndexOrder.clear();
+                this.columnIndexOrder.addAll(newColumnIndexOrder);
+            }
 
-	@Override
-	public int getColumnIndexByPosition(int columnPosition) {
-		if (columnPosition >= 0 && columnPosition < columnIndexOrder.size()) {
-			return columnIndexOrder.get(columnPosition).intValue();
-		} else {
-			return -1;
-		}
-	}
+        }
+        invalidateCache();
+        fireLayerEvent(new ColumnStructuralRefreshEvent(this));
+    }
 
-	@Override
-	public int getColumnPositionByIndex(int columnIndex) {
-		return columnIndexOrder.indexOf(Integer.valueOf(columnIndex));
-	}
+    /**
+     * Ensure that columns haven't changed in the underlying data source
+     *
+     * @param newColumnIndexOrder
+     *            restored from the properties file.
+     */
+    protected boolean isRestoredStateValid(List<Integer> newColumnIndexOrder) {
+        if (newColumnIndexOrder.size() != getColumnCount()) {
+            System.err
+            .println("Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
+                    "is not the same as the number of columns in the data source (" //$NON-NLS-1$
+                    + getColumnCount() + ").\n" + //$NON-NLS-1$
+                    "Skipping restore of column ordering"); //$NON-NLS-1$
+            return false;
+        }
 
-	@Override
-	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		int columnIndex = getColumnIndexByPosition(localColumnPosition);
-		return underlyingLayer.getColumnPositionByIndex(columnIndex);
-	}
+        for (Integer index : newColumnIndexOrder) {
+            if (!this.columnIndexOrder.contains(index)) {
+                System.err
+                .println("Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
+                        "Skipping restore of column ordering"); //$NON-NLS-1$
+                return false;
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-		int columnIndex = underlyingLayer.getColumnIndexByPosition(underlyingColumnPosition);
-		return getColumnPositionByIndex(columnIndex);
-	}
+    // Columns
 
-	@Override
-	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
-		List<Integer> reorderedColumnPositions = new ArrayList<Integer>();
-		for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
-			for (int underlyingColumnPosition = underlyingColumnPositionRange.start; underlyingColumnPosition < underlyingColumnPositionRange.end; underlyingColumnPosition++) {
-				int localColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start);
-				reorderedColumnPositions.add(Integer.valueOf(localColumnPosition));
-			}
-		}
-		Collections.sort(reorderedColumnPositions);
-		
-		return PositionUtil.getRanges(reorderedColumnPositions);
-	}
-	
-	// X
+    public List<Integer> getColumnIndexOrder() {
+        return this.columnIndexOrder;
+    }
 
-	@Override
-	public int getColumnPositionByX(int x) {
-		return LayerUtil.getColumnPositionByX(this, x);
-	}
+    @Override
+    public int getColumnIndexByPosition(int columnPosition) {
+        if (columnPosition >= 0
+                && columnPosition < this.columnIndexOrder.size()) {
+            return this.columnIndexOrder.get(columnPosition).intValue();
+        } else {
+            return -1;
+        }
+    }
 
-	@Override
-	public int getStartXOfColumnPosition(int targetColumnPosition) {
-		Integer cachedStartX = startXCache.get(Integer.valueOf(targetColumnPosition));
-		if (cachedStartX != null) {
-			return cachedStartX.intValue();
-		}
+    @Override
+    public int getColumnPositionByIndex(int columnIndex) {
+        return this.columnIndexOrder.indexOf(Integer.valueOf(columnIndex));
+    }
 
-		int aggregateWidth = 0;
-		for (int columnPosition = 0; columnPosition < targetColumnPosition; columnPosition++) {
-			aggregateWidth += underlyingLayer.getColumnWidthByPosition(localToUnderlyingColumnPosition(columnPosition));
-		}
+    @Override
+    public int localToUnderlyingColumnPosition(int localColumnPosition) {
+        int columnIndex = getColumnIndexByPosition(localColumnPosition);
+        return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
+    }
 
-		startXCache.put(Integer.valueOf(targetColumnPosition), Integer.valueOf(aggregateWidth));
-		return aggregateWidth;
-	}
-	
-	private void populateIndexOrder() {
-		ILayer underlyingLayer = getUnderlyingLayer();
-		for (int columnPosition = 0; columnPosition < underlyingLayer.getColumnCount(); columnPosition++) {
-			columnIndexOrder.add(Integer.valueOf(underlyingLayer.getColumnIndexByPosition(columnPosition)));
-		}
-	}
+    @Override
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
+            int underlyingColumnPosition) {
+        int columnIndex = this.underlyingLayer
+                .getColumnIndexByPosition(underlyingColumnPosition);
+        return getColumnPositionByIndex(columnIndex);
+    }
 
-	// Vertical features
+    @Override
+    public Collection<Range> underlyingToLocalColumnPositions(
+            ILayer sourceUnderlyingLayer,
+            Collection<Range> underlyingColumnPositionRanges) {
+        List<Integer> reorderedColumnPositions = new ArrayList<Integer>();
+        for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
+            for (int underlyingColumnPosition = underlyingColumnPositionRange.start; underlyingColumnPosition < underlyingColumnPositionRange.end; underlyingColumnPosition++) {
+                int localColumnPosition = underlyingToLocalColumnPosition(
+                        sourceUnderlyingLayer,
+                        underlyingColumnPositionRange.start);
+                reorderedColumnPositions.add(Integer
+                        .valueOf(localColumnPosition));
+            }
+        }
+        Collections.sort(reorderedColumnPositions);
 
-	// Rows
+        return PositionUtil.getRanges(reorderedColumnPositions);
+    }
 
-	@Override
-	public int getRowPositionByIndex(int rowIndex) {
-		return underlyingLayer.getRowPositionByIndex(rowIndex);
-	}
+    // X
 
-	/**
-	 * Moves the column to the <i>LEFT</i> of the toColumnPosition
-	 * @param fromColumnPosition column position to move
-	 * @param toColumnPosition position to move the column to
-	 */
-	private void moveColumn(int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
-		if (!reorderToLeftEdge) {
-			toColumnPosition++;
-		}
-		
-		Integer fromColumnIndex = columnIndexOrder.get(fromColumnPosition);
-		columnIndexOrder.add(toColumnPosition, fromColumnIndex);
+    @Override
+    public int getColumnPositionByX(int x) {
+        return LayerUtil.getColumnPositionByX(this, x);
+    }
 
-		columnIndexOrder.remove(fromColumnPosition + (fromColumnPosition > toColumnPosition ? 1 : 0));
-		invalidateCache();
-	}
+    @Override
+    public int getStartXOfColumnPosition(int targetColumnPosition) {
+        Integer cachedStartX = this.startXCache.get(Integer
+                .valueOf(targetColumnPosition));
+        if (cachedStartX != null) {
+            return cachedStartX.intValue();
+        }
 
-	public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition) {
-		boolean reorderToLeftEdge;
-		if (toColumnPosition < getColumnCount()) {
- 			reorderToLeftEdge = true;
-		} else {
-			reorderToLeftEdge = false;
-			toColumnPosition--;
-		}
-		reorderColumnPosition(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
-	}
-	
-	public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
-		moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
-		fireLayerEvent(new ColumnReorderEvent(this, fromColumnPosition, toColumnPosition, reorderToLeftEdge));
-	}
+        int aggregateWidth = 0;
+        for (int columnPosition = 0; columnPosition < targetColumnPosition; columnPosition++) {
+            aggregateWidth += this.underlyingLayer
+                    .getColumnWidthByPosition(localToUnderlyingColumnPosition(columnPosition));
+        }
 
-	public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition) {
-		boolean reorderToLeftEdge;
-		if (toColumnPosition < getColumnCount()) {
- 			reorderToLeftEdge = true;
-		} else {
-			reorderToLeftEdge = false;
-			toColumnPosition--;
-		}
-		reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition, reorderToLeftEdge);
-	}
-	
-	public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
-		// Moving from left to right
-		final int fromColumnPositionsCount = fromColumnPositions.size();
+        this.startXCache.put(Integer.valueOf(targetColumnPosition),
+                Integer.valueOf(aggregateWidth));
+        return aggregateWidth;
+    }
 
-		if (toColumnPosition > fromColumnPositions.get(fromColumnPositionsCount - 1).intValue()) {
-			int firstColumnPosition = fromColumnPositions.get(0).intValue();
+    private void populateIndexOrder() {
+        ILayer underlyingLayer = getUnderlyingLayer();
+        for (int columnPosition = 0; columnPosition < underlyingLayer
+                .getColumnCount(); columnPosition++) {
+            this.columnIndexOrder.add(Integer.valueOf(underlyingLayer
+                    .getColumnIndexByPosition(columnPosition)));
+        }
+    }
 
-			for (int columnCount = 0; columnCount < fromColumnPositionsCount; columnCount++) {
-				final int fromColumnPosition = fromColumnPositions.get(0).intValue();
-				moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
-				if (fromColumnPosition < firstColumnPosition) {
-					firstColumnPosition = fromColumnPosition;
-				}
-			}
-		} else if (toColumnPosition < fromColumnPositions.get(fromColumnPositionsCount - 1).intValue()) {
-			// Moving from right to left
-			int targetColumnPosition = toColumnPosition;
-			for (Integer fromColumnPosition : fromColumnPositions) {
-				final int fromColumnPositionInt = fromColumnPosition.intValue();
-				moveColumn(fromColumnPositionInt, targetColumnPosition++, reorderToLeftEdge);
-			}
-		}
+    // Vertical features
 
-		fireLayerEvent(new ColumnReorderEvent(this, fromColumnPositions, toColumnPosition, reorderToLeftEdge));
-	}
+    // Rows
 
-	private void invalidateCache() {
-		startXCache.clear();
-	}
+    @Override
+    public int getRowPositionByIndex(int rowIndex) {
+        return this.underlyingLayer.getRowPositionByIndex(rowIndex);
+    }
 
-	public int getReorderFromColumnPosition() {
-		return reorderFromColumnPosition;
-	}
-	
-	public void setReorderFromColumnPosition(int fromColumnPosition) {
-		this.reorderFromColumnPosition = fromColumnPosition;
-	}
+    /**
+     * Moves the column to the <i>LEFT</i> of the toColumnPosition
+     *
+     * @param fromColumnPosition
+     *            column position to move
+     * @param toColumnPosition
+     *            position to move the column to
+     */
+    private void moveColumn(int fromColumnPosition, int toColumnPosition,
+            boolean reorderToLeftEdge) {
+        if (!reorderToLeftEdge) {
+            toColumnPosition++;
+        }
+
+        Integer fromColumnIndex = this.columnIndexOrder.get(fromColumnPosition);
+        this.columnIndexOrder.add(toColumnPosition, fromColumnIndex);
+
+        this.columnIndexOrder.remove(fromColumnPosition
+                + (fromColumnPosition > toColumnPosition ? 1 : 0));
+        invalidateCache();
+    }
+
+    public void reorderColumnPosition(int fromColumnPosition,
+            int toColumnPosition) {
+        boolean reorderToLeftEdge;
+        if (toColumnPosition < getColumnCount()) {
+            reorderToLeftEdge = true;
+        } else {
+            reorderToLeftEdge = false;
+            toColumnPosition--;
+        }
+        reorderColumnPosition(fromColumnPosition, toColumnPosition,
+                reorderToLeftEdge);
+    }
+
+    public void reorderColumnPosition(int fromColumnPosition,
+            int toColumnPosition, boolean reorderToLeftEdge) {
+        moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
+        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPosition,
+                toColumnPosition, reorderToLeftEdge));
+    }
+
+    public void reorderMultipleColumnPositions(
+            List<Integer> fromColumnPositions, int toColumnPosition) {
+        boolean reorderToLeftEdge;
+        if (toColumnPosition < getColumnCount()) {
+            reorderToLeftEdge = true;
+        } else {
+            reorderToLeftEdge = false;
+            toColumnPosition--;
+        }
+        reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition,
+                reorderToLeftEdge);
+    }
+
+    public void reorderMultipleColumnPositions(
+            List<Integer> fromColumnPositions, int toColumnPosition,
+            boolean reorderToLeftEdge) {
+        // Moving from left to right
+        final int fromColumnPositionsCount = fromColumnPositions.size();
+
+        if (toColumnPosition > fromColumnPositions.get(
+                fromColumnPositionsCount - 1).intValue()) {
+            int firstColumnPosition = fromColumnPositions.get(0).intValue();
+
+            for (int columnCount = 0; columnCount < fromColumnPositionsCount; columnCount++) {
+                final int fromColumnPosition = fromColumnPositions.get(0)
+                        .intValue();
+                moveColumn(fromColumnPosition, toColumnPosition,
+                        reorderToLeftEdge);
+                if (fromColumnPosition < firstColumnPosition) {
+                    firstColumnPosition = fromColumnPosition;
+                }
+            }
+        } else if (toColumnPosition < fromColumnPositions.get(
+                fromColumnPositionsCount - 1).intValue()) {
+            // Moving from right to left
+            int targetColumnPosition = toColumnPosition;
+            for (Integer fromColumnPosition : fromColumnPositions) {
+                final int fromColumnPositionInt = fromColumnPosition.intValue();
+                moveColumn(fromColumnPositionInt, targetColumnPosition++,
+                        reorderToLeftEdge);
+            }
+        }
+
+        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPositions,
+                toColumnPosition, reorderToLeftEdge));
+    }
+
+    private void invalidateCache() {
+        this.startXCache.clear();
+    }
+
+    public int getReorderFromColumnPosition() {
+        return this.reorderFromColumnPosition;
+    }
+
+    public void setReorderFromColumnPosition(int fromColumnPosition) {
+        this.reorderFromColumnPosition = fromColumnPosition;
+    }
 
 }

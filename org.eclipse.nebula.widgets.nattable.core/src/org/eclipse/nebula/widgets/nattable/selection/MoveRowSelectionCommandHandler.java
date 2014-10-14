@@ -13,55 +13,72 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 
 /**
- * Preserves the basic semantics of the cell selection.
- * Additionally it selects the entire row when a cell in the row is selected.
+ * Preserves the basic semantics of the cell selection. Additionally it selects
+ * the entire row when a cell in the row is selected.
  */
-public class MoveRowSelectionCommandHandler extends MoveCellSelectionCommandHandler {
+public class MoveRowSelectionCommandHandler extends
+        MoveCellSelectionCommandHandler {
 
-	public MoveRowSelectionCommandHandler(SelectionLayer selectionLayer) {
-		super(selectionLayer);
-	}
+    public MoveRowSelectionCommandHandler(SelectionLayer selectionLayer) {
+        super(selectionLayer);
+    }
 
-	@Override
-	protected void moveLastSelectedLeft(int stepSize, boolean withShiftMask, boolean withControlMask) {
-		super.moveLastSelectedLeft(stepSize, withShiftMask, withControlMask);
+    @Override
+    protected void moveLastSelectedLeft(int stepSize, boolean withShiftMask,
+            boolean withControlMask) {
+        super.moveLastSelectedLeft(stepSize, withShiftMask, withControlMask);
 
-		if (lastSelectedCellPosition != null) {
-			selectionLayer.selectRow(newSelectedColumnPosition, lastSelectedCellPosition.rowPosition, withShiftMask, withControlMask);
-		}
-	}
+        if (lastSelectedCellPosition != null) {
+            selectionLayer.selectRow(newSelectedColumnPosition,
+                    lastSelectedCellPosition.rowPosition, withShiftMask,
+                    withControlMask);
+        }
+    }
 
-	@Override
-	protected void moveLastSelectedRight(int stepSize, boolean withShiftMask, boolean withControlMask) {
-		super.moveLastSelectedRight(stepSize, withShiftMask, withControlMask);
+    @Override
+    protected void moveLastSelectedRight(int stepSize, boolean withShiftMask,
+            boolean withControlMask) {
+        super.moveLastSelectedRight(stepSize, withShiftMask, withControlMask);
 
-		if (lastSelectedCellPosition != null) {
-			selectionLayer.selectRow(lastSelectedCellPosition.columnPosition, lastSelectedCellPosition.rowPosition, withShiftMask, withControlMask);
-		}
-	}
+        if (lastSelectedCellPosition != null) {
+            selectionLayer.selectRow(lastSelectedCellPosition.columnPosition,
+                    lastSelectedCellPosition.rowPosition, withShiftMask,
+                    withControlMask);
+        }
+    }
 
-	@Override
-	protected void moveLastSelectedUp(int stepSize, boolean withShiftMask, boolean withControlMask) {
-		if (selectionLayer.hasRowSelection()) {
-			PositionCoordinate lastSelectedCell = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
-			int newSelectedRowPosition = stepSize >= 0 ? lastSelectedCell.rowPosition - stepSize : 0;
-			if (newSelectedRowPosition < 0) {
-				newSelectedRowPosition = 0;
-			}
-			selectionLayer.selectRow(lastSelectedCell.columnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
-		}
-	}
+    @Override
+    protected void moveLastSelectedUp(int stepSize, boolean withShiftMask,
+            boolean withControlMask) {
+        if (selectionLayer.hasRowSelection()) {
+            PositionCoordinate lastSelectedCell = selectionLayer
+                    .getCellPositionToMoveFrom(withShiftMask, withControlMask);
+            int newSelectedRowPosition = stepSize >= 0 ? lastSelectedCell.rowPosition
+                    - stepSize
+                    : 0;
+            if (newSelectedRowPosition < 0) {
+                newSelectedRowPosition = 0;
+            }
+            selectionLayer.selectRow(lastSelectedCell.columnPosition,
+                    newSelectedRowPosition, withShiftMask, withControlMask);
+        }
+    }
 
-	@Override
-	protected void moveLastSelectedDown(int stepSize, boolean withShiftMask, boolean withControlMask) {
-		if (selectionLayer.hasRowSelection()) {
-			PositionCoordinate lastSelectedCell = selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
-			int newSelectedRowPosition = stepSize >= 0 ? lastSelectedCell.rowPosition + stepSize : selectionLayer.getRowCount() - 1;
-			if (newSelectedRowPosition >= selectionLayer.getRowCount()) {
-				newSelectedRowPosition = selectionLayer.getRowCount() - 1;
-			}
-			selectionLayer.selectRow(lastSelectedCell.columnPosition, newSelectedRowPosition, withShiftMask, withControlMask);
-		}
-	}
+    @Override
+    protected void moveLastSelectedDown(int stepSize, boolean withShiftMask,
+            boolean withControlMask) {
+        if (selectionLayer.hasRowSelection()) {
+            PositionCoordinate lastSelectedCell = selectionLayer
+                    .getCellPositionToMoveFrom(withShiftMask, withControlMask);
+            int newSelectedRowPosition = stepSize >= 0 ? lastSelectedCell.rowPosition
+                    + stepSize
+                    : selectionLayer.getRowCount() - 1;
+            if (newSelectedRowPosition >= selectionLayer.getRowCount()) {
+                newSelectedRowPosition = selectionLayer.getRowCount() - 1;
+            }
+            selectionLayer.selectRow(lastSelectedCell.columnPosition,
+                    newSelectedRowPosition, withShiftMask, withControlMask);
+        }
+    }
 
 }

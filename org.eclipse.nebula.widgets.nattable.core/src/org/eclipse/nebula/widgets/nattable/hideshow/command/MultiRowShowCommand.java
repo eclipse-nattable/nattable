@@ -20,29 +20,30 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
  */
 public class MultiRowShowCommand extends AbstractContextFreeCommand {
 
-	/**
-	 * The indexes of the rows that should be showed again.
-	 */
-	private final Collection<Integer> rowIndexes;
+    /**
+     * The indexes of the rows that should be showed again.
+     */
+    private final Collection<Integer> rowIndexes;
 
-	/**
-	 * 
-	 * @param rowIndexes The indexes of the rows that should be showed again.
-	 */
-	public MultiRowShowCommand(Collection<Integer> rowIndexes) {
-		this.rowIndexes = rowIndexes;
-	}
+    /**
+     * 
+     * @param rowIndexes
+     *            The indexes of the rows that should be showed again.
+     */
+    public MultiRowShowCommand(Collection<Integer> rowIndexes) {
+        this.rowIndexes = rowIndexes;
+    }
 
-	/**
-	 * 
-	 * @return The indexes of the rows that should be showed again.
-	 */
-	public Collection<Integer> getRowIndexes() {
-		return rowIndexes;
-	}
-	
-	@Override
-	public MultiRowShowCommand cloneCommand() {
-		return new MultiRowShowCommand(new ArrayList<Integer>(this.rowIndexes));
-	}
+    /**
+     * 
+     * @return The indexes of the rows that should be showed again.
+     */
+    public Collection<Integer> getRowIndexes() {
+        return rowIndexes;
+    }
+
+    @Override
+    public MultiRowShowCommand cloneCommand() {
+        return new MultiRowShowCommand(new ArrayList<Integer>(this.rowIndexes));
+    }
 }

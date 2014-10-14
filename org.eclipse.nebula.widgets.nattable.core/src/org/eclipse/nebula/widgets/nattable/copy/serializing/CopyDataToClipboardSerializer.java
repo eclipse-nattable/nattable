@@ -20,52 +20,53 @@ import org.eclipse.swt.widgets.Display;
 
 public class CopyDataToClipboardSerializer implements ISerializer {
 
-	private final ILayerCell[][] copiedCells;
-	private final CopyDataToClipboardCommand command;
+    private final ILayerCell[][] copiedCells;
+    private final CopyDataToClipboardCommand command;
 
-	public CopyDataToClipboardSerializer(ILayerCell[][] copiedCells, CopyDataToClipboardCommand command) {
-		this.copiedCells = copiedCells;
-		this.command = command;
-	}
-	
-	public void serialize() {
-		final String cellDelimeter = command.getCellDelimeter();
-		final String rowDelimeter = command.getRowDelimeter();
-		
-		final TextTransfer textTransfer = TextTransfer.getInstance();
-		final StringBuilder textData = new StringBuilder();
-		int currentRow = 0;
-		for (ILayerCell[] cells : copiedCells) {
-			int currentCell = 0;
-			for (ILayerCell cell : cells) {
-				final String delimeter = ++currentCell < cells.length ? cellDelimeter : ""; //$NON-NLS-1$
-				if (cell != null) {
-					textData.append(getTextForCell(cell) + delimeter);
-				} else {
-					textData.append(delimeter);
-				} 
-			}
-			if (++currentRow < copiedCells.length) {
-				textData.append(rowDelimeter);
-			}
-		}
-		if (textData.length() > 0) {
-			final Clipboard clipboard = new Clipboard(Display.getDefault());
-			try {
-				clipboard.setContents(new Object[]{ textData.toString() },
-						new Transfer[]{ textTransfer });
-			}
-			finally {
-				clipboard.dispose();
-			}
-		}
-	}
-	
-	protected String getTextForCell(ILayerCell cell) {
-		return String.valueOf(cell.getDataValue());
-	}
-	
-	final protected CopyDataToClipboardCommand getCommand() {
-		return command;
-	}
+    public CopyDataToClipboardSerializer(ILayerCell[][] copiedCells,
+            CopyDataToClipboardCommand command) {
+        this.copiedCells = copiedCells;
+        this.command = command;
+    }
+
+    public void serialize() {
+        final String cellDelimeter = command.getCellDelimeter();
+        final String rowDelimeter = command.getRowDelimeter();
+
+        final TextTransfer textTransfer = TextTransfer.getInstance();
+        final StringBuilder textData = new StringBuilder();
+        int currentRow = 0;
+        for (ILayerCell[] cells : copiedCells) {
+            int currentCell = 0;
+            for (ILayerCell cell : cells) {
+                final String delimeter = ++currentCell < cells.length ? cellDelimeter
+                        : ""; //$NON-NLS-1$
+                if (cell != null) {
+                    textData.append(getTextForCell(cell) + delimeter);
+                } else {
+                    textData.append(delimeter);
+                }
+            }
+            if (++currentRow < copiedCells.length) {
+                textData.append(rowDelimeter);
+            }
+        }
+        if (textData.length() > 0) {
+            final Clipboard clipboard = new Clipboard(Display.getDefault());
+            try {
+                clipboard.setContents(new Object[] { textData.toString() },
+                        new Transfer[] { textTransfer });
+            } finally {
+                clipboard.dispose();
+            }
+        }
+    }
+
+    protected String getTextForCell(ILayerCell cell) {
+        return String.valueOf(cell.getDataValue());
+    }
+
+    final protected CopyDataToClipboardCommand getCommand() {
+        return command;
+    }
 }

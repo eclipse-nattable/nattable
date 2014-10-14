@@ -15,16 +15,18 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class DisplayConverter implements IDisplayConverter {
 
-	public abstract Object canonicalToDisplayValue(Object canonicalValue);
+    public abstract Object canonicalToDisplayValue(Object canonicalValue);
 
-	public abstract Object displayToCanonicalValue(Object displayValue);
-	
-	public Object canonicalToDisplayValue(ILayerCell cell, IConfigRegistry configRegistry, Object canonicalValue) {
-		return canonicalToDisplayValue(canonicalValue);
-	}
+    public abstract Object displayToCanonicalValue(Object displayValue);
 
-	public Object displayToCanonicalValue(ILayerCell cell, IConfigRegistry configRegistry, Object displayValue) {
-		return displayToCanonicalValue(displayValue);
-	}
+    public Object canonicalToDisplayValue(ILayerCell cell,
+            IConfigRegistry configRegistry, Object canonicalValue) {
+        return canonicalToDisplayValue(canonicalValue);
+    }
+
+    public Object displayToCanonicalValue(ILayerCell cell,
+            IConfigRegistry configRegistry, Object displayValue) {
+        return displayToCanonicalValue(displayValue);
+    }
 
 }

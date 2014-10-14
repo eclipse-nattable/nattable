@@ -16,29 +16,29 @@ import org.eclipse.nebula.widgets.nattable.dataset.pricing.PricingDataBean;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 public class DataGeneratorTest {
 
-	@Test
-	public void testGenerate() {
-		try {
-			PricingDataBean pricingDataBean = new DataGenerator<PricingDataBean>().generate(PricingDataBean.class);
-			
-			Assert.assertNotNull(pricingDataBean);
-			Assert.assertTrue(pricingDataBean.getBid() >= 0.0d);
-			Assert.assertTrue(pricingDataBean.getBid() < 10000.0d);
-			
-			Assert.assertTrue(pricingDataBean.getAsk() >= 0.0d);
-			Assert.assertTrue(pricingDataBean.getAsk() < 10000.0d);
-			
-			Assert.assertTrue(pricingDataBean.getClosingPrice() >= 0.0d);
-			Assert.assertTrue(pricingDataBean.getClosingPrice() < 10000.0d);
-			
-			Assert.assertNotNull(pricingDataBean.getPricingSource());
-		} catch (GeneratorException e) {
-			e.printStackTrace();
-			Assert.fail(e.getMessage() + " : " + e.getCause().getMessage());
-		}
-	}
+    @Test
+    public void testGenerate() {
+        try {
+            PricingDataBean pricingDataBean = new DataGenerator<PricingDataBean>()
+                    .generate(PricingDataBean.class);
+
+            Assert.assertNotNull(pricingDataBean);
+            Assert.assertTrue(pricingDataBean.getBid() >= 0.0d);
+            Assert.assertTrue(pricingDataBean.getBid() < 10000.0d);
+
+            Assert.assertTrue(pricingDataBean.getAsk() >= 0.0d);
+            Assert.assertTrue(pricingDataBean.getAsk() < 10000.0d);
+
+            Assert.assertTrue(pricingDataBean.getClosingPrice() >= 0.0d);
+            Assert.assertTrue(pricingDataBean.getClosingPrice() < 10000.0d);
+
+            Assert.assertNotNull(pricingDataBean.getPricingSource());
+        } catch (GeneratorException e) {
+            e.printStackTrace();
+            Assert.fail(e.getMessage() + " : " + e.getCause().getMessage());
+        }
+    }
 
 }

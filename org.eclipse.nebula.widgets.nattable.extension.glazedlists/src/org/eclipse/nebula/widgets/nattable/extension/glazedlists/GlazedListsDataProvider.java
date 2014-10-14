@@ -18,42 +18,51 @@ import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 
 /**
- * This class implements "last row" caching for much faster column value access on the table.
- * As normally the default implementation would fetch the row object for each cell in a column,
- * we know what the last row we fetched was, and if it's a re-request of the same row as last time,
- * we simply return the last cached row object (assuming the list didn't change in some important way, as 
- * then we clear out our cache).
+ * This class implements "last row" caching for much faster column value access
+ * on the table. As normally the default implementation would fetch the row
+ * object for each cell in a column, we know what the last row we fetched was,
+ * and if it's a re-request of the same row as last time, we simply return the
+ * last cached row object (assuming the list didn't change in some important
+ * way, as then we clear out our cache).
  * 
  * @author Emil Crumhorn
  */
 public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
 
-	private int lastRowIndex = -1;
-	private T lastRowObject = null;
+    private int lastRowIndex = -1;
+    private T lastRowObject = null;
 
-    public GlazedListsDataProvider(EventList<T> list, IColumnAccessor<T> columnAccessor) {
+    public GlazedListsDataProvider(EventList<T> list,
+            IColumnAccessor<T> columnAccessor) {
         super(list, columnAccessor);
 
-        // As we cache the last row object for much faster access, we need to tell that "tiny cache"
-        // that the input changed in any way, so that it doesn't use the last row object anymore, as that will
-        // cause same rows as last to be updated with the old object until the entire table has either
-        // refreshed twice (for multi-row tables) or it will never refresh (single entry tables).
-        // thus, if it's a delete, we update completely. if it's a modification of the current row we have
-        // cached, we update as well, inserts we don't need to as they are new items and the index will never
+        // As we cache the last row object for much faster access, we need to
+        // tell that "tiny cache"
+        // that the input changed in any way, so that it doesn't use the last
+        // row object anymore, as that will
+        // cause same rows as last to be updated with the old object until the
+        // entire table has either
+        // refreshed twice (for multi-row tables) or it will never refresh
+        // (single entry tables).
+        // thus, if it's a delete, we update completely. if it's a modification
+        // of the current row we have
+        // cached, we update as well, inserts we don't need to as they are new
+        // items and the index will never
         // be the same anyway.
-		list.addListEventListener(new ListEventListener<T>() {
-			public void listChanged(ListEvent<T> event) {
-				while (event.next()) {
-					int sourceIndex = event.getIndex();
-					int changeType = event.getType();
+        list.addListEventListener(new ListEventListener<T>() {
+            public void listChanged(ListEvent<T> event) {
+                while (event.next()) {
+                    int sourceIndex = event.getIndex();
+                    int changeType = event.getType();
 
-					if (changeType == ListEvent.DELETE || sourceIndex == lastRowIndex) {
-						inputChanged();
-						break;
-					}
-				}
-			}
-		});
+                    if (changeType == ListEvent.DELETE
+                            || sourceIndex == lastRowIndex) {
+                        inputChanged();
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     public void inputChanged() {
@@ -64,15 +73,15 @@ public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
     @Override
     public T getRowObject(int rowIndex) {
         if (rowIndex != lastRowIndex || lastRowObject == null) {
-            ((EventList)list).getReadWriteLock().readLock().lock();
+            ((EventList) list).getReadWriteLock().readLock().lock();
             try {
                 return super.getRowObject(rowIndex);
             } finally {
-                ((EventList)list).getReadWriteLock().readLock().unlock();
+                ((EventList) list).getReadWriteLock().readLock().unlock();
             }
         }
-        
-        return lastRowObject;            
+
+        return lastRowObject;
     }
 
     @Override
@@ -80,15 +89,16 @@ public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
         // new row to cache
         if (rowIndex != lastRowIndex || lastRowObject == null) {
             lastRowIndex = rowIndex;
-            ((EventList)list).getReadWriteLock().readLock().lock();
+            ((EventList) list).getReadWriteLock().readLock().lock();
             try {
                 lastRowObject = list.get(rowIndex);
             } finally {
-                ((EventList)list).getReadWriteLock().readLock().unlock();
+                ((EventList) list).getReadWriteLock().readLock().unlock();
             }
         }
 
-        // same row as last, use its object as it's way faster than a list.get(row);
+        // same row as last, use its object as it's way faster than a
+        // list.get(row);
         return columnAccessor.getDataValue(lastRowObject, colIndex);
     }
 }

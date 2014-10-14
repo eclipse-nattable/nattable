@@ -47,7 +47,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Simple example showing how to add the {@link ColumnGroupHeaderLayer} and the
- * {@link ColumnGroupGroupHeaderLayer} to the layer composition of a grid and 
+ * {@link ColumnGroupGroupHeaderLayer} to the layer composition of a grid and
  * how to add the corresponding actions to the column header menu.
  * 
  * @author Dirk Fauth
@@ -55,105 +55,126 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _5112_TwoLevelColumnGroupingExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _5112_TwoLevelColumnGroupingExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner
+                .run(new _5112_TwoLevelColumnGroupingExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows the usage of the ColumnGroupHeaderLayer and the ColumnGroupHeaderLayer "
-				+ "within a grid and its corresponding actions in the column header menu. If you perform a "
-				+ "right click on the column header, you are able to hide the current selected "
-				+ "column or show all columns again.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", 
-				"address.street", "address.housenumber", "address.postalCode", "address.city", 
-				"age", "birthday", "money",
-				"description", "favouriteFood", "favouriteDrinks"};
+    @Override
+    public String getDescription() {
+        return "This example shows the usage of the ColumnGroupHeaderLayer and the ColumnGroupHeaderLayer "
+                + "within a grid and its corresponding actions in the column header menu. If you perform a "
+                + "right click on the column header, you are able to hide the current selected "
+                + "column or show all columns again.";
+    }
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("address.street", "Street");
-		propertyToLabelMap.put("address.housenumber", "Housenumber");
-		propertyToLabelMap.put("address.postalCode", "Postalcode");
-		propertyToLabelMap.put("address.city", "City");
-		propertyToLabelMap.put("age", "Age");
-		propertyToLabelMap.put("birthday", "Birthday");
-		propertyToLabelMap.put("money", "Money");
-		propertyToLabelMap.put("description", "Description");
-		propertyToLabelMap.put("favouriteFood", "Food");
-		propertyToLabelMap.put("favouriteDrinks", "Drinks");
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "address.street", "address.housenumber",
+                "address.postalCode", "address.city", "age", "birthday",
+                "money", "description", "favouriteFood", "favouriteDrinks" };
 
-		IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor = 
-				new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("address.street", "Street");
+        propertyToLabelMap.put("address.housenumber", "Housenumber");
+        propertyToLabelMap.put("address.postalCode", "Postalcode");
+        propertyToLabelMap.put("address.city", "City");
+        propertyToLabelMap.put("age", "Age");
+        propertyToLabelMap.put("birthday", "Birthday");
+        propertyToLabelMap.put("money", "Money");
+        propertyToLabelMap.put("description", "Description");
+        propertyToLabelMap.put("favouriteFood", "Food");
+        propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
-		ColumnGroupModel columnGroupModel = new ColumnGroupModel();
-		ColumnGroupModel sndColumnGroupModel = new ColumnGroupModel();
-		
-		//build the body layer stack 
-		//Usually you would create a new layer stack by extending AbstractIndexLayerTransform and
-		//setting the ViewportLayer as underlying layer. But in this case using the ViewportLayer
-		//directly as body layer is also working.
-		IDataProvider bodyDataProvider = 
-				new ListDataProvider<ExtendedPersonWithAddress>(
-						PersonService.getExtendedPersonsWithAddress(10), columnPropertyAccessor);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-		ColumnGroupReorderLayer columnGroupReorderLayer = new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
-		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
-		ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = 
-				new ColumnGroupExpandCollapseLayer(columnHideShowLayer, sndColumnGroupModel, columnGroupModel);
-		SelectionLayer selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(
+                propertyNames);
 
-		//build the column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
-		ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer, columnGroupModel);
+        ColumnGroupModel columnGroupModel = new ColumnGroupModel();
+        ColumnGroupModel sndColumnGroupModel = new ColumnGroupModel();
 
-		//configure the column groups
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Person", 0, 1, 2, 3);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Address", 4, 5, 6, 7);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Facts", 8, 9, 10);
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Personal", 11, 12, 13);
-		columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Person", 0, 1);
-		columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Address", 4, 5, 6);
-		columnGroupHeaderLayer.setGroupUnbreakable(1);
+        // build the body layer stack
+        // Usually you would create a new layer stack by extending
+        // AbstractIndexLayerTransform and
+        // setting the ViewportLayer as underlying layer. But in this case using
+        // the ViewportLayer
+        // directly as body layer is also working.
+        IDataProvider bodyDataProvider = new ListDataProvider<ExtendedPersonWithAddress>(
+                PersonService.getExtendedPersonsWithAddress(10),
+                columnPropertyAccessor);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
+                bodyDataLayer);
+        ColumnGroupReorderLayer columnGroupReorderLayer = new ColumnGroupReorderLayer(
+                columnReorderLayer, columnGroupModel);
+        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
+                columnGroupReorderLayer);
+        ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
+                columnHideShowLayer, sndColumnGroupModel, columnGroupModel);
+        SelectionLayer selectionLayer = new SelectionLayer(
+                columnGroupExpandCollapseLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-		ColumnGroupGroupHeaderLayer sndGroup = 
-				new ColumnGroupGroupHeaderLayer(columnGroupHeaderLayer, selectionLayer, sndColumnGroupModel);
-		
-		sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4, 5, 6, 7);
-		sndGroup.addColumnsIndexesToGroup("Additional Information", 8, 9, 10, 11, 12, 13);
+        // build the column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                viewportLayer, selectionLayer);
+        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                columnHeaderLayer, selectionLayer, columnGroupModel);
 
-		sndGroup.setStaticColumnIndexesByGroup("PersonWithAddress", 0, 1);
-		
-		//build the row header layer
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
-		
-		//build the corner layer
-		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, sndGroup);
-		
-		//build the grid layer
-		GridLayer gridLayer = new GridLayer(viewportLayer, sndGroup, rowHeaderLayer, cornerLayer);
-		
-		//turn the auto configuration off as we want to add our header menu configuration
-		NatTable natTable = new NatTable(parent, gridLayer);
-		
-		return natTable;
-	}
+        // configure the column groups
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Person", 0, 1, 2, 3);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Address", 4, 5, 6, 7);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Facts", 8, 9, 10);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Personal", 11, 12, 13);
+        columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Person", 0, 1);
+        columnGroupHeaderLayer
+                .setStaticColumnIndexesByGroup("Address", 4, 5, 6);
+        columnGroupHeaderLayer.setGroupUnbreakable(1);
+
+        ColumnGroupGroupHeaderLayer sndGroup = new ColumnGroupGroupHeaderLayer(
+                columnGroupHeaderLayer, selectionLayer, sndColumnGroupModel);
+
+        sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4,
+                5, 6, 7);
+        sndGroup.addColumnsIndexesToGroup("Additional Information", 8, 9, 10,
+                11, 12, 13);
+
+        sndGroup.setStaticColumnIndexesByGroup("PersonWithAddress", 0, 1);
+
+        // build the row header layer
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer);
+
+        // build the corner layer
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                sndGroup);
+
+        // build the grid layer
+        GridLayer gridLayer = new GridLayer(viewportLayer, sndGroup,
+                rowHeaderLayer, cornerLayer);
+
+        // turn the auto configuration off as we want to add our header menu
+        // configuration
+        NatTable natTable = new NatTable(parent, gridLayer);
+
+        return natTable;
+    }
 
 }

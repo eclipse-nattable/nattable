@@ -17,6 +17,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
  */
 public interface ISelectionEvent {
 
-	public SelectionLayer getSelectionLayer();
-	
+    public SelectionLayer getSelectionLayer();
+
 }

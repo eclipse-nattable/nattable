@@ -38,93 +38,101 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _5011_DataLayerExample extends AbstractNatExample {
 
-	private boolean showDefaultColumnWidth = true;
-	private boolean showDefaultRowHeight = true;
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5011_DataLayerExample());
-	}
+    private boolean showDefaultColumnWidth = true;
+    private boolean showDefaultRowHeight = true;
 
-	@Override
-	public String getDescription() {
-		return "This example shows a simple NatTable that is only able to show data and "
-				+ "supports different column/row sizes.\n"
-				+ "By pressing the buttons 'Toggle column width' and 'Toggle row height' you can see "
-				+ "how to change column/row sizes programmatically.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		parent.setLayout(new GridLayout());
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400, new _5011_DataLayerExample());
+    }
 
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows a simple NatTable that is only able to show data and "
+                + "supports different column/row sizes.\n"
+                + "By pressing the buttons 'Toggle column width' and 'Toggle row height' you can see "
+                + "how to change column/row sizes programmatically.";
+    }
 
-		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
-				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		
-		IDataProvider bodyDataProvider = new ListDataProvider<Person>(
-				PersonService.getPersons(10), columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		
-		//use different style bits to avoid rendering of inactive scrollbars for small table
-		//Note: The enabling/disabling and showing of the scrollbars is handled by the ViewportLayer.
-		//		Without the ViewportLayer the scrollbars will always be visible with the default
-		//		style bits of NatTable.
-		final NatTable natTable = new NatTable(
-				parent, 
-				SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, 
-				bodyDataLayer);
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+    @Override
+    public Control createExampleControl(Composite parent) {
+        parent.setLayout(new GridLayout());
 
-		Button b1 = new Button(parent, SWT.PUSH);
-		b1.setText("Toggle column width");
-		b1.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				showDefaultColumnWidth = !showDefaultColumnWidth;
-				if (showDefaultColumnWidth) {
-					//reset to default
-					bodyDataLayer.setColumnWidthByPosition(0, DataLayer.DEFAULT_COLUMN_WIDTH, false);
-					bodyDataLayer.setColumnWidthByPosition(1, DataLayer.DEFAULT_COLUMN_WIDTH, false);
-					bodyDataLayer.setColumnWidthByPosition(2, DataLayer.DEFAULT_COLUMN_WIDTH, false);
-					bodyDataLayer.setColumnWidthByPosition(3, DataLayer.DEFAULT_COLUMN_WIDTH, false);
-					//this one will trigger the refresh
-					bodyDataLayer.setColumnWidthByPosition(4, DataLayer.DEFAULT_COLUMN_WIDTH, true);
-				}
-				else {
-					bodyDataLayer.setColumnWidthByPosition(0, 70, false);
-					bodyDataLayer.setColumnWidthByPosition(1, 70, false);
-					bodyDataLayer.setColumnWidthByPosition(2, 50, false);
-					bodyDataLayer.setColumnWidthByPosition(3, 30, false);
-					//this one will trigger the refresh
-					bodyDataLayer.setColumnWidthByPosition(4, 200, true);
-				}
-			}
-		});
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		Button b2 = new Button(parent, SWT.PUSH);
-		b2.setText("Toggle row height");
-		b2.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				showDefaultRowHeight = !showDefaultRowHeight;
-				if (showDefaultRowHeight) {
-					//reset to default
-					bodyDataLayer.setDefaultRowHeight(DataLayer.DEFAULT_ROW_HEIGHT);
-				}
-				else {
-					bodyDataLayer.setDefaultRowHeight(50);
-				}
-				
-				//repaint the table, as setting the default height is not triggering a refresh automatically
-				//this is because setting the default usually should be done prior rendering
-				natTable.doCommand(new VisualRefreshCommand());
-			}
-		});
-		
-		return natTable;
-	}
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
+
+        IDataProvider bodyDataProvider = new ListDataProvider<Person>(
+                PersonService.getPersons(10), columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+
+        // use different style bits to avoid rendering of inactive scrollbars
+        // for small table
+        // Note: The enabling/disabling and showing of the scrollbars is handled
+        // by the ViewportLayer.
+        // Without the ViewportLayer the scrollbars will always be visible with
+        // the default
+        // style bits of NatTable.
+        final NatTable natTable = new NatTable(parent, SWT.NO_BACKGROUND
+                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, bodyDataLayer);
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Button b1 = new Button(parent, SWT.PUSH);
+        b1.setText("Toggle column width");
+        b1.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                showDefaultColumnWidth = !showDefaultColumnWidth;
+                if (showDefaultColumnWidth) {
+                    // reset to default
+                    bodyDataLayer.setColumnWidthByPosition(0,
+                            DataLayer.DEFAULT_COLUMN_WIDTH, false);
+                    bodyDataLayer.setColumnWidthByPosition(1,
+                            DataLayer.DEFAULT_COLUMN_WIDTH, false);
+                    bodyDataLayer.setColumnWidthByPosition(2,
+                            DataLayer.DEFAULT_COLUMN_WIDTH, false);
+                    bodyDataLayer.setColumnWidthByPosition(3,
+                            DataLayer.DEFAULT_COLUMN_WIDTH, false);
+                    // this one will trigger the refresh
+                    bodyDataLayer.setColumnWidthByPosition(4,
+                            DataLayer.DEFAULT_COLUMN_WIDTH, true);
+                } else {
+                    bodyDataLayer.setColumnWidthByPosition(0, 70, false);
+                    bodyDataLayer.setColumnWidthByPosition(1, 70, false);
+                    bodyDataLayer.setColumnWidthByPosition(2, 50, false);
+                    bodyDataLayer.setColumnWidthByPosition(3, 30, false);
+                    // this one will trigger the refresh
+                    bodyDataLayer.setColumnWidthByPosition(4, 200, true);
+                }
+            }
+        });
+
+        Button b2 = new Button(parent, SWT.PUSH);
+        b2.setText("Toggle row height");
+        b2.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                showDefaultRowHeight = !showDefaultRowHeight;
+                if (showDefaultRowHeight) {
+                    // reset to default
+                    bodyDataLayer
+                            .setDefaultRowHeight(DataLayer.DEFAULT_ROW_HEIGHT);
+                } else {
+                    bodyDataLayer.setDefaultRowHeight(50);
+                }
+
+                // repaint the table, as setting the default height is not
+                // triggering a refresh automatically
+                // this is because setting the default usually should be done
+                // prior rendering
+                natTable.doCommand(new VisualRefreshCommand());
+            }
+        });
+
+        return natTable;
+    }
 
 }

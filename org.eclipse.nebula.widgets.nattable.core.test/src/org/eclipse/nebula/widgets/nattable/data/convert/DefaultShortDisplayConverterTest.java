@@ -10,42 +10,43 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 
 public class DefaultShortDisplayConverterTest {
 
-	private DefaultShortDisplayConverter shortConverter = new DefaultShortDisplayConverter();
-	
-	@Test
-	public void testNonNullDataToDisplay() {
-		Assert.assertEquals("123", shortConverter.canonicalToDisplayValue(Short.valueOf("123")));
-	}
-	
-	@Test
-	public void testNullDataToDisplay() {
-		Assert.assertEquals(null, shortConverter.canonicalToDisplayValue(null));
-	}
-	
-	@Test
-	public void testNonNullDisplayToData() {
-		Assert.assertEquals(Short.valueOf("123"), shortConverter.displayToCanonicalValue("123"));
-	}
-	
-	@Test
-	public void testNullDisplayToData() {
-		Assert.assertEquals(null, shortConverter.displayToCanonicalValue(""));
-	}
+    private DefaultShortDisplayConverter shortConverter = new DefaultShortDisplayConverter();
 
-	@Test(expected=ConversionFailedException.class)
-	public void testConversionException() {
-		shortConverter.displayToCanonicalValue("abc");
-	}
+    @Test
+    public void testNonNullDataToDisplay() {
+        Assert.assertEquals("123",
+                shortConverter.canonicalToDisplayValue(Short.valueOf("123")));
+    }
 
-	@Test(expected=ConversionFailedException.class)
-	public void testConversionExceptionTooBig() {
-		short test = (Short) shortConverter.displayToCanonicalValue("32768");
-		System.out.println(test);
-	}
+    @Test
+    public void testNullDataToDisplay() {
+        Assert.assertEquals(null, shortConverter.canonicalToDisplayValue(null));
+    }
+
+    @Test
+    public void testNonNullDisplayToData() {
+        Assert.assertEquals(Short.valueOf("123"),
+                shortConverter.displayToCanonicalValue("123"));
+    }
+
+    @Test
+    public void testNullDisplayToData() {
+        Assert.assertEquals(null, shortConverter.displayToCanonicalValue(""));
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionException() {
+        shortConverter.displayToCanonicalValue("abc");
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionExceptionTooBig() {
+        short test = (Short) shortConverter.displayToCanonicalValue("32768");
+        System.out.println(test);
+    }
 }

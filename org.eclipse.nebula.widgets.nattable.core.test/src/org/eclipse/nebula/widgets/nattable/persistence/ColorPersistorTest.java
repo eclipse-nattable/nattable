@@ -24,30 +24,31 @@ import org.junit.Test;
 
 public class ColorPersistorTest {
 
-	private static final Color TEST_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_RED);;
-	Properties properties;
+    private static final Color TEST_COLOR = Display.getDefault()
+            .getSystemColor(SWT.COLOR_RED);;
+    Properties properties;
 
-	@Before
-	public void setup() {
-		properties = new Properties();
-	}
+    @Before
+    public void setup() {
+        properties = new Properties();
+    }
 
-	@Test
-	public void shouldSaveTheColorAsAString() throws Exception {
-		ColorPersistor.saveColor("prefix", properties, TEST_COLOR);
-		assertEquals("255,0,0", properties.getProperty("prefix.color"));
-	}
+    @Test
+    public void shouldSaveTheColorAsAString() throws Exception {
+        ColorPersistor.saveColor("prefix", properties, TEST_COLOR);
+        assertEquals("255,0,0", properties.getProperty("prefix.color"));
+    }
 
-	@Test
-	public void shouldLoadColorFromSavedRGBString() throws Exception {
-		properties.setProperty("prefix.color", "255, 0, 0");
-		Color actual = ColorPersistor.loadColor("prefix", properties);
-		assertEquals(TEST_COLOR, actual);
-	}
+    @Test
+    public void shouldLoadColorFromSavedRGBString() throws Exception {
+        properties.setProperty("prefix.color", "255, 0, 0");
+        Color actual = ColorPersistor.loadColor("prefix", properties);
+        assertEquals(TEST_COLOR, actual);
+    }
 
-	@Test
-	public void shouldFailToLoadForMissingRGBString() throws Exception {
-		Color actual = ColorPersistor.loadColor("missing", properties);
-		assertNull(actual);
-	}
+    @Test
+    public void shouldFailToLoadForMissingRGBString() throws Exception {
+        Color actual = ColorPersistor.loadColor("missing", properties);
+        assertNull(actual);
+    }
 }

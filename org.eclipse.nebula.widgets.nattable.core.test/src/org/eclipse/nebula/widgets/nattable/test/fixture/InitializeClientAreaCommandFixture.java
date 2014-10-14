@@ -13,10 +13,9 @@ package org.eclipse.nebula.widgets.nattable.test.fixture;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixture;
 
-
 public class InitializeClientAreaCommandFixture extends ClientAreaResizeCommand {
 
-	public InitializeClientAreaCommandFixture() {
-		super(ViewportLayerFixture.DEFAULT_SCROLLABLE);
-	}
+    public InitializeClientAreaCommandFixture() {
+        super(ViewportLayerFixture.DEFAULT_SCROLLABLE);
+    }
 }

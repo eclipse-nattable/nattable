@@ -14,8 +14,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public abstract class AbstractContextFreeEvent implements ILayerEvent {
 
-	public boolean convertToLocal(ILayer localLayer) {
-		return true;
-	}
+    public boolean convertToLocal(ILayer localLayer) {
+        return true;
+    }
 
 }

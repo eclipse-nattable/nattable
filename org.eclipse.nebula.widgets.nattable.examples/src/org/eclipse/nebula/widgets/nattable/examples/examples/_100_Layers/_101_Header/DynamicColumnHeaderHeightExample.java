@@ -73,221 +73,249 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 
-
 public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new DynamicColumnHeaderHeightExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new DynamicColumnHeaderHeightExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return
-				"This example demonstrates dynamic column header height configuration.\n" +
-				"It uses column grouping and filter row which are are related for height calculation.\n" +
-				"\n" +
-				"Following functions will change the column header height:\n" + 
-				"* GROUP SELECTED COLUMNS with ctrl-g or popup menu.\n" +
-				"* UNGROUP SELECTED COLUMNS with ctrl-u or popup menu until no column group is available.\n" +
-				"* Press button to enable/disable the filter row.";
-	}
+    @Override
+    public String getDescription() {
+        return "This example demonstrates dynamic column header height configuration.\n"
+                + "It uses column grouping and filter row which are are related for height calculation.\n"
+                + "\n"
+                + "Following functions will change the column header height:\n"
+                + "* GROUP SELECTED COLUMNS with ctrl-g or popup menu.\n"
+                + "* UNGROUP SELECTED COLUMNS with ctrl-u or popup menu until no column group is available.\n"
+                + "* Press button to enable/disable the filter row.";
+    }
 
-	private final ColumnGroupModel columnGroupModel = new ColumnGroupModel();
-	private ColumnHeaderLayer columnHeaderLayer;
+    private final ColumnGroupModel columnGroupModel = new ColumnGroupModel();
+    private ColumnHeaderLayer columnHeaderLayer;
 
-	@Override
-	public Control createExampleControl(Composite parent) {
-		IConfigRegistry configRegistry = new ConfigRegistry();
+    @Override
+    public Control createExampleControl(Composite parent) {
+        IConfigRegistry configRegistry = new ConfigRegistry();
 
-		// Underlying data source
-		EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList(200));
-		FilterList<RowDataFixture> filterList = new FilterList<RowDataFixture>(eventList);
-		String[] propertyNames = RowDataListFixture.getPropertyNames();
-		Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
+        // Underlying data source
+        EventList<RowDataFixture> eventList = GlazedLists
+                .eventList(RowDataListFixture.getList(200));
+        FilterList<RowDataFixture> filterList = new FilterList<RowDataFixture>(
+                eventList);
+        String[] propertyNames = RowDataListFixture.getPropertyNames();
+        Map<String, String> propertyToLabelMap = RowDataListFixture
+                .getPropertyToLabelMap();
 
-		// Body
-		IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
-		ListDataProvider<RowDataFixture> bodyDataProvider = new ListDataProvider<RowDataFixture>(filterList, columnPropertyAccessor);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(bodyDataLayer, columnGroupModel);
+        // Body
+        IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                propertyNames);
+        ListDataProvider<RowDataFixture> bodyDataProvider = new ListDataProvider<RowDataFixture>(
+                filterList, columnPropertyAccessor);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(
+                bodyDataLayer, columnGroupModel);
 
-		ColumnOverrideLabelAccumulator bodyLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
-		bodyDataLayer.setConfigLabelAccumulator(bodyLabelAccumulator);
-		
-		bodyLabelAccumulator.registerColumnOverrides(
-		           RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME),
-		           "PRICING_TYPE_PROP_NAME");
+        ColumnOverrideLabelAccumulator bodyLabelAccumulator = new ColumnOverrideLabelAccumulator(
+                bodyDataLayer);
+        bodyDataLayer.setConfigLabelAccumulator(bodyLabelAccumulator);
 
-		
-		// Column header
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
-		ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(columnHeaderLayer, bodyLayer.getSelectionLayer(), columnGroupModel);
+        bodyLabelAccumulator
+                .registerColumnOverrides(
+                        RowDataListFixture
+                                .getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME),
+                        "PRICING_TYPE_PROP_NAME");
 
-		columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 1", 1,2);
-		
-		//calculate the height of the column header area dependent if column groups exist or not
-		columnGroupHeaderLayer.setCalculateHeight(true);
+        // Column header
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
+        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                columnHeaderLayer, bodyLayer.getSelectionLayer(),
+                columnGroupModel);
 
-		//	Note: The column header layer is wrapped in a filter row composite.
-		//	This plugs in the filter row functionality
-		final FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer =
-			new FilterRowHeaderComposite<RowDataFixture>(
-					new DefaultGlazedListsFilterStrategy<RowDataFixture>(filterList, columnPropertyAccessor, configRegistry),
-					columnGroupHeaderLayer, columnHeaderDataProvider, configRegistry
-			);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 1", 1, 2);
 
-		filterRowHeaderLayer.setFilterRowVisible(false);
-		
-		ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
-		columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
+        // calculate the height of the column header area dependent if column
+        // groups exist or not
+        columnGroupHeaderLayer.setCalculateHeight(true);
 
-		// Register labels
-		labelAccumulator.registerColumnOverrides(
-           RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
-           "CUSTOM_COMPARATOR_LABEL");
-		
-		// Row header
+        // Note: The column header layer is wrapped in a filter row composite.
+        // This plugs in the filter row functionality
+        final FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer = new FilterRowHeaderComposite<RowDataFixture>(
+                new DefaultGlazedListsFilterStrategy<RowDataFixture>(
+                        filterList, columnPropertyAccessor, configRegistry),
+                columnGroupHeaderLayer, columnHeaderDataProvider,
+                configRegistry);
 
-		final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        filterRowHeaderLayer.setFilterRowVisible(false);
 
-		// Corner
+        ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
+                columnHeaderDataLayer);
+        columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
-		final DefaultCornerDataProvider cornerDataProvider =
-			new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, filterRowHeaderLayer);
+        // Register labels
+        labelAccumulator.registerColumnOverrides(RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
+                "CUSTOM_COMPARATOR_LABEL");
 
-		// Grid
-		GridLayer gridLayer = new GridLayer(
-				bodyLayer,
-				filterRowHeaderLayer,
-				rowHeaderLayer,
-				cornerLayer);
+        // Row header
 
+        final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
 
-		NatTable natTable = new NatTable(parent, gridLayer, false);
+        // Corner
 
-		// Register create column group command handler
+        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                filterRowHeaderLayer);
 
-		// Register column chooser
-		DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-				bodyLayer.getSelectionLayer(),
-				bodyLayer.getColumnHideShowLayer(),
-				columnHeaderLayer,
-				columnHeaderDataLayer,
-				columnGroupHeaderLayer,
-				columnGroupModel);
-		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
+        // Grid
+        GridLayer gridLayer = new GridLayer(bodyLayer, filterRowHeaderLayer,
+                rowHeaderLayer, cornerLayer);
 
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-			@Override
-			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-				return super.createColumnHeaderMenu(natTable).withColumnChooserMenuItem();
-			}
-		});
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				configRegistry.registerConfigAttribute(ExportConfigAttributes.EXPORTER, new HSSFExcelExporter());
-			}
-		});
-		natTable.addConfiguration(new FilterRowCustomConfiguration());
+        NatTable natTable = new NatTable(parent, gridLayer, false);
 
-		natTable.setConfigRegistry(configRegistry);
-		natTable.configure();
-		
-		//add button
-		Button button = new Button(parent, SWT.NONE);
-		button.setText("Switch FilterRow visibility");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				filterRowHeaderLayer.setFilterRowVisible(!filterRowHeaderLayer.isFilterRowVisible());
-			}
-		});
-		
-		return natTable;
-	}
+        // Register create column group command handler
 
-	
-	public static class FilterRowCustomConfiguration extends AbstractRegistryConfiguration {
+        // Register column chooser
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
+                bodyLayer.getSelectionLayer(),
+                bodyLayer.getColumnHideShowLayer(), columnHeaderLayer,
+                columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel);
+        bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
-		final DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter();
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return super.createColumnHeaderMenu(natTable)
+                        .withColumnChooserMenuItem();
+            }
+        });
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORTER,
+                        new HSSFExcelExporter());
+            }
+        });
+        natTable.addConfiguration(new FilterRowCustomConfiguration());
 
-		@Override
-		public void configureRegistry(IConfigRegistry configRegistry) {
-			// Configure custom comparator on the rating column
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.FILTER_COMPARATOR,
-					getIngnorecaseComparator(),
-					DisplayMode.NORMAL,
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.configure();
 
-			// If threshold comparison is used we have to convert the string entered by the
-			// user to the correct underlying type (double), so that it can be compared
+        // add button
+        Button button = new Button(parent, SWT.NONE);
+        button.setText("Switch FilterRow visibility");
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                filterRowHeaderLayer.setFilterRowVisible(!filterRowHeaderLayer
+                        .isFilterRowVisible());
+            }
+        });
 
-			// Configure Bid column
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-					doubleDisplayConverter,
-					DisplayMode.NORMAL,
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-					TextMatchingMode.REGULAR_EXPRESSION,
-					DisplayMode.NORMAL,
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
-			
-			// Configure Ask column
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-					doubleDisplayConverter,
-					DisplayMode.NORMAL,
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 6);
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-					TextMatchingMode.REGULAR_EXPRESSION,
-					DisplayMode.NORMAL,
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 6);
-		
-			// Configure a combo box on the pricing type column
-			
-			// Register a combo box editor to be displayed in the filter row cell 
-			//    when a value is selected from the combo, the object is converted to a string
-			//    using the converter (registered below)
-			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-					new ComboBoxCellEditor(Arrays.asList(new PricingTypeBean("MN"), new PricingTypeBean("AT"))), 
-					DisplayMode.NORMAL, 
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
-			
-			// The pricing bean object in column is converted to using this display converter
-			// A 'text' match is then performed against the value from the combo box 
-			configRegistry.registerConfigAttribute(FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-					PricingTypeBean.getDisplayConverter(),
-					DisplayMode.NORMAL,
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
-			
-			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER,
-					PricingTypeBean.getDisplayConverter(),
-					DisplayMode.NORMAL,
-					FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
-			
-			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, PricingTypeBean.getDisplayConverter(), DisplayMode.NORMAL, "PRICING_TYPE_PROP_NAME");
+        return natTable;
+    }
 
-			// Shade the row to be slightly darker than the blue background.
-			final Style rowStyle = new Style();
-			rowStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.getColor(197, 212, 231));
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, rowStyle, DisplayMode.NORMAL, GridRegion.FILTER_ROW);
-		}
-	}
-	
-	private static Comparator<?> getIngnorecaseComparator() {
-		return new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareToIgnoreCase(o2);
-			}
-		};
-	};
-	
+    public static class FilterRowCustomConfiguration extends
+            AbstractRegistryConfiguration {
+
+        final DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter();
+
+        @Override
+        public void configureRegistry(IConfigRegistry configRegistry) {
+            // Configure custom comparator on the rating column
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_COMPARATOR,
+                    getIngnorecaseComparator(), DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
+
+            // If threshold comparison is used we have to convert the string
+            // entered by the
+            // user to the correct underlying type (double), so that it can be
+            // compared
+
+            // Configure Bid column
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                    doubleDisplayConverter, DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                    TextMatchingMode.REGULAR_EXPRESSION, DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
+
+            // Configure Ask column
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                    doubleDisplayConverter, DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 6);
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                    TextMatchingMode.REGULAR_EXPRESSION, DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 6);
+
+            // Configure a combo box on the pricing type column
+
+            // Register a combo box editor to be displayed in the filter row
+            // cell
+            // when a value is selected from the combo, the object is converted
+            // to a string
+            // using the converter (registered below)
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    new ComboBoxCellEditor(Arrays.asList(new PricingTypeBean(
+                            "MN"), new PricingTypeBean("AT"))),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
+
+            // The pricing bean object in column is converted to using this
+            // display converter
+            // A 'text' match is then performed against the value from the combo
+            // box
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
+                    PricingTypeBean.getDisplayConverter(), DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    PricingTypeBean.getDisplayConverter(), DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    PricingTypeBean.getDisplayConverter(), DisplayMode.NORMAL,
+                    "PRICING_TYPE_PROP_NAME");
+
+            // Shade the row to be slightly darker than the blue background.
+            final Style rowStyle = new Style();
+            rowStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                    GUIHelper.getColor(197, 212, 231));
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE, rowStyle,
+                    DisplayMode.NORMAL, GridRegion.FILTER_ROW);
+        }
+    }
+
+    private static Comparator<?> getIngnorecaseComparator() {
+        return new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareToIgnoreCase(o2);
+            }
+        };
+    };
+
 }

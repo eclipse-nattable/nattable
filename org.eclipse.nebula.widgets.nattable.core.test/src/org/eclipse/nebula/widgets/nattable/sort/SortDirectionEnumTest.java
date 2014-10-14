@@ -19,10 +19,10 @@ import org.junit.Test;
 
 public class SortDirectionEnumTest {
 
-	@Test
-	public void shouldCalculateNextSortDirectionCorrectly() throws Exception {
-		assertEquals(ASC, NONE.getNextSortDirection());
-		assertEquals(DESC, ASC.getNextSortDirection());
-		assertEquals(NONE, DESC.getNextSortDirection());
-	}
+    @Test
+    public void shouldCalculateNextSortDirectionCorrectly() throws Exception {
+        assertEquals(ASC, NONE.getNextSortDirection());
+        assertEquals(DESC, ASC.getNextSortDirection());
+        assertEquals(NONE, DESC.getNextSortDirection());
+    }
 }

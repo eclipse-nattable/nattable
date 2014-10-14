@@ -16,77 +16,88 @@ import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
- * Command to end row reordering. Will transport the position of the row
- * to which the dragged row should be dropped.
+ * Command to end row reordering. Will transport the position of the row to
+ * which the dragged row should be dropped.
  * 
  * @author Dirk Fauth
  *
  */
 public class RowReorderEndCommand implements ILayerCommand {
-	
-	/**
-	 * The coordinate of the row to which the dragged row should be dropped
-	 */
-	private RowPositionCoordinate toRowPositionCoordinate;
-	/**
-	 * Flag to indicate if the row is dragged to the top edge of the layer.
-	 * Needed for the special case when the reordering is performed to the bottom edge.
-	 */
-	private boolean reorderToTopEdge;
-	
-	/**
-	 * 
-	 * @param layer The layer the position is related to
-	 * @param toRowPosition The position of the row to which the dragged row should be dropped
-	 */
-	public RowReorderEndCommand(ILayer layer, int toRowPosition) {
-		if (toRowPosition < layer.getRowCount()) {
- 			reorderToTopEdge = true;
-		} else {
-			reorderToTopEdge = false;
-			toRowPosition--;
-		}
-		
-		toRowPositionCoordinate = new RowPositionCoordinate(layer, toRowPosition);
-	}
-	
-	/**
-	 * Constructor used for cloning purposes
-	 * @param command The command which is base for the new one
-	 */
-	protected RowReorderEndCommand(RowReorderEndCommand command) {
-		this.toRowPositionCoordinate = command.toRowPositionCoordinate;
-		this.reorderToTopEdge = command.reorderToTopEdge;
-	}
-	
-	/**
-	 * @return The position of the row to which the dragged row should be dropped
-	 */
-	public int getToRowPosition() {
-		return toRowPositionCoordinate.getRowPosition();
-	}
-	
-	/**
-	 * @return Flag to indicate if the row is dragged to the top edge of the layer.
-	 */
-	public boolean isReorderToTopEdge() {
-		return reorderToTopEdge;
-	}
-	
-	@Override
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(toRowPositionCoordinate, targetLayer);
-		if (targetToRowPositionCoordinate != null) {
-			toRowPositionCoordinate = targetToRowPositionCoordinate;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	@Override
-	public RowReorderEndCommand cloneCommand() {
-		return new RowReorderEndCommand(this);
-	}
-	
+
+    /**
+     * The coordinate of the row to which the dragged row should be dropped
+     */
+    private RowPositionCoordinate toRowPositionCoordinate;
+    /**
+     * Flag to indicate if the row is dragged to the top edge of the layer.
+     * Needed for the special case when the reordering is performed to the
+     * bottom edge.
+     */
+    private boolean reorderToTopEdge;
+
+    /**
+     * 
+     * @param layer
+     *            The layer the position is related to
+     * @param toRowPosition
+     *            The position of the row to which the dragged row should be
+     *            dropped
+     */
+    public RowReorderEndCommand(ILayer layer, int toRowPosition) {
+        if (toRowPosition < layer.getRowCount()) {
+            reorderToTopEdge = true;
+        } else {
+            reorderToTopEdge = false;
+            toRowPosition--;
+        }
+
+        toRowPositionCoordinate = new RowPositionCoordinate(layer,
+                toRowPosition);
+    }
+
+    /**
+     * Constructor used for cloning purposes
+     * 
+     * @param command
+     *            The command which is base for the new one
+     */
+    protected RowReorderEndCommand(RowReorderEndCommand command) {
+        this.toRowPositionCoordinate = command.toRowPositionCoordinate;
+        this.reorderToTopEdge = command.reorderToTopEdge;
+    }
+
+    /**
+     * @return The position of the row to which the dragged row should be
+     *         dropped
+     */
+    public int getToRowPosition() {
+        return toRowPositionCoordinate.getRowPosition();
+    }
+
+    /**
+     * @return Flag to indicate if the row is dragged to the top edge of the
+     *         layer.
+     */
+    public boolean isReorderToTopEdge() {
+        return reorderToTopEdge;
+    }
+
+    @Override
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil
+                .convertRowPositionToTargetContext(toRowPositionCoordinate,
+                        targetLayer);
+        if (targetToRowPositionCoordinate != null) {
+            toRowPositionCoordinate = targetToRowPositionCoordinate;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public RowReorderEndCommand cloneCommand() {
+        return new RowReorderEndCommand(this);
+    }
+
 }

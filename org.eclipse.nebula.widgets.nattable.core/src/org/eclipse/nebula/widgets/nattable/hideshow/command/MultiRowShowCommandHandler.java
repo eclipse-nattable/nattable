@@ -13,22 +13,23 @@ package org.eclipse.nebula.widgets.nattable.hideshow.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowCommandLayer;
 
-public class MultiRowShowCommandHandler extends AbstractLayerCommandHandler<MultiRowShowCommand> {
+public class MultiRowShowCommandHandler extends
+        AbstractLayerCommandHandler<MultiRowShowCommand> {
 
-	private final IRowHideShowCommandLayer rowHideShowLayer;
+    private final IRowHideShowCommandLayer rowHideShowLayer;
 
-	public MultiRowShowCommandHandler(IRowHideShowCommandLayer rowHideShowLayer) {
-		this.rowHideShowLayer = rowHideShowLayer;
-	}
-	
-	public Class<MultiRowShowCommand> getCommandClass() {
-		return MultiRowShowCommand.class;
-	}
+    public MultiRowShowCommandHandler(IRowHideShowCommandLayer rowHideShowLayer) {
+        this.rowHideShowLayer = rowHideShowLayer;
+    }
 
-	@Override
-	protected boolean doCommand(MultiRowShowCommand command) {
-		rowHideShowLayer.showRowIndexes(command.getRowIndexes());
-		return true;
-	}
+    public Class<MultiRowShowCommand> getCommandClass() {
+        return MultiRowShowCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(MultiRowShowCommand command) {
+        rowHideShowLayer.showRowIndexes(command.getRowIndexes());
+        return true;
+    }
 
 }

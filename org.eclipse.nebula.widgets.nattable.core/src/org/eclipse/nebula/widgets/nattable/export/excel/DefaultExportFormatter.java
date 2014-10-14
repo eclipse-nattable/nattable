@@ -18,10 +18,13 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public class DefaultExportFormatter implements IExportFormatter {
 
-	public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
-		Object dataValue = cell.getDataValue();
-		IDisplayConverter displayConverter = configRegistry.getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
-		return displayConverter.canonicalToDisplayValue(dataValue);
-	}
+    public Object formatForExport(ILayerCell cell,
+            IConfigRegistry configRegistry) {
+        Object dataValue = cell.getDataValue();
+        IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
+                CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(),
+                cell.getConfigLabels().getLabels());
+        return displayConverter.canonicalToDisplayValue(dataValue);
+    }
 
 }

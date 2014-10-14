@@ -15,20 +15,21 @@ import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderStyleConfiguration;
 
 /**
- * Setup for the column header area to support column resizing and hover styling. 
+ * Setup for the column header area to support column resizing and hover
+ * styling.
  */
 public class ColumnHeaderHoverLayerConfiguration extends AggregateConfiguration {
 
-	public ColumnHeaderHoverLayerConfiguration(HoverLayer layer) {
-		addColumnHeaderStyleConfig();
-		addColumnHeaderUIBindings(layer);
-	}
+    public ColumnHeaderHoverLayerConfiguration(HoverLayer layer) {
+        addColumnHeaderStyleConfig();
+        addColumnHeaderUIBindings(layer);
+    }
 
-	protected void addColumnHeaderStyleConfig() {
-		addConfiguration(new DefaultColumnHeaderStyleConfiguration());
-	}
-	
-	protected void addColumnHeaderUIBindings(HoverLayer layer) {
-		addConfiguration(new ColumnHeaderResizeHoverBindings(layer));
-	}
+    protected void addColumnHeaderStyleConfig() {
+        addConfiguration(new DefaultColumnHeaderStyleConfiguration());
+    }
+
+    protected void addColumnHeaderUIBindings(HoverLayer layer) {
+        addConfiguration(new ColumnHeaderResizeHoverBindings(layer));
+    }
 }

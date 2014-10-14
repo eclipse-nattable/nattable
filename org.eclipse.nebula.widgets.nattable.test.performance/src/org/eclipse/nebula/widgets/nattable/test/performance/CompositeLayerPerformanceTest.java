@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.performance;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
@@ -27,24 +26,35 @@ import org.junit.Test;
 
 public class CompositeLayerPerformanceTest extends AbstractLayerPerformanceTest {
 
-	@Test
-	public void testGridLayerPerformance() {
-		DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(1000000, 1000000);
-		SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(bodyDataProvider));
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+    @Test
+    public void testGridLayerPerformance() {
+        DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(
+                1000000, 1000000);
+        SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(
+                bodyDataProvider));
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-		DummyColumnHeaderDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(bodyDataProvider);
-		DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
+        DummyColumnHeaderDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(
+                bodyDataProvider);
+        DataLayer columnHeaderDataLayer = new DataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                viewportLayer, selectionLayer);
 
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DataLayer rowHeaderDataLayer = new DataLayer(rowHeaderDataProvider);
-		rowHeaderDataLayer.setDefaultColumnWidth(40);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DataLayer rowHeaderDataLayer = new DataLayer(rowHeaderDataProvider);
+        rowHeaderDataLayer.setDefaultColumnWidth(40);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer);
 
-		ILayer cornerLayer = new CornerLayer(new DataLayer(new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), rowHeaderLayer, columnHeaderLayer);
-		
-		layer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-	}
-	
+        ILayer cornerLayer = new CornerLayer(new DataLayer(
+                new DefaultCornerDataProvider(columnHeaderDataProvider,
+                        rowHeaderDataProvider)), rowHeaderLayer,
+                columnHeaderLayer);
+
+        layer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer,
+                cornerLayer);
+    }
+
 }

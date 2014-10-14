@@ -12,5 +12,4 @@ package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
-public class ShowAllColumnsCommand extends AbstractContextFreeCommand {
-}
+public class ShowAllColumnsCommand extends AbstractContextFreeCommand {}

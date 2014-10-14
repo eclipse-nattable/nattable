@@ -36,64 +36,76 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class SelectionExampleGridLayer extends GridLayer {
 
-	private final DataLayer bodyDataLayer;
-	private final DataLayer columnHeaderDataLayer;
-	private SelectionExampleBodyLayerStack bodyLayer;
-	private ListDataProvider<RowDataFixture> bodyDataProvider;
+    private final DataLayer bodyDataLayer;
+    private final DataLayer columnHeaderDataLayer;
+    private SelectionExampleBodyLayerStack bodyLayer;
+    private ListDataProvider<RowDataFixture> bodyDataProvider;
 
-	public SelectionExampleGridLayer() {
-		super(true);
-		EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList());
-		String[] propertyNames = RowDataListFixture.getPropertyNames();
-		Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
+    public SelectionExampleGridLayer() {
+        super(true);
+        EventList<RowDataFixture> eventList = GlazedLists
+                .eventList(RowDataListFixture.getList());
+        String[] propertyNames = RowDataListFixture.getPropertyNames();
+        Map<String, String> propertyToLabelMap = RowDataListFixture
+                .getPropertyToLabelMap();
 
-		IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
-		bodyDataProvider = new ListDataProvider<RowDataFixture>(eventList, columnPropertyAccessor);
+        IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                propertyNames);
+        bodyDataProvider = new ListDataProvider<RowDataFixture>(eventList,
+                columnPropertyAccessor);
 
-		bodyDataLayer = new DataLayer(bodyDataProvider);
-		bodyLayer = new SelectionExampleBodyLayerStack(bodyDataLayer);
+        bodyDataLayer = new DataLayer(bodyDataProvider);
+        bodyLayer = new SelectionExampleBodyLayerStack(bodyDataLayer);
 
-		// Column header
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        // Column header
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+                columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
-		// Row header
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        // Row header
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayer, bodyLayer.getSelectionLayer());
 
-		// Corner
-		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
+        // Corner
+        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
+                rowHeaderLayer, columnHeaderLayer);
 
-		// Grid
-		setBodyLayer(bodyLayer);
-		setColumnHeaderLayer(columnHeaderLayer);
-		setRowHeaderLayer(rowHeaderLayer);
-		setCornerLayer(cornerLayer);
-	}
+        // Grid
+        setBodyLayer(bodyLayer);
+        setColumnHeaderLayer(columnHeaderLayer);
+        setRowHeaderLayer(rowHeaderLayer);
+        setCornerLayer(cornerLayer);
+    }
 
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		super.setClientAreaProvider(clientAreaProvider);
-	}
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        super.setClientAreaProvider(clientAreaProvider);
+    }
 
-	public SelectionLayer getSelectionLayer() {
-		return bodyLayer.getSelectionLayer();
-	}
-	
-	public DataLayer getBodyDataLayer() {
-		return bodyDataLayer;
-	}
+    public SelectionLayer getSelectionLayer() {
+        return bodyLayer.getSelectionLayer();
+    }
 
-	public ListDataProvider<RowDataFixture> getBodyDataProvider() {
-		return bodyDataProvider;
-	}
-	
-	public DataLayer getColumnHeaderDataLayer() {
-		return columnHeaderDataLayer;
-	}
+    public DataLayer getBodyDataLayer() {
+        return bodyDataLayer;
+    }
+
+    public ListDataProvider<RowDataFixture> getBodyDataProvider() {
+        return bodyDataProvider;
+    }
+
+    public DataLayer getColumnHeaderDataLayer() {
+        return columnHeaderDataLayer;
+    }
 
 }

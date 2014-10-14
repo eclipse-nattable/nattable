@@ -20,66 +20,67 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 
 public class Editors {
 
-	public static IEditor getCheckBoxEditor() {
-		return new IEditor() {
+    public static IEditor getCheckBoxEditor() {
+        return new IEditor() {
 
-			public IEditableRule getEditableRule() {
-				return IEditableRule.ALWAYS_EDITABLE;
-			}
+            public IEditableRule getEditableRule() {
+                return IEditableRule.ALWAYS_EDITABLE;
+            }
 
-			public IDataValidator getValidator() {
-				return IDataValidator.ALWAYS_VALID;
-			}
+            public IDataValidator getValidator() {
+                return IDataValidator.ALWAYS_VALID;
+            }
 
-			public IEditor.Type getType() {
-				return Type.CHECKBOX;
-			}
+            public IEditor.Type getType() {
+                return Type.CHECKBOX;
+            }
 
-			public ICellEditor getCellEditor() {
-				return new CheckBoxCellEditor();
-			}
-		};
-	}
+            public ICellEditor getCellEditor() {
+                return new CheckBoxCellEditor();
+            }
+        };
+    }
 
-	public static IEditor getComboboxEditor(final IComboBoxDataProvider dataProvider) {
-		return new IEditor() {
+    public static IEditor getComboboxEditor(
+            final IComboBoxDataProvider dataProvider) {
+        return new IEditor() {
 
-			public IEditableRule getEditableRule() {
-				return IEditableRule.ALWAYS_EDITABLE;
-			}
+            public IEditableRule getEditableRule() {
+                return IEditableRule.ALWAYS_EDITABLE;
+            }
 
-			public IDataValidator getValidator() {
-				return IDataValidator.ALWAYS_VALID;
-			}
+            public IDataValidator getValidator() {
+                return IDataValidator.ALWAYS_VALID;
+            }
 
-			public IEditor.Type getType() {
-				return Type.COMBO;
-			}
+            public IEditor.Type getType() {
+                return Type.COMBO;
+            }
 
-			public ICellEditor getCellEditor() {
-				return new ComboBoxCellEditor(dataProvider);
-			}
-		};
-	}
+            public ICellEditor getCellEditor() {
+                return new ComboBoxCellEditor(dataProvider);
+            }
+        };
+    }
 
-	public static IEditor getTextEditor() {
-		return new IEditor() {
+    public static IEditor getTextEditor() {
+        return new IEditor() {
 
-			public IEditableRule getEditableRule() {
-				return IEditableRule.ALWAYS_EDITABLE;
-			}
+            public IEditableRule getEditableRule() {
+                return IEditableRule.ALWAYS_EDITABLE;
+            }
 
-			public IDataValidator getValidator() {
-				return IDataValidator.ALWAYS_VALID;
-			}
+            public IDataValidator getValidator() {
+                return IDataValidator.ALWAYS_VALID;
+            }
 
-			public IEditor.Type getType() {
-				return Type.TEXT;
-			}
+            public IEditor.Type getType() {
+                return Type.TEXT;
+            }
 
-			public ICellEditor getCellEditor() {
-				return new TextCellEditor();
-			}
-		};
-	}
+            public ICellEditor getCellEditor() {
+                return new TextCellEditor();
+            }
+        };
+    }
 }

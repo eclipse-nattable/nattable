@@ -15,36 +15,40 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 
 /**
- * {@link IDataProvider} to use for the {@link RowHeaderLayer} if the {@link SummaryRowLayer} is present in the body layer stack.
- * This adds an extra row to the row header for displaying the summary row.
+ * {@link IDataProvider} to use for the {@link RowHeaderLayer} if the
+ * {@link SummaryRowLayer} is present in the body layer stack. This adds an
+ * extra row to the row header for displaying the summary row.
  */
-public class DefaultSummaryRowHeaderDataProvider extends DefaultRowHeaderDataProvider implements IDataProvider {
+public class DefaultSummaryRowHeaderDataProvider extends
+        DefaultRowHeaderDataProvider implements IDataProvider {
 
-	public static final String DEFAULT_SUMMARY_ROW_LABEL = "Summary"; //$NON-NLS-1$
-	private final String summaryRowLabel;
+    public static final String DEFAULT_SUMMARY_ROW_LABEL = "Summary"; //$NON-NLS-1$
+    private final String summaryRowLabel;
 
-	public DefaultSummaryRowHeaderDataProvider(IDataProvider bodyDataProvider) {
-		this(bodyDataProvider, DEFAULT_SUMMARY_ROW_LABEL);
-	}
+    public DefaultSummaryRowHeaderDataProvider(IDataProvider bodyDataProvider) {
+        this(bodyDataProvider, DEFAULT_SUMMARY_ROW_LABEL);
+    }
 
-	/**
-	 * @param summaryRowLabel label to display in the row header for the Summary Row
-	 */
-	public DefaultSummaryRowHeaderDataProvider(IDataProvider bodyDataProvider, String summaryRowLabel) {
-		super(bodyDataProvider);
-		this.summaryRowLabel = summaryRowLabel;
-	}
+    /**
+     * @param summaryRowLabel
+     *            label to display in the row header for the Summary Row
+     */
+    public DefaultSummaryRowHeaderDataProvider(IDataProvider bodyDataProvider,
+            String summaryRowLabel) {
+        super(bodyDataProvider);
+        this.summaryRowLabel = summaryRowLabel;
+    }
 
-	@Override
-	public int getRowCount() {
-		return super.getRowCount() + 1;
-	}
+    @Override
+    public int getRowCount() {
+        return super.getRowCount() + 1;
+    }
 
-	@Override
-	public Object getDataValue(int columnIndex, int rowIndex) {
-		if (rowIndex == super.getRowCount()){
-			return summaryRowLabel;
-		}
-		return super.getDataValue(columnIndex, rowIndex);
-	}
+    @Override
+    public Object getDataValue(int columnIndex, int rowIndex) {
+        if (rowIndex == super.getRowCount()) {
+            return summaryRowLabel;
+        }
+        return super.getDataValue(columnIndex, rowIndex);
+    }
 }

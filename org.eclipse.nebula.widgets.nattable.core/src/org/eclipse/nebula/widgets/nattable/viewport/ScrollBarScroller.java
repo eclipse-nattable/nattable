@@ -15,100 +15,100 @@ import org.eclipse.swt.widgets.ScrollBar;
 
 public class ScrollBarScroller implements IScroller<ScrollBar> {
 
-	private ScrollBar scrollBar;
+    private ScrollBar scrollBar;
 
-	public ScrollBarScroller(ScrollBar scrollBar) {
-		this.scrollBar = scrollBar;
-	}
-	
-	@Override
-	public ScrollBar getUnderlying() {
-		return scrollBar;
-	}
-	
-	@Override
-	public boolean isDisposed() {
-		return scrollBar.isDisposed();
-	}
+    public ScrollBarScroller(ScrollBar scrollBar) {
+        this.scrollBar = scrollBar;
+    }
 
-	@Override
-	public void addListener(int eventType, Listener listener) {
-		scrollBar.addListener(eventType, listener);
-	}
+    @Override
+    public ScrollBar getUnderlying() {
+        return scrollBar;
+    }
 
-	@Override
-	public void removeListener(int eventType, Listener listener) {
-		scrollBar.removeListener(eventType, listener);
-	}
-	
-	@Override
-	public int getSelection() {
-		return scrollBar.getSelection();
-	}
+    @Override
+    public boolean isDisposed() {
+        return scrollBar.isDisposed();
+    }
 
-	@Override
-	public void setSelection(int value) {
-		scrollBar.setSelection(value);
-	}
+    @Override
+    public void addListener(int eventType, Listener listener) {
+        scrollBar.addListener(eventType, listener);
+    }
 
-	@Override
-	public int getMaximum() {
-		return scrollBar.getMaximum();
-	}
-	
-	@Override
-	public void setMaximum(int value) {
-		scrollBar.setMaximum(value);
-	}
-	
-	@Override
-	public int getPageIncrement() {
-		return scrollBar.getPageIncrement();
-	}
+    @Override
+    public void removeListener(int eventType, Listener listener) {
+        scrollBar.removeListener(eventType, listener);
+    }
 
-	@Override
-	public void setPageIncrement(int value) {
-		scrollBar.setPageIncrement(value);
-	}
+    @Override
+    public int getSelection() {
+        return scrollBar.getSelection();
+    }
 
-	@Override
-	public int getThumb() {
-		return scrollBar.getThumb();
-	}
-	
-	@Override
-	public void setThumb(int value) {
-		scrollBar.setThumb(value);
-	}
+    @Override
+    public void setSelection(int value) {
+        scrollBar.setSelection(value);
+    }
 
-	@Override
-	public int getIncrement() {
-		return scrollBar.getIncrement();
-	}
-	
-	@Override
-	public void setIncrement(int value) {
-		scrollBar.setIncrement(value);
-	}
+    @Override
+    public int getMaximum() {
+        return scrollBar.getMaximum();
+    }
 
-	@Override
-	public boolean getEnabled() {
-		return scrollBar.getEnabled();
-	}
-	
-	@Override
-	public void setEnabled(boolean b) {
-		scrollBar.setEnabled(b);
-	}
+    @Override
+    public void setMaximum(int value) {
+        scrollBar.setMaximum(value);
+    }
 
-	@Override
-	public boolean getVisible() {
-		return scrollBar.getVisible();
-	}
-	
-	@Override
-	public void setVisible(boolean b) {
-		scrollBar.setVisible(b);
-	}
+    @Override
+    public int getPageIncrement() {
+        return scrollBar.getPageIncrement();
+    }
+
+    @Override
+    public void setPageIncrement(int value) {
+        scrollBar.setPageIncrement(value);
+    }
+
+    @Override
+    public int getThumb() {
+        return scrollBar.getThumb();
+    }
+
+    @Override
+    public void setThumb(int value) {
+        scrollBar.setThumb(value);
+    }
+
+    @Override
+    public int getIncrement() {
+        return scrollBar.getIncrement();
+    }
+
+    @Override
+    public void setIncrement(int value) {
+        scrollBar.setIncrement(value);
+    }
+
+    @Override
+    public boolean getEnabled() {
+        return scrollBar.getEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean b) {
+        scrollBar.setEnabled(b);
+    }
+
+    @Override
+    public boolean getVisible() {
+        return scrollBar.getVisible();
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        scrollBar.setVisible(b);
+    }
 
 }

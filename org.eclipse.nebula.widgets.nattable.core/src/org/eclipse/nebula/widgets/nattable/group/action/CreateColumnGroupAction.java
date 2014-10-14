@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.group.command.OpenCreateColumnGroupDialog;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
@@ -18,14 +17,14 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class CreateColumnGroupAction implements IKeyAction {
 
-	private OpenCreateColumnGroupDialog dialogCommand;
-	
-	public void run(NatTable natTable, KeyEvent event) {
-		if (dialogCommand == null) {
-			// Create dialog
-			dialogCommand = new OpenCreateColumnGroupDialog(natTable.getShell());
-		}
-		natTable.doCommand(dialogCommand);
-	}
-	
+    private OpenCreateColumnGroupDialog dialogCommand;
+
+    public void run(NatTable natTable, KeyEvent event) {
+        if (dialogCommand == null) {
+            // Create dialog
+            dialogCommand = new OpenCreateColumnGroupDialog(natTable.getShell());
+        }
+        natTable.doCommand(dialogCommand);
+    }
+
 }

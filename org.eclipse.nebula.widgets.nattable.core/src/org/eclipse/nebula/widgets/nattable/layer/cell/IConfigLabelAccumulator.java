@@ -15,18 +15,24 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 /**
  * Resolves the configuration/config label(s) which are tied to a given cell.
- * Various attributes can be registered in the {@link IConfigRegistry} against this
- * label
+ * Various attributes can be registered in the {@link IConfigRegistry} against
+ * this label
  */
 public interface IConfigLabelAccumulator {
-	
-	/**
-	 * Add labels applicable to this cell position
-	 * @param configLabels the labels currently applied to the cell. The labels contributed by this 
-	 * provider must be <i>added</i> to this stack
-	 * @param columnPosition of the cell for which labels are being gathered
-	 * @param rowPosition of the cell for which labels are being gathered
-	 */
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition);
-	
+
+    /**
+     * Add labels applicable to this cell position
+     * 
+     * @param configLabels
+     *            the labels currently applied to the cell. The labels
+     *            contributed by this provider must be <i>added</i> to this
+     *            stack
+     * @param columnPosition
+     *            of the cell for which labels are being gathered
+     * @param rowPosition
+     *            of the cell for which labels are being gathered
+     */
+    public void accumulateConfigLabels(LabelStack configLabels,
+            int columnPosition, int rowPosition);
+
 }

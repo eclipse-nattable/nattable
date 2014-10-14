@@ -47,119 +47,135 @@ import ca.odell.glazedlists.TransformedList;
  */
 public class SortableGridExample extends AbstractNatExample {
 
-	private static final String CUSTOM_COMPARATOR_LABEL = "customComparatorLabel";
-	protected static final String NO_SORT_LABEL = "noSortLabel";
+    private static final String CUSTOM_COMPARATOR_LABEL = "customComparatorLabel";
+    protected static final String NO_SORT_LABEL = "noSortLabel";
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(700, 400, new PersistentNatExampleWrapper(new SortableGridExample()));
-	}
-	
-	@Override
-	public String getDescription() {
-		return
-				"Grid demonstrates sorting moving data.\n" +
-				"\n" +
-				"Features:\n" +
-				"The contents of the grid are kept in sorted order as the rows are added/removed.\n" +
-				"Custom comparators can be applied to each column.\n" +
-				"Ignorecase comparator applied to the 'Rating' column.\n" +
-				"Sorting can be turned off on the selective columns.\n" +
-				"'Ask price' field is not sortable.\n" +
-				"\n" +
-				"Key bindings:\n" +
-				"Sort by left clicking on the column header.\n" +
-				"Add columns to the existing sort by (Alt. + left click) on the column header\n" +
-				"\n" +
-				"Technical information:\n" +
-				"The default implementation uses GlazedLists to sort the backing data source.";
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(700, 400,
+                new PersistentNatExampleWrapper(new SortableGridExample()));
+    }
 
-	private TransformedList<RowDataFixture, RowDataFixture> rowObjectsGlazedList;
-	private NatTable nattable;
+    @Override
+    public String getDescription() {
+        return "Grid demonstrates sorting moving data.\n"
+                + "\n"
+                + "Features:\n"
+                + "The contents of the grid are kept in sorted order as the rows are added/removed.\n"
+                + "Custom comparators can be applied to each column.\n"
+                + "Ignorecase comparator applied to the 'Rating' column.\n"
+                + "Sorting can be turned off on the selective columns.\n"
+                + "'Ask price' field is not sortable.\n"
+                + "\n"
+                + "Key bindings:\n"
+                + "Sort by left clicking on the column header.\n"
+                + "Add columns to the existing sort by (Alt. + left click) on the column header\n"
+                + "\n"
+                + "Technical information:\n"
+                + "The default implementation uses GlazedLists to sort the backing data source.";
+    }
 
-	/**
-	 * @see GlazedListsGridLayer to see the required stack setup.
-	 * 	Basically the {@link SortHeaderLayer} needs to be a part of the Column header layer stack.
-	 */
-	public Control createExampleControl(Composite parent) {
-		EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList());
-		rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+    private TransformedList<RowDataFixture, RowDataFixture> rowObjectsGlazedList;
+    private NatTable nattable;
 
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<RowDataFixture>(
-				rowObjectsGlazedList,
-				RowDataListFixture.getPropertyNames(),
-				RowDataListFixture.getPropertyToLabelMap(),
-				configRegistry);
+    /**
+     * @see GlazedListsGridLayer to see the required stack setup. Basically the
+     *      {@link SortHeaderLayer} needs to be a part of the Column header
+     *      layer stack.
+     */
+    public Control createExampleControl(Composite parent) {
+        EventList<RowDataFixture> eventList = GlazedLists
+                .eventList(RowDataListFixture.getList());
+        rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
-		nattable = new NatTable(parent, glazedListsGridLayer, false);
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<RowDataFixture>(
+                rowObjectsGlazedList, RowDataListFixture.getPropertyNames(),
+                RowDataListFixture.getPropertyToLabelMap(), configRegistry);
 
-		nattable.setConfigRegistry(configRegistry);
-		nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        nattable = new NatTable(parent, glazedListsGridLayer, false);
 
-		// Change the default sort key bindings. Note that 'auto configure' was turned off
-		// for the SortHeaderLayer (setup in the GlazedListsGridLayer)
-		nattable.addConfiguration(new SingleClickSortConfiguration());
-		nattable.addConfiguration(getCustomComparatorConfiguration(glazedListsGridLayer.getColumnHeaderLayerStack().getDataLayer()));
-		nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
+        nattable.setConfigRegistry(configRegistry);
+        nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
-		nattable.addConfiguration(new HeaderMenuConfiguration(nattable) {
-			@Override
-			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-				return super.createColumnHeaderMenu(natTable).withStateManagerMenuItemProvider();
-			}
-		});
-		
-		nattable.configure();
-		
-		//add the DisplayPersistenceDialogCommandHandler with the created NatTable instance after configure()
-		//so all configuration and states are correctly applied before storing the default state
-		glazedListsGridLayer.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(nattable));
-		return nattable;
-	}
+        // Change the default sort key bindings. Note that 'auto configure' was
+        // turned off
+        // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
+        nattable.addConfiguration(new SingleClickSortConfiguration());
+        nattable.addConfiguration(getCustomComparatorConfiguration(glazedListsGridLayer
+                .getColumnHeaderLayerStack().getDataLayer()));
+        nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
 
-	/**
-	 * NOTE: The labels for the the custom comparators must go on the columnHeaderDataLayer - since,
-	 * 		the SortHeaderLayer will resolve cell labels with respect to its underlying layer i.e columnHeaderDataLayer
-	 */
-	private IConfiguration getCustomComparatorConfiguration(final AbstractLayer columnHeaderDataLayer) {
+        nattable.addConfiguration(new HeaderMenuConfiguration(nattable) {
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return super.createColumnHeaderMenu(natTable)
+                        .withStateManagerMenuItemProvider();
+            }
+        });
 
-		return new AbstractRegistryConfiguration() {
+        nattable.configure();
 
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				// Add label accumulator
-				ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
-				columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
+        // add the DisplayPersistenceDialogCommandHandler with the created
+        // NatTable instance after configure()
+        // so all configuration and states are correctly applied before storing
+        // the default state
+        glazedListsGridLayer
+                .registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
+                        nattable));
+        return nattable;
+    }
 
-				// Register labels
-				labelAccumulator.registerColumnOverrides(
-	               RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
-	               CUSTOM_COMPARATOR_LABEL);
+    /**
+     * NOTE: The labels for the the custom comparators must go on the
+     * columnHeaderDataLayer - since, the SortHeaderLayer will resolve cell
+     * labels with respect to its underlying layer i.e columnHeaderDataLayer
+     */
+    private IConfiguration getCustomComparatorConfiguration(
+            final AbstractLayer columnHeaderDataLayer) {
 
-				labelAccumulator.registerColumnOverrides(
-                     RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME),
-                     NO_SORT_LABEL);
+        return new AbstractRegistryConfiguration() {
 
-				// Register custom comparator
-				configRegistry.registerConfigAttribute(SortConfigAttributes.SORT_COMPARATOR,
-									                       getCustomComparator(),
-									                       DisplayMode.NORMAL,
-									                       CUSTOM_COMPARATOR_LABEL);
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                // Add label accumulator
+                ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
+                        columnHeaderDataLayer);
+                columnHeaderDataLayer
+                        .setConfigLabelAccumulator(labelAccumulator);
 
-				// Register null comparator to disable sort
-				configRegistry.registerConfigAttribute(SortConfigAttributes.SORT_COMPARATOR,
-				                                       new NullComparator(),
-				                                       DisplayMode.NORMAL,
-				                                       NO_SORT_LABEL);
-			}
-		};
-	}
+                // Register labels
+                labelAccumulator
+                        .registerColumnOverrides(
+                                RowDataListFixture
+                                        .getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
+                                CUSTOM_COMPARATOR_LABEL);
 
-	private Comparator<?> getCustomComparator() {
-		return new Comparator<String>() {
-			public int compare(String o1, String o2) {
-				return o1.compareToIgnoreCase(o2);
-			}
-		};
-	};
+                labelAccumulator
+                        .registerColumnOverrides(
+                                RowDataListFixture
+                                        .getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME),
+                                NO_SORT_LABEL);
+
+                // Register custom comparator
+                configRegistry.registerConfigAttribute(
+                        SortConfigAttributes.SORT_COMPARATOR,
+                        getCustomComparator(), DisplayMode.NORMAL,
+                        CUSTOM_COMPARATOR_LABEL);
+
+                // Register null comparator to disable sort
+                configRegistry
+                        .registerConfigAttribute(
+                                SortConfigAttributes.SORT_COMPARATOR,
+                                new NullComparator(), DisplayMode.NORMAL,
+                                NO_SORT_LABEL);
+            }
+        };
+    }
+
+    private Comparator<?> getCustomComparator() {
+        return new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                return o1.compareToIgnoreCase(o2);
+            }
+        };
+    };
 }

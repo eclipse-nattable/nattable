@@ -15,40 +15,41 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 
 /**
- * Gathers all the VisualChangeEvents. When its run, it refreshes/repaints the table. 
+ * Gathers all the VisualChangeEvents. When its run, it refreshes/repaints the
+ * table.
  *
  */
-public class VisualChangeEventConflater extends AbstractEventConflater { 
+public class VisualChangeEventConflater extends AbstractEventConflater {
 
-	private final NatTable natTable;
+    private final NatTable natTable;
 
-	public VisualChangeEventConflater(NatTable ownerLayer) {
-		natTable = ownerLayer;
-	}
+    public VisualChangeEventConflater(NatTable ownerLayer) {
+        natTable = ownerLayer;
+    }
 
-	@Override
-	public void addEvent(ILayerEvent event) {
-		if(event instanceof IVisualChangeEvent){
-			super.addEvent(event);
-		}
-	}
-	
-	@Override
-	public Runnable getConflaterTask() {
-		return new Runnable() {
+    @Override
+    public void addEvent(ILayerEvent event) {
+        if (event instanceof IVisualChangeEvent) {
+            super.addEvent(event);
+        }
+    }
 
-			public void run() {
-				if (queue.size() > 0) {
-					natTable.getDisplay().asyncExec(new Runnable() {
-						public void run() {
-							natTable.updateResize();
-						}
-					});
+    @Override
+    public Runnable getConflaterTask() {
+        return new Runnable() {
 
-					clearQueue();
-				}
-			}
-		};
-	}
+            public void run() {
+                if (queue.size() > 0) {
+                    natTable.getDisplay().asyncExec(new Runnable() {
+                        public void run() {
+                            natTable.updateResize();
+                        }
+                    });
+
+                    clearQueue();
+                }
+            }
+        };
+    }
 
 }

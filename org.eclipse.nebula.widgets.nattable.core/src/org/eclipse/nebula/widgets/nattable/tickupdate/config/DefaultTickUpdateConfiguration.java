@@ -23,32 +23,33 @@ import org.eclipse.swt.SWT;
 
 /**
  * The default configuration for tick update handling. Will register the default
- * {@link ITickUpdateHandler#DEFAULT_TICK_UPDATE_HANDLER} to be the update handler
- * for tick updates and key bindings on keypad add and keybadd subtract to call 
- * the corresponding {@link TickUpdateAction}.
+ * {@link ITickUpdateHandler#DEFAULT_TICK_UPDATE_HANDLER} to be the update
+ * handler for tick updates and key bindings on keypad add and keybadd subtract
+ * to call the corresponding {@link TickUpdateAction}.
  */
-public class DefaultTickUpdateConfiguration extends AbstractLayerConfiguration<SelectionLayer> {
-	
-	@Override
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(
-				TickUpdateConfigAttributes.UPDATE_HANDLER, ITickUpdateHandler.DEFAULT_TICK_UPDATE_HANDLER);
-	}
+public class DefaultTickUpdateConfiguration extends
+        AbstractLayerConfiguration<SelectionLayer> {
 
-	@Override
-	public void configureTypedLayer(SelectionLayer selectionLayer) {
-		selectionLayer.registerCommandHandler(new TickUpdateCommandHandler(selectionLayer));
-	}
-	
-	@Override
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerKeyBinding(
-				new KeyEventMatcher(SWT.NONE, SWT.KEYPAD_ADD), 
-				new TickUpdateAction(true));
+    @Override
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        configRegistry.registerConfigAttribute(
+                TickUpdateConfigAttributes.UPDATE_HANDLER,
+                ITickUpdateHandler.DEFAULT_TICK_UPDATE_HANDLER);
+    }
 
-		uiBindingRegistry.registerKeyBinding(
-				new KeyEventMatcher(SWT.NONE, SWT.KEYPAD_SUBTRACT), 
-				new TickUpdateAction(false));
-	}
-	
+    @Override
+    public void configureTypedLayer(SelectionLayer selectionLayer) {
+        selectionLayer.registerCommandHandler(new TickUpdateCommandHandler(
+                selectionLayer));
+    }
+
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.KEYPAD_ADD), new TickUpdateAction(true));
+
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.KEYPAD_SUBTRACT), new TickUpdateAction(false));
+    }
+
 }

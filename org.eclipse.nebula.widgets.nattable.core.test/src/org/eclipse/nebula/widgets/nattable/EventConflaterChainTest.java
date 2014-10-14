@@ -22,46 +22,47 @@ import org.junit.Test;
 
 public class EventConflaterChainTest {
 
-	private EventConflaterChain conflaterChain;
-	private VisualChangeEventConflater conflater1;
-	private VisualChangeEventConflater conflater2;
-	private NatTableFixture natTableFixture;
+    private EventConflaterChain conflaterChain;
+    private VisualChangeEventConflater conflater1;
+    private VisualChangeEventConflater conflater2;
+    private NatTableFixture natTableFixture;
 
-	@Before
-	public void setup(){
-		conflaterChain = new EventConflaterChain(10, 10);
-		natTableFixture = new NatTableFixture();
-		conflater1 = new VisualChangeEventConflater(natTableFixture);
-		conflater2 = new VisualChangeEventConflater(natTableFixture);
+    @Before
+    public void setup() {
+        conflaterChain = new EventConflaterChain(10, 10);
+        natTableFixture = new NatTableFixture();
+        conflater1 = new VisualChangeEventConflater(natTableFixture);
+        conflater2 = new VisualChangeEventConflater(natTableFixture);
 
-		conflaterChain.add(conflater1);
-		conflaterChain.add(conflater2);
-	}
-	
-	@Test
-	public void shouldAddEventsToAllChildren() throws Exception {
-		conflaterChain.addEvent(new LayerEventFixture());
-		conflaterChain.addEvent(new LayerEventFixture());
-		
-		assertEquals(2, conflater1.getCount());
-		assertEquals(2, conflater2.getCount());
-	}
-	
-	@Test
-	public void shouldStartUpAllConflaterTasksAtTheEndOfTheInterval() throws Exception {
-		conflaterChain.start();
+        conflaterChain.add(conflater1);
+        conflaterChain.add(conflater2);
+    }
 
-		conflaterChain.addEvent(new LayerEventFixture());
-		conflaterChain.addEvent(new LayerEventFixture());
-		
-		Thread.sleep(100);
-		
-		assertEquals(0, conflater1.getCount());
-		assertEquals(0, conflater2.getCount());
-	}
-	
-	@After
-	public void teardown(){
-		conflaterChain.stop();
-	}
+    @Test
+    public void shouldAddEventsToAllChildren() throws Exception {
+        conflaterChain.addEvent(new LayerEventFixture());
+        conflaterChain.addEvent(new LayerEventFixture());
+
+        assertEquals(2, conflater1.getCount());
+        assertEquals(2, conflater2.getCount());
+    }
+
+    @Test
+    public void shouldStartUpAllConflaterTasksAtTheEndOfTheInterval()
+            throws Exception {
+        conflaterChain.start();
+
+        conflaterChain.addEvent(new LayerEventFixture());
+        conflaterChain.addEvent(new LayerEventFixture());
+
+        Thread.sleep(100);
+
+        assertEquals(0, conflater1.getCount());
+        assertEquals(0, conflater2.getCount());
+    }
+
+    @After
+    public void teardown() {
+        conflaterChain.stop();
+    }
 }

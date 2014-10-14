@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -18,12 +18,12 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
  */
 public class DarkGroupByThemeExtension extends ModernGroupByThemeExtension {
 
-	{
-		this.groupByHeaderBgColor = GUIHelper.COLOR_BLACK;
-		
-		this.groupByBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
+    {
+        this.groupByHeaderBgColor = GUIHelper.COLOR_BLACK;
 
-		this.groupByHintBgColor = GUIHelper.COLOR_BLACK;
-		this.groupByHintFgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
-	}
+        this.groupByBgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
+
+        this.groupByHintBgColor = GUIHelper.COLOR_BLACK;
+        this.groupByHintFgColor = GUIHelper.COLOR_WIDGET_DARK_SHADOW;
+    }
 }

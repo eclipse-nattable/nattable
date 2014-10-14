@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.test.fixture;
 
 import java.util.Collection;
 
-
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
@@ -20,20 +19,20 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class LayerEventFixture implements IVisualChangeEvent {
 
-	public ILayerEvent cloneEvent() {
-		return new LayerEventFixture();
-	}
+    public ILayerEvent cloneEvent() {
+        return new LayerEventFixture();
+    }
 
-	public boolean convertToLocal(ILayer localLayer) {
-		return true;
-	}
+    public boolean convertToLocal(ILayer localLayer) {
+        return true;
+    }
 
-	public Collection<Rectangle> getChangedPositionRectangles() {
-		return null;
-	}
+    public Collection<Rectangle> getChangedPositionRectangles() {
+        return null;
+    }
 
-	public ILayer getLayer() {
-		return null;
-	}
+    public ILayer getLayer() {
+        return null;
+    }
 
 }

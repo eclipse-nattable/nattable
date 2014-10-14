@@ -16,28 +16,33 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
-
 /**
- * An {@link IConfigLabelAccumulator} that can aggregate labels from other <code>IConfigLabelAccumulator</code>s. 
- * All the labels provided by the aggregated accumulators are applied to the cell.
+ * An {@link IConfigLabelAccumulator} that can aggregate labels from other
+ * <code>IConfigLabelAccumulator</code>s. All the labels provided by the
+ * aggregated accumulators are applied to the cell.
  */
-public class AggregrateConfigLabelAccumulator implements IConfigLabelAccumulator {
-    
+public class AggregrateConfigLabelAccumulator implements
+        IConfigLabelAccumulator {
+
     private List<IConfigLabelAccumulator> accumulators = new ArrayList<IConfigLabelAccumulator>();
-    
+
     public void add(IConfigLabelAccumulator r) {
-        if (r == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        if (r == null)
+            throw new IllegalArgumentException("null"); //$NON-NLS-1$
         accumulators.add(r);
     }
 
     public void add(IConfigLabelAccumulator... r) {
-    	if (r == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
-    	accumulators.addAll(Arrays.asList(r));
+        if (r == null)
+            throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        accumulators.addAll(Arrays.asList(r));
     }
 
-    public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+    public void accumulateConfigLabels(LabelStack configLabels,
+            int columnPosition, int rowPosition) {
         for (IConfigLabelAccumulator accumulator : accumulators) {
-        	accumulator.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
+            accumulator.accumulateConfigLabels(configLabels, columnPosition,
+                    rowPosition);
         }
     }
 

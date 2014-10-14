@@ -16,57 +16,58 @@ import org.eclipse.nebula.widgets.nattable.selection.action.CellSelectionDragMod
 import org.eclipse.swt.events.MouseEvent;
 
 /**
- * Specialisation of CellSelectionDragMode that is used in the context of editing.
- * If a drag&amp;drop operation is executed on the same cell, the corresponding editor
- * will be activated, just as if you performed a click into that cell.
+ * Specialisation of CellSelectionDragMode that is used in the context of
+ * editing. If a drag&amp;drop operation is executed on the same cell, the
+ * corresponding editor will be activated, just as if you performed a click into
+ * that cell.
  * <p>
- * This is needed to treat minimal (not intended) drag&amp;drop operations like clicks.
- * It sometimes happens that on performing a click, the mouse moves a bit. So between
- * mouseDown and mouseUp there is a movement registered, so it is not interpreted as
- * a click anymore, but as a drag&amp;drop operation. With this implementation registered
- * the described behaviour is avoided.
+ * This is needed to treat minimal (not intended) drag&amp;drop operations like
+ * clicks. It sometimes happens that on performing a click, the mouse moves a
+ * bit. So between mouseDown and mouseUp there is a movement registered, so it
+ * is not interpreted as a click anymore, but as a drag&amp;drop operation. With
+ * this implementation registered the described behaviour is avoided.
  */
 public class CellEditDragMode extends CellSelectionDragMode {
 
-	private int originalColumnPosition;
-	private int originalRowPosition;
+    private int originalColumnPosition;
+    private int originalRowPosition;
 
-	@Override
-	public void mouseDown(NatTable natTable, MouseEvent event) {
-		super.mouseDown(natTable, event);
-		
-		originalColumnPosition = natTable.getColumnPositionByX(event.x);
-		originalRowPosition = natTable.getRowPositionByY(event.y);
-	}
+    @Override
+    public void mouseDown(NatTable natTable, MouseEvent event) {
+        super.mouseDown(natTable, event);
 
-	@Override
-	public void mouseMove(NatTable natTable, MouseEvent event) {
-		super.mouseMove(natTable, event);
-		
-		int columnPosition = natTable.getColumnPositionByX(event.x);
-		int rowPosition = natTable.getRowPositionByY(event.y);
-		
-		if (columnPosition != originalColumnPosition || rowPosition != originalRowPosition) {
-			// Left original cell, cancel edit
-			originalColumnPosition = -1;
-			originalRowPosition = -1;
-		}
-	}
-	
-	@Override
-	public void mouseUp(NatTable natTable, MouseEvent event) {
-		super.mouseUp(natTable, event);
-		
-		int columnPosition = natTable.getColumnPositionByX(event.x);
-		int rowPosition = natTable.getRowPositionByY(event.y);
-		
-		if (columnPosition == originalColumnPosition && rowPosition == originalRowPosition) {
-			natTable.doCommand(
-					new EditCellCommand(
-							natTable,
-							natTable.getConfigRegistry(),
-							natTable.getCellByPosition(columnPosition, rowPosition)));
-		}
-	}
+        originalColumnPosition = natTable.getColumnPositionByX(event.x);
+        originalRowPosition = natTable.getRowPositionByY(event.y);
+    }
+
+    @Override
+    public void mouseMove(NatTable natTable, MouseEvent event) {
+        super.mouseMove(natTable, event);
+
+        int columnPosition = natTable.getColumnPositionByX(event.x);
+        int rowPosition = natTable.getRowPositionByY(event.y);
+
+        if (columnPosition != originalColumnPosition
+                || rowPosition != originalRowPosition) {
+            // Left original cell, cancel edit
+            originalColumnPosition = -1;
+            originalRowPosition = -1;
+        }
+    }
+
+    @Override
+    public void mouseUp(NatTable natTable, MouseEvent event) {
+        super.mouseUp(natTable, event);
+
+        int columnPosition = natTable.getColumnPositionByX(event.x);
+        int rowPosition = natTable.getRowPositionByY(event.y);
+
+        if (columnPosition == originalColumnPosition
+                && rowPosition == originalRowPosition) {
+            natTable.doCommand(new EditCellCommand(natTable, natTable
+                    .getConfigRegistry(), natTable.getCellByPosition(
+                    columnPosition, rowPosition)));
+        }
+    }
 
 }

@@ -19,47 +19,46 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 
-
 /**
  * A RowHideShowLayer for use in unit tests with a pre-canned set of hidden
  * rows. Row indexes by positions: 4 1 2 5 6
  */
 public class RowHideShowLayerFixture extends RowHideShowLayer {
 
-	private ILayerCommand lastCommand;
+    private ILayerCommand lastCommand;
 
-	@SuppressWarnings("boxing")
-	public RowHideShowLayerFixture() {
-		// Row reorder fixture index positions: 4 1 0 2 3 5 6
-		super(new RowReorderLayerFixture());
+    @SuppressWarnings("boxing")
+    public RowHideShowLayerFixture() {
+        // Row reorder fixture index positions: 4 1 0 2 3 5 6
+        super(new RowReorderLayerFixture());
 
-		List<Integer> rowPositions = Arrays.asList(2, 4);
-		hideRowPositions(rowPositions);
-	}
+        List<Integer> rowPositions = Arrays.asList(2, 4);
+        hideRowPositions(rowPositions);
+    }
 
-	public RowHideShowLayerFixture(IUniqueIndexLayer underlyingLayerFixture) {
-		super(underlyingLayerFixture);
-	}
+    public RowHideShowLayerFixture(IUniqueIndexLayer underlyingLayerFixture) {
+        super(underlyingLayerFixture);
+    }
 
-	public RowHideShowLayerFixture(int...rowPositionsToHide) {
-		super(new DataLayerFixture(10, 10, 20, 5));
+    public RowHideShowLayerFixture(int... rowPositionsToHide) {
+        super(new DataLayerFixture(10, 10, 20, 5));
 
-		Collection<Integer> rowPositions = new HashSet<Integer>();
-		for (int rowPosition : rowPositionsToHide) {
-			rowPositions.add(Integer.valueOf(rowPosition));
-		}
+        Collection<Integer> rowPositions = new HashSet<Integer>();
+        for (int rowPosition : rowPositionsToHide) {
+            rowPositions.add(Integer.valueOf(rowPosition));
+        }
 
-		hideRowPositions(rowPositions);
-	}
+        hideRowPositions(rowPositions);
+    }
 
-	@Override
-	public boolean doCommand(ILayerCommand command) {
-		lastCommand = command;
-		return super.doCommand(command);
-	}
+    @Override
+    public boolean doCommand(ILayerCommand command) {
+        lastCommand = command;
+        return super.doCommand(command);
+    }
 
-	public ILayerCommand getLastCommand() {
-		return lastCommand;
-	}
+    public ILayerCommand getLastCommand() {
+        return lastCommand;
+    }
 
 }

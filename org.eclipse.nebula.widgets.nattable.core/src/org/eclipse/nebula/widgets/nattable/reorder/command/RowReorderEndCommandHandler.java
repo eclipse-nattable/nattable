@@ -13,27 +13,30 @@ package org.eclipse.nebula.widgets.nattable.reorder.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 
-public class RowReorderEndCommandHandler extends AbstractLayerCommandHandler<RowReorderEndCommand> {
+public class RowReorderEndCommandHandler extends
+        AbstractLayerCommandHandler<RowReorderEndCommand> {
 
-	private final RowReorderLayer rowReorderLayer;
+    private final RowReorderLayer rowReorderLayer;
 
-	public RowReorderEndCommandHandler(RowReorderLayer rowReorderLayer) {
-		this.rowReorderLayer = rowReorderLayer;
-	}
-	
-	@Override
-	public Class<RowReorderEndCommand> getCommandClass() {
-		return RowReorderEndCommand.class;
-	}
+    public RowReorderEndCommandHandler(RowReorderLayer rowReorderLayer) {
+        this.rowReorderLayer = rowReorderLayer;
+    }
 
-	@Override
-	protected boolean doCommand(RowReorderEndCommand command) {
-		int toRowPosition = command.getToRowPosition();
-		boolean reorderToTopEdge = command.isReorderToTopEdge();
-		
-		rowReorderLayer.reorderRowPosition(rowReorderLayer.getReorderFromRowPosition(), toRowPosition, reorderToTopEdge);
-		
-		return true;
-	}
+    @Override
+    public Class<RowReorderEndCommand> getCommandClass() {
+        return RowReorderEndCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(RowReorderEndCommand command) {
+        int toRowPosition = command.getToRowPosition();
+        boolean reorderToTopEdge = command.isReorderToTopEdge();
+
+        rowReorderLayer.reorderRowPosition(
+                rowReorderLayer.getReorderFromRowPosition(), toRowPosition,
+                reorderToTopEdge);
+
+        return true;
+    }
 
 }

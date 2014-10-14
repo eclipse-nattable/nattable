@@ -17,58 +17,50 @@ import org.eclipse.swt.graphics.FontData;
 
 public class ExcelCellStyleAttributes {
 
-	private final Color fg;
-	private final Color bg;
-	private final FontData fontData;
-	private final String dataFormat;
-	private final int hAlign;
-	private final int vAlign;
-	private final boolean vertical;
+    private final Color fg;
+    private final Color bg;
+    private final FontData fontData;
+    private final String dataFormat;
+    private final int hAlign;
+    private final int vAlign;
+    private final boolean vertical;
 
-	public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData, String dataFormat, int hAlign, int vAlign, boolean vertical) {
-		this.fg = fg;
-		this.bg = bg;
-		this.fontData = fontData;
-		this.dataFormat = dataFormat;
-		this.hAlign = hAlign;
-		this.vAlign = vAlign;
-		this.vertical = vertical;
-	}
+    public ExcelCellStyleAttributes(Color fg, Color bg, FontData fontData,
+            String dataFormat, int hAlign, int vAlign, boolean vertical) {
+        this.fg = fg;
+        this.bg = bg;
+        this.fontData = fontData;
+        this.dataFormat = dataFormat;
+        this.hAlign = hAlign;
+        this.vAlign = vAlign;
+        this.vertical = vertical;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		
-		if (obj instanceof ExcelCellStyleAttributes == false) {
-			return false;
-		}
-		
-		ExcelCellStyleAttributes that = (ExcelCellStyleAttributes) obj;
-		
-		return new EqualsBuilder()
-			.append(this.fg, that.fg)
-			.append(this.bg, that.bg)
-			.append(this.fontData, that.fontData)
-			.append(this.dataFormat, that.dataFormat)
-			.append(this.hAlign, that.hAlign)
-			.append(this.vAlign, that.vAlign)
-			.append(this.vertical, that.vertical)
-			.isEquals();
-	}
-	
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(59, 187)
-			.append(fg)
-			.append(bg)
-			.append(fontData)
-			.append(dataFormat)
-			.append(hAlign)
-			.append(vAlign)
-			.append(vertical)
-			.toHashCode();
-	}
-	
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj instanceof ExcelCellStyleAttributes == false) {
+            return false;
+        }
+
+        ExcelCellStyleAttributes that = (ExcelCellStyleAttributes) obj;
+
+        return new EqualsBuilder().append(this.fg, that.fg)
+                .append(this.bg, that.bg).append(this.fontData, that.fontData)
+                .append(this.dataFormat, that.dataFormat)
+                .append(this.hAlign, that.hAlign)
+                .append(this.vAlign, that.vAlign)
+                .append(this.vertical, that.vertical).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(59, 187).append(fg).append(bg)
+                .append(fontData).append(dataFormat).append(hAlign)
+                .append(vAlign).append(vertical).toHashCode();
+    }
+
 }

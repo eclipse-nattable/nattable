@@ -15,26 +15,27 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.extension.builder.model.TableColumn;
 
-
 public class TableColumnUtils {
 
-	public static String[] getPropertyNames(TableColumn[] columns) {
-		String[] propertyNames = new String[columns.length];
+    public static String[] getPropertyNames(TableColumn[] columns) {
+        String[] propertyNames = new String[columns.length];
 
-		for (int j = 0; j < columns.length; j++) {
-			propertyNames[j] = columns[j].rowObjectPropertyName;
-		}
+        for (int j = 0; j < columns.length; j++) {
+            propertyNames[j] = columns[j].rowObjectPropertyName;
+        }
 
-		return propertyNames;
-	}
+        return propertyNames;
+    }
 
-	public static Map<String, String> getPropertyToLabelMap(TableColumn[] columns) {
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+    public static Map<String, String> getPropertyToLabelMap(
+            TableColumn[] columns) {
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
 
-		for (int j = 0; j < columns.length; j++) {
-			propertyToLabelMap.put(columns[j].rowObjectPropertyName, columns[j].displayName);
-		}
+        for (int j = 0; j < columns.length; j++) {
+            propertyToLabelMap.put(columns[j].rowObjectPropertyName,
+                    columns[j].displayName);
+        }
 
-		return propertyToLabelMap;
-	}
+        return propertyToLabelMap;
+    }
 }

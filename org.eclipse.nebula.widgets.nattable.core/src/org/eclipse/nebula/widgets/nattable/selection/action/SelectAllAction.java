@@ -10,16 +10,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectAllCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
 public class SelectAllAction implements IKeyAction {
-	
-	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new SelectAllCommand());
-	}
+
+    public void run(NatTable natTable, KeyEvent event) {
+        natTable.doCommand(new SelectAllCommand());
+    }
 
 }

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._100_Layers._101_Header;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -26,32 +25,36 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class ColumnHeaderViewportSelectionDataLayerExample extends AbstractNatExample {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new ColumnHeaderViewportSelectionDataLayerExample());
-	}
+public class ColumnHeaderViewportSelectionDataLayerExample extends
+        AbstractNatExample {
 
-	@Override
-	public String getDescription() {
-		return "This example shows a very large (500 columns x 1 million rows) data layer with a column header attached.";
-	}
-	
-	public Control createExampleControl(Composite parent) {
-		DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(500, 1000000);
-		SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(bodyDataProvider));
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner
+                .run(new ColumnHeaderViewportSelectionDataLayerExample());
+    }
 
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-			new DataLayer(new DummyColumnHeaderDataProvider(bodyDataProvider)),
-			viewportLayer, 
-			selectionLayer);
-		
-		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
-		compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
-		
-		return new NatTable(parent, compositeLayer);
-	}
-	
+    @Override
+    public String getDescription() {
+        return "This example shows a very large (500 columns x 1 million rows) data layer with a column header attached.";
+    }
+
+    public Control createExampleControl(Composite parent) {
+        DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(500,
+                1000000);
+        SelectionLayer selectionLayer = new SelectionLayer(new DataLayer(
+                bodyDataProvider));
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(
+                new DummyColumnHeaderDataProvider(bodyDataProvider)),
+                viewportLayer, selectionLayer);
+
+        CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
+                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+
+        return new NatTable(parent, compositeLayer);
+    }
+
 }

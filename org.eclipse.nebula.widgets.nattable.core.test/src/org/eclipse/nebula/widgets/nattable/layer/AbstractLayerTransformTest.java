@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
-
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.test.LayerAssert;
@@ -20,25 +19,23 @@ import org.junit.Test;
 
 public class AbstractLayerTransformTest {
 
-	private ILayer testLayer;
-	
-	@Before
-	public void setup() {
-		String columnInfo = "0:0;100 | 1:1;100 | 2:2;100 | 3:3;100";
-		String rowInfo =    "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40";
-		
-		String cellInfo = 
-			"A0 | <  | C0 | D0 \n" +
-			"^  | <  | C1 | D1 \n" +
-			"A2 | B2 | C2 | D2 \n" +
-			"A3 | B3 | C3 | D3 \n";
-		
-		testLayer = new TestLayer(4, 4, columnInfo, rowInfo, cellInfo);
-	}
-	
-	@Test
-	public void testIdentityLayerTransform() {
-		LayerAssert.assertLayerEquals(testLayer, new AbstractLayerTransform(testLayer) {});
-	}
+    private ILayer testLayer;
+
+    @Before
+    public void setup() {
+        String columnInfo = "0:0;100 | 1:1;100 | 2:2;100 | 3:3;100";
+        String rowInfo = "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40";
+
+        String cellInfo = "A0 | <  | C0 | D0 \n" + "^  | <  | C1 | D1 \n"
+                + "A2 | B2 | C2 | D2 \n" + "A3 | B3 | C3 | D3 \n";
+
+        testLayer = new TestLayer(4, 4, columnInfo, rowInfo, cellInfo);
+    }
+
+    @Test
+    public void testIdentityLayerTransform() {
+        LayerAssert.assertLayerEquals(testLayer, new AbstractLayerTransform(
+                testLayer) {});
+    }
 
 }

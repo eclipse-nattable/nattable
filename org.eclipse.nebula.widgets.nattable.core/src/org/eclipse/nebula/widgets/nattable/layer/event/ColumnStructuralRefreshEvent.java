@@ -13,24 +13,24 @@ package org.eclipse.nebula.widgets.nattable.layer.event;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
- * General event indicating that columns cached by the layers need refreshing. 
+ * General event indicating that columns cached by the layers need refreshing.
  * 
- * Note: As opposed to the the {@link ColumnStructuralChangeEvent} this event does not 
- * indicate the specific columns which have changed.
+ * Note: As opposed to the the {@link ColumnStructuralChangeEvent} this event
+ * does not indicate the specific columns which have changed.
  */
 public class ColumnStructuralRefreshEvent extends StructuralRefreshEvent {
 
-	public ColumnStructuralRefreshEvent(ILayer layer) {
-		super(layer);
-	}
-	
-	@Override
-	public boolean isHorizontalStructureChanged() {
-		return true;
-	}
-	
-	@Override
-	public boolean isVerticalStructureChanged() {
-		return false;
-	}
+    public ColumnStructuralRefreshEvent(ILayer layer) {
+        super(layer);
+    }
+
+    @Override
+    public boolean isHorizontalStructureChanged() {
+        return true;
+    }
+
+    @Override
+    public boolean isVerticalStructureChanged() {
+        return false;
+    }
 }

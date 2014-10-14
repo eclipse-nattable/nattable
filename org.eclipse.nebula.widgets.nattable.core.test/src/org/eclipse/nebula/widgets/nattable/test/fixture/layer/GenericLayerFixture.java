@@ -15,15 +15,15 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class GenericLayerFixture extends AbstractLayerTransform {
 
-	public GenericLayerFixture(ILayer underlyingLayer) {
-		super(underlyingLayer);
-	}
-	
-	public int getColumnIndexByPosition(int columnPosition) {
-		return columnPosition;
-	}
+    public GenericLayerFixture(ILayer underlyingLayer) {
+        super(underlyingLayer);
+    }
 
-	public int getRowIndexByPosition(int rowPosition) {
-		return rowPosition;
-	}
+    public int getColumnIndexByPosition(int columnPosition) {
+        return columnPosition;
+    }
+
+    public int getRowIndexByPosition(int rowPosition) {
+        return rowPosition;
+    }
 }

@@ -25,49 +25,53 @@ import ca.odell.glazedlists.gui.AdvancedTableFormat;
 
 public class NatColumnTableFormat<R> implements AdvancedTableFormat<R> {
 
-	private final IColumnPropertyResolver columnPropertyResolver;
-	private IColumnAccessor<R> columnAccessor;
-	private IConfigRegistry configRegistry;
-	private final ILayer columnHeaderDataLayer;
-	
-	public NatColumnTableFormat(IColumnPropertyAccessor<R> columnPropertyAccessor, IConfigRegistry configRegistry, ILayer dataLayer) {
-		this(columnPropertyAccessor, columnPropertyAccessor, configRegistry, dataLayer);
-	}
-	
-	public NatColumnTableFormat(IColumnAccessor<R> columnAccessor, IColumnPropertyResolver columnPropertyResolver, IConfigRegistry configRegistry, ILayer columnHeaderDataLayer) {
-		this.columnPropertyResolver = columnPropertyResolver;
-		this.columnAccessor = columnAccessor;
-		this.configRegistry = configRegistry;
-		this.columnHeaderDataLayer = columnHeaderDataLayer;
-	}
+    private final IColumnPropertyResolver columnPropertyResolver;
+    private IColumnAccessor<R> columnAccessor;
+    private IConfigRegistry configRegistry;
+    private final ILayer columnHeaderDataLayer;
 
-	public Class<?> getColumnClass(int col) {
-		return null;
-	}
+    public NatColumnTableFormat(
+            IColumnPropertyAccessor<R> columnPropertyAccessor,
+            IConfigRegistry configRegistry, ILayer dataLayer) {
+        this(columnPropertyAccessor, columnPropertyAccessor, configRegistry,
+                dataLayer);
+    }
 
-	public Comparator<?> getColumnComparator(final int col) {
-		ILayerCell cell = columnHeaderDataLayer.getCellByPosition(col, 0);
-		if (cell == null) {
-		    return null;
-		}
-		Comparator<?> comparator = configRegistry.getConfigAttribute(
-										SortConfigAttributes.SORT_COMPARATOR,
-										cell.getDisplayMode(),
-										cell.getConfigLabels().getLabels());
-		
-		return (comparator instanceof NullComparator) ? null : comparator;
-	}
+    public NatColumnTableFormat(IColumnAccessor<R> columnAccessor,
+            IColumnPropertyResolver columnPropertyResolver,
+            IConfigRegistry configRegistry, ILayer columnHeaderDataLayer) {
+        this.columnPropertyResolver = columnPropertyResolver;
+        this.columnAccessor = columnAccessor;
+        this.configRegistry = configRegistry;
+        this.columnHeaderDataLayer = columnHeaderDataLayer;
+    }
 
-	public String getColumnName(int col) {
-		return columnPropertyResolver.getColumnProperty(col);
-	}
+    public Class<?> getColumnClass(int col) {
+        return null;
+    }
 
-	public int getColumnCount() {
-		return columnAccessor.getColumnCount();
-	}
+    public Comparator<?> getColumnComparator(final int col) {
+        ILayerCell cell = columnHeaderDataLayer.getCellByPosition(col, 0);
+        if (cell == null) {
+            return null;
+        }
+        Comparator<?> comparator = configRegistry.getConfigAttribute(
+                SortConfigAttributes.SORT_COMPARATOR, cell.getDisplayMode(),
+                cell.getConfigLabels().getLabels());
 
-	public Object getColumnValue(R rowObj, int col) {
-		return columnAccessor.getDataValue(rowObj, col);
-	}
-	
+        return (comparator instanceof NullComparator) ? null : comparator;
+    }
+
+    public String getColumnName(int col) {
+        return columnPropertyResolver.getColumnProperty(col);
+    }
+
+    public int getColumnCount() {
+        return columnAccessor.getColumnCount();
+    }
+
+    public Object getColumnValue(R rowObj, int col) {
+        return columnAccessor.getDataValue(rowObj, col);
+    }
+
 }

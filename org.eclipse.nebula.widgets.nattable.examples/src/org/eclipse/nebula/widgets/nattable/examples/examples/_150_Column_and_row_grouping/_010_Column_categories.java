@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._150_Column_and_row_grouping;
 
-
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnCategories.ChooseColumnsFromCategoriesCommandHandler;
@@ -33,59 +32,60 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class _010_Column_categories extends AbstractNatExample {
 
-	private GlazedListsGridLayer<RowDataFixture> gridLayer;
+    private GlazedListsGridLayer<RowDataFixture> gridLayer;
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(800, 600, new _010_Column_categories());
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(800, 600, new _010_Column_categories());
+    }
 
-	@Override
-	public String getDescription() {
-		return
-				"This example demonstrates an alternative column chooser.\n" +
-				"\n" +
-				"- Right click on the column header.\n" +
-				"- Select the Last option 'Choose columns'\n" +
-				"- Hide some columns using the dialog\n" +
-				"\n" +
-				"This column chooser allows you to group the available columns into 'Categories'. Categories are a read " +
-				"only concept and cannot be edited. The intent is to make it easier for the users to choose columns " +
-				"when a large number of columns are available.";
-	}
-	
-	public Control createExampleControl(Composite parent) {
-		ConfigRegistry configRegistry = new ConfigRegistry();
+    @Override
+    public String getDescription() {
+        return "This example demonstrates an alternative column chooser.\n"
+                + "\n"
+                + "- Right click on the column header.\n"
+                + "- Select the Last option 'Choose columns'\n"
+                + "- Hide some columns using the dialog\n"
+                + "\n"
+                + "This column chooser allows you to group the available columns into 'Categories'. Categories are a read "
+                + "only concept and cannot be edited. The intent is to make it easier for the users to choose columns "
+                + "when a large number of columns are available.";
+    }
 
-		gridLayer = new GlazedListsGridLayer<RowDataFixture>(
-				GlazedLists.eventList(RowDataListFixture.getList()),
-				(String[])ArrayUtils.subarray(RowDataListFixture.getPropertyNames(), 0, 20),
-				RowDataListFixture.getPropertyToLabelMap(),
-				configRegistry);
+    public Control createExampleControl(Composite parent) {
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-			@Override
-			protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
-				return super.createColumnHeaderMenu(natTable).withCategoriesBasedColumnChooser("Choose columns");
-			}
-		});
+        gridLayer = new GlazedListsGridLayer<RowDataFixture>(
+                GlazedLists.eventList(RowDataListFixture.getList()),
+                (String[]) ArrayUtils.subarray(
+                        RowDataListFixture.getPropertyNames(), 0, 20),
+                RowDataListFixture.getPropertyToLabelMap(), configRegistry);
 
-		configureColumnCategoriesInChooser();
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
+                return super.createColumnHeaderMenu(natTable)
+                        .withCategoriesBasedColumnChooser("Choose columns");
+            }
+        });
 
-		natTable.configure();
-		return natTable;
-	}
+        configureColumnCategoriesInChooser();
 
-	private void configureColumnCategoriesInChooser() {
-		DefaultBodyLayerStack bodyLayer = gridLayer.getBodyLayerStack();
-		ColumnCategoriesModel model = new ColumnCategoriesModelFixture();
+        natTable.configure();
+        return natTable;
+    }
 
-		bodyLayer.registerCommandHandler(
-				new ChooseColumnsFromCategoriesCommandHandler(
-						bodyLayer.getColumnHideShowLayer(),
-						gridLayer.getColumnHeaderLayerStack().getColumnHeaderLayer(),
-						gridLayer.getColumnHeaderLayerStack().getDataLayer(),
-						model));
-	}
+    private void configureColumnCategoriesInChooser() {
+        DefaultBodyLayerStack bodyLayer = gridLayer.getBodyLayerStack();
+        ColumnCategoriesModel model = new ColumnCategoriesModelFixture();
+
+        bodyLayer
+                .registerCommandHandler(new ChooseColumnsFromCategoriesCommandHandler(
+                        bodyLayer.getColumnHideShowLayer(), gridLayer
+                                .getColumnHeaderLayerStack()
+                                .getColumnHeaderLayer(), gridLayer
+                                .getColumnHeaderLayerStack().getDataLayer(),
+                        model));
+    }
 }

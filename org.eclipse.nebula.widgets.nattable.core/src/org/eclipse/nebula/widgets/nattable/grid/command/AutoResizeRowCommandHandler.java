@@ -23,86 +23,97 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
- * This command is triggered by the {@link InitializeAutoResizeRowsCommand}.
- * The selected columns picked from the {@link SelectionLayer} by the above command.
- * This handler runs as a second step. 
+ * This command is triggered by the {@link InitializeAutoResizeRowsCommand}. The
+ * selected columns picked from the {@link SelectionLayer} by the above command.
+ * This handler runs as a second step.
  * <p>
- * This handler assumes that the target layer is the NatTable itself on calling doCommand()
+ * This handler assumes that the target layer is the NatTable itself on calling
+ * doCommand()
  */
-public class AutoResizeRowCommandHandler implements ILayerCommandHandler<AutoResizeRowsCommand> {
+public class AutoResizeRowCommandHandler implements
+        ILayerCommandHandler<AutoResizeRowsCommand> {
 
-	/**
-	 * The layer on which the command should be fired. 
-	 * Usually this will be the GridLayer
-	 */
-	protected final ILayer commandLayer;
-	/**
-	 * The layer to use for calculation of the row positions.
-	 * Needs to be a layer at a lower position in the layer composition.
-	 * Typically the body layer stack.
-	 */
-	protected final ILayer positionLayer;
+    /**
+     * The layer on which the command should be fired. Usually this will be the
+     * GridLayer
+     */
+    protected final ILayer commandLayer;
+    /**
+     * The layer to use for calculation of the row positions. Needs to be a
+     * layer at a lower position in the layer composition. Typically the body
+     * layer stack.
+     */
+    protected final ILayer positionLayer;
 
-	/**
-	 * 
-	 * @param commandLayer The layer on which the command should be fired. 
-	 * 			Usually this will be the GridLayer.
-	 * @param positionLayer The layer to use for calculation of the row positions.
-	 * 			Needs to be a layer at a lower position in the layer composition.
-	 * 			Typically the body layer stack.
-	 */
-	public AutoResizeRowCommandHandler(ILayer commandLayer, ILayer positionLayer) {
-		this.commandLayer = commandLayer;
-		this.positionLayer = positionLayer;
-	}
+    /**
+     * 
+     * @param commandLayer
+     *            The layer on which the command should be fired. Usually this
+     *            will be the GridLayer.
+     * @param positionLayer
+     *            The layer to use for calculation of the row positions. Needs
+     *            to be a layer at a lower position in the layer composition.
+     *            Typically the body layer stack.
+     */
+    public AutoResizeRowCommandHandler(ILayer commandLayer, ILayer positionLayer) {
+        this.commandLayer = commandLayer;
+        this.positionLayer = positionLayer;
+    }
 
-	/**
-	 * 
-	 * @param gridLayer The {@link GridLayer} to which this command handler should be registered
-	 */
-	public AutoResizeRowCommandHandler(GridLayer gridLayer) {
-		this.commandLayer = gridLayer;
-		this.positionLayer = gridLayer.getBodyLayer();
-	}
+    /**
+     * 
+     * @param gridLayer
+     *            The {@link GridLayer} to which this command handler should be
+     *            registered
+     */
+    public AutoResizeRowCommandHandler(GridLayer gridLayer) {
+        this.commandLayer = gridLayer;
+        this.positionLayer = gridLayer.getBodyLayer();
+    }
 
-	@Override
-	public Class<AutoResizeRowsCommand> getCommandClass() {
-		return AutoResizeRowsCommand.class;
-	}
+    @Override
+    public Class<AutoResizeRowsCommand> getCommandClass() {
+        return AutoResizeRowsCommand.class;
+    }
 
-	@Override
-	public boolean doCommand(ILayer targetLayer, AutoResizeRowsCommand command) {
-		// Need to resize selected rows even if they are outside the viewport
-		targetLayer.doCommand(new TurnViewportOffCommand());
+    @Override
+    public boolean doCommand(ILayer targetLayer, AutoResizeRowsCommand command) {
+        // Need to resize selected rows even if they are outside the viewport
+        targetLayer.doCommand(new TurnViewportOffCommand());
 
-		int[] rowPositions = ObjectUtils.asIntArray(command.getRowPositions());
-		int[] gridRowPositions = convertFromPositionToCommandLayer(rowPositions);
-		
-		int[] gridRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
-                                                    command.getConfigRegistry(), 
-                                                    command.getGCFactory(), 
-                                                    commandLayer,
-                                                    gridRowPositions);
+        int[] rowPositions = ObjectUtils.asIntArray(command.getRowPositions());
+        int[] gridRowPositions = convertFromPositionToCommandLayer(rowPositions);
 
-		commandLayer.doCommand(new MultiRowResizeCommand(commandLayer, gridRowPositions, gridRowHeights));
-		
-		targetLayer.doCommand(new TurnViewportOnCommand());
+        int[] gridRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
+                command.getConfigRegistry(), command.getGCFactory(),
+                commandLayer, gridRowPositions);
 
-		return true;
-	}
+        commandLayer.doCommand(new MultiRowResizeCommand(commandLayer,
+                gridRowPositions, gridRowHeights));
 
-	/**
-	 * Translates the row positions the layer stack upwards as the resulting {@link MultiRowResizeCommand}
-	 * will be fired on the command layer which is on top of the position layer.
-	 * @param rowPositions The row positions to convert to the positions in the command layer
-	 * @return The translated row positions for the local command layer.
-	 */
-	protected int[] convertFromPositionToCommandLayer(int[] rowPositions) {
-		int[] commandLayerRowPositions = new int[rowPositions.length];
+        targetLayer.doCommand(new TurnViewportOnCommand());
 
-		for (int i = 0; i < rowPositions.length; i++) {
-			commandLayerRowPositions[i] = commandLayer.underlyingToLocalRowPosition(positionLayer, rowPositions[i]);
-		}
-		return commandLayerRowPositions;
-	}
+        return true;
+    }
+
+    /**
+     * Translates the row positions the layer stack upwards as the resulting
+     * {@link MultiRowResizeCommand} will be fired on the command layer which is
+     * on top of the position layer.
+     * 
+     * @param rowPositions
+     *            The row positions to convert to the positions in the command
+     *            layer
+     * @return The translated row positions for the local command layer.
+     */
+    protected int[] convertFromPositionToCommandLayer(int[] rowPositions) {
+        int[] commandLayerRowPositions = new int[rowPositions.length];
+
+        for (int i = 0; i < rowPositions.length; i++) {
+            commandLayerRowPositions[i] = commandLayer
+                    .underlyingToLocalRowPosition(positionLayer,
+                            rowPositions[i]);
+        }
+        return commandLayerRowPositions;
+    }
 }

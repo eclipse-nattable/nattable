@@ -15,25 +15,26 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
-
 /**
- * Applies the given labels to all the cells in the grid.
- * Used to apply styles to the entire grid.
+ * Applies the given labels to all the cells in the grid. Used to apply styles
+ * to the entire grid.
  */
-public class BodyOverrideConfigLabelAccumulator implements IConfigLabelAccumulator {
+public class BodyOverrideConfigLabelAccumulator implements
+        IConfigLabelAccumulator {
 
-	private List<String> configLabels;
+    private List<String> configLabels;
 
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-		configLabels.getLabels().addAll(this.configLabels);
-	}
+    public void accumulateConfigLabels(LabelStack configLabels,
+            int columnPosition, int rowPosition) {
+        configLabels.getLabels().addAll(this.configLabels);
+    }
 
-	public void registerOverrides(String... configLabels) {
-		this.configLabels = Arrays.asList(configLabels);
-	}
+    public void registerOverrides(String... configLabels) {
+        this.configLabels = Arrays.asList(configLabels);
+    }
 
-	public void addOverride(String configLabel) {
-		this.configLabels.add(configLabel);
-	}
+    public void addOverride(String configLabel) {
+        this.configLabels.add(configLabel);
+    }
 
 }

@@ -32,491 +32,541 @@ import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommandHandle
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
-
 /**
- * Wraps the {@link IDataProvider}, and serves as the data source for all
- * other layers. Also, tracks the size of the columns and the rows using
- * {@link SizeConfig} objects. Since this layer sits directly on top of the
- * data source, at this layer index == position.
+ * Wraps the {@link IDataProvider}, and serves as the data source for all other
+ * layers. Also, tracks the size of the columns and the rows using
+ * {@link SizeConfig} objects. Since this layer sits directly on top of the data
+ * source, at this layer index == position.
  */
 public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
-	public static final String PERSISTENCE_KEY_ROW_HEIGHT = ".rowHeight"; //$NON-NLS-1$
-	public static final String PERSISTENCE_KEY_COLUMN_WIDTH = ".columnWidth"; //$NON-NLS-1$
+    public static final String PERSISTENCE_KEY_ROW_HEIGHT = ".rowHeight"; //$NON-NLS-1$
+    public static final String PERSISTENCE_KEY_COLUMN_WIDTH = ".columnWidth"; //$NON-NLS-1$
 
-	public static final int DEFAULT_COLUMN_WIDTH = 100;
-	public static final int DEFAULT_ROW_HEIGHT = 20;
+    public static final int DEFAULT_COLUMN_WIDTH = 100;
+    public static final int DEFAULT_ROW_HEIGHT = 20;
 
-	protected IDataProvider dataProvider;
+    protected IDataProvider dataProvider;
 
-	private final SizeConfig columnWidthConfig;
-	private final SizeConfig rowHeightConfig;
-	
-	public DataLayer(IDataProvider dataProvider) {
-		this(dataProvider, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
-	}
+    private final SizeConfig columnWidthConfig;
+    private final SizeConfig rowHeightConfig;
 
-	public DataLayer(IDataProvider dataProvider, int defaultColumnWidth, int defaultRowHeight) {
-		this(defaultColumnWidth, defaultRowHeight);
-		
-		setDataProvider(dataProvider);
-	}
+    public DataLayer(IDataProvider dataProvider) {
+        this(dataProvider, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
+    }
 
-	protected DataLayer() {
-		this(DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
-	}
+    public DataLayer(IDataProvider dataProvider, int defaultColumnWidth,
+            int defaultRowHeight) {
+        this(defaultColumnWidth, defaultRowHeight);
 
-	protected DataLayer(int defaultColumnWidth, int defaultRowHeight) {
-		columnWidthConfig = new SizeConfig(defaultColumnWidth);
-		rowHeightConfig = new SizeConfig(defaultRowHeight);
+        setDataProvider(dataProvider);
+    }
 
-		registerCommandHandlers();
-	}
+    protected DataLayer() {
+        this(DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
+    }
 
-	// Persistence
+    protected DataLayer(int defaultColumnWidth, int defaultRowHeight) {
+        columnWidthConfig = new SizeConfig(defaultColumnWidth);
+        rowHeightConfig = new SizeConfig(defaultRowHeight);
 
-	@Override
-	public void saveState(String prefix, Properties properties) {
-		super.saveState(prefix, properties);
-		columnWidthConfig.saveState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH, properties);
-		rowHeightConfig.saveState(prefix + PERSISTENCE_KEY_ROW_HEIGHT, properties);
-	}
+        registerCommandHandlers();
+    }
 
-	@Override
-	public void loadState(String prefix, Properties properties) {
-		super.loadState(prefix, properties);
-		columnWidthConfig.loadState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH, properties);
-		rowHeightConfig.loadState(prefix + PERSISTENCE_KEY_ROW_HEIGHT, properties);
-		
-		if (!properties.containsKey(NatTable.INITIAL_PAINT_COMPLETE_FLAG))
-			fireLayerEvent(new StructuralRefreshEvent(this));
-	}
+    // Persistence
 
-	// Configuration
+    @Override
+    public void saveState(String prefix, Properties properties) {
+        super.saveState(prefix, properties);
+        columnWidthConfig.saveState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
+                properties);
+        rowHeightConfig.saveState(prefix + PERSISTENCE_KEY_ROW_HEIGHT,
+                properties);
+    }
 
-	@Override
-	protected void registerCommandHandlers() {
-		registerCommandHandler(new ColumnResizeCommandHandler(this));
-		registerCommandHandler(new MultiColumnResizeCommandHandler(this));
-		registerCommandHandler(new RowResizeCommandHandler(this));
-		registerCommandHandler(new MultiRowResizeCommandHandler(this));
-		registerCommandHandler(new UpdateDataCommandHandler(this));
-		registerCommandHandler(new StructuralRefreshCommandHandler());
-		registerCommandHandler(new VisualRefreshCommandHandler());
-	}
+    @Override
+    public void loadState(String prefix, Properties properties) {
+        super.loadState(prefix, properties);
+        columnWidthConfig.loadState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
+                properties);
+        rowHeightConfig.loadState(prefix + PERSISTENCE_KEY_ROW_HEIGHT,
+                properties);
 
-	public IDataProvider getDataProvider() {
-		return dataProvider;
-	}
+        if (!properties.containsKey(NatTable.INITIAL_PAINT_COMPLETE_FLAG))
+            fireLayerEvent(new StructuralRefreshEvent(this));
+    }
 
-	protected void setDataProvider(IDataProvider dataProvider) {
-		if (this.dataProvider instanceof IPersistable) {
-			unregisterPersistable((IPersistable) this.dataProvider);
-		}
-		
-		this.dataProvider = dataProvider;
-		
-		if (dataProvider instanceof IPersistable) {
-			registerPersistable((IPersistable) dataProvider);
-		}
-	}
+    // Configuration
 
-	/**
-	 * Gets the value at the given column and row index.
-	 *
-	 * @param columnIndex
-	 * @param rowIndex
-	 * @return the data value associated with the specified cell
-	 */
-	public Object getDataValue(int columnIndex, int rowIndex) {
-		return this.dataProvider.getDataValue(columnIndex, rowIndex);
-	}
+    @Override
+    protected void registerCommandHandlers() {
+        registerCommandHandler(new ColumnResizeCommandHandler(this));
+        registerCommandHandler(new MultiColumnResizeCommandHandler(this));
+        registerCommandHandler(new RowResizeCommandHandler(this));
+        registerCommandHandler(new MultiRowResizeCommandHandler(this));
+        registerCommandHandler(new UpdateDataCommandHandler(this));
+        registerCommandHandler(new StructuralRefreshCommandHandler());
+        registerCommandHandler(new VisualRefreshCommandHandler());
+    }
 
-	/**
-	 * Sets the value at the given column and row index. Optional operation. Should throw UnsupportedOperationException
-	 * if this operation is not supported.
-	 *
-	 * @param columnIndex
-	 * @param rowIndex
-	 * @param newValue
-	 */
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-		this.dataProvider.setDataValue(columnIndex, rowIndex, newValue);
-	}
-	
-	// Horizontal features
+    public IDataProvider getDataProvider() {
+        return dataProvider;
+    }
 
-	// Columns
+    protected void setDataProvider(IDataProvider dataProvider) {
+        if (this.dataProvider instanceof IPersistable) {
+            unregisterPersistable((IPersistable) this.dataProvider);
+        }
 
-	@Override
-	public int getColumnCount() {
-		return dataProvider.getColumnCount();
-	}
+        this.dataProvider = dataProvider;
 
-	@Override
-	public int getPreferredColumnCount() {
-		return getColumnCount();
-	}
+        if (dataProvider instanceof IPersistable) {
+            registerPersistable((IPersistable) dataProvider);
+        }
+    }
 
     /**
-	 * This is the root coordinate system, so the column index is always equal to the column position.
-	 */
-	@Override
-	public int getColumnIndexByPosition(int columnPosition) {
-		if (columnPosition >=0 && columnPosition < getColumnCount()) {
-			return columnPosition;
-		} else {
-			return -1;
-		}
-	}
+     * Gets the value at the given column and row index.
+     *
+     * @param columnIndex
+     * @param rowIndex
+     * @return the data value associated with the specified cell
+     */
+    public Object getDataValue(int columnIndex, int rowIndex) {
+        return this.dataProvider.getDataValue(columnIndex, rowIndex);
+    }
 
-	/**
-	 * This is the root coordinate system, so the column position is always equal to the column index.
-	 */
-	@Override
-	public int getColumnPositionByIndex(int columnIndex) {
-		if (columnIndex >=0 && columnIndex < getColumnCount()) {
-			return columnIndex;
-		} else {
-			return -1;
-		}
-	}
+    /**
+     * Sets the value at the given column and row index. Optional operation.
+     * Should throw UnsupportedOperationException if this operation is not
+     * supported.
+     *
+     * @param columnIndex
+     * @param rowIndex
+     * @param newValue
+     */
+    public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+        this.dataProvider.setDataValue(columnIndex, rowIndex, newValue);
+    }
 
-	@Override
-	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		return localColumnPosition;
-	}
+    // Horizontal features
 
-	@Override
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-		return underlyingColumnPosition;
-	}
-	
-	@Override
-	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
-		return underlyingColumnPositionRanges;
-	}
-
-	// Width
+    // Columns
 
     @Override
-	public int getWidth() {
-		return columnWidthConfig.getAggregateSize(getColumnCount());
-	}
-
-	@Override
-	public int getPreferredWidth() {
-		return getWidth();
-	}
-
-	@Override
-	public int getColumnWidthByPosition(int columnPosition) {
-		return columnWidthConfig.getSize(columnPosition);
-	}
-
-	public void setColumnWidthByPosition(int columnPosition, int width) {
-		setColumnWidthByPosition(columnPosition, width, true);
-	}
-
-	public void setColumnWidthByPosition(int columnPosition, int width, boolean fireEvent) {
-		columnWidthConfig.setSize(columnPosition, width);
-		if (fireEvent) fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
-	}
-
-	public void setColumnWidthPercentageByPosition(int columnPosition, int width) {
-		columnWidthConfig.setPercentage(columnPosition, width);
-		fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
-	}
-
-	public void setDefaultColumnWidth(int width) {
-		columnWidthConfig.setDefaultSize(width);
-	}
-
-	public void setDefaultColumnWidthByPosition(int columnPosition, int width) {
-		columnWidthConfig.setDefaultSize(columnPosition, width);
-	}
-
-	// Column resize
-
-	@Override
-	public boolean isColumnPositionResizable(int columnPosition) {
-		return columnWidthConfig.isPositionResizable(columnPosition);
-	}
-
-	public void setColumnPositionResizable(int columnPosition, boolean resizable) {
-		columnWidthConfig.setPositionResizable(columnPosition, resizable);
-	}
-
-	public void setColumnsResizableByDefault(boolean resizableByDefault) {
-		columnWidthConfig.setResizableByDefault(resizableByDefault);
-	}
-
-	// Underlying
-
-	@Override
-	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
-		return null;
-	}
-
-	// Vertical features
-
-	// Rows
-
-	@Override
-	public int getRowCount() {
-		return dataProvider.getRowCount();
-	}
-
-	@Override
-	public int getPreferredRowCount() {
-		return getRowCount();
-	}
-
-	/**
-	 * This is the root coordinate system, so the row index is always equal to the row position.
-	 */
-	@Override
-	public int getRowIndexByPosition(int rowPosition) {
-		if (rowPosition >=0 && rowPosition < getRowCount()) {
-			return rowPosition;
-		} else {
-			return -1;
-		}
-	}
-
-	/**
-	 * This is the root coordinate system, so the row position is always equal to the row index.
-	 */
-	@Override
-	public int getRowPositionByIndex(int rowIndex) {
-		if (rowIndex >= 0 && rowIndex < getRowCount()) {
-			return rowIndex;
-		} else {
-			return -1;
-		}
-	}
-
-	@Override
-	public int localToUnderlyingRowPosition(int localRowPosition) {
-		return localRowPosition;
-	}
-
-	@Override
-	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
-		return underlyingRowPosition;
-	}
-	
-	@Override
-	public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
-		return underlyingRowPositionRanges;
-	}
-
-	// Height
+    public int getColumnCount() {
+        return dataProvider.getColumnCount();
+    }
 
     @Override
-	public int getHeight() {
-		return rowHeightConfig.getAggregateSize(getRowCount());
-	}
+    public int getPreferredColumnCount() {
+        return getColumnCount();
+    }
 
-	@Override
-	public int getPreferredHeight() {
-		return getHeight();
-	}
+    /**
+     * This is the root coordinate system, so the column index is always equal
+     * to the column position.
+     */
+    @Override
+    public int getColumnIndexByPosition(int columnPosition) {
+        if (columnPosition >= 0 && columnPosition < getColumnCount()) {
+            return columnPosition;
+        } else {
+            return -1;
+        }
+    }
 
-	@Override
-	public int getRowHeightByPosition(int rowPosition) {
-		return rowHeightConfig.getSize(rowPosition);
-	}
+    /**
+     * This is the root coordinate system, so the column position is always
+     * equal to the column index.
+     */
+    @Override
+    public int getColumnPositionByIndex(int columnIndex) {
+        if (columnIndex >= 0 && columnIndex < getColumnCount()) {
+            return columnIndex;
+        } else {
+            return -1;
+        }
+    }
 
-	public void setRowHeightByPosition(int rowPosition, int height) {
-		setRowHeightByPosition(rowPosition, height, true);
-	}
+    @Override
+    public int localToUnderlyingColumnPosition(int localColumnPosition) {
+        return localColumnPosition;
+    }
 
-	public void setRowHeightByPosition(int rowPosition, int height, boolean fireEvent) {
-		rowHeightConfig.setSize(rowPosition, height);
-		if (fireEvent) fireLayerEvent(new RowResizeEvent(this, rowPosition));
-	}
+    @Override
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
+            int underlyingColumnPosition) {
+        return underlyingColumnPosition;
+    }
 
-	public void setRowHeightPercentageByPosition(int rowPosition, int height) {
-		rowHeightConfig.setPercentage(rowPosition, height);
-		fireLayerEvent(new ColumnResizeEvent(this, rowPosition));
-	}
+    @Override
+    public Collection<Range> underlyingToLocalColumnPositions(
+            ILayer sourceUnderlyingLayer,
+            Collection<Range> underlyingColumnPositionRanges) {
+        return underlyingColumnPositionRanges;
+    }
 
-	public void setDefaultRowHeight(int height) {
-		rowHeightConfig.setDefaultSize(height);
-	}
+    // Width
 
-	public void setDefaultRowHeightByPosition(int rowPosition, int height) {
-		rowHeightConfig.setDefaultSize(rowPosition, height);
-	}
+    @Override
+    public int getWidth() {
+        return columnWidthConfig.getAggregateSize(getColumnCount());
+    }
 
-	// Row resize
+    @Override
+    public int getPreferredWidth() {
+        return getWidth();
+    }
 
-	@Override
-	public boolean isRowPositionResizable(int rowPosition) {
-		return rowHeightConfig.isPositionResizable(rowPosition);
-	}
+    @Override
+    public int getColumnWidthByPosition(int columnPosition) {
+        return columnWidthConfig.getSize(columnPosition);
+    }
 
-	public void setRowPositionResizable(int rowPosition, boolean resizable) {
-		rowHeightConfig.setPositionResizable(rowPosition, resizable);
-	}
+    public void setColumnWidthByPosition(int columnPosition, int width) {
+        setColumnWidthByPosition(columnPosition, width, true);
+    }
 
-	public void setRowsResizableByDefault(boolean resizableByDefault) {
-		rowHeightConfig.setResizableByDefault(resizableByDefault);
-	}
+    public void setColumnWidthByPosition(int columnPosition, int width,
+            boolean fireEvent) {
+        columnWidthConfig.setSize(columnPosition, width);
+        if (fireEvent)
+            fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
+    }
 
-	// Underlying
+    public void setColumnWidthPercentageByPosition(int columnPosition, int width) {
+        columnWidthConfig.setPercentage(columnPosition, width);
+        fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
+    }
 
-	@Override
-	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
-		return null;
-	}
+    public void setDefaultColumnWidth(int width) {
+        columnWidthConfig.setDefaultSize(width);
+    }
 
-	// Cell features
+    public void setDefaultColumnWidthByPosition(int columnPosition, int width) {
+        columnWidthConfig.setDefaultSize(columnPosition, width);
+    }
 
-	@Override
-	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
-		int rowIndex = getRowIndexByPosition(rowPosition);
-		return getDataValue(columnIndex, rowIndex);
-	}
+    // Column resize
 
-	public void setDataValueByPosition(int columnPosition, int rowPosition, Object newValue) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
-		int rowIndex = getRowIndexByPosition(rowPosition);
-		setDataValue(columnIndex, rowIndex, newValue);
-	}
+    @Override
+    public boolean isColumnPositionResizable(int columnPosition) {
+        return columnWidthConfig.isPositionResizable(columnPosition);
+    }
 
-	@Override
-	public int getColumnPositionByX(int x) {
-		return LayerUtil.getColumnPositionByX(this, x);
-	}
+    public void setColumnPositionResizable(int columnPosition, boolean resizable) {
+        columnWidthConfig.setPositionResizable(columnPosition, resizable);
+    }
 
-	@Override
-	public int getRowPositionByY(int y) {
-		return LayerUtil.getRowPositionByY(this, y);
-	}
+    public void setColumnsResizableByDefault(boolean resizableByDefault) {
+        columnWidthConfig.setResizableByDefault(resizableByDefault);
+    }
 
-	@Override
-	public int getStartXOfColumnPosition(int columnPosition) {
-		return columnWidthConfig.getAggregateSize(columnPosition);
-	}
+    // Underlying
 
-	@Override
-	public int getStartYOfRowPosition(int rowPosition) {
-		return rowHeightConfig.getAggregateSize(rowPosition);
-	}
+    @Override
+    public Collection<ILayer> getUnderlyingLayersByColumnPosition(
+            int columnPosition) {
+        return null;
+    }
 
-	@Override
-	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
-		return null;
-	}
-	
-	@Override
-	public boolean doCommand(ILayerCommand command) {
-		if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
-			ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
-			
-			boolean refresh = false;
-			if (isColumnPercentageSizing()) {
-				this.columnWidthConfig.calculatePercentages(clientAreaResizeCommand.getCalcArea().width, getColumnCount());
-				refresh = true;
-			}
-			if (isRowPercentageSizing()) {
-				this.rowHeightConfig.calculatePercentages(clientAreaResizeCommand.getCalcArea().height, getRowCount());
-				refresh = true;
-			}
-			
-			if (refresh) {
-				fireLayerEvent(new ResizeStructuralRefreshEvent(this));
-			}
+    // Vertical features
 
-			return refresh;
-		}
-		return super.doCommand(command);
-	}
-	
-	/**
-	 * @return <code>true</code> if the column sizing is done by percentage calculation,
-	 * 			<code>false</code> if the column sizing is done by pixel (default)
-	 */
-	public boolean isColumnPercentageSizing() {
-		return this.columnWidthConfig.isPercentageSizing();
-	}
-	
-	/**
-	 * Configures how the column sizing of this {@link DataLayer} is handled.
-	 * Default is pixel sizing.
-	 * If percentage sizing should be used you have to ensure that the size value for every 
-	 * column is set explicitly and that the sum of the column sizes doesn't exceed 100.
-	 * @param percentageSizing <code>true</code> if the column sizing should be done by percentage 
-	 * 			calculation, <code>false</code> if the column sizing should be done by pixel (default)
-	 */
-	public void setColumnPercentageSizing(boolean percentageSizing) {
-		this.columnWidthConfig.setPercentageSizing(percentageSizing);
-	}
-	
-	/**
-	 * @param position The position which is asked for the percentage sizing configuration.
-	 * @return <code>true</code> if the column sizing for the given position is done by percentage 
-	 * 			calculation, <code>false</code> if the column sizing is done by pixel (default)
-	 */
-	public boolean isColumnPercentageSizing(int position) {
-		return this.columnWidthConfig.isPercentageSizing(position);
-	}
-	
-	/**
-	 * Configures how the column sizing of this {@link DataLayer} is handled.
-	 * Default is pixel sizing.
-	 * If percentage sizing should be used you have to ensure that the size value for every 
-	 * column is set explicitly and that the sum of the column sizes doesn't exceed 100.
-	 * @param position The position for which the sizing configuration should be set.
-	 * @param percentageSizing <code>true</code> if the column sizing should be done by percentage 
-	 * 			calculation, <code>false</code> if the column sizing should be done by pixel (default)
-	 */
-	public void setColumnPercentageSizing(int position, boolean percentageSizing) {
-		this.columnWidthConfig.setPercentageSizing(position, percentageSizing);
-	}
-	
-	/**
-	 * @return <code>true</code> if the row sizing is done by percentage calculation, 
-	 * 			<code>false</code> if the row sizing is done by pixel (default)
-	 */
-	public boolean isRowPercentageSizing() {
-		return this.rowHeightConfig.isPercentageSizing();
-	}
-	
-	/**
-	 * Configures how the row sizing of this {@link DataLayer} is handled.
-	 * Default is pixel sizing.
-	 * If percentage sizing should be used you have to ensure that the size value for every 
-	 * row is set explicitly and that the sum of the row sizes doesn't exceed 100.
-	 * @param percentageSizing <code>true</code> if the row sizing should be done by percentage 
-	 * 			calculation, <code>false</code> if the row sizing should be done by pixel (default)
-	 */
-	public void setRowPercentageSizing(boolean percentageSizing) {
-		this.rowHeightConfig.setPercentageSizing(percentageSizing);
-	}
-	
-	/**
-	 * @param position The position which is asked for the percentage sizing configuration.
-	 * @return <code>true</code> if the row sizing for the given position is done by percentage 
-	 * 			calculation, <code>false</code> if the row sizing is done by pixel (default)
-	 */
-	public boolean isRowPercentageSizing(int position) {
-		return this.rowHeightConfig.isPercentageSizing(position);
-	}
-	
-	/**
-	 * Configures how the row sizing of this {@link DataLayer} is handled.
-	 * Default is pixel sizing.
-	 * If percentage sizing should be used you have to ensure that the size value for every 
-	 * row is set explicitly and that the sum of the row sizes doesn't exceed 100.
-	 * @param position The row position for which the sizing configuration should be set.
-	 * @param percentageSizing <code>true</code> if the row sizing should be done by percentage 
-	 * 			calculation, <code>false</code> if the row sizing should be done by pixel (default)
-	 */
-	public void setRowPercentageSizing(int position, boolean percentageSizing) {
-		this.rowHeightConfig.setPercentageSizing(position, percentageSizing);
-	}
+    // Rows
+
+    @Override
+    public int getRowCount() {
+        return dataProvider.getRowCount();
+    }
+
+    @Override
+    public int getPreferredRowCount() {
+        return getRowCount();
+    }
+
+    /**
+     * This is the root coordinate system, so the row index is always equal to
+     * the row position.
+     */
+    @Override
+    public int getRowIndexByPosition(int rowPosition) {
+        if (rowPosition >= 0 && rowPosition < getRowCount()) {
+            return rowPosition;
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * This is the root coordinate system, so the row position is always equal
+     * to the row index.
+     */
+    @Override
+    public int getRowPositionByIndex(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < getRowCount()) {
+            return rowIndex;
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    public int localToUnderlyingRowPosition(int localRowPosition) {
+        return localRowPosition;
+    }
+
+    @Override
+    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
+            int underlyingRowPosition) {
+        return underlyingRowPosition;
+    }
+
+    @Override
+    public Collection<Range> underlyingToLocalRowPositions(
+            ILayer sourceUnderlyingLayer,
+            Collection<Range> underlyingRowPositionRanges) {
+        return underlyingRowPositionRanges;
+    }
+
+    // Height
+
+    @Override
+    public int getHeight() {
+        return rowHeightConfig.getAggregateSize(getRowCount());
+    }
+
+    @Override
+    public int getPreferredHeight() {
+        return getHeight();
+    }
+
+    @Override
+    public int getRowHeightByPosition(int rowPosition) {
+        return rowHeightConfig.getSize(rowPosition);
+    }
+
+    public void setRowHeightByPosition(int rowPosition, int height) {
+        setRowHeightByPosition(rowPosition, height, true);
+    }
+
+    public void setRowHeightByPosition(int rowPosition, int height,
+            boolean fireEvent) {
+        rowHeightConfig.setSize(rowPosition, height);
+        if (fireEvent)
+            fireLayerEvent(new RowResizeEvent(this, rowPosition));
+    }
+
+    public void setRowHeightPercentageByPosition(int rowPosition, int height) {
+        rowHeightConfig.setPercentage(rowPosition, height);
+        fireLayerEvent(new ColumnResizeEvent(this, rowPosition));
+    }
+
+    public void setDefaultRowHeight(int height) {
+        rowHeightConfig.setDefaultSize(height);
+    }
+
+    public void setDefaultRowHeightByPosition(int rowPosition, int height) {
+        rowHeightConfig.setDefaultSize(rowPosition, height);
+    }
+
+    // Row resize
+
+    @Override
+    public boolean isRowPositionResizable(int rowPosition) {
+        return rowHeightConfig.isPositionResizable(rowPosition);
+    }
+
+    public void setRowPositionResizable(int rowPosition, boolean resizable) {
+        rowHeightConfig.setPositionResizable(rowPosition, resizable);
+    }
+
+    public void setRowsResizableByDefault(boolean resizableByDefault) {
+        rowHeightConfig.setResizableByDefault(resizableByDefault);
+    }
+
+    // Underlying
+
+    @Override
+    public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
+        return null;
+    }
+
+    // Cell features
+
+    @Override
+    public Object getDataValueByPosition(int columnPosition, int rowPosition) {
+        int columnIndex = getColumnIndexByPosition(columnPosition);
+        int rowIndex = getRowIndexByPosition(rowPosition);
+        return getDataValue(columnIndex, rowIndex);
+    }
+
+    public void setDataValueByPosition(int columnPosition, int rowPosition,
+            Object newValue) {
+        int columnIndex = getColumnIndexByPosition(columnPosition);
+        int rowIndex = getRowIndexByPosition(rowPosition);
+        setDataValue(columnIndex, rowIndex, newValue);
+    }
+
+    @Override
+    public int getColumnPositionByX(int x) {
+        return LayerUtil.getColumnPositionByX(this, x);
+    }
+
+    @Override
+    public int getRowPositionByY(int y) {
+        return LayerUtil.getRowPositionByY(this, y);
+    }
+
+    @Override
+    public int getStartXOfColumnPosition(int columnPosition) {
+        return columnWidthConfig.getAggregateSize(columnPosition);
+    }
+
+    @Override
+    public int getStartYOfRowPosition(int rowPosition) {
+        return rowHeightConfig.getAggregateSize(rowPosition);
+    }
+
+    @Override
+    public ILayer getUnderlyingLayerByPosition(int columnPosition,
+            int rowPosition) {
+        return null;
+    }
+
+    @Override
+    public boolean doCommand(ILayerCommand command) {
+        if (command instanceof ClientAreaResizeCommand
+                && command.convertToTargetLayer(this)) {
+            ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
+
+            boolean refresh = false;
+            if (isColumnPercentageSizing()) {
+                this.columnWidthConfig.calculatePercentages(
+                        clientAreaResizeCommand.getCalcArea().width,
+                        getColumnCount());
+                refresh = true;
+            }
+            if (isRowPercentageSizing()) {
+                this.rowHeightConfig.calculatePercentages(
+                        clientAreaResizeCommand.getCalcArea().height,
+                        getRowCount());
+                refresh = true;
+            }
+
+            if (refresh) {
+                fireLayerEvent(new ResizeStructuralRefreshEvent(this));
+            }
+
+            return refresh;
+        }
+        return super.doCommand(command);
+    }
+
+    /**
+     * @return <code>true</code> if the column sizing is done by percentage
+     *         calculation, <code>false</code> if the column sizing is done by
+     *         pixel (default)
+     */
+    public boolean isColumnPercentageSizing() {
+        return this.columnWidthConfig.isPercentageSizing();
+    }
+
+    /**
+     * Configures how the column sizing of this {@link DataLayer} is handled.
+     * Default is pixel sizing. If percentage sizing should be used you have to
+     * ensure that the size value for every column is set explicitly and that
+     * the sum of the column sizes doesn't exceed 100.
+     * 
+     * @param percentageSizing
+     *            <code>true</code> if the column sizing should be done by
+     *            percentage calculation, <code>false</code> if the column
+     *            sizing should be done by pixel (default)
+     */
+    public void setColumnPercentageSizing(boolean percentageSizing) {
+        this.columnWidthConfig.setPercentageSizing(percentageSizing);
+    }
+
+    /**
+     * @param position
+     *            The position which is asked for the percentage sizing
+     *            configuration.
+     * @return <code>true</code> if the column sizing for the given position is
+     *         done by percentage calculation, <code>false</code> if the column
+     *         sizing is done by pixel (default)
+     */
+    public boolean isColumnPercentageSizing(int position) {
+        return this.columnWidthConfig.isPercentageSizing(position);
+    }
+
+    /**
+     * Configures how the column sizing of this {@link DataLayer} is handled.
+     * Default is pixel sizing. If percentage sizing should be used you have to
+     * ensure that the size value for every column is set explicitly and that
+     * the sum of the column sizes doesn't exceed 100.
+     * 
+     * @param position
+     *            The position for which the sizing configuration should be set.
+     * @param percentageSizing
+     *            <code>true</code> if the column sizing should be done by
+     *            percentage calculation, <code>false</code> if the column
+     *            sizing should be done by pixel (default)
+     */
+    public void setColumnPercentageSizing(int position, boolean percentageSizing) {
+        this.columnWidthConfig.setPercentageSizing(position, percentageSizing);
+    }
+
+    /**
+     * @return <code>true</code> if the row sizing is done by percentage
+     *         calculation, <code>false</code> if the row sizing is done by
+     *         pixel (default)
+     */
+    public boolean isRowPercentageSizing() {
+        return this.rowHeightConfig.isPercentageSizing();
+    }
+
+    /**
+     * Configures how the row sizing of this {@link DataLayer} is handled.
+     * Default is pixel sizing. If percentage sizing should be used you have to
+     * ensure that the size value for every row is set explicitly and that the
+     * sum of the row sizes doesn't exceed 100.
+     * 
+     * @param percentageSizing
+     *            <code>true</code> if the row sizing should be done by
+     *            percentage calculation, <code>false</code> if the row sizing
+     *            should be done by pixel (default)
+     */
+    public void setRowPercentageSizing(boolean percentageSizing) {
+        this.rowHeightConfig.setPercentageSizing(percentageSizing);
+    }
+
+    /**
+     * @param position
+     *            The position which is asked for the percentage sizing
+     *            configuration.
+     * @return <code>true</code> if the row sizing for the given position is
+     *         done by percentage calculation, <code>false</code> if the row
+     *         sizing is done by pixel (default)
+     */
+    public boolean isRowPercentageSizing(int position) {
+        return this.rowHeightConfig.isPercentageSizing(position);
+    }
+
+    /**
+     * Configures how the row sizing of this {@link DataLayer} is handled.
+     * Default is pixel sizing. If percentage sizing should be used you have to
+     * ensure that the size value for every row is set explicitly and that the
+     * sum of the row sizes doesn't exceed 100.
+     * 
+     * @param position
+     *            The row position for which the sizing configuration should be
+     *            set.
+     * @param percentageSizing
+     *            <code>true</code> if the row sizing should be done by
+     *            percentage calculation, <code>false</code> if the row sizing
+     *            should be done by pixel (default)
+     */
+    public void setRowPercentageSizing(int position, boolean percentageSizing) {
+        this.rowHeightConfig.setPercentageSizing(position, percentageSizing);
+    }
 }

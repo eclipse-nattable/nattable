@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.sort.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
@@ -18,15 +17,16 @@ import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
 public class SortColumnAction implements IMouseAction {
-	
-	private final boolean accumulate;
 
-	public SortColumnAction(boolean accumulate) {
-		this.accumulate = accumulate;
-	}
-	
-	public void run(NatTable natTable, MouseEvent event) {
-		int columnPosition = ((NatEventData)event.data).getColumnPosition();
-		natTable.doCommand(new SortColumnCommand(natTable, columnPosition, accumulate));
-	}
+    private final boolean accumulate;
+
+    public SortColumnAction(boolean accumulate) {
+        this.accumulate = accumulate;
+    }
+
+    public void run(NatTable natTable, MouseEvent event) {
+        int columnPosition = ((NatEventData) event.data).getColumnPosition();
+        natTable.doCommand(new SortColumnCommand(natTable, columnPosition,
+                accumulate));
+    }
 }

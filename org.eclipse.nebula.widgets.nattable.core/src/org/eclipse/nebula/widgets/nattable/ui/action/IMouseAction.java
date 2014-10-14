@@ -18,18 +18,20 @@ import org.eclipse.swt.events.MouseEvent;
  * MouseEvent into a command that should be executed in the NatTable.
  * <p>
  * This concept allows to catch general MouseEvents on the NatTable control
- * itself, and translate it into commands that correspond to a cell which
- * is determined via x/y coordinates.
+ * itself, and translate it into commands that correspond to a cell which is
+ * determined via x/y coordinates.
  */
 public interface IMouseAction {
 
-	/**
-	 * Translates the SWT MouseEvent to a NatTable command and executes
-	 * that command accordingly.
-	 * 
-	 * @param natTable The NatTable instance on which the MouseEvent was
-	 * 			fired and on which the command should be executed.
-	 * @param event The received MouseEvent.
-	 */
-	void run(NatTable natTable, MouseEvent event);
+    /**
+     * Translates the SWT MouseEvent to a NatTable command and executes that
+     * command accordingly.
+     * 
+     * @param natTable
+     *            The NatTable instance on which the MouseEvent was fired and on
+     *            which the command should be executed.
+     * @param event
+     *            The received MouseEvent.
+     */
+    void run(NatTable natTable, MouseEvent event);
 }

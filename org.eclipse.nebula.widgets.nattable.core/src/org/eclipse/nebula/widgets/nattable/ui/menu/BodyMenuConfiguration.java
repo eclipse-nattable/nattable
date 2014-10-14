@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
@@ -25,26 +24,26 @@ import org.eclipse.swt.widgets.Menu;
 
 public class BodyMenuConfiguration extends AbstractUiBindingConfiguration {
 
-	private final Menu colHeaderMenu;
-	
-	public BodyMenuConfiguration(NatTable natTable, ILayer bodyLayer) {
-		colHeaderMenu = new PopupMenuBuilder(natTable)
-								.withColumnStyleEditor(Messages.getString("ColumnStyleEditorDialog.shellTitle")) //$NON-NLS-1$
-								.build();
-		
-		natTable.addDisposeListener(new DisposeListener() {
-			
-			public void widgetDisposed(DisposeEvent e) {
-				colHeaderMenu.dispose();
-			}
-			
-		});
-	}
-	
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerMouseDownBinding(
-				new MouseEventMatcher(SWT.NONE, GridRegion.COLUMN_HEADER, 3), 
-				new PopupMenuAction(colHeaderMenu));
-	}
+    private final Menu colHeaderMenu;
+
+    public BodyMenuConfiguration(NatTable natTable, ILayer bodyLayer) {
+        colHeaderMenu = new PopupMenuBuilder(natTable).withColumnStyleEditor(
+                Messages.getString("ColumnStyleEditorDialog.shellTitle")) //$NON-NLS-1$
+                .build();
+
+        natTable.addDisposeListener(new DisposeListener() {
+
+            public void widgetDisposed(DisposeEvent e) {
+                colHeaderMenu.dispose();
+            }
+
+        });
+    }
+
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerMouseDownBinding(new MouseEventMatcher(
+                SWT.NONE, GridRegion.COLUMN_HEADER, 3), new PopupMenuAction(
+                colHeaderMenu));
+    }
 
 }

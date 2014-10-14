@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
-
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -35,78 +34,82 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class FilterRowHeaderCompositeTest {
 
-	private DataLayerFixture columnHeaderLayer;
-	private IConfigRegistry configRegistry;
-	private FilterList<RowDataFixture> filterList;
-	private FilterRowHeaderComposite<RowDataFixture> layerUnderTest;
-	private LayerListenerFixture listener;
+    private DataLayerFixture columnHeaderLayer;
+    private IConfigRegistry configRegistry;
+    private FilterList<RowDataFixture> filterList;
+    private FilterRowHeaderComposite<RowDataFixture> layerUnderTest;
+    private LayerListenerFixture listener;
 
-	@Before
-	public void setup() {
-		columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
+    @Before
+    public void setup() {
+        columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
 
-		configRegistry = new ConfigRegistry();
-		new DefaultNatTableStyleConfiguration().configureRegistry(configRegistry);
-		new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
+        configRegistry = new ConfigRegistry();
+        new DefaultNatTableStyleConfiguration()
+                .configureRegistry(configRegistry);
+        new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
 
-		filterList = new FilterList<RowDataFixture>(GlazedLists.eventList(RowDataListFixture.getList()));
-		
-		layerUnderTest = new FilterRowHeaderComposite<RowDataFixture>(
-				new DefaultGlazedListsFilterStrategy<RowDataFixture>(
-					filterList,
-					new ReflectiveColumnPropertyAccessor<RowDataFixture>(RowDataListFixture.getPropertyNames()),
-					configRegistry
-				),
-				columnHeaderLayer, columnHeaderLayer.getDataProvider(), configRegistry);
-		listener = new LayerListenerFixture();
-		layerUnderTest.addLayerListener(listener);
-	}
+        filterList = new FilterList<RowDataFixture>(
+                GlazedLists.eventList(RowDataListFixture.getList()));
 
-	@Test
-	public void shouldHandleClearFilterCommand() throws Exception {
-		Assert.assertEquals(13, filterList.size());
+        layerUnderTest = new FilterRowHeaderComposite<RowDataFixture>(
+                new DefaultGlazedListsFilterStrategy<RowDataFixture>(
+                        filterList,
+                        new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                                RowDataListFixture.getPropertyNames()),
+                        configRegistry), columnHeaderLayer,
+                columnHeaderLayer.getDataProvider(), configRegistry);
+        listener = new LayerListenerFixture();
+        layerUnderTest.addLayerListener(listener);
+    }
 
-		layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 2, "ford"));
-		Assert.assertEquals(1, filterList.size());
+    @Test
+    public void shouldHandleClearFilterCommand() throws Exception {
+        Assert.assertEquals(13, filterList.size());
 
-		layerUnderTest.doCommand(new ClearFilterCommand(layerUnderTest, 1));
-		Assert.assertEquals(13, filterList.size());
+        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 2,
+                "ford"));
+        Assert.assertEquals(1, filterList.size());
 
-		listener.containsInstanceOf(RowStructuralRefreshEvent.class);
-	}
+        layerUnderTest.doCommand(new ClearFilterCommand(layerUnderTest, 1));
+        Assert.assertEquals(13, filterList.size());
 
-	@Test
-	public void shouldHandleTheClearAllFiltersCommand() throws Exception {
-		Assert.assertEquals(13, filterList.size());
+        listener.containsInstanceOf(RowStructuralRefreshEvent.class);
+    }
 
-		layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 2, "ford"));
-		Assert.assertEquals(1, filterList.size());
+    @Test
+    public void shouldHandleTheClearAllFiltersCommand() throws Exception {
+        Assert.assertEquals(13, filterList.size());
 
-		layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 0, 2, "XXX"));
-		Assert.assertEquals(0, filterList.size());
+        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 2,
+                "ford"));
+        Assert.assertEquals(1, filterList.size());
 
-		layerUnderTest.doCommand(new ClearAllFiltersCommand());
-		Assert.assertEquals(13, filterList.size());
+        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 0, 2,
+                "XXX"));
+        Assert.assertEquals(0, filterList.size());
 
-		listener.containsInstanceOf(RowStructuralRefreshEvent.class);
-	}
+        layerUnderTest.doCommand(new ClearAllFiltersCommand());
+        Assert.assertEquals(13, filterList.size());
 
-	@Test
-	public void shouldHandleTheToggeleFilterRowCommand() throws Exception {
-		Assert.assertEquals(3, layerUnderTest.getRowCount());
-		layerUnderTest.doCommand(new ToggleFilterRowCommand());
-		Assert.assertEquals(2, layerUnderTest.getRowCount());
-		layerUnderTest.doCommand(new ToggleFilterRowCommand());
-		Assert.assertEquals(3, layerUnderTest.getRowCount());
-	}
+        listener.containsInstanceOf(RowStructuralRefreshEvent.class);
+    }
 
-	@Test
-	public void shouldSwitchVisibilityProgrammatically() throws Exception {
-		Assert.assertEquals(3, layerUnderTest.getRowCount());
-		layerUnderTest.setFilterRowVisible(false);
-		Assert.assertEquals(2, layerUnderTest.getRowCount());
-		layerUnderTest.setFilterRowVisible(true);
-		Assert.assertEquals(3, layerUnderTest.getRowCount());
-	}
+    @Test
+    public void shouldHandleTheToggeleFilterRowCommand() throws Exception {
+        Assert.assertEquals(3, layerUnderTest.getRowCount());
+        layerUnderTest.doCommand(new ToggleFilterRowCommand());
+        Assert.assertEquals(2, layerUnderTest.getRowCount());
+        layerUnderTest.doCommand(new ToggleFilterRowCommand());
+        Assert.assertEquals(3, layerUnderTest.getRowCount());
+    }
+
+    @Test
+    public void shouldSwitchVisibilityProgrammatically() throws Exception {
+        Assert.assertEquals(3, layerUnderTest.getRowCount());
+        layerUnderTest.setFilterRowVisible(false);
+        Assert.assertEquals(2, layerUnderTest.getRowCount());
+        layerUnderTest.setFilterRowVisible(true);
+        Assert.assertEquals(3, layerUnderTest.getRowCount());
+    }
 }
-

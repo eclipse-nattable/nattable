@@ -13,23 +13,25 @@ package org.eclipse.nebula.widgets.nattable.resize.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 
-public class ColumnResizeCommandHandler extends AbstractLayerCommandHandler<ColumnResizeCommand> {
+public class ColumnResizeCommandHandler extends
+        AbstractLayerCommandHandler<ColumnResizeCommand> {
 
-	private final DataLayer dataLayer;
+    private final DataLayer dataLayer;
 
-	public ColumnResizeCommandHandler(DataLayer dataLayer) {
-		this.dataLayer = dataLayer;
-	}
-	
-	public Class<ColumnResizeCommand> getCommandClass() {
-		return ColumnResizeCommand.class;
-	}
+    public ColumnResizeCommandHandler(DataLayer dataLayer) {
+        this.dataLayer = dataLayer;
+    }
 
-	@Override
-	protected boolean doCommand(ColumnResizeCommand command) {
-		final int newColumnWidth = command.getNewColumnWidth();
-		dataLayer.setColumnWidthByPosition(command.getColumnPosition(), newColumnWidth);
-		return true;
-	}
+    public Class<ColumnResizeCommand> getCommandClass() {
+        return ColumnResizeCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(ColumnResizeCommand command) {
+        final int newColumnWidth = command.getNewColumnWidth();
+        dataLayer.setColumnWidthByPosition(command.getColumnPosition(),
+                newColumnWidth);
+        return true;
+    }
 
 }

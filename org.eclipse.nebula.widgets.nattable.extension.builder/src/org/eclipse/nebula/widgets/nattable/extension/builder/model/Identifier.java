@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.extension.builder.model;
 
 import java.io.Serializable;
 
-public interface Identifier extends Serializable
-{
-	public int hashCode();
+public interface Identifier extends Serializable {
+    public int hashCode();
 }

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.config;
 
-
 import org.eclipse.nebula.widgets.nattable.selection.action.RowSelectionDragMode;
 import org.eclipse.nebula.widgets.nattable.selection.action.SelectRowAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
@@ -21,21 +20,33 @@ import org.eclipse.swt.SWT;
 
 public class RowOnlySelectionBindings extends DefaultSelectionBindings {
 
-	@Override
-	protected void configureBodyMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
-		IMouseAction action = new SelectRowAction();
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), action);
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.CTRL), action);
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), action);
-	}
+    @Override
+    protected void configureBodyMouseClickBindings(
+            UiBindingRegistry uiBindingRegistry) {
+        IMouseAction action = new SelectRowAction();
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.bodyLeftClick(SWT.SHIFT), action);
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.bodyLeftClick(SWT.CTRL), action);
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), action);
+    }
 
-	@Override
-	protected void configureBodyMouseDragMode(UiBindingRegistry uiBindingRegistry) {
-		IDragMode dragMode = new RowSelectionDragMode();
-		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.NONE), dragMode);
-		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), dragMode);
-		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.MOD1), dragMode);
-		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), dragMode);
-	}
+    @Override
+    protected void configureBodyMouseDragMode(
+            UiBindingRegistry uiBindingRegistry) {
+        IDragMode dragMode = new RowSelectionDragMode();
+        uiBindingRegistry.registerFirstMouseDragMode(
+                MouseEventMatcher.bodyLeftClick(SWT.NONE), dragMode);
+        uiBindingRegistry.registerFirstMouseDragMode(
+                MouseEventMatcher.bodyLeftClick(SWT.SHIFT), dragMode);
+        uiBindingRegistry.registerFirstMouseDragMode(
+                MouseEventMatcher.bodyLeftClick(SWT.MOD1), dragMode);
+        uiBindingRegistry
+                .registerFirstMouseDragMode(
+                        MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1),
+                        dragMode);
+    }
 }

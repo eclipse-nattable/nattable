@@ -18,57 +18,60 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 
-
 /**
- * A DataLayer for use in unit tests with a pre-canned 
+ * A DataLayer for use in unit tests with a pre-canned
  */
 public class BaseDataLayerFixture extends DataLayer {
-	
-	public BaseDataLayerFixture() {
-		this(5, 7);
-	}
 
-	public BaseDataLayerFixture(int colCount, int rowCount) {
-		setDataProvider(initDataProvider(colCount, rowCount));
-		initCellLabelAccumulator();
-	}
-	
-	private IDataProvider initDataProvider(final int colCount, final int rowCount) {
-		return new IDataProvider() {
-			Map<String, Object> dataStore = new HashMap<String, Object>();
+    public BaseDataLayerFixture() {
+        this(5, 7);
+    }
 
-			public int getColumnCount() {
-				return colCount;
-			}
+    public BaseDataLayerFixture(int colCount, int rowCount) {
+        setDataProvider(initDataProvider(colCount, rowCount));
+        initCellLabelAccumulator();
+    }
 
-			public int getRowCount() {
-				return rowCount;
-			}
+    private IDataProvider initDataProvider(final int colCount,
+            final int rowCount) {
+        return new IDataProvider() {
+            Map<String, Object> dataStore = new HashMap<String, Object>();
 
-			public Object getDataValue(int columnIndex, int rowIndex) {
-				String key = "[" + columnIndex + ", " + rowIndex + "]";
-				if(dataStore.get(key) == null){
-					return key;
-				}else{
-					return dataStore.get(key);
-				}
-			}
-			
-			public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-				dataStore.put("[" + columnIndex + ", " + rowIndex + "]", newValue);
-			}
-			
-		};
-	}
+            public int getColumnCount() {
+                return colCount;
+            }
 
-	private void initCellLabelAccumulator() {
-		setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+            public int getRowCount() {
+                return rowCount;
+            }
 
-			public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-				configLabels.addLabel("DEFAULT");
-			}
-			
-		});
-	}
-	
+            public Object getDataValue(int columnIndex, int rowIndex) {
+                String key = "[" + columnIndex + ", " + rowIndex + "]";
+                if (dataStore.get(key) == null) {
+                    return key;
+                } else {
+                    return dataStore.get(key);
+                }
+            }
+
+            public void setDataValue(int columnIndex, int rowIndex,
+                    Object newValue) {
+                dataStore.put("[" + columnIndex + ", " + rowIndex + "]",
+                        newValue);
+            }
+
+        };
+    }
+
+    private void initCellLabelAccumulator() {
+        setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+
+            public void accumulateConfigLabels(LabelStack configLabels,
+                    int columnPosition, int rowPosition) {
+                configLabels.addLabel("DEFAULT");
+            }
+
+        });
+    }
+
 }

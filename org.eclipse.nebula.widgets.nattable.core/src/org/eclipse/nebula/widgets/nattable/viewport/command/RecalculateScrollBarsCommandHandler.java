@@ -13,22 +13,23 @@ package org.eclipse.nebula.widgets.nattable.viewport.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-public class RecalculateScrollBarsCommandHandler extends AbstractLayerCommandHandler<RecalculateScrollBarsCommand> {
-	
-	private final ViewportLayer viewportLayer;
+public class RecalculateScrollBarsCommandHandler extends
+        AbstractLayerCommandHandler<RecalculateScrollBarsCommand> {
 
-	public RecalculateScrollBarsCommandHandler(ViewportLayer viewportLayer) {
-		this.viewportLayer = viewportLayer;
-	}
-	
-	public Class<RecalculateScrollBarsCommand> getCommandClass() {
-		return RecalculateScrollBarsCommand.class;
-	}
+    private final ViewportLayer viewportLayer;
 
-	@Override
-	protected boolean doCommand(RecalculateScrollBarsCommand command) {
-		viewportLayer.recalculateScrollBars();
-		return true;
-	}
+    public RecalculateScrollBarsCommandHandler(ViewportLayer viewportLayer) {
+        this.viewportLayer = viewportLayer;
+    }
+
+    public Class<RecalculateScrollBarsCommand> getCommandClass() {
+        return RecalculateScrollBarsCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(RecalculateScrollBarsCommand command) {
+        viewportLayer.recalculateScrollBars();
+        return true;
+    }
 
 }

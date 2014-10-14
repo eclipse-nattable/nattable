@@ -17,32 +17,30 @@ import java.util.Random;
 
 import org.eclipse.nebula.widgets.nattable.dataset.generator.IValueGenerator;
 
+public abstract class AbstractListValueGenerator<T> implements IValueGenerator {
+    private final List<T> listOfValues;
 
-public abstract class AbstractListValueGenerator<T> implements IValueGenerator
-{
-	private final List<T> listOfValues;
+    public AbstractListValueGenerator(List<T> listOfValues) {
 
-	public AbstractListValueGenerator(List<T> listOfValues) {
-		
-		this.listOfValues = Collections.unmodifiableList(listOfValues);
-	}
+        this.listOfValues = Collections.unmodifiableList(listOfValues);
+    }
 
-	public AbstractListValueGenerator(T... values) {
-		
-		this(Arrays.asList(values));
-	}
-	
-	public Object newValue(Random random) {
-		
-		return listOfValues.get(random.nextInt(listOfValues.size()));
-	}
+    public AbstractListValueGenerator(T... values) {
 
-	protected static <V> String[] toStringArray(V... values) {
-		
-		String[] retStrings = new String[values.length];
-		for (int i=0; i < values.length; i++) {
-			retStrings[i] = String.valueOf(values[i]);
-		}
-		return retStrings;
-	}
+        this(Arrays.asList(values));
+    }
+
+    public Object newValue(Random random) {
+
+        return listOfValues.get(random.nextInt(listOfValues.size()));
+    }
+
+    protected static <V> String[] toStringArray(V... values) {
+
+        String[] retStrings = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            retStrings[i] = String.valueOf(values[i]);
+        }
+        return retStrings;
+    }
 }

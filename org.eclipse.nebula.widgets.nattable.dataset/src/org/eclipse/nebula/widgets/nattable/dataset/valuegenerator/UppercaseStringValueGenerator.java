@@ -14,34 +14,35 @@ import java.util.Random;
 
 import org.eclipse.nebula.widgets.nattable.dataset.generator.IValueGenerator;
 
-
 public class UppercaseStringValueGenerator implements IValueGenerator {
-	
-	private char[] uppercase = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 
-	private int maxLength;
-	
-	public UppercaseStringValueGenerator() {
-		this(10);
-	}
-	
-	public UppercaseStringValueGenerator(int maxLength) {
-		this.maxLength = maxLength;
-	}
-	
-	public Object newValue(Random random) {
-		StringBuilder strBuilder = new StringBuilder();
-		
-		int wordLength = random.nextInt(maxLength);
-		for (int i = 0; i < wordLength; i++) {
-			strBuilder.append(getChar(uppercase, random));
-		}
-		
-		return strBuilder.toString();
-	}
-	
-	private char getChar(char[] chars, Random random) {
-		return chars[random.nextInt(chars.length)];
-	}
-	
+    private char[] uppercase = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+            'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+            'U', 'V', 'W', 'X', 'Y', 'Z' };
+
+    private int maxLength;
+
+    public UppercaseStringValueGenerator() {
+        this(10);
+    }
+
+    public UppercaseStringValueGenerator(int maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    public Object newValue(Random random) {
+        StringBuilder strBuilder = new StringBuilder();
+
+        int wordLength = random.nextInt(maxLength);
+        for (int i = 0; i < wordLength; i++) {
+            strBuilder.append(getChar(uppercase, random));
+        }
+
+        return strBuilder.toString();
+    }
+
+    private char getChar(char[] chars, Random random) {
+        return chars[random.nextInt(chars.length)];
+    }
+
 }

@@ -28,80 +28,89 @@ import ca.odell.glazedlists.SortedList;
 
 public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
 
-	private NatTableComparatorChooser<T> comparatorChooser;
-	protected final SortedList<T> sortedList;
-	protected final IColumnAccessor<T> columnAccessor;
-	protected final IColumnPropertyResolver columnPropertyResolver;
-	protected final IConfigRegistry configRegistry;
-	protected final ILayer columnHeaderDataLayer;
+    private NatTableComparatorChooser<T> comparatorChooser;
+    protected final SortedList<T> sortedList;
+    protected final IColumnAccessor<T> columnAccessor;
+    protected final IColumnPropertyResolver columnPropertyResolver;
+    protected final IConfigRegistry configRegistry;
+    protected final ILayer columnHeaderDataLayer;
 
-	public GlazedListsSortModel(SortedList<T> sortedList, IColumnPropertyAccessor<T> columnPropertyAccessor, IConfigRegistry configRegistry, ILayer dataLayer) {
-		this(sortedList, columnPropertyAccessor, columnPropertyAccessor, configRegistry, dataLayer);
-	}
+    public GlazedListsSortModel(SortedList<T> sortedList,
+            IColumnPropertyAccessor<T> columnPropertyAccessor,
+            IConfigRegistry configRegistry, ILayer dataLayer) {
+        this(sortedList, columnPropertyAccessor, columnPropertyAccessor,
+                configRegistry, dataLayer);
+    }
 
-	public GlazedListsSortModel(SortedList<T> sortedList, IColumnAccessor<T> columnAccessor, IColumnPropertyResolver columnPropertyResolver, IConfigRegistry configRegistry, ILayer dataLayer) {
-		this.sortedList = sortedList;
-		this.columnAccessor = columnAccessor;
-		this.columnPropertyResolver = columnPropertyResolver;
-		this.configRegistry = configRegistry;
-		this.columnHeaderDataLayer = dataLayer;
-		
-		this.columnHeaderDataLayer.addLayerListener(this);
-	}
+    public GlazedListsSortModel(SortedList<T> sortedList,
+            IColumnAccessor<T> columnAccessor,
+            IColumnPropertyResolver columnPropertyResolver,
+            IConfigRegistry configRegistry, ILayer dataLayer) {
+        this.sortedList = sortedList;
+        this.columnAccessor = columnAccessor;
+        this.columnPropertyResolver = columnPropertyResolver;
+        this.configRegistry = configRegistry;
+        this.columnHeaderDataLayer = dataLayer;
 
-	protected NatTableComparatorChooser<T> getComparatorChooser() {
-		if (comparatorChooser == null) {
-			comparatorChooser =
-				new NatTableComparatorChooser<T>(
-						sortedList,
-						new NatColumnTableFormat<T>(columnAccessor, columnPropertyResolver, configRegistry, columnHeaderDataLayer)
-				);
-		}
+        this.columnHeaderDataLayer.addLayerListener(this);
+    }
 
-		return comparatorChooser;
-	}
-	
-	@Override
-	public List<Integer> getSortedColumnIndexes() {
-		return getComparatorChooser().getSortingColumns();
-	}
+    protected NatTableComparatorChooser<T> getComparatorChooser() {
+        if (comparatorChooser == null) {
+            comparatorChooser = new NatTableComparatorChooser<T>(sortedList,
+                    new NatColumnTableFormat<T>(columnAccessor,
+                            columnPropertyResolver, configRegistry,
+                            columnHeaderDataLayer));
+        }
 
-	@Override
-	public int getSortOrder(int columnIndex) {
-		return getComparatorChooser().getClickSequence(columnIndex);
-	}
+        return comparatorChooser;
+    }
 
-	@Override
-	public SortDirectionEnum getSortDirection(int columnIndex) {
-		return getComparatorChooser().getSortDirectionForColumnIndex(columnIndex);
-	}
+    @Override
+    public List<Integer> getSortedColumnIndexes() {
+        return getComparatorChooser().getSortingColumns();
+    }
 
-	@Override
-	public boolean isColumnIndexSorted(int columnIndex) {
-		return getComparatorChooser().isColumnIndexSorted(columnIndex);
-	}
-	
-	@Override
-	public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
-		return getComparatorChooser().getComparatorsForColumn(columnIndex);
-	}
+    @Override
+    public int getSortOrder(int columnIndex) {
+        return getComparatorChooser().getClickSequence(columnIndex);
+    }
 
-	@Override
-	public void sort(int columnIndex, SortDirectionEnum sortDirection, boolean accumulate) {
-		getComparatorChooser().sort(columnIndex, sortDirection, accumulate);
-	}
+    @Override
+    public SortDirectionEnum getSortDirection(int columnIndex) {
+        return getComparatorChooser().getSortDirectionForColumnIndex(
+                columnIndex);
+    }
 
-	@Override
-	public void clear() {
-		getComparatorChooser().clearComparator();
-	}
+    @Override
+    public boolean isColumnIndexSorted(int columnIndex) {
+        return getComparatorChooser().isColumnIndexSorted(columnIndex);
+    }
 
-	@Override
-	public void handleLayerEvent(ILayerEvent event) {
-		if (event instanceof StructuralRefreshEvent && ((StructuralRefreshEvent) event).isHorizontalStructureChanged()) {
-			String test = getComparatorChooser().toString();
-			this.comparatorChooser = null;
-			getComparatorChooser().fromString(test);
-		}
-	}
+    @Override
+    public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
+        return getComparatorChooser().getComparatorsForColumn(columnIndex);
+    }
+
+    @Override
+    public void sort(int columnIndex, SortDirectionEnum sortDirection,
+            boolean accumulate) {
+        getComparatorChooser().sort(columnIndex, sortDirection, accumulate);
+    }
+
+    @Override
+    public void clear() {
+        getComparatorChooser().clearComparator();
+    }
+
+    @Override
+    public void handleLayerEvent(ILayerEvent event) {
+        if (event instanceof StructuralRefreshEvent
+                && ((StructuralRefreshEvent) event)
+                        .isHorizontalStructureChanged()) {
+            String test = getComparatorChooser().toString();
+            this.comparatorChooser = null;
+            getComparatorChooser().fromString(test);
+        }
+    }
 }

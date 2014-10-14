@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.builder.configuration;
 
-
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.extension.builder.model.TableModel;
@@ -37,56 +36,62 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-public class ColumnGroupConfiguration extends DefaultColumnGroupHeaderLayerConfiguration {
+public class ColumnGroupConfiguration extends
+        DefaultColumnGroupHeaderLayerConfiguration {
 
-	private final ColumnGroupModel columnGroupModel;
-	private final TableModel tableModel;
+    private final ColumnGroupModel columnGroupModel;
+    private final TableModel tableModel;
 
-	public ColumnGroupConfiguration(ColumnGroupModel columnGroupModel, TableModel tableModel) {
-		super(columnGroupModel);
-		this.columnGroupModel = columnGroupModel;
-		this.tableModel = tableModel;
-	}
+    public ColumnGroupConfiguration(ColumnGroupModel columnGroupModel,
+            TableModel tableModel) {
+        super(columnGroupModel);
+        this.columnGroupModel = columnGroupModel;
+        this.tableModel = tableModel;
+    }
 
-	@Override
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		// Column Group Header is a part of the Group Header.
-		// Register the 'column group header matcher' first so that it gets
-		// picked up before the more general 'column header matcher'.
-		uiBindingRegistry.registerMouseDragMode(
-                MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
-                new AggregateDragMode(new CellDragMode(), new ColumnGroupHeaderReorderDragMode(columnGroupModel)));
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        // Column Group Header is a part of the Group Header.
+        // Register the 'column group header matcher' first so that it gets
+        // picked up before the more general 'column header matcher'.
+        uiBindingRegistry.registerMouseDragMode(MouseEventMatcher
+                .columnGroupHeaderLeftClick(SWT.NONE), new AggregateDragMode(
+                new CellDragMode(), new ColumnGroupHeaderReorderDragMode(
+                        columnGroupModel)));
 
-		uiBindingRegistry.registerMouseDragMode(
+        uiBindingRegistry.registerMouseDragMode(
                 MouseEventMatcher.columnHeaderLeftClick(SWT.NONE),
                 new ColumnHeaderReorderDragMode(columnGroupModel));
 
-		uiBindingRegistry.registerFirstSingleClickBinding(
-				MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
-				new ColumnGroupExpandCollapseAction());
+        uiBindingRegistry.registerFirstSingleClickBinding(
+                MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
+                new ColumnGroupExpandCollapseAction());
 
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL, 'g'), new CreateColumnGroupAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL, 'u'), new UngroupColumnsAction());
-	}
+        uiBindingRegistry.registerKeyBinding(
+                new KeyEventMatcher(SWT.CTRL, 'g'),
+                new CreateColumnGroupAction());
+        uiBindingRegistry.registerKeyBinding(
+                new KeyEventMatcher(SWT.CTRL, 'u'), new UngroupColumnsAction());
+    }
 
-	@Override
-	public void configureRegistry(IConfigRegistry configRegistry) {
-		Image bgImage = tableModel.tableStyle.columnHeaderBgImage;
+    @Override
+    public void configureRegistry(IConfigRegistry configRegistry) {
+        Image bgImage = tableModel.tableStyle.columnHeaderBgImage;
 
-		if (ObjectUtils.isNotNull(bgImage)) {
-			TextPainter txtPainter = new TextPainter(false, false);
-			ICellPainter cellPainter = new BackgroundImagePainter(txtPainter, bgImage, GUIHelper.getColor(192, 192, 192));
+        if (ObjectUtils.isNotNull(bgImage)) {
+            TextPainter txtPainter = new TextPainter(false, false);
+            ICellPainter cellPainter = new BackgroundImagePainter(txtPainter,
+                    bgImage, GUIHelper.getColor(192, 192, 192));
 
-			configRegistry.registerConfigAttribute(
-					CellConfigAttributes.CELL_PAINTER,
-					new ColumnGroupHeaderTextPainter(columnGroupModel, cellPainter),
-					DisplayMode.NORMAL,
-					GridRegion.COLUMN_GROUP_HEADER
-			);
-		} else {
-			super.configureRegistry(configRegistry);
-		}
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER,
+                    new ColumnGroupHeaderTextPainter(columnGroupModel,
+                            cellPainter), DisplayMode.NORMAL,
+                    GridRegion.COLUMN_GROUP_HEADER);
+        } else {
+            super.configureRegistry(configRegistry);
+        }
 
-	}
+    }
 
 }

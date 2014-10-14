@@ -30,140 +30,141 @@ import org.junit.Test;
  */
 public class HorizontalScrollBarHandlerTest {
 
-	ViewportLayerFixture viewport;
-	private ScrollBar scrollBar;
-	private HorizontalScrollBarHandler scrollHandler;
+    ViewportLayerFixture viewport;
+    private ScrollBar scrollBar;
+    private HorizontalScrollBarHandler scrollHandler;
 
-	@Before
-	public void init() {
-		viewport = new ViewportLayerFixture();
-		scrollBar = ViewportLayerFixture.DEFAULT_SCROLLABLE.getHorizontalBar();
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+    @Before
+    public void init() {
+        viewport = new ViewportLayerFixture();
+        scrollBar = ViewportLayerFixture.DEFAULT_SCROLLABLE.getHorizontalBar();
+        scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
 
-		assertEquals(0, viewport.getColumnIndexByPosition(0));
-		assertEquals(1, viewport.getColumnIndexByPosition(1));
-	}
+        assertEquals(0, viewport.getColumnIndexByPosition(0));
+        assertEquals(1, viewport.getColumnIndexByPosition(1));
+    }
 
-	private void scrollViewportByOffset(int offset) {
-		scrollHandler.setViewportOrigin(viewport.getOrigin().getX() + offset);
-	}
+    private void scrollViewportByOffset(int offset) {
+        scrollHandler.setViewportOrigin(viewport.getOrigin().getX() + offset);
+    }
 
-	private void scrollViewportToPixel(int x) {
-		scrollHandler.setViewportOrigin(x);
-	}
+    private void scrollViewportToPixel(int x) {
+        scrollHandler.setViewportOrigin(x);
+    }
 
-	@Test
-	public void scrollViewportLeftByPage() throws Exception {
-		viewport.moveColumnPositionIntoViewport(3);
-		assertEquals(1, viewport.getColumnIndexByPosition(0));
+    @Test
+    public void scrollViewportLeftByPage() throws Exception {
+        viewport.moveColumnPositionIntoViewport(3);
+        assertEquals(1, viewport.getColumnIndexByPosition(0));
 
-		viewport.moveColumnPositionIntoViewport(4);
-		assertEquals(2, viewport.getColumnIndexByPosition(0));
-	}
+        viewport.moveColumnPositionIntoViewport(4);
+        assertEquals(2, viewport.getColumnIndexByPosition(0));
+    }
 
-	@Test
-	public void scrollViewportLeftByOffset() throws Exception {
-		// Origin adjusted
-		viewport.setOriginX(viewport.getStartXOfColumnPosition(2));
-		scrollViewportByOffset(-1);
-		assertEquals(1, viewport.getColumnIndexByPosition(0));
+    @Test
+    public void scrollViewportLeftByOffset() throws Exception {
+        // Origin adjusted
+        viewport.setOriginX(viewport.getStartXOfColumnPosition(2));
+        scrollViewportByOffset(-1);
+        assertEquals(1, viewport.getColumnIndexByPosition(0));
 
-		viewport.setOriginX(viewport.getStartXOfColumnPosition(1));
-		scrollViewportByOffset(-1);
-		assertEquals(0, viewport.getColumnIndexByPosition(0));
-	}
+        viewport.setOriginX(viewport.getStartXOfColumnPosition(1));
+        scrollViewportByOffset(-1);
+        assertEquals(0, viewport.getColumnIndexByPosition(0));
+    }
 
-	@Test
-	public void scrollViewportRightByOffset() throws Exception {
-		scrollViewportByOffset(200);
-		assertEquals(1, viewport.getColumnIndexByPosition(0));
+    @Test
+    public void scrollViewportRightByOffset() throws Exception {
+        scrollViewportByOffset(200);
+        assertEquals(1, viewport.getColumnIndexByPosition(0));
 
-		scrollViewportByOffset(200);
-		assertEquals(2, viewport.getColumnIndexByPosition(0));
-	}
+        scrollViewportByOffset(200);
+        assertEquals(2, viewport.getColumnIndexByPosition(0));
+    }
 
-	@Test
-	public void dragRight() throws Exception {
-		scrollViewportToPixel(300);
-		assertEquals(2, viewport.getColumnIndexByPosition(0));
-		assertEquals(3, viewport.getColumnIndexByPosition(1));
-	}
+    @Test
+    public void dragRight() throws Exception {
+        scrollViewportToPixel(300);
+        assertEquals(2, viewport.getColumnIndexByPosition(0));
+        assertEquals(3, viewport.getColumnIndexByPosition(1));
+    }
 
-	@Test
-	public void dragLeft() throws Exception {
-		// Origin adjusted
-		viewport.moveColumnPositionIntoViewport(3);
-		assertEquals(1, viewport.getColumnIndexByPosition(0));
+    @Test
+    public void dragLeft() throws Exception {
+        // Origin adjusted
+        viewport.moveColumnPositionIntoViewport(3);
+        assertEquals(1, viewport.getColumnIndexByPosition(0));
 
-		scrollViewportToPixel(50);
-		assertEquals(0, viewport.getColumnIndexByPosition(0));
-	}
+        scrollViewportToPixel(50);
+        assertEquals(0, viewport.getColumnIndexByPosition(0));
+    }
 
-	/**
-	 * Test for issue reported in http://nattable.org/jira/browse/NTBL-99.
-	 * Resizing the last column to be larger than the width of a table and
-	 * scrolling to the right results in a all white background and no columns
-	 * 
-	 * COLUMNS 0 1 |------|------| 250 250
-	 */
-	@Test
-	public void issueNTBL99MoveByColumn() throws Exception {
-		viewport = new ViewportLayerFixture(2, 1, 250, 40);
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+    /**
+     * Test for issue reported in http://nattable.org/jira/browse/NTBL-99.
+     * Resizing the last column to be larger than the width of a table and
+     * scrolling to the right results in a all white background and no columns
+     * 
+     * COLUMNS 0 1 |------|------| 250 250
+     */
+    @Test
+    public void issueNTBL99MoveByColumn() throws Exception {
+        viewport = new ViewportLayerFixture(2, 1, 250, 40);
+        scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
 
-		assertEquals(200, viewport.getClientAreaWidth());
-		assertEquals(1, viewport.getColumnCount());
+        assertEquals(200, viewport.getClientAreaWidth());
+        assertEquals(1, viewport.getColumnCount());
 
-		assertEquals(0, viewport.getColumnIndexByPosition(0));
+        assertEquals(0, viewport.getColumnIndexByPosition(0));
 
-		scrollViewportByOffset(200);
-		assertEquals(0, viewport.getColumnIndexByPosition(0));
-		
-		scrollViewportByOffset(200);
-		assertEquals(1, viewport.getColumnIndexByPosition(0));
+        scrollViewportByOffset(200);
+        assertEquals(0, viewport.getColumnIndexByPosition(0));
 
-		// No more scrolling
-		scrollViewportByOffset(200);
-		assertEquals(1, viewport.getColumnIndexByPosition(0));
-	}
+        scrollViewportByOffset(200);
+        assertEquals(1, viewport.getColumnIndexByPosition(0));
 
-	@Test
-	public void issueNTBL99MoveByPage() throws Exception {
-		viewport = new ViewportLayerFixture(2, 1, 250, 40);
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+        // No more scrolling
+        scrollViewportByOffset(200);
+        assertEquals(1, viewport.getColumnIndexByPosition(0));
+    }
 
-		assertEquals(200, viewport.getClientAreaWidth());
-		assertEquals(1, viewport.getColumnCount());
+    @Test
+    public void issueNTBL99MoveByPage() throws Exception {
+        viewport = new ViewportLayerFixture(2, 1, 250, 40);
+        scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
 
-		assertEquals(0, viewport.getColumnIndexByPosition(0));
-	}
+        assertEquals(200, viewport.getClientAreaWidth());
+        assertEquals(1, viewport.getColumnCount());
 
-	@Test
-	public void horizontalScrollbarThumbSize() throws Exception {
-		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 250, 100));
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+        assertEquals(0, viewport.getColumnIndexByPosition(0));
+    }
 
-		assertEquals(250, viewport.getWidth());
-		scrollHandler.recalculateScrollBarSize();
+    @Test
+    public void horizontalScrollbarThumbSize() throws Exception {
+        viewport = new ViewportLayerFixture(new Rectangle(0, 0, 250, 100));
+        scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
 
-		// Fixture data - viewport (250px), scrollable(465px)
-		assertEquals(250, scrollHandler.scroller.getThumb());
+        assertEquals(250, viewport.getWidth());
+        scrollHandler.recalculateScrollBarSize();
 
-		viewport.moveColumnPositionIntoViewport(9);
-		assertEquals(250, scrollHandler.scroller.getThumb());
-	}
+        // Fixture data - viewport (250px), scrollable(465px)
+        assertEquals(250, scrollHandler.scroller.getThumb());
 
-	@Test
-	public void horizontalScrollbarThumbSizeCalcNoScrollingNeeded() throws Exception {
-		viewport = new ViewportLayerFixture(new Rectangle(0, 0, 500, 500));
-		scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
+        viewport.moveColumnPositionIntoViewport(9);
+        assertEquals(250, scrollHandler.scroller.getThumb());
+    }
 
-		scrollHandler.recalculateScrollBarSize();
-		assertEquals(465, viewport.getWidth());
+    @Test
+    public void horizontalScrollbarThumbSizeCalcNoScrollingNeeded()
+            throws Exception {
+        viewport = new ViewportLayerFixture(new Rectangle(0, 0, 500, 500));
+        scrollHandler = new HorizontalScrollBarHandler(viewport, scrollBar);
 
-		assertEquals(465, scrollHandler.scroller.getThumb());
-		assertFalse(scrollBar.isEnabled());
-		assertFalse(scrollBar.isVisible());
-	}
+        scrollHandler.recalculateScrollBarSize();
+        assertEquals(465, viewport.getWidth());
+
+        assertEquals(465, scrollHandler.scroller.getThumb());
+        assertFalse(scrollBar.isEnabled());
+        assertFalse(scrollBar.isVisible());
+    }
 
 }

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow.command;
 
-
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.RowHideShowLayerFixture;
 import org.junit.Assert;
@@ -19,28 +18,28 @@ import org.junit.Test;
 
 public class ShowAllRowsCommandTest {
 
-	private RowHideShowLayer rowHideShowLayer;
+    private RowHideShowLayer rowHideShowLayer;
 
-	@Before
-	public void setup() {
-		rowHideShowLayer = new RowHideShowLayerFixture();
-	}
+    @Before
+    public void setup() {
+        rowHideShowLayer = new RowHideShowLayerFixture();
+    }
 
-	@Test
-	public void testHideColumnCommand() {
-		Assert.assertEquals(5, rowHideShowLayer.getRowCount());
+    @Test
+    public void testHideColumnCommand() {
+        Assert.assertEquals(5, rowHideShowLayer.getRowCount());
 
-		rowHideShowLayer.doCommand(new ShowAllRowsCommand());
+        rowHideShowLayer.doCommand(new ShowAllRowsCommand());
 
-		Assert.assertEquals(7, rowHideShowLayer.getRowCount());
+        Assert.assertEquals(7, rowHideShowLayer.getRowCount());
 
-		Assert.assertEquals(4, rowHideShowLayer.getRowIndexByPosition(0));
-		Assert.assertEquals(1, rowHideShowLayer.getRowIndexByPosition(1));
-		Assert.assertEquals(0, rowHideShowLayer.getRowIndexByPosition(2));
-		Assert.assertEquals(2, rowHideShowLayer.getRowIndexByPosition(3));
-		Assert.assertEquals(3, rowHideShowLayer.getRowIndexByPosition(4));
-		Assert.assertEquals(5, rowHideShowLayer.getRowIndexByPosition(5));
-		Assert.assertEquals(6, rowHideShowLayer.getRowIndexByPosition(6));
-	}
+        Assert.assertEquals(4, rowHideShowLayer.getRowIndexByPosition(0));
+        Assert.assertEquals(1, rowHideShowLayer.getRowIndexByPosition(1));
+        Assert.assertEquals(0, rowHideShowLayer.getRowIndexByPosition(2));
+        Assert.assertEquals(2, rowHideShowLayer.getRowIndexByPosition(3));
+        Assert.assertEquals(3, rowHideShowLayer.getRowIndexByPosition(4));
+        Assert.assertEquals(5, rowHideShowLayer.getRowIndexByPosition(5));
+        Assert.assertEquals(6, rowHideShowLayer.getRowIndexByPosition(6));
+    }
 
 }

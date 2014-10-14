@@ -17,31 +17,33 @@ import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 
 public class TreeExportFormatter extends DefaultExportFormatter {
 
-	private final ITreeRowModel<?> treeRowModel;
-	
-	public TreeExportFormatter(ITreeRowModel<?> treeRowModel) {
-		this.treeRowModel = treeRowModel;
-	}
-	
-	@Override
-	public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
-		int index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
-		int depth = treeRowModel.depth(index);
-		
-		StringBuilder str = new StringBuilder();
-		if (depth > 0) {
-			for (int i = 0; i < depth; i++) {
-				str.append("  "); //$NON-NLS-1$
-			}
-		}
-		
-		if (treeRowModel.isLeaf(index)) {
-			str.append(super.formatForExport(cell, configRegistry));
-		} else {
-			str.append(treeRowModel.getObjectAtIndexAndDepth(index, depth));
-		}
-		
-		return str.toString();
-	}
-	
+    private final ITreeRowModel<?> treeRowModel;
+
+    public TreeExportFormatter(ITreeRowModel<?> treeRowModel) {
+        this.treeRowModel = treeRowModel;
+    }
+
+    @Override
+    public Object formatForExport(ILayerCell cell,
+            IConfigRegistry configRegistry) {
+        int index = cell.getLayer()
+                .getRowIndexByPosition(cell.getRowPosition());
+        int depth = treeRowModel.depth(index);
+
+        StringBuilder str = new StringBuilder();
+        if (depth > 0) {
+            for (int i = 0; i < depth; i++) {
+                str.append("  "); //$NON-NLS-1$
+            }
+        }
+
+        if (treeRowModel.isLeaf(index)) {
+            str.append(super.formatForExport(cell, configRegistry));
+        } else {
+            str.append(treeRowModel.getObjectAtIndexAndDepth(index, depth));
+        }
+
+        return str.toString();
+    }
+
 }

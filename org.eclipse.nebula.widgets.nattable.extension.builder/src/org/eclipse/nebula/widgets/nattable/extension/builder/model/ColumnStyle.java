@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.builder.model;
 
-
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
@@ -21,13 +20,14 @@ import org.eclipse.swt.graphics.Font;
 
 public class ColumnStyle {
 
-	public Color bgColor = GUIHelper.COLOR_WHITE;
-	public Color fgColor = GUIHelper.COLOR_BLACK;
+    public Color bgColor = GUIHelper.COLOR_WHITE;
+    public Color fgColor = GUIHelper.COLOR_BLACK;
 
-	public HorizontalAlignmentEnum hAlign = HorizontalAlignmentEnum.LEFT;
-	public VerticalAlignmentEnum vAlign = VerticalAlignmentEnum.TOP;
+    public HorizontalAlignmentEnum hAlign = HorizontalAlignmentEnum.LEFT;
+    public VerticalAlignmentEnum vAlign = VerticalAlignmentEnum.TOP;
 
-	public Font font = TableStyle.DEFAULT_TABLE_FONT;
+    public Font font = TableStyle.DEFAULT_TABLE_FONT;
 
-	public BorderStyle borderStyle = new BorderStyle(0, GUIHelper.COLOR_BLACK, LineStyleEnum.SOLID);
+    public BorderStyle borderStyle = new BorderStyle(0, GUIHelper.COLOR_BLACK,
+            LineStyleEnum.SOLID);
 }

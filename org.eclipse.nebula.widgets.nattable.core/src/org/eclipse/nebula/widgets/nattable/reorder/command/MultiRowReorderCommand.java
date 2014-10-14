@@ -26,108 +26,137 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  */
 public class MultiRowReorderCommand implements ILayerCommand {
 
-	/**
-	 * The coordinates of the rows that should be reordered
-	 */
-	private List<RowPositionCoordinate> fromRowPositionCoordinates;
-	/**
-	 * The coordinate of the row to which the dragged rows should be dropped
-	 */
-	private RowPositionCoordinate toRowPositionCoordinate;
-	/**
-	 * Flag to indicate if the row is dragged to the top edge of the layer.
-	 * Needed for the special case when the reordering is performed to the bottom edge.
-	 */
-	private boolean reorderToTopEdge;
+    /**
+     * The coordinates of the rows that should be reordered
+     */
+    private List<RowPositionCoordinate> fromRowPositionCoordinates;
+    /**
+     * The coordinate of the row to which the dragged rows should be dropped
+     */
+    private RowPositionCoordinate toRowPositionCoordinate;
+    /**
+     * Flag to indicate if the row is dragged to the top edge of the layer.
+     * Needed for the special case when the reordering is performed to the
+     * bottom edge.
+     */
+    private boolean reorderToTopEdge;
 
-	/**
-	 * 
-	 * @param layer The layer the positions are related to
-	 * @param fromRowPositions The positions of the rows that should be reordered
-	 * @param toRowPosition The position of the row to which the dragged row should be dropped
-	 */
-	public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions, int toRowPosition) {
-		this(layer, fromRowPositions, toRowPosition < layer.getRowCount() ? toRowPosition : toRowPosition - 1, toRowPosition < layer.getRowCount());
-	}
-	
-	/**
-	 * 
-	 * @param layer The layer the positions are related to
-	 * @param fromRowPositions The positions of the rows that should be reordered
-	 * @param toRowPosition The position of the row to which the dragged row should be dropped
-	 * @param reorderToTopEdge Flag to indicate if the row is dragged to the top edge of the layer
-	 */
-	public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions, int toRowPosition, boolean reorderToTopEdge) {
-		fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
-		for (Integer fromRowPosition : fromRowPositions) {
-			fromRowPositionCoordinates.add(new RowPositionCoordinate(layer, fromRowPosition));
-		}
-		
-		toRowPositionCoordinate = new RowPositionCoordinate(layer, toRowPosition);
-		
-		this.reorderToTopEdge = reorderToTopEdge;
-	}
+    /**
+     * 
+     * @param layer
+     *            The layer the positions are related to
+     * @param fromRowPositions
+     *            The positions of the rows that should be reordered
+     * @param toRowPosition
+     *            The position of the row to which the dragged row should be
+     *            dropped
+     */
+    public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions,
+            int toRowPosition) {
+        this(layer, fromRowPositions,
+                toRowPosition < layer.getRowCount() ? toRowPosition
+                        : toRowPosition - 1, toRowPosition < layer
+                        .getRowCount());
+    }
 
-	/**
-	 * Constructor used for cloning purposes
-	 * @param command The command which is base for the new one
-	 */
-	protected MultiRowReorderCommand(MultiRowReorderCommand command) {
-		this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>(command.fromRowPositionCoordinates);
-		this.toRowPositionCoordinate = command.toRowPositionCoordinate;
-		this.reorderToTopEdge = command.reorderToTopEdge;
-	}
+    /**
+     * 
+     * @param layer
+     *            The layer the positions are related to
+     * @param fromRowPositions
+     *            The positions of the rows that should be reordered
+     * @param toRowPosition
+     *            The position of the row to which the dragged row should be
+     *            dropped
+     * @param reorderToTopEdge
+     *            Flag to indicate if the row is dragged to the top edge of the
+     *            layer
+     */
+    public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions,
+            int toRowPosition, boolean reorderToTopEdge) {
+        fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
+        for (Integer fromRowPosition : fromRowPositions) {
+            fromRowPositionCoordinates.add(new RowPositionCoordinate(layer,
+                    fromRowPosition));
+        }
 
-	/**
-	 * @return The positions of the rows that should be reordered
-	 */
-	public List<Integer> getFromRowPositions() {
-		List<Integer> fromRowPositions = new ArrayList<Integer>();
-		for (RowPositionCoordinate fromRowPositionCoordinate : fromRowPositionCoordinates) {
-			fromRowPositions.add(fromRowPositionCoordinate.getRowPosition());
-		}
-		return fromRowPositions;
-	}
+        toRowPositionCoordinate = new RowPositionCoordinate(layer,
+                toRowPosition);
 
-	/**
-	 * @return The position of the row to which the dragged rows should be dropped
-	 */
-	public int getToRowPosition() {
-		return toRowPositionCoordinate.getRowPosition();
-	}
-	
-	/**
-	 * @return Flag to indicate if the row is dragged to the top edge of the layer.
-	 */
-	public boolean isReorderToTopEdge() {
-		return reorderToTopEdge;
-	}
+        this.reorderToTopEdge = reorderToTopEdge;
+    }
 
-	@Override
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		List<RowPositionCoordinate> convertedFromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
-		
-		for (RowPositionCoordinate fromRowPositionCoordinate : fromRowPositionCoordinates) {
-			RowPositionCoordinate convertedFromRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(fromRowPositionCoordinate, targetLayer);
-			if (convertedFromRowPositionCoordinate != null) {
-				convertedFromRowPositionCoordinates.add(convertedFromRowPositionCoordinate);
-			}
-		}
-		
-		RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(toRowPositionCoordinate, targetLayer);
-		
-		if (convertedFromRowPositionCoordinates.size() > 0 && targetToRowPositionCoordinate != null) {
-			fromRowPositionCoordinates = convertedFromRowPositionCoordinates;
-			toRowPositionCoordinate = targetToRowPositionCoordinate;
-			return true;
-		} else {
-			return false;
-		}
-	}
+    /**
+     * Constructor used for cloning purposes
+     * 
+     * @param command
+     *            The command which is base for the new one
+     */
+    protected MultiRowReorderCommand(MultiRowReorderCommand command) {
+        this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>(
+                command.fromRowPositionCoordinates);
+        this.toRowPositionCoordinate = command.toRowPositionCoordinate;
+        this.reorderToTopEdge = command.reorderToTopEdge;
+    }
 
-	@Override
-	public MultiRowReorderCommand cloneCommand() {
-		return new MultiRowReorderCommand(this);
-	}
+    /**
+     * @return The positions of the rows that should be reordered
+     */
+    public List<Integer> getFromRowPositions() {
+        List<Integer> fromRowPositions = new ArrayList<Integer>();
+        for (RowPositionCoordinate fromRowPositionCoordinate : fromRowPositionCoordinates) {
+            fromRowPositions.add(fromRowPositionCoordinate.getRowPosition());
+        }
+        return fromRowPositions;
+    }
+
+    /**
+     * @return The position of the row to which the dragged rows should be
+     *         dropped
+     */
+    public int getToRowPosition() {
+        return toRowPositionCoordinate.getRowPosition();
+    }
+
+    /**
+     * @return Flag to indicate if the row is dragged to the top edge of the
+     *         layer.
+     */
+    public boolean isReorderToTopEdge() {
+        return reorderToTopEdge;
+    }
+
+    @Override
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        List<RowPositionCoordinate> convertedFromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
+
+        for (RowPositionCoordinate fromRowPositionCoordinate : fromRowPositionCoordinates) {
+            RowPositionCoordinate convertedFromRowPositionCoordinate = LayerCommandUtil
+                    .convertRowPositionToTargetContext(
+                            fromRowPositionCoordinate, targetLayer);
+            if (convertedFromRowPositionCoordinate != null) {
+                convertedFromRowPositionCoordinates
+                        .add(convertedFromRowPositionCoordinate);
+            }
+        }
+
+        RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil
+                .convertRowPositionToTargetContext(toRowPositionCoordinate,
+                        targetLayer);
+
+        if (convertedFromRowPositionCoordinates.size() > 0
+                && targetToRowPositionCoordinate != null) {
+            fromRowPositionCoordinates = convertedFromRowPositionCoordinates;
+            toRowPositionCoordinate = targetToRowPositionCoordinate;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public MultiRowReorderCommand cloneCommand() {
+        return new MultiRowReorderCommand(this);
+    }
 
 }

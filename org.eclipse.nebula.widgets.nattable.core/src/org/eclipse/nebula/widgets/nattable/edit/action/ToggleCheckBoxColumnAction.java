@@ -18,27 +18,32 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.ColumnHeaderCheckBoxPain
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
-
 public class ToggleCheckBoxColumnAction implements IMouseAction {
 
-	private final ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter;
-	private final IUniqueIndexLayer bodyDataLayer;
+    private final ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter;
+    private final IUniqueIndexLayer bodyDataLayer;
 
-	public ToggleCheckBoxColumnAction(ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter, IUniqueIndexLayer bodyDataLayer) {
-		this.columnHeaderCheckBoxPainter = columnHeaderCheckBoxPainter;
-		this.bodyDataLayer = bodyDataLayer;
-	}
-	
-	public void run(NatTable natTable, MouseEvent event) {
-		int sourceColumnPosition = natTable.getColumnPositionByX(event.x);
-		int columnPosition = LayerUtil.convertColumnPosition(natTable, sourceColumnPosition, bodyDataLayer);
-		
-		int checkedCellsCount = columnHeaderCheckBoxPainter.getCheckedCellsCount(columnPosition, natTable.getConfigRegistry());
-		boolean targetState = checkedCellsCount < bodyDataLayer.getRowCount();
-		
-		for (int rowPosition = 0; rowPosition < bodyDataLayer.getRowCount(); rowPosition++) {
-			bodyDataLayer.doCommand(new UpdateDataCommand(bodyDataLayer, columnPosition, rowPosition, targetState));
-		}
-	}
+    public ToggleCheckBoxColumnAction(
+            ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter,
+            IUniqueIndexLayer bodyDataLayer) {
+        this.columnHeaderCheckBoxPainter = columnHeaderCheckBoxPainter;
+        this.bodyDataLayer = bodyDataLayer;
+    }
+
+    public void run(NatTable natTable, MouseEvent event) {
+        int sourceColumnPosition = natTable.getColumnPositionByX(event.x);
+        int columnPosition = LayerUtil.convertColumnPosition(natTable,
+                sourceColumnPosition, bodyDataLayer);
+
+        int checkedCellsCount = columnHeaderCheckBoxPainter
+                .getCheckedCellsCount(columnPosition,
+                        natTable.getConfigRegistry());
+        boolean targetState = checkedCellsCount < bodyDataLayer.getRowCount();
+
+        for (int rowPosition = 0; rowPosition < bodyDataLayer.getRowCount(); rowPosition++) {
+            bodyDataLayer.doCommand(new UpdateDataCommand(bodyDataLayer,
+                    columnPosition, rowPosition, targetState));
+        }
+    }
 
 }

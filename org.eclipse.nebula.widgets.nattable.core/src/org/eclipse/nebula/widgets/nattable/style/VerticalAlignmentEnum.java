@@ -13,25 +13,26 @@ package org.eclipse.nebula.widgets.nattable.style;
 import org.eclipse.swt.SWT;
 
 public enum VerticalAlignmentEnum {
-	
-	TOP, MIDDLE, BOTTOM;
 
-	public static int getSWTStyle(IStyle cellStyle) {
-		VerticalAlignmentEnum verticalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
-		
-		if (verticalAlignment == null) {
-			return SWT.NONE;
-		}
-		
-		switch (verticalAlignment) {
-		case TOP:
-			return SWT.TOP;
-		case MIDDLE:
-			return SWT.CENTER;
-		case BOTTOM:
-			return SWT.BOTTOM;
-		default:
-			return SWT.NONE;
-		}
-	}
+    TOP, MIDDLE, BOTTOM;
+
+    public static int getSWTStyle(IStyle cellStyle) {
+        VerticalAlignmentEnum verticalAlignment = cellStyle
+                .getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
+
+        if (verticalAlignment == null) {
+            return SWT.NONE;
+        }
+
+        switch (verticalAlignment) {
+            case TOP:
+                return SWT.TOP;
+            case MIDDLE:
+                return SWT.CENTER;
+            case BOTTOM:
+                return SWT.BOTTOM;
+            default:
+                return SWT.NONE;
+        }
+    }
 }

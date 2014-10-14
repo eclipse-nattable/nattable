@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
@@ -19,10 +18,11 @@ import org.eclipse.swt.events.MouseEvent;
 
 public class ClearFilterAction implements IMouseAction {
 
-	public void run(NatTable natTable, MouseEvent event) {
-		NatEventData natEventData = (NatEventData) event.data;
+    public void run(NatTable natTable, MouseEvent event) {
+        NatEventData natEventData = (NatEventData) event.data;
 
-		natTable.doCommand(new ClearFilterCommand(natTable, natEventData.getColumnPosition()));
-	}
+        natTable.doCommand(new ClearFilterCommand(natTable, natEventData
+                .getColumnPosition()));
+    }
 
 }

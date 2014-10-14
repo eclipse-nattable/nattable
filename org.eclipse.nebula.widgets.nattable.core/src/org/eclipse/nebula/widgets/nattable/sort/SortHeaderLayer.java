@@ -18,71 +18,85 @@ import org.eclipse.nebula.widgets.nattable.sort.command.SortCommandHandler;
 import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 
 /**
- * Enables sorting of the data. Uses an {@link ISortModel} to do/track the sorting.
- * @param <T> Type of the Beans in the backing data source.
+ * Enables sorting of the data. Uses an {@link ISortModel} to do/track the
+ * sorting.
+ * 
+ * @param <T>
+ *            Type of the Beans in the backing data source.
  *
  * @see DefaultSortConfiguration
  * @see SortStatePersistor
  */
-public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersistable {
+public class SortHeaderLayer<T> extends AbstractLayerTransform implements
+        IPersistable {
 
-	/** Handles the actual sorting of underlying data */
-	private final ISortModel sortModel;
+    /** Handles the actual sorting of underlying data */
+    private final ISortModel sortModel;
 
-	public SortHeaderLayer(ILayer underlyingLayer, ISortModel sortModel) {
-		this(underlyingLayer, sortModel, true);
-	}
+    public SortHeaderLayer(ILayer underlyingLayer, ISortModel sortModel) {
+        this(underlyingLayer, sortModel, true);
+    }
 
-	public SortHeaderLayer(ILayer underlyingLayer, ISortModel sortModel, boolean useDefaultConfiguration) {
-		super(underlyingLayer);
-		this.sortModel = sortModel;
-		
-		registerPersistable(new SortStatePersistor<T>(sortModel));
-		registerCommandHandler(new SortCommandHandler<T>(sortModel, this));
+    public SortHeaderLayer(ILayer underlyingLayer, ISortModel sortModel,
+            boolean useDefaultConfiguration) {
+        super(underlyingLayer);
+        this.sortModel = sortModel;
 
-		if (useDefaultConfiguration) {
-			addConfiguration(new DefaultSortConfiguration());
-		}
-	}
+        registerPersistable(new SortStatePersistor<T>(sortModel));
+        registerCommandHandler(new SortCommandHandler<T>(sortModel, this));
 
-	/**
-	 * @return adds a special configuration label to the stack taking into account the following:
-	 * 	<ol>
-	 * 		<li>Is the column sorted ?</li>
-	 * 		<li>What is the sort order of the column</li>
-	 * 	</ol>
-	 * A special painter is registered against the above labels to render the sort arrows
-	 */
-	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
+        if (useDefaultConfiguration) {
+            addConfiguration(new DefaultSortConfiguration());
+        }
+    }
 
-		if (sortModel != null) {
-			int columnIndex = getColumnIndexByPosition(columnPosition);
-			if (sortModel.isColumnIndexSorted(columnIndex)) {
-				
-				String sortConfig = DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + sortModel.getSortOrder(columnIndex);
-				configLabels.addLabelOnTop(sortConfig);
+    /**
+     * @return adds a special configuration label to the stack taking into
+     *         account the following:
+     *         <ol>
+     *         <li>Is the column sorted ?</li>
+     *         <li>What is the sort order of the column</li>
+     *         </ol>
+     *         A special painter is registered against the above labels to
+     *         render the sort arrows
+     */
+    @Override
+    public LabelStack getConfigLabelsByPosition(int columnPosition,
+            int rowPosition) {
+        LabelStack configLabels = super.getConfigLabelsByPosition(
+                columnPosition, rowPosition);
 
-				SortDirectionEnum sortDirection = sortModel.getSortDirection(columnIndex);
+        if (sortModel != null) {
+            int columnIndex = getColumnIndexByPosition(columnPosition);
+            if (sortModel.isColumnIndexSorted(columnIndex)) {
 
-				switch (sortDirection) {
-				case ASC:
-					configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
-					break;
-				case DESC:
-					configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
-					break;
-				}
-			}
-		}
-		return configLabels;
-	}
-	
-	/**
-	 * @return The ISortModel that is used to handle the sorting of the underlying data.
-	 */
-	public ISortModel getSortModel() {
-		return sortModel;
-	}
+                String sortConfig = DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE
+                        + sortModel.getSortOrder(columnIndex);
+                configLabels.addLabelOnTop(sortConfig);
+
+                SortDirectionEnum sortDirection = sortModel
+                        .getSortDirection(columnIndex);
+
+                switch (sortDirection) {
+                    case ASC:
+                        configLabels
+                                .addLabelOnTop(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+                        break;
+                    case DESC:
+                        configLabels
+                                .addLabelOnTop(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+                        break;
+                }
+            }
+        }
+        return configLabels;
+    }
+
+    /**
+     * @return The ISortModel that is used to handle the sorting of the
+     *         underlying data.
+     */
+    public ISortModel getSortModel() {
+        return sortModel;
+    }
 }

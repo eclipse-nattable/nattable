@@ -18,52 +18,63 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Scheduler implements ThreadFactory  {
-    
-	private final String threadNamePrefix;
-	private final AtomicInteger counter = new AtomicInteger();
-	private int scheduledTasks;
-	private ScheduledExecutorService threadPool;
-	
-	public Scheduler(String threadNamePrefix) {
-		this.threadNamePrefix = threadNamePrefix;
-	}
-	
-	public synchronized ScheduledFuture<?> schedule(Runnable runnable, long initialDelayMillis) {
-		return getThreadPool().schedule(runnable, initialDelayMillis, TimeUnit.MILLISECONDS);
-	}
-	
-	public synchronized ScheduledFuture<?> scheduleAtFixedRate(Runnable runnable, long initialDelayMillis, long refreshIntervalMillis) {
-		scheduledTasks++;
-		return getThreadPool().scheduleAtFixedRate(runnable, initialDelayMillis, refreshIntervalMillis, TimeUnit.MILLISECONDS);
-	}
+public class Scheduler implements ThreadFactory {
 
-	public synchronized ScheduledFuture<?> scheduleWithFixedDelay(Runnable runnable, long initialDelayMillis, long refreshIntervalMillis) {
-		scheduledTasks++;
-		return getThreadPool().scheduleWithFixedDelay(runnable, initialDelayMillis, refreshIntervalMillis, TimeUnit.MILLISECONDS);
-	}
+    private final String threadNamePrefix;
+    private final AtomicInteger counter = new AtomicInteger();
+    private int scheduledTasks;
+    private ScheduledExecutorService threadPool;
 
-	private synchronized ScheduledExecutorService getThreadPool() {
-		if (threadPool == null)	{
-			threadPool = Executors.newScheduledThreadPool(1,this);
-		}
-		return threadPool;
-	}
+    public Scheduler(String threadNamePrefix) {
+        this.threadNamePrefix = threadNamePrefix;
+    }
 
-	public synchronized void unschedule(ScheduledFuture<?> future) {
-		future.cancel(false);
-		if (threadPool != null && --scheduledTasks <= 0) {
-			threadPool.shutdownNow();
-			threadPool = null;
-		}
-	}
+    public synchronized ScheduledFuture<?> schedule(Runnable runnable,
+            long initialDelayMillis) {
+        return getThreadPool().schedule(runnable, initialDelayMillis,
+                TimeUnit.MILLISECONDS);
+    }
 
-	@Override
-	public Thread newThread(Runnable r) {
-		return new Thread(ObjectUtils.getNatTableThreadGroup(),r,threadNamePrefix+"-"+counter.incrementAndGet()); //$NON-NLS-1$
-	}
-	
-	public synchronized Future<?> submit(Runnable runnable) {
-		return getThreadPool().submit(runnable);
-	}
+    public synchronized ScheduledFuture<?> scheduleAtFixedRate(
+            Runnable runnable, long initialDelayMillis,
+            long refreshIntervalMillis) {
+        scheduledTasks++;
+        return getThreadPool().scheduleAtFixedRate(runnable,
+                initialDelayMillis, refreshIntervalMillis,
+                TimeUnit.MILLISECONDS);
+    }
+
+    public synchronized ScheduledFuture<?> scheduleWithFixedDelay(
+            Runnable runnable, long initialDelayMillis,
+            long refreshIntervalMillis) {
+        scheduledTasks++;
+        return getThreadPool().scheduleWithFixedDelay(runnable,
+                initialDelayMillis, refreshIntervalMillis,
+                TimeUnit.MILLISECONDS);
+    }
+
+    private synchronized ScheduledExecutorService getThreadPool() {
+        if (threadPool == null) {
+            threadPool = Executors.newScheduledThreadPool(1, this);
+        }
+        return threadPool;
+    }
+
+    public synchronized void unschedule(ScheduledFuture<?> future) {
+        future.cancel(false);
+        if (threadPool != null && --scheduledTasks <= 0) {
+            threadPool.shutdownNow();
+            threadPool = null;
+        }
+    }
+
+    @Override
+    public Thread newThread(Runnable r) {
+        return new Thread(ObjectUtils.getNatTableThreadGroup(), r,
+                threadNamePrefix + "-" + counter.incrementAndGet()); //$NON-NLS-1$
+    }
+
+    public synchronized Future<?> submit(Runnable runnable) {
+        return getThreadPool().submit(runnable);
+    }
 }

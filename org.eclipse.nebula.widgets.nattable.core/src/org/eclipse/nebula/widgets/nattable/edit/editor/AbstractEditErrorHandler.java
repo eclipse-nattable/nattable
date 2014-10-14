@@ -20,40 +20,41 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
  */
 public abstract class AbstractEditErrorHandler implements IEditErrorHandler {
 
-	/**
-	 * The underlying {@link IEditErrorHandler}
-	 */
-	protected IEditErrorHandler underlyingErrorHandler;
-	
-	/**
-	 * 
-	 * @param underlyingErrorHandler The underlying {@link IEditErrorHandler}
-	 */
-	public AbstractEditErrorHandler(IEditErrorHandler underlyingErrorHandler) {
-		this.underlyingErrorHandler = underlyingErrorHandler;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * This implementation will call its underlying {@link IEditErrorHandler}.
-	 */
-	@Override
-	public void removeError(ICellEditor cellEditor) {
-		if (underlyingErrorHandler != null) {
-			underlyingErrorHandler.removeError(cellEditor);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * This implementation will call its underlying {@link IEditErrorHandler}.
-	 */
-	@Override
-	public void displayError(ICellEditor cellEditor, Exception e) {
-		if (underlyingErrorHandler != null) {
-			underlyingErrorHandler.displayError(cellEditor, e);
-		}
-	}
+    /**
+     * The underlying {@link IEditErrorHandler}
+     */
+    protected IEditErrorHandler underlyingErrorHandler;
+
+    /**
+     * 
+     * @param underlyingErrorHandler
+     *            The underlying {@link IEditErrorHandler}
+     */
+    public AbstractEditErrorHandler(IEditErrorHandler underlyingErrorHandler) {
+        this.underlyingErrorHandler = underlyingErrorHandler;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation will call its underlying {@link IEditErrorHandler}.
+     */
+    @Override
+    public void removeError(ICellEditor cellEditor) {
+        if (underlyingErrorHandler != null) {
+            underlyingErrorHandler.removeError(cellEditor);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation will call its underlying {@link IEditErrorHandler}.
+     */
+    @Override
+    public void displayError(ICellEditor cellEditor, Exception e) {
+        if (underlyingErrorHandler != null) {
+            underlyingErrorHandler.displayError(cellEditor, e);
+        }
+    }
 }

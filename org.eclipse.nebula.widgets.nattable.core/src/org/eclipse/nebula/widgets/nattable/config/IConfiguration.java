@@ -21,24 +21,26 @@ import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
  * Configurations can be added to NatTable/ILayer to modify default behavior.
  * These will be processed when {@link NatTable#configure()} is invoked.
  *
- * Default configurations are added to most layers {@link AbstractLayer#addConfiguration(IConfiguration)}.
- * You can turn off default configuration for an {@link ILayer} by setting auto configure to false
- * in the constructor.
+ * Default configurations are added to most layers
+ * {@link AbstractLayer#addConfiguration(IConfiguration)}. You can turn off
+ * default configuration for an {@link ILayer} by setting auto configure to
+ * false in the constructor.
  */
 public interface IConfiguration {
 
-	public void configureLayer(ILayer layer);
+    public void configureLayer(ILayer layer);
 
-	/**
-	 * Configure NatTable's {@link IConfigRegistry} upon receiving this call back.
-	 * A mechanism to plug-in custom {@link ICellPainter}, {@link IDataValidator} etc.
-	 */
-	public void configureRegistry(IConfigRegistry configRegistry);
+    /**
+     * Configure NatTable's {@link IConfigRegistry} upon receiving this call
+     * back. A mechanism to plug-in custom {@link ICellPainter},
+     * {@link IDataValidator} etc.
+     */
+    public void configureRegistry(IConfigRegistry configRegistry);
 
-	/**
-	 * Configure NatTable's {@link IConfigRegistry} upon receiving this call back
-	 * A mechanism to customize key/mouse bindings.
-	 */
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry);
+    /**
+     * Configure NatTable's {@link IConfigRegistry} upon receiving this call
+     * back A mechanism to customize key/mouse bindings.
+     */
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry);
 
 }

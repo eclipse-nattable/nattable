@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._100_Layers._900_test.elemental;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -24,15 +23,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class SpanningDataLayerExample extends AbstractNatExample {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new SpanningDataLayerExample());
-	}
 
-	public Control createExampleControl(Composite parent) {
-		CompositeLayer layer = new CompositeLayer(1, 1);
-		layer.setChildLayer(GridRegion.BODY, new ViewportLayer(new SelectionLayer(new SpanningDataLayer(new DummySpanningBodyDataProvider(1000000, 1000000)))), 0, 0);
-		return new NatTable(parent, layer);
-	}
-	
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new SpanningDataLayerExample());
+    }
+
+    public Control createExampleControl(Composite parent) {
+        CompositeLayer layer = new CompositeLayer(1, 1);
+        layer.setChildLayer(GridRegion.BODY, new ViewportLayer(
+                new SelectionLayer(new SpanningDataLayer(
+                        new DummySpanningBodyDataProvider(1000000, 1000000)))),
+                0, 0);
+        return new NatTable(parent, layer);
+    }
+
 }

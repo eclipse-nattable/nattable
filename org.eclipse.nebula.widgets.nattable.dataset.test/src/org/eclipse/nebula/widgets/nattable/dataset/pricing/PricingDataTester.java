@@ -22,27 +22,29 @@ import org.junit.Test;
 @Ignore
 public class PricingDataTester {
 
-	@Test
-	public void readUsingTabDelimReader() throws Exception {
-		final DelimitedFileReader reader = new DelimitedFileReader(new BufferedReader(new InputStreamReader(getClass()
-				.getResourceAsStream("pricing_data.txt"))), '\t');
-		try {
-			if (reader.ready() && reader.markSupported()) {
-				while (reader.read() >= 0) {
-					final StringTokenizer tabbedData = reader.getTabbedLineRead();
-					Assert.assertEquals(18, tabbedData.countTokens());
-				}
-			}
-		} finally {
-			reader.close();
-		}
-	}
+    @Test
+    public void readUsingTabDelimReader() throws Exception {
+        final DelimitedFileReader reader = new DelimitedFileReader(
+                new BufferedReader(new InputStreamReader(getClass()
+                        .getResourceAsStream("pricing_data.txt"))), '\t');
+        try {
+            if (reader.ready() && reader.markSupported()) {
+                while (reader.read() >= 0) {
+                    final StringTokenizer tabbedData = reader
+                            .getTabbedLineRead();
+                    Assert.assertEquals(18, tabbedData.countTokens());
+                }
+            }
+        } finally {
+            reader.close();
+        }
+    }
 
-	@Test
-	public void loadAPSBeans() throws Exception {
-		final PricingDataFileLoader<PricingDataBean> gen = new PricingDataFileLoader<PricingDataBean>();
-		final List<PricingDataBean> data = gen.loadDataFromFile();
-		Assert.assertEquals(46, data.size());
-		Assert.assertEquals("USA 4 15FEB15".trim(), data.get(28).getIsin());
-	}
+    @Test
+    public void loadAPSBeans() throws Exception {
+        final PricingDataFileLoader<PricingDataBean> gen = new PricingDataFileLoader<PricingDataBean>();
+        final List<PricingDataBean> data = gen.loadDataFromFile();
+        Assert.assertEquals(46, data.size());
+        Assert.assertEquals("USA 4 15FEB15".trim(), data.get(28).getIsin());
+    }
 }

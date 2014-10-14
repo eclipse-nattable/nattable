@@ -15,48 +15,47 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.tree.AbstractTreeRowModel;
 
+public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
 
-public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T>{
+    public GlazedListTreeRowModel(GlazedListTreeData<T> treeData) {
+        super(treeData);
+    }
 
-	public GlazedListTreeRowModel(GlazedListTreeData<T> treeData) {
-		super(treeData);
-	}
+    @Override
+    public boolean isCollapsed(int index) {
+        return !this.getTreeData().isExpanded(index);
+    }
 
-	@Override
-	public boolean isCollapsed(int index) {
-		return !this.getTreeData().isExpanded(index);
-	}
+    @Override
+    public List<Integer> collapse(int index) {
+        this.getTreeData().collapse(index);
+        notifyListeners();
+        return new ArrayList<Integer>();
+    }
 
-	@Override
-	public List<Integer> collapse(int index) {
-		this.getTreeData().collapse(index);
-		notifyListeners();
-		return new ArrayList<Integer>();
-	}
-	
-	@Override
-	public List<Integer> collapseAll() {
-		this.getTreeData().collapseAll();
-		notifyListeners();
-		return new ArrayList<Integer>();
-	}
+    @Override
+    public List<Integer> collapseAll() {
+        this.getTreeData().collapseAll();
+        notifyListeners();
+        return new ArrayList<Integer>();
+    }
 
-	@Override
-	public List<Integer> expand(int index) {
-		this.getTreeData().expand(index);
-		notifyListeners();
-		return new ArrayList<Integer>();
-	}
+    @Override
+    public List<Integer> expand(int index) {
+        this.getTreeData().expand(index);
+        notifyListeners();
+        return new ArrayList<Integer>();
+    }
 
-	@Override
-	public List<Integer> expandAll() {
-		this.getTreeData().expandAll();
-		notifyListeners();
-		return new ArrayList<Integer>();
-	}
-	
-	@Override
-	protected GlazedListTreeData<T> getTreeData() {
-		return (GlazedListTreeData<T>) super.getTreeData();
-	}
+    @Override
+    public List<Integer> expandAll() {
+        this.getTreeData().expandAll();
+        notifyListeners();
+        return new ArrayList<Integer>();
+    }
+
+    @Override
+    protected GlazedListTreeData<T> getTreeData() {
+        return (GlazedListTreeData<T>) super.getTreeData();
+    }
 }

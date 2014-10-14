@@ -12,6 +12,6 @@ package org.eclipse.nebula.widgets.nattable.blink;
 
 interface KeyStrategy {
 
-	public String getKey(String columnProperty, String rowId);
-	
+    public String getKey(String columnProperty, String rowId);
+
 }

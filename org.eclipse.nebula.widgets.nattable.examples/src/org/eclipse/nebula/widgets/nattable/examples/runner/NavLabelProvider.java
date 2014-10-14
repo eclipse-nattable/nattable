@@ -10,36 +10,35 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.runner;
 
-
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.nattable.examples.INatExample;
 
 public class NavLabelProvider extends LabelProvider {
 
-	private final NavContentProvider contentProvider;
+    private final NavContentProvider contentProvider;
 
-	public NavLabelProvider(NavContentProvider contentProvider) {
-		this.contentProvider = contentProvider;
-	}
-	
-	@Override
-	public String getText(Object element) {
-		String str = (String) element;
-		if (!contentProvider.hasChildren(element)) {
-			INatExample example = TabbedNatExampleRunner.getExample(str);
-			return example.getName();
-		}
-		
-		int lastSlashIndex = str.lastIndexOf('/');
-		if (lastSlashIndex < 0) {
-			return format(str);
-		} else {
-			return format(str.substring(lastSlashIndex + 1));
-		}
-	}
-	
-	private String format(String str) {
-		return str.replaceAll("^_[0-9]*_", "").replace('_', ' ');
-	}
-	
+    public NavLabelProvider(NavContentProvider contentProvider) {
+        this.contentProvider = contentProvider;
+    }
+
+    @Override
+    public String getText(Object element) {
+        String str = (String) element;
+        if (!contentProvider.hasChildren(element)) {
+            INatExample example = TabbedNatExampleRunner.getExample(str);
+            return example.getName();
+        }
+
+        int lastSlashIndex = str.lastIndexOf('/');
+        if (lastSlashIndex < 0) {
+            return format(str);
+        } else {
+            return format(str.substring(lastSlashIndex + 1));
+        }
+    }
+
+    private String format(String str) {
+        return str.replaceAll("^_[0-9]*_", "").replace('_', ' ');
+    }
+
 }

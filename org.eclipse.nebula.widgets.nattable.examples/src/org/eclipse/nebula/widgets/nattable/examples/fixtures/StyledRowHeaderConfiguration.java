@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.fixtures;
 
-
 import org.eclipse.nebula.widgets.nattable.examples.examples._104_Styling._000_Styled_grid;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultRowHeaderStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundImagePainter;
@@ -27,14 +26,17 @@ import org.eclipse.swt.widgets.Display;
  *
  * @see _000_Styled_grid
  */
-public class StyledRowHeaderConfiguration extends DefaultRowHeaderStyleConfiguration {
+public class StyledRowHeaderConfiguration extends
+        DefaultRowHeaderStyleConfiguration {
 
-	public StyledRowHeaderConfiguration() {
-		font = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
+    public StyledRowHeaderConfiguration() {
+        font = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
 
-		Image bgImage = new Image(Display.getDefault(), getClass().getResourceAsStream("row_header_bg.png"));
-		TextPainter txtPainter = new TextPainter(false, false);
-		ICellPainter bgImagePainter = new BackgroundImagePainter(txtPainter, bgImage, null);
-		cellPainter = bgImagePainter;
-	}
+        Image bgImage = new Image(Display.getDefault(), getClass()
+                .getResourceAsStream("row_header_bg.png"));
+        TextPainter txtPainter = new TextPainter(false, false);
+        ICellPainter bgImagePainter = new BackgroundImagePainter(txtPainter,
+                bgImage, null);
+        cellPainter = bgImagePainter;
+    }
 }

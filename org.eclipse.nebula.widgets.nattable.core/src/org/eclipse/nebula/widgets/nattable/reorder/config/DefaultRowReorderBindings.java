@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.action.RowReorderDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.AggregateDragMode;
@@ -24,10 +23,10 @@ import org.eclipse.swt.SWT;
  */
 public class DefaultRowReorderBindings extends AbstractUiBindingConfiguration {
 
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerMouseDragMode(
-				MouseEventMatcher.rowHeaderLeftClick(SWT.NONE), 
-				new AggregateDragMode(new CellDragMode(), new RowReorderDragMode()));
-	}
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerMouseDragMode(MouseEventMatcher
+                .rowHeaderLeftClick(SWT.NONE), new AggregateDragMode(
+                new CellDragMode(), new RowReorderDragMode()));
+    }
 
 }

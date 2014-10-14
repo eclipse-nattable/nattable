@@ -12,5 +12,5 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
-public class UngroupColumnCommand extends AbstractContextFreeCommand implements IColumnGroupCommand {
-}
+public class UngroupColumnCommand extends AbstractContextFreeCommand implements
+        IColumnGroupCommand {}

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.config;
 
-
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.copy.action.CopyDataAction;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -35,153 +34,241 @@ import org.eclipse.swt.SWT;
 
 public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 
-	@Override
-	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		// Move up
-		configureMoveUpBindings(uiBindingRegistry, new MoveSelectionAction(MoveDirectionEnum.UP));
+    @Override
+    public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+        // Move up
+        configureMoveUpBindings(uiBindingRegistry, new MoveSelectionAction(
+                MoveDirectionEnum.UP));
 
-		// Move down
-		configureMoveDownBindings(uiBindingRegistry, new MoveSelectionAction(MoveDirectionEnum.DOWN));
+        // Move down
+        configureMoveDownBindings(uiBindingRegistry, new MoveSelectionAction(
+                MoveDirectionEnum.DOWN));
 
-		// Move left
-		configureMoveLeftBindings(uiBindingRegistry, new MoveSelectionAction(MoveDirectionEnum.LEFT));
+        // Move left
+        configureMoveLeftBindings(uiBindingRegistry, new MoveSelectionAction(
+                MoveDirectionEnum.LEFT));
 
-		// Move right
-		configureMoveRightBindings(uiBindingRegistry, new MoveSelectionAction(MoveDirectionEnum.RIGHT));
+        // Move right
+        configureMoveRightBindings(uiBindingRegistry, new MoveSelectionAction(
+                MoveDirectionEnum.RIGHT));
 
-		// Page Up
-		configurePageUpButtonBindings(uiBindingRegistry, new PageUpAction());
+        // Page Up
+        configurePageUpButtonBindings(uiBindingRegistry, new PageUpAction());
 
-		// Page down
-		configurePageDownButtonBindings(uiBindingRegistry, new PageDownAction());
+        // Page down
+        configurePageDownButtonBindings(uiBindingRegistry, new PageDownAction());
 
-		// Home - Move to first column
-		configureHomeButtonBindings(uiBindingRegistry, new MoveToFirstColumnAction());
+        // Home - Move to first column
+        configureHomeButtonBindings(uiBindingRegistry,
+                new MoveToFirstColumnAction());
 
-		// End - Move to last column
-		configureEndButtonBindings(uiBindingRegistry, new MoveToLastColumnAction());
+        // End - Move to last column
+        configureEndButtonBindings(uiBindingRegistry,
+                new MoveToLastColumnAction());
 
-		// Select all
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, 'a'), new SelectAllAction());
+        // Select all
+        uiBindingRegistry.registerKeyBinding(
+                new KeyEventMatcher(SWT.MOD1, 'a'), new SelectAllAction());
 
-		// Copy
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, 'c'), new CopyDataAction());
+        // Copy
+        uiBindingRegistry.registerKeyBinding(
+                new KeyEventMatcher(SWT.MOD1, 'c'), new CopyDataAction());
 
-		// Mouse bindings - select Cell
-		configureBodyMouseClickBindings(uiBindingRegistry);
+        // Mouse bindings - select Cell
+        configureBodyMouseClickBindings(uiBindingRegistry);
 
-		// Mouse bindings - select columns
-		configureColumnHeaderMouseClickBindings(uiBindingRegistry);
+        // Mouse bindings - select columns
+        configureColumnHeaderMouseClickBindings(uiBindingRegistry);
 
-		// Mouse bindings - select rows
-		configureRowHeaderMouseClickBindings(uiBindingRegistry);
+        // Mouse bindings - select rows
+        configureRowHeaderMouseClickBindings(uiBindingRegistry);
 
-		// Mouse bindings - Drag
-		configureBodyMouseDragMode(uiBindingRegistry);
-	}
+        // Mouse bindings - Drag
+        configureBodyMouseDragMode(uiBindingRegistry);
+    }
 
-	// *** pg. up, pg. down, home, end keys selection bindings ***
+    // *** pg. up, pg. down, home, end keys selection bindings ***
 
-	protected void configureEndButtonBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.END), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.END), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.END), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.END), action);
-	}
+    protected void configureEndButtonBindings(
+            UiBindingRegistry uiBindingRegistry, IKeyAction action) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.END), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.END), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.END), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.END), action);
+    }
 
-	protected void configureHomeButtonBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.HOME), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.HOME), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.HOME), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.HOME), action);
-	}
+    protected void configureHomeButtonBindings(
+            UiBindingRegistry uiBindingRegistry, IKeyAction action) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.HOME), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.HOME), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.HOME), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.HOME), action);
+    }
 
-	protected void configurePageDownButtonBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.PAGE_DOWN), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.PAGE_DOWN), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.PAGE_DOWN), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.PAGE_DOWN), action);
-	}
+    protected void configurePageDownButtonBindings(
+            UiBindingRegistry uiBindingRegistry, IKeyAction action) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.PAGE_DOWN), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.PAGE_DOWN), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.PAGE_DOWN), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.PAGE_DOWN), action);
+    }
 
-	protected void configurePageUpButtonBindings(UiBindingRegistry uiBindingRegistry, PageUpAction action) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.PAGE_UP), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.PAGE_UP), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.PAGE_UP), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.PAGE_UP), action);
-	}
+    protected void configurePageUpButtonBindings(
+            UiBindingRegistry uiBindingRegistry, PageUpAction action) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.PAGE_UP), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.PAGE_UP), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.PAGE_UP), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.PAGE_UP), action);
+    }
 
-	// *** Arrow keys selection bindings ***
+    // *** Arrow keys selection bindings ***
 
-	protected void configureMoveRightBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_RIGHT), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_RIGHT), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_RIGHT), new MoveToLastColumnAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_RIGHT), new MoveToLastColumnAction());
+    protected void configureMoveRightBindings(
+            UiBindingRegistry uiBindingRegistry, IKeyAction action) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.ARROW_RIGHT), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.ARROW_RIGHT), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.ARROW_RIGHT), new MoveToLastColumnAction());
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.ARROW_RIGHT), new MoveToLastColumnAction());
 
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.TAB), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.TAB), action);
-	}
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.TAB), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.TAB), action);
+    }
 
-	protected void configureMoveLeftBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_LEFT), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_LEFT), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_LEFT), new MoveToFirstColumnAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_LEFT), new MoveToFirstColumnAction());
+    protected void configureMoveLeftBindings(
+            UiBindingRegistry uiBindingRegistry, IKeyAction action) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.ARROW_LEFT), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.ARROW_LEFT), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.ARROW_LEFT), new MoveToFirstColumnAction());
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.ARROW_LEFT), new MoveToFirstColumnAction());
 
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.TAB), new MoveSelectionAction(MoveDirectionEnum.LEFT, false, false));
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.TAB), action);
-	}
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.TAB), new MoveSelectionAction(MoveDirectionEnum.LEFT,
+                false, false));
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.TAB), action);
+    }
 
-	protected void configureMoveDownBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_DOWN), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_DOWN), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_DOWN), new MoveToLastRowAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_DOWN), new MoveToLastRowAction());
+    protected void configureMoveDownBindings(
+            UiBindingRegistry uiBindingRegistry, IKeyAction action) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.ARROW_DOWN), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.ARROW_DOWN), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.ARROW_DOWN), new MoveToLastRowAction());
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.ARROW_DOWN), new MoveToLastRowAction());
 
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.CR), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.CR), action);
-	}
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.CR), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.CR), action);
+    }
 
-	protected void configureMoveUpBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_UP), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_UP), action);
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_UP), new MoveToFirstRowAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_UP), new MoveToFirstRowAction());
+    protected void configureMoveUpBindings(UiBindingRegistry uiBindingRegistry,
+            IKeyAction action) {
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
+                SWT.ARROW_UP), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.ARROW_UP), action);
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1,
+                SWT.ARROW_UP), new MoveToFirstRowAction());
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.ARROW_UP), new MoveToFirstRowAction());
 
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.CR), new MoveSelectionAction(MoveDirectionEnum.UP, false, false));
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.CR), action);
-	}
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT,
+                SWT.CR), new MoveSelectionAction(MoveDirectionEnum.UP, false,
+                false));
+        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT
+                | SWT.MOD1, SWT.CR), action);
+    }
 
-	// *** Mouse bindings ***
+    // *** Mouse bindings ***
 
-	protected void configureBodyMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
-		IMouseAction action = new SelectCellAction();
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), action);
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD1), action);
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), action);
-	}
+    protected void configureBodyMouseClickBindings(
+            UiBindingRegistry uiBindingRegistry) {
+        IMouseAction action = new SelectCellAction();
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.bodyLeftClick(SWT.SHIFT), action);
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.bodyLeftClick(SWT.MOD1), action);
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), action);
+    }
 
-	protected void configureColumnHeaderMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.NONE), new ViewportSelectColumnAction(false, false));
-		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.SHIFT), new ViewportSelectColumnAction(true, false));
-		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.MOD1), new ViewportSelectColumnAction(false, true));
-		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.SHIFT | SWT.MOD1), new ViewportSelectColumnAction(true, true));
-	}
+    protected void configureColumnHeaderMouseClickBindings(
+            UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerSingleClickBinding(
+                MouseEventMatcher.columnHeaderLeftClick(SWT.NONE),
+                new ViewportSelectColumnAction(false, false));
+        uiBindingRegistry.registerSingleClickBinding(
+                MouseEventMatcher.columnHeaderLeftClick(SWT.SHIFT),
+                new ViewportSelectColumnAction(true, false));
+        uiBindingRegistry.registerSingleClickBinding(
+                MouseEventMatcher.columnHeaderLeftClick(SWT.MOD1),
+                new ViewportSelectColumnAction(false, true));
+        uiBindingRegistry.registerSingleClickBinding(
+                MouseEventMatcher.columnHeaderLeftClick(SWT.SHIFT | SWT.MOD1),
+                new ViewportSelectColumnAction(true, true));
+    }
 
-	protected void configureRowHeaderMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.NONE), new ViewportSelectRowAction(false, false));
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.SHIFT), new ViewportSelectRowAction(true, false));
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD1), new ViewportSelectRowAction(false, true));
-		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.SHIFT | SWT.MOD1), new ViewportSelectRowAction(true, true));
-	}
+    protected void configureRowHeaderMouseClickBindings(
+            UiBindingRegistry uiBindingRegistry) {
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.rowHeaderLeftClick(SWT.NONE),
+                new ViewportSelectRowAction(false, false));
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.rowHeaderLeftClick(SWT.SHIFT),
+                new ViewportSelectRowAction(true, false));
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.rowHeaderLeftClick(SWT.MOD1),
+                new ViewportSelectRowAction(false, true));
+        uiBindingRegistry.registerMouseDownBinding(
+                MouseEventMatcher.rowHeaderLeftClick(SWT.SHIFT | SWT.MOD1),
+                new ViewportSelectRowAction(true, true));
+    }
 
-	protected void configureBodyMouseDragMode(UiBindingRegistry uiBindingRegistry) {
-		CellSelectionDragMode dragMode = new CellSelectionDragMode();
-		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.NONE), dragMode);
-		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), dragMode);
-		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.MOD1), dragMode);
-		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), dragMode);
-	}
+    protected void configureBodyMouseDragMode(
+            UiBindingRegistry uiBindingRegistry) {
+        CellSelectionDragMode dragMode = new CellSelectionDragMode();
+        uiBindingRegistry.registerMouseDragMode(
+                MouseEventMatcher.bodyLeftClick(SWT.NONE), dragMode);
+        uiBindingRegistry.registerMouseDragMode(
+                MouseEventMatcher.bodyLeftClick(SWT.SHIFT), dragMode);
+        uiBindingRegistry.registerMouseDragMode(
+                MouseEventMatcher.bodyLeftClick(SWT.MOD1), dragMode);
+        uiBindingRegistry
+                .registerMouseDragMode(
+                        MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1),
+                        dragMode);
+    }
 
 }

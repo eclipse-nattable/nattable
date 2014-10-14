@@ -21,5 +21,4 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
  * including the areas outside the viewport. Example printing, excel export,
  * auto resize all columns etc.
  */
-public class TurnViewportOffCommand extends AbstractContextFreeCommand {
-}
+public class TurnViewportOffCommand extends AbstractContextFreeCommand {}

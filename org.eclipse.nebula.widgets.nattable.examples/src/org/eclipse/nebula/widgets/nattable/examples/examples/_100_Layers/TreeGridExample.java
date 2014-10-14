@@ -68,255 +68,262 @@ import ca.odell.glazedlists.TreeList;
 
 public class TreeGridExample extends AbstractNatExample {
 
-	protected static final String NO_SORT_LABEL = "noSortLabel";
-	
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(800, 400, new TreeGridExample());
-	}
-	
-	public Control createExampleControl(Composite parent) {
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		configRegistry.registerConfigAttribute(SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
-		
-		// Underlying data source
-		createDatums();
-		EventList<Datum> eventList = GlazedLists.eventList(datums.values());
-		SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
-		
-		String[] propertyNames = new String[] { "foo", "bar" };
-		IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(propertyNames);
-		
-		// Column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		
-		ISortModel sortModel = new GlazedListsSortModel<Datum>(
-				sortedList,
-				columnPropertyAccessor,
-				configRegistry, 
-				columnHeaderDataLayer);
-		
-		final TreeList<Datum> treeList = new TreeList<Datum>(sortedList, new DatumTreeFormat(sortModel), new DatumExpansionModel());
-		GlazedListTreeData <Datum> treeData = new DatumTreeData(treeList);
-		
-		GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(treeList, columnPropertyAccessor);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		
-//		GlazedListsEventLayer<Datum> glazedListsEventLayer = 
-//				new GlazedListsEventLayer<Datum>(bodyDataLayer, treeList);
-		DetailGlazedListsEventLayer<Datum> glazedListsEventLayer = 
-				new DetailGlazedListsEventLayer<Datum>(bodyDataLayer, treeList);
+    protected static final String NO_SORT_LABEL = "noSortLabel";
 
-		// Body layer
-		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
-		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-		
-		RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(columnHideShowLayer);
-		
-		// Switch the ITreeRowModel implementation between using native grid Hide/Show or GlazedList TreeList Hide/Show  
-//		TreeLayer treeLayer = new TreeLayer(rowHideShowLayer, new TreeRowModel<Datum>(treeData), true);
-		TreeLayer treeLayer = new TreeLayer(rowHideShowLayer, new GlazedListTreeRowModel<Datum>(treeData), false);
-		
-		SelectionLayer selectionLayer = new SelectionLayer(treeLayer);
-		
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
-		
-		
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
-		//	Note: The column header layer is wrapped in a filter row composite.
-		//	This plugs in the filter row functionality
-	
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(800, 400, new TreeGridExample());
+    }
 
-		ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
-		columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
+    public Control createExampleControl(Composite parent) {
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        configRegistry.registerConfigAttribute(
+                SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
 
-		// Register labels
-		SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<Datum>(
-				columnHeaderLayer, 
-				sortModel, 
-				false);
+        // Underlying data source
+        createDatums();
+        EventList<Datum> eventList = GlazedLists.eventList(datums.values());
+        SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
 
-		// Row header layer
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
+        String[] propertyNames = new String[] { "foo", "bar" };
+        IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(
+                propertyNames);
 
-		// Corner layer
-		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, sortHeaderLayer);
+        // Column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
 
-		// Grid
-		GridLayer gridLayer = new GridLayer(
-				viewportLayer,
-				sortHeaderLayer,
-				rowHeaderLayer,
-				cornerLayer);
-		
-		NatTable natTable = new NatTable(parent, gridLayer, false);
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-			@Override
-			protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
-				return super.createRowHeaderMenu(natTable)
-						.withHideRowMenuItem()
-						.withShowAllRowsMenuItem();
-			}
-		});
-		natTable.addConfiguration(new DefaultTreeLayerConfiguration(treeLayer));
-		natTable.addConfiguration(new SingleClickSortConfiguration());
-		
-		// Uncomment to see the native tree list printed to stout.
-//		printTree(treeList, treeData);
-		
-		natTable.configure();
-		return natTable;
-	}
+        ISortModel sortModel = new GlazedListsSortModel<Datum>(sortedList,
+                columnPropertyAccessor, configRegistry, columnHeaderDataLayer);
 
-	private static class DatumTreeData extends GlazedListTreeData<Datum>{
+        final TreeList<Datum> treeList = new TreeList<Datum>(sortedList,
+                new DatumTreeFormat(sortModel), new DatumExpansionModel());
+        GlazedListTreeData<Datum> treeData = new DatumTreeData(treeList);
 
-		public DatumTreeData(TreeList<Datum> treeList) {
-			super(treeList);
-		}
+        GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(
+                treeList, columnPropertyAccessor);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
-		@Override
-		public String formatDataForDepth(int depth, Datum object) {
-			return object.getFoo();
-		}
+        // GlazedListsEventLayer<Datum> glazedListsEventLayer =
+        // new GlazedListsEventLayer<Datum>(bodyDataLayer, treeList);
+        DetailGlazedListsEventLayer<Datum> glazedListsEventLayer = new DetailGlazedListsEventLayer<Datum>(
+                bodyDataLayer, treeList);
 
-		
-	}
-	
-	private static class DatumTreeFormat implements TreeList.Format<Datum> {
-		
-		private final ISortModel sortModel;
+        // Body layer
+        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
+                glazedListsEventLayer);
+        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
+                columnReorderLayer);
 
-		public DatumTreeFormat(ISortModel sortModel) {
-			this.sortModel = sortModel;
-		}
-		
-		public void getPath(List<Datum> path, Datum element) {
-			path.add(element);
-			Datum parent = element.getParent();
-			while (parent != null) {
-				path.add(parent);
-				parent = parent.getParent();
-			}
-			Collections.reverse(path);
-		}
-		
-		public boolean allowsChildren(Datum element) {
-			return true;
-		}
+        RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(
+                columnHideShowLayer);
 
-		public Comparator<Datum> getComparator(int depth) {
-			return new SortableTreeComparator<Datum>(GlazedLists.beanPropertyComparator(Datum.class, "foo"), sortModel);
-		}
-	}
+        // Switch the ITreeRowModel implementation between using native grid
+        // Hide/Show or GlazedList TreeList Hide/Show
+        // TreeLayer treeLayer = new TreeLayer(rowHideShowLayer, new
+        // TreeRowModel<Datum>(treeData), true);
+        TreeLayer treeLayer = new TreeLayer(rowHideShowLayer,
+                new GlazedListTreeRowModel<Datum>(treeData), false);
 
-	private static class DatumExpansionModel implements TreeList.ExpansionModel<Datum> {
-		public boolean isExpanded(Datum element, List<Datum> path) {
-			return true;
-		}
+        SelectionLayer selectionLayer = new SelectionLayer(treeLayer);
 
-		public void setExpanded(Datum element,	List<Datum> path, boolean expanded) {
-		}
-	}
-	
-	private void printTree(TreeList <Datum> treeList, ITreeData<Datum> treeData){
-		System.out.println(treeList.size());
-		   for (int i = 0; i < treeList.size(); i++) {
-	            final Datum location = treeList.get(i);
-	            final int depth = treeList.depth(i);
-	            final boolean hasChildren = treeList.hasChildren(i);
-	            final boolean isExpanded = treeList.isExpanded(i);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-	            for (int j = 0; j < depth; j++)
-	                System.out.print("\t");
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+                columnHeaderDataLayer, viewportLayer, selectionLayer);
+        // Note: The column header layer is wrapped in a filter row composite.
+        // This plugs in the filter row functionality
 
-	            if (hasChildren)
-	                System.out.print(isExpanded ? "- " : "+ ");
-	            else
-	                System.out.print("  ");
+        ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
+                columnHeaderDataLayer);
+        columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
-	            System.out.println(treeData.formatDataForDepth(depth, location));
-	        }
-	}
-	
-	public class Datum {
-		/**
+        // Register labels
+        SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<Datum>(
+                columnHeaderLayer, sortModel, false);
+
+        // Row header layer
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                viewportLayer, selectionLayer);
+
+        // Corner layer
+        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
+                rowHeaderLayer, sortHeaderLayer);
+
+        // Grid
+        GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer,
+                rowHeaderLayer, cornerLayer);
+
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
+                return super.createRowHeaderMenu(natTable)
+                        .withHideRowMenuItem().withShowAllRowsMenuItem();
+            }
+        });
+        natTable.addConfiguration(new DefaultTreeLayerConfiguration(treeLayer));
+        natTable.addConfiguration(new SingleClickSortConfiguration());
+
+        // Uncomment to see the native tree list printed to stout.
+        // printTree(treeList, treeData);
+
+        natTable.configure();
+        return natTable;
+    }
+
+    private static class DatumTreeData extends GlazedListTreeData<Datum> {
+
+        public DatumTreeData(TreeList<Datum> treeList) {
+            super(treeList);
+        }
+
+        @Override
+        public String formatDataForDepth(int depth, Datum object) {
+            return object.getFoo();
+        }
+
+    }
+
+    private static class DatumTreeFormat implements TreeList.Format<Datum> {
+
+        private final ISortModel sortModel;
+
+        public DatumTreeFormat(ISortModel sortModel) {
+            this.sortModel = sortModel;
+        }
+
+        public void getPath(List<Datum> path, Datum element) {
+            path.add(element);
+            Datum parent = element.getParent();
+            while (parent != null) {
+                path.add(parent);
+                parent = parent.getParent();
+            }
+            Collections.reverse(path);
+        }
+
+        public boolean allowsChildren(Datum element) {
+            return true;
+        }
+
+        public Comparator<Datum> getComparator(int depth) {
+            return new SortableTreeComparator<Datum>(
+                    GlazedLists.beanPropertyComparator(Datum.class, "foo"),
+                    sortModel);
+        }
+    }
+
+    private static class DatumExpansionModel implements
+            TreeList.ExpansionModel<Datum> {
+        public boolean isExpanded(Datum element, List<Datum> path) {
+            return true;
+        }
+
+        public void setExpanded(Datum element, List<Datum> path,
+                boolean expanded) {}
+    }
+
+    private void printTree(TreeList<Datum> treeList, ITreeData<Datum> treeData) {
+        System.out.println(treeList.size());
+        for (int i = 0; i < treeList.size(); i++) {
+            final Datum location = treeList.get(i);
+            final int depth = treeList.depth(i);
+            final boolean hasChildren = treeList.hasChildren(i);
+            final boolean isExpanded = treeList.isExpanded(i);
+
+            for (int j = 0; j < depth; j++)
+                System.out.print("\t");
+
+            if (hasChildren)
+                System.out.print(isExpanded ? "- " : "+ ");
+            else
+                System.out.print("  ");
+
+            System.out.println(treeData.formatDataForDepth(depth, location));
+        }
+    }
+
+    public class Datum {
+        /**
 		 * 
 		 */
-		private final Datum parent;
-		private String foo;
-		private int bar;
-		
-		public Datum(Datum parent, String foo, int bar) {
-			this.parent = parent;
-			this.foo = foo;
-			this.bar = bar;
-		}
-		
-		public Datum getParent() {
-			return parent;
-		}
-		
-		public String getFoo() {
-			return foo;
-		}
-		
-		public int getBar() {
-			return bar;
-		}
-		
-		@Override
-		public String toString() {
-			return "[" +
-					"parent=" + parent +
-					", foo=" + foo +
-					", bar=" + bar +
-					"]";
-		}
-		
-	}
-	
-	private Map<String, Datum> datums = new HashMap<String, Datum>();
-	
-	private void createDatum(String parent, String foo, int bar) {
-		Datum datum = new Datum(datums.get(parent), foo, bar);
-		datums.put(foo, datum);
-	}
-	
-	private void createDatums() {
-		createDatum(null, "root", 1);
-			createDatum("root", "A", 10);
-				createDatum("A", "A.1", 100);
-				createDatum("A", "A.2", 110);
-				createDatum("A", "A.3", 120);
-			createDatum("root", "B", 20);
-				createDatum("B", "B.1", 200);
-				createDatum("B", "B.2", 210);
-			createDatum("root", "C", 30);
-				createDatum("C", "C.1", 330);
-				createDatum("C", "C.2", 370);
-				createDatum("C", "C.3", 322);
-				createDatum("C", "C.4", 310);
-				createDatum("C", "C.5", 315);
-		createDatum(null, "root2", 2);
-			createDatum("root2", "X", 70);
-				createDatum("X", "X.1", 700);
-				createDatum("X", "X.2", 710);
-				createDatum("X", "X.3", 720);
-			createDatum("root2", "Y", 80);
-				createDatum("Y", "Y.1", 800);
-				createDatum("Y", "Y.2", 810);
-			createDatum("root2", "Z", 90);
-				createDatum("Z", "Z.1", 900);
-				createDatum("Z", "Z.2", 910);
-				createDatum("Z", "Z.3", 920);
-				createDatum("Z", "Z.4", 930);
-				createDatum("Z", "Z.5", 940);
-	}
-	
+        private final Datum parent;
+        private String foo;
+        private int bar;
+
+        public Datum(Datum parent, String foo, int bar) {
+            this.parent = parent;
+            this.foo = foo;
+            this.bar = bar;
+        }
+
+        public Datum getParent() {
+            return parent;
+        }
+
+        public String getFoo() {
+            return foo;
+        }
+
+        public int getBar() {
+            return bar;
+        }
+
+        @Override
+        public String toString() {
+            return "[" + "parent=" + parent + ", foo=" + foo + ", bar=" + bar
+                    + "]";
+        }
+
+    }
+
+    private Map<String, Datum> datums = new HashMap<String, Datum>();
+
+    private void createDatum(String parent, String foo, int bar) {
+        Datum datum = new Datum(datums.get(parent), foo, bar);
+        datums.put(foo, datum);
+    }
+
+    private void createDatums() {
+        createDatum(null, "root", 1);
+        createDatum("root", "A", 10);
+        createDatum("A", "A.1", 100);
+        createDatum("A", "A.2", 110);
+        createDatum("A", "A.3", 120);
+        createDatum("root", "B", 20);
+        createDatum("B", "B.1", 200);
+        createDatum("B", "B.2", 210);
+        createDatum("root", "C", 30);
+        createDatum("C", "C.1", 330);
+        createDatum("C", "C.2", 370);
+        createDatum("C", "C.3", 322);
+        createDatum("C", "C.4", 310);
+        createDatum("C", "C.5", 315);
+        createDatum(null, "root2", 2);
+        createDatum("root2", "X", 70);
+        createDatum("X", "X.1", 700);
+        createDatum("X", "X.2", 710);
+        createDatum("X", "X.3", 720);
+        createDatum("root2", "Y", 80);
+        createDatum("Y", "Y.1", 800);
+        createDatum("Y", "Y.2", 810);
+        createDatum("root2", "Z", 90);
+        createDatum("Z", "Z.1", 900);
+        createDatum("Z", "Z.2", 910);
+        createDatum("Z", "Z.3", 920);
+        createDatum("Z", "Z.4", 930);
+        createDatum("Z", "Z.5", 940);
+    }
+
 }

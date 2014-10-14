@@ -42,49 +42,53 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _5031_VerticalCompositionExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5031_VerticalCompositionExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _5031_VerticalCompositionExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows how to assemble a table that consists of a column header and a body layer.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public String getDescription() {
+        return "This example shows how to assemble a table that consists of a column header and a body layer.";
+    }
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
-				new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		
-		final List<Person> data = PersonService.getPersons(10);
-		
-		IDataProvider bodyDataProvider = new ListDataProvider<Person>(data, columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
 
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-				new DataLayer(new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap)),
-				viewportLayer, 
-				selectionLayer);
-		
-		//set the region labels to make default configurations work, e.g. selection
-		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
-		compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
-		
-		return new NatTable(parent, compositeLayer);
-	}
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
+
+        final List<Person> data = PersonService.getPersons(10);
+
+        IDataProvider bodyDataProvider = new ListDataProvider<Person>(data,
+                columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(
+                new DefaultColumnHeaderDataProvider(propertyNames,
+                        propertyToLabelMap)), viewportLayer, selectionLayer);
+
+        // set the region labels to make default configurations work, e.g.
+        // selection
+        CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
+                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+
+        return new NatTable(parent, compositeLayer);
+    }
 
 }

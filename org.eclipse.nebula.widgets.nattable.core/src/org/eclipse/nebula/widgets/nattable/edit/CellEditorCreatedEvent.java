@@ -7,8 +7,8 @@ import org.eclipse.swt.events.DisposeListener;
 
 /**
  * The {@code CellEditorCreatedEvent} is fired by the
- * {@linkplain EditController} whenever a {@linkplain ICellEditor editor} has been
- * created.
+ * {@linkplain EditController} whenever a {@linkplain ICellEditor editor} has
+ * been created.
  * <p>
  * Please keep in mind that there is no event fired when the editor is
  * destroyed. Clients should associate a {@linkplain DisposeListener dispose
@@ -23,35 +23,35 @@ import org.eclipse.swt.events.DisposeListener;
  */
 public class CellEditorCreatedEvent implements ILayerEvent {
 
-	private final ICellEditor editor;
+    private final ICellEditor editor;
 
-	/**
-	 * Creates a new event passing the created editor
-	 *
-	 * @param editor
-	 *            the new editor
-	 */
-	public CellEditorCreatedEvent(ICellEditor editor) {
-		this.editor = editor;
-	}
+    /**
+     * Creates a new event passing the created editor
+     *
+     * @param editor
+     *            the new editor
+     */
+    public CellEditorCreatedEvent(ICellEditor editor) {
+        this.editor = editor;
+    }
 
-	@Override
-	public boolean convertToLocal(ILayer localLayer) {
-		return true; // no conversion needed
-	}
+    @Override
+    public boolean convertToLocal(ILayer localLayer) {
+        return true; // no conversion needed
+    }
 
-	@Override
-	public ILayerEvent cloneEvent() {
-		return this; // cloning not needed
-	}
+    @Override
+    public ILayerEvent cloneEvent() {
+        return this; // cloning not needed
+    }
 
-	/**
-	 * Returns the editor associated with this event.
-	 *
-	 * @return the created editor
-	 */
-	public ICellEditor getEditor() {
-		return editor;
-	}
+    /**
+     * Returns the editor associated with this event.
+     *
+     * @return the created editor
+     */
+    public ICellEditor getEditor() {
+        return editor;
+    }
 
 }

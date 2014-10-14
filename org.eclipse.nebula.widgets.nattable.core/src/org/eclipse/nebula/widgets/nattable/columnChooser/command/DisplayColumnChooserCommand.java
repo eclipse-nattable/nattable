@@ -15,14 +15,14 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
 public class DisplayColumnChooserCommand extends AbstractContextFreeCommand {
 
-	private final NatTable natTable;
+    private final NatTable natTable;
 
-	public DisplayColumnChooserCommand(NatTable natTable) {
-		this.natTable = natTable;
-	}
-	
-	public NatTable getNatTable() {
-		return natTable;
-	}
-	
+    public DisplayColumnChooserCommand(NatTable natTable) {
+        this.natTable = natTable;
+    }
+
+    public NatTable getNatTable() {
+        return natTable;
+    }
+
 }

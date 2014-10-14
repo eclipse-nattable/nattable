@@ -21,58 +21,67 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class CheckBoxPainter extends ImagePainter {
 
-	private final Image checkedImg;
-	private final Image uncheckedImg;
+    private final Image checkedImg;
+    private final Image uncheckedImg;
 
-	public CheckBoxPainter() {
-		checkedImg = GUIHelper.getImage("checked"); //$NON-NLS-1$
-		uncheckedImg = GUIHelper.getImage("unchecked"); //$NON-NLS-1$
-	}
+    public CheckBoxPainter() {
+        checkedImg = GUIHelper.getImage("checked"); //$NON-NLS-1$
+        uncheckedImg = GUIHelper.getImage("unchecked"); //$NON-NLS-1$
+    }
 
-	public CheckBoxPainter(Image checkedImg, Image uncheckedImg) {
-		super();
-		this.checkedImg = checkedImg;
-		this.uncheckedImg = uncheckedImg;
-	}
+    public CheckBoxPainter(Image checkedImg, Image uncheckedImg) {
+        super();
+        this.checkedImg = checkedImg;
+        this.uncheckedImg = uncheckedImg;
+    }
 
-	public int getPreferredWidth(boolean checked) {
-		return checked ? checkedImg.getBounds().width : uncheckedImg.getBounds().width;
-	}
+    public int getPreferredWidth(boolean checked) {
+        return checked ? checkedImg.getBounds().width : uncheckedImg
+                .getBounds().width;
+    }
 
-	public int getPreferredHeight(boolean checked) {
-		return checked ? checkedImg.getBounds().height : uncheckedImg.getBounds().height;
-	}
+    public int getPreferredHeight(boolean checked) {
+        return checked ? checkedImg.getBounds().height : uncheckedImg
+                .getBounds().height;
+    }
 
-	public void paintIconImage(GC gc, Rectangle rectangle, int yOffset, boolean checked) {
-		Image checkBoxImage = checked ? checkedImg : uncheckedImg;
+    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset,
+            boolean checked) {
+        Image checkBoxImage = checked ? checkedImg : uncheckedImg;
 
-		// Center image
-		int x = rectangle.x + (rectangle.width / 2) - (checkBoxImage.getBounds().width/2);
+        // Center image
+        int x = rectangle.x + (rectangle.width / 2)
+                - (checkBoxImage.getBounds().width / 2);
 
-		gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
-	}
+        gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
+    }
 
-	@Override
-	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-		return isChecked(cell, configRegistry) ? checkedImg : uncheckedImg;
-	}
+    @Override
+    protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
+        return isChecked(cell, configRegistry) ? checkedImg : uncheckedImg;
+    }
 
-	protected boolean isChecked(ILayerCell cell, IConfigRegistry configRegistry) {
-		return convertDataType(cell, configRegistry).booleanValue();
-	}
+    protected boolean isChecked(ILayerCell cell, IConfigRegistry configRegistry) {
+        return convertDataType(cell, configRegistry).booleanValue();
+    }
 
-	protected Boolean convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
-		if (cell.getDataValue() instanceof Boolean) {
-			return (Boolean) cell.getDataValue();
-		}
-		IDisplayConverter displayConverter = configRegistry.getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
-		Boolean convertedValue = null;
-		if (displayConverter != null) {
-			convertedValue = (Boolean) displayConverter.canonicalToDisplayValue(cell, configRegistry, cell.getDataValue());
-		}
-		if (convertedValue == null) {
-			convertedValue = Boolean.FALSE;
-		}
-		return convertedValue;
-	}
+    protected Boolean convertDataType(ILayerCell cell,
+            IConfigRegistry configRegistry) {
+        if (cell.getDataValue() instanceof Boolean) {
+            return (Boolean) cell.getDataValue();
+        }
+        IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
+                CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(),
+                cell.getConfigLabels().getLabels());
+        Boolean convertedValue = null;
+        if (displayConverter != null) {
+            convertedValue = (Boolean) displayConverter
+                    .canonicalToDisplayValue(cell, configRegistry,
+                            cell.getDataValue());
+        }
+        if (convertedValue == null) {
+            convertedValue = Boolean.FALSE;
+        }
+        return convertedValue;
+    }
 }

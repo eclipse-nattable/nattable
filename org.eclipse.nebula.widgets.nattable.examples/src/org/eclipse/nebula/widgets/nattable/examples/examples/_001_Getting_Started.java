@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
@@ -42,84 +41,95 @@ import org.eclipse.swt.widgets.Control;
 
 public class _001_Getting_Started extends AbstractNatExample {
 
-	private IDataProvider bodyDataProvider;
-	private String[] propertyNames;
-	private BodyLayerStack bodyLayer;
-	private Map<String, String> propertyToLabels;
+    private IDataProvider bodyDataProvider;
+    private String[] propertyNames;
+    private BodyLayerStack bodyLayer;
+    private Map<String, String> propertyToLabels;
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(600, 400, new _001_Getting_Started());
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(600, 400, new _001_Getting_Started());
+    }
 
-	public Control createExampleControl(Composite parent) {
-		bodyDataProvider = setupBodyDataProvider();
-		DefaultColumnHeaderDataProvider colHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabels);
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
+    public Control createExampleControl(Composite parent) {
+        bodyDataProvider = setupBodyDataProvider();
+        DefaultColumnHeaderDataProvider colHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabels);
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
 
-		bodyLayer = new BodyLayerStack(bodyDataProvider);
-		ColumnHeaderLayerStack columnHeaderLayer = new ColumnHeaderLayerStack(colHeaderDataProvider);
-		RowHeaderLayerStack rowHeaderLayer = new RowHeaderLayerStack(rowHeaderDataProvider);
-		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(colHeaderDataProvider, rowHeaderDataProvider);
-		CornerLayer cornerLayer = new CornerLayer(new DataLayer(cornerDataProvider), rowHeaderLayer, columnHeaderLayer);
+        bodyLayer = new BodyLayerStack(bodyDataProvider);
+        ColumnHeaderLayerStack columnHeaderLayer = new ColumnHeaderLayerStack(
+                colHeaderDataProvider);
+        RowHeaderLayerStack rowHeaderLayer = new RowHeaderLayerStack(
+                rowHeaderDataProvider);
+        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                colHeaderDataProvider, rowHeaderDataProvider);
+        CornerLayer cornerLayer = new CornerLayer(new DataLayer(
+                cornerDataProvider), rowHeaderLayer, columnHeaderLayer);
 
-		GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-		NatTable natTable = new NatTable(parent, gridLayer);
+        GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer);
+        NatTable natTable = new NatTable(parent, gridLayer);
 
-		return natTable;
-	}
+        return natTable;
+    }
 
-	private IDataProvider setupBodyDataProvider() {
-		final List<Person> people = Arrays.asList(
-				new Person(100, "Mickey Mouse", new Date(1000000)), 
-				new Person(110, "Batman", new Date(2000000)), 
-				new Person(120, "Bender", new Date(3000000)), 
-				new Person(130, "Cartman", new Date(4000000)), 
-				new Person(140, "Dogbert", new Date(5000000)));
-		
+    private IDataProvider setupBodyDataProvider() {
+        final List<Person> people = Arrays.asList(new Person(100,
+                "Mickey Mouse", new Date(1000000)), new Person(110, "Batman",
+                new Date(2000000)),
+                new Person(120, "Bender", new Date(3000000)), new Person(130,
+                        "Cartman", new Date(4000000)), new Person(140,
+                        "Dogbert", new Date(5000000)));
 
-		propertyToLabels = new HashMap<String, String>();
-		propertyToLabels.put("id", "ID");
-		propertyToLabels.put("name", "First Name");
-		propertyToLabels.put("birthDate", "DOB");
+        propertyToLabels = new HashMap<String, String>();
+        propertyToLabels.put("id", "ID");
+        propertyToLabels.put("name", "First Name");
+        propertyToLabels.put("birthDate", "DOB");
 
-		propertyNames = new String[] { "id", "name", "birthDate" };
-		return new ListDataProvider<Person>(people, new ReflectiveColumnPropertyAccessor<Person>(propertyNames));
+        propertyNames = new String[] { "id", "name", "birthDate" };
+        return new ListDataProvider<Person>(people,
+                new ReflectiveColumnPropertyAccessor<Person>(propertyNames));
 
-	}
+    }
 
-	public class BodyLayerStack extends AbstractLayerTransform {
+    public class BodyLayerStack extends AbstractLayerTransform {
 
-		private SelectionLayer selectionLayer;
+        private SelectionLayer selectionLayer;
 
-		public BodyLayerStack(IDataProvider dataProvider) {
-			DataLayer bodyDataLayer = new DataLayer(dataProvider);
-			ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-			ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-			selectionLayer = new SelectionLayer(columnHideShowLayer);
-			ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
-			setUnderlyingLayer(viewportLayer);
-		}
+        public BodyLayerStack(IDataProvider dataProvider) {
+            DataLayer bodyDataLayer = new DataLayer(dataProvider);
+            ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
+                    bodyDataLayer);
+            ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
+                    columnReorderLayer);
+            selectionLayer = new SelectionLayer(columnHideShowLayer);
+            ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+            setUnderlyingLayer(viewportLayer);
+        }
 
-		public SelectionLayer getSelectionLayer() {
-			return selectionLayer;
-		}
-	}
+        public SelectionLayer getSelectionLayer() {
+            return selectionLayer;
+        }
+    }
 
-	public class ColumnHeaderLayerStack extends AbstractLayerTransform {
+    public class ColumnHeaderLayerStack extends AbstractLayerTransform {
 
-		public ColumnHeaderLayerStack(IDataProvider dataProvider) {
-			DataLayer dataLayer = new DataLayer(dataProvider);
-			ColumnHeaderLayer colHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayer, bodyLayer.getSelectionLayer());
-			setUnderlyingLayer(colHeaderLayer);
-		}
-	}
+        public ColumnHeaderLayerStack(IDataProvider dataProvider) {
+            DataLayer dataLayer = new DataLayer(dataProvider);
+            ColumnHeaderLayer colHeaderLayer = new ColumnHeaderLayer(dataLayer,
+                    bodyLayer, bodyLayer.getSelectionLayer());
+            setUnderlyingLayer(colHeaderLayer);
+        }
+    }
 
-	public class RowHeaderLayerStack extends AbstractLayerTransform {
+    public class RowHeaderLayerStack extends AbstractLayerTransform {
 
-		public RowHeaderLayerStack(IDataProvider dataProvider) {
-			DataLayer dataLayer = new DataLayer(dataProvider, 50, 20);
-			RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(dataLayer, bodyLayer, bodyLayer.getSelectionLayer());
-			setUnderlyingLayer(rowHeaderLayer);
-		}
-	}
+        public RowHeaderLayerStack(IDataProvider dataProvider) {
+            DataLayer dataLayer = new DataLayer(dataProvider, 50, 20);
+            RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(dataLayer,
+                    bodyLayer, bodyLayer.getSelectionLayer());
+            setUnderlyingLayer(rowHeaderLayer);
+        }
+    }
 }

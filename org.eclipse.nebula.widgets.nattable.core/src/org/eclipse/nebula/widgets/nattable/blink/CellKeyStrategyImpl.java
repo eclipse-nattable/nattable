@@ -12,8 +12,7 @@ package org.eclipse.nebula.widgets.nattable.blink;
 
 class CellKeyStrategyImpl implements KeyStrategy {
 
-	public String getKey(String columnProperty, String rowId)
-	{
-		return columnProperty + "-" + rowId; //$NON-NLS-1$
-	}
+    public String getKey(String columnProperty, String rowId) {
+        return columnProperty + "-" + rowId; //$NON-NLS-1$
+    }
 }

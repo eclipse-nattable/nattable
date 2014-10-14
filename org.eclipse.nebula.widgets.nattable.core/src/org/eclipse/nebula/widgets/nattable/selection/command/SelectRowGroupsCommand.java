@@ -15,59 +15,66 @@ import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class SelectRowGroupsCommand extends AbstractRowCommand {
-	
-	private ColumnPositionCoordinate columnPositionCoordinate;
-	private final boolean withShiftMask;
-	private final boolean withControlMask;
-	private boolean moveAnchorToTopOfGroup = false;
-	private int rowPositionToMoveIntoViewport = -1; 
 
-	public SelectRowGroupsCommand(ILayer layer, int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask, boolean moveAnchortoTopOfGroup) {
-		this(layer, columnPosition, rowPosition, withShiftMask, withControlMask, moveAnchortoTopOfGroup, -1);
-	}
-	
-	public SelectRowGroupsCommand(ILayer layer, int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask, boolean moveAnchortoTopOfGroup, int rowPositionToMoveIntoViewport) {
-		this(layer, columnPosition, rowPosition, withShiftMask, withControlMask);
-		this.moveAnchorToTopOfGroup = moveAnchortoTopOfGroup;
-		this.rowPositionToMoveIntoViewport = rowPositionToMoveIntoViewport;
-	}
-		
-	public SelectRowGroupsCommand(ILayer layer, int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
-		super(layer, rowPosition);
-		this.withShiftMask = withShiftMask;
-		this.withControlMask = withControlMask;
-		this.columnPositionCoordinate = new ColumnPositionCoordinate(layer, columnPosition);
-	}
-	
-	protected SelectRowGroupsCommand(SelectRowGroupsCommand command) {
-		super(command);
-		this.columnPositionCoordinate = command.columnPositionCoordinate;
-		this.withShiftMask = command.withShiftMask;
-		this.withControlMask = command.withControlMask;
-	}
-	
-	public int getColumnPosition() {
-		return columnPositionCoordinate.getColumnPosition();
-	}
+    private ColumnPositionCoordinate columnPositionCoordinate;
+    private final boolean withShiftMask;
+    private final boolean withControlMask;
+    private boolean moveAnchorToTopOfGroup = false;
+    private int rowPositionToMoveIntoViewport = -1;
 
-	public boolean isWithShiftMask() {
-		return withShiftMask;
-	}
+    public SelectRowGroupsCommand(ILayer layer, int columnPosition,
+            int rowPosition, boolean withShiftMask, boolean withControlMask,
+            boolean moveAnchortoTopOfGroup) {
+        this(layer, columnPosition, rowPosition, withShiftMask,
+                withControlMask, moveAnchortoTopOfGroup, -1);
+    }
 
-	public boolean isWithControlMask() {
-		return withControlMask;
-	}
-	
-	public SelectRowGroupsCommand cloneCommand() {
-		return new SelectRowGroupsCommand(this);
-	}
-	
-	public boolean isMoveAnchorToTopOfGroup() {
-		return moveAnchorToTopOfGroup;
-	}
-	
-	public int getRowPositionToMoveIntoViewport() {
-		return rowPositionToMoveIntoViewport;
-	}
-	
+    public SelectRowGroupsCommand(ILayer layer, int columnPosition,
+            int rowPosition, boolean withShiftMask, boolean withControlMask,
+            boolean moveAnchortoTopOfGroup, int rowPositionToMoveIntoViewport) {
+        this(layer, columnPosition, rowPosition, withShiftMask, withControlMask);
+        this.moveAnchorToTopOfGroup = moveAnchortoTopOfGroup;
+        this.rowPositionToMoveIntoViewport = rowPositionToMoveIntoViewport;
+    }
+
+    public SelectRowGroupsCommand(ILayer layer, int columnPosition,
+            int rowPosition, boolean withShiftMask, boolean withControlMask) {
+        super(layer, rowPosition);
+        this.withShiftMask = withShiftMask;
+        this.withControlMask = withControlMask;
+        this.columnPositionCoordinate = new ColumnPositionCoordinate(layer,
+                columnPosition);
+    }
+
+    protected SelectRowGroupsCommand(SelectRowGroupsCommand command) {
+        super(command);
+        this.columnPositionCoordinate = command.columnPositionCoordinate;
+        this.withShiftMask = command.withShiftMask;
+        this.withControlMask = command.withControlMask;
+    }
+
+    public int getColumnPosition() {
+        return columnPositionCoordinate.getColumnPosition();
+    }
+
+    public boolean isWithShiftMask() {
+        return withShiftMask;
+    }
+
+    public boolean isWithControlMask() {
+        return withControlMask;
+    }
+
+    public SelectRowGroupsCommand cloneCommand() {
+        return new SelectRowGroupsCommand(this);
+    }
+
+    public boolean isMoveAnchorToTopOfGroup() {
+        return moveAnchorToTopOfGroup;
+    }
+
+    public int getRowPositionToMoveIntoViewport() {
+        return rowPositionToMoveIntoViewport;
+    }
+
 }

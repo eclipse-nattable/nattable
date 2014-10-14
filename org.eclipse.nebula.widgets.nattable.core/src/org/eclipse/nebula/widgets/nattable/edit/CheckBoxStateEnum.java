@@ -12,6 +12,6 @@ package org.eclipse.nebula.widgets.nattable.edit;
 
 public enum CheckBoxStateEnum {
 
-	CHECKED, SEMICHECKED, UNCHECKED;
-	
+    CHECKED, SEMICHECKED, UNCHECKED;
+
 }

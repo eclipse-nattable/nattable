@@ -15,22 +15,21 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 
-
 public abstract class AbstractEventConflater implements IEventConflater {
 
-	protected List<ILayerEvent> queue = new LinkedList<ILayerEvent>();
+    protected List<ILayerEvent> queue = new LinkedList<ILayerEvent>();
 
-	public void addEvent(ILayerEvent event){
-		queue.add(event);
-	}
-	
-	public void clearQueue() {
-		queue.clear();
-	}
-	
-	public int getCount() {
-		return queue.size();
-	}
+    public void addEvent(ILayerEvent event) {
+        queue.add(event);
+    }
 
-	public abstract Runnable getConflaterTask();
+    public void clearQueue() {
+        queue.clear();
+    }
+
+    public int getCount() {
+        return queue.size();
+    }
+
+    public abstract Runnable getConflaterTask();
 }

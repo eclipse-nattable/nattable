@@ -15,14 +15,14 @@ import org.eclipse.swt.graphics.GC;
 
 public class GCFactory {
 
-	private final Drawable drawable;
+    private final Drawable drawable;
 
-	public GCFactory(Drawable drawable) {
-		this.drawable = drawable;
-	}
-	
-	public GC createGC() {
-		return new GC(drawable);
-	}
-	
+    public GCFactory(Drawable drawable) {
+        this.drawable = drawable;
+    }
+
+    public GC createGC() {
+        return new GC(drawable);
+    }
+
 }

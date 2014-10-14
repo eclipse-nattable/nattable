@@ -12,26 +12,27 @@ package org.eclipse.nebula.widgets.nattable.test.fixture.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 
-public class CommandHandlerFixture extends AbstractLayerCommandHandler<LayerCommandFixture>{
+public class CommandHandlerFixture extends
+        AbstractLayerCommandHandler<LayerCommandFixture> {
 
-	private LayerCommandFixture lastCommandHandled;
+    private LayerCommandFixture lastCommandHandled;
 
-	@Override
-	public boolean doCommand(LayerCommandFixture command) {
-		this.lastCommandHandled = command;
-		return true;
-	}
+    @Override
+    public boolean doCommand(LayerCommandFixture command) {
+        this.lastCommandHandled = command;
+        return true;
+    }
 
-	public Class<LayerCommandFixture> getCommandClass() {
-		return LayerCommandFixture.class;
-	}
-	
-	public LayerCommandFixture getLastCommandHandled() {
-		return lastCommandHandled;
-	}
-	
-	public void clearLastCommandHandled(){
-		lastCommandHandled = null;
-	}
+    public Class<LayerCommandFixture> getCommandClass() {
+        return LayerCommandFixture.class;
+    }
+
+    public LayerCommandFixture getLastCommandHandled() {
+        return lastCommandHandled;
+    }
+
+    public void clearLastCommandHandled() {
+        lastCommandHandled = null;
+    }
 
 }

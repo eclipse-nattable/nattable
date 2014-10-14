@@ -19,31 +19,35 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.BodyCellEditorMouseEventMa
 import org.eclipse.nebula.widgets.nattable.ui.matcher.IMouseEventMatcher;
 import org.junit.Assert;
 
-
 import org.junit.Test;
 
 public class BodyCellEditorMouseEventMatcherTest {
 
-	@Test
-	public void testEquals() {
-		IMouseEventMatcher matcher1 = new BodyCellEditorMouseEventMatcher(TextCellEditor.class);
-		IMouseEventMatcher matcher2 = new BodyCellEditorMouseEventMatcher(TextCellEditor.class);
-		Assert.assertEquals(matcher1, matcher2);
-	}
-	
-	@Test
-	public void testNotEqual() {
-		IMouseEventMatcher matcher = new BodyCellEditorMouseEventMatcher(TextCellEditor.class);
-		Assert.assertFalse(matcher.equals(new BodyCellEditorMouseEventMatcher(CheckBoxCellEditor.class)));
-	}
-	
-	@Test
-	public void testMap() {
-		Map<IMouseEventMatcher, String> map = new HashMap<IMouseEventMatcher, String>();
-		map.put(new BodyCellEditorMouseEventMatcher(TextCellEditor.class), "ABC");
-		Assert.assertEquals(1, map.size());
-		map.remove(new BodyCellEditorMouseEventMatcher(TextCellEditor.class));
-		Assert.assertEquals(0, map.size());
-	}
-	
+    @Test
+    public void testEquals() {
+        IMouseEventMatcher matcher1 = new BodyCellEditorMouseEventMatcher(
+                TextCellEditor.class);
+        IMouseEventMatcher matcher2 = new BodyCellEditorMouseEventMatcher(
+                TextCellEditor.class);
+        Assert.assertEquals(matcher1, matcher2);
+    }
+
+    @Test
+    public void testNotEqual() {
+        IMouseEventMatcher matcher = new BodyCellEditorMouseEventMatcher(
+                TextCellEditor.class);
+        Assert.assertFalse(matcher.equals(new BodyCellEditorMouseEventMatcher(
+                CheckBoxCellEditor.class)));
+    }
+
+    @Test
+    public void testMap() {
+        Map<IMouseEventMatcher, String> map = new HashMap<IMouseEventMatcher, String>();
+        map.put(new BodyCellEditorMouseEventMatcher(TextCellEditor.class),
+                "ABC");
+        Assert.assertEquals(1, map.size());
+        map.remove(new BodyCellEditorMouseEventMatcher(TextCellEditor.class));
+        Assert.assertEquals(0, map.size());
+    }
+
 }

@@ -20,36 +20,36 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 
-
 public class HideRowPositionsEvent extends RowStructuralChangeEvent {
 
-	public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
-		super(layer, PositionUtil.getRanges(rowPositions));
-	}
-	
-	// Copy constructor
-	protected HideRowPositionsEvent(HideRowPositionsEvent event) {
-		super(event);
-	}
-	
-	public HideRowPositionsEvent cloneEvent() {
-		return new HideRowPositionsEvent(this);
-	}
-	
-	public Collection<StructuralDiff> getRowDiffs() {
-		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
+    public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
+        super(layer, PositionUtil.getRanges(rowPositions));
+    }
 
-		for (Range range : getRowPositionRanges()) {
-			StructuralDiff diff = new StructuralDiff(DiffTypeEnum.DELETE, range, new Range(range.start, range.start));
-			rowDiffs.add(diff);
-		}
+    // Copy constructor
+    protected HideRowPositionsEvent(HideRowPositionsEvent event) {
+        super(event);
+    }
 
-		return rowDiffs;
-	}
+    public HideRowPositionsEvent cloneEvent() {
+        return new HideRowPositionsEvent(this);
+    }
 
-	@Override
-	public boolean convertToLocal(ILayer localLayer) {
-		super.convertToLocal(localLayer);
-		return true;
-	}
+    public Collection<StructuralDiff> getRowDiffs() {
+        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
+
+        for (Range range : getRowPositionRanges()) {
+            StructuralDiff diff = new StructuralDiff(DiffTypeEnum.DELETE,
+                    range, new Range(range.start, range.start));
+            rowDiffs.add(diff);
+        }
+
+        return rowDiffs;
+    }
+
+    @Override
+    public boolean convertToLocal(ILayer localLayer) {
+        super.convertToLocal(localLayer);
+        return true;
+    }
 }

@@ -19,53 +19,62 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Specialised {@link TextCellEditor} that sets the echo char of the text control used by
- * this editor to a configured character. You can configure the echo character by setting
- * the attribute {@link CellStyleAttributes#PASSWORD_ECHO_CHAR} to the cell style to use. 
- * If there is no echo character configured, the bullet character will be used.
+ * Specialised {@link TextCellEditor} that sets the echo char of the text
+ * control used by this editor to a configured character. You can configure the
+ * echo character by setting the attribute
+ * {@link CellStyleAttributes#PASSWORD_ECHO_CHAR} to the cell style to use. If
+ * there is no echo character configured, the bullet character will be used.
  * 
- * <p>As the anonymization of the inserted value only relates to the {@link Text} control,
- * ensure to also register the {@link PasswordTextPainter} so the value is not shown in clear text
- * after commit.
+ * <p>
+ * As the anonymization of the inserted value only relates to the {@link Text}
+ * control, ensure to also register the {@link PasswordTextPainter} so the value
+ * is not shown in clear text after commit.
  * 
  * @author Dirk Fauth
  * @see PasswordTextPainter
  */
 public class PasswordCellEditor extends TextCellEditor {
 
-	/**
-	 * Creates a PasswordCellEditor that will not commit a value on pressing the up or the down key.
-	 */
-	public PasswordCellEditor() {
-		this(false);
-	}
-	
-	/**
-	 * Creates a PasswordCellEditor.
-	 * @param commitOnUpDown Flag to configure whether the editor should commit and move the selection 
-	 * 			in the corresponding way if the up or down key is pressed.
-	 */
-	public PasswordCellEditor(boolean commitOnUpDown) {
-		super(commitOnUpDown);
-	}
+    /**
+     * Creates a PasswordCellEditor that will not commit a value on pressing the
+     * up or the down key.
+     */
+    public PasswordCellEditor() {
+        this(false);
+    }
 
-	@Override
-	public Text createEditorControl(Composite parent) {
-		int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.PASSWORD;
-		if (this.editMode == EditModeEnum.DIALOG) {
-			style = style | SWT.BORDER;
-		}
+    /**
+     * Creates a PasswordCellEditor.
+     * 
+     * @param commitOnUpDown
+     *            Flag to configure whether the editor should commit and move
+     *            the selection in the corresponding way if the up or down key
+     *            is pressed.
+     */
+    public PasswordCellEditor(boolean commitOnUpDown) {
+        super(commitOnUpDown);
+    }
 
-		final Text textControl = super.createEditorControl(
-				parent, style);
-		
-		//search for the configured echo character within the ConfigRegistry
-		Character configEchoChar = this.cellStyle.getAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR);
-		//set the echo char of the Text control to the configured one or if there is
-		//none configured, set the bullet char
-		textControl.setEchoChar(configEchoChar != null ? configEchoChar : '\u2022');
-		
-		return textControl;
-	}
+    @Override
+    public Text createEditorControl(Composite parent) {
+        int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
+                | SWT.PASSWORD;
+        if (this.editMode == EditModeEnum.DIALOG) {
+            style = style | SWT.BORDER;
+        }
+
+        final Text textControl = super.createEditorControl(parent, style);
+
+        // search for the configured echo character within the ConfigRegistry
+        Character configEchoChar = this.cellStyle
+                .getAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR);
+        // set the echo char of the Text control to the configured one or if
+        // there is
+        // none configured, set the bullet char
+        textControl.setEchoChar(configEchoChar != null ? configEchoChar
+                : '\u2022');
+
+        return textControl;
+    }
 
 }

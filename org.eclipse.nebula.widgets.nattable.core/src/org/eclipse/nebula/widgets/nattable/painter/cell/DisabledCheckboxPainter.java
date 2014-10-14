@@ -10,17 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Image;
 
 public class DisabledCheckboxPainter extends CheckBoxPainter {
 
-	public DisabledCheckboxPainter() {
-		super(GUIHelper.getImage("checked_disabled"), GUIHelper.getImage("unchecked_disabled")); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+    public DisabledCheckboxPainter() {
+        super(
+                GUIHelper.getImage("checked_disabled"), GUIHelper.getImage("unchecked_disabled")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
 
-	public DisabledCheckboxPainter(Image checkedImg, Image uncheckedImg) {
-		super(checkedImg, uncheckedImg);
-	}
+    public DisabledCheckboxPainter(Image checkedImg, Image uncheckedImg) {
+        super(checkedImg, uncheckedImg);
+    }
 }

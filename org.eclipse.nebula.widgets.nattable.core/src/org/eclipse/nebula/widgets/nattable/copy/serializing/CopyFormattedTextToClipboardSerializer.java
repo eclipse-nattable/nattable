@@ -14,14 +14,17 @@ import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardComma
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
-public class CopyFormattedTextToClipboardSerializer extends CopyDataToClipboardSerializer {
+public class CopyFormattedTextToClipboardSerializer extends
+        CopyDataToClipboardSerializer {
 
-	public CopyFormattedTextToClipboardSerializer(ILayerCell[][] copiedCells, CopyDataToClipboardCommand command) {
-		super(copiedCells, command);
-	}
+    public CopyFormattedTextToClipboardSerializer(ILayerCell[][] copiedCells,
+            CopyDataToClipboardCommand command) {
+        super(copiedCells, command);
+    }
 
-	@Override
+    @Override
     protected String getTextForCell(ILayerCell cell) {
-		return CellDisplayConversionUtils.convertDataType(cell, getCommand().getConfigRegistry());
-	}
+        return CellDisplayConversionUtils.convertDataType(cell, getCommand()
+                .getConfigRegistry());
+    }
 }

@@ -16,28 +16,25 @@ import org.eclipse.nebula.widgets.nattable.ui.action.IMouseClickAction;
 import org.eclipse.swt.events.MouseEvent;
 
 /**
- * Action that will execute an {@link EditCellCommand}.
- * It determines the cell to edit by mouse pointer coordinates
- * instead of using a SelectionLayer. So this action is also
- * working in NatTables that doesn't have a SelectionLayer in
- * its composition of layers.
+ * Action that will execute an {@link EditCellCommand}. It determines the cell
+ * to edit by mouse pointer coordinates instead of using a SelectionLayer. So
+ * this action is also working in NatTables that doesn't have a SelectionLayer
+ * in its composition of layers.
  */
 public class MouseEditAction implements IMouseClickAction {
 
-	@Override
-	public void run(NatTable natTable, MouseEvent event) {
-		int columnPosition = natTable.getColumnPositionByX(event.x);
-		int rowPosition = natTable.getRowPositionByY(event.y);
+    @Override
+    public void run(NatTable natTable, MouseEvent event) {
+        int columnPosition = natTable.getColumnPositionByX(event.x);
+        int rowPosition = natTable.getRowPositionByY(event.y);
 
-		natTable.doCommand(
-				new EditCellCommand(
-						natTable,
-						natTable.getConfigRegistry(),
-						natTable.getCellByPosition(columnPosition, rowPosition)));
-	}
+        natTable.doCommand(new EditCellCommand(natTable, natTable
+                .getConfigRegistry(), natTable.getCellByPosition(
+                columnPosition, rowPosition)));
+    }
 
-	@Override
-	public boolean isExclusive() {
-		return true;
-	}
+    @Override
+    public boolean isExclusive() {
+        return true;
+    }
 }

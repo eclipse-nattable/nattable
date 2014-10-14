@@ -19,25 +19,32 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnShowComma
 import org.junit.Test;
 
 public class MultiColumnShowCommandTest {
-	
-	@Test
-	public void testClone() throws Exception {
-		Collection<Integer> columnIndexes = new ArrayList<Integer>();
-		columnIndexes.add(3);
-		columnIndexes.add(6);
-		columnIndexes.add(9);
-		columnIndexes.add(12);
-		MultiColumnShowCommand command = new MultiColumnShowCommand(columnIndexes);
-		MultiColumnShowCommand copiedCommand = command.cloneCommand();
-		
-		Collection<Integer> commandIndexes = command.getColumnIndexes();
-		Collection<Integer> cloneIndexes = copiedCommand.getColumnIndexes();
-		
-		assertTrue("The commands reference the same instance", command != copiedCommand);
-		assertTrue("The command collections reference the same instance", commandIndexes != cloneIndexes);
-		assertTrue("The cloned command does not contain index 3", cloneIndexes.contains(3));
-		assertTrue("The cloned command does not contain index 6", cloneIndexes.contains(6));
-		assertTrue("The cloned command does not contain index 9", cloneIndexes.contains(9));
-		assertTrue("The cloned command does not contain index 12", cloneIndexes.contains(12));
-	}
+
+    @Test
+    public void testClone() throws Exception {
+        Collection<Integer> columnIndexes = new ArrayList<Integer>();
+        columnIndexes.add(3);
+        columnIndexes.add(6);
+        columnIndexes.add(9);
+        columnIndexes.add(12);
+        MultiColumnShowCommand command = new MultiColumnShowCommand(
+                columnIndexes);
+        MultiColumnShowCommand copiedCommand = command.cloneCommand();
+
+        Collection<Integer> commandIndexes = command.getColumnIndexes();
+        Collection<Integer> cloneIndexes = copiedCommand.getColumnIndexes();
+
+        assertTrue("The commands reference the same instance",
+                command != copiedCommand);
+        assertTrue("The command collections reference the same instance",
+                commandIndexes != cloneIndexes);
+        assertTrue("The cloned command does not contain index 3",
+                cloneIndexes.contains(3));
+        assertTrue("The cloned command does not contain index 6",
+                cloneIndexes.contains(6));
+        assertTrue("The cloned command does not contain index 9",
+                cloneIndexes.contains(9));
+        assertTrue("The cloned command does not contain index 12",
+                cloneIndexes.contains(12));
+    }
 }

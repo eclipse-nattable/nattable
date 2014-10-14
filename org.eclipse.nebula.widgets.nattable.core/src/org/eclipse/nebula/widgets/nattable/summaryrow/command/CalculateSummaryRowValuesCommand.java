@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *******************************************************************************/ 
+ *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.summaryrow.command;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -17,8 +17,8 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 /**
  * Command to trigger the calculation of the summary row values manually.
  * <p>
- * Usually the calculation will be triggered when the summary row moves into
- * the viewport. For large tables that should be printed or exported the calculation
+ * Usually the calculation will be triggered when the summary row moves into the
+ * viewport. For large tables that should be printed or exported the calculation
  * is too late. This is because the calculation happens in a seperate thread to
  * avoid freezing of the table on calculation.
  * <p>
@@ -26,9 +26,9 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
  * summary row. Therefore the handling of this command is implemented directly
  * in the SummaryRowLayer.
  * <p>
- * Note: This is only intended for internal usage and could cause 
- * 		 a performance leak. If you want to use it for your use cases you should
- * 		 be careful about performance issues.
+ * Note: This is only intended for internal usage and could cause a performance
+ * leak. If you want to use it for your use cases you should be careful about
+ * performance issues.
  * 
  * @author Dirk Fauth
  *
@@ -36,17 +36,19 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
  */
 public class CalculateSummaryRowValuesCommand implements ILayerCommand {
 
-	@Override
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		// no need for a check as the command simply triggers the calculation of the 
-		// summary row values and firing a CalculationFinishedEvent
-		return true;
-	}
+    @Override
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        // no need for a check as the command simply triggers the calculation of
+        // the
+        // summary row values and firing a CalculationFinishedEvent
+        return true;
+    }
 
-	@Override
-	public ILayerCommand cloneCommand() {
-		// as the command doesn't have a state, the clone is simply a new instance
-		return new CalculateSummaryRowValuesCommand();
-	}
+    @Override
+    public ILayerCommand cloneCommand() {
+        // as the command doesn't have a state, the clone is simply a new
+        // instance
+        return new CalculateSummaryRowValuesCommand();
+    }
 
 }

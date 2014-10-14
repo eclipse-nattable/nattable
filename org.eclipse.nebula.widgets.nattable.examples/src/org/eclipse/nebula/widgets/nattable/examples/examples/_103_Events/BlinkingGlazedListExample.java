@@ -55,239 +55,259 @@ import ca.odell.glazedlists.ObservableElementList;
 /*
  * This is a work in progress while seeking best solution and is therefore
  * unlikely to be a good reference example yet...
-*/
+ */
 public class BlinkingGlazedListExample extends AbstractNatExample {
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(800, 400, new BlinkingGlazedListExample());
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(800, 400,
+                new BlinkingGlazedListExample());
+    }
 
-	private static final String BLINK_UP_CONFIG_LABEL = "blinkUpConfigLabel";
-	private static final String BLINK_DOWN_CONFIG_LABEL = "blinkDownConfigLabel";
+    private static final String BLINK_UP_CONFIG_LABEL = "blinkUpConfigLabel";
+    private static final String BLINK_DOWN_CONFIG_LABEL = "blinkDownConfigLabel";
 
-	private final Timer timer = new Timer();
+    private final Timer timer = new Timer();
 
-	private final EventList<Tuple> baseTupleList;
-	private final List<String> headers = new ArrayList<String>();
-	private final BasicEventList<Tuple> eventList;
+    private final EventList<Tuple> baseTupleList;
+    private final List<String> headers = new ArrayList<String>();
+    private final BasicEventList<Tuple> eventList;
 
+    public BlinkingGlazedListExample() {
+        headers.add("Name");
+        headers.add("Value");
+        headers.add("Price");
+        headers.add("Quantity");
 
-	public BlinkingGlazedListExample(){
-		headers.add("Name");
-		headers.add("Value");
-		headers.add("Price");
-		headers.add("Quantity");
+        eventList = new BasicEventList<Tuple>();
+        baseTupleList = GlazedLists.threadSafeList(eventList);
+    }
 
-		eventList = new BasicEventList<Tuple>();
-		baseTupleList = GlazedLists.threadSafeList(eventList);
-	}
+    @Override
+    public String getDescription() {
+        return "Cell blinking";
+    }
 
-	@Override
-	public String getDescription() {
-		return "Cell blinking";
-	}
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // Data backing the table
+        baseTupleList.add(new Tuple(headers, new Object[] { "Name 1",
+                "Value 1", 1.5d, -1000 }, 0));
+        baseTupleList.add(new Tuple(headers, new Object[] { "Name 2",
+                "Value 2", -2.5d, 2000 }, 1));
+        baseTupleList.add(new Tuple(headers, new Object[] { "Name 3",
+                "Value 3", 3.5d, -3000 }, 2));
+        baseTupleList.add(new Tuple(headers, new Object[] { "Name 4",
+                "Value 4", -4.5d, 4000 }, 3));
+        baseTupleList.add(new Tuple(headers, new Object[] { "Name 5",
+                "Value 5", 5.5d, -5000 }, 4));
 
-	@Override
-	public Control createExampleControl(Composite parent) {
-		// Data backing the table
-		baseTupleList.add(new Tuple(headers, new Object[]{"Name 1", "Value 1", 1.5d, -1000}, 0));
-		baseTupleList.add(new Tuple(headers, new Object[]{"Name 2", "Value 2", -2.5d, 2000}, 1));
-		baseTupleList.add(new Tuple(headers, new Object[]{"Name 3", "Value 3", 3.5d, -3000}, 2));
-		baseTupleList.add(new Tuple(headers, new Object[]{"Name 4", "Value 4", -4.5d, 4000}, 3));
-		baseTupleList.add(new Tuple(headers, new Object[]{"Name 5", "Value 5", 5.5d, -5000}, 4));
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-		ConfigRegistry configRegistry = new ConfigRegistry();
+        ObservableElementList<Tuple> observableTupleList = new ObservableElementList<Tuple>(
+                baseTupleList, GlazedLists.beanConnector(Tuple.class));
+        TupleColumnPropertyAccessor columnPropertyAccessor = new TupleColumnPropertyAccessor();
+        ListDataProvider<Tuple> bodyDataProvider = new ListDataProvider<Tuple>(
+                observableTupleList, columnPropertyAccessor);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
-		ObservableElementList<Tuple> observableTupleList = new ObservableElementList<Tuple>(baseTupleList, GlazedLists.beanConnector(Tuple.class));
-		TupleColumnPropertyAccessor columnPropertyAccessor = new TupleColumnPropertyAccessor();
-		ListDataProvider<Tuple> bodyDataProvider = new ListDataProvider<Tuple>(observableTupleList, columnPropertyAccessor);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        // Enable capturing glazed list update events
+        GlazedListsEventLayer<Tuple> glazedListEventsLayer = new GlazedListsEventLayer<Tuple>(
+                bodyDataLayer, baseTupleList);
 
-		// Enable capturing glazed list update events
-		GlazedListsEventLayer<Tuple> glazedListEventsLayer = new GlazedListsEventLayer<Tuple>(bodyDataLayer, baseTupleList);
+        // Enable blinking
+        final BlinkLayer<Tuple> blinkingLayer = new BlinkLayer<Tuple>(
+                glazedListEventsLayer, bodyDataProvider, getRowIdAccessor(),
+                columnPropertyAccessor, configRegistry);
 
-		// Enable blinking
-		final BlinkLayer<Tuple> blinkingLayer = new BlinkLayer<Tuple>(glazedListEventsLayer, bodyDataProvider, getRowIdAccessor(), columnPropertyAccessor, configRegistry);
+        registerBlinkingConfigCells(configRegistry);
 
-		registerBlinkingConfigCells(configRegistry);
+        // Add Listener to existing elements
+        try {
+            baseTupleList.getReadWriteLock().readLock().lock();
+            for (Tuple tuple : baseTupleList) {
+                tuple.addPropertyChangeListener(glazedListEventsLayer);
+            }
+        } finally {
+            baseTupleList.getReadWriteLock().readLock().unlock();
+        }
 
-		// Add Listener to existing elements
-		try{
-			baseTupleList.getReadWriteLock().readLock().lock();
-			for (Tuple tuple : baseTupleList) {
-				tuple.addPropertyChangeListener(glazedListEventsLayer);
-			}
-		}
-		finally{
-			baseTupleList.getReadWriteLock().readLock().unlock();
-		}
+        // Setup row/column and corner layers
+        ColumnHeaderDataProvider defaultColumnHeaderDataProvider = new ColumnHeaderDataProvider();
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultCornerDataProvider defaultCornerDataProvider = new DefaultCornerDataProvider(
+                defaultColumnHeaderDataProvider, rowHeaderDataProvider);
 
-		// Setup row/column and corner layers
-		ColumnHeaderDataProvider defaultColumnHeaderDataProvider = new ColumnHeaderDataProvider();
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultCornerDataProvider defaultCornerDataProvider = new DefaultCornerDataProvider(defaultColumnHeaderDataProvider, rowHeaderDataProvider);
+        // Build composite for all regions
+        DefaultGridLayer gridLayer = new DefaultGridLayer(blinkingLayer,
+                new DefaultColumnHeaderDataLayer(
+                        defaultColumnHeaderDataProvider),
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider),
+                new DataLayer(defaultCornerDataProvider));
 
-		// Build composite for all regions
-		DefaultGridLayer gridLayer = new DefaultGridLayer(
-                                              blinkingLayer,
-                                              new DefaultColumnHeaderDataLayer(defaultColumnHeaderDataProvider),
-                                              new DefaultRowHeaderDataLayer(rowHeaderDataProvider),
-                                              new DataLayer(defaultCornerDataProvider));
+        NatTable natTable = new NatTable(parent, gridLayer, false);
 
-		NatTable natTable = new NatTable(parent, gridLayer, false);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.configure();
 
-		natTable.configure();
+        return natTable;
+    }
 
-		return natTable;
-	}
+    private IRowIdAccessor<Tuple> getRowIdAccessor() {
+        return new IRowIdAccessor<Tuple>() {
+            @Override
+            public Serializable getRowId(Tuple rowObject) {
+                return rowObject.id;
+            }
+        };
+    }
 
-	private IRowIdAccessor<Tuple> getRowIdAccessor() {
-		return new IRowIdAccessor<Tuple>(){
-			@Override
-			public Serializable getRowId(Tuple rowObject) {
-				return rowObject.id;
-			}
-		};
-	}
+    @Override
+    public void onStart() {
+        timer.schedule(new UpdateTupleTask(), 500L, 2000L);
+    }
 
-	@Override
-	public void onStart() {
-		timer.schedule(new UpdateTupleTask(), 500L, 2000L);
-	}
+    @Override
+    public void onStop() {
+        timer.cancel();
+    }
 
-	@Override
-	public void onStop() {
-		timer.cancel();
-	}
+    public class Tuple implements Comparable<Tuple> {
 
-	public class Tuple implements Comparable<Tuple> {
+        private final Object[] objects;
+        private final List<String> propertyNames;
+        private final long id;
 
-		private final Object[] objects;
-		private final List<String> propertyNames;
-		private final long id;
+        private final PropertyChangeSupport support;
 
-		private final PropertyChangeSupport support;
+        public Tuple(List<String> propertyNames, Object[] objects, long id) {
+            this.propertyNames = propertyNames;
+            this.objects = objects;
+            this.id = id;
+            support = new PropertyChangeSupport(this);
+        }
 
-		public Tuple(List<String> propertyNames, Object[] objects, long id) {
-			this.propertyNames = propertyNames;
-			this.objects = objects;
-			this.id = id;
-			support = new PropertyChangeSupport(this);
-		}
+        public void addPropertyChangeListener(PropertyChangeListener listener) {
+            support.addPropertyChangeListener(listener);
+        }
 
-		public void addPropertyChangeListener(PropertyChangeListener listener) {
-			support.addPropertyChangeListener(listener);
-		}
+        public void removePropertyChangeListener(PropertyChangeListener listener) {
+            support.removePropertyChangeListener(listener);
+        }
 
-		public void removePropertyChangeListener(PropertyChangeListener listener) {
-			support.removePropertyChangeListener(listener);
-		}
+        public Object getValue(int index) {
+            return objects[index];
+        }
 
-		public Object getValue(int index) {
-			return objects[index];
-		}
+        public void update(int index, Object newValue) {
+            Object oldValue = objects[index];
+            objects[index] = newValue;
+            System.out.println("Update: " + newValue);
+            support.firePropertyChange(propertyNames.get(index), oldValue,
+                    newValue);
+        }
 
-		public void update(int index, Object newValue) {
-			Object oldValue = objects[index];
-			objects[index] = newValue;
-			System.out.println("Update: " + newValue);
-			support.firePropertyChange(propertyNames.get(index), oldValue, newValue);
-		}
+        @Override
+        public int compareTo(Tuple o) {
+            return 0;
+        }
+    }
 
-		@Override
-		public int compareTo(Tuple o) {
-			return 0;
-		}
-	}
+    private void registerBlinkingConfigCells(ConfigRegistry configRegistry) {
+        configRegistry.registerConfigAttribute(
+                BlinkConfigAttributes.BLINK_RESOLVER, getBlinkResolver(),
+                DisplayMode.NORMAL);
 
-	private void registerBlinkingConfigCells(ConfigRegistry configRegistry) {
-		configRegistry.registerConfigAttribute(BlinkConfigAttributes.BLINK_RESOLVER, getBlinkResolver(), DisplayMode.NORMAL);
+        // Styles
+        Style cellStyle = new Style();
+        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                cellStyle, DisplayMode.NORMAL, BLINK_UP_CONFIG_LABEL);
 
-		// Styles
-		Style cellStyle = new Style();
-		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, BLINK_UP_CONFIG_LABEL);
+        cellStyle = new Style();
+        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                Display.getDefault().getSystemColor(SWT.COLOR_RED));
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                cellStyle, DisplayMode.NORMAL, BLINK_DOWN_CONFIG_LABEL);
+    }
 
-		cellStyle = new Style();
-		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getDefault().getSystemColor(SWT.COLOR_RED));
-		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL, BLINK_DOWN_CONFIG_LABEL);
-	}
+    private IBlinkingCellResolver getBlinkResolver() {
+        return new BlinkingCellResolver() {
+            private final String[] configLabels = new String[1];
 
-	private IBlinkingCellResolver getBlinkResolver() {
-		return new BlinkingCellResolver() {
-			private final String[] configLabels = new String[1];
+            @Override
+            public String[] resolve(Object oldValue, Object newValue) {
+                int old = ((Integer) oldValue).intValue();
+                int latest = ((Integer) newValue).intValue();
+                configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
+                        : BLINK_DOWN_CONFIG_LABEL);
+                return configLabels;
+            };
+        };
+    }
 
-			@Override
-			public String[] resolve(Object oldValue, Object newValue) {
-				int old = ((Integer) oldValue).intValue();
-				int latest = ((Integer) newValue).intValue();
-				configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL : BLINK_DOWN_CONFIG_LABEL);
-				return configLabels;
-			};
-		};
-	}
+    public class TupleColumnPropertyAccessor implements
+            IColumnPropertyAccessor<Tuple> {
 
-	public class TupleColumnPropertyAccessor implements IColumnPropertyAccessor<Tuple> {
+        @Override
+        public int getColumnCount() {
+            return headers.size();
+        }
 
-		@Override
-		public int getColumnCount() {
-			return headers.size();
-		}
+        @Override
+        public Object getDataValue(Tuple tuple, int colIndex) {
+            return tuple.getValue(colIndex);
+        }
 
-		@Override
-		public Object getDataValue(Tuple tuple, int colIndex) {
-			return tuple.getValue(colIndex);
-		}
+        @Override
+        public void setDataValue(Tuple arg0, int arg1, Object arg2) {
+            // not supported
+        }
 
-		@Override
-		public void setDataValue(Tuple arg0, int arg1, Object arg2) {
-			// not supported
-		}
+        @Override
+        public int getColumnIndex(String propertyName) {
+            return headers.indexOf(propertyName);
+        }
 
-		@Override
-		public int getColumnIndex(String propertyName) {
-			return headers.indexOf(propertyName);
-		}
+        @Override
+        public String getColumnProperty(int columnIndex) {
+            return headers.get(columnIndex);
+        }
 
-		@Override
-		public String getColumnProperty(int columnIndex) {
-			return headers.get(columnIndex);
-		}
+    }
 
-	}
+    public class ColumnHeaderDataProvider implements IDataProvider {
 
-	public class ColumnHeaderDataProvider implements IDataProvider {
+        @Override
+        public int getColumnCount() {
+            return headers.size();
+        }
 
-		@Override
-		public int getColumnCount() {
-			return headers.size();
-		}
+        @Override
+        public Object getDataValue(int columnIndex, int rowIndex) {
+            return headers.get(columnIndex);
+        }
 
-		@Override
-		public Object getDataValue(int columnIndex, int rowIndex) {
-			return headers.get(columnIndex);
-		}
+        @Override
+        public int getRowCount() {
+            return 1;
+        }
 
-		@Override
-		public int getRowCount() {
-			return 1;
-		}
+        @Override
+        public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+            // none
+        }
+    }
 
-		@Override
-		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-			// none
-		}
-	}
-
-	public class UpdateTupleTask extends TimerTask {
-		@Override
-		public void run() {
-			Tuple toUpdate = baseTupleList.get(2);
-			Integer existingValue = (Integer) toUpdate.getValue(3);
-			toUpdate.update(3, existingValue * -1);
-		}
-	}
+    public class UpdateTupleTask extends TimerTask {
+        @Override
+        public void run() {
+            Tuple toUpdate = baseTupleList.get(2);
+            Integer existingValue = (Integer) toUpdate.getValue(3);
+            toUpdate.update(3, existingValue * -1);
+        }
+    }
 }

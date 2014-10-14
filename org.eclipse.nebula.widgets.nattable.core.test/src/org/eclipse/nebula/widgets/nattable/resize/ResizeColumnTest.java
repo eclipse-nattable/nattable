@@ -19,17 +19,18 @@ import org.junit.Test;
 
 public class ResizeColumnTest {
 
-	/**
-	 * Test for bug NTBL-431
-	 */
-	@Test
-	public void reiszeColumnInATableWithNoRows() throws Exception {
-		NatTableFixture natTable = new NatTableFixture(new DummyGridLayerStack(5, 0), true);
+    /**
+     * Test for bug NTBL-431
+     */
+    @Test
+    public void reiszeColumnInATableWithNoRows() throws Exception {
+        NatTableFixture natTable = new NatTableFixture(new DummyGridLayerStack(
+                5, 0), true);
 
-		assertEquals(100, natTable.getColumnWidthByPosition(2));
-		natTable.doCommand(new ColumnResizeCommand(natTable, 2, 150));
+        assertEquals(100, natTable.getColumnWidthByPosition(2));
+        natTable.doCommand(new ColumnResizeCommand(natTable, 2, 150));
 
-		assertEquals(150, natTable.getColumnWidthByPosition(2));
-	}
+        assertEquals(150, natTable.getColumnWidthByPosition(2));
+    }
 
 }

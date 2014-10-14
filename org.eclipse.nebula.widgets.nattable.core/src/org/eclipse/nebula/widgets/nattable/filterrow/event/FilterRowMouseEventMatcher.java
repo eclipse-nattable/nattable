@@ -21,13 +21,14 @@ import org.eclipse.swt.events.MouseEvent;
 
 public class FilterRowMouseEventMatcher implements IMouseEventMatcher {
 
-	public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
-		NatEventData eventData = NatEventData.createInstanceFromEvent(event);
-		LabelStack labels = eventData.getRegionLabels();
+    public boolean matches(NatTable natTable, MouseEvent event,
+            LabelStack regionLabels) {
+        NatEventData eventData = NatEventData.createInstanceFromEvent(event);
+        LabelStack labels = eventData.getRegionLabels();
 
-		if(isNotNull(labels)){
-			return labels.getLabels().contains(GridRegion.FILTER_ROW);
-		}
-		return false;
-	}
+        if (isNotNull(labels)) {
+            return labels.getLabels().contains(GridRegion.FILTER_ROW);
+        }
+        return false;
+    }
 }

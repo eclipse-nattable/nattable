@@ -64,113 +64,134 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class _200_Group_by extends AbstractNatExample {
 
-	public static void main(String[] args) {
-		StandaloneNatExampleRunner.run(800, 400, new _200_Group_by());
-	}
+    public static void main(String[] args) {
+        StandaloneNatExampleRunner.run(800, 400, new _200_Group_by());
+    }
 
-	@Override
-	public String getDescription() {
-		return
-				"This example has a 'Group By' region at the top.\n" +
-				"If you drag a column header into this region, rows in the grid will be grouped by this column.\n" +
-				"If you right-click on the names in the Group By region, you can ungroup by the clicked column.";
-	}
+    @Override
+    public String getDescription() {
+        return "This example has a 'Group By' region at the top.\n"
+                + "If you drag a column header into this region, rows in the grid will be grouped by this column.\n"
+                + "If you right-click on the names in the Group By region, you can ungroup by the clicked column.";
+    }
 
-	@Override
-	public Control createExampleControl(Composite parent) {
-		Composite comp = new Composite(parent, SWT.NONE);
-		comp.setLayout(new GridLayout(1, false));
+    @Override
+    public Control createExampleControl(Composite parent) {
+        Composite comp = new Composite(parent, SWT.NONE);
+        comp.setLayout(new GridLayout(1, false));
 
-		// Underlying data source
-		EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList(200));
-		String[] propertyNames = RowDataListFixture.getPropertyNames();
-		Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
-		IColumnPropertyAccessor<RowDataFixture> reflectiveColumnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
+        // Underlying data source
+        EventList<RowDataFixture> eventList = GlazedLists
+                .eventList(RowDataListFixture.getList(200));
+        String[] propertyNames = RowDataListFixture.getPropertyNames();
+        Map<String, String> propertyToLabelMap = RowDataListFixture
+                .getPropertyToLabelMap();
+        IColumnPropertyAccessor<RowDataFixture> reflectiveColumnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(
+                propertyNames);
 
-		GroupByModel groupByModel = new GroupByModel();
+        GroupByModel groupByModel = new GroupByModel();
 
-		// Summary
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		configRegistry.registerConfigAttribute(GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-				new SummationGroupBySummaryProvider<RowDataFixture>(reflectiveColumnPropertyAccessor),
-				DisplayMode.NORMAL, GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 
-				RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME));
-		
-		GroupByDataLayer<RowDataFixture> bodyDataLayer = new GroupByDataLayer<RowDataFixture>(groupByModel, eventList,
-				reflectiveColumnPropertyAccessor, configRegistry);	
+        // Summary
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        configRegistry
+                .registerConfigAttribute(
+                        GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
+                        new SummationGroupBySummaryProvider<RowDataFixture>(
+                                reflectiveColumnPropertyAccessor),
+                        DisplayMode.NORMAL,
+                        GroupByDataLayer.GROUP_BY_COLUMN_PREFIX
+                                + RowDataListFixture
+                                        .getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME));
 
-		// Body layer
-		ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-		ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-		SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
+        GroupByDataLayer<RowDataFixture> bodyDataLayer = new GroupByDataLayer<RowDataFixture>(
+                groupByModel, eventList, reflectiveColumnPropertyAccessor,
+                configRegistry);
 
-		TreeLayer treeLayer = new TreeLayer(selectionLayer, bodyDataLayer.getTreeRowModel());
+        // Body layer
+        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
+                bodyDataLayer);
+        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
+                columnReorderLayer);
+        SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
 
-		FreezeLayer freeze = new FreezeLayer(treeLayer);
+        TreeLayer treeLayer = new TreeLayer(selectionLayer,
+                bodyDataLayer.getTreeRowModel());
 
-		ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+        FreezeLayer freeze = new FreezeLayer(treeLayer);
 
-		CompositeFreezeLayer compFreeze = new CompositeFreezeLayer(freeze, viewportLayer, selectionLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
-		// Column header layer
-		final IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		final DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, compFreeze, selectionLayer);
-		//	Note: The column header layer is wrapped in a filter row composite.
-		//	This plugs in the filter row functionality
+        CompositeFreezeLayer compFreeze = new CompositeFreezeLayer(freeze,
+                viewportLayer, selectionLayer);
 
-		ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
-		columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
-		bodyDataLayer.setConfigLabelAccumulator(labelAccumulator);
+        // Column header layer
+        final IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        final DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+                columnHeaderDataLayer, compFreeze, selectionLayer);
+        // Note: The column header layer is wrapped in a filter row composite.
+        // This plugs in the filter row functionality
 
-		// Register labels
-		labelAccumulator.registerColumnOverrides(
-						RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
-						"CUSTOM_COMPARATOR_LABEL");
+        ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
+                columnHeaderDataLayer);
+        columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
+        bodyDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
-		// Row header layer
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataLayer.getDataProvider());
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, compFreeze, selectionLayer);
+        // Register labels
+        labelAccumulator.registerColumnOverrides(RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
+                "CUSTOM_COMPARATOR_LABEL");
 
-		// Corner layer
-		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
+        // Row header layer
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataLayer.getDataProvider());
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                compFreeze, selectionLayer);
 
-		// Grid
-		GridLayer gridLayer = new GridLayer(
-				compFreeze,
-				columnHeaderLayer,
-				rowHeaderLayer,
-				cornerLayer, false);
+        // Corner layer
+        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
+                rowHeaderLayer, columnHeaderLayer);
 
-		CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
-		final GroupByHeaderLayer groupByHeaderLayer = new GroupByHeaderLayer(groupByModel, gridLayer, columnHeaderDataProvider);
-		compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
-		compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
+        // Grid
+        GridLayer gridLayer = new GridLayer(compFreeze, columnHeaderLayer,
+                rowHeaderLayer, cornerLayer, false);
 
-		NatTable natTable = new NatTable(comp, compositeGridLayer, false);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
-		natTable.addConfiguration(new DebugMenuConfiguration(natTable));
+        CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
+        final GroupByHeaderLayer groupByHeaderLayer = new GroupByHeaderLayer(
+                groupByModel, gridLayer, columnHeaderDataProvider);
+        compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION,
+                groupByHeaderLayer, 0, 0);
+        compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
 
-		natTable.setConfigRegistry(configRegistry);
+        NatTable natTable = new NatTable(comp, compositeGridLayer, false);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable,
+                groupByHeaderLayer));
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
-		natTable.configure();
+        natTable.setConfigRegistry(configRegistry);
 
-		natTable.setLayoutData(new GridData(GridData.FILL_BOTH));
+        natTable.configure();
 
-		Button button = new Button(comp, SWT.NONE);
-		button.setText("Toggle Group By Header");
-		button.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
-			}
-		});
+        natTable.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		return comp;
-	}
+        Button button = new Button(comp, SWT.NONE);
+        button.setText("Toggle Group By Header");
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseUp(MouseEvent e) {
+                groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
+            }
+        });
+
+        return comp;
+    }
 }

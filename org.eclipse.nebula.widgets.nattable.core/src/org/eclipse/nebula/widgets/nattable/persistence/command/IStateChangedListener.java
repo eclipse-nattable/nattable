@@ -20,9 +20,11 @@ package org.eclipse.nebula.widgets.nattable.persistence.command;
  */
 public interface IStateChangedListener {
 
-	/**
-	 * Handle the {@link StateChangeEvent} fired by the PersistenceDialog.
-	 * @param event The {@link StateChangeEvent} to handle
-	 */
-	void handleStateChange(final StateChangeEvent event);
+    /**
+     * Handle the {@link StateChangeEvent} fired by the PersistenceDialog.
+     * 
+     * @param event
+     *            The {@link StateChangeEvent} to handle
+     */
+    void handleStateChange(final StateChangeEvent event);
 }

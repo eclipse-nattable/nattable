@@ -17,60 +17,60 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 
-
 public abstract class AbstractOverrider implements IConfigLabelAccumulator {
-	
-	private Map<Serializable, List<String>> overrides = new HashMap<Serializable, List<String>>();
 
-	public void removeOverride(Serializable key) {
-		overrides.remove(key);
-	}
+    private Map<Serializable, List<String>> overrides = new HashMap<Serializable, List<String>>();
 
-	public void registerOverrides(Serializable key, String...configLabels) {
-		registerOverrides(key, ArrayUtil.asList(configLabels));
-	}
-	
-	public void registerOverrides(Serializable key, List<String> configLabels) {
-		List<String> existingOverrides = getOverrides(key);
-		if (existingOverrides == null){
-			overrides.put(key, configLabels);
-		} else {
-			for (String configLabel : configLabels) {
-				if (!existingOverrides.contains(configLabel)) {
-					existingOverrides.add(configLabel);
-				}
-			}
-		}
-	}
-	
-	public void registerOverridesOnTop(Serializable key, String...configLabels) {
-		registerOverridesOnTop(key, ArrayUtil.asList(configLabels));
-	}
-	
-	public void registerOverridesOnTop(Serializable key, List<String> configLabels) {
-		List<String> existingOverrides = getOverrides(key);
-		if (existingOverrides == null){
-			overrides.put(key, configLabels);
-		} else {
-			for (int i = configLabels.size()-1; i >= 0; i--) {
-				String configLabel = configLabels.get(i);
-				if (!existingOverrides.contains(configLabel)) {
-					existingOverrides.add(0, configLabel);
-				}
-			}
-		}
-	}
+    public void removeOverride(Serializable key) {
+        overrides.remove(key);
+    }
 
-	public Map<Serializable, List<String>> getOverrides() {
-		return overrides;
-	}
-	
-	public List<String> getOverrides(Serializable key) {
-		return overrides.get(key);
-	}
+    public void registerOverrides(Serializable key, String... configLabels) {
+        registerOverrides(key, ArrayUtil.asList(configLabels));
+    }
 
-	public void addOverrides(Map<Serializable, List<String>> overrides) {
-		this.overrides.putAll(overrides);
-	}
-	
+    public void registerOverrides(Serializable key, List<String> configLabels) {
+        List<String> existingOverrides = getOverrides(key);
+        if (existingOverrides == null) {
+            overrides.put(key, configLabels);
+        } else {
+            for (String configLabel : configLabels) {
+                if (!existingOverrides.contains(configLabel)) {
+                    existingOverrides.add(configLabel);
+                }
+            }
+        }
+    }
+
+    public void registerOverridesOnTop(Serializable key, String... configLabels) {
+        registerOverridesOnTop(key, ArrayUtil.asList(configLabels));
+    }
+
+    public void registerOverridesOnTop(Serializable key,
+            List<String> configLabels) {
+        List<String> existingOverrides = getOverrides(key);
+        if (existingOverrides == null) {
+            overrides.put(key, configLabels);
+        } else {
+            for (int i = configLabels.size() - 1; i >= 0; i--) {
+                String configLabel = configLabels.get(i);
+                if (!existingOverrides.contains(configLabel)) {
+                    existingOverrides.add(0, configLabel);
+                }
+            }
+        }
+    }
+
+    public Map<Serializable, List<String>> getOverrides() {
+        return overrides;
+    }
+
+    public List<String> getOverrides(Serializable key) {
+        return overrides.get(key);
+    }
+
+    public void addOverrides(Map<Serializable, List<String>> overrides) {
+        this.overrides.putAll(overrides);
+    }
+
 }

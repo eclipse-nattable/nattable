@@ -15,21 +15,22 @@ import static java.util.Arrays.asList;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.IRowHideShowCommandLayer;
 
-public class RowHideCommandHandler extends AbstractLayerCommandHandler<RowHideCommand> {
+public class RowHideCommandHandler extends
+        AbstractLayerCommandHandler<RowHideCommand> {
 
-	private final IRowHideShowCommandLayer rowHideShowLayer;
-	
-	public RowHideCommandHandler(IRowHideShowCommandLayer rowHideShowLayer) {
-		this.rowHideShowLayer = rowHideShowLayer;
-	}
+    private final IRowHideShowCommandLayer rowHideShowLayer;
 
-	public Class<RowHideCommand> getCommandClass() {
-		return RowHideCommand.class;
-	}
+    public RowHideCommandHandler(IRowHideShowCommandLayer rowHideShowLayer) {
+        this.rowHideShowLayer = rowHideShowLayer;
+    }
 
-	@Override
-	protected boolean doCommand(RowHideCommand command) {
-		rowHideShowLayer.hideRowPositions(asList(command.getRowPosition()));
-		return true;
-	}
+    public Class<RowHideCommand> getCommandClass() {
+        return RowHideCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(RowHideCommand command) {
+        rowHideShowLayer.hideRowPositions(asList(command.getRowPosition()));
+        return true;
+    }
 }

@@ -16,15 +16,16 @@ import org.eclipse.nebula.widgets.nattable.selection.MoveRowSelectionCommandHand
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
 /**
- * Configure the move selection behavior so that we always move by a row.
- * Add {@link ILayerEventHandler} to preserve row selection.
+ * Configure the move selection behavior so that we always move by a row. Add
+ * {@link ILayerEventHandler} to preserve row selection.
  * 
  * @see DefaultMoveSelectionConfiguration
  */
-public class RowOnlySelectionConfiguration<T> extends AbstractLayerConfiguration<SelectionLayer> {
+public class RowOnlySelectionConfiguration<T> extends
+        AbstractLayerConfiguration<SelectionLayer> {
 
-	@Override
-	public void configureTypedLayer(SelectionLayer layer) {
-		layer.registerCommandHandler(new MoveRowSelectionCommandHandler(layer));
-	}
+    @Override
+    public void configureTypedLayer(SelectionLayer layer) {
+        layer.registerCommandHandler(new MoveRowSelectionCommandHandler(layer));
+    }
 }

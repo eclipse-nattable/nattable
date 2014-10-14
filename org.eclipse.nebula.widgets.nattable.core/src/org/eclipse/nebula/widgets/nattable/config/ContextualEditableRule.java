@@ -15,11 +15,13 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class ContextualEditableRule implements IEditableRule {
 
-	public boolean isEditable(int columnIndex, int rowIndex) {
-		throw new NotImplementedException(this.getClass().getName() 
-				+ " is a ContextualEditableRule and has therefore to be called with context informations."); //$NON-NLS-1$
-	}
+    public boolean isEditable(int columnIndex, int rowIndex) {
+        throw new NotImplementedException(
+                this.getClass().getName()
+                        + " is a ContextualEditableRule and has therefore to be called with context informations."); //$NON-NLS-1$
+    }
 
-	public abstract boolean isEditable(ILayerCell cell, IConfigRegistry configRegistry);
+    public abstract boolean isEditable(ILayerCell cell,
+            IConfigRegistry configRegistry);
 
 }

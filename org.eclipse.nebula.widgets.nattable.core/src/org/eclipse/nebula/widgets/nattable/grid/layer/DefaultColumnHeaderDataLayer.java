@@ -15,8 +15,8 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 
 public class DefaultColumnHeaderDataLayer extends DataLayer {
 
-	public DefaultColumnHeaderDataLayer(IDataProvider columnHeaderDataProvider) {
-		super(columnHeaderDataProvider, 100, 20);
-	}
-	
+    public DefaultColumnHeaderDataLayer(IDataProvider columnHeaderDataProvider) {
+        super(columnHeaderDataProvider, 100, 20);
+    }
+
 }

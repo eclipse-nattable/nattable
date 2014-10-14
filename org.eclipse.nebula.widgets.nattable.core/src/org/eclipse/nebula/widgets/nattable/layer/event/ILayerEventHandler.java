@@ -10,10 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.event;
 
-public interface ILayerEventHandler <T extends ILayerEvent> {
+public interface ILayerEventHandler<T extends ILayerEvent> {
 
-	public void handleLayerEvent(T event);
-	
-	public Class<T> getLayerEventClass();
-	
+    public void handleLayerEvent(T event);
+
+    public Class<T> getLayerEventClass();
+
 }

@@ -19,44 +19,52 @@ import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.ComparatorChain;
 
-
 public class SortableTreeComparator<T> implements Comparator<T> {
 
-	private final Comparator<T> treeComparator;
-	private final ISortModel sortModel;
+    private final Comparator<T> treeComparator;
+    private final ISortModel sortModel;
 
-	public SortableTreeComparator(Comparator<T> treeComparator, ISortModel sortModel) {
-		this.treeComparator = treeComparator;
-		this.sortModel = sortModel;
-	}
-	
-	public int compare(T o1, T o2) {
-		int treeComparatorResult = treeComparator.compare(o1, o2);
-		if (treeComparatorResult == 0) {
-			return 0;
-		} else {
-			List<Integer> sortedColumnIndexes = sortModel.getSortedColumnIndexes();
-			if (sortedColumnIndexes != null && sortedColumnIndexes.size() > 0) {
-				List<Comparator<T>> comparators = new ArrayList<Comparator<T>>();
-				for (int sortedColumnIndex : sortedColumnIndexes) {
-					// get comparator for column index... somehow
-					List<Comparator> columnComparators = sortModel.getComparatorsForColumnIndex(sortedColumnIndex);
-					
-					if (columnComparators != null) {
-						SortDirectionEnum sortDirection = sortModel.getSortDirection(sortedColumnIndex);
-						for (Comparator columnComparator : columnComparators) {
-							switch (sortDirection) {
-							case ASC: comparators.add(columnComparator); break;
-							case DESC: comparators.add(Collections.reverseOrder(columnComparator)); break;
-							}
-						}
-					}
-				}
-				return new ComparatorChain<T>(comparators).compare(o1, o2);
-			} else {
-				return treeComparatorResult;
-			}
-		}
-	}
+    public SortableTreeComparator(Comparator<T> treeComparator,
+            ISortModel sortModel) {
+        this.treeComparator = treeComparator;
+        this.sortModel = sortModel;
+    }
+
+    public int compare(T o1, T o2) {
+        int treeComparatorResult = treeComparator.compare(o1, o2);
+        if (treeComparatorResult == 0) {
+            return 0;
+        } else {
+            List<Integer> sortedColumnIndexes = sortModel
+                    .getSortedColumnIndexes();
+            if (sortedColumnIndexes != null && sortedColumnIndexes.size() > 0) {
+                List<Comparator<T>> comparators = new ArrayList<Comparator<T>>();
+                for (int sortedColumnIndex : sortedColumnIndexes) {
+                    // get comparator for column index... somehow
+                    List<Comparator> columnComparators = sortModel
+                            .getComparatorsForColumnIndex(sortedColumnIndex);
+
+                    if (columnComparators != null) {
+                        SortDirectionEnum sortDirection = sortModel
+                                .getSortDirection(sortedColumnIndex);
+                        for (Comparator columnComparator : columnComparators) {
+                            switch (sortDirection) {
+                                case ASC:
+                                    comparators.add(columnComparator);
+                                    break;
+                                case DESC:
+                                    comparators.add(Collections
+                                            .reverseOrder(columnComparator));
+                                    break;
+                            }
+                        }
+                    }
+                }
+                return new ComparatorChain<T>(comparators).compare(o1, o2);
+            } else {
+                return treeComparatorResult;
+            }
+        }
+    }
 
 }

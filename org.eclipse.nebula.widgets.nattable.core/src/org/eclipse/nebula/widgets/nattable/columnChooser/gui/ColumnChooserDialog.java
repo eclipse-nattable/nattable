@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooserUtils;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
@@ -50,794 +49,917 @@ import org.eclipse.swt.widgets.TreeItem;
 
 public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
-	private Tree availableTree;
-	private Tree selectedTree;
-	private final String selectedLabel;
-	private final String availableLabel;
-	private ColumnGroupModel columnGroupModel;
-
-	public ColumnChooserDialog(Shell parentShell, String availableLabel, String selectedLabel) {
-		super(parentShell);
-		this.availableLabel = availableLabel;
-		this.selectedLabel = selectedLabel;
-	}
-
-	@Override
-	public void populateDialogArea(Composite parent) {
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
-		parent.setLayout(new GridLayout(4, false));
-
-		createLabels(parent, availableLabel, selectedLabel);
-
-		availableTree = new Tree(parent, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.Expand);
-
-		GridData gridData = GridDataFactory.fillDefaults().grab(true, true).create();
-		availableTree.setLayoutData(gridData);
-		availableTree.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				addSelected();
-			}
-
-		});
-
-		availableTree.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (e.character == ' ')
-					addSelected();
-			}
-		});
-
-		Composite buttonComposite = new Composite(parent, SWT.NONE);
-		buttonComposite.setLayout(new GridLayout(1, true));
-
-		Button addButton = new Button(buttonComposite, SWT.PUSH);
-		addButton.setImage(GUIHelper.getImage("arrow_right")); //$NON-NLS-1$
-		gridData = GridDataFactory.fillDefaults().grab(false, true).align(SWT.CENTER, SWT.CENTER).create();
-		addButton.setLayoutData(gridData);
-		addButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				addSelected();
-			}
-
-		});
-
-		Button removeButton = new Button(buttonComposite, SWT.PUSH);
-		removeButton.setImage(GUIHelper.getImage("arrow_left")); //$NON-NLS-1$
-		gridData = GridDataFactory.copyData(gridData);
-		removeButton.setLayoutData(gridData);
-		removeButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				removeSelected();
-			}
-
-		});
-
-		selectedTree = new Tree(parent, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.Expand);
-
-		gridData = GridDataFactory.fillDefaults().grab(true, true).create();
-		selectedTree.setLayoutData(gridData);
-		selectedTree.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				removeSelected();
-			}
-
-		});
-
-		selectedTree.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				boolean controlMask = (e.stateMask & SWT.MOD1) == SWT.MOD1;
-				if (controlMask && e.keyCode == SWT.ARROW_UP) {
-					moveSelectedUp();
-					e.doit = false;
-				} else if (controlMask && e.keyCode == SWT.ARROW_DOWN) {
-					moveSelectedDown();
-					e.doit = false;
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-
-				if (e.character == ' ')
-					removeSelected();
-			}
-		});
-
-		selectedTree.addTreeListener(new TreeListener(){
-
-			public void treeCollapsed(TreeEvent event) {
-				selectedTreeCollapsed(event);
-			}
-
-			public void treeExpanded(TreeEvent event) {
-				selectedTreeExpanded(event);
-			}
-
-		});
-
-		selectedTree.addSelectionListener(new SelectionListener(){
-
-			public void widgetDefaultSelected(SelectionEvent event) {
-				widgetSelected(event);
-			}
-
-			public void widgetSelected(SelectionEvent event) {
-				toggleColumnGroupSelection((TreeItem) event.item);
-			}
-
-		});
-
-		Composite upDownbuttonComposite = new Composite(parent, SWT.NONE);
-		upDownbuttonComposite.setLayout(new GridLayout(1, true));
-
-		Button topButton = new Button(upDownbuttonComposite, SWT.PUSH);
-		topButton.setImage(GUIHelper.getImage("arrow_up_top")); //$NON-NLS-1$
-		gridData = GridDataFactory.fillDefaults().grab(false, true).align(SWT.CENTER, SWT.CENTER).create();
-		topButton.setLayoutData(gridData);
-		topButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				moveSelectedToTop();
-			}
-		});
-		
-		Button upButton = new Button(upDownbuttonComposite, SWT.PUSH);
-		upButton.setImage(GUIHelper.getImage("arrow_up")); //$NON-NLS-1$
-		gridData = GridDataFactory.fillDefaults().grab(false, true).align(SWT.CENTER, SWT.CENTER).create();
-		upButton.setLayoutData(gridData);
-		upButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				moveSelectedUp();
-			}
-		});
-
-		Button downButton = new Button(upDownbuttonComposite, SWT.PUSH);
-		downButton.setImage(GUIHelper.getImage("arrow_down")); //$NON-NLS-1$
-		gridData = GridDataFactory.copyData(gridData);
-		downButton.setLayoutData(gridData);
-		downButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				moveSelectedDown();
-			}
-		});
-
-		Button bottomButton = new Button(upDownbuttonComposite, SWT.PUSH);
-		bottomButton.setImage(GUIHelper.getImage("arrow_down_end")); //$NON-NLS-1$
-		gridData = GridDataFactory.copyData(gridData);
-		bottomButton.setLayoutData(gridData);
-		bottomButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				moveSelectedToBottom();
-			}
-		});
-	}
-
-	protected final void fireItemsSelected(List<ColumnEntry> addedItems) {
-		for (Object listener : listeners.getListeners()) {
-			((ISelectionTreeListener) listener).itemsSelected(addedItems);
-		}
-	}
-
-	protected final void fireItemsRemoved(List<ColumnEntry> removedItems) {
-		for (Object listener : listeners.getListeners()) {
-			((ISelectionTreeListener) listener).itemsRemoved(removedItems);
-		}
-	}
-
-	protected final void fireItemsMoved(MoveDirectionEnum direction, List<ColumnGroupEntry> selectedColumnGroupEntries, List<ColumnEntry> selectedColumnEntries, List<List<Integer>> fromPositions, List<Integer> toPositions) {
-		for (Object listener : listeners.getListeners()) {
-			((ISelectionTreeListener) listener).itemsMoved(direction, selectedColumnGroupEntries, selectedColumnEntries, fromPositions, toPositions);
-		}
-	}
-
-	private void fireGroupExpanded(ColumnGroupEntry columnGroupEntry) {
-		for (Object listener : listeners.getListeners()) {
-			((ISelectionTreeListener) listener).itemsExpanded(columnGroupEntry);
-		}
-	}
-
-	private void fireGroupCollapsed(ColumnGroupEntry columnGroupEntry) {
-		for (Object listener : listeners.getListeners()) {
-			((ISelectionTreeListener) listener).itemsCollapsed(columnGroupEntry);
-		}
-	}
-
-
-	public void populateSelectedTree(List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
-		populateModel(selectedTree, columnEntries, columnGroupModel);
-	}
-
-	public void populateAvailableTree(List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
-		populateModel(availableTree, columnEntries, columnGroupModel);
-	}
-
-	/**
-	 * Populates the tree.
-	 *   Looks for column group and adds an extra node for the group.
-	 *   The column leaves carry a {@link ColumnEntry} object as data.
-	 *   The column group leaves carry a {@link ColumnGroupEntry} object as data.
-	 */
-	private void populateModel(Tree tree, List<ColumnEntry> columnEntries, ColumnGroupModel columnGroupModel) {
-		this.columnGroupModel = columnGroupModel;
-
-		for (ColumnEntry columnEntry : columnEntries) {
-			TreeItem treeItem;
-			int columnEntryIndex = columnEntry.getIndex().intValue();
-
-			// Create a node for the column group - if needed
-			if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(columnEntryIndex)) {
-				ColumnGroup columnGroup = columnGroupModel.getColumnGroupByIndex(columnEntryIndex);
-				String columnGroupName = columnGroup.getName();
-				TreeItem columnGroupTreeItem = getTreeItem(tree, columnGroupName);
-
-				if (columnGroupTreeItem == null) {
-					columnGroupTreeItem = new TreeItem(tree, SWT.NONE);
-					ColumnGroupEntry columnGroupEntry = new ColumnGroupEntry(
-																columnGroupName,
-																columnEntry.getPosition(),
-																columnEntry.getIndex(),
-																columnGroup.isCollapsed());
-					columnGroupTreeItem.setData(columnGroupEntry);
-					columnGroupTreeItem.setText(columnGroupEntry.getLabel());
-				}
-				treeItem = new TreeItem(columnGroupTreeItem, SWT.NONE);
-			} else {
-				treeItem = new TreeItem(tree, SWT.NONE);
-			}
-			treeItem.setText(columnEntry.getLabel());
-			treeItem.setData(columnEntry);
-		}
-	}
-
-	/**
-	 * If the tree contains an item with the given label return it
-	 */
-	private TreeItem getTreeItem(Tree tree, String label) {
-		for (TreeItem treeItem : tree.getItems()) {
-			if (treeItem.getText().equals(label)) {
-				return treeItem;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Get the ColumnEntries from the selected TreeItem(s)
-	 * Includes nested column group entries - if the column group is selected.
-	 * Does not include parent of the nested entries - since that does not denote an actual column
-	 */
-	private List<ColumnEntry> getColumnEntriesIncludingNested(TreeItem[] selectedTreeItems) {
-		List<ColumnEntry> selectedColumnEntries = new ArrayList<ColumnEntry>();
-
-		for (int i = 0; i < selectedTreeItems.length; i++) {
-			// Column Group selected - get all children
-			if (isColumnGroupLeaf(selectedTreeItems[i])) {
-				TreeItem[] itemsInGroup = selectedTreeItems[i].getItems();
-				for (TreeItem itemInGroup : itemsInGroup) {
-					selectedColumnEntries.add((ColumnEntry) itemInGroup.getData());
-				}
-			} else {
-				// Column
-				selectedColumnEntries.add(getColumnEntryInLeaf(selectedTreeItems[i]));
-			}
-		}
-		return selectedColumnEntries;
-	}
-
-	private List<ColumnGroupEntry> getSelectedColumnGroupEntries(TreeItem[] selectedTreeItems) {
-		List<ColumnGroupEntry> selectedColumnGroups = new ArrayList<ColumnGroupEntry>();
-
-		for (int i = 0; i < selectedTreeItems.length; i++) {
-			if (isColumnGroupLeaf(selectedTreeItems[i])) {
-				selectedColumnGroups.add((ColumnGroupEntry) selectedTreeItems[i].getData());
-			}
-		}
-		return selectedColumnGroups;
-	}
-
-	private List<ColumnEntry> getSelectedColumnEntriesIncludingNested(Tree tree){
-		return getColumnEntriesIncludingNested(tree.getSelection());
-	}
-
-	private List<ColumnGroupEntry> getSelectedColumnGroupEntries(Tree tree){
-		return getSelectedColumnGroupEntries(tree.getSelection());
-	}
-
-	// Event handlers
-
-	/**
-	 * Add selected items: 'Available tree' --> 'Selected tree' Notify
-	 * listeners.
-	 */
-	private void addSelected() {
-		if (isAnyLeafSelected(availableTree)) {
-			TreeItem topAvailableItem = availableTree.getTopItem();
-			int topAvailableIndex = availableTree.indexOf(topAvailableItem);
-			TreeItem topSelectedItem = selectedTree.getTopItem();
-			int topSelectedIndex = topSelectedItem != null ? selectedTree.indexOf(topSelectedItem) : 0;
-			
-			fireItemsSelected(getSelectedColumnEntriesIncludingNested(availableTree));
-			
-			if (topAvailableIndex > -1 && topAvailableIndex < availableTree.getItemCount()) {
-				availableTree.setTopItem(availableTree.getItem(topAvailableIndex));
-			}
-			if (topSelectedIndex > -1 && topSelectedIndex < selectedTree.getItemCount()) {
-				selectedTree.setTopItem(selectedTree.getItem(topSelectedIndex));
-			}
-		}
-	}
-
-	/**
-	 * Add selected items: 'Available tree' <-- 'Selected tree' Notify
-	 * listeners.
-	 */
-	private void removeSelected() {
-		if (isAnyLeafSelected(selectedTree)) {
-			TreeItem topAvailableItem = availableTree.getTopItem();
-            int topIndex = topAvailableItem == null ? -1 : availableTree.indexOf(topAvailableItem);
-			
+    private Tree availableTree;
+    private Tree selectedTree;
+    private final String selectedLabel;
+    private final String availableLabel;
+    private ColumnGroupModel columnGroupModel;
+
+    public ColumnChooserDialog(Shell parentShell, String availableLabel,
+            String selectedLabel) {
+        super(parentShell);
+        this.availableLabel = availableLabel;
+        this.selectedLabel = selectedLabel;
+    }
+
+    @Override
+    public void populateDialogArea(Composite parent) {
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
+        parent.setLayout(new GridLayout(4, false));
+
+        createLabels(parent, availableLabel, selectedLabel);
+
+        availableTree = new Tree(parent, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL
+                | SWT.V_SCROLL | SWT.Expand);
+
+        GridData gridData = GridDataFactory.fillDefaults().grab(true, true)
+                .create();
+        availableTree.setLayoutData(gridData);
+        availableTree.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                addSelected();
+            }
+
+        });
+
+        availableTree.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.character == ' ')
+                    addSelected();
+            }
+        });
+
+        Composite buttonComposite = new Composite(parent, SWT.NONE);
+        buttonComposite.setLayout(new GridLayout(1, true));
+
+        Button addButton = new Button(buttonComposite, SWT.PUSH);
+        addButton.setImage(GUIHelper.getImage("arrow_right")); //$NON-NLS-1$
+        gridData = GridDataFactory.fillDefaults().grab(false, true)
+                .align(SWT.CENTER, SWT.CENTER).create();
+        addButton.setLayoutData(gridData);
+        addButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                addSelected();
+            }
+
+        });
+
+        Button removeButton = new Button(buttonComposite, SWT.PUSH);
+        removeButton.setImage(GUIHelper.getImage("arrow_left")); //$NON-NLS-1$
+        gridData = GridDataFactory.copyData(gridData);
+        removeButton.setLayoutData(gridData);
+        removeButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                removeSelected();
+            }
+
+        });
+
+        selectedTree = new Tree(parent, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL
+                | SWT.V_SCROLL | SWT.Expand);
+
+        gridData = GridDataFactory.fillDefaults().grab(true, true).create();
+        selectedTree.setLayoutData(gridData);
+        selectedTree.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                removeSelected();
+            }
+
+        });
+
+        selectedTree.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                boolean controlMask = (e.stateMask & SWT.MOD1) == SWT.MOD1;
+                if (controlMask && e.keyCode == SWT.ARROW_UP) {
+                    moveSelectedUp();
+                    e.doit = false;
+                } else if (controlMask && e.keyCode == SWT.ARROW_DOWN) {
+                    moveSelectedDown();
+                    e.doit = false;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+                if (e.character == ' ')
+                    removeSelected();
+            }
+        });
+
+        selectedTree.addTreeListener(new TreeListener() {
+
+            public void treeCollapsed(TreeEvent event) {
+                selectedTreeCollapsed(event);
+            }
+
+            public void treeExpanded(TreeEvent event) {
+                selectedTreeExpanded(event);
+            }
+
+        });
+
+        selectedTree.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent event) {
+                widgetSelected(event);
+            }
+
+            public void widgetSelected(SelectionEvent event) {
+                toggleColumnGroupSelection((TreeItem) event.item);
+            }
+
+        });
+
+        Composite upDownbuttonComposite = new Composite(parent, SWT.NONE);
+        upDownbuttonComposite.setLayout(new GridLayout(1, true));
+
+        Button topButton = new Button(upDownbuttonComposite, SWT.PUSH);
+        topButton.setImage(GUIHelper.getImage("arrow_up_top")); //$NON-NLS-1$
+        gridData = GridDataFactory.fillDefaults().grab(false, true)
+                .align(SWT.CENTER, SWT.CENTER).create();
+        topButton.setLayoutData(gridData);
+        topButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                moveSelectedToTop();
+            }
+        });
+
+        Button upButton = new Button(upDownbuttonComposite, SWT.PUSH);
+        upButton.setImage(GUIHelper.getImage("arrow_up")); //$NON-NLS-1$
+        gridData = GridDataFactory.fillDefaults().grab(false, true)
+                .align(SWT.CENTER, SWT.CENTER).create();
+        upButton.setLayoutData(gridData);
+        upButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                moveSelectedUp();
+            }
+        });
+
+        Button downButton = new Button(upDownbuttonComposite, SWT.PUSH);
+        downButton.setImage(GUIHelper.getImage("arrow_down")); //$NON-NLS-1$
+        gridData = GridDataFactory.copyData(gridData);
+        downButton.setLayoutData(gridData);
+        downButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                moveSelectedDown();
+            }
+        });
+
+        Button bottomButton = new Button(upDownbuttonComposite, SWT.PUSH);
+        bottomButton.setImage(GUIHelper.getImage("arrow_down_end")); //$NON-NLS-1$
+        gridData = GridDataFactory.copyData(gridData);
+        bottomButton.setLayoutData(gridData);
+        bottomButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                moveSelectedToBottom();
+            }
+        });
+    }
+
+    protected final void fireItemsSelected(List<ColumnEntry> addedItems) {
+        for (Object listener : listeners.getListeners()) {
+            ((ISelectionTreeListener) listener).itemsSelected(addedItems);
+        }
+    }
+
+    protected final void fireItemsRemoved(List<ColumnEntry> removedItems) {
+        for (Object listener : listeners.getListeners()) {
+            ((ISelectionTreeListener) listener).itemsRemoved(removedItems);
+        }
+    }
+
+    protected final void fireItemsMoved(MoveDirectionEnum direction,
+            List<ColumnGroupEntry> selectedColumnGroupEntries,
+            List<ColumnEntry> selectedColumnEntries,
+            List<List<Integer>> fromPositions, List<Integer> toPositions) {
+        for (Object listener : listeners.getListeners()) {
+            ((ISelectionTreeListener) listener).itemsMoved(direction,
+                    selectedColumnGroupEntries, selectedColumnEntries,
+                    fromPositions, toPositions);
+        }
+    }
+
+    private void fireGroupExpanded(ColumnGroupEntry columnGroupEntry) {
+        for (Object listener : listeners.getListeners()) {
+            ((ISelectionTreeListener) listener).itemsExpanded(columnGroupEntry);
+        }
+    }
+
+    private void fireGroupCollapsed(ColumnGroupEntry columnGroupEntry) {
+        for (Object listener : listeners.getListeners()) {
+            ((ISelectionTreeListener) listener)
+                    .itemsCollapsed(columnGroupEntry);
+        }
+    }
+
+    public void populateSelectedTree(List<ColumnEntry> columnEntries,
+            ColumnGroupModel columnGroupModel) {
+        populateModel(selectedTree, columnEntries, columnGroupModel);
+    }
+
+    public void populateAvailableTree(List<ColumnEntry> columnEntries,
+            ColumnGroupModel columnGroupModel) {
+        populateModel(availableTree, columnEntries, columnGroupModel);
+    }
+
+    /**
+     * Populates the tree. Looks for column group and adds an extra node for the
+     * group. The column leaves carry a {@link ColumnEntry} object as data. The
+     * column group leaves carry a {@link ColumnGroupEntry} object as data.
+     */
+    private void populateModel(Tree tree, List<ColumnEntry> columnEntries,
+            ColumnGroupModel columnGroupModel) {
+        this.columnGroupModel = columnGroupModel;
+
+        for (ColumnEntry columnEntry : columnEntries) {
+            TreeItem treeItem;
+            int columnEntryIndex = columnEntry.getIndex().intValue();
+
+            // Create a node for the column group - if needed
+            if (columnGroupModel != null
+                    && columnGroupModel.isPartOfAGroup(columnEntryIndex)) {
+                ColumnGroup columnGroup = columnGroupModel
+                        .getColumnGroupByIndex(columnEntryIndex);
+                String columnGroupName = columnGroup.getName();
+                TreeItem columnGroupTreeItem = getTreeItem(tree,
+                        columnGroupName);
+
+                if (columnGroupTreeItem == null) {
+                    columnGroupTreeItem = new TreeItem(tree, SWT.NONE);
+                    ColumnGroupEntry columnGroupEntry = new ColumnGroupEntry(
+                            columnGroupName, columnEntry.getPosition(),
+                            columnEntry.getIndex(), columnGroup.isCollapsed());
+                    columnGroupTreeItem.setData(columnGroupEntry);
+                    columnGroupTreeItem.setText(columnGroupEntry.getLabel());
+                }
+                treeItem = new TreeItem(columnGroupTreeItem, SWT.NONE);
+            } else {
+                treeItem = new TreeItem(tree, SWT.NONE);
+            }
+            treeItem.setText(columnEntry.getLabel());
+            treeItem.setData(columnEntry);
+        }
+    }
+
+    /**
+     * If the tree contains an item with the given label return it
+     */
+    private TreeItem getTreeItem(Tree tree, String label) {
+        for (TreeItem treeItem : tree.getItems()) {
+            if (treeItem.getText().equals(label)) {
+                return treeItem;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the ColumnEntries from the selected TreeItem(s) Includes nested
+     * column group entries - if the column group is selected. Does not include
+     * parent of the nested entries - since that does not denote an actual
+     * column
+     */
+    private List<ColumnEntry> getColumnEntriesIncludingNested(
+            TreeItem[] selectedTreeItems) {
+        List<ColumnEntry> selectedColumnEntries = new ArrayList<ColumnEntry>();
+
+        for (int i = 0; i < selectedTreeItems.length; i++) {
+            // Column Group selected - get all children
+            if (isColumnGroupLeaf(selectedTreeItems[i])) {
+                TreeItem[] itemsInGroup = selectedTreeItems[i].getItems();
+                for (TreeItem itemInGroup : itemsInGroup) {
+                    selectedColumnEntries.add((ColumnEntry) itemInGroup
+                            .getData());
+                }
+            } else {
+                // Column
+                selectedColumnEntries
+                        .add(getColumnEntryInLeaf(selectedTreeItems[i]));
+            }
+        }
+        return selectedColumnEntries;
+    }
+
+    private List<ColumnGroupEntry> getSelectedColumnGroupEntries(
+            TreeItem[] selectedTreeItems) {
+        List<ColumnGroupEntry> selectedColumnGroups = new ArrayList<ColumnGroupEntry>();
+
+        for (int i = 0; i < selectedTreeItems.length; i++) {
+            if (isColumnGroupLeaf(selectedTreeItems[i])) {
+                selectedColumnGroups
+                        .add((ColumnGroupEntry) selectedTreeItems[i].getData());
+            }
+        }
+        return selectedColumnGroups;
+    }
+
+    private List<ColumnEntry> getSelectedColumnEntriesIncludingNested(Tree tree) {
+        return getColumnEntriesIncludingNested(tree.getSelection());
+    }
+
+    private List<ColumnGroupEntry> getSelectedColumnGroupEntries(Tree tree) {
+        return getSelectedColumnGroupEntries(tree.getSelection());
+    }
+
+    // Event handlers
+
+    /**
+     * Add selected items: 'Available tree' --> 'Selected tree' Notify
+     * listeners.
+     */
+    private void addSelected() {
+        if (isAnyLeafSelected(availableTree)) {
+            TreeItem topAvailableItem = availableTree.getTopItem();
+            int topAvailableIndex = availableTree.indexOf(topAvailableItem);
             TreeItem topSelectedItem = selectedTree.getTopItem();
-            int topSelectedIndex = topSelectedItem == null ? - 1 : selectedTree.indexOf(topSelectedItem);
-			
-			fireItemsRemoved(getSelectedColumnEntriesIncludingNested(selectedTree));
-			
-			if (topIndex > -1 && topIndex < availableTree.getItemCount()) {
-				availableTree.setTopItem(availableTree.getItem(topIndex));
-			}
-			if (topSelectedIndex > -1 && topSelectedIndex < selectedTree.getItemCount()) {
-				selectedTree.setTopItem(selectedTree.getItem(topSelectedIndex));
-			}
-		}
-	}
+            int topSelectedIndex = topSelectedItem != null ? selectedTree
+                    .indexOf(topSelectedItem) : 0;
 
-	private void selectedTreeCollapsed(TreeEvent event) {
-		TreeItem item = (TreeItem) event.item;
-		ColumnGroupEntry columnGroupEntry = (ColumnGroupEntry) item.getData();
-		fireGroupCollapsed(columnGroupEntry);
-	}
+            fireItemsSelected(getSelectedColumnEntriesIncludingNested(availableTree));
 
-	private void selectedTreeExpanded(TreeEvent event) {
-		TreeItem item = (TreeItem) event.item;
-		ColumnGroupEntry columnGroupEntry = (ColumnGroupEntry) item.getData();
-		fireGroupExpanded(columnGroupEntry);
-	}
+            if (topAvailableIndex > -1
+                    && topAvailableIndex < availableTree.getItemCount()) {
+                availableTree.setTopItem(availableTree
+                        .getItem(topAvailableIndex));
+            }
+            if (topSelectedIndex > -1
+                    && topSelectedIndex < selectedTree.getItemCount()) {
+                selectedTree.setTopItem(selectedTree.getItem(topSelectedIndex));
+            }
+        }
+    }
 
-	private void toggleColumnGroupSelection(TreeItem treeItem) {
-		if(isColumnGroupLeaf(treeItem)){
-			Collection<TreeItem> selectedLeaves = ArrayUtil.asCollection(selectedTree.getSelection());
-			boolean selected = selectedLeaves.contains(treeItem);
-			if(selected){
-				selectAllChildren(selectedTree, treeItem);
-			} else {
-				unSelectAllChildren(selectedTree, treeItem);
-			}
-		}
-	}
+    /**
+     * Add selected items: 'Available tree' <-- 'Selected tree' Notify
+     * listeners.
+     */
+    private void removeSelected() {
+        if (isAnyLeafSelected(selectedTree)) {
+            TreeItem topAvailableItem = availableTree.getTopItem();
+            int topIndex = topAvailableItem == null ? -1 : availableTree
+                    .indexOf(topAvailableItem);
 
-	private void selectAllChildren(Tree tree, TreeItem treeItem) {
-		Collection<TreeItem> selectedLeaves = ArrayUtil.asCollection(tree.getSelection());
-		if(isColumnGroupLeaf(treeItem)){
-			selectedLeaves.addAll(ArrayUtil.asCollection(treeItem.getItems()));
-		}
-		tree.setSelection(selectedLeaves.toArray(new TreeItem[]{}));
-		tree.showSelection();
-	}
+            TreeItem topSelectedItem = selectedTree.getTopItem();
+            int topSelectedIndex = topSelectedItem == null ? -1 : selectedTree
+                    .indexOf(topSelectedItem);
 
-	private void unSelectAllChildren(Tree tree, TreeItem treeItem) {
-		Collection<TreeItem> selectedLeaves = ArrayUtil.asCollection(tree.getSelection());
-		if(isColumnGroupLeaf(treeItem)){
-			selectedLeaves.removeAll(ArrayUtil.asCollection(treeItem.getItems()));
-		}
-		tree.setSelection(selectedLeaves.toArray(new TreeItem[]{}));
-		tree.showSelection();
-	}
+            fireItemsRemoved(getSelectedColumnEntriesIncludingNested(selectedTree));
 
-	private void moveSelectedToTop() {
-		if (isAnyLeafSelected(selectedTree)) {
-			if (!isFirstLeafSelected(selectedTree)) {
-				List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
-				List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
+            if (topIndex > -1 && topIndex < availableTree.getItemCount()) {
+                availableTree.setTopItem(availableTree.getItem(topIndex));
+            }
+            if (topSelectedIndex > -1
+                    && topSelectedIndex < selectedTree.getItemCount()) {
+                selectedTree.setTopItem(selectedTree.getItem(topSelectedIndex));
+            }
+        }
+    }
 
-				List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+    private void selectedTreeCollapsed(TreeEvent event) {
+        TreeItem item = (TreeItem) event.item;
+        ColumnGroupEntry columnGroupEntry = (ColumnGroupEntry) item.getData();
+        fireGroupCollapsed(columnGroupEntry);
+    }
 
-				// Group continuous positions
-				List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-				List<Integer> toPositions = new ArrayList<Integer>();
-				
-				int shift = 0;
-				for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
-					toPositions.add(shift);
-					shift += groupedPositions.size();
-				}
-				fireItemsMoved(MoveDirectionEnum.UP, selectedColumnGroupEntries, selectedColumnEntries, postionsGroupedByContiguous, toPositions);
-			}
-		}
-	}
-	
-	/**
-	 * Move columns <i>up</i> in the 'Selected' Tree (Right)
-	 */
-	@SuppressWarnings("boxing")
-	protected void moveSelectedUp() {
-		if (isAnyLeafSelected(selectedTree)) {
-			if(!isFirstLeafSelected(selectedTree)){
-				List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
-				List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
+    private void selectedTreeExpanded(TreeEvent event) {
+        TreeItem item = (TreeItem) event.item;
+        ColumnGroupEntry columnGroupEntry = (ColumnGroupEntry) item.getData();
+        fireGroupExpanded(columnGroupEntry);
+    }
 
-				List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+    private void toggleColumnGroupSelection(TreeItem treeItem) {
+        if (isColumnGroupLeaf(treeItem)) {
+            Collection<TreeItem> selectedLeaves = ArrayUtil
+                    .asCollection(selectedTree.getSelection());
+            boolean selected = selectedLeaves.contains(treeItem);
+            if (selected) {
+                selectAllChildren(selectedTree, treeItem);
+            } else {
+                unSelectAllChildren(selectedTree, treeItem);
+            }
+        }
+    }
 
-				// Group continuous positions. If a column group moves, a bunch of 'from' positions move
-				// to a single 'to' position
-				List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-				List<Integer> toPositions = new ArrayList<Integer>();
+    private void selectAllChildren(Tree tree, TreeItem treeItem) {
+        Collection<TreeItem> selectedLeaves = ArrayUtil.asCollection(tree
+                .getSelection());
+        if (isColumnGroupLeaf(treeItem)) {
+            selectedLeaves.addAll(ArrayUtil.asCollection(treeItem.getItems()));
+        }
+        tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
+        tree.showSelection();
+    }
 
-				//Set destination positions
-				for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
-					// Do these contiguous positions contain a column group ?
-					boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+    private void unSelectAllChildren(Tree tree, TreeItem treeItem) {
+        Collection<TreeItem> selectedLeaves = ArrayUtil.asCollection(tree
+                .getSelection());
+        if (isColumnGroupLeaf(treeItem)) {
+            selectedLeaves
+                    .removeAll(ArrayUtil.asCollection(treeItem.getItems()));
+        }
+        tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
+        tree.showSelection();
+    }
 
-					//  If already at first position do not move
-					int firstPositionInGroup = groupedPositions.get(0);
-					if (firstPositionInGroup == 0){
-						return;
-					}
+    private void moveSelectedToTop() {
+        if (isAnyLeafSelected(selectedTree)) {
+            if (!isFirstLeafSelected(selectedTree)) {
+                List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
+                List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
 
-					// Column entry
-					ColumnEntry columnEntry = getColumnEntryForPosition(selectedTree, firstPositionInGroup);
-					int columnEntryIndex = columnEntry.getIndex();
+                List<Integer> allSelectedPositions = merge(
+                        selectedColumnEntries, selectedColumnGroupEntries);
 
-					// Previous column entry
-					ColumnEntry previousColumnEntry = getColumnEntryForPosition(selectedTree, firstPositionInGroup - 1);
-					int previousColumnEntryIndex = previousColumnEntry.getIndex();
+                // Group continuous positions
+                List<List<Integer>> postionsGroupedByContiguous = PositionUtil
+                        .getGroupedByContiguous(allSelectedPositions);
+                List<Integer> toPositions = new ArrayList<Integer>();
 
-					if (columnGroupMoved) {
-						// If the previous entry is a column group - move above it.
-						if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(previousColumnEntryIndex)) {
-							ColumnGroup previousColumnGroup = columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
-							toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
-						} else {
-							toPositions.add(firstPositionInGroup - 1);
-						}
-					} else {
-						// If is first member of the unbreakable group, can't move up i.e. out of the group
-						if (columnGroupModel != null && columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex) && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, columnGroupModel)){
-							return;
-						}
+                int shift = 0;
+                for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+                    toPositions.add(shift);
+                    shift += groupedPositions.size();
+                }
+                fireItemsMoved(MoveDirectionEnum.UP,
+                        selectedColumnGroupEntries, selectedColumnEntries,
+                        postionsGroupedByContiguous, toPositions);
+            }
+        }
+    }
 
-						// If previous entry is an unbreakable column group - move above it
-						if (columnGroupModel != null && columnGroupModel.isPartOfAnUnbreakableGroup(previousColumnEntryIndex) && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, previousColumnEntryIndex, columnGroupModel)) {
-							ColumnGroup previousColumnGroup = columnGroupModel.getColumnGroupByIndex(previousColumnEntryIndex);
-							toPositions.add(firstPositionInGroup - previousColumnGroup.getSize());
-						} else {
-							toPositions.add(firstPositionInGroup - 1);
-						}
-					}
-				}
+    /**
+     * Move columns <i>up</i> in the 'Selected' Tree (Right)
+     */
+    @SuppressWarnings("boxing")
+    protected void moveSelectedUp() {
+        if (isAnyLeafSelected(selectedTree)) {
+            if (!isFirstLeafSelected(selectedTree)) {
+                List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
+                List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
 
-				fireItemsMoved(MoveDirectionEnum.UP, selectedColumnGroupEntries, selectedColumnEntries, postionsGroupedByContiguous, toPositions);
-			}
-		}
-	}
+                List<Integer> allSelectedPositions = merge(
+                        selectedColumnEntries, selectedColumnGroupEntries);
 
-	private List<Integer> merge(List<ColumnEntry> selectedColumnEntries, List<ColumnGroupEntry> selectedColumnGroupEntries){
-		//Convert to positions
-		List<Integer> columnEntryPositions = ColumnChooserUtils.getColumnEntryPositions(selectedColumnEntries);
-		List<Integer> columnGroupEntryPositions = ColumnGroupEntry.getColumnGroupEntryPositions(selectedColumnGroupEntries);
+                // Group continuous positions. If a column group moves, a bunch
+                // of 'from' positions move
+                // to a single 'to' position
+                List<List<Integer>> postionsGroupedByContiguous = PositionUtil
+                        .getGroupedByContiguous(allSelectedPositions);
+                List<Integer> toPositions = new ArrayList<Integer>();
 
-		//Selected columns + column groups
-		Set<Integer> allSelectedPositionsSet = new HashSet<Integer>();
-		allSelectedPositionsSet.addAll(columnEntryPositions);
-		allSelectedPositionsSet.addAll(columnGroupEntryPositions);
-		List<Integer> allSelectedPositions = new ArrayList<Integer>(allSelectedPositionsSet);
-		Collections.sort(allSelectedPositions);
+                // Set destination positions
+                for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+                    // Do these contiguous positions contain a column group ?
+                    boolean columnGroupMoved = columnGroupMoved(
+                            groupedPositions, selectedColumnGroupEntries);
 
-		return allSelectedPositions;
-	}
+                    // If already at first position do not move
+                    int firstPositionInGroup = groupedPositions.get(0);
+                    if (firstPositionInGroup == 0) {
+                        return;
+                    }
 
-	/**
-	 * Move columns <i>down</i> in the 'Selected' Tree (Right)
-	 */
-	@SuppressWarnings("boxing")
-	protected void moveSelectedDown() {
-		if (isAnyLeafSelected(selectedTree)) {
-			if (!isLastLeafSelected(selectedTree)) {
-				List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
-				List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
+                    // Column entry
+                    ColumnEntry columnEntry = getColumnEntryForPosition(
+                            selectedTree, firstPositionInGroup);
+                    int columnEntryIndex = columnEntry.getIndex();
 
-				List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+                    // Previous column entry
+                    ColumnEntry previousColumnEntry = getColumnEntryForPosition(
+                            selectedTree, firstPositionInGroup - 1);
+                    int previousColumnEntryIndex = previousColumnEntry
+                            .getIndex();
 
-				// Group continuous positions
-				List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-				List<Integer> toPositions = new ArrayList<Integer>();
+                    if (columnGroupMoved) {
+                        // If the previous entry is a column group - move above
+                        // it.
+                        if (columnGroupModel != null
+                                && columnGroupModel
+                                        .isPartOfAGroup(previousColumnEntryIndex)) {
+                            ColumnGroup previousColumnGroup = columnGroupModel
+                                    .getColumnGroupByIndex(previousColumnEntryIndex);
+                            toPositions.add(firstPositionInGroup
+                                    - previousColumnGroup.getSize());
+                        } else {
+                            toPositions.add(firstPositionInGroup - 1);
+                        }
+                    } else {
+                        // If is first member of the unbreakable group, can't
+                        // move up i.e. out of the group
+                        if (columnGroupModel != null
+                                && columnGroupModel
+                                        .isPartOfAnUnbreakableGroup(columnEntryIndex)
+                                && !ColumnGroupUtils.isInTheSameGroup(
+                                        columnEntryIndex,
+                                        previousColumnEntryIndex,
+                                        columnGroupModel)) {
+                            return;
+                        }
 
-				// Set destination positions
-				for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
-					// Do these contiguous positions contain a column group ?
-					boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
+                        // If previous entry is an unbreakable column group -
+                        // move above it
+                        if (columnGroupModel != null
+                                && columnGroupModel
+                                        .isPartOfAnUnbreakableGroup(previousColumnEntryIndex)
+                                && !ColumnGroupUtils.isInTheSameGroup(
+                                        columnEntryIndex,
+                                        previousColumnEntryIndex,
+                                        columnGroupModel)) {
+                            ColumnGroup previousColumnGroup = columnGroupModel
+                                    .getColumnGroupByIndex(previousColumnEntryIndex);
+                            toPositions.add(firstPositionInGroup
+                                    - previousColumnGroup.getSize());
+                        } else {
+                            toPositions.add(firstPositionInGroup - 1);
+                        }
+                    }
+                }
 
-					// Position of last element in list
-					int lastListIndex = groupedPositions.size() - 1;
-					int lastPositionInGroup = groupedPositions.get(lastListIndex);
+                fireItemsMoved(MoveDirectionEnum.UP,
+                        selectedColumnGroupEntries, selectedColumnEntries,
+                        postionsGroupedByContiguous, toPositions);
+            }
+        }
+    }
 
-					// Column entry
-					ColumnEntry columnEntry = getColumnEntryForPosition(selectedTree, lastPositionInGroup);
-					int columnEntryIndex = columnEntry.getIndex();
+    private List<Integer> merge(List<ColumnEntry> selectedColumnEntries,
+            List<ColumnGroupEntry> selectedColumnGroupEntries) {
+        // Convert to positions
+        List<Integer> columnEntryPositions = ColumnChooserUtils
+                .getColumnEntryPositions(selectedColumnEntries);
+        List<Integer> columnGroupEntryPositions = ColumnGroupEntry
+                .getColumnGroupEntryPositions(selectedColumnGroupEntries);
 
-					// Next Column Entry
-					ColumnEntry nextColumnEntry = getColumnEntryForPosition(selectedTree, lastPositionInGroup + 1);
+        // Selected columns + column groups
+        Set<Integer> allSelectedPositionsSet = new HashSet<Integer>();
+        allSelectedPositionsSet.addAll(columnEntryPositions);
+        allSelectedPositionsSet.addAll(columnGroupEntryPositions);
+        List<Integer> allSelectedPositions = new ArrayList<Integer>(
+                allSelectedPositionsSet);
+        Collections.sort(allSelectedPositions);
 
-					// Next column entry will be null the last leaf in the tree is selected
-					if (nextColumnEntry == null) {
-						return;
-					}
-					int nextColumnEntryIndex = nextColumnEntry.getIndex();
+        return allSelectedPositions;
+    }
 
-					if (columnGroupMoved) {
-						// If the next entry is a column group - move past it.
-						if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(nextColumnEntryIndex)) {
-							ColumnGroup nextColumnGroup = columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
-							toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
-						} else {
-							toPositions.add(lastPositionInGroup + 1);
-						}
-					} else {
-						// If is last member of the unbreakable group, can't move down i.e. out of the group
-						if (columnGroupModel != null && columnGroupModel.isPartOfAnUnbreakableGroup(columnEntryIndex) && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, columnGroupModel)) {
-							return;
-						}
+    /**
+     * Move columns <i>down</i> in the 'Selected' Tree (Right)
+     */
+    @SuppressWarnings("boxing")
+    protected void moveSelectedDown() {
+        if (isAnyLeafSelected(selectedTree)) {
+            if (!isLastLeafSelected(selectedTree)) {
+                List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
+                List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
 
-						// If next entry is an unbreakable column group - move past it
-						if (columnGroupModel != null && columnGroupModel.isPartOfAnUnbreakableGroup(nextColumnEntryIndex) && !ColumnGroupUtils.isInTheSameGroup(columnEntryIndex, nextColumnEntryIndex, columnGroupModel)) {
-							ColumnGroup nextColumnGroup = columnGroupModel.getColumnGroupByIndex(nextColumnEntryIndex);
-							toPositions.add(lastPositionInGroup + nextColumnGroup.getSize());
-						} else {
-							toPositions.add(lastPositionInGroup + 1);
-						}
-					}
-				}
-				fireItemsMoved(MoveDirectionEnum.DOWN, selectedColumnGroupEntries, selectedColumnEntries, postionsGroupedByContiguous, toPositions);
-			}
-		}
-	}
+                List<Integer> allSelectedPositions = merge(
+                        selectedColumnEntries, selectedColumnGroupEntries);
 
-	private void moveSelectedToBottom() {
-		if (isAnyLeafSelected(selectedTree)) {
-			if (!isLastLeafSelected(selectedTree)) {
-				List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
-				List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
+                // Group continuous positions
+                List<List<Integer>> postionsGroupedByContiguous = PositionUtil
+                        .getGroupedByContiguous(allSelectedPositions);
+                List<Integer> toPositions = new ArrayList<Integer>();
 
-				List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+                // Set destination positions
+                for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+                    // Do these contiguous positions contain a column group ?
+                    boolean columnGroupMoved = columnGroupMoved(
+                            groupedPositions, selectedColumnGroupEntries);
 
-				// Group continuous positions
-				List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-				List<Integer> toPositions = new ArrayList<Integer>();
+                    // Position of last element in list
+                    int lastListIndex = groupedPositions.size() - 1;
+                    int lastPositionInGroup = groupedPositions
+                            .get(lastListIndex);
 
-				List<List<Integer>> reversed = new ArrayList<List<Integer>>(postionsGroupedByContiguous);
-				Collections.reverse(reversed);
-				
-				int totalSelItemCount = getColumnEntriesIncludingNested(selectedTree.getItems()).size();
-				
-				int shift = 0;
-				for (List<Integer> groupedPositions : reversed) {
-					toPositions.add(Integer.valueOf(totalSelItemCount - shift - 1));
-					shift += groupedPositions.size();
-				}
-				
-				fireItemsMoved(MoveDirectionEnum.DOWN, selectedColumnGroupEntries, selectedColumnEntries, reversed, toPositions);
-			}
-		}
-	}
-	
-	private boolean columnGroupMoved(List<Integer> fromPositions, List<ColumnGroupEntry> movedColumnGroupEntries) {
-		for (ColumnGroupEntry columnGroupEntry : movedColumnGroupEntries) {
-			if(fromPositions.contains(columnGroupEntry.getFirstElementPosition())) return true;
-		}
-		return false;
-	}
+                    // Column entry
+                    ColumnEntry columnEntry = getColumnEntryForPosition(
+                            selectedTree, lastPositionInGroup);
+                    int columnEntryIndex = columnEntry.getIndex();
 
-	/**
-	 * Get the ColumnEntry in the tree with the given position
-	 */
-	private ColumnEntry getColumnEntryForPosition(Tree tree, int columnEntryPosition) {
-		List<ColumnEntry> allColumnEntries = getColumnEntriesIncludingNested(selectedTree.getItems());
+                    // Next Column Entry
+                    ColumnEntry nextColumnEntry = getColumnEntryForPosition(
+                            selectedTree, lastPositionInGroup + 1);
 
-		for (ColumnEntry columnEntry : allColumnEntries) {
-			if(columnEntry.getPosition().intValue() == columnEntryPosition){
-				return columnEntry;
-			}
-		}
-		return null;
-	}
+                    // Next column entry will be null the last leaf in the tree
+                    // is selected
+                    if (nextColumnEntry == null) {
+                        return;
+                    }
+                    int nextColumnEntryIndex = nextColumnEntry.getIndex();
 
-	// Leaf related methods
+                    if (columnGroupMoved) {
+                        // If the next entry is a column group - move past it.
+                        if (columnGroupModel != null
+                                && columnGroupModel
+                                        .isPartOfAGroup(nextColumnEntryIndex)) {
+                            ColumnGroup nextColumnGroup = columnGroupModel
+                                    .getColumnGroupByIndex(nextColumnEntryIndex);
+                            toPositions.add(lastPositionInGroup
+                                    + nextColumnGroup.getSize());
+                        } else {
+                            toPositions.add(lastPositionInGroup + 1);
+                        }
+                    } else {
+                        // If is last member of the unbreakable group, can't
+                        // move down i.e. out of the group
+                        if (columnGroupModel != null
+                                && columnGroupModel
+                                        .isPartOfAnUnbreakableGroup(columnEntryIndex)
+                                && !ColumnGroupUtils.isInTheSameGroup(
+                                        columnEntryIndex, nextColumnEntryIndex,
+                                        columnGroupModel)) {
+                            return;
+                        }
 
-	/**
-	 * Get Leaf index of the selected leaves in the tree
-	 */
-	protected List<Integer> getIndexesOfSelectedLeaves(Tree tree) {
-		List<TreeItem> allSelectedLeaves = ArrayUtil.asList(tree.getSelection());
-		List<Integer> allSelectedIndexes = new ArrayList<Integer>();
+                        // If next entry is an unbreakable column group - move
+                        // past it
+                        if (columnGroupModel != null
+                                && columnGroupModel
+                                        .isPartOfAnUnbreakableGroup(nextColumnEntryIndex)
+                                && !ColumnGroupUtils.isInTheSameGroup(
+                                        columnEntryIndex, nextColumnEntryIndex,
+                                        columnGroupModel)) {
+                            ColumnGroup nextColumnGroup = columnGroupModel
+                                    .getColumnGroupByIndex(nextColumnEntryIndex);
+                            toPositions.add(lastPositionInGroup
+                                    + nextColumnGroup.getSize());
+                        } else {
+                            toPositions.add(lastPositionInGroup + 1);
+                        }
+                    }
+                }
+                fireItemsMoved(MoveDirectionEnum.DOWN,
+                        selectedColumnGroupEntries, selectedColumnEntries,
+                        postionsGroupedByContiguous, toPositions);
+            }
+        }
+    }
 
-		for (TreeItem selectedLeaf : allSelectedLeaves) {
-			allSelectedIndexes.add(Integer.valueOf(tree.indexOf(selectedLeaf)));
-		}
+    private void moveSelectedToBottom() {
+        if (isAnyLeafSelected(selectedTree)) {
+            if (!isLastLeafSelected(selectedTree)) {
+                List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
+                List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
 
-		return allSelectedIndexes;
-	}
+                List<Integer> allSelectedPositions = merge(
+                        selectedColumnEntries, selectedColumnGroupEntries);
 
-	public void expandAllLeaves() {
-		List<TreeItem> allLeaves = ArrayUtil.asList(selectedTree.getItems());
+                // Group continuous positions
+                List<List<Integer>> postionsGroupedByContiguous = PositionUtil
+                        .getGroupedByContiguous(allSelectedPositions);
+                List<Integer> toPositions = new ArrayList<Integer>();
 
-		for (TreeItem leaf : allLeaves) {
-			if(isColumnGroupLeaf(leaf)){
-				ColumnGroupEntry columnGroupEntry = (ColumnGroupEntry) leaf.getData();
-				leaf.setExpanded(! columnGroupEntry.isCollapsed());
-			}
-		}
-	}
+                List<List<Integer>> reversed = new ArrayList<List<Integer>>(
+                        postionsGroupedByContiguous);
+                Collections.reverse(reversed);
 
-	private boolean isColumnGroupLeaf(TreeItem treeItem) {
-		if(ObjectUtils.isNotNull(treeItem)){
-			return treeItem.getData() instanceof ColumnGroupEntry;
-		} else {
-			return false;
-		}
-	}
+                int totalSelItemCount = getColumnEntriesIncludingNested(
+                        selectedTree.getItems()).size();
 
-	private boolean isLastLeafSelected(Tree tree) {
-		TreeItem[] selectedLeaves = tree.getSelection();
-		for (int i = 0; i < selectedLeaves.length; i++) {
-			if (tree.indexOf(selectedLeaves[i])+1 == tree.getItemCount()) {
-				return true;
-			}
-		}
-		return false;
-	}
+                int shift = 0;
+                for (List<Integer> groupedPositions : reversed) {
+                    toPositions.add(Integer.valueOf(totalSelItemCount - shift
+                            - 1));
+                    shift += groupedPositions.size();
+                }
 
-	private boolean isFirstLeafSelected(Tree tree) {
-		TreeItem[] selectedLeaves = tree.getSelection();
-		for (int i = 0; i < selectedLeaves.length; i++) {
-			if (selectedTree.indexOf(selectedLeaves[i]) == 0) {
-				return true;
-			}
-		}
-		return false;
-	}
+                fireItemsMoved(MoveDirectionEnum.DOWN,
+                        selectedColumnGroupEntries, selectedColumnEntries,
+                        reversed, toPositions);
+            }
+        }
+    }
 
-	private boolean isAnyLeafSelected(Tree tree) {
-		TreeItem[] selectedLeaves = tree.getSelection();
-		return selectedLeaves != null && selectedLeaves.length > 0;
-	}
+    private boolean columnGroupMoved(List<Integer> fromPositions,
+            List<ColumnGroupEntry> movedColumnGroupEntries) {
+        for (ColumnGroupEntry columnGroupEntry : movedColumnGroupEntries) {
+            if (fromPositions.contains(columnGroupEntry
+                    .getFirstElementPosition()))
+                return true;
+        }
+        return false;
+    }
 
+    /**
+     * Get the ColumnEntry in the tree with the given position
+     */
+    private ColumnEntry getColumnEntryForPosition(Tree tree,
+            int columnEntryPosition) {
+        List<ColumnEntry> allColumnEntries = getColumnEntriesIncludingNested(selectedTree
+                .getItems());
 
-	private ColumnEntry getColumnEntryInLeaf(TreeItem leaf) {
-		if (!isColumnGroupLeaf(leaf)) {
-			return (ColumnEntry) leaf.getData();
-		} else {
-			return null;
-		}
-	}
+        for (ColumnEntry columnEntry : allColumnEntries) {
+            if (columnEntry.getPosition().intValue() == columnEntryPosition) {
+                return columnEntry;
+            }
+        }
+        return null;
+    }
 
-	public void removeAllLeaves() {
-		selectedTree.removeAll();
-		availableTree.removeAll();
-	}
+    // Leaf related methods
 
-	// Leaf Selection
+    /**
+     * Get Leaf index of the selected leaves in the tree
+     */
+    protected List<Integer> getIndexesOfSelectedLeaves(Tree tree) {
+        List<TreeItem> allSelectedLeaves = ArrayUtil
+                .asList(tree.getSelection());
+        List<Integer> allSelectedIndexes = new ArrayList<Integer>();
 
-	public void setSelectionIncludingNested(List<Integer> indexes) {
-		setSelectionIncludingNested(selectedTree, indexes);
-	}
+        for (TreeItem selectedLeaf : allSelectedLeaves) {
+            allSelectedIndexes.add(Integer.valueOf(tree.indexOf(selectedLeaf)));
+        }
 
-	/**
-	 * Marks the leaves in the tree as selected
-	 * @param tree containing the leaves
-	 * @param indexes index of the leaf in the tree
-	 */
-	protected void setSelection(Tree tree, List<Integer> indexes) {
-		List<TreeItem> selectedLeaves = new ArrayList<TreeItem>();
+        return allSelectedIndexes;
+    }
 
-		for (Integer leafIndex : indexes) {
-			selectedLeaves.add(tree.getItem(leafIndex.intValue()));
-		}
-		tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
-		tree.showSelection();
-	}
+    public void expandAllLeaves() {
+        List<TreeItem> allLeaves = ArrayUtil.asList(selectedTree.getItems());
 
-	/**
-	 * Mark the leaves with matching column entries as selected.
-	 * Also checks all the children of the column group leaves
-	 * @param columnEntryIndexes index of the ColumnEntry in the leaf
-	 */
-	private void setSelectionIncludingNested(Tree tree, List<Integer> columnEntryIndexes) {
-		Collection<TreeItem> allLeaves = ArrayUtil.asCollection(tree.getItems());
-		List<TreeItem> selectedLeaves = new ArrayList<TreeItem>();
+        for (TreeItem leaf : allLeaves) {
+            if (isColumnGroupLeaf(leaf)) {
+                ColumnGroupEntry columnGroupEntry = (ColumnGroupEntry) leaf
+                        .getData();
+                leaf.setExpanded(!columnGroupEntry.isCollapsed());
+            }
+        }
+    }
 
-		for (TreeItem leaf : allLeaves) {
-			if (!isColumnGroupLeaf(leaf)) {
-				int index = getColumnEntryInLeaf(leaf).getIndex().intValue();
-				if (columnEntryIndexes.contains(Integer.valueOf(index))) {
-					selectedLeaves.add(leaf);
-				}
-			} else {
-				//Check all children in column groups
-				Collection<TreeItem> columnGroupLeaves = ArrayUtil.asCollection(leaf.getItems());
-				for (TreeItem columnGroupLeaf : columnGroupLeaves) {
-					int index = getColumnEntryInLeaf(columnGroupLeaf).getIndex().intValue();
-					if (columnEntryIndexes.contains(Integer.valueOf(index))) {
-						selectedLeaves.add(columnGroupLeaf);
-					}
-				}
-			}
-		}
-		tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
-		setGroupsSelectionIfRequired(tree, columnEntryIndexes);
-		tree.showSelection();
-	}
+    private boolean isColumnGroupLeaf(TreeItem treeItem) {
+        if (ObjectUtils.isNotNull(treeItem)) {
+            return treeItem.getData() instanceof ColumnGroupEntry;
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * If all the leaves in a group are selected the group is also selected
-	 */
-	private void setGroupsSelectionIfRequired(Tree tree, List<Integer> columnEntryIndexes){
-		Collection<TreeItem> allLeaves = ArrayUtil.asCollection(tree.getItems());
-		Collection<TreeItem> selectedLeaves = ArrayUtil.asCollection(tree.getSelection());
+    private boolean isLastLeafSelected(Tree tree) {
+        TreeItem[] selectedLeaves = tree.getSelection();
+        for (int i = 0; i < selectedLeaves.length; i++) {
+            if (tree.indexOf(selectedLeaves[i]) + 1 == tree.getItemCount()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-		for (TreeItem leaf : allLeaves) {
-			if(isColumnGroupLeaf(leaf)){
-				boolean markSelected = true;
-				Collection<TreeItem> nestedLeaves = ArrayUtil.asCollection(leaf.getItems());
+    private boolean isFirstLeafSelected(Tree tree) {
+        TreeItem[] selectedLeaves = tree.getSelection();
+        for (int i = 0; i < selectedLeaves.length; i++) {
+            if (selectedTree.indexOf(selectedLeaves[i]) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-				for (TreeItem nestedLeaf : nestedLeaves) {
-					ColumnEntry columnEntry = getColumnEntryInLeaf(nestedLeaf);
-					if(!columnEntryIndexes.contains(columnEntry.getIndex())){
-						markSelected = false;
-					}
-				}
-				if(markSelected){
-					selectedLeaves.add(leaf);
-				}
-			}
-		}
-		tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
-	}
+    private boolean isAnyLeafSelected(Tree tree) {
+        TreeItem[] selectedLeaves = tree.getSelection();
+        return selectedLeaves != null && selectedLeaves.length > 0;
+    }
 
-	protected Tree getSelectedTree() {
-		return selectedTree;
-	}
+    private ColumnEntry getColumnEntryInLeaf(TreeItem leaf) {
+        if (!isColumnGroupLeaf(leaf)) {
+            return (ColumnEntry) leaf.getData();
+        } else {
+            return null;
+        }
+    }
+
+    public void removeAllLeaves() {
+        selectedTree.removeAll();
+        availableTree.removeAll();
+    }
+
+    // Leaf Selection
+
+    public void setSelectionIncludingNested(List<Integer> indexes) {
+        setSelectionIncludingNested(selectedTree, indexes);
+    }
+
+    /**
+     * Marks the leaves in the tree as selected
+     * 
+     * @param tree
+     *            containing the leaves
+     * @param indexes
+     *            index of the leaf in the tree
+     */
+    protected void setSelection(Tree tree, List<Integer> indexes) {
+        List<TreeItem> selectedLeaves = new ArrayList<TreeItem>();
+
+        for (Integer leafIndex : indexes) {
+            selectedLeaves.add(tree.getItem(leafIndex.intValue()));
+        }
+        tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
+        tree.showSelection();
+    }
+
+    /**
+     * Mark the leaves with matching column entries as selected. Also checks all
+     * the children of the column group leaves
+     * 
+     * @param columnEntryIndexes
+     *            index of the ColumnEntry in the leaf
+     */
+    private void setSelectionIncludingNested(Tree tree,
+            List<Integer> columnEntryIndexes) {
+        Collection<TreeItem> allLeaves = ArrayUtil
+                .asCollection(tree.getItems());
+        List<TreeItem> selectedLeaves = new ArrayList<TreeItem>();
+
+        for (TreeItem leaf : allLeaves) {
+            if (!isColumnGroupLeaf(leaf)) {
+                int index = getColumnEntryInLeaf(leaf).getIndex().intValue();
+                if (columnEntryIndexes.contains(Integer.valueOf(index))) {
+                    selectedLeaves.add(leaf);
+                }
+            } else {
+                // Check all children in column groups
+                Collection<TreeItem> columnGroupLeaves = ArrayUtil
+                        .asCollection(leaf.getItems());
+                for (TreeItem columnGroupLeaf : columnGroupLeaves) {
+                    int index = getColumnEntryInLeaf(columnGroupLeaf)
+                            .getIndex().intValue();
+                    if (columnEntryIndexes.contains(Integer.valueOf(index))) {
+                        selectedLeaves.add(columnGroupLeaf);
+                    }
+                }
+            }
+        }
+        tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
+        setGroupsSelectionIfRequired(tree, columnEntryIndexes);
+        tree.showSelection();
+    }
+
+    /**
+     * If all the leaves in a group are selected the group is also selected
+     */
+    private void setGroupsSelectionIfRequired(Tree tree,
+            List<Integer> columnEntryIndexes) {
+        Collection<TreeItem> allLeaves = ArrayUtil
+                .asCollection(tree.getItems());
+        Collection<TreeItem> selectedLeaves = ArrayUtil.asCollection(tree
+                .getSelection());
+
+        for (TreeItem leaf : allLeaves) {
+            if (isColumnGroupLeaf(leaf)) {
+                boolean markSelected = true;
+                Collection<TreeItem> nestedLeaves = ArrayUtil.asCollection(leaf
+                        .getItems());
+
+                for (TreeItem nestedLeaf : nestedLeaves) {
+                    ColumnEntry columnEntry = getColumnEntryInLeaf(nestedLeaf);
+                    if (!columnEntryIndexes.contains(columnEntry.getIndex())) {
+                        markSelected = false;
+                    }
+                }
+                if (markSelected) {
+                    selectedLeaves.add(leaf);
+                }
+            }
+        }
+        tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
+    }
+
+    protected Tree getSelectedTree() {
+        return selectedTree;
+    }
 
 }

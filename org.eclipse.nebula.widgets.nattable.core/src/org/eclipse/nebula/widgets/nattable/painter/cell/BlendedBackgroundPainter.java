@@ -44,63 +44,76 @@ import org.eclipse.swt.graphics.RGB;
  */
 public class BlendedBackgroundPainter extends TextPainter {
 
-	// We wont blend colours with the background colour of the grid. Otherwise, if the
-	// grid's background colour was white, for exmaple, this would result in all
-	// background colours becoming paler than intended.
-	private final RGB gridBackgroundColour;
+    // We wont blend colours with the background colour of the grid. Otherwise,
+    // if the
+    // grid's background colour was white, for exmaple, this would result in all
+    // background colours becoming paler than intended.
+    private final RGB gridBackgroundColour;
 
-	public BlendedBackgroundPainter(final RGB gridBackgroundColour) {
-		this.gridBackgroundColour = gridBackgroundColour;
-	}
+    public BlendedBackgroundPainter(final RGB gridBackgroundColour) {
+        this.gridBackgroundColour = gridBackgroundColour;
+    }
 
-	@Override
-	protected Color getBackgroundColour(final ILayerCell cell, final IConfigRegistry configRegistry) {
-		return blendBackgroundColour(cell, configRegistry, this.gridBackgroundColour);
-	}
+    @Override
+    protected Color getBackgroundColour(final ILayerCell cell,
+            final IConfigRegistry configRegistry) {
+        return blendBackgroundColour(cell, configRegistry,
+                this.gridBackgroundColour);
+    }
 
-	/**
-	 * Returns a background colour for the specified cell. If multiple colours
-	 * have been registered, they are all blended together.
-	 *
-	 * @param cell
-	 *            the {@link org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell} to get a background colour for.
-	 * @param configRegistry
-	 *            an {@link org.eclipse.nebula.widgets.nattable.config.IConfigRegistry}.
-	 * @param baseColor
-	 *            Colours are not blended with this colour.
-	 * @return A blended background colour.
-	 */
-	public static Color blendBackgroundColour(final ILayerCell cell, final IConfigRegistry configRegistry, final RGB baseColor) {
+    /**
+     * Returns a background colour for the specified cell. If multiple colours
+     * have been registered, they are all blended together.
+     *
+     * @param cell
+     *            the
+     *            {@link org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell}
+     *            to get a background colour for.
+     * @param configRegistry
+     *            an
+     *            {@link org.eclipse.nebula.widgets.nattable.config.IConfigRegistry}
+     *            .
+     * @param baseColor
+     *            Colours are not blended with this colour.
+     * @return A blended background colour.
+     */
+    public static Color blendBackgroundColour(final ILayerCell cell,
+            final IConfigRegistry configRegistry, final RGB baseColor) {
 
-		// Get all of the background colours registered for the cell in normal mode.
-		final List<Color> colours = CellStyleUtil.getAllBackgroundColors(cell, configRegistry, DisplayMode.NORMAL);
+        // Get all of the background colours registered for the cell in normal
+        // mode.
+        final List<Color> colours = CellStyleUtil.getAllBackgroundColors(cell,
+                configRegistry, DisplayMode.NORMAL);
 
-		// If the cell is selected, get it's selected background colour and add to the blending mix.
-		if (cell.getDisplayMode().equals(DisplayMode.SELECT)) {
-			final IStyle cellStyle = new CellStyleProxy(configRegistry, DisplayMode.SELECT, cell.getConfigLabels().getLabels());
-			colours.add(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-		}
+        // If the cell is selected, get it's selected background colour and add
+        // to the blending mix.
+        if (cell.getDisplayMode().equals(DisplayMode.SELECT)) {
+            final IStyle cellStyle = new CellStyleProxy(configRegistry,
+                    DisplayMode.SELECT, cell.getConfigLabels().getLabels());
+            colours.add(cellStyle
+                    .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        }
 
-		if (colours.size() == 0) {
-			return null;
+        if (colours.size() == 0) {
+            return null;
 
-		} else if (colours.size() == 1) {
-			return colours.get(0);
+        } else if (colours.size() == 1) {
+            return colours.get(0);
 
-		} else {
-			RGB rgb = colours.get(0).getRGB();
+        } else {
+            RGB rgb = colours.get(0).getRGB();
 
-			for (int i=1; i<colours.size(); i++) {
-				// Don't blend with the grid background colour.
-				if (rgb.equals(baseColor)) {
-					rgb = colours.get(i).getRGB();
+            for (int i = 1; i < colours.size(); i++) {
+                // Don't blend with the grid background colour.
+                if (rgb.equals(baseColor)) {
+                    rgb = colours.get(i).getRGB();
 
-				} else if (!colours.get(i).getRGB().equals(baseColor)) {
-					rgb = GUIHelper.blend(rgb, colours.get(i).getRGB());
-				}
-			}
+                } else if (!colours.get(i).getRGB().equals(baseColor)) {
+                    rgb = GUIHelper.blend(rgb, colours.get(i).getRGB());
+                }
+            }
 
-			return GUIHelper.getColor(rgb);
-		}
-	}
+            return GUIHelper.getColor(rgb);
+        }
+    }
 }

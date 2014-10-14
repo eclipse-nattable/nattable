@@ -15,8 +15,9 @@ import org.eclipse.swt.widgets.Shell;
 
 public class ColumnRenameDialogRunner {
 
-	public static void main(String[] args) {
-		ColumnRenameDialog dialog = new ColumnRenameDialog(new Shell(), "Original", "New");
-		dialog.open();
-	}
+    public static void main(String[] args) {
+        ColumnRenameDialog dialog = new ColumnRenameDialog(new Shell(),
+                "Original", "New");
+        dialog.open();
+    }
 }

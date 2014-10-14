@@ -16,96 +16,98 @@ import org.junit.Test;
 
 public class SizeConfigTest {
 
-	private static final int DEFAULT_SIZE = 100;
-	private SizeConfig sizeConfig;
+    private static final int DEFAULT_SIZE = 100;
+    private SizeConfig sizeConfig;
 
-	@Before
-	public void setup(){
-		sizeConfig = new SizeConfig(DEFAULT_SIZE);
-	}
+    @Before
+    public void setup() {
+        sizeConfig = new SizeConfig(DEFAULT_SIZE);
+    }
 
-	@Test
-	public void getAggregateSize() throws Exception {
-		Assert.assertEquals(1000, sizeConfig.getAggregateSize(10));
-	}
+    @Test
+    public void getAggregateSize() throws Exception {
+        Assert.assertEquals(1000, sizeConfig.getAggregateSize(10));
+    }
 
-	@Test
-	public void sizeOverride() throws Exception {
-		sizeConfig.setSize(5, 120);
+    @Test
+    public void sizeOverride() throws Exception {
+        sizeConfig.setSize(5, 120);
 
-		Assert.assertEquals(120, sizeConfig.getSize(5));
-	}
+        Assert.assertEquals(120, sizeConfig.getSize(5));
+    }
 
-	@Test
-	public void getAggregateSizeWithSizeOverrides() throws Exception {
-		sizeConfig.setSize(5, 120);
-		sizeConfig.setSize(0, 10);
+    @Test
+    public void getAggregateSizeWithSizeOverrides() throws Exception {
+        sizeConfig.setSize(5, 120);
+        sizeConfig.setSize(0, 10);
 
-		Assert.assertEquals(10, sizeConfig.getAggregateSize(1));
-		Assert.assertEquals(410, sizeConfig.getAggregateSize(5));
-		Assert.assertEquals(930, sizeConfig.getAggregateSize(10));
-	}
+        Assert.assertEquals(10, sizeConfig.getAggregateSize(1));
+        Assert.assertEquals(410, sizeConfig.getAggregateSize(5));
+        Assert.assertEquals(930, sizeConfig.getAggregateSize(10));
+    }
 
-	@Test
-	public void setIndexResizable() throws Exception {
-		sizeConfig.setResizableByDefault(false);
-		sizeConfig.setPositionResizable(2, true);
-		sizeConfig.setSize(2, 120);
+    @Test
+    public void setIndexResizable() throws Exception {
+        sizeConfig.setResizableByDefault(false);
+        sizeConfig.setPositionResizable(2, true);
+        sizeConfig.setSize(2, 120);
 
-		Assert.assertEquals(320, sizeConfig.getAggregateSize(3));
-	}
+        Assert.assertEquals(320, sizeConfig.getAggregateSize(3));
+    }
 
-	@Test
-	public void ingnoreResizeForNonResizableColumns() throws Exception {
-		sizeConfig.setResizableByDefault(false);
-		sizeConfig.setSize(2, 120);
+    @Test
+    public void ingnoreResizeForNonResizableColumns() throws Exception {
+        sizeConfig.setResizableByDefault(false);
+        sizeConfig.setSize(2, 120);
 
-		Assert.assertEquals(300, sizeConfig.getAggregateSize(3));
-	}
+        Assert.assertEquals(300, sizeConfig.getAggregateSize(3));
+    }
 
-	@Test
-	public void allIndexesSameSize() throws Exception {
-		Assert.assertTrue(sizeConfig.isAllPositionsSameSize());
+    @Test
+    public void allIndexesSameSize() throws Exception {
+        Assert.assertTrue(sizeConfig.isAllPositionsSameSize());
 
-		sizeConfig.setSize(2, 120);
-		Assert.assertFalse(sizeConfig.isAllPositionsSameSize());
-	}
+        sizeConfig.setSize(2, 120);
+        Assert.assertFalse(sizeConfig.isAllPositionsSameSize());
+    }
 
-	@Test
-	public void testAggregateSize() {
-		final SizeConfig sc = new SizeConfig(50); // Global default of 50
-		sc.setSize(0, 20);
-		sc.setSize(1, 20);
-		// use global default for 3rd and 4th position
+    @Test
+    public void testAggregateSize() {
+        final SizeConfig sc = new SizeConfig(50); // Global default of 50
+        sc.setSize(0, 20);
+        sc.setSize(1, 20);
+        // use global default for 3rd and 4th position
 
-		Assert.assertEquals(140, sc.getAggregateSize(4));
-	}
+        Assert.assertEquals(140, sc.getAggregateSize(4));
+    }
 
-	@Test
-	public void testAggregateSizeWithPositionDefaults() {
-		final SizeConfig sc = new SizeConfig(50); // Global default of 50
-		sc.setSize(0, 20);
-		sc.setSize(1, 20);
-		sc.setDefaultSize(0, 10); // must not be considered as there is a size set on 1st position
-		sc.setDefaultSize(2, 10); // must be considered as there is no size setting on 3rd position
-		// use global default for 4th position
+    @Test
+    public void testAggregateSizeWithPositionDefaults() {
+        final SizeConfig sc = new SizeConfig(50); // Global default of 50
+        sc.setSize(0, 20);
+        sc.setSize(1, 20);
+        sc.setDefaultSize(0, 10); // must not be considered as there is a size
+                                  // set on 1st position
+        sc.setDefaultSize(2, 10); // must be considered as there is no size
+                                  // setting on 3rd position
+        // use global default for 4th position
 
-		Assert.assertEquals(100, sc.getAggregateSize(4));
-	}
+        Assert.assertEquals(100, sc.getAggregateSize(4));
+    }
 
-	@Test
-	public void testAggregateSizeCache() {
-		final SizeConfig sc = new SizeConfig(100);
-		sc.setSize(0, 50);
-		Assert.assertEquals(450, sc.getAggregateSize(5));
-		sc.setSize(1, 50);
-		Assert.assertEquals(400, sc.getAggregateSize(5));
-		sc.setSize(2, 50);
-		Assert.assertEquals(350, sc.getAggregateSize(5));
-		sc.setDefaultSize(75);
-		Assert.assertEquals(300, sc.getAggregateSize(5));
-		sc.setSize(2, 100);
-		Assert.assertEquals(350, sc.getAggregateSize(5));
-	}
+    @Test
+    public void testAggregateSizeCache() {
+        final SizeConfig sc = new SizeConfig(100);
+        sc.setSize(0, 50);
+        Assert.assertEquals(450, sc.getAggregateSize(5));
+        sc.setSize(1, 50);
+        Assert.assertEquals(400, sc.getAggregateSize(5));
+        sc.setSize(2, 50);
+        Assert.assertEquals(350, sc.getAggregateSize(5));
+        sc.setDefaultSize(75);
+        Assert.assertEquals(300, sc.getAggregateSize(5));
+        sc.setSize(2, 100);
+        Assert.assertEquals(350, sc.getAggregateSize(5));
+    }
 
 }

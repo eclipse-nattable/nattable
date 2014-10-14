@@ -32,32 +32,34 @@ import org.eclipse.swt.widgets.Control;
  */
 public class _5041_ViewportLayerExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _5041_ViewportLayerExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _5041_ViewportLayerExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows a simple composition using a viewport.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday", 
-				"address.street", "address.housenumber", "address.postalCode", "address.city"};
+    @Override
+    public String getDescription() {
+        return "This example shows a simple composition using a viewport.";
+    }
 
-		IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = 
-				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
-		
-		IDataProvider bodyDataProvider = new ListDataProvider<PersonWithAddress>(
-				PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
-		DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		ViewportLayer viewportLayer = new ViewportLayer(bodyDataLayer);
-		
-		NatTable natTable = new NatTable(parent, viewportLayer);
-		
-		return natTable;
-	}
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday", "address.street", "address.housenumber",
+                "address.postalCode", "address.city" };
+
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(
+                propertyNames);
+
+        IDataProvider bodyDataProvider = new ListDataProvider<PersonWithAddress>(
+                PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
+        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        ViewportLayer viewportLayer = new ViewportLayer(bodyDataLayer);
+
+        NatTable natTable = new NatTable(parent, viewportLayer);
+
+        return natTable;
+    }
 
 }

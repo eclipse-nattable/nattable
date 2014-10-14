@@ -69,196 +69,218 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
 
 /**
- * Example showing how to add the filter row to the layer
- * composition of a grid that looks like the Excel filter.
+ * Example showing how to add the filter row to the layer composition of a grid
+ * that looks like the Excel filter.
  * 
  * @author Dirk Fauth
  *
  */
 public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _6034_ExcelLikeFilterRowExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new _6034_ExcelLikeFilterRowExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows the usage of the filter row within a grid that looks like the Excel"
-				+ " filter row.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout());
-		
-		//create a new ConfigRegistry which will be needed for GlazedLists handling
-		ConfigRegistry configRegistry = new ConfigRegistry();
+    @Override
+    public String getDescription() {
+        return "This example shows the usage of the filter row within a grid that looks like the Excel"
+                + " filter row.";
+    }
 
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday", 
-				"address.street", "address.housenumber", "address.postalCode", "address.city"};
+    @Override
+    public Control createExampleControl(Composite parent) {
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout());
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
-		propertyToLabelMap.put("address.street", "Street");
-		propertyToLabelMap.put("address.housenumber", "Housenumber");
-		propertyToLabelMap.put("address.postalCode", "Postal Code");
-		propertyToLabelMap.put("address.city", "City");
+        // create a new ConfigRegistry which will be needed for GlazedLists
+        // handling
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-		IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = 
-				new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
-		
-		final BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
-				PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
-		
-		//build the column header layer
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-		
-		ComboBoxFilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer =
-				new ComboBoxFilterRowHeaderComposite<PersonWithAddress>(
-						bodyLayerStack.getFilterList(), bodyLayerStack.getGlazedListsEventLayer(), bodyLayerStack.getSortedList(), 
-						columnPropertyAccessor, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
-		
-		//build the row header layer
-		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
-		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-		
-		//build the corner layer
-		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, filterRowHeaderLayer);
-		
-		//build the grid layer
-		GridLayer gridLayer = new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
-		
-		//turn the auto configuration off as we want to add our header menu configuration
-		NatTable natTable = new NatTable(container, gridLayer, false);
-		
-		//as the autoconfiguration of the NatTable is turned off, we have to add the 
-		//DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
-			@Override
-			protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
-				return super.createCornerMenu(natTable)
-						.withStateManagerMenuItemProvider();
-			}
-		});
-		
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday", "address.street", "address.housenumber",
+                "address.postalCode", "address.city" };
 
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				configRegistry.registerConfigAttribute(
-						EditConfigAttributes.CELL_EDITABLE_RULE, 
-						IEditableRule.ALWAYS_EDITABLE);
-			}
-			
-		});
-		
-		natTable.configure();
-		
-		natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		
-		Button button = new Button(container, SWT.PUSH);
-		button.setText("Add Row");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Address address = new Address();
-				address.setStreet("Some Street");
-				address.setHousenumber(42);
-				address.setPostalCode(12345);
-				address.setCity("In the clouds");
-				PersonWithAddress person = new PersonWithAddress(42, "Ralph", "Wiggum", Gender.MALE, false, new Date(), address);
-				
-				bodyLayerStack.getSortedList().add(person);
-			}
-		});
-		
-		return container;
-	}
-	
-	/**
-	 * Always encapsulate the body layer stack in an AbstractLayerTransform to ensure that the
-	 * index transformations are performed in later commands.
-	 * @param <T>
-	 */
-	class BodyLayerStack<T> extends AbstractLayerTransform {
-		
-		private final SortedList<T> sortedList;
-		private final FilterList<T> filterList;
-		
-		private final IDataProvider bodyDataProvider;
-		private final DataLayer bodyDataLayer;
-		private final GlazedListsEventLayer<T> glazedListsEventLayer;
-		
-		private final SelectionLayer selectionLayer;
-		
-		public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
-			//wrapping of the list to show into GlazedLists
-			//see http://publicobject.com/glazedlists/ for further information
-			EventList<T> eventList = GlazedLists.eventList(values);
-			TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-			
-			//use the SortedList constructor with 'null' for the Comparator because the Comparator
-			//will be set by configuration
-			this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
-			// wrap the SortedList with the FilterList
-			this.filterList = new FilterList<T>(sortedList);
-			
-			this.bodyDataProvider = 
-				new ListDataProvider<T>(filterList, columnPropertyAccessor);
-			this.bodyDataLayer = new DataLayer(getBodyDataProvider());
-			
-			//layer for event handling of GlazedLists and PropertyChanges
-			this.glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, filterList);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
+        propertyToLabelMap.put("address.street", "Street");
+        propertyToLabelMap.put("address.housenumber", "Housenumber");
+        propertyToLabelMap.put("address.postalCode", "Postal Code");
+        propertyToLabelMap.put("address.city", "City");
 
-			this.selectionLayer = new SelectionLayer(getGlazedListsEventLayer());
-			ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
-			
-			FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
-		    CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(
+                propertyNames);
 
-			setUnderlyingLayer(compositeFreezeLayer);
-		}
+        final BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
+                PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
 
-		public SelectionLayer getSelectionLayer() {
-			return selectionLayer;
-		}
+        // build the column header layer
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
-		public SortedList<T> getSortedList() {
-			return sortedList;
-		}
-		
-		public FilterList<T> getFilterList() {
-			return this.filterList;
-		}
+        ComboBoxFilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer = new ComboBoxFilterRowHeaderComposite<PersonWithAddress>(
+                bodyLayerStack.getFilterList(),
+                bodyLayerStack.getGlazedListsEventLayer(),
+                bodyLayerStack.getSortedList(), columnPropertyAccessor,
+                columnHeaderLayer, columnHeaderDataProvider, configRegistry);
 
-		public IDataProvider getBodyDataProvider() {
-			return bodyDataProvider;
-		}
+        // build the row header layer
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
-		public DataLayer getBodyDataLayer() {
-			return bodyDataLayer;
-		}
+        // build the corner layer
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
+                filterRowHeaderLayer);
 
-		public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
-			return glazedListsEventLayer;
-		}
-	}
+        // build the grid layer
+        GridLayer gridLayer = new GridLayer(bodyLayerStack,
+                filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
+
+        // turn the auto configuration off as we want to add our header menu
+        // configuration
+        NatTable natTable = new NatTable(container, gridLayer, false);
+
+        // as the autoconfiguration of the NatTable is turned off, we have to
+        // add the
+        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+
+        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+            @Override
+            protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
+                return super.createCornerMenu(natTable)
+                        .withStateManagerMenuItemProvider();
+            }
+        });
+
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITABLE_RULE,
+                        IEditableRule.ALWAYS_EDITABLE);
+            }
+
+        });
+
+        natTable.configure();
+
+        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
+                natTable));
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Button button = new Button(container, SWT.PUSH);
+        button.setText("Add Row");
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Address address = new Address();
+                address.setStreet("Some Street");
+                address.setHousenumber(42);
+                address.setPostalCode(12345);
+                address.setCity("In the clouds");
+                PersonWithAddress person = new PersonWithAddress(42, "Ralph",
+                        "Wiggum", Gender.MALE, false, new Date(), address);
+
+                bodyLayerStack.getSortedList().add(person);
+            }
+        });
+
+        return container;
+    }
+
+    /**
+     * Always encapsulate the body layer stack in an AbstractLayerTransform to
+     * ensure that the index transformations are performed in later commands.
+     * 
+     * @param <T>
+     */
+    class BodyLayerStack<T> extends AbstractLayerTransform {
+
+        private final SortedList<T> sortedList;
+        private final FilterList<T> filterList;
+
+        private final IDataProvider bodyDataProvider;
+        private final DataLayer bodyDataLayer;
+        private final GlazedListsEventLayer<T> glazedListsEventLayer;
+
+        private final SelectionLayer selectionLayer;
+
+        public BodyLayerStack(List<T> values,
+                IColumnPropertyAccessor<T> columnPropertyAccessor) {
+            // wrapping of the list to show into GlazedLists
+            // see http://publicobject.com/glazedlists/ for further information
+            EventList<T> eventList = GlazedLists.eventList(values);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
+                    .threadSafeList(eventList);
+
+            // use the SortedList constructor with 'null' for the Comparator
+            // because the Comparator
+            // will be set by configuration
+            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            // wrap the SortedList with the FilterList
+            this.filterList = new FilterList<T>(sortedList);
+
+            this.bodyDataProvider = new ListDataProvider<T>(filterList,
+                    columnPropertyAccessor);
+            this.bodyDataLayer = new DataLayer(getBodyDataProvider());
+
+            // layer for event handling of GlazedLists and PropertyChanges
+            this.glazedListsEventLayer = new GlazedListsEventLayer<T>(
+                    bodyDataLayer, filterList);
+
+            this.selectionLayer = new SelectionLayer(getGlazedListsEventLayer());
+            ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
+
+            FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+            CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(
+                    freezeLayer, viewportLayer, selectionLayer);
+
+            setUnderlyingLayer(compositeFreezeLayer);
+        }
+
+        public SelectionLayer getSelectionLayer() {
+            return selectionLayer;
+        }
+
+        public SortedList<T> getSortedList() {
+            return sortedList;
+        }
+
+        public FilterList<T> getFilterList() {
+            return this.filterList;
+        }
+
+        public IDataProvider getBodyDataProvider() {
+            return bodyDataProvider;
+        }
+
+        public DataLayer getBodyDataLayer() {
+            return bodyDataLayer;
+        }
+
+        public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+            return glazedListsEventLayer;
+        }
+    }
 
 }

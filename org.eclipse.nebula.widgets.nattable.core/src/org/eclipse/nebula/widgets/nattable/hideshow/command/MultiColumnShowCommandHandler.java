@@ -13,22 +13,23 @@ package org.eclipse.nebula.widgets.nattable.hideshow.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 
-public class MultiColumnShowCommandHandler extends AbstractLayerCommandHandler<MultiColumnShowCommand> {
+public class MultiColumnShowCommandHandler extends
+        AbstractLayerCommandHandler<MultiColumnShowCommand> {
 
-	private final ColumnHideShowLayer columnHideShowLayer;
+    private final ColumnHideShowLayer columnHideShowLayer;
 
-	public MultiColumnShowCommandHandler(ColumnHideShowLayer columnHideShowLayer) {
-		this.columnHideShowLayer = columnHideShowLayer;
-	}
-	
-	public Class<MultiColumnShowCommand> getCommandClass() {
-		return MultiColumnShowCommand.class;
-	}
+    public MultiColumnShowCommandHandler(ColumnHideShowLayer columnHideShowLayer) {
+        this.columnHideShowLayer = columnHideShowLayer;
+    }
 
-	@Override
-	protected boolean doCommand(MultiColumnShowCommand command) {
-		columnHideShowLayer.showColumnIndexes(command.getColumnIndexes());
-		return true;
-	}
+    public Class<MultiColumnShowCommand> getCommandClass() {
+        return MultiColumnShowCommand.class;
+    }
+
+    @Override
+    protected boolean doCommand(MultiColumnShowCommand command) {
+        columnHideShowLayer.showColumnIndexes(command.getColumnIndexes());
+        return true;
+    }
 
 }

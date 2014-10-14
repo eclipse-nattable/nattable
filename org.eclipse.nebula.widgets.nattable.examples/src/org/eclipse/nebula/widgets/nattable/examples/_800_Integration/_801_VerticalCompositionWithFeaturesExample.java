@@ -77,214 +77,224 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransformedList;
 
 /**
- * Example showing a NatTable that contains a column header and a body layer.
- * It adds sorting, filtering, editing, copy, print and export features.
+ * Example showing a NatTable that contains a column header and a body layer. It
+ * adds sorting, filtering, editing, copy, print and export features.
  * 
  * @author Dirk Fauth
  *
  */
-public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExample {
+public class _801_VerticalCompositionWithFeaturesExample extends
+        AbstractNatExample {
 
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 400, new _801_VerticalCompositionWithFeaturesExample());
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 400,
+                new _801_VerticalCompositionWithFeaturesExample());
+    }
 
-	@Override
-	public String getDescription() {
-		return "This example shows how to assemble a table that consists of a column header and a body layer.\n"
-				+ "This example also shows how to configure such a composition by adding sorting,"
-				+ " filtering, editing, copy, print and export features.\n"
-				+ "Additionally it contains example code for modifying the table content with actions "
-				+ "outside the NatTable context.";
-	}
-	
-	@Override
-	public Control createExampleControl(Composite parent) {
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		
-		Composite panel = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		panel.setLayout(layout);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
-		
-		Composite gridPanel = new Composite(panel, SWT.NONE);
-		gridPanel.setLayout(layout);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
-		
-		Composite buttonPanel = new Composite(panel, SWT.NONE);
-		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(false, false).applyTo(buttonPanel);
+    @Override
+    public String getDescription() {
+        return "This example shows how to assemble a table that consists of a column header and a body layer.\n"
+                + "This example also shows how to configure such a composition by adding sorting,"
+                + " filtering, editing, copy, print and export features.\n"
+                + "Additionally it contains example code for modifying the table content with actions "
+                + "outside the NatTable context.";
+    }
 
-		//property names of the Person class
-		String[] propertyNames = {"firstName", "lastName", "gender", "married", "birthday"};
+    @Override
+    public Control createExampleControl(Composite parent) {
+        ConfigRegistry configRegistry = new ConfigRegistry();
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("firstName", "Firstname");
-		propertyToLabelMap.put("lastName", "Lastname");
-		propertyToLabelMap.put("gender", "Gender");
-		propertyToLabelMap.put("married", "Married");
-		propertyToLabelMap.put("birthday", "Birthday");
+        Composite panel = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        panel.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 
-		IColumnPropertyAccessor<Person> columnPropertyAccessor = 
-				new ExtendedReflectiveColumnPropertyAccessor<Person>(propertyNames);
-		
-		List<Person> values = PersonService.getPersons(10);
-		final EventList<Person> eventList = GlazedLists.eventList(values);
-		TransformedList<Person, Person> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-		
-		//use the SortedList constructor with 'null' for the Comparator because the Comparator
-		//will be set by configuration
-		SortedList<Person> sortedList = new SortedList<Person>(rowObjectsGlazedList, null);
-		// wrap the SortedList with the FilterList
-		FilterList<Person> filterList = new FilterList<Person>(sortedList);
-		
-		IRowDataProvider<Person> bodyDataProvider = 
-				new ListDataProvider<Person>(filterList, columnPropertyAccessor);
-		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-		bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-		GlazedListsEventLayer<Person> eventLayer = new GlazedListsEventLayer<Person>(bodyDataLayer, filterList);
-		final SelectionLayer selectionLayer = new SelectionLayer(eventLayer);
-		ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        Composite gridPanel = new Composite(panel, SWT.NONE);
+        gridPanel.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
 
-		IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap); 
-		DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
-		ILayer columnHeaderLayer = new ColumnHeaderLayer(
-				columnHeaderDataLayer,
-				viewportLayer, 
-				selectionLayer);
+        Composite buttonPanel = new Composite(panel, SWT.NONE);
+        buttonPanel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(false, false).applyTo(buttonPanel);
 
-		//add sorting
-		SortHeaderLayer<Person> sortHeaderLayer = new SortHeaderLayer<Person>(
-				columnHeaderLayer, 
-				new GlazedListsSortModel<Person>(
-						sortedList, 
-						columnPropertyAccessor,
-						configRegistry, 
-						columnHeaderDataLayer), 
-				false);
+        // property names of the Person class
+        String[] propertyNames = { "firstName", "lastName", "gender",
+                "married", "birthday" };
 
-		//add the filter row functionality
-		final FilterRowHeaderComposite<Person> filterRowHeaderLayer =
-			new FilterRowHeaderComposite<Person>(
-					new DefaultGlazedListsFilterStrategy<Person>(filterList, columnPropertyAccessor, configRegistry),
-					sortHeaderLayer, columnHeaderDataProvider, configRegistry
-			);
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("birthday", "Birthday");
 
-		
-		//set the region labels to make default configurations work, e.g. editing, selection
-		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, filterRowHeaderLayer, 0, 0);
-		compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
+        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Person>(
+                propertyNames);
 
-		//add edit configurations
-		compositeLayer.addConfiguration(new DefaultEditConfiguration());
-		compositeLayer.addConfiguration(new DefaultEditBindings());
+        List<Person> values = PersonService.getPersons(10);
+        final EventList<Person> eventList = GlazedLists.eventList(values);
+        TransformedList<Person, Person> rowObjectsGlazedList = GlazedLists
+                .threadSafeList(eventList);
 
-		//add print support
-		compositeLayer.registerCommandHandler(new PrintCommandHandler(compositeLayer));
-		compositeLayer.addConfiguration(new DefaultPrintBindings());
+        // use the SortedList constructor with 'null' for the Comparator because
+        // the Comparator
+        // will be set by configuration
+        SortedList<Person> sortedList = new SortedList<Person>(
+                rowObjectsGlazedList, null);
+        // wrap the SortedList with the FilterList
+        FilterList<Person> filterList = new FilterList<Person>(sortedList);
 
-		//add excel export support
-		compositeLayer.registerCommandHandler(new ExportCommandHandler(compositeLayer));
-		compositeLayer.addConfiguration(new DefaultExportBindings());
+        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(
+                filterList, columnPropertyAccessor);
+        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        GlazedListsEventLayer<Person> eventLayer = new GlazedListsEventLayer<Person>(
+                bodyDataLayer, filterList);
+        final SelectionLayer selectionLayer = new SelectionLayer(eventLayer);
+        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-		final NatTable natTable = new NatTable(gridPanel, compositeLayer, false);
-		
-		natTable.setConfigRegistry(configRegistry);
-		
-		//adding this configuration adds the styles and the painters to use
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		
-		//add sorting configuration
-		natTable.addConfiguration(new SingleClickSortConfiguration());
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DataLayer(
+                columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+                viewportLayer, selectionLayer);
 
-		natTable.addConfiguration(new AbstractRegistryConfiguration() {
-			
-			@Override
-			public void configureRegistry(IConfigRegistry configRegistry) {
-				configRegistry.registerConfigAttribute(
-						EditConfigAttributes.CELL_EDITABLE_RULE, 
-						IEditableRule.ALWAYS_EDITABLE);
+        // add sorting
+        SortHeaderLayer<Person> sortHeaderLayer = new SortHeaderLayer<Person>(
+                columnHeaderLayer, new GlazedListsSortModel<Person>(sortedList,
+                        columnPropertyAccessor, configRegistry,
+                        columnHeaderDataLayer), false);
 
-				//birthday is never editable
-				configRegistry.registerConfigAttribute(
-						EditConfigAttributes.CELL_EDITABLE_RULE, 
-						IEditableRule.NEVER_EDITABLE,
-						DisplayMode.NORMAL,
-						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
-				
-				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-						new ComboBoxCellEditor(Arrays.asList(Gender.FEMALE, Gender.MALE)), 
-						DisplayMode.NORMAL, 
-						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.DISPLAY_CONVERTER, 
-						getGenderBooleanConverter(), 
-						DisplayMode.NORMAL, 
-						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
-				
-				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, 
-						new ComboBoxCellEditor(Arrays.asList(Boolean.TRUE, Boolean.FALSE)), 
-						DisplayMode.NORMAL, 
-						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
-				configRegistry.registerConfigAttribute(
-						CellConfigAttributes.DISPLAY_CONVERTER, 
-						new DefaultBooleanDisplayConverter(), 
-						DisplayMode.NORMAL, 
-						ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+        // add the filter row functionality
+        final FilterRowHeaderComposite<Person> filterRowHeaderLayer = new FilterRowHeaderComposite<Person>(
+                new DefaultGlazedListsFilterStrategy<Person>(filterList,
+                        columnPropertyAccessor, configRegistry),
+                sortHeaderLayer, columnHeaderDataProvider, configRegistry);
 
-			}
-		});
+        // set the region labels to make default configurations work, e.g.
+        // editing, selection
+        CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
+                filterRowHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
-		natTable.configure();
-		
-		final RowSelectionProvider<Person> selectionProvider = 
-				new RowSelectionProvider<Person>(selectionLayer, bodyDataProvider, false);
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        // add edit configurations
+        compositeLayer.addConfiguration(new DefaultEditConfiguration());
+        compositeLayer.addConfiguration(new DefaultEditBindings());
 
-		Button button = new Button(buttonPanel, SWT.PUSH);
-		button.setText("Remove selected item");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				//ensure any active cell editor is closed prior actions outside the NatTable context
-				if (natTable.getActiveCellEditor() != null) {
-					natTable.commitAndCloseActiveCellEditor();
-				}
-				Person item = (Person) ((IStructuredSelection)selectionProvider.getSelection()).getFirstElement();
-				eventList.remove(item);
-			}
-		});
-		
-		return panel;
-	}
-	/**
-	 * @return Returns a simple converter for the gender of a Person.
-	 * 			{@link Gender#MALE} will be interpreted as <code>true</code>
-	 * 			while {@link Gender#FEMALE} will be interpreted as <code>false</code>
-	 */
-	private IDisplayConverter getGenderBooleanConverter() {
-		return new DisplayConverter() {
-			
-			@Override
-			public Object canonicalToDisplayValue(Object canonicalValue) {
-				if (canonicalValue instanceof Gender) {
-					return canonicalValue.toString();
-				}
-				return null;
-			}
-			
-			@Override
-			public Object displayToCanonicalValue(Object displayValue) {
-				Boolean displayBoolean = Boolean.valueOf(displayValue.toString());
-				return displayBoolean ? Gender.MALE : Gender.FEMALE;
-			}
-			
-		};
-	}
+        // add print support
+        compositeLayer.registerCommandHandler(new PrintCommandHandler(
+                compositeLayer));
+        compositeLayer.addConfiguration(new DefaultPrintBindings());
+
+        // add excel export support
+        compositeLayer.registerCommandHandler(new ExportCommandHandler(
+                compositeLayer));
+        compositeLayer.addConfiguration(new DefaultExportBindings());
+
+        final NatTable natTable = new NatTable(gridPanel, compositeLayer, false);
+
+        natTable.setConfigRegistry(configRegistry);
+
+        // adding this configuration adds the styles and the painters to use
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+
+        // add sorting configuration
+        natTable.addConfiguration(new SingleClickSortConfiguration());
+
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITABLE_RULE,
+                        IEditableRule.ALWAYS_EDITABLE);
+
+                // birthday is never editable
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITABLE_RULE,
+                        IEditableRule.NEVER_EDITABLE, DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new ComboBoxCellEditor(Arrays.asList(Gender.FEMALE,
+                                Gender.MALE)), DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        getGenderBooleanConverter(), DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITOR,
+                        new ComboBoxCellEditor(Arrays.asList(Boolean.TRUE,
+                                Boolean.FALSE)), DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.DISPLAY_CONVERTER,
+                        new DefaultBooleanDisplayConverter(),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+
+            }
+        });
+
+        natTable.configure();
+
+        final RowSelectionProvider<Person> selectionProvider = new RowSelectionProvider<Person>(
+                selectionLayer, bodyDataProvider, false);
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Button button = new Button(buttonPanel, SWT.PUSH);
+        button.setText("Remove selected item");
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                // ensure any active cell editor is closed prior actions outside
+                // the NatTable context
+                if (natTable.getActiveCellEditor() != null) {
+                    natTable.commitAndCloseActiveCellEditor();
+                }
+                Person item = (Person) ((IStructuredSelection) selectionProvider
+                        .getSelection()).getFirstElement();
+                eventList.remove(item);
+            }
+        });
+
+        return panel;
+    }
+
+    /**
+     * @return Returns a simple converter for the gender of a Person.
+     *         {@link Gender#MALE} will be interpreted as <code>true</code>
+     *         while {@link Gender#FEMALE} will be interpreted as
+     *         <code>false</code>
+     */
+    private IDisplayConverter getGenderBooleanConverter() {
+        return new DisplayConverter() {
+
+            @Override
+            public Object canonicalToDisplayValue(Object canonicalValue) {
+                if (canonicalValue instanceof Gender) {
+                    return canonicalValue.toString();
+                }
+                return null;
+            }
+
+            @Override
+            public Object displayToCanonicalValue(Object displayValue) {
+                Boolean displayBoolean = Boolean.valueOf(displayValue
+                        .toString());
+                return displayBoolean ? Gender.MALE : Gender.FEMALE;
+            }
+
+        };
+    }
 
 }

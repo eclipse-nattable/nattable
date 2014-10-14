@@ -24,98 +24,111 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class ColumnHeaderCheckBoxPainter extends ImagePainter {
-	
-	private static final Log log = LogFactory.getLog(ColumnHeaderCheckBoxPainter.class);
 
-	private final Image checkedImg;
-	private final Image semicheckedImg;
-	private final Image uncheckedImg;
-	
-	private final IUniqueIndexLayer columnDataLayer;
+    private static final Log log = LogFactory
+            .getLog(ColumnHeaderCheckBoxPainter.class);
 
-	public ColumnHeaderCheckBoxPainter(IUniqueIndexLayer columnDataLayer) {
-		this(
-				columnDataLayer,
-				GUIHelper.getImage("checked"), //$NON-NLS-1$
-				GUIHelper.getImage("semichecked"), //$NON-NLS-1$
-				GUIHelper.getImage("unchecked") //$NON-NLS-1$
-		);
-	}
+    private final Image checkedImg;
+    private final Image semicheckedImg;
+    private final Image uncheckedImg;
 
-	public ColumnHeaderCheckBoxPainter(IUniqueIndexLayer columnLayer, Image checkedImg, Image semicheckedImage, Image uncheckedImg) {
-		this.columnDataLayer = columnLayer;
-		this.checkedImg = checkedImg;
-		this.semicheckedImg = semicheckedImage;
-		this.uncheckedImg = uncheckedImg;
-	}
+    private final IUniqueIndexLayer columnDataLayer;
 
-	public int getPreferredWidth(boolean checked) {
-		return checked ? checkedImg.getBounds().width : uncheckedImg.getBounds().width;
-	}
+    public ColumnHeaderCheckBoxPainter(IUniqueIndexLayer columnDataLayer) {
+        this(columnDataLayer, GUIHelper.getImage("checked"), //$NON-NLS-1$
+                GUIHelper.getImage("semichecked"), //$NON-NLS-1$
+                GUIHelper.getImage("unchecked") //$NON-NLS-1$
+        );
+    }
 
-	public int getPreferredHeight(boolean checked) {
-		return checked ? checkedImg.getBounds().height : uncheckedImg.getBounds().height;
-	}
+    public ColumnHeaderCheckBoxPainter(IUniqueIndexLayer columnLayer,
+            Image checkedImg, Image semicheckedImage, Image uncheckedImg) {
+        this.columnDataLayer = columnLayer;
+        this.checkedImg = checkedImg;
+        this.semicheckedImg = semicheckedImage;
+        this.uncheckedImg = uncheckedImg;
+    }
 
-	public void paintIconImage(GC gc, Rectangle rectangle, int yOffset, boolean checked) {
-		Image checkBoxImage = checked ? checkedImg : uncheckedImg;
+    public int getPreferredWidth(boolean checked) {
+        return checked ? checkedImg.getBounds().width : uncheckedImg
+                .getBounds().width;
+    }
 
-		// Center image
-		int x = rectangle.x + (rectangle.width / 2) - (checkBoxImage.getBounds().width/2);
+    public int getPreferredHeight(boolean checked) {
+        return checked ? checkedImg.getBounds().height : uncheckedImg
+                .getBounds().height;
+    }
 
-		gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
-	}
+    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset,
+            boolean checked) {
+        Image checkBoxImage = checked ? checkedImg : uncheckedImg;
 
-	@Override
-	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-		int columnPosition = LayerUtil.convertColumnPosition(cell.getLayer(), cell.getColumnPosition(), columnDataLayer);
-		
-		int checkedCellsCount = getCheckedCellsCount(columnPosition, configRegistry);
-		
-		if (checkedCellsCount > 0) {
-			if (checkedCellsCount == columnDataLayer.getRowCount()) {
-				return checkedImg;
-			} else {
-				return semicheckedImg;
-			}
-		} else {
-			return uncheckedImg;
-		}
-	}
+        // Center image
+        int x = rectangle.x + (rectangle.width / 2)
+                - (checkBoxImage.getBounds().width / 2);
 
-	public int getCheckedCellsCount(int columnPosition, IConfigRegistry configRegistry) {
-		int checkedCellsCount = 0;
-		
-		for (int rowPosition = 0; rowPosition < columnDataLayer.getRowCount(); rowPosition++) {
-			ILayerCell columnCell = columnDataLayer.getCellByPosition(columnPosition, rowPosition);
-			if (isChecked(columnCell, configRegistry)) {
-				checkedCellsCount++;
-			}
-		}
-		return checkedCellsCount;
-	}
+        gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
+    }
 
-	protected boolean isChecked(ILayerCell cell, IConfigRegistry configRegistry) {
-		return convertDataType(cell, configRegistry).booleanValue();
-	}
+    @Override
+    protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
+        int columnPosition = LayerUtil.convertColumnPosition(cell.getLayer(),
+                cell.getColumnPosition(), columnDataLayer);
 
-	protected Boolean convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
-		if (cell.getDataValue() instanceof Boolean) {
-			return (Boolean) cell.getDataValue();
-		}
-		IDisplayConverter displayConverter = configRegistry.getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
-		Boolean convertedValue = null;
-		if (displayConverter != null) {
-			try {
-				convertedValue = (Boolean) displayConverter.canonicalToDisplayValue(cell, configRegistry, cell.getDataValue());
-			} catch (Exception e) {
-				log.debug(e);
-			}
-		}
-		if (convertedValue == null) {
-			convertedValue = Boolean.FALSE;
-		}
-		return convertedValue;
-	}
-	
+        int checkedCellsCount = getCheckedCellsCount(columnPosition,
+                configRegistry);
+
+        if (checkedCellsCount > 0) {
+            if (checkedCellsCount == columnDataLayer.getRowCount()) {
+                return checkedImg;
+            } else {
+                return semicheckedImg;
+            }
+        } else {
+            return uncheckedImg;
+        }
+    }
+
+    public int getCheckedCellsCount(int columnPosition,
+            IConfigRegistry configRegistry) {
+        int checkedCellsCount = 0;
+
+        for (int rowPosition = 0; rowPosition < columnDataLayer.getRowCount(); rowPosition++) {
+            ILayerCell columnCell = columnDataLayer.getCellByPosition(
+                    columnPosition, rowPosition);
+            if (isChecked(columnCell, configRegistry)) {
+                checkedCellsCount++;
+            }
+        }
+        return checkedCellsCount;
+    }
+
+    protected boolean isChecked(ILayerCell cell, IConfigRegistry configRegistry) {
+        return convertDataType(cell, configRegistry).booleanValue();
+    }
+
+    protected Boolean convertDataType(ILayerCell cell,
+            IConfigRegistry configRegistry) {
+        if (cell.getDataValue() instanceof Boolean) {
+            return (Boolean) cell.getDataValue();
+        }
+        IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
+                CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(),
+                cell.getConfigLabels().getLabels());
+        Boolean convertedValue = null;
+        if (displayConverter != null) {
+            try {
+                convertedValue = (Boolean) displayConverter
+                        .canonicalToDisplayValue(cell, configRegistry,
+                                cell.getDataValue());
+            } catch (Exception e) {
+                log.debug(e);
+            }
+        }
+        if (convertedValue == null) {
+            convertedValue = Boolean.FALSE;
+        }
+        return convertedValue;
+    }
+
 }

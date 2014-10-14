@@ -14,25 +14,25 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 
 /**
- * Handles renaming of columns.
- * Registered with the {@link ColumnHeaderLayer}.
+ * Handles renaming of columns. Registered with the {@link ColumnHeaderLayer}.
  */
-public class RenameColumnHeaderCommandHandler 
-		extends AbstractLayerCommandHandler<RenameColumnHeaderCommand> {
+public class RenameColumnHeaderCommandHandler extends
+        AbstractLayerCommandHandler<RenameColumnHeaderCommand> {
 
-	ColumnHeaderLayer columnHeaderLayer;
-	
-	public RenameColumnHeaderCommandHandler(ColumnHeaderLayer columnHeaderLayer) {
-		this.columnHeaderLayer = columnHeaderLayer;
-	}
+    ColumnHeaderLayer columnHeaderLayer;
 
-	@Override
-	protected boolean doCommand(RenameColumnHeaderCommand command) {
-		return columnHeaderLayer.renameColumnPosition(command.getColumnPosition(), command.getCustomColumnName());
-	}
+    public RenameColumnHeaderCommandHandler(ColumnHeaderLayer columnHeaderLayer) {
+        this.columnHeaderLayer = columnHeaderLayer;
+    }
 
-	public Class<RenameColumnHeaderCommand> getCommandClass() {
-		return RenameColumnHeaderCommand.class;
-	}
+    @Override
+    protected boolean doCommand(RenameColumnHeaderCommand command) {
+        return columnHeaderLayer.renameColumnPosition(
+                command.getColumnPosition(), command.getCustomColumnName());
+    }
+
+    public Class<RenameColumnHeaderCommand> getCommandClass() {
+        return RenameColumnHeaderCommand.class;
+    }
 
 }

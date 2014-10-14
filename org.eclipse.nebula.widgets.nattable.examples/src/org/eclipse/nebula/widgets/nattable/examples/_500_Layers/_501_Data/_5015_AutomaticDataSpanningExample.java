@@ -45,159 +45,165 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 /**
- * Example to show the SpanningDataLayer for automatic spanning of equal shown data.
+ * Example to show the SpanningDataLayer for automatic spanning of equal shown
+ * data.
  * 
  * @author Dirk Fauth
  *
  */
 public class _5015_AutomaticDataSpanningExample extends AbstractNatExample {
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(600, 300, new _5015_AutomaticDataSpanningExample());
-	}
 
-	@Override
-	public String getDescription() {
-		return "This example shows the usage of automatic spanning. This means adjacent cells that"
-				+ " contain the same values get spanned automatically.\n"
-				+ "The automatic spanning type (column/row/none) can be changed via body context menu"
-				+ " entry 'Toggle auto spanning'";
-	}
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(600, 300,
+                new _5015_AutomaticDataSpanningExample());
+    }
 
-	@Override
-	public Control createExampleControl(Composite parent) {
-		//property names of the NumberValues class
-		String[] propertyNames = {"columnOneNumber", "columnTwoNumber", "columnThreeNumber", "columnFourNumber", 
-				"columnFiveNumber"};
+    @Override
+    public String getDescription() {
+        return "This example shows the usage of automatic spanning. This means adjacent cells that"
+                + " contain the same values get spanned automatically.\n"
+                + "The automatic spanning type (column/row/none) can be changed via body context menu"
+                + " entry 'Toggle auto spanning'";
+    }
 
-		IColumnPropertyAccessor<NumberValues> cpa = new ReflectiveColumnPropertyAccessor<NumberValues>(propertyNames);
-		IDataProvider dataProvider = new ListDataProvider<NumberValues>(createNumberValueList(), cpa);
-		AutomaticSpanningDataProvider spanningDataProvider = 
-				new AutomaticSpanningDataProvider(dataProvider, true, false);
-		
-//		spanningDataProvider.addAutoSpanningColumnPositions(0, 1, 2);
-//		spanningDataProvider.addAutoSpanningColumnPositions(2, 3, 4);
-//		spanningDataProvider.addAutoSpanningColumnPositions(0, 1, 3, 4);
-//		spanningDataProvider.addAutoSpanningRowPositions(0, 1, 2);
-//		spanningDataProvider.addAutoSpanningRowPositions(2, 3, 4);
-//		spanningDataProvider.addAutoSpanningRowPositions(0, 1, 3, 4);
-		
-		NatTable natTable = new NatTable(parent, 
-				new ViewportLayer(new SelectionLayer(new SpanningDataLayer(spanningDataProvider))), false);
-		
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+    @Override
+    public Control createExampleControl(Composite parent) {
+        // property names of the NumberValues class
+        String[] propertyNames = { "columnOneNumber", "columnTwoNumber",
+                "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
-		natTable.addConfiguration(new BodyMenuConfiguration(natTable, spanningDataProvider));
-		
-		natTable.configure();
-		
-		natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler());
-		
-		return natTable;
-	}
-	
-	private List<NumberValues> createNumberValueList() {
-		List<NumberValues> result = new ArrayList<NumberValues>();
-		
-		NumberValues nv = new NumberValues();
-		nv.setColumnOneNumber(5);
-		nv.setColumnTwoNumber(4);
-		nv.setColumnThreeNumber(3);
-		nv.setColumnFourNumber(1);
-		nv.setColumnFiveNumber(1);
-		result.add(nv);
-		
-		nv = new NumberValues();
-		nv.setColumnOneNumber(1);
-		nv.setColumnTwoNumber(1);
-		nv.setColumnThreeNumber(2);
-		nv.setColumnFourNumber(2);
-		nv.setColumnFiveNumber(3);
-		result.add(nv);
-		
-		nv = new NumberValues();
-		nv.setColumnOneNumber(1);
-		nv.setColumnTwoNumber(2);
-		nv.setColumnThreeNumber(2);
-		nv.setColumnFourNumber(3);
-		nv.setColumnFiveNumber(3);
-		result.add(nv);
-		
-		nv = new NumberValues();
-		nv.setColumnOneNumber(1);
-		nv.setColumnTwoNumber(2);
-		nv.setColumnThreeNumber(4);
-		nv.setColumnFourNumber(4);
-		nv.setColumnFiveNumber(3);
-		result.add(nv);
-		
-		nv = new NumberValues();
-		nv.setColumnOneNumber(5);
-		nv.setColumnTwoNumber(4);
-		nv.setColumnThreeNumber(4);
-		nv.setColumnFourNumber(4);
-		nv.setColumnFiveNumber(7);
-		result.add(nv);
-		return result;
-	}
+        IColumnPropertyAccessor<NumberValues> cpa = new ReflectiveColumnPropertyAccessor<NumberValues>(
+                propertyNames);
+        IDataProvider dataProvider = new ListDataProvider<NumberValues>(
+                createNumberValueList(), cpa);
+        AutomaticSpanningDataProvider spanningDataProvider = new AutomaticSpanningDataProvider(
+                dataProvider, true, false);
 
-	
-	class BodyMenuConfiguration extends AbstractUiBindingConfiguration {
-		private Menu bodyMenu;
-		private AutomaticSpanningDataProvider dataProvider;
-		
-		public BodyMenuConfiguration(NatTable natTable, AutomaticSpanningDataProvider dataProvider) {
-			this.bodyMenu = createBodyMenu(natTable).build();
-			this.dataProvider = dataProvider;
-			
-			natTable.addDisposeListener(new DisposeListener() {
+        // spanningDataProvider.addAutoSpanningColumnPositions(0, 1, 2);
+        // spanningDataProvider.addAutoSpanningColumnPositions(2, 3, 4);
+        // spanningDataProvider.addAutoSpanningColumnPositions(0, 1, 3, 4);
+        // spanningDataProvider.addAutoSpanningRowPositions(0, 1, 2);
+        // spanningDataProvider.addAutoSpanningRowPositions(2, 3, 4);
+        // spanningDataProvider.addAutoSpanningRowPositions(0, 1, 3, 4);
 
-				@Override
-				public void widgetDisposed(DisposeEvent e) {
-					if (bodyMenu != null)
-						bodyMenu.dispose();
-				}
+        NatTable natTable = new NatTable(parent,
+                new ViewportLayer(new SelectionLayer(new SpanningDataLayer(
+                        spanningDataProvider))), false);
 
-			});
-		}
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
-		protected PopupMenuBuilder createBodyMenu(final NatTable natTable) {
-			return new PopupMenuBuilder(natTable)
-					.withMenuItemProvider(new IMenuItemProvider() {
-						@Override
-						public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-							MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-							menuItem.setText("Toggle auto spanning");
-							menuItem.setEnabled(true);
+        natTable.addConfiguration(new BodyMenuConfiguration(natTable,
+                spanningDataProvider));
 
-							menuItem.addSelectionListener(new SelectionAdapter() {
-								@Override
-								public void widgetSelected(SelectionEvent event) {
-									if (dataProvider.isAutoColumnSpan()) {
-										dataProvider.setAutoColumnSpan(false);
-										dataProvider.setAutoRowSpan(true);
-									}
-									else if (dataProvider.isAutoRowSpan()) {
-										dataProvider.setAutoRowSpan(false);
-									}
-									else {
-										dataProvider.setAutoColumnSpan(true);
-									}
-									natTable.doCommand(new VisualRefreshCommand());
-								}
-							});
-						}
-					})
-					.withStateManagerMenuItemProvider();
-		}
-		
-		@Override
-		public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-			if (this.bodyMenu != null) {
-				uiBindingRegistry.registerMouseDownBinding(
-						new MouseEventMatcher(SWT.NONE, null, MouseEventMatcher.RIGHT_BUTTON),
-						new PopupMenuAction(this.bodyMenu));
-			}
-		}
-	}
+        natTable.configure();
+
+        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler());
+
+        return natTable;
+    }
+
+    private List<NumberValues> createNumberValueList() {
+        List<NumberValues> result = new ArrayList<NumberValues>();
+
+        NumberValues nv = new NumberValues();
+        nv.setColumnOneNumber(5);
+        nv.setColumnTwoNumber(4);
+        nv.setColumnThreeNumber(3);
+        nv.setColumnFourNumber(1);
+        nv.setColumnFiveNumber(1);
+        result.add(nv);
+
+        nv = new NumberValues();
+        nv.setColumnOneNumber(1);
+        nv.setColumnTwoNumber(1);
+        nv.setColumnThreeNumber(2);
+        nv.setColumnFourNumber(2);
+        nv.setColumnFiveNumber(3);
+        result.add(nv);
+
+        nv = new NumberValues();
+        nv.setColumnOneNumber(1);
+        nv.setColumnTwoNumber(2);
+        nv.setColumnThreeNumber(2);
+        nv.setColumnFourNumber(3);
+        nv.setColumnFiveNumber(3);
+        result.add(nv);
+
+        nv = new NumberValues();
+        nv.setColumnOneNumber(1);
+        nv.setColumnTwoNumber(2);
+        nv.setColumnThreeNumber(4);
+        nv.setColumnFourNumber(4);
+        nv.setColumnFiveNumber(3);
+        result.add(nv);
+
+        nv = new NumberValues();
+        nv.setColumnOneNumber(5);
+        nv.setColumnTwoNumber(4);
+        nv.setColumnThreeNumber(4);
+        nv.setColumnFourNumber(4);
+        nv.setColumnFiveNumber(7);
+        result.add(nv);
+        return result;
+    }
+
+    class BodyMenuConfiguration extends AbstractUiBindingConfiguration {
+        private Menu bodyMenu;
+        private AutomaticSpanningDataProvider dataProvider;
+
+        public BodyMenuConfiguration(NatTable natTable,
+                AutomaticSpanningDataProvider dataProvider) {
+            this.bodyMenu = createBodyMenu(natTable).build();
+            this.dataProvider = dataProvider;
+
+            natTable.addDisposeListener(new DisposeListener() {
+
+                @Override
+                public void widgetDisposed(DisposeEvent e) {
+                    if (bodyMenu != null)
+                        bodyMenu.dispose();
+                }
+
+            });
+        }
+
+        protected PopupMenuBuilder createBodyMenu(final NatTable natTable) {
+            return new PopupMenuBuilder(natTable).withMenuItemProvider(
+                    new IMenuItemProvider() {
+                        @Override
+                        public void addMenuItem(final NatTable natTable,
+                                Menu popupMenu) {
+                            MenuItem menuItem = new MenuItem(popupMenu,
+                                    SWT.PUSH);
+                            menuItem.setText("Toggle auto spanning");
+                            menuItem.setEnabled(true);
+
+                            menuItem.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent event) {
+                                    if (dataProvider.isAutoColumnSpan()) {
+                                        dataProvider.setAutoColumnSpan(false);
+                                        dataProvider.setAutoRowSpan(true);
+                                    } else if (dataProvider.isAutoRowSpan()) {
+                                        dataProvider.setAutoRowSpan(false);
+                                    } else {
+                                        dataProvider.setAutoColumnSpan(true);
+                                    }
+                                    natTable.doCommand(new VisualRefreshCommand());
+                                }
+                            });
+                        }
+                    }).withStateManagerMenuItemProvider();
+        }
+
+        @Override
+        public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+            if (this.bodyMenu != null) {
+                uiBindingRegistry.registerMouseDownBinding(
+                        new MouseEventMatcher(SWT.NONE, null,
+                                MouseEventMatcher.RIGHT_BUTTON),
+                        new PopupMenuAction(this.bodyMenu));
+            }
+        }
+    }
 }

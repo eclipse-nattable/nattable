@@ -16,46 +16,49 @@ import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ColumnReorderEndCommand implements ILayerCommand {
-	
-	private ColumnPositionCoordinate toColumnPositionCoordinate;
-	private boolean reorderToLeftEdge;
-	
-	public ColumnReorderEndCommand(ILayer layer, int toColumnPosition) {
-		if (toColumnPosition < layer.getColumnCount()) {
- 			reorderToLeftEdge = true;
-		} else {
-			reorderToLeftEdge = false;
-			toColumnPosition--;
-		}
-		
-		toColumnPositionCoordinate = new ColumnPositionCoordinate(layer, toColumnPosition);
-	}
-	
-	protected ColumnReorderEndCommand(ColumnReorderEndCommand command) {
-		this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
-		this.reorderToLeftEdge = command.reorderToLeftEdge;
-	}
-	
-	public int getToColumnPosition() {
-		return toColumnPositionCoordinate.getColumnPosition();
-	}
-	
-	public boolean isReorderToLeftEdge() {
-		return reorderToLeftEdge;
-	}
-	
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
-		if (targetToColumnPositionCoordinate != null) {
-			toColumnPositionCoordinate = targetToColumnPositionCoordinate;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public ColumnReorderEndCommand cloneCommand() {
-		return new ColumnReorderEndCommand(this);
-	}
-	
+
+    private ColumnPositionCoordinate toColumnPositionCoordinate;
+    private boolean reorderToLeftEdge;
+
+    public ColumnReorderEndCommand(ILayer layer, int toColumnPosition) {
+        if (toColumnPosition < layer.getColumnCount()) {
+            reorderToLeftEdge = true;
+        } else {
+            reorderToLeftEdge = false;
+            toColumnPosition--;
+        }
+
+        toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+                toColumnPosition);
+    }
+
+    protected ColumnReorderEndCommand(ColumnReorderEndCommand command) {
+        this.toColumnPositionCoordinate = command.toColumnPositionCoordinate;
+        this.reorderToLeftEdge = command.reorderToLeftEdge;
+    }
+
+    public int getToColumnPosition() {
+        return toColumnPositionCoordinate.getColumnPosition();
+    }
+
+    public boolean isReorderToLeftEdge() {
+        return reorderToLeftEdge;
+    }
+
+    public boolean convertToTargetLayer(ILayer targetLayer) {
+        ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil
+                .convertColumnPositionToTargetContext(
+                        toColumnPositionCoordinate, targetLayer);
+        if (targetToColumnPositionCoordinate != null) {
+            toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public ColumnReorderEndCommand cloneCommand() {
+        return new ColumnReorderEndCommand(this);
+    }
+
 }

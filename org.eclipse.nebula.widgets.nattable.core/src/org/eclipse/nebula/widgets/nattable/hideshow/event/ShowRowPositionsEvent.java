@@ -20,37 +20,37 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 
-
 public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
 
-	public ShowRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
-		super(layer, PositionUtil.getRanges(rowPositions));
-	}
-	
-	// Copy constructor
-	protected ShowRowPositionsEvent(ShowRowPositionsEvent event) {
-		super(event);
-	}
-	
-	public Collection<StructuralDiff> getRowDiffs() {
-		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
+    public ShowRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
+        super(layer, PositionUtil.getRanges(rowPositions));
+    }
 
-		int offset = 0;
-		for (Range range : getRowPositionRanges()) {
-			rowDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, new Range(range.start - offset, range.start - offset), range));
-			offset += range.size();
-		}
+    // Copy constructor
+    protected ShowRowPositionsEvent(ShowRowPositionsEvent event) {
+        super(event);
+    }
 
-		return rowDiffs;
-	}
+    public Collection<StructuralDiff> getRowDiffs() {
+        Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 
-	public ShowRowPositionsEvent cloneEvent() {
-		return new ShowRowPositionsEvent(this);
-	}
-	
-	@Override
-	public boolean convertToLocal(ILayer localLayer) {
-		super.convertToLocal(localLayer);
-		return true;
-	}
+        int offset = 0;
+        for (Range range : getRowPositionRanges()) {
+            rowDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, new Range(
+                    range.start - offset, range.start - offset), range));
+            offset += range.size();
+        }
+
+        return rowDiffs;
+    }
+
+    public ShowRowPositionsEvent cloneEvent() {
+        return new ShowRowPositionsEvent(this);
+    }
+
+    @Override
+    public boolean convertToLocal(ILayer localLayer) {
+        super.convertToLocal(localLayer);
+        return true;
+    }
 }

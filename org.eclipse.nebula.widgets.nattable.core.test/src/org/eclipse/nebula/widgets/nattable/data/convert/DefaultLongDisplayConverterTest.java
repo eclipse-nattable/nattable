@@ -10,36 +10,37 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 
 public class DefaultLongDisplayConverterTest {
 
-	private DefaultLongDisplayConverter longConverter = new DefaultLongDisplayConverter();
-	
-	@Test
-	public void testNonNullDataToDisplay() {
-		Assert.assertEquals("123", longConverter.canonicalToDisplayValue(Long.valueOf("123")));
-	}
-	
-	@Test
-	public void testNullDataToDisplay() {
-		Assert.assertEquals(null, longConverter.canonicalToDisplayValue(null));
-	}
-	
-	@Test
-	public void testNonNullDisplayToData() {
-		Assert.assertEquals(Long.valueOf("123"), longConverter.displayToCanonicalValue("123"));
-	}
-	
-	@Test
-	public void testNullDisplayToData() {
-		Assert.assertEquals(null, longConverter.displayToCanonicalValue(""));
-	}
+    private DefaultLongDisplayConverter longConverter = new DefaultLongDisplayConverter();
 
-	@Test(expected=ConversionFailedException.class)
-	public void testConversionException() {
-		longConverter.displayToCanonicalValue("abc");
-	}
+    @Test
+    public void testNonNullDataToDisplay() {
+        Assert.assertEquals("123",
+                longConverter.canonicalToDisplayValue(Long.valueOf("123")));
+    }
+
+    @Test
+    public void testNullDataToDisplay() {
+        Assert.assertEquals(null, longConverter.canonicalToDisplayValue(null));
+    }
+
+    @Test
+    public void testNonNullDisplayToData() {
+        Assert.assertEquals(Long.valueOf("123"),
+                longConverter.displayToCanonicalValue("123"));
+    }
+
+    @Test
+    public void testNullDisplayToData() {
+        Assert.assertEquals(null, longConverter.displayToCanonicalValue(""));
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionException() {
+        longConverter.displayToCanonicalValue("abc");
+    }
 }

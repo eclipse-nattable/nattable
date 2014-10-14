@@ -18,28 +18,28 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerCon
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultRowStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 
-
 public class GridLayerConfiguration extends DefaultGridLayerConfiguration {
 
-	private final TableStyle properties;
+    private final TableStyle properties;
 
-	public GridLayerConfiguration(GridLayer gridLayer, TableStyle tableStyle) {
-		super(gridLayer);
-		this.properties = tableStyle;
-		alternateRowColorConfig(gridLayer);
-	}
+    public GridLayerConfiguration(GridLayer gridLayer, TableStyle tableStyle) {
+        super(gridLayer);
+        this.properties = tableStyle;
+        alternateRowColorConfig(gridLayer);
+    }
 
-	/** Prevent the superclass from setting this */
-	@Override
-	protected void addAlternateRowColoringConfig(CompositeLayer gridLayer) {}
+    /** Prevent the superclass from setting this */
+    @Override
+    protected void addAlternateRowColoringConfig(CompositeLayer gridLayer) {}
 
-	private void alternateRowColorConfig(GridLayer gridLayer) {
-		DefaultRowStyleConfiguration rowStyleConfig = new DefaultRowStyleConfiguration();
-		rowStyleConfig.evenRowBgColor = properties.evenRowColor;
-		rowStyleConfig.oddRowBgColor = properties.oddRowColor;
-		addConfiguration(rowStyleConfig);
+    private void alternateRowColorConfig(GridLayer gridLayer) {
+        DefaultRowStyleConfiguration rowStyleConfig = new DefaultRowStyleConfiguration();
+        rowStyleConfig.evenRowBgColor = properties.evenRowColor;
+        rowStyleConfig.oddRowBgColor = properties.oddRowColor;
+        addConfiguration(rowStyleConfig);
 
-		gridLayer.setConfigLabelAccumulatorForRegion(GridRegion.BODY, new AlternatingRowConfigLabelAccumulator());
-	}
+        gridLayer.setConfigLabelAccumulatorForRegion(GridRegion.BODY,
+                new AlternatingRowConfigLabelAccumulator());
+    }
 
 }

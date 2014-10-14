@@ -12,16 +12,17 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
-public class CreateColumnGroupCommand extends AbstractContextFreeCommand implements IColumnGroupCommand {
+public class CreateColumnGroupCommand extends AbstractContextFreeCommand
+        implements IColumnGroupCommand {
 
-	private final String columnGroupName;
-	
-	public CreateColumnGroupCommand(String columnGroupName) {
-		this.columnGroupName = columnGroupName;	
-	}
-	
-	public String getColumnGroupName() {
-		return columnGroupName;
-	}
-	
+    private final String columnGroupName;
+
+    public CreateColumnGroupCommand(String columnGroupName) {
+        this.columnGroupName = columnGroupName;
+    }
+
+    public String getColumnGroupName() {
+        return columnGroupName;
+    }
+
 }

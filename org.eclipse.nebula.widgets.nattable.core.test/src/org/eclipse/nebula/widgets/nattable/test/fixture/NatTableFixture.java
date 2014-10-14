@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
@@ -27,110 +26,125 @@ import org.eclipse.swt.widgets.Shell;
 
 public class NatTableFixture extends NatTable {
 
-	private static final int DEFAULT_HEIGHT = 400;
-	private static final int DEFAULT_WIDTH = 600;
+    private static final int DEFAULT_HEIGHT = 400;
+    private static final int DEFAULT_WIDTH = 600;
 
-	private int eventCount = 0;
-	private boolean updated = false;
-	private ColumnOverrideLabelAccumulator columnLabelAccumulator;
+    private int eventCount = 0;
+    private boolean updated = false;
+    private ColumnOverrideLabelAccumulator columnLabelAccumulator;
 
-	public NatTableFixture() {
-		super(new Shell(), new DummyGridLayerStack(), true);
-		initClientArea();
-	}
+    public NatTableFixture() {
+        super(new Shell(), new DummyGridLayerStack(), true);
+        initClientArea();
+    }
 
-	public NatTableFixture(ILayer underlyingLayer) {
-		this(underlyingLayer, true);
-	}
+    public NatTableFixture(ILayer underlyingLayer) {
+        this(underlyingLayer, true);
+    }
 
-	public NatTableFixture(Shell shell, ILayer underlyingLayer) {
-		super(shell, underlyingLayer, true);
-		initClientArea();
-	}
+    public NatTableFixture(Shell shell, ILayer underlyingLayer) {
+        super(shell, underlyingLayer, true);
+        initClientArea();
+    }
 
-	public NatTableFixture(Shell shell, ILayer underlyingLayer, int width, int height) {
-		super(shell, underlyingLayer, true);
-		initClientArea(width, height);
-	}
+    public NatTableFixture(Shell shell, ILayer underlyingLayer, int width,
+            int height) {
+        super(shell, underlyingLayer, true);
+        initClientArea(width, height);
+    }
 
-	public NatTableFixture(ILayer underlyingLayer, boolean autoconfigure) {
-		super(new Shell(Display.getDefault()), underlyingLayer, autoconfigure);
-		initClientArea();
-	}
+    public NatTableFixture(ILayer underlyingLayer, boolean autoconfigure) {
+        super(new Shell(Display.getDefault()), underlyingLayer, autoconfigure);
+        initClientArea();
+    }
 
+    public NatTableFixture(ILayer underlyingLayer, int width, int height,
+            boolean autoconfigure) {
+        super(new Shell(Display.getDefault()), underlyingLayer, autoconfigure);
+        initClientArea(width, height);
+    }
 
-	public NatTableFixture(ILayer underlyingLayer, int width, int height, boolean autoconfigure) {
-		super(new Shell(Display.getDefault()), underlyingLayer, autoconfigure);
-		initClientArea(width, height);
-	}
+    private void initClientArea() {
+        initClientArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    }
 
-	private void initClientArea() {
-		initClientArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-	}
+    private void initClientArea(int width, int height) {
+        setSize(width, height);
+        doCommand(new InitializeClientAreaCommandFixture());
+    }
 
-	private void initClientArea(int width, int height) {
-		setSize(width, height);
-		doCommand(new InitializeClientAreaCommandFixture());
-	}
+    @Override
+    public void handleLayerEvent(ILayerEvent event) {
+        super.handleLayerEvent(event);
+        eventCount++;
+    }
 
-	@Override
-	public void handleLayerEvent(ILayerEvent event) {
-		super.handleLayerEvent(event);
-		eventCount++;
-	}
+    @Override
+    public void updateResize() {
+        updated = true;
+    }
 
-	@Override
-	public void updateResize() {
-		updated = true;
-	}
+    public int getEventCount() {
+        return eventCount;
+    }
 
-	public int getEventCount() {
-		return eventCount;
-	}
+    public boolean isUpdated() {
+        return updated;
+    }
 
-	public boolean isUpdated() {
-		return updated;
-	}
+    // Convenience methods for tests
 
-	// Convenience methods for tests
+    public void registerLabelOnColumn(DataLayer bodyDataLayer, int columnIndex,
+            String columnLabel) {
+        getColumnLabelAccumulator(bodyDataLayer).registerColumnOverrides(
+                columnIndex, columnLabel);
+    }
 
-	public void registerLabelOnColumn(DataLayer bodyDataLayer, int columnIndex, String columnLabel) {
-		getColumnLabelAccumulator(bodyDataLayer).registerColumnOverrides(columnIndex, columnLabel);
-	}
+    public void registerLabelOnColumnHeader(DataLayer columnHeaderDataLayer,
+            int columnIndex, String columnLabel) {
+        getColumnLabelAccumulator(columnHeaderDataLayer)
+                .registerColumnOverrides(columnIndex, columnLabel);
+    }
 
-	public void registerLabelOnColumnHeader(DataLayer columnHeaderDataLayer, int columnIndex, String columnLabel) {
-		getColumnLabelAccumulator(columnHeaderDataLayer).registerColumnOverrides(columnIndex, columnLabel);
-	}
+    private ColumnOverrideLabelAccumulator getColumnLabelAccumulator(
+            DataLayer dataLayer) {
+        if (columnLabelAccumulator == null) {
+            columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
+                    dataLayer);
+            dataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
+        }
+        return columnLabelAccumulator;
+    }
 
-	private ColumnOverrideLabelAccumulator getColumnLabelAccumulator(DataLayer dataLayer) {
-		if (columnLabelAccumulator == null) {
-			columnLabelAccumulator = new ColumnOverrideLabelAccumulator(dataLayer);
-			dataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
-		}
-		return columnLabelAccumulator;
-	}
+    public void scrollToColumn(int gridColumnPosition) {
+        DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(
+                1, 1);
+        ViewportLayer viewportLayer = gridLayer.getBodyLayer()
+                .getViewportLayer();
+        viewportLayer.invalidateHorizontalStructure();
+        viewportLayer.setOriginX(viewportLayer
+                .getStartXOfColumnPosition(gridColumnPosition));
+    }
 
-	public void scrollToColumn(int gridColumnPosition) {
-		DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
-		ViewportLayer viewportLayer = gridLayer.getBodyLayer().getViewportLayer();
-		viewportLayer.invalidateHorizontalStructure();
-		viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(gridColumnPosition));
-	}
+    public void scrollToRow(int gridRowPosition) {
+        DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(
+                1, 1);
+        ViewportLayer viewportLayer = gridLayer.getBodyLayer()
+                .getViewportLayer();
+        viewportLayer.invalidateVerticalStructure();
+        viewportLayer.setOriginY(viewportLayer
+                .getStartYOfRowPosition(gridRowPosition));
+    }
 
-	public void scrollToRow(int gridRowPosition) {
-		DummyGridLayerStack gridLayer = (DummyGridLayerStack) getUnderlyingLayerByPosition(1, 1);
-		ViewportLayer viewportLayer = gridLayer.getBodyLayer().getViewportLayer();
-		viewportLayer.invalidateVerticalStructure();
-		viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(gridRowPosition));
-	}
+    public void enableEditingOnAllCells() {
+        getConfigRegistry().registerConfigAttribute(
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT);
+    }
 
-	public void enableEditingOnAllCells() {
-		getConfigRegistry().registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT);
-	}
-
-	@Override
-	public ConfigRegistry getConfigRegistry() {
-		return (ConfigRegistry) super.getConfigRegistry();
-	}
+    @Override
+    public ConfigRegistry getConfigRegistry() {
+        return (ConfigRegistry) super.getConfigRegistry();
+    }
 
 }

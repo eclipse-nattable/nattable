@@ -23,38 +23,43 @@ import org.junit.Test;
 
 public class DefaultDateDisplayConverterTest {
 
-	private static final TimeZone utc = TimeZone.getTimeZone("UTC");
-	private static final Date FROZEN_DATE = new Date(0);
-	
-	@Test
-	public void happyPath() throws Exception {
-		final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter("yyyy.MM.dd HH:mm:ss", utc);
-		assertEquals("1970.01.01 00:00:00", converter.canonicalToDisplayValue(FROZEN_DATE));
-		assertEquals(FROZEN_DATE, converter.displayToCanonicalValue("1970.01.01 00:00:00"));
-	}
+    private static final TimeZone utc = TimeZone.getTimeZone("UTC");
+    private static final Date FROZEN_DATE = new Date(0);
 
-	@Test
-	public void defaultDisplayFormat() throws Exception {
-		final SimpleDateFormat sdf = new SimpleDateFormat();
-		sdf.setTimeZone(utc);
-		
-		final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter(utc);
-		assertEquals(sdf.format(FROZEN_DATE), converter.canonicalToDisplayValue(FROZEN_DATE));
-		assertEquals(FROZEN_DATE, converter.displayToCanonicalValue(sdf.format(FROZEN_DATE)));
-	}
+    @Test
+    public void happyPath() throws Exception {
+        final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter(
+                "yyyy.MM.dd HH:mm:ss", utc);
+        assertEquals("1970.01.01 00:00:00",
+                converter.canonicalToDisplayValue(FROZEN_DATE));
+        assertEquals(FROZEN_DATE,
+                converter.displayToCanonicalValue("1970.01.01 00:00:00"));
+    }
 
-	@Test
-	public void invalidDataType() throws Exception {
-		final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter();
+    @Test
+    public void defaultDisplayFormat() throws Exception {
+        final SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(utc);
 
-		System.err.println("** THE FOLLOWING STACK TRACE IS EXPECTED **");
-		assertEquals("XXX", converter.canonicalToDisplayValue("XXX"));
+        final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter(
+                utc);
+        assertEquals(sdf.format(FROZEN_DATE),
+                converter.canonicalToDisplayValue(FROZEN_DATE));
+        assertEquals(FROZEN_DATE,
+                converter.displayToCanonicalValue(sdf.format(FROZEN_DATE)));
+    }
 
-		try {
-			converter.displayToCanonicalValue("AAA");
-			fail("ConversionFailedException should have been throwed");
-		}
-		catch (ConversionFailedException e) {}
-		
-	}
+    @Test
+    public void invalidDataType() throws Exception {
+        final DefaultDateDisplayConverter converter = new DefaultDateDisplayConverter();
+
+        System.err.println("** THE FOLLOWING STACK TRACE IS EXPECTED **");
+        assertEquals("XXX", converter.canonicalToDisplayValue("XXX"));
+
+        try {
+            converter.displayToCanonicalValue("AAA");
+            fail("ConversionFailedException should have been throwed");
+        } catch (ConversionFailedException e) {}
+
+    }
 }

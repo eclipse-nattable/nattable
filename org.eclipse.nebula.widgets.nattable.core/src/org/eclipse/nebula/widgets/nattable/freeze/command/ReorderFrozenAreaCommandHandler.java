@@ -12,14 +12,15 @@ package org.eclipse.nebula.widgets.nattable.freeze.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 
-public class ReorderFrozenAreaCommandHandler extends AbstractLayerCommandHandler<ReorderFrozenAreaCommand> {
+public class ReorderFrozenAreaCommandHandler extends
+        AbstractLayerCommandHandler<ReorderFrozenAreaCommand> {
 
-	public boolean doCommand(ReorderFrozenAreaCommand command) {
-		return false;
-	}
+    public boolean doCommand(ReorderFrozenAreaCommand command) {
+        return false;
+    }
 
-	public Class<ReorderFrozenAreaCommand> getCommandClass() {
-		return ReorderFrozenAreaCommand.class;
-	}
+    public Class<ReorderFrozenAreaCommand> getCommandClass() {
+        return ReorderFrozenAreaCommand.class;
+    }
 
 }

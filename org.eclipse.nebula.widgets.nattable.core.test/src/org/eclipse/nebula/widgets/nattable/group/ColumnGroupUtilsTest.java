@@ -24,84 +24,115 @@ import org.junit.Test;
 
 public class ColumnGroupUtilsTest {
 
-	private ColumnGroupModel model;
-	private ColumnGroupBodyLayerStack bodyStack;
+    private ColumnGroupModel model;
+    private ColumnGroupBodyLayerStack bodyStack;
 
-	/*
-	 * Test fixture
-	 *
-	 *       0    1    2    3     4    5    6 ...  8   9   10  11  12
-	 * ------------------------------------------------------------------
-	 *     |<- G1 ->|     |<-- G2 -->|           |<- G4 ->|<--- G3 --->|
-	 */
-	@Before
-	public void setup(){
-		model = new ColumnGroupModelFixture();
-		model.addColumnsIndexesToGroup("G4", 8, 9);
+    /*
+     * Test fixture
+     * 
+     * 0 1 2 3 4 5 6 ... 8 9 10 11 12
+     * ------------------------------------------------------------------ |<- G1
+     * ->| |<-- G2 -->| |<- G4 ->|<--- G3 --->|
+     */
+    @Before
+    public void setup() {
+        model = new ColumnGroupModelFixture();
+        model.addColumnsIndexesToGroup("G4", 8, 9);
 
-		bodyStack = new ColumnGroupBodyLayerStack(new DataLayerFixture(20, 10, 10, 20), model);
+        bodyStack = new ColumnGroupBodyLayerStack(new DataLayerFixture(20, 10,
+                10, 20), model);
 
-		new NatTableFixture(bodyStack); // Inits client area
-	}
+        new NatTableFixture(bodyStack); // Inits client area
+    }
 
-	@Test
-	public void isRightEdgeOfAColumnGroup() throws Exception {
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 0, 0, model));
+    @Test
+    public void isRightEdgeOfAColumnGroup() throws Exception {
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 0, 0,
+                model));
 
-		// 1
-		assertTrue(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 1, 1, model));
+        // 1
+        assertTrue(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 1, 1,
+                model));
 
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 2, 2, model));
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 3, 3, model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 2, 2,
+                model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 3, 3,
+                model));
 
-		// 4
-		assertTrue(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 4, 4, model));
+        // 4
+        assertTrue(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 4, 4,
+                model));
 
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 5, 5, model));
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 6, 6, model));
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 7, 7, model));
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 8, 8, model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 5, 5,
+                model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 6, 6,
+                model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 7, 7,
+                model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 8, 8,
+                model));
 
-		// 9
-		assertTrue(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 9, 9, model));
+        // 9
+        assertTrue(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 9, 9,
+                model));
 
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 10, 10, model));
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 11, 11, model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 10,
+                10, model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 11,
+                11, model));
 
-		// 12
-		assertTrue(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 12, 12, model));
+        // 12
+        assertTrue(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 12,
+                12, model));
 
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 13, 13, model));
-		assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 14, 14, model));
-	}
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 13,
+                13, model));
+        assertFalse(ColumnGroupUtils.isRightEdgeOfAColumnGroup(bodyStack, 14,
+                14, model));
+    }
 
-	@Test
-	public void isLeftEdgeOfAColumnGroup() throws Exception {
-		// 0
-		assertTrue(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 0, 0, model));
+    @Test
+    public void isLeftEdgeOfAColumnGroup() throws Exception {
+        // 0
+        assertTrue(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 0, 0,
+                model));
 
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 1, 1, model));
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 2, 2, model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 1, 1,
+                model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 2, 2,
+                model));
 
-		// 3
-		assertTrue(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 3, 3, model));
+        // 3
+        assertTrue(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 3, 3,
+                model));
 
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 4, 4, model));
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 5, 5, model));
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 6, 6, model));
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 7, 7, model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 4, 4,
+                model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 5, 5,
+                model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 6, 6,
+                model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 7, 7,
+                model));
 
-		// 8
-		assertTrue(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 8, 8, model));
+        // 8
+        assertTrue(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 8, 8,
+                model));
 
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 9, 9, model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 9, 9,
+                model));
 
-		// 10
-		assertTrue(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 10, 10, model));
+        // 10
+        assertTrue(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 10, 10,
+                model));
 
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 11, 11, model));
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 12, 12, model));
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 13, 13, model));
-		assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 14, 14, model));
-	}
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 11,
+                11, model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 12,
+                12, model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 13,
+                13, model));
+        assertFalse(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(bodyStack, 14,
+                14, model));
+    }
 }

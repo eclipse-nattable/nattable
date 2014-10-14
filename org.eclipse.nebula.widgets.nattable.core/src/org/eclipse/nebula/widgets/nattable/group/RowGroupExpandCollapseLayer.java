@@ -20,78 +20,80 @@ import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModelListener;
 import org.eclipse.nebula.widgets.nattable.hideshow.AbstractRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 
+public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer
+        implements IRowGroupModelListener {
 
-public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer implements IRowGroupModelListener {
+    private final IRowGroupModel<T> model;
 
-	private final IRowGroupModel<T> model;
-	
-	public RowGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer, IRowGroupModel<T> model) {
-		super(underlyingLayer);
-		this.model = model;
+    public RowGroupExpandCollapseLayer(IUniqueIndexLayer underlyingLayer,
+            IRowGroupModel<T> model) {
+        super(underlyingLayer);
+        this.model = model;
 
-		model.registerRowGroupModelListener(this);
+        model.registerRowGroupModelListener(this);
 
-		registerCommandHandler(new RowGroupExpandCollapseCommandHandler<T>(this));
-	}
-	
-	public IRowGroupModel<T> getModel() {
-		return model;
-	}
-	
-	// Expand/collapse
+        registerCommandHandler(new RowGroupExpandCollapseCommandHandler<T>(this));
+    }
 
-	@Override
-	public boolean isRowIndexHidden(int rowIndex) {
-		
-		// This can happen if a row has just been removed.
-		if (rowIndex >= model.getDataProvider().getRowCount()) {
-			return true;
-		}
-				
-		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		
-		boolean isHiddeninUnderlyingLayer = 
-			RowGroupUtils.isRowIndexHiddenInUnderLyingLayer(rowIndex, this, underlyingLayer);
-		
-		// Get the row and the group from our cache and model.
-		final T row = model.getRowFromIndexCache(rowIndex);
-		IRowGroup<T> rowGroup = model.getRowGroupForRow(row);
-			
-		if (rowGroup == null) {
-			return false;
-		}
-		
-		boolean isCollapsedAndNotStaticRow = RowGroupUtils.isCollapsed(model, rowGroup) &&
-			!rowGroup.getOwnStaticMemberRows().contains(row);
-					
-		return isHiddeninUnderlyingLayer || isCollapsedAndNotStaticRow;
-	}
-	
-	@Override
-	public Collection<Integer> getHiddenRowIndexes() {
-		Collection<Integer> hiddenRowIndexes = new HashSet<Integer>();
+    public IRowGroupModel<T> getModel() {
+        return model;
+    }
 
-		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		int underlyingColumnCount = underlyingLayer.getRowCount();
-		for (int i = 0; i < underlyingColumnCount; i++) {
-			int rowIndex = underlyingLayer.getRowIndexByPosition(i);
-			if (isRowIndexHidden(rowIndex)) {
-				hiddenRowIndexes.add(Integer.valueOf(rowIndex));
-			}
-		}
+    // Expand/collapse
 
-		return hiddenRowIndexes;
-	}
-	
-	@Override
-	public void rowGroupModelChanged() {
-		invalidateCache();
-	}
-	
-	@Override
-	protected void invalidateCache() {		
-		super.invalidateCache();
-		model.invalidateIndexCache();
-	}
+    @Override
+    public boolean isRowIndexHidden(int rowIndex) {
+
+        // This can happen if a row has just been removed.
+        if (rowIndex >= model.getDataProvider().getRowCount()) {
+            return true;
+        }
+
+        IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
+
+        boolean isHiddeninUnderlyingLayer = RowGroupUtils
+                .isRowIndexHiddenInUnderLyingLayer(rowIndex, this,
+                        underlyingLayer);
+
+        // Get the row and the group from our cache and model.
+        final T row = model.getRowFromIndexCache(rowIndex);
+        IRowGroup<T> rowGroup = model.getRowGroupForRow(row);
+
+        if (rowGroup == null) {
+            return false;
+        }
+
+        boolean isCollapsedAndNotStaticRow = RowGroupUtils.isCollapsed(model,
+                rowGroup) && !rowGroup.getOwnStaticMemberRows().contains(row);
+
+        return isHiddeninUnderlyingLayer || isCollapsedAndNotStaticRow;
+    }
+
+    @Override
+    public Collection<Integer> getHiddenRowIndexes() {
+        Collection<Integer> hiddenRowIndexes = new HashSet<Integer>();
+
+        IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
+        int underlyingColumnCount = underlyingLayer.getRowCount();
+        for (int i = 0; i < underlyingColumnCount; i++) {
+            int rowIndex = underlyingLayer.getRowIndexByPosition(i);
+            if (isRowIndexHidden(rowIndex)) {
+                hiddenRowIndexes.add(Integer.valueOf(rowIndex));
+            }
+        }
+
+        return hiddenRowIndexes;
+    }
+
+    @Override
+    public void rowGroupModelChanged() {
+        invalidateCache();
+    }
+
+    @Override
+    protected void invalidateCache() {
+        super.invalidateCache();
+        model.invalidateIndexCache();
+    }
 
 }

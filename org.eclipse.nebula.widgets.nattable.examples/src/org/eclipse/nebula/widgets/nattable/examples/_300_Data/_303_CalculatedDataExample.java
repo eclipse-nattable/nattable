@@ -70,285 +70,327 @@ import ca.odell.glazedlists.GlazedLists;
  */
 public class _303_CalculatedDataExample extends AbstractNatExample {
 
-	public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
-	public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
-	public static String COLUMN_THREE_LABEL = "ColumnThreeLabel";
-	public static String COLUMN_FOUR_LABEL = "ColumnFourLabel";
-	public static String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
-	
-	private EventList<NumberValues> valuesToShow = GlazedLists.eventList(new ArrayList<NumberValues>());
-	
-	public static void main(String[] args) throws Exception {
-		StandaloneNatExampleRunner.run(new _303_CalculatedDataExample());
-	}
+    public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
+    public static String COLUMN_TWO_LABEL = "ColumnTwoLabel";
+    public static String COLUMN_THREE_LABEL = "ColumnThreeLabel";
+    public static String COLUMN_FOUR_LABEL = "ColumnFourLabel";
+    public static String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
 
-	/**	
-	 * @Override
-	 */
-	@Override
-	public String getDescription() {
-		return "This example demonstrates how to create a NatTable that contains calculated values.\n"
-				+ "The first three columns are editable, while the last two columns contain the calculated values.\n"
-				+ "The values in column four and five will automatically update when committing the edited values.";
-	}
+    private EventList<NumberValues> valuesToShow = GlazedLists
+            .eventList(new ArrayList<NumberValues>());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	public Control createExampleControl(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		panel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
-		
-		Composite gridPanel = new Composite(panel, SWT.NONE);
-		gridPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
-		
-		Composite buttonPanel = new Composite(panel, SWT.NONE);
-		buttonPanel.setLayout(new GridLayout());
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
+    public static void main(String[] args) throws Exception {
+        StandaloneNatExampleRunner.run(new _303_CalculatedDataExample());
+    }
 
-		//property names of the NumberValues class
-		String[] propertyNames = {"columnOneNumber", "columnTwoNumber", "columnThreeNumber", "columnFourNumber", 
-				"columnFiveNumber"};
+    /**
+     * @Override
+     */
+    @Override
+    public String getDescription() {
+        return "This example demonstrates how to create a NatTable that contains calculated values.\n"
+                + "The first three columns are editable, while the last two columns contain the calculated values.\n"
+                + "The values in column four and five will automatically update when committing the edited values.";
+    }
 
-		//mapping from property to label, needed for column header labels
-		Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-		propertyToLabelMap.put("columnOneNumber", "100%");
-		propertyToLabelMap.put("columnTwoNumber", "Value One");
-		propertyToLabelMap.put("columnThreeNumber", "Value Two");
-		propertyToLabelMap.put("columnFourNumber", "Sum");
-		propertyToLabelMap.put("columnFiveNumber", "Percentage");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
+     * (org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public Control createExampleControl(Composite parent) {
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
 
-		valuesToShow.add(createNumberValues());
-		valuesToShow.add(createNumberValues());
-		
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		
-		CalculatingGridLayer gridLayer = new CalculatingGridLayer(valuesToShow, configRegistry, 
-				propertyNames, propertyToLabelMap);
-		DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
-		
-		final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
-		bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
-		registerColumnLabels(columnLabelAccumulator);
-		
-		final NatTable natTable = new NatTable(gridPanel, gridLayer, false);
-		natTable.setConfigRegistry(configRegistry);
-		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new CalculatingEditConfiguration());
-		natTable.configure();
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        Composite gridPanel = new Composite(panel, SWT.NONE);
+        gridPanel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(gridPanel);
 
-		Button addRowButton = new Button(buttonPanel, SWT.PUSH);
-		addRowButton.setText("add row");
-		addRowButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				valuesToShow.add(createNumberValues());
-				natTable.refresh();
-			}
-		});
+        Composite buttonPanel = new Composite(panel, SWT.NONE);
+        buttonPanel.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
-		Button resetButton = new Button(buttonPanel, SWT.PUSH);
-		resetButton.setText("reset");
-		resetButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				valuesToShow.clear();
-				valuesToShow.add(createNumberValues());
-				valuesToShow.add(createNumberValues());
-				natTable.refresh();
-			}
-		});
+        // property names of the NumberValues class
+        String[] propertyNames = { "columnOneNumber", "columnTwoNumber",
+                "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
-		return panel;
-	}
-	
-	private void registerColumnLabels(ColumnOverrideLabelAccumulator columnLabelAccumulator) {
-		columnLabelAccumulator.registerColumnOverrides(0, COLUMN_ONE_LABEL);
-		columnLabelAccumulator.registerColumnOverrides(1, COLUMN_TWO_LABEL);
-		columnLabelAccumulator.registerColumnOverrides(2, COLUMN_THREE_LABEL);
-		columnLabelAccumulator.registerColumnOverrides(3, COLUMN_FOUR_LABEL);
-		columnLabelAccumulator.registerColumnOverrides(4, COLUMN_FIVE_LABEL);
-	}
-	
-	private NumberValues createNumberValues() {
-		NumberValues nv = new NumberValues();
-		nv.setColumnOneNumber(100);  //the value which should be used as 100%
-		nv.setColumnTwoNumber(20);   //the value 1 for calculation
-		nv.setColumnThreeNumber(30); //the value 2 for calculation
-		//as column 4 and 5 should be calculated values, we don't set them to the NumberValues object
-		return nv;
-	}
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("columnOneNumber", "100%");
+        propertyToLabelMap.put("columnTwoNumber", "Value One");
+        propertyToLabelMap.put("columnThreeNumber", "Value Two");
+        propertyToLabelMap.put("columnFourNumber", "Sum");
+        propertyToLabelMap.put("columnFiveNumber", "Percentage");
 
-	
-	/**
-	 * The column accessor which is used for retrieving the data out of the model.
-	 * While the values for the first three columns are returned directly, the values for
-	 * column four and five are calculated.
-	 */
-	class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
-		
-		/* (non-Javadoc)
-		 * @see org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getDataValue(java.lang.Object, int)
-		 */
-		@Override
-		public Object getDataValue(NumberValues rowObject, int columnIndex) {
-			switch(columnIndex) {
-			case 0: return rowObject.getColumnOneNumber();
-			case 1: return rowObject.getColumnTwoNumber();
-			case 2: return rowObject.getColumnThreeNumber();
-			case 3: //calculate the sum
-				return rowObject.getColumnTwoNumber() + rowObject.getColumnThreeNumber();
-			case 4: //calculate the percentage
-				return new Double(rowObject.getColumnTwoNumber() + rowObject.getColumnThreeNumber()) / rowObject.getColumnOneNumber();
-			}
-			return null;
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#setDataValue(java.lang.Object, int, java.lang.Object)
-		 */
-		@Override
-		public void setDataValue(NumberValues rowObject, int columnIndex, Object newValue) {
-			//because of the registered conversion, the new value has to be an Integer
-			switch(columnIndex) {
-			case 0: rowObject.setColumnOneNumber((Integer)newValue);
-			break;
-			case 1: rowObject.setColumnTwoNumber((Integer)newValue);
-			break;
-			case 2: rowObject.setColumnThreeNumber((Integer)newValue);
-			break;
-			}		
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getColumnCount()
-		 */
-		@Override
-		public int getColumnCount() {
-			//this example will show exactly 5 columns
-			return 5;
-		}
-		
-	}
-	
-	/**
-	 * The body layer stack for the {@link _303_CalculatedDataExample}.
-	 * Consists of
-	 * <ol>
-	 * <li>ViewportLayer</li>
-	 * <li>SelectionLayer</li>
-	 * <li>ColumnHideShowLayer</li>
-	 * <li>ColumnReorderLayer</li>
-	 * <li>DataLayer</li>
-	 * </ol>
-	 */
-	class CalculatingBodyLayerStack extends AbstractLayerTransform {
-		
-		private final DataLayer bodyDataLayer;
-		private final ColumnReorderLayer columnReorderLayer;
-		private final ColumnHideShowLayer columnHideShowLayer;
-		private final SelectionLayer selectionLayer;
-		private final ViewportLayer viewportLayer;
-		
-		public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry) {
-			IDataProvider dataProvider = new ListDataProvider<NumberValues>(valuesToShow, new CalculatingDataProvider());
-			bodyDataLayer = new DataLayer(dataProvider);
-			columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-			columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-			selectionLayer = new SelectionLayer(columnHideShowLayer);
-			viewportLayer = new ViewportLayer(selectionLayer);
-			setUnderlyingLayer(viewportLayer);
-			
-			registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
-		}
-		
-		public DataLayer getDataLayer() {
-			return this.bodyDataLayer;
-		}
-		
-		public SelectionLayer getSelectionLayer() {
-			return selectionLayer;
-		}
-	}
-	
-	/**
-	 * The {@link GridLayer} used by the {@link _303_CalculatedDataExample}.
-	 */
-	class CalculatingGridLayer extends GridLayer {
-		
-		public CalculatingGridLayer(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry,
-				final String[] propertyNames, Map<String, String> propertyToLabelMap) {
-			super(true);
-			init(valuesToShow, configRegistry, propertyNames, propertyToLabelMap);
-		}
-		
-		
-		private void init(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry,
-				final String[] propertyNames, Map<String, String> propertyToLabelMap) {
-			// Body
-			CalculatingBodyLayerStack bodyLayer = new CalculatingBodyLayerStack(valuesToShow, configRegistry);
-			
-			SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
-			
-			// Column header
-			IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-			ILayer columnHeaderLayer = new ColumnHeaderLayer(
-					new DefaultColumnHeaderDataLayer(columnHeaderDataProvider), 
-					bodyLayer, selectionLayer);
-			
-			// Row header
-			IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-					bodyLayer.getDataLayer().getDataProvider());
-			ILayer rowHeaderLayer = new RowHeaderLayer(
-					new DefaultRowHeaderDataLayer(rowHeaderDataProvider), 
-					bodyLayer, selectionLayer);
-			
-			// Corner
-			ILayer cornerLayer = new CornerLayer(
-					new DataLayer(new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)), 
-					rowHeaderLayer, columnHeaderLayer);
-			
-			setBodyLayer(bodyLayer);
-			setColumnHeaderLayer(columnHeaderLayer);
-			setRowHeaderLayer(rowHeaderLayer);
-			setCornerLayer(cornerLayer);
-		}
-		
-		
-		public DataLayer getBodyDataLayer() {
-			return ((CalculatingBodyLayerStack)getBodyLayer()).getDataLayer();
-		}
-	}
-	
-	/**
-	 * Configuration for enabling and configuring edit behaviour.
-	 */
-	class CalculatingEditConfiguration extends AbstractRegistryConfiguration  {
-		
-		@Override
-		public void configureRegistry(IConfigRegistry configRegistry) {
-			configRegistry.registerConfigAttribute(
-					EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE);
-			configRegistry.registerConfigAttribute(
-					EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
-					DisplayMode.EDIT, _303_CalculatedDataExample.COLUMN_FOUR_LABEL);
-			configRegistry.registerConfigAttribute(
-					EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.NEVER_EDITABLE, 
-					DisplayMode.EDIT, _303_CalculatedDataExample.COLUMN_FIVE_LABEL);
-			
-			configRegistry.registerConfigAttribute(
-					CellConfigAttributes.DISPLAY_CONVERTER, new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL);
-			configRegistry.registerConfigAttribute(
-					CellConfigAttributes.DISPLAY_CONVERTER, new DefaultIntegerDisplayConverter(), DisplayMode.EDIT);
-			
-			configRegistry.registerConfigAttribute(
-					CellConfigAttributes.DISPLAY_CONVERTER, new PercentageDisplayConverter(), 
-					DisplayMode.NORMAL, _303_CalculatedDataExample.COLUMN_FIVE_LABEL);
-		}
-	}
+        valuesToShow.add(createNumberValues());
+        valuesToShow.add(createNumberValues());
+
+        ConfigRegistry configRegistry = new ConfigRegistry();
+
+        CalculatingGridLayer gridLayer = new CalculatingGridLayer(valuesToShow,
+                configRegistry, propertyNames, propertyToLabelMap);
+        DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
+
+        final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
+                bodyDataLayer);
+        bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
+        registerColumnLabels(columnLabelAccumulator);
+
+        final NatTable natTable = new NatTable(gridPanel, gridLayer, false);
+        natTable.setConfigRegistry(configRegistry);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new CalculatingEditConfiguration());
+        natTable.configure();
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        Button addRowButton = new Button(buttonPanel, SWT.PUSH);
+        addRowButton.setText("add row");
+        addRowButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                valuesToShow.add(createNumberValues());
+                natTable.refresh();
+            }
+        });
+
+        Button resetButton = new Button(buttonPanel, SWT.PUSH);
+        resetButton.setText("reset");
+        resetButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                valuesToShow.clear();
+                valuesToShow.add(createNumberValues());
+                valuesToShow.add(createNumberValues());
+                natTable.refresh();
+            }
+        });
+
+        return panel;
+    }
+
+    private void registerColumnLabels(
+            ColumnOverrideLabelAccumulator columnLabelAccumulator) {
+        columnLabelAccumulator.registerColumnOverrides(0, COLUMN_ONE_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(1, COLUMN_TWO_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(2, COLUMN_THREE_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(3, COLUMN_FOUR_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(4, COLUMN_FIVE_LABEL);
+    }
+
+    private NumberValues createNumberValues() {
+        NumberValues nv = new NumberValues();
+        nv.setColumnOneNumber(100); // the value which should be used as 100%
+        nv.setColumnTwoNumber(20); // the value 1 for calculation
+        nv.setColumnThreeNumber(30); // the value 2 for calculation
+        // as column 4 and 5 should be calculated values, we don't set them to
+        // the NumberValues object
+        return nv;
+    }
+
+    /**
+     * The column accessor which is used for retrieving the data out of the
+     * model. While the values for the first three columns are returned
+     * directly, the values for column four and five are calculated.
+     */
+    class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getDataValue
+         * (java.lang.Object, int)
+         */
+        @Override
+        public Object getDataValue(NumberValues rowObject, int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return rowObject.getColumnOneNumber();
+                case 1:
+                    return rowObject.getColumnTwoNumber();
+                case 2:
+                    return rowObject.getColumnThreeNumber();
+                case 3: // calculate the sum
+                    return rowObject.getColumnTwoNumber()
+                            + rowObject.getColumnThreeNumber();
+                case 4: // calculate the percentage
+                    return new Double(rowObject.getColumnTwoNumber()
+                            + rowObject.getColumnThreeNumber())
+                            / rowObject.getColumnOneNumber();
+            }
+            return null;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#setDataValue
+         * (java.lang.Object, int, java.lang.Object)
+         */
+        @Override
+        public void setDataValue(NumberValues rowObject, int columnIndex,
+                Object newValue) {
+            // because of the registered conversion, the new value has to be an
+            // Integer
+            switch (columnIndex) {
+                case 0:
+                    rowObject.setColumnOneNumber((Integer) newValue);
+                    break;
+                case 1:
+                    rowObject.setColumnTwoNumber((Integer) newValue);
+                    break;
+                case 2:
+                    rowObject.setColumnThreeNumber((Integer) newValue);
+                    break;
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getColumnCount
+         * ()
+         */
+        @Override
+        public int getColumnCount() {
+            // this example will show exactly 5 columns
+            return 5;
+        }
+
+    }
+
+    /**
+     * The body layer stack for the {@link _303_CalculatedDataExample}. Consists
+     * of
+     * <ol>
+     * <li>ViewportLayer</li>
+     * <li>SelectionLayer</li>
+     * <li>ColumnHideShowLayer</li>
+     * <li>ColumnReorderLayer</li>
+     * <li>DataLayer</li>
+     * </ol>
+     */
+    class CalculatingBodyLayerStack extends AbstractLayerTransform {
+
+        private final DataLayer bodyDataLayer;
+        private final ColumnReorderLayer columnReorderLayer;
+        private final ColumnHideShowLayer columnHideShowLayer;
+        private final SelectionLayer selectionLayer;
+        private final ViewportLayer viewportLayer;
+
+        public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow,
+                ConfigRegistry configRegistry) {
+            IDataProvider dataProvider = new ListDataProvider<NumberValues>(
+                    valuesToShow, new CalculatingDataProvider());
+            bodyDataLayer = new DataLayer(dataProvider);
+            columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
+            columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
+            selectionLayer = new SelectionLayer(columnHideShowLayer);
+            viewportLayer = new ViewportLayer(selectionLayer);
+            setUnderlyingLayer(viewportLayer);
+
+            registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+        }
+
+        public DataLayer getDataLayer() {
+            return this.bodyDataLayer;
+        }
+
+        public SelectionLayer getSelectionLayer() {
+            return selectionLayer;
+        }
+    }
+
+    /**
+     * The {@link GridLayer} used by the {@link _303_CalculatedDataExample}.
+     */
+    class CalculatingGridLayer extends GridLayer {
+
+        public CalculatingGridLayer(EventList<NumberValues> valuesToShow,
+                ConfigRegistry configRegistry, final String[] propertyNames,
+                Map<String, String> propertyToLabelMap) {
+            super(true);
+            init(valuesToShow, configRegistry, propertyNames,
+                    propertyToLabelMap);
+        }
+
+        private void init(EventList<NumberValues> valuesToShow,
+                ConfigRegistry configRegistry, final String[] propertyNames,
+                Map<String, String> propertyToLabelMap) {
+            // Body
+            CalculatingBodyLayerStack bodyLayer = new CalculatingBodyLayerStack(
+                    valuesToShow, configRegistry);
+
+            SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
+
+            // Column header
+            IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+                    propertyNames, propertyToLabelMap);
+            ILayer columnHeaderLayer = new ColumnHeaderLayer(
+                    new DefaultColumnHeaderDataLayer(columnHeaderDataProvider),
+                    bodyLayer, selectionLayer);
+
+            // Row header
+            IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                    bodyLayer.getDataLayer().getDataProvider());
+            ILayer rowHeaderLayer = new RowHeaderLayer(
+                    new DefaultRowHeaderDataLayer(rowHeaderDataProvider),
+                    bodyLayer, selectionLayer);
+
+            // Corner
+            ILayer cornerLayer = new CornerLayer(new DataLayer(
+                    new DefaultCornerDataProvider(columnHeaderDataProvider,
+                            rowHeaderDataProvider)), rowHeaderLayer,
+                    columnHeaderLayer);
+
+            setBodyLayer(bodyLayer);
+            setColumnHeaderLayer(columnHeaderLayer);
+            setRowHeaderLayer(rowHeaderLayer);
+            setCornerLayer(cornerLayer);
+        }
+
+        public DataLayer getBodyDataLayer() {
+            return ((CalculatingBodyLayerStack) getBodyLayer()).getDataLayer();
+        }
+    }
+
+    /**
+     * Configuration for enabling and configuring edit behaviour.
+     */
+    class CalculatingEditConfiguration extends AbstractRegistryConfiguration {
+
+        @Override
+        public void configureRegistry(IConfigRegistry configRegistry) {
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE,
+                    IEditableRule.ALWAYS_EDITABLE);
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE,
+                    IEditableRule.NEVER_EDITABLE, DisplayMode.EDIT,
+                    _303_CalculatedDataExample.COLUMN_FOUR_LABEL);
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE,
+                    IEditableRule.NEVER_EDITABLE, DisplayMode.EDIT,
+                    _303_CalculatedDataExample.COLUMN_FIVE_LABEL);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultIntegerDisplayConverter(), DisplayMode.EDIT);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new PercentageDisplayConverter(), DisplayMode.NORMAL,
+                    _303_CalculatedDataExample.COLUMN_FIVE_LABEL);
+        }
+    }
 
 }

@@ -22,78 +22,87 @@ import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEve
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 
+public class ColumnGroupExpandCollapseCommandHandler extends
+        AbstractLayerCommandHandler<ColumnGroupExpandCollapseCommand> {
 
-public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerCommandHandler<ColumnGroupExpandCollapseCommand> {
+    private final ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
 
-	private final ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
+    public ColumnGroupExpandCollapseCommandHandler(
+            ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer) {
+        this.columnGroupExpandCollapseLayer = columnGroupExpandCollapseLayer;
+    }
 
-	public ColumnGroupExpandCollapseCommandHandler(ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer) {
-		this.columnGroupExpandCollapseLayer = columnGroupExpandCollapseLayer;
-	}
-	
-	@Override
-	public Class<ColumnGroupExpandCollapseCommand> getCommandClass() {
-		return ColumnGroupExpandCollapseCommand.class;
-	}
+    @Override
+    public Class<ColumnGroupExpandCollapseCommand> getCommandClass() {
+        return ColumnGroupExpandCollapseCommand.class;
+    }
 
-	@Override
-	protected boolean doCommand(ColumnGroupExpandCollapseCommand command) {
-		
-		int columnIndex = columnGroupExpandCollapseLayer.getColumnIndexByPosition(command.getColumnPosition());
-		ColumnGroupModel model = columnGroupExpandCollapseLayer.getModel(command.getRowPosition());
-		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
-		
-		// if group of columnIndex is not collapseable return without any 
-		// further operation ...
-		if (columnGroup == null || !columnGroup.isCollapseable()) {
-			return true;
-		}
-		
-		List<Integer> columnIndexes = new ArrayList<Integer>(columnGroup.getMembers());
-		columnIndexes.removeAll(columnGroup.getStaticColumnIndexes());
-		
-		boolean wasCollapsed = columnGroup.isCollapsed();
-		
-		if (wasCollapsed) {
-			//we need to cleanup the column position list before we toggle
-			//because the columns are hidden before the toggle and will be 
-			//visible afterwards
-			cleanupColumnIndexes(columnIndexes);
-		}
-		
-		columnGroup.toggleCollapsed();
-		
-		if (!wasCollapsed) {
-			//we need to cleanup the column position list after we toggle
-			//because the columns are hidden now
-			cleanupColumnIndexes(columnIndexes);
-		}
-		
-		ILayerEvent event;
-		if (wasCollapsed) {
-			event = new ShowColumnPositionsEvent(columnGroupExpandCollapseLayer, columnIndexes);
-		} else {
-			event = new HideColumnPositionsEvent(columnGroupExpandCollapseLayer, columnIndexes);
-		}
-		
-		columnGroupExpandCollapseLayer.fireLayerEvent(event);
-		
-		return true;
-	}
+    @Override
+    protected boolean doCommand(ColumnGroupExpandCollapseCommand command) {
 
-	/**
-	 * Will clean up the given list of column indexes for a column group, so only those
-	 * column indexes will stay in the list that are relevant for the hide/show column
-	 * events.
-	 * @param columnIndexes The column indexes to cleanup.
-	 */
-	private void cleanupColumnIndexes(List<Integer> columnIndexes) {
-		for (Iterator<Integer> it = columnIndexes.iterator(); it.hasNext();) {
-			Integer columnIndex = it.next();
-			
-			if (!columnGroupExpandCollapseLayer.isColumnIndexHidden(columnIndex)) {
-				it.remove();
-			}
-		}
-	}
+        int columnIndex = columnGroupExpandCollapseLayer
+                .getColumnIndexByPosition(command.getColumnPosition());
+        ColumnGroupModel model = columnGroupExpandCollapseLayer
+                .getModel(command.getRowPosition());
+        ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+
+        // if group of columnIndex is not collapseable return without any
+        // further operation ...
+        if (columnGroup == null || !columnGroup.isCollapseable()) {
+            return true;
+        }
+
+        List<Integer> columnIndexes = new ArrayList<Integer>(
+                columnGroup.getMembers());
+        columnIndexes.removeAll(columnGroup.getStaticColumnIndexes());
+
+        boolean wasCollapsed = columnGroup.isCollapsed();
+
+        if (wasCollapsed) {
+            // we need to cleanup the column position list before we toggle
+            // because the columns are hidden before the toggle and will be
+            // visible afterwards
+            cleanupColumnIndexes(columnIndexes);
+        }
+
+        columnGroup.toggleCollapsed();
+
+        if (!wasCollapsed) {
+            // we need to cleanup the column position list after we toggle
+            // because the columns are hidden now
+            cleanupColumnIndexes(columnIndexes);
+        }
+
+        ILayerEvent event;
+        if (wasCollapsed) {
+            event = new ShowColumnPositionsEvent(
+                    columnGroupExpandCollapseLayer, columnIndexes);
+        } else {
+            event = new HideColumnPositionsEvent(
+                    columnGroupExpandCollapseLayer, columnIndexes);
+        }
+
+        columnGroupExpandCollapseLayer.fireLayerEvent(event);
+
+        return true;
+    }
+
+    /**
+     * Will clean up the given list of column indexes for a column group, so
+     * only those column indexes will stay in the list that are relevant for the
+     * hide/show column events.
+     * 
+     * @param columnIndexes
+     *            The column indexes to cleanup.
+     */
+    private void cleanupColumnIndexes(List<Integer> columnIndexes) {
+        for (Iterator<Integer> it = columnIndexes.iterator(); it.hasNext();) {
+            Integer columnIndex = it.next();
+
+            if (!columnGroupExpandCollapseLayer
+                    .isColumnIndexHidden(columnIndex)) {
+                it.remove();
+            }
+        }
+    }
 }

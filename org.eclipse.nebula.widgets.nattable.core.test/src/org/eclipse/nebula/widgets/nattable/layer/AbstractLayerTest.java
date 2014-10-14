@@ -18,7 +18,6 @@ import static org.junit.Assert.assertSame;
 
 import java.util.List;
 
-
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.test.fixture.PersistableFixture;
@@ -33,71 +32,71 @@ import org.junit.Test;
 
 public class AbstractLayerTest {
 
-	private DataLayerFixture dataLayer;
-	private LayerListenerFixture firstListener;
+    private DataLayerFixture dataLayer;
+    private LayerListenerFixture firstListener;
 
-	@Before
-	public void setup() {
-		dataLayer = new DataLayerFixture();
-		
-		firstListener = new LayerListenerFixture();
-		dataLayer.addLayerListener(firstListener);
-	}
-	
-	@Test
-	public void testFireOriginalEventIfOnlyOneListener() {
-		ILayerEvent event = new ColumnResizeEvent(dataLayer, 2);
-		dataLayer.fireLayerEvent(event);
-		
-		List<ILayerEvent> receivedEvents = firstListener.getReceivedEvents();
-		assertNotNull(receivedEvents);
-		assertEquals(1, receivedEvents.size());
-		assertSame(event, receivedEvents.get(0));
-	}
-	
-	@Test
-	public void testFireClonedEventIfMultipleListeners() {
-		LayerListenerFixture secondListener = new LayerListenerFixture();
-		dataLayer.addLayerListener(secondListener);
-		
-		ILayerEvent event = new ColumnResizeEvent(dataLayer, 2);
-		dataLayer.fireLayerEvent(event);
-		
-		List<ILayerEvent> receivedEvents = firstListener.getReceivedEvents();
-		assertNotNull(receivedEvents);
-		assertEquals(1, receivedEvents.size());
-		assertNotSame(event, receivedEvents.get(0));
-		
-		receivedEvents = secondListener.getReceivedEvents();
-		assertNotNull(receivedEvents);
-		assertEquals(1, receivedEvents.size());
-		assertSame(event, receivedEvents.get(0));
-	}
-	
-	@Test
-	public void persistablesAreSaved() throws Exception {
-		PersistableFixture persistable = new PersistableFixture();
-		PropertiesFixture properties = new PropertiesFixture();
+    @Before
+    public void setup() {
+        dataLayer = new DataLayerFixture();
 
-		dataLayer.registerPersistable(persistable);
-		dataLayer.saveState("test_prefix", properties);
+        firstListener = new LayerListenerFixture();
+        dataLayer.addLayerListener(firstListener);
+    }
 
-		Assert.assertTrue(persistable.stateSaved);
-	}
-	
-	@Test
-	public void commandHandlerRegistration() throws Exception {
-		LayerCommandFixture command = new LayerCommandFixture();
-		CommandHandlerFixture commandHandler = new CommandHandlerFixture();
+    @Test
+    public void testFireOriginalEventIfOnlyOneListener() {
+        ILayerEvent event = new ColumnResizeEvent(dataLayer, 2);
+        dataLayer.fireLayerEvent(event);
 
-		dataLayer.registerCommandHandler(commandHandler);
-		dataLayer.doCommand(command);
-		
-		assertNotNull(commandHandler.getLastCommandHandled());
-		commandHandler.clearLastCommandHandled();
-		
-		dataLayer.unregisterCommandHandler(command.getClass());
-		dataLayer.doCommand(command);
-		assertNull(commandHandler.getLastCommandHandled());
-	}
+        List<ILayerEvent> receivedEvents = firstListener.getReceivedEvents();
+        assertNotNull(receivedEvents);
+        assertEquals(1, receivedEvents.size());
+        assertSame(event, receivedEvents.get(0));
+    }
+
+    @Test
+    public void testFireClonedEventIfMultipleListeners() {
+        LayerListenerFixture secondListener = new LayerListenerFixture();
+        dataLayer.addLayerListener(secondListener);
+
+        ILayerEvent event = new ColumnResizeEvent(dataLayer, 2);
+        dataLayer.fireLayerEvent(event);
+
+        List<ILayerEvent> receivedEvents = firstListener.getReceivedEvents();
+        assertNotNull(receivedEvents);
+        assertEquals(1, receivedEvents.size());
+        assertNotSame(event, receivedEvents.get(0));
+
+        receivedEvents = secondListener.getReceivedEvents();
+        assertNotNull(receivedEvents);
+        assertEquals(1, receivedEvents.size());
+        assertSame(event, receivedEvents.get(0));
+    }
+
+    @Test
+    public void persistablesAreSaved() throws Exception {
+        PersistableFixture persistable = new PersistableFixture();
+        PropertiesFixture properties = new PropertiesFixture();
+
+        dataLayer.registerPersistable(persistable);
+        dataLayer.saveState("test_prefix", properties);
+
+        Assert.assertTrue(persistable.stateSaved);
+    }
+
+    @Test
+    public void commandHandlerRegistration() throws Exception {
+        LayerCommandFixture command = new LayerCommandFixture();
+        CommandHandlerFixture commandHandler = new CommandHandlerFixture();
+
+        dataLayer.registerCommandHandler(commandHandler);
+        dataLayer.doCommand(command);
+
+        assertNotNull(commandHandler.getLastCommandHandled());
+        commandHandler.clearLastCommandHandled();
+
+        dataLayer.unregisterCommandHandler(command.getClass());
+        dataLayer.doCommand(command);
+        assertNull(commandHandler.getLastCommandHandled());
+    }
 }

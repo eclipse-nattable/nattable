@@ -26,48 +26,50 @@ import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 
 public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
 
-	private final IConfigRegistry configRegistry;
-	private final GCFactory gcFactory;
-	private final ILayer sourceLayer;
-	private int[] selectedColumnPositions = new int[0];
+    private final IConfigRegistry configRegistry;
+    private final GCFactory gcFactory;
+    private final ILayer sourceLayer;
+    private int[] selectedColumnPositions = new int[0];
 
-	public InitializeAutoResizeColumnsCommand(ILayer layer, int columnPosition, IConfigRegistry configRegistry, GCFactory gcFactory) {
-		super(layer, columnPosition);
-		this.configRegistry = configRegistry;
-		this.gcFactory = gcFactory;
-		this.sourceLayer = layer;
-	}
+    public InitializeAutoResizeColumnsCommand(ILayer layer, int columnPosition,
+            IConfigRegistry configRegistry, GCFactory gcFactory) {
+        super(layer, columnPosition);
+        this.configRegistry = configRegistry;
+        this.gcFactory = gcFactory;
+        this.sourceLayer = layer;
+    }
 
-	protected InitializeAutoResizeColumnsCommand(InitializeAutoResizeColumnsCommand command) {
-		super(command);
-		this.configRegistry = command.configRegistry;
-		this.gcFactory = command.gcFactory;
-		this.sourceLayer = command.sourceLayer;
-	}
+    protected InitializeAutoResizeColumnsCommand(
+            InitializeAutoResizeColumnsCommand command) {
+        super(command);
+        this.configRegistry = command.configRegistry;
+        this.gcFactory = command.gcFactory;
+        this.sourceLayer = command.sourceLayer;
+    }
 
-	public ILayerCommand cloneCommand() {
-		return new InitializeAutoResizeColumnsCommand(this);
-	}
+    public ILayerCommand cloneCommand() {
+        return new InitializeAutoResizeColumnsCommand(this);
+    }
 
-	// Accessors
+    // Accessors
 
-	public GCFactory getGCFactory() {
-		return gcFactory;
-	}
+    public GCFactory getGCFactory() {
+        return gcFactory;
+    }
 
-	public IConfigRegistry getConfigRegistry() {
-		return configRegistry;
-	}
+    public IConfigRegistry getConfigRegistry() {
+        return configRegistry;
+    }
 
-	public ILayer getSourceLayer() {
-		return sourceLayer;
-	}
+    public ILayer getSourceLayer() {
+        return sourceLayer;
+    }
 
-	public void setSelectedColumnPositions(int[] selectedColumnPositions) {
-		this.selectedColumnPositions = selectedColumnPositions;
-	}
+    public void setSelectedColumnPositions(int[] selectedColumnPositions) {
+        this.selectedColumnPositions = selectedColumnPositions;
+    }
 
-	public int[] getColumnPositions() {
-		return selectedColumnPositions;
-	}
+    public int[] getColumnPositions() {
+        return selectedColumnPositions;
+    }
 }

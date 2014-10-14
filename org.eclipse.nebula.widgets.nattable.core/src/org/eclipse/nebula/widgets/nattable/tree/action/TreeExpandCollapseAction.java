@@ -17,13 +17,14 @@ import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 
 public class TreeExpandCollapseAction implements IMouseAction {
-	
-	public void run(NatTable natTable, MouseEvent event) {
-		int c = natTable.getColumnPositionByX(event.x);
-		int r = natTable.getRowPositionByY(event.y);
-		ILayerCell cell = natTable.getCellByPosition(c, r);
-		int index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
-		TreeExpandCollapseCommand command = new TreeExpandCollapseCommand(index);
-		natTable.doCommand(command);
-	}
+
+    public void run(NatTable natTable, MouseEvent event) {
+        int c = natTable.getColumnPositionByX(event.x);
+        int r = natTable.getRowPositionByY(event.y);
+        ILayerCell cell = natTable.getCellByPosition(c, r);
+        int index = cell.getLayer()
+                .getRowIndexByPosition(cell.getRowPosition());
+        TreeExpandCollapseCommand command = new TreeExpandCollapseCommand(index);
+        natTable.doCommand(command);
+    }
 }

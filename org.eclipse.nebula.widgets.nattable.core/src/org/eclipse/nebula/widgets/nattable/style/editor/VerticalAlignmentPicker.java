@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
-
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.swt.SWT;
@@ -25,12 +24,14 @@ public class VerticalAlignmentPicker extends Composite {
 
     private final Combo combo;
 
-    public VerticalAlignmentPicker(Composite parent, VerticalAlignmentEnum alignment) {
+    public VerticalAlignmentPicker(Composite parent,
+            VerticalAlignmentEnum alignment) {
         super(parent, SWT.NONE);
         setLayout(new RowLayout());
 
         combo = new Combo(this, SWT.READ_ONLY | SWT.DROP_DOWN);
-        combo.setItems(new String[] { Messages.getString("VerticalAlignmentPicker.top"), Messages.getString("VerticalAlignmentPicker.middle"), Messages.getString("VerticalAlignmentPicker.bottom") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        combo.setItems(new String[] {
+                Messages.getString("VerticalAlignmentPicker.top"), Messages.getString("VerticalAlignmentPicker.middle"), Messages.getString("VerticalAlignmentPicker.bottom") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         update(alignment);
     }
@@ -59,7 +60,8 @@ public class VerticalAlignmentPicker extends Composite {
     }
 
     public void setSelectedAlignment(VerticalAlignmentEnum verticalAlignment) {
-        if (verticalAlignment == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
+        if (verticalAlignment == null)
+            throw new IllegalArgumentException("null"); //$NON-NLS-1$
         update(verticalAlignment);
     }
 }

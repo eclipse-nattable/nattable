@@ -19,12 +19,12 @@ import java.util.Collection;
  */
 public interface IStructuralChangeEvent extends IVisualChangeEvent {
 
-	public boolean isHorizontalStructureChanged();
-	
-	public Collection<StructuralDiff> getColumnDiffs();
-	
-	public boolean isVerticalStructureChanged();
-	
-	public Collection<StructuralDiff> getRowDiffs();
-	
+    public boolean isHorizontalStructureChanged();
+
+    public Collection<StructuralDiff> getColumnDiffs();
+
+    public boolean isVerticalStructureChanged();
+
+    public Collection<StructuralDiff> getRowDiffs();
+
 }

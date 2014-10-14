@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnRename;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.AbstractColumnCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -21,22 +20,25 @@ import org.eclipse.swt.graphics.Point;
  */
 public class DisplayColumnRenameDialogCommand extends AbstractColumnCommand {
 
-	private final NatTable natTable;
+    private final NatTable natTable;
 
     /**
-	 * @param columnPosition of the column to be renamed 
-	 */
-	public DisplayColumnRenameDialogCommand(NatTable natTable, int columnPosition) {
-		super(natTable, columnPosition);
+     * @param columnPosition
+     *            of the column to be renamed
+     */
+    public DisplayColumnRenameDialogCommand(NatTable natTable,
+            int columnPosition) {
+        super(natTable, columnPosition);
         this.natTable = natTable;
-	}
+    }
 
-	public Point toDisplayCoordinates(Point point) {
-	    return natTable.toDisplay(point);
-	}
-	
-	public ILayerCommand cloneCommand() {
-		return new DisplayColumnRenameDialogCommand((NatTable) getLayer(), getColumnPosition());
-	}
+    public Point toDisplayCoordinates(Point point) {
+        return natTable.toDisplay(point);
+    }
+
+    public ILayerCommand cloneCommand() {
+        return new DisplayColumnRenameDialogCommand((NatTable) getLayer(),
+                getColumnPosition());
+    }
 
 }

@@ -14,57 +14,64 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
-public class CellSelectionEvent extends CellVisualChangeEvent implements ISelectionEvent {
+public class CellSelectionEvent extends CellVisualChangeEvent implements
+        ISelectionEvent {
 
-	private final SelectionLayer selectionLayer;
+    private final SelectionLayer selectionLayer;
 
-	// The state of the keys when the event was raised
-	private boolean withShiftMask = false;
-	private boolean withControlMask = false;
+    // The state of the keys when the event was raised
+    private boolean withShiftMask = false;
+    private boolean withControlMask = false;
 
-	public CellSelectionEvent(SelectionLayer selectionLayer, int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
-		super(selectionLayer, columnPosition, rowPosition);
-		this.selectionLayer = selectionLayer;
-		this.withControlMask = withControlMask;
-		this.withShiftMask = withShiftMask;
-	}
+    public CellSelectionEvent(SelectionLayer selectionLayer,
+            int columnPosition, int rowPosition, boolean withShiftMask,
+            boolean withControlMask) {
+        super(selectionLayer, columnPosition, rowPosition);
+        this.selectionLayer = selectionLayer;
+        this.withControlMask = withControlMask;
+        this.withShiftMask = withShiftMask;
+    }
 
-	// Copy constructor
-	protected CellSelectionEvent(CellSelectionEvent event) {
-		super(event);
-		this.selectionLayer = event.selectionLayer;
-		this.withControlMask = event.withControlMask;
-		this.withShiftMask = event.withShiftMask;
-	}
+    // Copy constructor
+    protected CellSelectionEvent(CellSelectionEvent event) {
+        super(event);
+        this.selectionLayer = event.selectionLayer;
+        this.withControlMask = event.withControlMask;
+        this.withShiftMask = event.withShiftMask;
+    }
 
-	public SelectionLayer getSelectionLayer() {
-		return selectionLayer;
-	}
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
 
-	@Override
-	public CellSelectionEvent cloneEvent() {
-		return new CellSelectionEvent(this);
-	}
+    @Override
+    public CellSelectionEvent cloneEvent() {
+        return new CellSelectionEvent(this);
+    }
 
-	public boolean isWithShiftMask() {
-		return withShiftMask;
-	}
+    public boolean isWithShiftMask() {
+        return withShiftMask;
+    }
 
-	public boolean isWithControlMask() {
-		return withControlMask;
-	}
+    public boolean isWithControlMask() {
+        return withControlMask;
+    }
 
-	public boolean convertToLocal(ILayer localLayer) {
-		if(columnPosition == SelectionLayer.NO_SELECTION || rowPosition == SelectionLayer.NO_SELECTION){
-			return true;
-		}
-		columnPosition = localLayer.underlyingToLocalColumnPosition(getLayer(), columnPosition);
-		rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(), rowPosition);
-		
-		layer = localLayer;
-		
-		return columnPosition >= 0 && rowPosition >= 0
-			&& columnPosition < layer.getColumnCount() && rowPosition < layer.getRowCount();
-	}
-	
+    public boolean convertToLocal(ILayer localLayer) {
+        if (columnPosition == SelectionLayer.NO_SELECTION
+                || rowPosition == SelectionLayer.NO_SELECTION) {
+            return true;
+        }
+        columnPosition = localLayer.underlyingToLocalColumnPosition(getLayer(),
+                columnPosition);
+        rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(),
+                rowPosition);
+
+        layer = localLayer;
+
+        return columnPosition >= 0 && rowPosition >= 0
+                && columnPosition < layer.getColumnCount()
+                && rowPosition < layer.getRowCount();
+    }
+
 }

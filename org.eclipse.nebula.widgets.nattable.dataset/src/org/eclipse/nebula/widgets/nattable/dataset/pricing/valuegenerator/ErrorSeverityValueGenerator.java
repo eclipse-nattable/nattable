@@ -12,21 +12,14 @@ package org.eclipse.nebula.widgets.nattable.dataset.pricing.valuegenerator;
 
 import org.eclipse.nebula.widgets.nattable.dataset.valuegenerator.AbstractListValueGenerator;
 
-public class ErrorSeverityValueGenerator extends AbstractListValueGenerator<Integer> {
-	
-	public ErrorSeverityValueGenerator() {
-		super(new Integer[] {
-				Integer.valueOf(0),
-				Integer.valueOf(0),
-				Integer.valueOf(0),
-				Integer.valueOf(0),
-				Integer.valueOf(0),
-				Integer.valueOf(0),
-				Integer.valueOf(0),
-				Integer.valueOf(1),
-				Integer.valueOf(2),
-				}
-		);
-	}
+public class ErrorSeverityValueGenerator extends
+        AbstractListValueGenerator<Integer> {
+
+    public ErrorSeverityValueGenerator() {
+        super(new Integer[] { Integer.valueOf(0), Integer.valueOf(0),
+                Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0),
+                Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(1),
+                Integer.valueOf(2), });
+    }
 
 }

@@ -14,6 +14,6 @@ import java.io.Serializable;
 
 public interface IRowIdAccessor<R> {
 
-	public Serializable getRowId(R rowObject);
+    public Serializable getRowId(R rowObject);
 
 }

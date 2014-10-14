@@ -17,69 +17,69 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class CellFixture extends LayerCell {
 
-	public static final Rectangle TEST_BOUNDS = new Rectangle(0,0,10,10);
-	public static final String TEST_CONFIG_TYPE = "default";
-	public static final String TEST_CELL_DATA = "Test cell data";
-	
-	private String displayMode;
-	private LabelStack configLabels;
-	private Object dataValue;
-	private Rectangle bounds;
+    public static final Rectangle TEST_BOUNDS = new Rectangle(0, 0, 10, 10);
+    public static final String TEST_CONFIG_TYPE = "default";
+    public static final String TEST_CELL_DATA = "Test cell data";
 
-	public CellFixture() {
-		this(TEST_CELL_DATA);
-	}
-	
-	public CellFixture(Object dataValue) {
-		super(null, 0, 0);
-		
-		this.dataValue = dataValue;
-		
-		displayMode = DisplayMode.NORMAL;
-		configLabels = new LabelStack(TEST_CONFIG_TYPE);
-		bounds = TEST_BOUNDS;
-	}
-	
-	@Override
-	public String getDisplayMode() {
-		return displayMode;
-	}
-	
-	public void setDisplayMode(String displayMode) {
-		this.displayMode = displayMode;
-	}
-	
-	@Override
-	public LabelStack getConfigLabels() {
-		return configLabels;
-	}
-	
-	public void setConfigLabels(LabelStack configLabels) {
-		this.configLabels = configLabels;
-	}
+    private String displayMode;
+    private LabelStack configLabels;
+    private Object dataValue;
+    private Rectangle bounds;
 
-	public void addConfigLabels(String... additionalConfigLabels) {
-		for (String configLabel : additionalConfigLabels) {
-			configLabels.addLabel(configLabel);
-		}
-	}
-	
-	@Override
-	public Object getDataValue() {
-		return dataValue;
-	}
-	
-	public void setDataValue(Object dataValue) {
-		this.dataValue = dataValue;
-	}
-	
-	@Override
-	public Rectangle getBounds() {
-		return bounds;
-	}
-	
-	public void setBounds(Rectangle bounds) {
-		this.bounds = bounds;
-	}
-	
+    public CellFixture() {
+        this(TEST_CELL_DATA);
+    }
+
+    public CellFixture(Object dataValue) {
+        super(null, 0, 0);
+
+        this.dataValue = dataValue;
+
+        displayMode = DisplayMode.NORMAL;
+        configLabels = new LabelStack(TEST_CONFIG_TYPE);
+        bounds = TEST_BOUNDS;
+    }
+
+    @Override
+    public String getDisplayMode() {
+        return displayMode;
+    }
+
+    public void setDisplayMode(String displayMode) {
+        this.displayMode = displayMode;
+    }
+
+    @Override
+    public LabelStack getConfigLabels() {
+        return configLabels;
+    }
+
+    public void setConfigLabels(LabelStack configLabels) {
+        this.configLabels = configLabels;
+    }
+
+    public void addConfigLabels(String... additionalConfigLabels) {
+        for (String configLabel : additionalConfigLabels) {
+            configLabels.addLabel(configLabel);
+        }
+    }
+
+    @Override
+    public Object getDataValue() {
+        return dataValue;
+    }
+
+    public void setDataValue(Object dataValue) {
+        this.dataValue = dataValue;
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    public void setBounds(Rectangle bounds) {
+        this.bounds = bounds;
+    }
+
 }

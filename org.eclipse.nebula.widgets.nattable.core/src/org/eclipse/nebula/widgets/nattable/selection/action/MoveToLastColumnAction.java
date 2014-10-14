@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -19,13 +18,14 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class MoveToLastColumnAction extends AbstractKeySelectAction {
 
-	public MoveToLastColumnAction() {
-		super(MoveDirectionEnum.RIGHT);
-	}
+    public MoveToLastColumnAction() {
+        super(MoveDirectionEnum.RIGHT);
+    }
 
-	public void run(NatTable natTable, KeyEvent event) {
-		super.run(natTable, event);
-		natTable.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, SelectionLayer.MOVE_ALL, isShiftMask(), isControlMask()));
-	}
+    public void run(NatTable natTable, KeyEvent event) {
+        super.run(natTable, event);
+        natTable.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT,
+                SelectionLayer.MOVE_ALL, isShiftMask(), isControlMask()));
+    }
 
 }

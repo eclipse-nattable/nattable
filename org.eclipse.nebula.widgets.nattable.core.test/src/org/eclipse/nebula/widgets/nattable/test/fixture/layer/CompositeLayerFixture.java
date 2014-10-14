@@ -35,46 +35,46 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
  */
 public class CompositeLayerFixture extends CompositeLayer {
 
-	private static final int ROW_COUNT = 2;
-	private static final int COLUMN_COUNT = 2;
+    private static final int ROW_COUNT = 2;
+    private static final int COLUMN_COUNT = 2;
 
-	public DataLayerFixture cornerLayer;
-	public DataLayerFixture colHeaderLayer;
-	public DataLayerFixture rowHeaderLayer;
-	public ViewportLayerFixture bodyLayer;
+    public DataLayerFixture cornerLayer;
+    public DataLayerFixture colHeaderLayer;
+    public DataLayerFixture rowHeaderLayer;
+    public ViewportLayerFixture bodyLayer;
 
-	public CompositeLayerFixture() {
-		super(COLUMN_COUNT, ROW_COUNT);
+    public CompositeLayerFixture() {
+        super(COLUMN_COUNT, ROW_COUNT);
 
-		cornerLayer = new DataLayerFixture(5, 5);
-		setChildLayer(GridRegion.CORNER, cornerLayer, 0, 0);
+        cornerLayer = new DataLayerFixture(5, 5);
+        setChildLayer(GridRegion.CORNER, cornerLayer, 0, 0);
 
-		colHeaderLayer = new DataLayerFixture(25, 5);
-		setChildLayer(GridRegion.COLUMN_HEADER, colHeaderLayer, 1, 0);
+        colHeaderLayer = new DataLayerFixture(25, 5);
+        setChildLayer(GridRegion.COLUMN_HEADER, colHeaderLayer, 1, 0);
 
-		rowHeaderLayer = new DataLayerFixture(10, 5);
-		setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0, 1);
+        rowHeaderLayer = new DataLayerFixture(10, 5);
+        setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0, 1);
 
-		bodyLayer = new ViewportLayerFixture();
-		setChildLayer(GridRegion.BODY, bodyLayer, 1, 1);
-	}
+        bodyLayer = new ViewportLayerFixture();
+        setChildLayer(GridRegion.BODY, bodyLayer, 1, 1);
+    }
 
-	/**
-	 * Fixture with all columns equal width and all rows equal height
-	 */
-	public CompositeLayerFixture(int width, int height) {
-		super(COLUMN_COUNT, ROW_COUNT);
+    /**
+     * Fixture with all columns equal width and all rows equal height
+     */
+    public CompositeLayerFixture(int width, int height) {
+        super(COLUMN_COUNT, ROW_COUNT);
 
-		cornerLayer = new DataLayerFixture(width,height);
-		setChildLayer(GridRegion.CORNER, cornerLayer, 0, 0);
+        cornerLayer = new DataLayerFixture(width, height);
+        setChildLayer(GridRegion.CORNER, cornerLayer, 0, 0);
 
-		colHeaderLayer = new DataLayerFixture(width,height);
-		setChildLayer(GridRegion.COLUMN_HEADER, colHeaderLayer, 1, 0);
+        colHeaderLayer = new DataLayerFixture(width, height);
+        setChildLayer(GridRegion.COLUMN_HEADER, colHeaderLayer, 1, 0);
 
-		rowHeaderLayer = new DataLayerFixture(width,height);
-		setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0, 1);
+        rowHeaderLayer = new DataLayerFixture(width, height);
+        setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0, 1);
 
-		bodyLayer = new ViewportLayerFixture(width,height);
-		setChildLayer(GridRegion.BODY, bodyLayer, 1, 1);
-	}
+        bodyLayer = new ViewportLayerFixture(width, height);
+        setChildLayer(GridRegion.BODY, bodyLayer, 1, 1);
+    }
 }

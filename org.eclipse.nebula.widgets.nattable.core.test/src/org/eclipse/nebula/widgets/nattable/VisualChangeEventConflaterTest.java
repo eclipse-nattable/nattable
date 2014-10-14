@@ -20,20 +20,21 @@ import org.junit.Test;
 
 public class VisualChangeEventConflaterTest {
 
-	@Test
-	public void shouldAccumulateEvents() throws Exception {
-		NatTableFixture natTable = new NatTableFixture();
-		VisualChangeEventConflater conflater = 	new VisualChangeEventConflater(natTable);
-		EventConflaterChain chain = new EventConflaterChain();
-		chain.add(conflater);
-		
-		conflater.addEvent(new LayerEventFixture());
-		conflater.addEvent(new LayerEventFixture());
-		assertEquals(2, conflater.getCount());
+    @Test
+    public void shouldAccumulateEvents() throws Exception {
+        NatTableFixture natTable = new NatTableFixture();
+        VisualChangeEventConflater conflater = new VisualChangeEventConflater(
+                natTable);
+        EventConflaterChain chain = new EventConflaterChain();
+        chain.add(conflater);
 
-		chain.start();
-		Thread.sleep(EventConflaterChain.DEFAULT_INITIAL_DELAY + 100);
+        conflater.addEvent(new LayerEventFixture());
+        conflater.addEvent(new LayerEventFixture());
+        assertEquals(2, conflater.getCount());
 
-		assertEquals(0, conflater.getCount());
-	}
+        chain.start();
+        Thread.sleep(EventConflaterChain.DEFAULT_INITIAL_DELAY + 100);
+
+        assertEquals(0, conflater.getCount());
+    }
 }

@@ -15,11 +15,12 @@ import java.math.BigInteger;
 /**
  * Converts the display value to a {@link BigInteger} and vice versa.
  */
-public class DefaultBigIntegerDisplayConverter extends DefaultLongDisplayConverter {
+public class DefaultBigIntegerDisplayConverter extends
+        DefaultLongDisplayConverter {
 
-	@Override
-	protected Object convertToNumericValue(String value) {
-		return new BigInteger(value);
-	}
+    @Override
+    protected Object convertToNumericValue(String value) {
+        return new BigInteger(value);
+    }
 
 }

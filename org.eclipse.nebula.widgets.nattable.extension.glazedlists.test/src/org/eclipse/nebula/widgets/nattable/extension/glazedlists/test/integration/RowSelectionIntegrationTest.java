@@ -52,214 +52,248 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class RowSelectionIntegrationTest {
 
-	private NatTable nattable;
-	private EventList<RowDataFixture> eventListFixture;
-	private ListDataProvider<RowDataFixture> bodyDataProvider;
-	private SelectionLayer selectionLayer;
-	private RowSelectionProvider<RowDataFixture> selectionProvider;
+    private NatTable nattable;
+    private EventList<RowDataFixture> eventListFixture;
+    private ListDataProvider<RowDataFixture> bodyDataProvider;
+    private SelectionLayer selectionLayer;
+    private RowSelectionProvider<RowDataFixture> selectionProvider;
 
-	@Before
-	public void setup() {
-		IConfigRegistry configRegistry = new ConfigRegistry();
+    @Before
+    public void setup() {
+        IConfigRegistry configRegistry = new ConfigRegistry();
 
-		// 10 rows in fixture
-		eventListFixture = GlazedLists.eventList(RowDataListFixture.getList(10));
+        // 10 rows in fixture
+        eventListFixture = GlazedLists
+                .eventList(RowDataListFixture.getList(10));
 
-		GlazedListsGridLayer<RowDataFixture> gridLayer = new GlazedListsGridLayer<RowDataFixture>(
-																eventListFixture,
-																RowDataListFixture.getPropertyNames(),
-																RowDataListFixture.getPropertyToLabelMap(),
-																configRegistry);
-		nattable = new NatTableFixture(gridLayer, false);
-		nattable.setConfigRegistry(configRegistry);
+        GlazedListsGridLayer<RowDataFixture> gridLayer = new GlazedListsGridLayer<RowDataFixture>(
+                eventListFixture, RowDataListFixture.getPropertyNames(),
+                RowDataListFixture.getPropertyToLabelMap(), configRegistry);
+        nattable = new NatTableFixture(gridLayer, false);
+        nattable.setConfigRegistry(configRegistry);
 
-		selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
-		bodyDataProvider = gridLayer.getBodyDataProvider();
-		selectionProvider = new RowSelectionProvider<RowDataFixture>(selectionLayer, bodyDataProvider);
+        selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
+        bodyDataProvider = gridLayer.getBodyDataProvider();
+        selectionProvider = new RowSelectionProvider<RowDataFixture>(
+                selectionLayer, bodyDataProvider);
 
-		nattable.addConfiguration(new DefaultSortConfiguration());
+        nattable.addConfiguration(new DefaultSortConfiguration());
 
-		// Enable preserve selection on data update
-		selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(selectionLayer, bodyDataProvider, new IRowIdAccessor<RowDataFixture>() {
+        // Enable preserve selection on data update
+        selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
+                selectionLayer, bodyDataProvider,
+                new IRowIdAccessor<RowDataFixture>() {
 
-			@Override
-			public Serializable getRowId(RowDataFixture rowObject) {
-				return rowObject.getSecurity_id();
-			}
-			
-		}));
+                    @Override
+                    public Serializable getRowId(RowDataFixture rowObject) {
+                        return rowObject.getSecurity_id();
+                    }
 
-		// Enable test mode - events can be fired outside the Display thread
-		gridLayer.getGlazedListsEventLayer().setTestMode(true);
+                }));
 
-		nattable.configure();
-	}
+        // Enable test mode - events can be fired outside the Display thread
+        gridLayer.getGlazedListsEventLayer().setTestMode(true);
 
-	@Test
-	public void shouldPreserveRowSelectionOnDataUpdates() throws Exception {
-		assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
+        nattable.configure();
+    }
 
-		nattable.doCommand(new SelectRowsCommand(nattable, 1, 1, false, false));
-		assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
+    @Test
+    public void shouldPreserveRowSelectionOnDataUpdates() throws Exception {
+        assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
 
-		// Ford motor at top and selected
-		assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1).toString());
-		assertEquals("B Ford Motor", getSelected().getSecurity_description());
+        nattable.doCommand(new SelectRowsCommand(nattable, 1, 1, false, false));
+        assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
 
-		eventListFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
+        // Ford motor at top and selected
+        assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1)
+                .toString());
+        assertEquals("B Ford Motor", getSelected().getSecurity_description());
 
-		// Event layer will conflate list change events
-		Thread.sleep(100);
+        eventListFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
 
-		// Tata motors at top but Ford motors still selected
-		assertEquals("Tata motors", nattable.getDataValueByPosition(2, 1).toString());
-		assertEquals("B Ford Motor", getSelected().getSecurity_description());
-	}
+        // Event layer will conflate list change events
+        Thread.sleep(100);
 
-	@Test
-	public void shouldPreserveRowSelectionOnSort() throws Exception {
-		assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
+        // Tata motors at top but Ford motors still selected
+        assertEquals("Tata motors", nattable.getDataValueByPosition(2, 1)
+                .toString());
+        assertEquals("B Ford Motor", getSelected().getSecurity_description());
+    }
 
-		// Unsorted order - Ford motor at top
-		assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1).toString());
-		assertEquals("A Alphabet Co.", nattable.getDataValueByPosition(2, 2).toString());
-		assertEquals("C General Electric Co", nattable.getDataValueByPosition(2, 3).toString());
+    @Test
+    public void shouldPreserveRowSelectionOnSort() throws Exception {
+        assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
 
-		// Select 'Ford Motor'
-		nattable.doCommand(new SelectRowsCommand(nattable, 1, 1, false, false));
-		assertEquals("B Ford Motor", getSelected().getSecurity_description());
+        // Unsorted order - Ford motor at top
+        assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1)
+                .toString());
+        assertEquals("A Alphabet Co.", nattable.getDataValueByPosition(2, 2)
+                .toString());
+        assertEquals("C General Electric Co",
+                nattable.getDataValueByPosition(2, 3).toString());
 
-		// Sort
-		nattable.doCommand(new SortColumnCommand(nattable, 2, false));
+        // Select 'Ford Motor'
+        nattable.doCommand(new SelectRowsCommand(nattable, 1, 1, false, false));
+        assertEquals("B Ford Motor", getSelected().getSecurity_description());
 
-		// Sorted order - Alphabet co. at top
-		assertEquals("A Alphabet Co.", nattable.getDataValueByPosition(2, 1).toString());
-		assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 2).toString());
-		assertEquals("C General Electric Co", nattable.getDataValueByPosition(2, 3).toString());
+        // Sort
+        nattable.doCommand(new SortColumnCommand(nattable, 2, false));
 
-		// Ford motor still selected
-		assertEquals("B Ford Motor", getSelected().getSecurity_description());
-	}
-	
-	@Test
-	public void onlyOneRowSelectedAtAnyTime() {
-		selectionLayer.getSelectionModel().setMultipleSelectionAllowed(false);
+        // Sorted order - Alphabet co. at top
+        assertEquals("A Alphabet Co.", nattable.getDataValueByPosition(2, 1)
+                .toString());
+        assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 2)
+                .toString());
+        assertEquals("C General Electric Co",
+                nattable.getDataValueByPosition(2, 3).toString());
 
-		selectionLayer.clear();
-		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0, false, true));
+        // Ford motor still selected
+        assertEquals("B Ford Motor", getSelected().getSecurity_description());
+    }
 
-		Collection<PositionCoordinate> cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
-		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
-		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
+    @Test
+    public void onlyOneRowSelectedAtAnyTime() {
+        selectionLayer.getSelectionModel().setMultipleSelectionAllowed(false);
 
-		//select another cell with control mask
-		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 1, false, true));
+        selectionLayer.clear();
+        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0,
+                false, true));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
-		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
-		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
+        Collection<PositionCoordinate> cells = ArrayUtil
+                .asCollection(selectionLayer.getSelectedCellPositions());
+        Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
+        Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
 
-		//select additional cells with shift mask
-		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 10, true, false));
+        // select another cell with control mask
+        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 1,
+                false, true));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
-		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
-		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
+        cells = ArrayUtil.asCollection(selectionLayer
+                .getSelectedCellPositions());
+        Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
+        Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
 
-		//select additional cells with shift mask
-		selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 10, 0, true, false));
+        // select additional cells with shift mask
+        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 10,
+                true, false));
 
-		cells = ArrayUtil.asCollection(selectionLayer.getSelectedCellPositions());
-		Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
-		Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
-	}
+        cells = ArrayUtil.asCollection(selectionLayer
+                .getSelectedCellPositions());
+        Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
+        Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
 
-	@Test
-	public void onlySelectRowEventsFired() {
-		nattable.addLayerListener(new ILayerListener() {
-			@Override
-			public void handleLayerEvent(ILayerEvent event) {
-				if (event instanceof CellSelectionEvent) {
-					fail("CellSelectionEvent fired for row selection");
-				}
-			}
-		});
-		
-		nattable.doCommand(new SelectRowsCommand(selectionLayer, 0, 0, false, false));
-		//the second call first clears the selection and then applies the new one
-		//clearing by default also fires a CellSelectionEvent with negative values
-		nattable.doCommand(new SelectRowsCommand(selectionLayer, 0, 3, false, false));
-	}
-	
-	@Test
-	public void setSingleSelectionViaProvider() {
-		selectionProvider.setSelection(new StructuredSelection(
-				new RowDataFixture[] { eventListFixture.get(1) }));
-		
-		assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
-	}
-	
-	@Test
-	public void setMultipleSelectionViaProvider() {
-		selectionProvider.setSelection(new StructuredSelection(
-				new RowDataFixture[] { eventListFixture.get(1), eventListFixture.get(3) }));
-		
-		assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
+        // select additional cells with shift mask
+        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 10, 0,
+                true, false));
 
-		selectionProvider.setSelection(new StructuredSelection(
-				new RowDataFixture[] { eventListFixture.get(5), eventListFixture.get(7) }));
-		
-		assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
-	}
-	
-	@Test
-	public void setMultipleSelectionViaProviderWithAdd() {
-		selectionProvider.setAddSelectionOnSet(true);
-		
-		selectionProvider.setSelection(new StructuredSelection(
-				new RowDataFixture[] { eventListFixture.get(1), eventListFixture.get(3) }));
-		
-		assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
+        cells = ArrayUtil.asCollection(selectionLayer
+                .getSelectedCellPositions());
+        Assert.assertEquals(selectionLayer.getColumnCount(), cells.size());
+        Assert.assertEquals(1, selectionLayer.getSelectedRowCount());
+    }
 
-		selectionProvider.setSelection(new StructuredSelection(
-				new RowDataFixture[] { eventListFixture.get(5), eventListFixture.get(7) }));
-		
-		assertEquals(4, selectionLayer.getFullySelectedRowPositions().length);
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void testColumnSelectionProcessing() {
-		final List selectedObjects = new ArrayList();
-		
-		//add a listener to see how many rows are selected
-		selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
-			
-			@SuppressWarnings("unchecked")
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				selectedObjects.addAll(selection.toList());
-			}
-		});
-		
-		//first execute column selection with default configuration to see that all rows get selected
-		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0, false, false));
-		
-		assertEquals(10, selectedObjects.size());
-		
-		//now clear set the flag for column selection processing to false and fire the event again
-		selectedObjects.clear();
-		selectionProvider.setProcessColumnSelection(false);
-		selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0, false, false));
-		assertEquals(0, selectedObjects.size());
-		
-		//now select a cell to verify that other selections are still processed
-		selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 1, false, false));
-		assertEquals(1, selectedObjects.size());
-	}
-	
-	private RowDataFixture getSelected() {
-		return (RowDataFixture) ((StructuredSelection) selectionProvider.getSelection()).iterator().next();
-	}
+    @Test
+    public void onlySelectRowEventsFired() {
+        nattable.addLayerListener(new ILayerListener() {
+            @Override
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof CellSelectionEvent) {
+                    fail("CellSelectionEvent fired for row selection");
+                }
+            }
+        });
+
+        nattable.doCommand(new SelectRowsCommand(selectionLayer, 0, 0, false,
+                false));
+        // the second call first clears the selection and then applies the new
+        // one
+        // clearing by default also fires a CellSelectionEvent with negative
+        // values
+        nattable.doCommand(new SelectRowsCommand(selectionLayer, 0, 3, false,
+                false));
+    }
+
+    @Test
+    public void setSingleSelectionViaProvider() {
+        selectionProvider.setSelection(new StructuredSelection(
+                new RowDataFixture[] { eventListFixture.get(1) }));
+
+        assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
+    }
+
+    @Test
+    public void setMultipleSelectionViaProvider() {
+        selectionProvider.setSelection(new StructuredSelection(
+                new RowDataFixture[] { eventListFixture.get(1),
+                        eventListFixture.get(3) }));
+
+        assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
+
+        selectionProvider.setSelection(new StructuredSelection(
+                new RowDataFixture[] { eventListFixture.get(5),
+                        eventListFixture.get(7) }));
+
+        assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
+    }
+
+    @Test
+    public void setMultipleSelectionViaProviderWithAdd() {
+        selectionProvider.setAddSelectionOnSet(true);
+
+        selectionProvider.setSelection(new StructuredSelection(
+                new RowDataFixture[] { eventListFixture.get(1),
+                        eventListFixture.get(3) }));
+
+        assertEquals(2, selectionLayer.getFullySelectedRowPositions().length);
+
+        selectionProvider.setSelection(new StructuredSelection(
+                new RowDataFixture[] { eventListFixture.get(5),
+                        eventListFixture.get(7) }));
+
+        assertEquals(4, selectionLayer.getFullySelectedRowPositions().length);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void testColumnSelectionProcessing() {
+        final List selectedObjects = new ArrayList();
+
+        // add a listener to see how many rows are selected
+        selectionProvider
+                .addSelectionChangedListener(new ISelectionChangedListener() {
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public void selectionChanged(SelectionChangedEvent event) {
+                        IStructuredSelection selection = (IStructuredSelection) event
+                                .getSelection();
+                        selectedObjects.addAll(selection.toList());
+                    }
+                });
+
+        // first execute column selection with default configuration to see that
+        // all rows get selected
+        selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0,
+                false, false));
+
+        assertEquals(10, selectedObjects.size());
+
+        // now clear set the flag for column selection processing to false and
+        // fire the event again
+        selectedObjects.clear();
+        selectionProvider.setProcessColumnSelection(false);
+        selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 1, 0,
+                false, false));
+        assertEquals(0, selectedObjects.size());
+
+        // now select a cell to verify that other selections are still processed
+        selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 1,
+                false, false));
+        assertEquals(1, selectedObjects.size());
+    }
+
+    private RowDataFixture getSelected() {
+        return (RowDataFixture) ((StructuredSelection) selectionProvider
+                .getSelection()).iterator().next();
+    }
 }

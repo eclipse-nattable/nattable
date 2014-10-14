@@ -37,107 +37,109 @@ import ca.odell.glazedlists.SortedList;
 
 /**
  * Factory for assembling GridLayer and the child layers - with support for
- *    GlazedLists and sorting
+ * GlazedLists and sorting
+ * 
  * @see {@linkplain http://publicobject.com/glazedlists/}
  */
 public class GlazedListsGridLayer<T> extends GridLayer {
 
-	private ColumnOverrideLabelAccumulator columnLabelAccumulator;
-	private DataLayer bodyDataLayer;
-	private DefaultBodyLayerStack bodyLayerStack;
-	private ListDataProvider<T> bodyDataProvider;
-	private GlazedListsColumnHeaderLayerStack<T> columnHeaderLayerStack;
+    private ColumnOverrideLabelAccumulator columnLabelAccumulator;
+    private DataLayer bodyDataLayer;
+    private DefaultBodyLayerStack bodyLayerStack;
+    private ListDataProvider<T> bodyDataProvider;
+    private GlazedListsColumnHeaderLayerStack<T> columnHeaderLayerStack;
 
-	public GlazedListsGridLayer(EventList<T> eventList,
-									String[] propertyNames,
-									Map<String, String> propertyToLabelMap,
-									IConfigRegistry configRegistry) {
-		this(eventList, propertyNames, propertyToLabelMap, configRegistry, true);
-	}
+    public GlazedListsGridLayer(EventList<T> eventList, String[] propertyNames,
+            Map<String, String> propertyToLabelMap,
+            IConfigRegistry configRegistry) {
+        this(eventList, propertyNames, propertyToLabelMap, configRegistry, true);
+    }
 
-	/**
-	 * The underlying {@link DataLayer} created is able to handle Events raised by GlazedLists
-	 * and fire corresponding NatTable events.
-	 *
-	 * The {@link SortHeaderLayer} triggers sorting on the the underlying SortedList when
-	 * a {@link SortColumnCommand} is received.
-	 */
-	public GlazedListsGridLayer(EventList<T> eventList,
-									String[] propertyNames,
-									Map<String, String> propertyToLabelMap,
-									IConfigRegistry configRegistry,
-									boolean useDefaultConfiguration) {
-		
-		this(eventList,
-				new ReflectiveColumnPropertyAccessor<T>(propertyNames),
-				new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap),
-				configRegistry,
-				useDefaultConfiguration);
-	}
-	
-	public GlazedListsGridLayer(EventList<T> eventList,
-			IColumnPropertyAccessor<T> columnPropertyAccessor,
-			IDataProvider columnHeaderDataProvider,
-			IConfigRegistry configRegistry,
-			boolean useDefaultConfiguration) {
-		
-		super(useDefaultConfiguration);
-		
-		// Body - with list event listener
-		//	NOTE: Remember to use the SortedList constructor with 'null' for the Comparator
-		SortedList<T> sortedList = new SortedList<T>(eventList, null);
-		bodyDataProvider = new ListDataProvider<T>(sortedList, columnPropertyAccessor);
+    /**
+     * The underlying {@link DataLayer} created is able to handle Events raised
+     * by GlazedLists and fire corresponding NatTable events.
+     *
+     * The {@link SortHeaderLayer} triggers sorting on the the underlying
+     * SortedList when a {@link SortColumnCommand} is received.
+     */
+    public GlazedListsGridLayer(EventList<T> eventList, String[] propertyNames,
+            Map<String, String> propertyToLabelMap,
+            IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
 
-		bodyDataLayer = new DataLayer(bodyDataProvider);
-		GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, eventList);
-		bodyLayerStack = new DefaultBodyLayerStack(glazedListsEventLayer);
+        this(eventList, new ReflectiveColumnPropertyAccessor<T>(propertyNames),
+                new DefaultColumnHeaderDataProvider(propertyNames,
+                        propertyToLabelMap), configRegistry,
+                useDefaultConfiguration);
+    }
 
-		// Column header
-		columnHeaderLayerStack = new GlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, 
-														sortedList, 
-														columnPropertyAccessor, 
-														configRegistry, 
-														bodyLayerStack);
+    public GlazedListsGridLayer(EventList<T> eventList,
+            IColumnPropertyAccessor<T> columnPropertyAccessor,
+            IDataProvider columnHeaderDataProvider,
+            IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
 
-		// Row header
-		DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-		DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-		RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        super(useDefaultConfiguration);
 
-		// Corner
-		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderLayerStack.getDataProvider(), rowHeaderDataProvider);
-		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayerStack);
+        // Body - with list event listener
+        // NOTE: Remember to use the SortedList constructor with 'null' for the
+        // Comparator
+        SortedList<T> sortedList = new SortedList<T>(eventList, null);
+        bodyDataProvider = new ListDataProvider<T>(sortedList,
+                columnPropertyAccessor);
 
-		// Grid
-		setBodyLayer(bodyLayerStack);
-		setColumnHeaderLayer(columnHeaderLayerStack);
-		setRowHeaderLayer(rowHeaderLayer);
-		setCornerLayer(cornerLayer);
-	}
-	
-	public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
-		return columnLabelAccumulator;
-	}
+        bodyDataLayer = new DataLayer(bodyDataProvider);
+        GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
+                bodyDataLayer, eventList);
+        bodyLayerStack = new DefaultBodyLayerStack(glazedListsEventLayer);
 
-	@Override
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-		super.setClientAreaProvider(clientAreaProvider);
-	}
+        // Column header
+        columnHeaderLayerStack = new GlazedListsColumnHeaderLayerStack<T>(
+                columnHeaderDataProvider, sortedList, columnPropertyAccessor,
+                configRegistry, bodyLayerStack);
 
-	public DataLayer getBodyDataLayer() {
-		return bodyDataLayer;
-	}
+        // Row header
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
+                bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
+                rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
+                bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
-	public ListDataProvider<T> getBodyDataProvider() {
-		return bodyDataProvider;
-	}
+        // Corner
+        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+                columnHeaderLayerStack.getDataProvider(), rowHeaderDataProvider);
+        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
+                rowHeaderLayer, columnHeaderLayerStack);
 
-	public GlazedListsColumnHeaderLayerStack<T> getColumnHeaderLayerStack() {
-		return columnHeaderLayerStack;
-	}
+        // Grid
+        setBodyLayer(bodyLayerStack);
+        setColumnHeaderLayer(columnHeaderLayerStack);
+        setRowHeaderLayer(rowHeaderLayer);
+        setCornerLayer(cornerLayer);
+    }
 
-	public DefaultBodyLayerStack getBodyLayerStack() {
-		return bodyLayerStack;
-	}
+    public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
+        return columnLabelAccumulator;
+    }
+
+    @Override
+    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
+        super.setClientAreaProvider(clientAreaProvider);
+    }
+
+    public DataLayer getBodyDataLayer() {
+        return bodyDataLayer;
+    }
+
+    public ListDataProvider<T> getBodyDataProvider() {
+        return bodyDataProvider;
+    }
+
+    public GlazedListsColumnHeaderLayerStack<T> getColumnHeaderLayerStack() {
+        return columnHeaderLayerStack;
+    }
+
+    public DefaultBodyLayerStack getBodyLayerStack() {
+        return bodyLayerStack;
+    }
 }

@@ -15,9 +15,9 @@ package org.eclipse.nebula.widgets.nattable.data.convert;
  */
 public class DefaultByteDisplayConverter extends NumericDisplayConverter {
 
-	@Override
-	protected Object convertToNumericValue(String value) {
-		return Byte.valueOf(value);
-	}
-	
+    @Override
+    protected Object convertToNumericValue(String value) {
+        return Byte.valueOf(value);
+    }
+
 }

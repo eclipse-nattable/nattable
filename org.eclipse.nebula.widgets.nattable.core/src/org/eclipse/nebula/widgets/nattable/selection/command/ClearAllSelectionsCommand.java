@@ -12,8 +12,8 @@ package org.eclipse.nebula.widgets.nattable.selection.command;
 
 public class ClearAllSelectionsCommand extends AbstractSelectionCommand {
 
-	public ClearAllSelectionsCommand() {
-		super(false, false);
-	}
+    public ClearAllSelectionsCommand() {
+        super(false, false);
+    }
 
 }

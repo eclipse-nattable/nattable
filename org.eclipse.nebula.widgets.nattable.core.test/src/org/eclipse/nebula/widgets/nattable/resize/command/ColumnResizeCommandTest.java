@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
@@ -21,36 +20,39 @@ import org.junit.Test;
 
 public class ColumnResizeCommandTest {
 
-	private DataLayer dataLayer;
-	
-	@Before
-	public void setup() {
-		dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
-	}
-	
-	@Test
-	public void testHandleColumnResizeCommand() {
-		Assert.assertEquals(100, dataLayer.getColumnWidthByPosition(3));
-		
-		int columnPosition = 3;
-		int newWidth = 150;
-		ColumnResizeCommand columnResizeCommand = new ColumnResizeCommand(dataLayer, columnPosition, newWidth);
-		
-		dataLayer.doCommand(columnResizeCommand);
-		
-		Assert.assertEquals(150, dataLayer.getColumnWidthByPosition(3));
-	}
-	
-	@Test
-	public void shouldResizeAllSelectedColumns() {		
-		int columnPositions[] = new int[]{3, 2, 4};
-		int newWidth = 250;
-		MultiColumnResizeCommand columnResizeCommand = new MultiColumnResizeCommand(dataLayer, columnPositions, newWidth);
-		
-		dataLayer.doCommand(columnResizeCommand);
-		
-		for (int columnPosition : columnPositions) {
-			Assert.assertEquals(newWidth, dataLayer.getColumnWidthByPosition(columnPosition));
-		}
-	}
+    private DataLayer dataLayer;
+
+    @Before
+    public void setup() {
+        dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
+    }
+
+    @Test
+    public void testHandleColumnResizeCommand() {
+        Assert.assertEquals(100, dataLayer.getColumnWidthByPosition(3));
+
+        int columnPosition = 3;
+        int newWidth = 150;
+        ColumnResizeCommand columnResizeCommand = new ColumnResizeCommand(
+                dataLayer, columnPosition, newWidth);
+
+        dataLayer.doCommand(columnResizeCommand);
+
+        Assert.assertEquals(150, dataLayer.getColumnWidthByPosition(3));
+    }
+
+    @Test
+    public void shouldResizeAllSelectedColumns() {
+        int columnPositions[] = new int[] { 3, 2, 4 };
+        int newWidth = 250;
+        MultiColumnResizeCommand columnResizeCommand = new MultiColumnResizeCommand(
+                dataLayer, columnPositions, newWidth);
+
+        dataLayer.doCommand(columnResizeCommand);
+
+        for (int columnPosition : columnPositions) {
+            Assert.assertEquals(newWidth,
+                    dataLayer.getColumnWidthByPosition(columnPosition));
+        }
+    }
 }
