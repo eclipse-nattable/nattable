@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -133,6 +133,10 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 			}
 		} else {
 			if (!(mouseDown && eventOnSameCell(initialMouseDownEvent, event))) {
+				//ensure the double click runnable is not executed and process single click immediately
+				this.skipProcessing = true;
+				executeClickAction(singleClickAction, this.initialMouseDownEvent);
+
 				//Bug 436770
 				//do not switch back to normal mode in case a click is processed
 				// No drag mode registered when mouseMove detected. Switch back to normal mode.
