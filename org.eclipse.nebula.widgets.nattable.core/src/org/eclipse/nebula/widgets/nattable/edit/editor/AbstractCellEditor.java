@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -132,9 +132,8 @@ public abstract class AbstractCellEditor implements ICellEditor {
     protected TraverseListener traverseListener = new InlineTraverseListener();
 
     @Override
-    public final Control activateCell(Composite parent,
-            Object originalCanonicalValue, EditModeEnum editMode,
-            ICellEditHandler editHandler, ILayerCell cell,
+    public final Control activateCell(Composite parent, Object originalCanonicalValue,
+            EditModeEnum editMode, ICellEditHandler editHandler, ILayerCell cell,
             IConfigRegistry configRegistry) {
 
         this.closed = false;
@@ -144,22 +143,27 @@ public abstract class AbstractCellEditor implements ICellEditor {
         this.layerCell = cell;
         this.configRegistry = configRegistry;
         this.labelStack = cell.getConfigLabels();
-        final List<String> configLabels = labelStack.getLabels();
+        final List<String> configLabels = this.labelStack.getLabels();
         this.displayConverter = configRegistry.getConfigAttribute(
-                CellConfigAttributes.DISPLAY_CONVERTER, DisplayMode.EDIT,
+                CellConfigAttributes.DISPLAY_CONVERTER,
+                DisplayMode.EDIT,
                 configLabels);
-        this.cellStyle = new CellStyleProxy(configRegistry, DisplayMode.EDIT,
-                configLabels);
+        this.cellStyle = new CellStyleProxy(configRegistry, DisplayMode.EDIT, configLabels);
         this.dataValidator = configRegistry.getConfigAttribute(
-                EditConfigAttributes.DATA_VALIDATOR, DisplayMode.EDIT,
+                EditConfigAttributes.DATA_VALIDATOR,
+                DisplayMode.EDIT,
                 configLabels);
 
-        this.conversionEditErrorHandler = EditConfigHelper.getEditErrorHandler(
-                configRegistry, EditConfigAttributes.CONVERSION_ERROR_HANDLER,
-                configLabels);
-        this.validationEditErrorHandler = EditConfigHelper.getEditErrorHandler(
-                configRegistry, EditConfigAttributes.VALIDATION_ERROR_HANDLER,
-                configLabels);
+        this.conversionEditErrorHandler =
+                EditConfigHelper.getEditErrorHandler(
+                        configRegistry,
+                        EditConfigAttributes.CONVERSION_ERROR_HANDLER,
+                        configLabels);
+        this.validationEditErrorHandler =
+                EditConfigHelper.getEditErrorHandler(
+                        configRegistry,
+                        EditConfigAttributes.VALIDATION_ERROR_HANDLER,
+                        configLabels);
 
         return activateCell(parent, originalCanonicalValue);
     }
@@ -170,7 +174,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
      * after initializing the activation values and before adding the default
      * listeners. In this method the underlying editor control should be created
      * and initialized, hiding default configuration from editor implementors.
-     * 
+     *
      * @param parent
      *            The parent Composite, needed for the creation of the editor
      *            control.
@@ -179,15 +183,14 @@ public abstract class AbstractCellEditor implements ICellEditor {
      * @return The SWT {@link Control} to be used for capturing the new cell
      *         value.
      */
-    protected abstract Control activateCell(Composite parent,
-            Object originalCanonicalValue);
+    protected abstract Control activateCell(Composite parent, Object originalCanonicalValue);
 
     /**
      * @see ILayerCell#getColumnIndex()
      */
     @Override
     public int getColumnIndex() {
-        return layerCell.getColumnIndex();
+        return this.layerCell.getColumnIndex();
     }
 
     /**
@@ -195,7 +198,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
      */
     @Override
     public int getRowIndex() {
-        return layerCell.getRowIndex();
+        return this.layerCell.getRowIndex();
     }
 
     /**
@@ -203,7 +206,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
      */
     @Override
     public int getColumnPosition() {
-        return layerCell.getColumnPosition();
+        return this.layerCell.getColumnPosition();
     }
 
     /**
@@ -211,14 +214,14 @@ public abstract class AbstractCellEditor implements ICellEditor {
      */
     @Override
     public int getRowPosition() {
-        return layerCell.getRowPosition();
+        return this.layerCell.getRowPosition();
     }
 
     /**
      * Converts the current value in this editor using the configured
      * {@link IDisplayConverter}. If there is no {@link IDisplayConverter}
      * registered for this editor, the value itself will be returned.
-     * 
+     *
      * @return The canonical value after converting the current value or the
      *         value itself if no {@link IDisplayConverter} is configured.
      * @throws RuntimeException
@@ -239,7 +242,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
      * {@link IDisplayConverter}. If there is no {@link IDisplayConverter}
      * registered for this editor, the value itself will be returned. Will use
      * the specified {@link IEditErrorHandler} for handling conversion errors.
-     * 
+     *
      * @param conversionErrorHandler
      *            The error handler that will be activated in case of conversion
      *            errors.
@@ -263,7 +266,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
      * {@link IDisplayConverter}. If there is no {@link IDisplayConverter}
      * registered for this editor, the value itself will be returned. Will use
      * the specified {@link IEditErrorHandler} for handling conversion errors.
-     * 
+     *
      * @param displayValue
      *            The display value that needs to be converted.
      * @param conversionErrorHandler
@@ -279,14 +282,12 @@ public abstract class AbstractCellEditor implements ICellEditor {
      *             failed.
      * @see IDisplayConverter
      */
-    protected Object handleConversion(Object displayValue,
-            IEditErrorHandler conversionErrorHandler) {
+    protected Object handleConversion(Object displayValue, IEditErrorHandler conversionErrorHandler) {
         Object canonicalValue;
         try {
             if (this.displayConverter != null) {
                 // always do the conversion to check for valid entered data
-                canonicalValue = this.displayConverter.displayToCanonicalValue(
-                        this.layerCell, this.configRegistry, displayValue);
+                canonicalValue = this.displayConverter.displayToCanonicalValue(this.layerCell, this.configRegistry, displayValue);
             } else {
                 canonicalValue = displayValue;
             }
@@ -309,8 +310,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
     public void setCanonicalValue(Object canonicalValue) {
         Object displayValue;
         if (this.displayConverter != null) {
-            displayValue = this.displayConverter.canonicalToDisplayValue(
-                    this.layerCell, this.configRegistry, canonicalValue);
+            displayValue = this.displayConverter.canonicalToDisplayValue(this.layerCell, this.configRegistry, canonicalValue);
         } else {
             displayValue = canonicalValue;
         }
@@ -319,25 +319,21 @@ public abstract class AbstractCellEditor implements ICellEditor {
 
     @Override
     public boolean validateCanonicalValue(Object canonicalValue) {
-        return validateCanonicalValue(canonicalValue,
-                this.validationEditErrorHandler);
+        return validateCanonicalValue(canonicalValue, this.validationEditErrorHandler);
     }
 
     @Override
-    public boolean validateCanonicalValue(Object canonicalValue,
-            IEditErrorHandler validationEditErrorHandler) {
+    public boolean validateCanonicalValue(Object canonicalValue, IEditErrorHandler validationEditErrorHandler) {
         // do the validation if a validator is registered
         if (this.dataValidator != null) {
             try {
-                boolean validationResult = this.dataValidator.validate(
-                        this.layerCell, this.configRegistry, canonicalValue);
+                boolean validationResult = this.dataValidator.validate(this.layerCell, this.configRegistry, canonicalValue);
 
                 // if the validation succeeded, remove error rendering if exists
                 if (validationResult) {
                     validationEditErrorHandler.removeError(this);
                 } else {
-                    throw new ValidationFailedException(
-                            Messages.getString("AbstractCellEditor.validationFailure")); //$NON-NLS-1$
+                    throw new ValidationFailedException(Messages.getString("AbstractCellEditor.validationFailure")); //$NON-NLS-1$
                 }
                 return validationResult;
             } catch (Exception e) {
@@ -361,25 +357,20 @@ public abstract class AbstractCellEditor implements ICellEditor {
     }
 
     @Override
-    public boolean commit(MoveDirectionEnum direction,
-            boolean closeAfterCommit, boolean skipValidation) {
+    public boolean commit(MoveDirectionEnum direction, boolean closeAfterCommit, boolean skipValidation) {
         if (this.editHandler != null && !this.closed) {
             try {
                 // always do the conversion
                 Object canonicalValue = getCanonicalValue();
-                if (skipValidation
-                        || (!skipValidation && validateCanonicalValue(canonicalValue))) {
-                    boolean committed = this.editHandler.commit(canonicalValue,
-                            direction);
+                if (skipValidation || (!skipValidation && validateCanonicalValue(canonicalValue))) {
+                    boolean committed = this.editHandler.commit(canonicalValue, direction);
 
                     if (committed && closeAfterCommit) {
                         close();
 
-                        if (direction != MoveDirectionEnum.NONE
-                                && openAdjacentEditor()) {
+                        if (direction != MoveDirectionEnum.NONE && openAdjacentEditor()) {
                             this.layerCell.getLayer().doCommand(
-                                    new EditSelectionCommand(this.parent,
-                                            this.configRegistry));
+                                    new EditSelectionCommand(this.parent, this.configRegistry, true));
                         }
                     }
 
@@ -387,22 +378,17 @@ public abstract class AbstractCellEditor implements ICellEditor {
                 }
             } catch (ConversionFailedException e) {
                 // do nothing as exceptions caused by conversion are handled
-                // already
-                // we just need this catch block for stopping the process if
-                // conversion
-                // failed with an exception
+                // already we just need this catch block for stopping the
+                // process if conversion failed with an exception
             } catch (ValidationFailedException e) {
                 // do nothing as exceptions caused by validation are handled
-                // already
-                // we just need this catch block for stopping the process if
-                // validation
-                // failed with an exception
+                // already we just need this catch block for stopping the
+                // process if validation failed with an exception
             } catch (Exception e) {
                 // if another exception occured that wasn't thrown by us, it
-                // should at least
-                // be logged without killing the whole application
-                log.error(
-                        "Error on updating cell value: " + e.getLocalizedMessage(), e); //$NON-NLS-1$
+                // should at least be logged without killing the whole
+                // application
+                log.error("Error on updating cell value: " + e.getLocalizedMessage(), e); //$NON-NLS-1$
             }
         }
         return false;
@@ -429,14 +415,12 @@ public abstract class AbstractCellEditor implements ICellEditor {
     }
 
     @Override
-    public boolean openInline(IConfigRegistry configRegistry,
-            List<String> configLabels) {
+    public boolean openInline(IConfigRegistry configRegistry, List<String> configLabels) {
         return EditConfigHelper.openInline(configRegistry, configLabels);
     }
 
     @Override
-    public boolean supportMultiEdit(IConfigRegistry configRegistry,
-            List<String> configLabels) {
+    public boolean supportMultiEdit(IConfigRegistry configRegistry, List<String> configLabels) {
         return EditConfigHelper.supportMultiEdit(configRegistry, configLabels);
     }
 
@@ -447,8 +431,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 
     @Override
     public boolean openAdjacentEditor() {
-        return EditConfigHelper.openAdjacentEditor(this.configRegistry,
-                this.labelStack.getLabels());
+        return EditConfigHelper.openAdjacentEditor(this.configRegistry, this.labelStack.getLabels());
     }
 
     @Override
@@ -457,10 +440,14 @@ public abstract class AbstractCellEditor implements ICellEditor {
     }
 
     @Override
+    public boolean activateOnTraversal(IConfigRegistry configRegistry, List<String> configLabels) {
+        return EditConfigHelper.activateEditorOnTraversal(configRegistry, configLabels);
+    }
+
+    @Override
     public void addEditorControlListeners() {
         Control editorControl = getEditorControl();
-        if (editorControl != null && !editorControl.isDisposed()
-                && editMode == EditModeEnum.INLINE) {
+        if (editorControl != null && !editorControl.isDisposed() && this.editMode == EditModeEnum.INLINE) {
             // only add the focus and traverse listeners for inline mode
             editorControl.addFocusListener(this.focusListener);
             editorControl.addTraverseListener(this.traverseListener);
@@ -491,7 +478,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
      * e.g. by the TickUpdateCellEditDialog as dependent on the selected update
      * type, the validator needs to be enabled or not.
      * </p>
-     * 
+     *
      * @param validator
      *            The {@link IDataValidator} to set.
      */
@@ -507,8 +494,8 @@ public abstract class AbstractCellEditor implements ICellEditor {
                     ((Control) e.widget).forceFocus();
                 }
             } else {
-                if (!parent.isDisposed())
-                    parent.forceFocus();
+                if (!AbstractCellEditor.this.parent.isDisposed())
+                    AbstractCellEditor.this.parent.forceFocus();
             }
         }
     }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,8 +27,7 @@ import org.eclipse.swt.widgets.Composite;
  * configured. Will call the {@link EditController} for activation of the edit
  * mode if these checks succeed.
  */
-public class EditSelectionCommandHandler extends
-        AbstractLayerCommandHandler<EditSelectionCommand> {
+public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<EditSelectionCommand> {
 
     private SelectionLayer selectionLayer;
 
@@ -49,47 +48,45 @@ public class EditSelectionCommandHandler extends
 
         if (EditUtils.allCellsEditable(this.selectionLayer, configRegistry)
                 && EditUtils.isEditorSame(this.selectionLayer, configRegistry)
-                && EditUtils.isConverterSame(this.selectionLayer,
-                        configRegistry)) {
+                && EditUtils.isConverterSame(this.selectionLayer, configRegistry)
+                && EditUtils.activateLastSelectedCellEditor(this.selectionLayer, configRegistry, command.isByTraversal())) {
+
             // check how many cells are selected
-            Collection<ILayerCell> selectedCells = selectionLayer
-                    .getSelectedCells();
+            Collection<ILayerCell> selectedCells = this.selectionLayer.getSelectedCells();
             if (selectedCells.size() == 1) {
                 // editing is triggered by key for a single cell
-                // we need to fire the InlineCellEditEvent here because we don't
-                // know the correct bounds
-                // of the cell to edit inline corresponding to the NatTable. On
-                // firing the event, a
-                // translation process is triggered, converting the information
-                // to the correct values
+                // we need to fire the InlineCellEditEvent here because we
+                // don't know the correct bounds of the cell to edit inline
+                // corresponding to the NatTable.
+                // On firing the event, a translation process is triggered,
+                // converting the information to the correct values
                 // needed for inline editing
                 ILayerCell cell = selectedCells.iterator().next();
-                this.selectionLayer.fireLayerEvent(new InlineCellEditEvent(
-                        this.selectionLayer, new PositionCoordinate(
-                                this.selectionLayer, cell.getColumnPosition(),
-                                cell.getRowPosition()), parent, configRegistry,
-                        (initialValue != null ? initialValue : cell
-                                .getDataValue())));
+                this.selectionLayer.fireLayerEvent(
+                        new InlineCellEditEvent(
+                                this.selectionLayer,
+                                new PositionCoordinate(this.selectionLayer, cell.getColumnPosition(), cell.getRowPosition()),
+                                parent,
+                                configRegistry,
+                                (initialValue != null ? initialValue : cell.getDataValue())));
             } else if (selectedCells.size() > 1) {
                 // determine the initial value
                 Object initialEditValue = initialValue;
                 if (initialValue == null
                         && EditUtils.isValueSame(this.selectionLayer)) {
                     ILayerCell cell = selectedCells.iterator().next();
-                    initialEditValue = this.selectionLayer
-                            .getDataValueByPosition(cell.getColumnPosition(),
-                                    cell.getRowPosition());
+                    initialEditValue = this.selectionLayer.getDataValueByPosition(
+                            cell.getColumnPosition(),
+                            cell.getRowPosition());
                 }
 
-                EditController.editCells(selectedCells, parent,
-                        initialEditValue, configRegistry);
+                EditController.editCells(selectedCells, parent, initialEditValue, configRegistry);
             }
         }
 
         // as commands by default are intended to be consumed by the handler,
-        // always
-        // return true, whether the activation of the edit mode was successfull
-        // or not
+        // always return true, whether the activation of the edit mode was
+        // successful or not
         return true;
     }
 

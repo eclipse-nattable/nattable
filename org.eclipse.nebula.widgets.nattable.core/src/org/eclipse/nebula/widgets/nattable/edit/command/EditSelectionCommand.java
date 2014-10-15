@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -42,6 +42,10 @@ public class EditSelectionCommand extends AbstractContextFreeCommand {
      * The parent Composite, needed for the creation of the editor control.
      */
     private final Composite parent;
+    /**
+     * Flag to determine whether this command was triggered by traversal or not.
+     */
+    private final boolean byTraversal;
 
     /**
      * @param parent
@@ -77,9 +81,21 @@ public class EditSelectionCommand extends AbstractContextFreeCommand {
      */
     public EditSelectionCommand(Composite parent,
             IConfigRegistry configRegistry, Character character) {
+        this(parent, configRegistry, character, false);
+    }
+
+    public EditSelectionCommand(Composite parent,
+            IConfigRegistry configRegistry, boolean byTraversal) {
+        this(parent, configRegistry, null, byTraversal);
+    }
+
+    public EditSelectionCommand(Composite parent,
+            IConfigRegistry configRegistry, Character character,
+            boolean byTraversal) {
         this.parent = parent;
         this.configRegistry = configRegistry;
         this.character = character;
+        this.byTraversal = byTraversal;
     }
 
     /**
@@ -87,7 +103,7 @@ public class EditSelectionCommand extends AbstractContextFreeCommand {
      *         current NatTable instance the command should be executed for.
      */
     public IConfigRegistry getConfigRegistry() {
-        return configRegistry;
+        return this.configRegistry;
     }
 
     /**
@@ -98,7 +114,7 @@ public class EditSelectionCommand extends AbstractContextFreeCommand {
      *         execution.
      */
     public Character getCharacter() {
-        return character;
+        return this.character;
     }
 
     /**
@@ -106,7 +122,16 @@ public class EditSelectionCommand extends AbstractContextFreeCommand {
      *         control.
      */
     public Composite getParent() {
-        return parent;
+        return this.parent;
+    }
+
+    /**
+     * @return <code>true</code> if this command was triggered by traversal,
+     *         <code>false</code> if it was triggered otherwise (e.g. pressing
+     *         F2)
+     */
+    public boolean isByTraversal() {
+        return this.byTraversal;
     }
 
 }

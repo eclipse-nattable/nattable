@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,7 +36,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 public class EditUtils {
 
     /**
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} to retrieve the current selection
      *            from.
@@ -45,16 +45,14 @@ public class EditUtils {
      *         no selection.
      */
     public static ILayerCell getLastSelectedCell(SelectionLayer selectionLayer) {
-        PositionCoordinate selectionAnchor = selectionLayer
-                .getSelectionAnchor();
-        return selectionLayer.getCellByPosition(selectionAnchor.columnPosition,
-                selectionAnchor.rowPosition);
+        PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
+        return selectionLayer.getCellByPosition(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
     }
 
     /**
-     * 
+     *
      * @param selectionLayer
-     *            The {@link SelectionLayer} to retrieve the current selection
+     *            The {@link SelectionLayer} to retrieve the current selectio
      *            from.
      * @param configRegistry
      *            The {@link IConfigRegistry} needed to access the configured
@@ -63,24 +61,38 @@ public class EditUtils {
      *         in the specified {@link SelectionLayer}. Will return
      *         <code>null</code> if there is no selection.
      */
-    public static ICellEditor getLastSelectedCellEditor(
-            SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
-        ILayerCell lastSelectedCell = EditUtils
-                .getLastSelectedCell(selectionLayer);
+    public static ICellEditor getLastSelectedCellEditor(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
+        ILayerCell lastSelectedCell = EditUtils.getLastSelectedCell(selectionLayer);
         if (lastSelectedCell != null) {
-            final List<String> lastSelectedCellLabelsArray = lastSelectedCell
-                    .getConfigLabels().getLabels();
+            final List<String> lastSelectedCellLabelsArray = lastSelectedCell.getConfigLabels().getLabels();
             return configRegistry.getConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT,
+                    EditConfigAttributes.CELL_EDITOR,
+                    DisplayMode.EDIT,
                     lastSelectedCellLabelsArray);
         }
         return null;
     }
 
+    // TODO javadoc
+    public static boolean activateLastSelectedCellEditor(SelectionLayer selectionLayer, IConfigRegistry configRegistry, boolean byTraversal) {
+        ILayerCell lastSelectedCell = EditUtils.getLastSelectedCell(selectionLayer);
+        if (lastSelectedCell != null) {
+            final List<String> lastSelectedCellLabelsArray = lastSelectedCell.getConfigLabels().getLabels();
+            ICellEditor editor = configRegistry.getConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR,
+                    DisplayMode.EDIT,
+                    lastSelectedCellLabelsArray);
+            if (editor != null) {
+                return (!byTraversal || editor.activateOnTraversal(configRegistry, lastSelectedCellLabelsArray));
+            }
+        }
+        return false;
+    }
+
     /**
      * For every cell that is selected it is checked whether the cell is
      * editable or not.
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} to retrieve the current selection.
      * @param configRegistry
@@ -89,14 +101,13 @@ public class EditUtils {
      * @return <code>true</code> if all selected cells are editable,
      *         <code>false</code> if at least one cell is not editable.
      */
-    public static boolean allCellsEditable(SelectionLayer selectionLayer,
-            IConfigRegistry configRegistry) {
-        Collection<ILayerCell> selectedCells = selectionLayer
-                .getSelectedCells();
+    public static boolean allCellsEditable(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
+        Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
         for (ILayerCell layerCell : selectedCells) {
             LabelStack labelStack = layerCell.getConfigLabels();
             IEditableRule editableRule = configRegistry.getConfigAttribute(
-                    EditConfigAttributes.CELL_EDITABLE_RULE, DisplayMode.EDIT,
+                    EditConfigAttributes.CELL_EDITABLE_RULE,
+                    DisplayMode.EDIT,
                     labelStack.getLabels());
 
             if (editableRule == null
@@ -112,7 +123,7 @@ public class EditUtils {
      * <p>
      * Note: The coordinates need to be related to the given SelectionLayer,
      * otherwise the wrong cell will be used for the check.
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} to check the cell coordinates
      *            against.
@@ -127,12 +138,12 @@ public class EditUtils {
      */
     public static boolean isCellEditable(SelectionLayer selectionLayer,
             IConfigRegistry configRegistry, PositionCoordinate cellCoords) {
-        ILayerCell layerCell = selectionLayer.getCellByPosition(
-                cellCoords.columnPosition, cellCoords.rowPosition);
+        ILayerCell layerCell = selectionLayer.getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition);
         LabelStack labelStack = layerCell.getConfigLabels();
 
         IEditableRule editableRule = configRegistry.getConfigAttribute(
-                EditConfigAttributes.CELL_EDITABLE_RULE, DisplayMode.EDIT,
+                EditConfigAttributes.CELL_EDITABLE_RULE,
+                DisplayMode.EDIT,
                 labelStack.getLabels());
         if (editableRule == null) {
             return false;
@@ -145,7 +156,7 @@ public class EditUtils {
      * Checks if all selected cells have the same {@link ICellEditor}
      * configured. This is needed for the multi edit feature to determine if a
      * multi edit is possible.
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} to retrieve the current selection.
      * @param configRegistry
@@ -155,23 +166,21 @@ public class EditUtils {
      *         {@link ICellEditor} configured, <code>false</code> if at least
      *         one cell has another {@link ICellEditor} configured.
      */
-    public static boolean isEditorSame(SelectionLayer selectionLayer,
-            IConfigRegistry configRegistry) {
-        PositionCoordinate[] selectedCells = selectionLayer
-                .getSelectedCellPositions();
+    public static boolean isEditorSame(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
+        PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
         ICellEditor lastSelectedCellEditor = null;
         for (PositionCoordinate selectedCell : selectedCells) {
             LabelStack labelStack = selectionLayer.getConfigLabelsByPosition(
                     selectedCell.columnPosition, selectedCell.rowPosition);
             ICellEditor cellEditor = configRegistry.getConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT,
+                    EditConfigAttributes.CELL_EDITOR,
+                    DisplayMode.EDIT,
                     labelStack.getLabels());
 
             // The first time we get here we need to remember the editor so
-            // further checks can
-            // use it. Getting the editor before by getLastSelectedCellEditor()
-            // might cause
-            // issues in case there is no active selection anchor
+            // further checks can use it.
+            // Getting the editor before by getLastSelectedCellEditor()
+            // might cause issues in case there is no active selection anchor
             if (lastSelectedCellEditor == null) {
                 lastSelectedCellEditor = cellEditor;
             }
@@ -191,7 +200,7 @@ public class EditUtils {
      * a Date. Both have a TextCellEditor configured, so if only the editor is
      * checked, the multi edit dialog would open. On committing a changed value
      * an error would occur because of wrong conversion.
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} to retrieve the current selection.
      * @param configRegistry
@@ -202,18 +211,17 @@ public class EditUtils {
      *         least one cell has another {@link IDisplayConverter} configured.
      */
     @SuppressWarnings("rawtypes")
-    public static boolean isConverterSame(SelectionLayer selectionLayer,
-            IConfigRegistry configRegistry) {
-        PositionCoordinate[] selectedCells = selectionLayer
-                .getSelectedCellPositions();
+    public static boolean isConverterSame(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
+        PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
         Set<Class> converterSet = new HashSet<Class>();
 
         for (PositionCoordinate selectedCell : selectedCells) {
             LabelStack labelStack = selectionLayer.getConfigLabelsByPosition(
                     selectedCell.columnPosition, selectedCell.rowPosition);
-            IDisplayConverter dataTypeConverter = configRegistry
-                    .getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER,
-                            DisplayMode.EDIT, labelStack.getLabels());
+            IDisplayConverter dataTypeConverter = configRegistry.getConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    DisplayMode.EDIT,
+                    labelStack.getLabels());
             if (dataTypeConverter != null) {
                 converterSet.add(dataTypeConverter.getClass());
             }
@@ -227,7 +235,7 @@ public class EditUtils {
      * Checks if all selected cells contain the same canonical value. This is
      * needed for multi edit to know if the editor should be initialised with
      * the value that is shared amongst all cells.
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} to retrieve the current selection.
      * @return <code>true</code> if all cells contain the same value,
@@ -235,8 +243,7 @@ public class EditUtils {
      */
     public static boolean isValueSame(SelectionLayer selectionLayer) {
         Object lastSelectedValue = null;
-        Collection<ILayerCell> selectedCells = selectionLayer
-                .getSelectedCells();
+        Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
         for (ILayerCell layerCell : selectedCells) {
             Object cellValue = layerCell.getDataValue();
             if (lastSelectedValue == null) {
@@ -267,8 +274,7 @@ public class EditUtils {
      */
     @Deprecated
     public static boolean commitAndCloseActiveEditor() {
-        ICellEditor activeCellEditor = ActiveCellEditorRegistry
-                .getActiveCellEditor();
+        ICellEditor activeCellEditor = ActiveCellEditorRegistry.getActiveCellEditor();
         if (activeCellEditor != null) {
             return activeCellEditor.commit(MoveDirectionEnum.NONE, true);
         }

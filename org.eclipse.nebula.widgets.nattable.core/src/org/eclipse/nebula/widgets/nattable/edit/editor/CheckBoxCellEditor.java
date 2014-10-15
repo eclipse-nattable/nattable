@@ -1,15 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
+import java.util.List;
+
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
@@ -91,7 +94,7 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
      * <code>false</code> and Strings than can be converted to Boolean directly.
      * Every other object will result in setting the editor value to
      * <code>false</code>.
-     * 
+     *
      * @param value
      *            The display value to set to the wrapped editor control.
      */
@@ -122,7 +125,7 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
         canvas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent e) {
-                checked = !checked;
+                CheckBoxCellEditor.this.checked = !CheckBoxCellEditor.this.checked;
                 canvas.redraw();
             }
         });
@@ -140,12 +143,19 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
     @Override
     public boolean activateAtAnyPosition() {
         // as the checkbox should only change its value if the icon that
-        // represents the checkbox is
-        // clicked, this method needs to return false so the IMouseEventMatcher
-        // can react on that.
+        // represents the checkbox is clicked, this method needs to return
+        // false so the IMouseEventMatcher can react on that.
         // Note that on return false here creates the need to add a special
         // matcher for this editor
         // to be activated.
+        return false;
+    }
+
+    @Override
+    public boolean activateOnTraversal(IConfigRegistry configRegistry, List<String> configLabels) {
+        // the checkbox editor is immediately changing the value and closing
+        // the again on activation. on tab traversal it is not intended that the
+        // value changes therefore this editor is not activated on traversal
         return false;
     }
 }

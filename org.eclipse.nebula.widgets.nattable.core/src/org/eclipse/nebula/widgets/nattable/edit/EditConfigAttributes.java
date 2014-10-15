@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 
 /**
- * The configuration attributes for configuring editing behaviour.
+ * The configuration attributes for configuring editing behavior.
  */
 public interface EditConfigAttributes {
 
@@ -83,27 +83,38 @@ public interface EditConfigAttributes {
     /**
      * The configuration attribute to specify if cell editors should be opened
      * inline or in a dialog. If this configuration is not set, the editors will
-     * open inline, unless the editors themself specify different behaviour.
-     * 
+     * open inline, unless the editors themself specify different behavior.
+     *
      * @see ICellEditor#openInline(IConfigRegistry configRegistry, List
      *      configLabels)
      */
     public static final ConfigAttribute<Boolean> OPEN_IN_DIALOG = new ConfigAttribute<Boolean>();
 
     /**
-     * The configuration attribute to specify behaviour after committing a value
+     * The configuration attribute to specify behavior after committing a value
      * inline. If the value for this attribute is set to <code>true</code> and
      * the cell selection is specified to move after a successful commit
      * operation, the editor for the selected cell will be activated
      * immediately. If there is no value for this configuration attribute
      * registered, the default value used is <code>false</code> as this is the
-     * default behaviour prior to this.
+     * default behavior prior to this.
      */
     public static final ConfigAttribute<Boolean> OPEN_ADJACENT_EDITOR = new ConfigAttribute<Boolean>();
 
     /**
+     * The configuration attribute to specify whether an editor should be
+     * activated if the activation was triggered by traversal, where traversal
+     * also includes selection and activation after commit. If there is no value
+     * for this configuration attribute registered, the default value used is
+     * <code>true</code> as this is the default behavior prior to this.
+     *
+     * @see EditConfigAttributes#OPEN_ADJACENT_EDITOR
+     */
+    public static final ConfigAttribute<Boolean> ACTIVATE_EDITOR_ON_TRAVERSAL = new ConfigAttribute<Boolean>();
+
+    /**
      * The configuration attribute to specify whether an editor supports multi
-     * edit behaviour or not. If this attribute is set to <code>true</code>, on
+     * edit behavior or not. If this attribute is set to <code>true</code>, on
      * selecting and pressing F2 on several cells that are editable, having the
      * same editor type and converter registered, a multi edit dialog will open.
      * You should consider setting the value for this attribute to
@@ -119,7 +130,7 @@ public interface EditConfigAttributes {
      * attribute allows to modify the appearance of edit dialogs. To see which
      * key-value-pairs are interpreted have a look at the constants configured
      * in {@link ICellEditDialog}.
-     * 
+     *
      * @see ICellEditDialog#DIALOG_SHELL_TITLE
      * @see ICellEditDialog#DIALOG_SHELL_ICON
      * @see ICellEditDialog#DIALOG_SHELL_LOCATION
