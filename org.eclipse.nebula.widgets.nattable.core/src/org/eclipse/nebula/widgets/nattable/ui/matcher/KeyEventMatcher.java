@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.swt.events.KeyEvent;
 
 public class KeyEventMatcher implements IKeyEventMatcher {
@@ -30,41 +28,45 @@ public class KeyEventMatcher implements IKeyEventMatcher {
     }
 
     public int getStateMask() {
-        return stateMask;
+        return this.stateMask;
     }
 
     public int getKeyCode() {
-        return keyCode;
+        return this.keyCode;
     }
 
+    @Override
     public boolean matches(KeyEvent event) {
-        boolean stateMaskMatches = stateMask == event.stateMask;
+        boolean stateMaskMatches = this.stateMask == event.stateMask;
 
-        boolean keyCodeMatches = keyCode == event.keyCode;
+        boolean keyCodeMatches = this.keyCode == event.keyCode;
 
         return stateMaskMatches && keyCodeMatches;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof KeyEventMatcher == false) {
-            return false;
-        }
-
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-
-        KeyEventMatcher rhs = (KeyEventMatcher) obj;
-
-        return new EqualsBuilder().append(stateMask, rhs.stateMask)
-                .append(keyCode, rhs.keyCode).isEquals();
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        KeyEventMatcher other = (KeyEventMatcher) obj;
+        if (this.keyCode != other.keyCode)
+            return false;
+        if (this.stateMask != other.stateMask)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(71, 7).append(stateMask).append(keyCode)
-                .toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.keyCode;
+        result = prime * result + this.stateMask;
+        return result;
     }
 
 }

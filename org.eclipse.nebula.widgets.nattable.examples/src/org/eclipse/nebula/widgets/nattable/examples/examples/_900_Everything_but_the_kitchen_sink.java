@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.blink.BlinkConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.blink.BlinkingCellResolver;
@@ -105,6 +104,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
     private NatTable natTable;
     private ScheduledExecutorService scheduledThreadPool;
 
+    @Override
     public Control createExampleControl(Composite parent) {
         final String[] propertyNames = RowDataListFixture.getPropertyNames();
         final Map<String, String> propertyToLabelMap = RowDataListFixture
@@ -116,10 +116,10 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         // Body
 
         LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<BlinkingRowDataFixture>();
-        baseEventList = GlazedLists.threadSafeList(GlazedLists
+        this.baseEventList = GlazedLists.threadSafeList(GlazedLists
                 .eventList(rowData));
         ObservableElementList<BlinkingRowDataFixture> observableElementList = new ObservableElementList<BlinkingRowDataFixture>(
-                baseEventList,
+                this.baseEventList,
                 GlazedLists.beanConnector(BlinkingRowDataFixture.class));
         FilterList<BlinkingRowDataFixture> filterList = new FilterList<BlinkingRowDataFixture>(
                 observableElementList);
@@ -130,8 +130,8 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
                 sortedList, BlinkingRowDataFixture.rowIdAccessor,
                 propertyNames, configRegistry, columnGroupModel);
 
-        bodyDataProvider = bodyLayer.getBodyDataProvider();
-        propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
+        this.bodyDataProvider = bodyLayer.getBodyDataProvider();
+        this.propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
 
         // blinking
         registerBlinkingConfigCells(configRegistry);
@@ -147,7 +147,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
 
         // Row header
         final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(
-                bodyDataProvider);
+                this.bodyDataProvider);
         DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
                 rowHeaderDataProvider);
         rowHeaderDataLayer.setDefaultColumnWidth(50);
@@ -166,13 +166,13 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer,
                 rowHeaderLayer, cornerLayer);
 
-        natTable = new NatTable(parent, gridLayer, false);
+        this.natTable = new NatTable(parent, gridLayer, false);
 
-        natTable.setConfigRegistry(configRegistry);
+        this.natTable.setConfigRegistry(configRegistry);
 
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         // Popup menu
-        natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
+        this.natTable.addConfiguration(new HeaderMenuConfiguration(this.natTable) {
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
@@ -180,17 +180,17 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
             }
         });
 
-        natTable.addConfiguration(new SingleClickSortConfiguration());
+        this.natTable.addConfiguration(new SingleClickSortConfiguration());
 
         // Editing
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
                 bodyLayer.getBodyDataLayer());
         bodyLayer.getBodyDataLayer().setConfigLabelAccumulator(
                 columnLabelAccumulator);
-        natTable.addConfiguration(EditableGridExample
+        this.natTable.addConfiguration(EditableGridExample
                 .editableGridConfiguration(columnLabelAccumulator,
-                        bodyDataProvider));
-        natTable.addConfiguration(new FilterRowGridExample.FilterRowCustomConfiguration());
+                        this.bodyDataProvider));
+        this.natTable.addConfiguration(new FilterRowGridExample.FilterRowCustomConfiguration());
 
         // Column chooser
         DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
@@ -202,11 +202,11 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
         // Summary row configuration
-        natTable.addConfiguration(new MySummaryRow<BlinkingRowDataFixture>(
-                bodyDataProvider));
-        natTable.configure();
+        this.natTable.addConfiguration(new MySummaryRow<BlinkingRowDataFixture>(
+                this.bodyDataProvider));
+        this.natTable.configure();
 
-        return natTable;
+        return this.natTable;
     }
 
     private void setUpColumnGroups(
@@ -222,22 +222,23 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
     @Override
     public void onStart() {
         Display.getDefault().asyncExec(new Runnable() {
+            @Override
             public void run() {
-                scheduledThreadPool = Executors.newScheduledThreadPool(1);
+                _900_Everything_but_the_kitchen_sink.this.scheduledThreadPool = Executors.newScheduledThreadPool(1);
                 System.out.println("Starting data load.");
-                scheduledThreadPool.schedule(new DataLoader(
-                        propertyChangeListener, baseEventList), 100L,
+                _900_Everything_but_the_kitchen_sink.this.scheduledThreadPool.schedule(new DataLoader(
+                        _900_Everything_but_the_kitchen_sink.this.propertyChangeListener, _900_Everything_but_the_kitchen_sink.this.baseEventList), 100L,
                         TimeUnit.MILLISECONDS);
-                scheduledThreadPool.scheduleAtFixedRate(new DataUpdater(
-                        bodyDataProvider), 100L, 5000L, TimeUnit.MILLISECONDS);
+                _900_Everything_but_the_kitchen_sink.this.scheduledThreadPool.scheduleAtFixedRate(new DataUpdater(
+                        _900_Everything_but_the_kitchen_sink.this.bodyDataProvider), 100L, 5000L, TimeUnit.MILLISECONDS);
             }
         });
     }
 
     @Override
     public void onStop() {
-        if (isNotNull(scheduledThreadPool)) {
-            scheduledThreadPool.shutdownNow();
+        if (isNotNull(this.scheduledThreadPool)) {
+            this.scheduledThreadPool.shutdownNow();
         }
     }
 
@@ -264,12 +265,13 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         return new BlinkingCellResolver() {
             private final String[] configLabels = new String[1];
 
+            @Override
             public String[] resolve(Object oldValue, Object newValue) {
                 double old = ((Double) oldValue).doubleValue();
                 double latest = ((Double) newValue).doubleValue();
-                configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
+                this.configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
                         : BLINK_DOWN_CONFIG_LABEL);
-                return configLabels;
+                return this.configLabels;
             }
         };
     }
@@ -299,42 +301,46 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
             this.list = baseEventList;
         }
 
+        @Override
         public void run() {
             try {
                 // Display wait dialog
                 Display.getDefault().asyncExec(new Runnable() {
+                    @Override
                     public void run() {
                         final Image icon = new Image(Display.getDefault(),
                                 getClass().getResourceAsStream("waiting.gif"));
-                        dialog = new WaitDialog(natTable.getShell(), SWT.NONE,
-                                waitMsg, icon);
-                        dialog.setBlockOnOpen(true);
-                        dialog.open();
+                        DataLoader.this.dialog = new WaitDialog(_900_Everything_but_the_kitchen_sink.this.natTable.getShell(), SWT.NONE,
+                                DataLoader.this.waitMsg, icon);
+                        DataLoader.this.dialog.setBlockOnOpen(true);
+                        DataLoader.this.dialog.open();
                     }
                 });
 
                 // Load data
-                while (list.size() < DATASET_SIZE) {
+                while (this.list.size() < DATASET_SIZE) {
                     // Add to buffer
                     List<BlinkingRowDataFixture> buffer = new ArrayList<BlinkingRowDataFixture>();
                     for (int i = 0; i < 100; i++) {
                         buffer.addAll(BlinkingRowDataFixture
-                                .getList(changeListener));
+                                .getList(this.changeListener));
                     }
                     // Load as a batch
-                    list.addAll(buffer);
+                    this.list.addAll(buffer);
                     // Update wait dialog
                     Display.getDefault().syncExec(new Runnable() {
+                        @Override
                         public void run() {
-                            dialog.setMsg(waitMsg + list.size());
+                            DataLoader.this.dialog.setMsg(DataLoader.this.waitMsg + DataLoader.this.list.size());
                         }
                     });
                 }
 
                 // Close wait dialog
                 Display.getDefault().asyncExec(new Runnable() {
+                    @Override
                     public void run() {
-                        dialog.close();
+                        DataLoader.this.dialog.close();
                     }
                 });
             } catch (Exception e) {
@@ -345,8 +351,10 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
 
     public Runnable runWithBusyIndicator(final Runnable runnable) {
         return new Runnable() {
+            @Override
             public void run() {
                 Display.getDefault().asyncExec(new Runnable() {
+                    @Override
                     public void run() {
                         BusyIndicator.showWhile(Display.getDefault(), runnable);
                     }
@@ -366,15 +374,17 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
             this.dataProvider = dataProvider;
         }
 
+        @Override
         public void run() {
             Display.getDefault().asyncExec(new Runnable() {
+                @Override
                 public void run() {
                     for (int i = 0; i < 5; i++) {
-                        int index = RandomUtils.nextInt(13);
-                        int nextAsk = random.nextInt(1000);
+                        int index = _900_Everything_but_the_kitchen_sink.this.random.nextInt(13);
+                        int nextAsk = _900_Everything_but_the_kitchen_sink.this.random.nextInt(1000);
 
-                        if (dataProvider.getRowCount() > index) {
-                            BlinkingRowDataFixture rowObject = dataProvider
+                        if (DataUpdater.this.dataProvider.getRowCount() > index) {
+                            BlinkingRowDataFixture rowObject = DataUpdater.this.dataProvider
                                     .getRowObject(index);
                             // System.out.println("Ask: "+rowObject.getAsk_price()+" --> "+nextAsk);
                             rowObject.setAsk_price(nextAsk);
@@ -387,7 +397,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
     }
 
     class MySummaryRow<T> extends DefaultSummaryRowConfiguration implements
-            IConfiguration {
+    IConfiguration {
 
         private IRowDataProvider<T> dataProvider;
 
@@ -400,10 +410,10 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
             // Add summaries to ask price column
             configRegistry.registerConfigAttribute(
                     SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                    new SummationSummaryProvider(dataProvider),
+                    new SummationSummaryProvider(this.dataProvider),
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX
-                            + getColumnIndexOfProperty(ASK_PRICE_PROP_NAME));
+                    + getColumnIndexOfProperty(ASK_PRICE_PROP_NAME));
 
             // No Summary by default
             configRegistry.registerConfigAttribute(

@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
@@ -41,7 +39,7 @@ public class BodyCellEditorMouseEventMatcher implements IMouseEventMatcher {
     public boolean matches(NatTable natTable, MouseEvent event,
             LabelStack regionLabels) {
         if (regionLabels != null && regionLabels.hasLabel(GridRegion.BODY)
-                && event.button == button) {
+                && event.button == this.button) {
             ILayerCell cell = natTable.getCellByPosition(
                     natTable.getColumnPositionByX(event.x),
                     natTable.getRowPositionByY(event.y));
@@ -55,7 +53,7 @@ public class BodyCellEditorMouseEventMatcher implements IMouseEventMatcher {
                         .getConfigAttribute(EditConfigAttributes.CELL_EDITOR,
                                 DisplayMode.EDIT,
                                 cell.getConfigLabels().getLabels());
-                if (cellEditorClass.isInstance(cellEditor)) {
+                if (this.cellEditorClass.isInstance(cellEditor)) {
                     return true;
                 }
             }
@@ -65,23 +63,27 @@ public class BodyCellEditorMouseEventMatcher implements IMouseEventMatcher {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof BodyCellEditorMouseEventMatcher == false) {
-            return false;
-        }
-
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-
-        BodyCellEditorMouseEventMatcher rhs = (BodyCellEditorMouseEventMatcher) obj;
-
-        return new EqualsBuilder().append(cellEditorClass, rhs.cellEditorClass)
-                .isEquals();
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BodyCellEditorMouseEventMatcher other = (BodyCellEditorMouseEventMatcher) obj;
+        if (this.cellEditorClass == null) {
+            if (other.cellEditorClass != null)
+                return false;
+        } else if (this.cellEditorClass != other.cellEditorClass)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(43, 21).append(cellEditorClass).toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.cellEditorClass == null) ? 0 : this.cellEditorClass.hashCode());
+        return result;
     }
 
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -16,8 +16,6 @@ import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.getRandomDate
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
@@ -25,9 +23,9 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
  * Duplicated from the {@link RowDataListFixture} as the overriden hashcode and
  * equals in the RowDataFixture doesn't play nicely with hashmaps used in the
  * RowGroupModel.
- * 
+ *
  * @author stefan bolton
- * 
+ *
  */
 public class RowGroupDataFixture {
 
@@ -72,6 +70,7 @@ public class RowGroupDataFixture {
     public double field40;
 
     public static final IRowIdAccessor<RowGroupDataFixture> rowIdAccessor = new IRowIdAccessor<RowGroupDataFixture>() {
+        @Override
         public Serializable getRowId(RowGroupDataFixture rowObject) {
             return rowObject.getSecurity_description();
         }
@@ -158,12 +157,25 @@ public class RowGroupDataFixture {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this,
-                ToStringStyle.SIMPLE_STYLE);
+        return "RowGroupDataFixture [security_id=" + this.security_id + ", security_description=" + this.security_description + ", rating=" + this.rating
+                + ", issue_date="
+                + this.issue_date + ", pricing_type=" + this.pricing_type + ", bid_price=" + this.bid_price + ", ask_price=" + this.ask_price + ", lot_size="
+                + this.lot_size
+                + ", publish_flag=" + this.publish_flag + ", high52Week=" + this.high52Week + ", low52Week=" + this.low52Week + ", eps=" + this.eps
+                + ", volume=" + this.volume
+                + ", marketCap=" + this.marketCap + ", institutionOwned=" + this.institutionOwned + ", field20=" + this.field20 + ", field21=" + this.field21
+                + ", field22="
+                + this.field22 + ", field23=" + this.field23 + ", field24=" + this.field24 + ", field25=" + this.field25 + ", field26=" + this.field26
+                + ", field27=" + this.field27
+                + ", field28=" + this.field28 + ", field29=" + this.field29 + ", field30=" + this.field30 + ", field31=" + this.field31 + ", field32="
+                + this.field32 + ", field33="
+                + this.field33 + ", field34=" + this.field34 + ", field35=" + this.field35 + ", field36=" + this.field36 + ", field37=" + this.field37
+                + ", field38=" + this.field38
+                + ", field39=" + this.field39 + ", field40=" + this.field40 + "]";
     }
 
     public String getSecurity_id() {
-        return security_id;
+        return this.security_id;
     }
 
     public void setSecurity_id(String security_id) {
@@ -171,7 +183,7 @@ public class RowGroupDataFixture {
     }
 
     public String getSecurity_description() {
-        return security_description;
+        return this.security_description;
     }
 
     public void setSecurity_description(String security_description) {
@@ -179,7 +191,7 @@ public class RowGroupDataFixture {
     }
 
     public String getRating() {
-        return rating;
+        return this.rating;
     }
 
     public void setRating(String rating) {
@@ -187,7 +199,7 @@ public class RowGroupDataFixture {
     }
 
     public Date getIssue_date() {
-        return issue_date;
+        return this.issue_date;
     }
 
     public void setIssue_date(Date issue_date) {
@@ -195,7 +207,7 @@ public class RowGroupDataFixture {
     }
 
     public PricingTypeBean getPricing_type() {
-        return pricing_type;
+        return this.pricing_type;
     }
 
     public void setPricing_type(PricingTypeBean pricing_type) {
@@ -203,7 +215,7 @@ public class RowGroupDataFixture {
     }
 
     public double getBid_price() {
-        return bid_price;
+        return this.bid_price;
     }
 
     public void setBid_price(double bid_price) {
@@ -211,7 +223,7 @@ public class RowGroupDataFixture {
     }
 
     public double getAsk_price() {
-        return ask_price;
+        return this.ask_price;
     }
 
     public void setAsk_price(double ask_price) {
@@ -219,7 +231,7 @@ public class RowGroupDataFixture {
     }
 
     public int getLot_size() {
-        return lot_size;
+        return this.lot_size;
     }
 
     public void setLot_size(int lot_size) {
@@ -227,7 +239,7 @@ public class RowGroupDataFixture {
     }
 
     public boolean isPublish_flag() {
-        return publish_flag;
+        return this.publish_flag;
     }
 
     public void setPublish_flag(boolean publish_flag) {
@@ -235,11 +247,11 @@ public class RowGroupDataFixture {
     }
 
     public double getSpread() {
-        return ask_price - bid_price;
+        return this.ask_price - this.bid_price;
     }
 
     public double getHigh52Week() {
-        return high52Week;
+        return this.high52Week;
     }
 
     public void setHigh52Week(double high52Week) {
@@ -247,7 +259,7 @@ public class RowGroupDataFixture {
     }
 
     public double getLow52Week() {
-        return low52Week;
+        return this.low52Week;
     }
 
     public void setLow52Week(double low52Week) {
@@ -255,7 +267,7 @@ public class RowGroupDataFixture {
     }
 
     public double getEps() {
-        return eps;
+        return this.eps;
     }
 
     public void setEps(double eps) {
@@ -263,7 +275,7 @@ public class RowGroupDataFixture {
     }
 
     public double getVolume() {
-        return volume;
+        return this.volume;
     }
 
     public void setVolume(double volume) {
@@ -271,7 +283,7 @@ public class RowGroupDataFixture {
     }
 
     public double getMarketCap() {
-        return marketCap;
+        return this.marketCap;
     }
 
     public void setMarketCap(double marketCap) {
@@ -279,7 +291,7 @@ public class RowGroupDataFixture {
     }
 
     public double getInstitutionOwned() {
-        return institutionOwned;
+        return this.institutionOwned;
     }
 
     public void setInstitutionOwned(double institutionOwned) {
@@ -287,7 +299,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField20() {
-        return field20;
+        return this.field20;
     }
 
     public void setField20(String field20) {
@@ -295,7 +307,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField21() {
-        return field21;
+        return this.field21;
     }
 
     public void setField21(String field21) {
@@ -303,7 +315,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField22() {
-        return field22;
+        return this.field22;
     }
 
     public void setField22(String field22) {
@@ -311,7 +323,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField23() {
-        return field23;
+        return this.field23;
     }
 
     public void setField23(String field23) {
@@ -319,7 +331,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField24() {
-        return field24;
+        return this.field24;
     }
 
     public void setField24(String field24) {
@@ -327,7 +339,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField25() {
-        return field25;
+        return this.field25;
     }
 
     public void setField25(String field25) {
@@ -335,7 +347,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField26() {
-        return field26;
+        return this.field26;
     }
 
     public void setField26(String field26) {
@@ -343,7 +355,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField27() {
-        return field27;
+        return this.field27;
     }
 
     public void setField27(String field27) {
@@ -351,7 +363,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField28() {
-        return field28;
+        return this.field28;
     }
 
     public void setField28(String field28) {
@@ -359,7 +371,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField29() {
-        return field29;
+        return this.field29;
     }
 
     public void setField29(String field29) {
@@ -367,7 +379,7 @@ public class RowGroupDataFixture {
     }
 
     public String getField30() {
-        return field30;
+        return this.field30;
     }
 
     public void setField30(String field30) {
@@ -375,7 +387,7 @@ public class RowGroupDataFixture {
     }
 
     public boolean isField31() {
-        return field31;
+        return this.field31;
     }
 
     public void setField31(boolean field31) {
@@ -383,7 +395,7 @@ public class RowGroupDataFixture {
     }
 
     public boolean isField32() {
-        return field32;
+        return this.field32;
     }
 
     public void setField32(boolean field32) {
@@ -391,7 +403,7 @@ public class RowGroupDataFixture {
     }
 
     public Date getField33() {
-        return field33;
+        return this.field33;
     }
 
     public void setField33(Date field33) {
@@ -399,7 +411,7 @@ public class RowGroupDataFixture {
     }
 
     public Date getField34() {
-        return field34;
+        return this.field34;
     }
 
     public void setField34(Date field34) {
@@ -407,7 +419,7 @@ public class RowGroupDataFixture {
     }
 
     public double getField35() {
-        return field35;
+        return this.field35;
     }
 
     public void setField35(double field35) {
@@ -415,7 +427,7 @@ public class RowGroupDataFixture {
     }
 
     public double getField36() {
-        return field36;
+        return this.field36;
     }
 
     public void setField36(double field36) {
@@ -423,7 +435,7 @@ public class RowGroupDataFixture {
     }
 
     public double getField37() {
-        return field37;
+        return this.field37;
     }
 
     public void setField37(double field37) {
@@ -431,7 +443,7 @@ public class RowGroupDataFixture {
     }
 
     public double getField38() {
-        return field38;
+        return this.field38;
     }
 
     public void setField38(double field38) {
@@ -439,7 +451,7 @@ public class RowGroupDataFixture {
     }
 
     public double getField39() {
-        return field39;
+        return this.field39;
     }
 
     public void setField39(double field39) {
@@ -447,7 +459,7 @@ public class RowGroupDataFixture {
     }
 
     public double getField40() {
-        return field40;
+        return this.field40;
     }
 
     public void setField40(double field40) {

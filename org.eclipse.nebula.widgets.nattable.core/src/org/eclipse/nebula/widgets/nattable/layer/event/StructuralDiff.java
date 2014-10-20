@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.event;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 
 public class StructuralDiff {
@@ -34,47 +32,56 @@ public class StructuralDiff {
     }
 
     public DiffTypeEnum getDiffType() {
-        return diffType;
+        return this.diffType;
     }
 
     public Range getBeforePositionRange() {
-        return beforePositionRange;
+        return this.beforePositionRange;
     }
 
     public Range getAfterPositionRange() {
-        return afterPositionRange;
+        return this.afterPositionRange;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
+        if (this == obj)
             return true;
-        }
-
-        if ((obj instanceof StructuralDiff) == false) {
+        if (obj == null)
             return false;
-        }
-
-        StructuralDiff that = (StructuralDiff) obj;
-
-        return new EqualsBuilder().append(this.diffType, that.diffType)
-                .append(this.beforePositionRange, that.beforePositionRange)
-                .append(this.afterPositionRange, that.afterPositionRange)
-                .isEquals();
+        if (getClass() != obj.getClass())
+            return false;
+        StructuralDiff other = (StructuralDiff) obj;
+        if (this.afterPositionRange == null) {
+            if (other.afterPositionRange != null)
+                return false;
+        } else if (!this.afterPositionRange.equals(other.afterPositionRange))
+            return false;
+        if (this.beforePositionRange == null) {
+            if (other.beforePositionRange != null)
+                return false;
+        } else if (!this.beforePositionRange.equals(other.beforePositionRange))
+            return false;
+        if (this.diffType != other.diffType)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(57, 55).append(diffType)
-                .append(beforePositionRange).append(afterPositionRange)
-                .toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.afterPositionRange == null) ? 0 : this.afterPositionRange.hashCode());
+        result = prime * result + ((this.beforePositionRange == null) ? 0 : this.beforePositionRange.hashCode());
+        result = prime * result + ((this.diffType == null) ? 0 : this.diffType.hashCode());
+        return result;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " " + diffType //$NON-NLS-1$
-                + " before: " + beforePositionRange //$NON-NLS-1$
-                + " after: " + afterPositionRange; //$NON-NLS-1$
+        return getClass().getSimpleName() + " " + this.diffType //$NON-NLS-1$
+                + " before: " + this.beforePositionRange //$NON-NLS-1$
+                + " after: " + this.afterPositionRange; //$NON-NLS-1$
     }
 
 }

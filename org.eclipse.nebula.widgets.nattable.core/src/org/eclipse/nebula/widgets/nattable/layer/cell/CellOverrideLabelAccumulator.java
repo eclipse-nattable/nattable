@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -13,16 +13,14 @@ package org.eclipse.nebula.widgets.nattable.layer.cell;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 /*
  * Allows application of config labels to cell(s) containing a specified data value.
  * Internally the class generated a 'key' using a combination of the cell value and its column position.
- * The registered labels are tracked using this key. 
- * 
+ * The registered labels are tracked using this key.
+ *
  * Note: First Map's key is displayMode, inner Map's key is fieldName, the inner Map's value is cellValue
  */
 public class CellOverrideLabelAccumulator<T> extends AbstractOverrider {
@@ -32,10 +30,11 @@ public class CellOverrideLabelAccumulator<T> extends AbstractOverrider {
         this.dataProvider = dataProvider;
     }
 
+    @Override
     public void accumulateConfigLabels(LabelStack configLabels,
             int columnPosition, int rowPosition) {
         List<String> cellLabels = getConfigLabels(
-                dataProvider.getDataValue(columnPosition, rowPosition),
+                this.dataProvider.getDataValue(columnPosition, rowPosition),
                 columnPosition);
         if (cellLabels == null) {
             return;
@@ -52,7 +51,7 @@ public class CellOverrideLabelAccumulator<T> extends AbstractOverrider {
 
     /**
      * Register a config label on the cell
-     * 
+     *
      * @param cellValue
      *            data value of the cell. This is the backing data value, not
      *            the display value.
@@ -82,24 +81,33 @@ class CellValueOverrideKey implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CellValueOverrideKey == false) {
-            return false;
-        }
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        CellValueOverrideKey rhs = ((CellValueOverrideKey) obj);
-        return new EqualsBuilder().append(cellValue, rhs.cellValue)
-                .append(col, rhs.col).isEquals();
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CellValueOverrideKey other = (CellValueOverrideKey) obj;
+        if (this.cellValue == null) {
+            if (other.cellValue != null)
+                return false;
+        } else if (!this.cellValue.equals(other.cellValue))
+            return false;
+        if (this.col != other.col)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(1, 3).append(cellValue).append(col)
-                .toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.cellValue == null) ? 0 : this.cellValue.hashCode());
+        result = prime * result + this.col;
+        return result;
     }
 
     public String getComposite() {
-        return cellValue + String.valueOf(col);
+        return this.cellValue + String.valueOf(this.col);
     }
 }

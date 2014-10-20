@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.poi;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 
@@ -37,30 +35,55 @@ public class ExcelCellStyleAttributes {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-
-        if (obj instanceof ExcelCellStyleAttributes == false) {
-            return false;
-        }
-
-        ExcelCellStyleAttributes that = (ExcelCellStyleAttributes) obj;
-
-        return new EqualsBuilder().append(this.fg, that.fg)
-                .append(this.bg, that.bg).append(this.fontData, that.fontData)
-                .append(this.dataFormat, that.dataFormat)
-                .append(this.hAlign, that.hAlign)
-                .append(this.vAlign, that.vAlign)
-                .append(this.vertical, that.vertical).isEquals();
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.bg == null) ? 0 : this.bg.hashCode());
+        result = prime * result + ((this.dataFormat == null) ? 0 : this.dataFormat.hashCode());
+        result = prime * result + ((this.fg == null) ? 0 : this.fg.hashCode());
+        result = prime * result + ((this.fontData == null) ? 0 : this.fontData.hashCode());
+        result = prime * result + this.hAlign;
+        result = prime * result + this.vAlign;
+        result = prime * result + (this.vertical ? 1231 : 1237);
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(59, 187).append(fg).append(bg)
-                .append(fontData).append(dataFormat).append(hAlign)
-                .append(vAlign).append(vertical).toHashCode();
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ExcelCellStyleAttributes other = (ExcelCellStyleAttributes) obj;
+        if (this.bg == null) {
+            if (other.bg != null)
+                return false;
+        } else if (!this.bg.equals(other.bg))
+            return false;
+        if (this.dataFormat == null) {
+            if (other.dataFormat != null)
+                return false;
+        } else if (!this.dataFormat.equals(other.dataFormat))
+            return false;
+        if (this.fg == null) {
+            if (other.fg != null)
+                return false;
+        } else if (!this.fg.equals(other.fg))
+            return false;
+        if (this.fontData == null) {
+            if (other.fontData != null)
+                return false;
+        } else if (!this.fontData.equals(other.fontData))
+            return false;
+        if (this.hAlign != other.hAlign)
+            return false;
+        if (this.vAlign != other.vAlign)
+            return false;
+        if (this.vertical != other.vertical)
+            return false;
+        return true;
     }
 
 }

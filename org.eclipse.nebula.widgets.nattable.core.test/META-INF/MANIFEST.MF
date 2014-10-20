@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.core.test
 Bundle-Version: 1.2.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.apache.commons.lang.math,
- org.eclipse.core.commands.common,
+Import-Package: org.eclipse.core.commands.common,
  org.osgi.framework
 Export-Package: org.eclipse.nebula.widgets.nattable.test.data,
  org.eclipse.nebula.widgets.nattable.test.fixture,

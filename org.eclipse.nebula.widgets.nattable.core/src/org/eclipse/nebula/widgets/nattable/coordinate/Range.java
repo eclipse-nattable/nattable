@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -15,8 +15,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * Represents an Range of numbers. Example a Range of selected rows: 1 - 100
@@ -34,26 +32,26 @@ public class Range {
     }
 
     public int size() {
-        return end - start;
+        return this.end - this.start;
     }
 
     /**
      * @return TRUE if the range contains the given row position
      */
     public boolean contains(int position) {
-        return position >= start && position < end;
+        return position >= this.start && position < this.end;
     }
 
     public boolean overlap(Range range) {
-        return (start < end) && // this is a non-empty range
+        return (this.start < this.end) && // this is a non-empty range
                 (range.start < range.end) && // range parameter is non-empty
                 (this.contains(range.start) || this.contains(range.end - 1)
-                        || range.contains(start) || range.contains(end - 1));
+                        || range.contains(this.start) || range.contains(this.end - 1));
     }
 
     public Set<Integer> getMembers() {
         Set<Integer> members = new HashSet<Integer>();
-        for (int i = start; i < end; i++) {
+        for (int i = this.start; i < this.end; i++) {
             members.add(Integer.valueOf(i));
         }
         return members;
@@ -61,26 +59,37 @@ public class Range {
 
     @Override
     public String toString() {
-        return "Range[" + start + "," + end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        return "Range[" + this.start + "," + this.end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Range)) {
+        if (this == obj)
+            return true;
+        if (obj == null)
             return false;
-        }
-
-        Range range2 = (Range) obj;
-        return (start == range2.start) && (end == range2.end);
+        if (getClass() != obj.getClass())
+            return false;
+        Range other = (Range) obj;
+        if (this.end != other.end)
+            return false;
+        if (this.start != other.start)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.end;
+        result = prime * result + this.start;
+        return result;
     }
 
     public static void sortByStart(List<Range> ranges) {
         Collections.sort(ranges, new Comparator<Range>() {
+            @Override
             public int compare(Range range1, Range range2) {
                 return Integer.valueOf(range1.start).compareTo(
                         Integer.valueOf(range2.start));

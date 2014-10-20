@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,10 +23,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.builder.model.TableRow;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.PricingTypeBean;
@@ -57,6 +53,7 @@ public class TableRowFixture implements TableRow {
             "low52Week", "eps", "volume", "marketCap", "institutionOwned" };
 
     public static final IRowIdAccessor<TableRowFixture> rowIdAccessor = new IRowIdAccessor<TableRowFixture>() {
+        @Override
         public Serializable getRowId(TableRowFixture rowObject) {
             return rowObject.getSecurityId();
         }
@@ -87,14 +84,27 @@ public class TableRowFixture implements TableRow {
 
     @Override
     public boolean equals(Object obj) {
-        final TableRowFixture that = (TableRowFixture) obj;
-        return new EqualsBuilder().append(this.getSecurityId(),
-                that.getSecurityId()).isEquals();
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TableRowFixture other = (TableRowFixture) obj;
+        if (this.securityId == null) {
+            if (other.securityId != null)
+                return false;
+        } else if (!this.securityId.equals(other.securityId))
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this.getSecurityId()).hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.securityId == null) ? 0 : this.securityId.hashCode());
+        return result;
     }
 
     /**
@@ -108,24 +118,33 @@ public class TableRowFixture implements TableRow {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this,
-                ToStringStyle.SIMPLE_STYLE);
+        return "TableRowFixture [securityId=" + this.securityId + ", securityDescription=" + this.securityDescription + ", rating=" + this.rating
+                + ", issueDate=" + this.issueDate
+                + ", pricingType=" + this.pricingType + ", bidPrice=" + this.bidPrice + ", askPrice=" + this.askPrice + ", lotSize=" + this.lotSize
+                + ", publishFlag="
+                + this.publishFlag + ", high52Week=" + this.high52Week + ", low52Week=" + this.low52Week + ", eps=" + this.eps + ", volume=" + this.volume
+                + ", marketCap=" + this.marketCap
+                + ", institutionOwned=" + this.institutionOwned + ", propertyNames=" + Arrays.toString(this.propertyNames) + "]";
     }
 
+    @Override
     public Object getData() {
         return this;
     }
 
+    @Override
     public Object getIdentifier() {
-        return securityId;
+        return this.securityId;
     }
 
+    @Override
     public Object getValue(int columnIndex) {
-        return getValue(propertyNames[columnIndex]);
+        return getValue(this.propertyNames[columnIndex]);
     }
 
+    @Override
     public void setValue(int columnIndex, Object value) {
-        setValue(propertyNames[columnIndex], value);
+        setValue(this.propertyNames[columnIndex], value);
     }
 
     public Object getValue(String propertyName) {
@@ -157,7 +176,7 @@ public class TableRowFixture implements TableRow {
     // Accessors
 
     public String getSecurityId() {
-        return securityId;
+        return this.securityId;
     }
 
     public void setSecurityId(String securityId) {
@@ -165,7 +184,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public String getSecurityDescription() {
-        return securityDescription;
+        return this.securityDescription;
     }
 
     public void setSecurityDescription(String securityDescription) {
@@ -173,7 +192,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public String getRating() {
-        return rating;
+        return this.rating;
     }
 
     public void setRating(String rating) {
@@ -181,7 +200,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Date getIssueDate() {
-        return issueDate;
+        return this.issueDate;
     }
 
     public void setIssueDate(Date issueDate) {
@@ -189,7 +208,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public PricingTypeBean getPricingType() {
-        return pricingType;
+        return this.pricingType;
     }
 
     public void setPricingType(PricingTypeBean pricingType) {
@@ -197,7 +216,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Double getBidPrice() {
-        return bidPrice;
+        return this.bidPrice;
     }
 
     public void setBidPrice(Double bidPrice) {
@@ -205,7 +224,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Double getAskPrice() {
-        return askPrice;
+        return this.askPrice;
     }
 
     public void setAskPrice(Double askPrice) {
@@ -213,7 +232,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public int getLotSize() {
-        return lotSize;
+        return this.lotSize;
     }
 
     public void setLotSize(int lotSize) {
@@ -221,7 +240,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Boolean getPublishFlag() {
-        return publishFlag;
+        return this.publishFlag;
     }
 
     public void setPublishFlag(Boolean publishFlag) {
@@ -229,7 +248,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Double getHigh52Week() {
-        return high52Week;
+        return this.high52Week;
     }
 
     public void setHigh52Week(Double high52Week) {
@@ -237,7 +256,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Double getLow52Week() {
-        return low52Week;
+        return this.low52Week;
     }
 
     public void setLow52Week(Double low52Week) {
@@ -245,7 +264,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Double getEps() {
-        return eps;
+        return this.eps;
     }
 
     public void setEps(Double eps) {
@@ -253,7 +272,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Double getVolume() {
-        return volume;
+        return this.volume;
     }
 
     public void setVolume(Double volume) {
@@ -261,7 +280,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Double getMarketCap() {
-        return marketCap;
+        return this.marketCap;
     }
 
     public void setMarketCap(Double marketCap) {
@@ -269,7 +288,7 @@ public class TableRowFixture implements TableRow {
     }
 
     public Double getInstitutionOwned() {
-        return institutionOwned;
+        return this.institutionOwned;
     }
 
     public void setInstitutionOwned(Double institutionOwned) {
@@ -277,60 +296,26 @@ public class TableRowFixture implements TableRow {
     }
 
     public String[] getPropertyNames() {
-        return propertyNames;
+        return this.propertyNames;
     }
 
     public static List<TableRowFixture> getList() {
         List<TableRowFixture> listFixture = new ArrayList<TableRowFixture>();
 
-        listFixture.addAll(Arrays.asList(new TableRowFixture("US"
-                + getRandomNumber(), "B Ford Motor", "a", getRandomDate(),
-                PRICING_MANUAL, 4.7912, 20, 1500000, true, 6.75, 1.01, -7.03,
-                114000000, 2000000000, 5000000000D), new TableRowFixture("ABC"
-                + getRandomNumber(), "A Alphabet Co.", "AAA", getRandomDate(),
-                PRICING_AUTO, 1.23456, 10, 10000, true, 5.124, .506, 1.233,
-                2000000, 50000000, 4500000), new TableRowFixture("US"
-                + getRandomNumber(), "C General Electric Co", "B",
-                getRandomDate(), PRICING_MANUAL, 10.1244, 30, 1500000, false,
-                30.74, 5.73, 1.62, 93350000, 142000000, 70000000),
-                new TableRowFixture("US" + getRandomNumber(),
-                        "E Nissan Motor Co., Ltd.", "AA", getRandomDate(),
-                        PRICING_MANUAL, 7.7891, 50, 80000, true, 17.97, 5.59,
-                        0.50, 489000, 250000000, 250000), new TableRowFixture(
-                        "US" + getRandomNumber(), "D Toyota Motor Corp.",
-                        "aaa", getRandomDate(), PRICING_MANUAL, 62.5789, 40,
-                        450000, true, 104.40, 55.41, -2.85, 849000, 1242000000,
-                        2000000), new TableRowFixture("US" + getRandomNumber(),
-                        "F Honda Motor Co., Ltd.", "aa", getRandomDate(),
-                        PRICING_MANUAL, 23.7125, 60, 6500000, false, 36.29,
-                        17.35, -21.83, 1050000, 53000000, 70000),
-                new TableRowFixture("US" + getRandomNumber(),
-                        "G General Motors Corporation", "B-", getRandomDate(),
-                        PRICING_MANUAL, 2.9811, 70, 2585000, true, 18.18, .27,
-                        .110, 58714700, 25900000, 2800000),
-                new TableRowFixture("US" + getRandomNumber(), "H Yahoo! Inc",
-                        "C", getRandomDate(), PRICING_AUTO, 12.9811, 80, 99000,
-                        true, 26.86, 8.94, 0.00, 22000000, 22740000000D,
-                        14000000000D), new TableRowFixture("US"
-                        + getRandomNumber(), "I Microsoft", "BB",
-                        getRandomDate(), PRICING_AUTO, 22.5506, 90, 6250000,
-                        false, 29.57, 14.87, 1.74, 57000000, 196000000000D,
-                        80000000000D), new TableRowFixture("US"
-                        + getRandomNumber(), "J Google Inc.", "AAA",
-                        getRandomDate(), PRICING_AUTO, 330.9315, 100, 8550000,
-                        true, 579.10, 247.30, 13.67, 3000000, 136000000000D,
-                        70000000000D), new TableRowFixture("US"
-                        + getRandomNumber(), "K Research In Motion Limited",
-                        "AA", getRandomDate(), PRICING_MANUAL, 43.0311, 110,
-                        55000, true, 150.30, 44.23, 3.67, 587295, 51000000000D,
-                        0), new TableRowFixture("US" + getRandomNumber(),
-                        "L Apple Inc.", "AAA", getRandomDate(), PRICING_AUTO,
-                        102.4817, 120, 115000, false, 186.78, 78.20, 1.67,
-                        17000000, 125000000000D, 14000000000D),
-                new TableRowFixture("US" + getRandomNumber(), "M Nokia Corp.",
-                        "A-", getRandomDate(), PRICING_AUTO, 12.0500, 130,
-                        315000, true, 28.34, 8.47, 1.08, 17390000,
-                        58400000000D, 10000000000D)));
+        listFixture.addAll(Arrays.asList(
+                new TableRowFixture("US" + getRandomNumber(), "B Ford Motor", "a", getRandomDate(), PRICING_MANUAL, 4.7912, 20, 1500000, true, 6.75, 1.01, -7.03, 114000000, 2000000000, 5000000000D),
+                new TableRowFixture("ABC" + getRandomNumber(), "A Alphabet Co.", "AAA", getRandomDate(), PRICING_AUTO, 1.23456, 10, 10000, true, 5.124, .506, 1.233, 2000000, 50000000, 4500000),
+                new TableRowFixture("US" + getRandomNumber(), "C General Electric Co", "B", getRandomDate(), PRICING_MANUAL, 10.1244, 30, 1500000, false, 30.74, 5.73, 1.62, 93350000, 142000000, 70000000),
+                new TableRowFixture("US" + getRandomNumber(), "E Nissan Motor Co., Ltd.", "AA", getRandomDate(), PRICING_MANUAL, 7.7891, 50, 80000, true, 17.97, 5.59, 0.50, 489000, 250000000, 250000),
+                new TableRowFixture("US" + getRandomNumber(), "D Toyota Motor Corp.", "aaa", getRandomDate(), PRICING_MANUAL, 62.5789, 40, 450000, true, 104.40, 55.41, -2.85, 849000, 1242000000, 2000000),
+                new TableRowFixture("US" + getRandomNumber(), "F Honda Motor Co., Ltd.", "aa", getRandomDate(), PRICING_MANUAL, 23.7125, 60, 6500000, false, 36.29, 17.35, -21.83, 1050000, 53000000, 70000),
+                new TableRowFixture("US" + getRandomNumber(), "G General Motors Corporation", "B-", getRandomDate(), PRICING_MANUAL, 2.9811, 70, 2585000, true, 18.18, .27, .110, 58714700, 25900000, 2800000),
+                new TableRowFixture("US" + getRandomNumber(), "H Yahoo! Inc", "C", getRandomDate(), PRICING_AUTO, 12.9811, 80, 99000, true, 26.86, 8.94, 0.00, 22000000, 22740000000D, 14000000000D),
+                new TableRowFixture("US" + getRandomNumber(), "I Microsoft", "BB", getRandomDate(), PRICING_AUTO, 22.5506, 90, 6250000, false, 29.57, 14.87, 1.74, 57000000, 196000000000D, 80000000000D),
+                new TableRowFixture("US" + getRandomNumber(), "J Google Inc.", "AAA", getRandomDate(), PRICING_AUTO, 330.9315, 100, 8550000, true, 579.10, 247.30, 13.67, 3000000, 136000000000D, 70000000000D),
+                new TableRowFixture("US" + getRandomNumber(), "K Research In Motion Limited", "AA", getRandomDate(), PRICING_MANUAL, 43.0311, 110, 55000, true, 150.30, 44.23, 3.67, 587295, 51000000000D, 0),
+                new TableRowFixture("US" + getRandomNumber(), "L Apple Inc.", "AAA", getRandomDate(), PRICING_AUTO, 102.4817, 120, 115000, false, 186.78, 78.20, 1.67, 17000000, 125000000000D, 14000000000D),
+                new TableRowFixture("US" + getRandomNumber(), "M Nokia Corp.", "A-", getRandomDate(), PRICING_AUTO, 12.0500, 130, 315000, true, 28.34, 8.47, 1.08, 17390000, 58400000000D, 10000000000D)));
 
         return listFixture;
     }

@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.matcher;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -44,16 +42,15 @@ public class MouseEventMatcher implements IMouseEventMatcher {
 
     /**
      * Constructor
-     * 
+     *
      * @param stateMask
-     *            @see "org.eclipse.swt.events.MouseEvent.stateMask"
+     * @see "org.eclipse.swt.events.MouseEvent.stateMask"
      * @param eventRegion
      *            {@linkplain org.eclipse.nebula.widgets.nattable.grid.GridRegion}
      * @param button
-     *            @see org.eclipse.swt.events.MouseEvent#button
-     *            {@link MouseEventMatcher#LEFT_BUTTON},
-     *            {@link MouseEventMatcher#RIGHT_BUTTON} can be used for
-     *            convenience
+     * @see org.eclipse.swt.events.MouseEvent#button
+     *      {@link MouseEventMatcher#LEFT_BUTTON},
+     *      {@link MouseEventMatcher#RIGHT_BUTTON} can be used for convenience
      */
     public MouseEventMatcher(int stateMask, String eventRegion, int button) {
         this.stateMask = stateMask;
@@ -61,6 +58,7 @@ public class MouseEventMatcher implements IMouseEventMatcher {
         this.button = button;
     }
 
+    @Override
     public boolean matches(NatTable natTable, MouseEvent event,
             LabelStack regionLabels) {
         if (regionLabels == null) {
@@ -68,57 +66,65 @@ public class MouseEventMatcher implements IMouseEventMatcher {
         }
 
         boolean stateMaskMatches;
-        if (stateMask != 0) {
-            stateMaskMatches = (event.stateMask == stateMask) ? true : false;
+        if (this.stateMask != 0) {
+            stateMaskMatches = (event.stateMask == this.stateMask) ? true : false;
         } else {
             stateMaskMatches = event.stateMask == 0;
         }
 
         boolean eventRegionMatches;
         if (this.regionName != null) {
-            eventRegionMatches = regionLabels.hasLabel(regionName);
+            eventRegionMatches = regionLabels.hasLabel(this.regionName);
         } else {
             eventRegionMatches = true;
         }
 
-        boolean buttonMatches = button != 0 ? (button == event.button) : true;
+        boolean buttonMatches = this.button != 0 ? (this.button == event.button) : true;
 
         return stateMaskMatches && eventRegionMatches && buttonMatches;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof MouseEventMatcher == false) {
-            return false;
-        }
-
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-
-        MouseEventMatcher rhs = (MouseEventMatcher) obj;
-
-        return new EqualsBuilder().append(stateMask, rhs.stateMask)
-                .append(regionName, rhs.regionName).append(button, rhs.button)
-                .isEquals();
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MouseEventMatcher other = (MouseEventMatcher) obj;
+        if (this.button != other.button)
+            return false;
+        if (this.regionName == null) {
+            if (other.regionName != null)
+                return false;
+        } else if (!this.regionName.equals(other.regionName))
+            return false;
+        if (this.stateMask != other.stateMask)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(43, 21).append(stateMask).append(regionName)
-                .append(button).toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.button;
+        result = prime * result + ((this.regionName == null) ? 0 : this.regionName.hashCode());
+        result = prime * result + this.stateMask;
+        return result;
     }
 
     public int getStateMask() {
-        return stateMask;
+        return this.stateMask;
     }
 
     public String getEventRegion() {
-        return regionName;
+        return this.regionName;
     }
 
     public int getButton() {
-        return button;
+        return this.button;
     }
 
     public static MouseEventMatcher columnHeaderLeftClick(int mask) {

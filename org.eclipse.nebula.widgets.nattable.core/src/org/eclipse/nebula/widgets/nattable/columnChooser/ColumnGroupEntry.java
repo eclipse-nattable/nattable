@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.columnChooser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.columnChooser.gui.ColumnChooserDialog;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -39,19 +38,19 @@ public class ColumnGroupEntry {
     }
 
     public String getLabel() {
-        return label;
+        return this.label;
     }
 
     public Integer getFirstElementPosition() {
-        return firstElementPosition;
+        return this.firstElementPosition;
     }
 
     public Integer getFirstElementIndex() {
-        return firstElementIndex;
+        return this.firstElementIndex;
     }
 
     public boolean isCollapsed() {
-        return isCollapsed;
+        return this.isCollapsed;
     }
 
     public static List<Integer> getColumnGroupEntryPositions(
@@ -67,19 +66,49 @@ public class ColumnGroupEntry {
     @Override
     public String toString() {
         return "ColumnGroupEntry (" + //$NON-NLS-1$
-                "Label: " + label + //$NON-NLS-1$
-                ", firstElementPosition: " + firstElementPosition + //$NON-NLS-1$
-                ", firstElementIndex: " + firstElementIndex + //$NON-NLS-1$
-                ", collapsed: " + isCollapsed + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+                "Label: " + this.label + //$NON-NLS-1$
+                ", firstElementPosition: " + this.firstElementPosition + //$NON-NLS-1$
+                ", firstElementIndex: " + this.firstElementIndex + //$NON-NLS-1$
+                ", collapsed: " + this.isCollapsed + ")"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ColumnGroupEntry other = (ColumnGroupEntry) obj;
+        if (this.firstElementIndex == null) {
+            if (other.firstElementIndex != null)
+                return false;
+        } else if (!this.firstElementIndex.equals(other.firstElementIndex))
+            return false;
+        if (this.firstElementPosition == null) {
+            if (other.firstElementPosition != null)
+                return false;
+        } else if (!this.firstElementPosition.equals(other.firstElementPosition))
+            return false;
+        if (this.isCollapsed != other.isCollapsed)
+            return false;
+        if (this.label == null) {
+            if (other.label != null)
+                return false;
+        } else if (!this.label.equals(other.label))
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.firstElementIndex == null) ? 0 : this.firstElementIndex.hashCode());
+        result = prime * result + ((this.firstElementPosition == null) ? 0 : this.firstElementPosition.hashCode());
+        result = prime * result + (this.isCollapsed ? 1231 : 1237);
+        result = prime * result + ((this.label == null) ? 0 : this.label.hashCode());
+        return result;
     }
 }

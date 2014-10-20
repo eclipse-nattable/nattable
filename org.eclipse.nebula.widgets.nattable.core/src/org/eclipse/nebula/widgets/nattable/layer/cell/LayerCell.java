@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class LayerCell extends AbstractLayerCell {
@@ -53,63 +51,86 @@ public class LayerCell extends AbstractLayerCell {
         this.rowSpan = rowSpan;
     }
 
+    @Override
     public int getOriginColumnPosition() {
-        return originColumnPosition;
+        return this.originColumnPosition;
     }
 
+    @Override
     public int getOriginRowPosition() {
-        return originRowPosition;
+        return this.originRowPosition;
     }
 
+    @Override
     public ILayer getLayer() {
-        return layer;
+        return this.layer;
     }
 
+    @Override
     public int getColumnPosition() {
-        return columnPosition;
+        return this.columnPosition;
     }
 
+    @Override
     public int getRowPosition() {
-        return rowPosition;
+        return this.rowPosition;
     }
 
+    @Override
     public int getColumnIndex() {
         return getLayer().getColumnIndexByPosition(getColumnPosition());
     }
 
+    @Override
     public int getRowIndex() {
         return getLayer().getRowIndexByPosition(getRowPosition());
     }
 
+    @Override
     public int getColumnSpan() {
-        return columnSpan;
+        return this.columnSpan;
     }
 
+    @Override
     public int getRowSpan() {
-        return rowSpan;
+        return this.rowSpan;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof LayerCell == false) {
-            return false;
-        }
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        LayerCell rhs = (LayerCell) obj;
-        return new EqualsBuilder().append(layer, rhs.layer)
-                .append(originColumnPosition, rhs.originColumnPosition)
-                .append(originRowPosition, rhs.originRowPosition)
-                .append(columnSpan, rhs.columnSpan)
-                .append(rowSpan, rhs.rowSpan).isEquals();
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LayerCell other = (LayerCell) obj;
+        if (this.columnSpan != other.columnSpan)
+            return false;
+        if (this.layer == null) {
+            if (other.layer != null)
+                return false;
+        } else if (!this.layer.equals(other.layer))
+            return false;
+        if (this.originColumnPosition != other.originColumnPosition)
+            return false;
+        if (this.originRowPosition != other.originRowPosition)
+            return false;
+        if (this.rowSpan != other.rowSpan)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(771, 855).append(layer)
-                .append(originColumnPosition).append(originRowPosition)
-                .append(columnSpan).append(rowSpan).toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.columnSpan;
+        result = prime * result + ((this.layer == null) ? 0 : this.layer.hashCode());
+        result = prime * result + this.originColumnPosition;
+        result = prime * result + this.originRowPosition;
+        result = prime * result + this.rowSpan;
+        return result;
     }
 
     @Override

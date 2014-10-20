@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class DataCell {
 
@@ -36,45 +34,54 @@ public class DataCell {
     }
 
     public int getColumnPosition() {
-        return columnPosition;
+        return this.columnPosition;
     }
 
     public int getRowPosition() {
-        return rowPosition;
+        return this.rowPosition;
     }
 
     public int getColumnSpan() {
-        return columnSpan;
+        return this.columnSpan;
     }
 
     public int getRowSpan() {
-        return rowSpan;
+        return this.rowSpan;
     }
 
     public boolean isSpannedCell() {
-        return columnSpan > 1 || rowSpan > 1;
+        return this.columnSpan > 1 || this.rowSpan > 1;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DataCell == false) {
-            return false;
-        }
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        DataCell rhs = (DataCell) obj;
-        return new EqualsBuilder().append(columnPosition, rhs.columnPosition)
-                .append(rowPosition, rhs.rowPosition)
-                .append(columnSpan, rhs.columnSpan)
-                .append(rowSpan, rhs.rowSpan).isEquals();
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DataCell other = (DataCell) obj;
+        if (this.columnPosition != other.columnPosition)
+            return false;
+        if (this.columnSpan != other.columnSpan)
+            return false;
+        if (this.rowPosition != other.rowPosition)
+            return false;
+        if (this.rowSpan != other.rowSpan)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(423, 971).append(columnPosition)
-                .append(rowPosition).append(columnSpan).append(rowSpan)
-                .toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.columnPosition;
+        result = prime * result + this.columnSpan;
+        result = prime * result + this.rowPosition;
+        result = prime * result + this.rowSpan;
+        return result;
     }
 
 }

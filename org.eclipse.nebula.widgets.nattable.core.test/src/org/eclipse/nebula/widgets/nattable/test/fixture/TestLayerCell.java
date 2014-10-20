@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.fixture;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -45,26 +43,34 @@ public class TestLayerCell extends LayerCell {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ILayerCell == false) {
-            return false;
-        }
-        if (this == obj) {
+        // no checks for class and layer to be able to perform automated tests
+        if (this == obj)
             return true;
-        }
-        ILayerCell rhs = (ILayerCell) obj;
-        return new EqualsBuilder()
-                .append(getOriginColumnPosition(),
-                        rhs.getOriginColumnPosition())
-                .append(getOriginRowPosition(), rhs.getOriginRowPosition())
-                .append(getColumnSpan(), rhs.getColumnSpan())
-                .append(getRowSpan(), rhs.getRowSpan()).isEquals();
+        if (obj == null)
+            return false;
+        if (!(obj instanceof ILayerCell))
+            return false;
+        ILayerCell other = (ILayerCell) obj;
+        if (this.getColumnSpan() != other.getColumnSpan())
+            return false;
+        if (this.getOriginColumnPosition() != other.getOriginColumnPosition())
+            return false;
+        if (this.getOriginRowPosition() != other.getOriginRowPosition())
+            return false;
+        if (this.getRowSpan() != other.getRowSpan())
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(771, 855).append(getOriginColumnPosition())
-                .append(getOriginRowPosition()).append(getColumnSpan())
-                .append(getRowSpan()).toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.getColumnSpan();
+        result = prime * result + this.getOriginColumnPosition();
+        result = prime * result + this.getOriginRowPosition();
+        result = prime * result + this.getRowSpan();
+        return result;
     }
 
 }

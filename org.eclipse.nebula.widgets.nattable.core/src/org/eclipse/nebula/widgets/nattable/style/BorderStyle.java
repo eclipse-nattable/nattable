@@ -4,14 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.nebula.widgets.nattable.persistence.ColorPersistor;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
@@ -57,7 +55,7 @@ public class BorderStyle {
 
     /**
      * Reconstruct this instance from the persisted String.
-     * 
+     *
      * @see BorderStyle#toString()
      */
     public BorderStyle(String string) {
@@ -69,15 +67,15 @@ public class BorderStyle {
     }
 
     public int getThickness() {
-        return thickness;
+        return this.thickness;
     }
 
     public Color getColor() {
-        return color;
+        return this.color;
     }
 
     public LineStyleEnum getLineStyle() {
-        return lineStyle;
+        return this.lineStyle;
     }
 
     public void setThickness(int thickness) {
@@ -94,26 +92,33 @@ public class BorderStyle {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof BorderStyle == false) {
-            return false;
-        }
-
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-
-        BorderStyle that = (BorderStyle) obj;
-
-        return new EqualsBuilder().append(this.thickness, that.thickness)
-                .append(this.color, that.color)
-                .append(this.lineStyle.name(), that.lineStyle.name())
-                .isEquals();
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BorderStyle other = (BorderStyle) obj;
+        if (this.color == null) {
+            if (other.color != null)
+                return false;
+        } else if (!this.color.equals(other.color))
+            return false;
+        if (this.lineStyle != other.lineStyle)
+            return false;
+        if (this.thickness != other.thickness)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(87, 19).append(thickness).append(color)
-                .append(lineStyle.name()).toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.color == null) ? 0 : this.color.hashCode());
+        result = prime * result + ((this.lineStyle == null) ? 0 : this.lineStyle.hashCode());
+        result = prime * result + this.thickness;
+        return result;
     }
 
     /**
@@ -123,8 +128,8 @@ public class BorderStyle {
      */
     @Override
     public String toString() {
-        return thickness + "|" + //$NON-NLS-1$
-                ColorPersistor.asString(color) + "|" + //$NON-NLS-1$
-                lineStyle;
+        return this.thickness + "|" + //$NON-NLS-1$
+                ColorPersistor.asString(this.color) + "|" + //$NON-NLS-1$
+                this.lineStyle;
     }
 }
