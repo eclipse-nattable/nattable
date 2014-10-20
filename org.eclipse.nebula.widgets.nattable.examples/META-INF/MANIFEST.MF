@@ -4,12 +4,11 @@ Bundle-Name: NatTable Examples
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.examples
 Bundle-Version: 1.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: ca.odell.glazedlists;resolution:=optional,
- ca.odell.glazedlists.event;resolution:=optional,
+Import-Package: ca.odell.glazedlists,
+ ca.odell.glazedlists.event,
  ca.odell.glazedlists.matchers,
- ca.odell.glazedlists.swt;resolution:=optional,
- ca.odell.glazedlists.util.concurrent;resolution:=optional,
- org.apache.commons.lang,
+ ca.odell.glazedlists.swt,
+ ca.odell.glazedlists.util.concurrent,
  org.eclipse.core.commands.common,
  org.eclipse.jface.dialogs,
  org.eclipse.jface.layout,
