@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -82,7 +82,7 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
     /**
      * Create a {@link RenderErrorHandling} with no underlying error handler and
      * the specified decoration provider.
-     * 
+     *
      * @param decorationProvider
      *            The decoration provider that should be used for decorating the
      *            editor control on error.
@@ -96,15 +96,15 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
      * and the specified decoration provider. By default the error style is set
      * to render the value in the editor control with red foreground color. You
      * can override that style by calling setErrorStyle(IStyle)
-     * 
+     *
      * @param underlyingErrorHandler
      *            The underlying error handler.
      * @param decorationProvider
      *            The decoration provider that should be used for decorating the
      *            editor control on error.
      */
-    public RenderErrorHandling(IEditErrorHandler underlyingErrorHandler,
-            ControlDecorationProvider decorationProvider) {
+    public RenderErrorHandling(
+            IEditErrorHandler underlyingErrorHandler, ControlDecorationProvider decorationProvider) {
         super(underlyingErrorHandler);
         this.decorationProvider = decorationProvider;
         this.errorStyle = this.defaultErrorStyle;
@@ -123,18 +123,19 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
             Control editorControl = cellEditor.getEditorControl();
 
             // reset the rendering information to normal
-            editorControl.setBackground(originalBgColor);
-            editorControl.setForeground(originalFgColor);
-            editorControl.setFont(originalFont);
+            editorControl.setBackground(this.originalBgColor);
+            editorControl.setForeground(this.originalFgColor);
+            editorControl.setFont(this.originalFont);
 
             // ensure to reset the stored original values so possible
             // dynamic rendering aspects are also covered
-            originalBgColor = null;
-            originalFgColor = null;
-            originalFont = null;
+            this.originalBgColor = null;
+            this.originalFgColor = null;
+            this.originalFont = null;
 
-            if (decorationProvider != null) {
-                decorationProvider.hideDecoration();
+            if (this.decorationProvider != null) {
+                this.decorationProvider.setErrorDecorationText(null);
+                this.decorationProvider.hideDecoration();
             }
 
             this.errorStylingActive = false;
@@ -154,23 +155,25 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
             Control editorControl = cellEditor.getEditorControl();
 
             // store the current rendering information to be able to reset again
-            originalBgColor = editorControl.getBackground();
-            originalFgColor = editorControl.getForeground();
-            originalFont = editorControl.getFont();
+            this.originalBgColor = editorControl.getBackground();
+            this.originalFgColor = editorControl.getForeground();
+            this.originalFont = editorControl.getFont();
 
             // set the rendering information out of the error style
-            editorControl.setBackground(this.errorStyle
-                    .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-            editorControl.setForeground(this.errorStyle
-                    .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-            editorControl.setFont(this.errorStyle
-                    .getAttributeValue(CellStyleAttributes.FONT));
-
-            if (decorationProvider != null) {
-                decorationProvider.showDecoration();
-            }
+            editorControl.setBackground(
+                    this.errorStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+            editorControl.setForeground(
+                    this.errorStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+            editorControl.setFont(
+                    this.errorStyle.getAttributeValue(CellStyleAttributes.FONT));
 
             this.errorStylingActive = true;
+        }
+
+        // we should always update the error decoration text
+        if (this.decorationProvider != null) {
+            this.decorationProvider.setErrorDecorationText(e.getLocalizedMessage());
+            this.decorationProvider.showDecoration();
         }
     }
 
@@ -181,8 +184,7 @@ public class RenderErrorHandling extends AbstractEditErrorHandler {
      *            font.
      */
     public void setErrorStyle(IStyle errorStyle) {
-        this.errorStyle = errorStyle != null ? errorStyle
-                : this.defaultErrorStyle;
+        this.errorStyle = errorStyle != null ? errorStyle : this.defaultErrorStyle;
     }
 
 }
