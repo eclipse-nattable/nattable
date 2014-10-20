@@ -4,13 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnRename;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.editor.AbstractEditorPanel;
 import org.eclipse.swt.SWT;
@@ -39,35 +38,35 @@ public class ColumnLabelPanel extends AbstractEditorPanel<String> {
         setLayout(gridLayout);
 
         // Original label
-        if (columnLabel != null) {
+        if (this.columnLabel != null) {
             Label label = new Label(this, SWT.NONE);
             label.setText(Messages.getString("ColumnLabel.original")); //$NON-NLS-1$
 
             Label originalLabel = new Label(this, SWT.NONE);
-            originalLabel.setText(columnLabel);
+            originalLabel.setText(this.columnLabel);
         }
 
         // Text field for new label
         Label renameLabel = new Label(this, SWT.NONE);
         renameLabel.setText(Messages.getString("ColumnLabel.rename")); //$NON-NLS-1$
 
-        textField = new Text(this, SWT.BORDER);
+        this.textField = new Text(this, SWT.BORDER);
         GridData gridData = new GridData(200, 15);
         gridData.grabExcessHorizontalSpace = true;
         gridData.horizontalAlignment = GridData.FILL;
-        textField.setLayoutData(gridData);
+        this.textField.setLayoutData(gridData);
 
-        if (StringUtils.isNotEmpty(newColumnLabel)) {
-            textField.setText(newColumnLabel);
-            textField.selectAll();
+        if (this.newColumnLabel != null && this.newColumnLabel.length() > 0) {
+            this.textField.setText(this.newColumnLabel);
+            this.textField.selectAll();
         }
     }
 
     @Override
     public void edit(String newColumnHeaderLabel) throws Exception {
-        if (StringUtils.isNotEmpty(newColumnHeaderLabel)) {
-            textField.setText(newColumnHeaderLabel);
-            textField.selectAll();
+        if (newColumnHeaderLabel != null && newColumnHeaderLabel.length() > 0) {
+            this.textField.setText(newColumnHeaderLabel);
+            this.textField.selectAll();
         }
     }
 
@@ -78,9 +77,10 @@ public class ColumnLabelPanel extends AbstractEditorPanel<String> {
 
     @Override
     public String getNewValue() {
-        if (textField.isEnabled()
-                && StringUtils.isNotEmpty(textField.getText())) {
-            return textField.getText();
+        if (this.textField.isEnabled()
+                && this.textField.getText() != null
+                && this.textField.getText().length() > 0) {
+            return this.textField.getText();
         }
         return null;
     }

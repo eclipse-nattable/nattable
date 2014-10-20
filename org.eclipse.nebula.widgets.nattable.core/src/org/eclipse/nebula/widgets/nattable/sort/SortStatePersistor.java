@@ -4,13 +4,11 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.sort;
-
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,13 +45,14 @@ public class SortStatePersistor<T> implements IPersistable {
      * <p>
      * Format: column index : sort direction : sort order |
      */
+    @Override
     public void saveState(String prefix, Properties properties) {
         StringBuffer buffer = new StringBuffer();
 
-        for (int columnIndex : sortModel.getSortedColumnIndexes()) {
-            SortDirectionEnum sortDirection = sortModel
+        for (int columnIndex : this.sortModel.getSortedColumnIndexes()) {
+            SortDirectionEnum sortDirection = this.sortModel
                     .getSortDirection(columnIndex);
-            int sortOrder = sortModel.getSortOrder(columnIndex);
+            int sortOrder = this.sortModel.getSortOrder(columnIndex);
 
             buffer.append(columnIndex);
             buffer.append(":"); //$NON-NLS-1$
@@ -63,15 +62,16 @@ public class SortStatePersistor<T> implements IPersistable {
             buffer.append("|"); //$NON-NLS-1$
         }
 
-        if (isNotEmpty(buffer.toString())) {
-            properties.put(prefix + PERSISTENCE_KEY_SORTING_STATE,
-                    buffer.toString());
+        String result = buffer.toString();
+        if (result != null && result.length() > 0) {
+            properties.put(prefix + PERSISTENCE_KEY_SORTING_STATE, result);
         }
     }
 
     /**
      * Parses the saved string and restores the state to the {@link ISortModel}.
      */
+    @Override
     public void loadState(String prefix, Properties properties) {
 
         /*
@@ -79,7 +79,7 @@ public class SortStatePersistor<T> implements IPersistable {
          * necessary because there could be calls to the sortModel before which
          * leads to an undefined state afterwards ...
          */
-        sortModel.clear();
+        this.sortModel.clear();
 
         Object savedValue = properties.get(prefix
                 + PERSISTENCE_KEY_SORTING_STATE);
@@ -100,10 +100,10 @@ public class SortStatePersistor<T> implements IPersistable {
             // Restore to the model
             Collections.sort(stateInfo, new SortStateComparator());
             for (SortState state : stateInfo) {
-                sortModel.sort(state.columnIndex, state.sortDirection, true);
+                this.sortModel.sort(state.columnIndex, state.sortDirection, true);
             }
         } catch (Exception ex) {
-            sortModel.clear();
+            this.sortModel.clear();
             log.error(
                     "Error while restoring sorting state: " + ex.getLocalizedMessage(), ex); //$NON-NLS-1$
         }
@@ -145,6 +145,7 @@ public class SortStatePersistor<T> implements IPersistable {
      */
     private class SortStateComparator implements Comparator<SortState> {
 
+        @Override
         public int compare(SortState state1, SortState state2) {
             return Integer.valueOf(state1.sortOrder).compareTo(
                     Integer.valueOf(state2.sortOrder));

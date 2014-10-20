@@ -4,13 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
@@ -23,11 +22,9 @@ import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
  * updating the data model. It is usually directly registered to the
  * {@link DataLayer} this command handler is associated with.
  */
-public class UpdateDataCommandHandler extends
-        AbstractLayerCommandHandler<UpdateDataCommand> {
+public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<UpdateDataCommand> {
 
-    private static final Log log = LogFactory
-            .getLog(UpdateDataCommandHandler.class);
+    private static final Log log = LogFactory.getLog(UpdateDataCommandHandler.class);
 
     /**
      * The {@link DataLayer} on which the data model updates should be executed.
@@ -53,12 +50,13 @@ public class UpdateDataCommandHandler extends
         try {
             int columnPosition = command.getColumnPosition();
             int rowPosition = command.getRowPosition();
-            if (!ObjectUtils.equals(dataLayer.getDataValueByPosition(
-                    columnPosition, rowPosition), command.getNewValue())) {
-                dataLayer.setDataValueByPosition(columnPosition, rowPosition,
-                        command.getNewValue());
-                dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer,
-                        columnPosition, rowPosition));
+
+            Object currentValue = this.dataLayer.getDataValueByPosition(columnPosition, rowPosition);
+            if (currentValue == null
+                    || command.getNewValue() == null
+                    || !currentValue.equals(command.getNewValue())) {
+                this.dataLayer.setDataValueByPosition(columnPosition, rowPosition, command.getNewValue());
+                this.dataLayer.fireLayerEvent(new CellVisualChangeEvent(this.dataLayer, columnPosition, rowPosition));
 
                 // TODO implement a new event which is a mix of
                 // PropertyUpdateEvent and CellVisualChangeEvent

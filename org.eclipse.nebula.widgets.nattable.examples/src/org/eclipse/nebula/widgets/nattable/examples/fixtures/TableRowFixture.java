@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.builder.model.TableRow;
 import org.eclipse.nebula.widgets.nattable.test.fixture.data.PricingTypeBean;
@@ -150,7 +149,7 @@ public class TableRowFixture implements TableRow {
     public Object getValue(String propertyName) {
         try {
             return this.getClass()
-                    .getMethod("get" + StringUtils.capitalize(propertyName))
+                    .getMethod("get" + Character.toTitleCase(propertyName.charAt(0)) + propertyName.substring(1))
                     .invoke(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -160,7 +159,7 @@ public class TableRowFixture implements TableRow {
 
     public void setValue(String propertyName, Object value) {
         try {
-            String setterName = "set" + StringUtils.capitalize(propertyName);
+            String setterName = "set" + Character.toTitleCase(propertyName.charAt(0)) + propertyName.substring(1);
             Method[] methods = this.getClass().getDeclaredMethods();
             for (Method method : methods) {
                 if (method.getName().equals(setterName)) {

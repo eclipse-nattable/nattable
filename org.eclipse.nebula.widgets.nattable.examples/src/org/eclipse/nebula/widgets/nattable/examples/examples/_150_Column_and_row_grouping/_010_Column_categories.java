@@ -4,13 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._150_Column_and_row_grouping;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnCategories.ChooseColumnsFromCategoriesCommandHandler;
 import org.eclipse.nebula.widgets.nattable.columnCategories.ColumnCategoriesModel;
@@ -51,16 +50,19 @@ public class _010_Column_categories extends AbstractNatExample {
                 + "when a large number of columns are available.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        gridLayer = new GlazedListsGridLayer<RowDataFixture>(
+        String[] propertyNames = new String[20];
+        for (int i = 0; i < 20; i++) {
+            propertyNames[i] = RowDataListFixture.getPropertyNames()[i];
+        }
+        this.gridLayer = new GlazedListsGridLayer<RowDataFixture>(
                 GlazedLists.eventList(RowDataListFixture.getList()),
-                (String[]) ArrayUtils.subarray(
-                        RowDataListFixture.getPropertyNames(), 0, 20),
-                RowDataListFixture.getPropertyToLabelMap(), configRegistry);
+                propertyNames, RowDataListFixture.getPropertyToLabelMap(), configRegistry);
 
-        NatTable natTable = new NatTable(parent, gridLayer, false);
+        NatTable natTable = new NatTable(parent, this.gridLayer, false);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
             @Override
@@ -77,15 +79,15 @@ public class _010_Column_categories extends AbstractNatExample {
     }
 
     private void configureColumnCategoriesInChooser() {
-        DefaultBodyLayerStack bodyLayer = gridLayer.getBodyLayerStack();
+        DefaultBodyLayerStack bodyLayer = this.gridLayer.getBodyLayerStack();
         ColumnCategoriesModel model = new ColumnCategoriesModelFixture();
 
         bodyLayer
-                .registerCommandHandler(new ChooseColumnsFromCategoriesCommandHandler(
-                        bodyLayer.getColumnHideShowLayer(), gridLayer
-                                .getColumnHeaderLayerStack()
-                                .getColumnHeaderLayer(), gridLayer
-                                .getColumnHeaderLayerStack().getDataLayer(),
-                        model));
+        .registerCommandHandler(new ChooseColumnsFromCategoriesCommandHandler(
+                bodyLayer.getColumnHideShowLayer(), this.gridLayer
+                .getColumnHeaderLayerStack()
+                .getColumnHeaderLayer(), this.gridLayer
+                .getColumnHeaderLayerStack().getDataLayer(),
+                model));
     }
 }

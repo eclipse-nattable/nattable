@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -59,7 +59,15 @@ public class ArrayUtil {
         return !isEmpty(array);
     }
 
-    public static int[] asIntArray(List<Integer> list) {
+    /**
+     * Transforms the given collection of <code>Integer</code>s to an array of
+     * primitive <code>int</code> values.
+     *
+     * @param list
+     *            The collection of <code>Integer</code>s to transform
+     * @return The array representation of primitive <code>int</code> values.
+     */
+    public static int[] asIntArray(Collection<Integer> list) {
         int[] ints = new int[list.size()];
         int i = 0;
         for (int fromSet : list) {
@@ -69,4 +77,34 @@ public class ArrayUtil {
         return ints;
     }
 
+    /**
+     * Creates a new <code>int</code> array containing the elements between
+     * start and end indices.
+     * <p>
+     * Similar to Apache Commons Lang <code>ArrayUtils.subarray()</code>
+     * </p>
+     *
+     * @param array
+     * @param startIndexInclusive
+     * @param endIndexExclusive
+     * @return
+     */
+    public static int[] subarray(int[] array, int startIndexInclusive, int endIndexExclusive) {
+        if (array == null) {
+            return null;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        }
+        if (endIndexExclusive > array.length) {
+            endIndexExclusive = array.length;
+        }
+        int newSize = endIndexExclusive - startIndexInclusive;
+        if (newSize <= 0) {
+            return new int[0];
+        }
+        int[] subarray = new int[newSize];
+        System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
+        return subarray;
+    }
 }

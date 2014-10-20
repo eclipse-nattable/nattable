@@ -4,13 +4,12 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnChooser.gui;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -61,8 +60,8 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
 
         Label separator = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
         GridDataFactory.fillDefaults().grab(true, false)
-                .span(((GridLayout) composite.getLayout()).numColumns, 1)
-                .applyTo(separator);
+        .span(((GridLayout) composite.getLayout()).numColumns, 1)
+        .applyTo(separator);
 
         return composite;
     }
@@ -71,8 +70,8 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
 
     protected void createLabels(Composite parent, String availableStr,
             String selectedStr) {
-        boolean availableSet = StringUtils.isNotEmpty(availableStr);
-        boolean selectedSet = StringUtils.isNotEmpty(selectedStr);
+        boolean availableSet = availableStr != null && availableStr.length() > 0;
+        boolean selectedSet = selectedStr != null && selectedStr.length() > 0;
 
         if (availableSet && selectedSet) {
             if (availableSet) {
@@ -83,7 +82,7 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
 
             Label filler = new Label(parent, SWT.NONE);
             GridDataFactory.swtDefaults().span(availableSet ? 1 : 2, 1)
-                    .applyTo(filler);
+            .applyTo(filler);
 
             if (selectedSet) {
                 Label selectedLabel = new Label(parent, SWT.NONE);
@@ -94,28 +93,29 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
     }
 
     public void addListener(Object listener) {
-        listeners.add(listener);
+        this.listeners.add(listener);
     }
 
     public void removeListener(Object listener) {
-        listeners.remove(listener);
+        this.listeners.remove(listener);
     }
 
     @Override
     protected Point getInitialSize() {
-        if (dialogSettings == null) {
+        if (this.dialogSettings == null) {
             return new Point(500, 350);
         }
         Point initialSize = super.getInitialSize();
         return initialSize.x < 500 && initialSize.y < 350 ? new Point(500, 350)
-                : initialSize;
+        : initialSize;
     }
 
     public void setDialogSettings(IDialogSettings dialogSettings) {
         this.dialogSettings = dialogSettings;
     }
 
+    @Override
     protected IDialogSettings getDialogBoundsSettings() {
-        return dialogSettings;
+        return this.dialogSettings;
     }
 }

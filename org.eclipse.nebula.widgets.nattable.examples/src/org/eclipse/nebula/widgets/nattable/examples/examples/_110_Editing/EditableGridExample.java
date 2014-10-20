@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -112,6 +111,7 @@ public class EditableGridExample extends AbstractNatExample {
     public static final String COMBO_BOX_CONFIG_LABEL = "comboBox";
     public static final String COMBO_BOX_EDITOR_CONFIG_LABEL = "comboBoxEditor";
 
+    @Override
     public Control createExampleControl(Composite parent) {
         DefaultGridLayer gridLayer = new DefaultGridLayer(
                 RowDataListFixture.getList(),
@@ -121,7 +121,7 @@ public class EditableGridExample extends AbstractNatExample {
         DataLayer columnHeaderDataLayer = (DataLayer) gridLayer
                 .getColumnHeaderDataLayer();
         columnHeaderDataLayer
-                .setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        .setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         final DataLayer bodyDataLayer = (DataLayer) gridLayer
                 .getBodyDataLayer();
@@ -147,6 +147,7 @@ public class EditableGridExample extends AbstractNatExample {
                 new CellPainterDecorator(new TextPainter(), CellEdgeEnum.RIGHT,
                         columnHeaderCheckBoxPainter));
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
+            @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.CELL_PAINTER,
@@ -161,8 +162,8 @@ public class EditableGridExample extends AbstractNatExample {
                                 GridRegion.COLUMN_HEADER,
                                 MouseEventMatcher.LEFT_BUTTON,
                                 columnHeaderCheckBoxPainter),
-                        new ToggleCheckBoxColumnAction(
-                                columnHeaderCheckBoxPainter, bodyDataLayer));
+                                new ToggleCheckBoxColumnAction(
+                                        columnHeaderCheckBoxPainter, bodyDataLayer));
             }
         });
 
@@ -177,10 +178,11 @@ public class EditableGridExample extends AbstractNatExample {
 
         return new AbstractRegistryConfiguration() {
 
+            @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
 
                 EditableGridExample
-                        .registerConfigLabelsOnColumns(columnLabelAccumulator);
+                .registerConfigLabelsOnColumns(columnLabelAccumulator);
 
                 registerISINValidator(configRegistry);
                 registerAskPriceValidator(configRegistry, dataProvider);
@@ -211,47 +213,47 @@ public class EditableGridExample extends AbstractNatExample {
     private static void registerConfigLabelsOnColumns(
             ColumnOverrideLabelAccumulator columnLabelAccumulator) {
         columnLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.SECURITY_ID_PROP_NAME),
-                        SECURITY_ID_EDITOR, SECURITY_ID_CONFIG_LABEL);
+        .registerColumnOverrides(
+                RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.SECURITY_ID_PROP_NAME),
+                SECURITY_ID_EDITOR, SECURITY_ID_CONFIG_LABEL);
 
         columnLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.SECURITY_DESCRIPTION_PROP_NAME),
-                        ALIGN_CELL_CONTENTS_LEFT_CONFIG_LABEL);
+        .registerColumnOverrides(
+                RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.SECURITY_DESCRIPTION_PROP_NAME),
+                ALIGN_CELL_CONTENTS_LEFT_CONFIG_LABEL);
 
         columnLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.ISSUE_DATE_PROP_NAME),
-                        FORMAT_DATE_CONFIG_LABEL);
+        .registerColumnOverrides(
+                RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.ISSUE_DATE_PROP_NAME),
+                FORMAT_DATE_CONFIG_LABEL);
 
         columnLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME),
-                        COMBO_BOX_CONFIG_LABEL, COMBO_BOX_EDITOR_CONFIG_LABEL,
-                        FORMAT_PRICING_TYPE_CONFIG_LABEL);
+        .registerColumnOverrides(
+                RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME),
+                COMBO_BOX_CONFIG_LABEL, COMBO_BOX_EDITOR_CONFIG_LABEL,
+                FORMAT_PRICING_TYPE_CONFIG_LABEL);
 
         columnLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.BID_PRICE_PROP_NAME),
-                        BID_PRICE_CONFIG_LABEL,
-                        FORMAT_DOUBLE_6_PLACES_CONFIG_LABEL,
-                        FORMAT_DOUBLE_2_PLACES_CONFIG_LABEL,
-                        ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
+        .registerColumnOverrides(
+                RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.BID_PRICE_PROP_NAME),
+                BID_PRICE_CONFIG_LABEL,
+                FORMAT_DOUBLE_6_PLACES_CONFIG_LABEL,
+                FORMAT_DOUBLE_2_PLACES_CONFIG_LABEL,
+                ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
 
         columnLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME),
-                        ASK_PRICE_CONFIG_LABEL,
-                        FORMAT_DOUBLE_6_PLACES_CONFIG_LABEL,
-                        FORMAT_DOUBLE_2_PLACES_CONFIG_LABEL,
-                        ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
+        .registerColumnOverrides(
+                RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME),
+                ASK_PRICE_CONFIG_LABEL,
+                FORMAT_DOUBLE_6_PLACES_CONFIG_LABEL,
+                FORMAT_DOUBLE_2_PLACES_CONFIG_LABEL,
+                ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
 
         columnLabelAccumulator.registerColumnOverrides(RowDataListFixture
                 .getColumnIndexOfProperty(RowDataListFixture.SPREAD_PROP_NAME),
@@ -259,17 +261,17 @@ public class EditableGridExample extends AbstractNatExample {
                 ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
 
         columnLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME),
-                        LOT_SIZE_CONFIG_LABEL, FORMAT_IN_MILLIONS_CONFIG_LABEL,
-                        ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
+        .registerColumnOverrides(
+                RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME),
+                LOT_SIZE_CONFIG_LABEL, FORMAT_IN_MILLIONS_CONFIG_LABEL,
+                ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
 
         columnLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.PUBLISH_FLAG_PROP_NAME),
-                        CHECK_BOX_EDITOR_CONFIG_LABEL, CHECK_BOX_CONFIG_LABEL);
+        .registerColumnOverrides(
+                RowDataListFixture
+                .getColumnIndexOfProperty(RowDataListFixture.PUBLISH_FLAG_PROP_NAME),
+                CHECK_BOX_EDITOR_CONFIG_LABEL, CHECK_BOX_CONFIG_LABEL);
     }
 
     private static void registerSecurityDescriptionCellStyle(
@@ -328,7 +330,7 @@ public class EditableGridExample extends AbstractNatExample {
         TextCellEditor textCellEditor = new TextCellEditor();
         textCellEditor.setErrorDecorationEnabled(true);
         textCellEditor
-                .setErrorDecorationText("Security Id must be 3 alpha characters optionally followed by numbers");
+        .setErrorDecorationText("Security Id must be 3 alpha characters optionally followed by numbers");
         textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITOR, textCellEditor,
@@ -428,6 +430,7 @@ public class EditableGridExample extends AbstractNatExample {
      */
     private static IEditableRule getEditRule(final IDataProvider dataProvider) {
         return new EditableRule() {
+            @Override
             public boolean isEditable(int columnIndex, int rowIndex) {
                 int columnIndexOfPublishFlag = RowDataListFixture
                         .getColumnIndexOfProperty(RowDataListFixture.PUBLISH_FLAG_PROP_NAME);
@@ -445,19 +448,21 @@ public class EditableGridExample extends AbstractNatExample {
         return new DisplayConverter() {
             NumberFormat numberFormatter = NumberFormat.getInstance();
 
+            @Override
             public Object canonicalToDisplayValue(Object canonicalValue) {
                 if (canonicalValue == null) {
                     return "";
                 }
-                numberFormatter.setMaximumFractionDigits(decimalPlaces);
-                numberFormatter.setMinimumFractionDigits(decimalPlaces);
-                return numberFormatter.format(Double.valueOf(canonicalValue
+                this.numberFormatter.setMaximumFractionDigits(decimalPlaces);
+                this.numberFormatter.setMinimumFractionDigits(decimalPlaces);
+                return this.numberFormatter.format(Double.valueOf(canonicalValue
                         .toString()));
             }
 
+            @Override
             public Object displayToCanonicalValue(Object displayValue) {
                 try {
-                    return numberFormatter.parse((String) displayValue);
+                    return this.numberFormatter.parse((String) displayValue);
                 } catch (ParseException e) {
                     return null;
                 }
@@ -474,12 +479,14 @@ public class EditableGridExample extends AbstractNatExample {
             private final SimpleDateFormat dateFormatter = new SimpleDateFormat(
                     "MM-dd-yy");
 
+            @Override
             public Object canonicalToDisplayValue(Object canonicalValue) {
-                return dateFormatter.format((Date) canonicalValue);
+                return this.dateFormatter.format((Date) canonicalValue);
             }
 
+            @Override
             public Object displayToCanonicalValue(Object displayValue) {
-                return dateFormatter.parse(displayValue.toString(),
+                return this.dateFormatter.parse(displayValue.toString(),
                         new ParsePosition(0));
             }
         };
@@ -492,16 +499,18 @@ public class EditableGridExample extends AbstractNatExample {
         return new DisplayConverter() {
             NumberFormat numberFormatter = new DecimalFormat("###,###,###");
 
+            @Override
             public Object canonicalToDisplayValue(Object canonicalValue) {
                 if (canonicalValue == null) {
                     return null;
                 }
-                return numberFormatter.format(Integer.valueOf(canonicalValue
+                return this.numberFormatter.format(Integer.valueOf(canonicalValue
                         .toString()));
             }
 
+            @Override
             public Object displayToCanonicalValue(Object displayValue) {
-                return (numberFormatter.parse(displayValue.toString(),
+                return (this.numberFormatter.parse(displayValue.toString(),
                         new ParsePosition(0))).intValue();
             }
         };
@@ -515,6 +524,7 @@ public class EditableGridExample extends AbstractNatExample {
 
         return new DataValidator() {
 
+            @Override
             public boolean validate(int columnIndex, int rowIndex,
                     Object newValue) {
                 try {
@@ -539,6 +549,7 @@ public class EditableGridExample extends AbstractNatExample {
     private static IDataValidator getSecurtityIdValidator() {
         return new DataValidator() {
 
+            @Override
             public boolean validate(int columnIndex, int rowIndex,
                     Object newValue) {
                 if (newValue == null) {
@@ -548,12 +559,28 @@ public class EditableGridExample extends AbstractNatExample {
                 if (value.length() > 3) {
                     String alphabeticPart = value.substring(0, 2);
                     String numericPart = value.substring(3, value.length());
-                    return StringUtils.isAlpha(alphabeticPart)
-                            && StringUtils.isNumeric(numericPart);
+                    return isAlpha(alphabeticPart)
+                            && isNumeric(numericPart);
                 } else {
                     String alphabeticPart = value.substring(0, value.length());
-                    return StringUtils.isAlpha(alphabeticPart);
+                    return isAlpha(alphabeticPart);
                 }
+            }
+
+            private boolean isAlpha(String str) {
+                for (int i = 0; i < str.length(); i++) {
+                    if (!Character.isLetter(str.charAt(i)))
+                        return false;
+                }
+                return true;
+            }
+
+            private boolean isNumeric(String str) {
+                for (int i = 0; i < str.length(); i++) {
+                    if (!Character.isDigit(str.charAt(i)))
+                        return false;
+                }
+                return true;
             }
         };
     }

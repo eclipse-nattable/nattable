@@ -22,7 +22,6 @@ import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -31,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.IMarkerSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.CellPosition;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -111,40 +111,40 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         this.rowDataProvider = rowDataProvider;
         this.rowIdAccessor = rowIdAccessor;
         this.allowMultiSelection = true;
-        selectionsLock = new ReentrantReadWriteLock();
+        this.selectionsLock = new ReentrantReadWriteLock();
     }
 
     @Override
     public boolean isMultipleSelectionAllowed() {
-        return allowMultiSelection;
+        return this.allowMultiSelection;
     }
 
     @Override
     public void setMultipleSelectionAllowed(boolean multipleSelectionAllowed) {
-        allowMultiSelection = multipleSelectionAllowed;
+        this.allowMultiSelection = multipleSelectionAllowed;
     }
 
     @Override
     public void addSelection(int columnPosition, int rowPosition) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
-            if (!allowMultiSelection) {
+            if (!this.allowMultiSelection) {
                 clearSelection();
             }
 
             T rowObject = getRowObjectByPosition(rowPosition);
             if (rowObject != null) {
-                Serializable rowId = rowIdAccessor.getRowId(rowObject);
-                selections.select(rowId, rowObject, columnPosition);
+                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+                this.selections.select(rowId, rowObject, columnPosition);
             }
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
     @Override
     public void addSelection(Rectangle range) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
             SelectionOperation addSelectionOperation = new SelectionOperation() {
 
@@ -155,37 +155,37 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             };
             performOnKnownCells(range, addSelectionOperation);
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
     @Override
     public void clearSelection() {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
-            selections.clear();
+            this.selections.clear();
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
     @Override
     public void clearSelection(int columnPosition, int rowPosition) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
             T rowObject = getRowObjectByPosition(rowPosition);
             if (rowObject != null) {
-                Serializable rowId = rowIdAccessor.getRowId(rowObject);
-                selections.deselect(rowId, columnPosition);
+                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+                this.selections.deselect(rowId, columnPosition);
             }
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
     @Override
     public void clearSelection(Rectangle removedSelection) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
             SelectionOperation clearSelectionOperation = new SelectionOperation() {
 
@@ -196,7 +196,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             };
             performOnKnownCells(removedSelection, clearSelectionOperation);
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
@@ -214,22 +214,22 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      */
     private void performOnKnownCells(Rectangle selection,
             SelectionOperation selectionOperation) {
-        int columnCount = selectionLayer.getColumnCount();
-        int rowCount = selectionLayer.getRowCount();
+        int columnCount = this.selectionLayer.getColumnCount();
+        int rowCount = this.selectionLayer.getRowCount();
         int startColumnPosition = selection.x;
         int startRowPosition = selection.y;
         if (startColumnPosition < columnCount && startRowPosition < rowCount) {
 
-            int columnStartIndex = selectionLayer
+            int columnStartIndex = this.selectionLayer
                     .getColumnIndexByPosition(selection.x);
             int numberOfVisibleColumnsToBeSelected = (selection.x
                     + selection.width <= columnCount) ? selection.width
-                    : columnCount - columnStartIndex;
-            int rowStartIndex = selectionLayer
+                            : columnCount - columnStartIndex;
+            int rowStartIndex = this.selectionLayer
                     .getRowIndexByPosition(selection.y);
             int numberOfVisibleRowsToBeSelected = (selection.y
                     + selection.height <= rowCount) ? selection.height
-                    : rowCount - rowStartIndex;
+                            : rowCount - rowStartIndex;
 
             for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition
                     + numberOfVisibleColumnsToBeSelected; columnPosition++) {
@@ -243,11 +243,11 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public boolean isEmpty() {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            return selections.isEmpty();
+            return this.selections.isEmpty();
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
@@ -255,9 +255,9 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public List<Rectangle> getSelections() {
         ArrayList<Rectangle> selectedCells = new ArrayList<Rectangle>();
 
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            for (CellPosition<T> cellPosition : selections.getSelections()) {
+            for (CellPosition<T> cellPosition : this.selections.getSelections()) {
                 int rowPosition = getRowPositionByRowObject(cellPosition
                         .getRowObject());
                 if (isRowVisible(rowPosition)) {
@@ -268,14 +268,14 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
         return selectedCells;
     }
 
     /**
      * Determines if rowPosition represents a visible row
-     * 
+     *
      * @param rowPosition
      *            position of row to inspect
      * @return whether rowPosition represents a visible row
@@ -286,10 +286,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
         try {
-            ILayerCell cell = selectionLayer.getCellByPosition(columnPosition,
+            ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition,
                     rowPosition);
             int cellOriginRowPosition = cell.getOriginRowPosition();
 
@@ -300,61 +300,59 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 int cellOriginColumnPosition = cell.getOriginColumnPosition();
                 for (int candidateColumnPosition = cellOriginColumnPosition; candidateColumnPosition < cellOriginColumnPosition
                         + cell.getColumnSpan(); candidateColumnPosition++) {
-                    if (selections.isSelected(rowId, candidateColumnPosition)) {
+                    if (this.selections.isSelected(rowId, candidateColumnPosition)) {
                         return true;
                     }
 
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
         return false;
     }
 
     @Override
     public int[] getSelectedColumnPositions() {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            Collection<Integer> columnPositions = selections
+            Collection<Integer> columnPositions = this.selections
                     .getColumnPositions();
-            return ArrayUtils.toPrimitive(columnPositions
-                    .toArray(new Integer[columnPositions.size()]));
+            return ArrayUtil.asIntArray(columnPositions);
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
     @Override
     public boolean isColumnPositionSelected(int columnPosition) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            for (Selections<T>.Row row : selections.getRows()) {
+            for (Selections<T>.Row row : this.selections.getRows()) {
                 if (row.contains(columnPosition)) {
                     return true;
                 }
             }
 
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
         return false;
     }
 
     @Override
     public int[] getFullySelectedColumnPositions(int columnHeight) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
             List<Integer> fullySelectedColumnPositions = new ArrayList<Integer>();
-            for (Integer selectedColumn : selections.getColumnPositions()) {
+            for (Integer selectedColumn : this.selections.getColumnPositions()) {
                 if (isColumnPositionFullySelected(selectedColumn, columnHeight)) {
                     fullySelectedColumnPositions.add(selectedColumn);
                 }
             }
-            return ArrayUtils.toPrimitive(fullySelectedColumnPositions
-                    .toArray(new Integer[fullySelectedColumnPositions.size()]));
+            return ArrayUtil.asIntArray(fullySelectedColumnPositions);
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
@@ -362,28 +360,28 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public boolean isColumnPositionFullySelected(int columnPosition,
             int columnHeight) {
         TreeSet<Integer> selectedRowIndices = new TreeSet<Integer>();
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            Selections<T>.Column selectedRowsInColumn = selections
+            Selections<T>.Column selectedRowsInColumn = this.selections
                     .getSelectedRows(columnPosition);
             if (hasColumnsSelectedRows(selectedRowsInColumn)) {
                 for (Serializable rowId : selectedRowsInColumn.getItems()) {
-                    Selections<T>.Row row = selections
+                    Selections<T>.Row row = this.selections
                             .getSelectedColumns(rowId);
                     T rowObject = row.getRowObject();
-                    int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
+                    int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
                     selectedRowIndices.add(rowIndex);
                 }
             }
             return hasContinuousSection(selectedRowIndices, columnHeight);
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
     /**
      * Determines if there are selected cells in a column
-     * 
+     *
      * @param column
      *            collections of selected cells for a column
      * @return whether there are selected cells in column
@@ -395,7 +393,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     /**
      * Determines if there is a long enough continuous section of integers in
      * the sequence. The continuous section must be at least sectionSize long.
-     * 
+     *
      * @param sequence
      *            sequence of integers to inspect
      * @param minimumLength
@@ -427,11 +425,11 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public int getSelectedRowCount() {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            return selections.getRows().size();
+            return this.selections.getRows().size();
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
@@ -439,9 +437,9 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public Set<Range> getSelectedRowPositions() {
         HashSet<Range> visiblySelectedRowPositions = new HashSet<Range>();
 
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            for (Selections<T>.Row row : selections.getRows()) {
+            for (Selections<T>.Row row : this.selections.getRows()) {
                 int rowPosition = getRowPositionByRowObject(row.getRowObject());
                 if (isRowVisible(rowPosition)) {
                     visiblySelectedRowPositions.add(new Range(rowPosition,
@@ -449,28 +447,28 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
         return visiblySelectedRowPositions;
     }
 
     @Override
     public boolean isRowPositionSelected(int rowPosition) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
             Serializable rowId = getRowIdByPosition(rowPosition);
-            return selections.isRowSelected(rowId);
+            return this.selections.isRowSelected(rowId);
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
     @Override
     public int[] getFullySelectedRowPositions(int rowWidth) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
             List<Integer> fullySelectedRows = new ArrayList<Integer>();
-            for (Selections<T>.Row selectedRow : selections.getRows()) {
+            for (Selections<T>.Row selectedRow : this.selections.getRows()) {
                 T rowObject = selectedRow.getRowObject();
                 int rowPosition = getRowPositionByRowObject(rowObject);
                 if (isRowVisible(rowPosition)
@@ -479,10 +477,9 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 }
             }
             Collections.sort(fullySelectedRows);
-            return ArrayUtils.toPrimitive(fullySelectedRows
-                    .toArray(new Integer[fullySelectedRows.size()]));
+            return ArrayUtil.asIntArray(fullySelectedRows);
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
@@ -490,12 +487,12 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public boolean isRowPositionFullySelected(int rowPosition, int rowWidth) {
         TreeSet<Integer> selectedColumnPositions = new TreeSet<Integer>();
 
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
             T rowObject = getRowObjectByPosition(rowPosition);
             if (rowObject != null) {
-                Serializable rowId = rowIdAccessor.getRowId(rowObject);
-                Selections<T>.Row selectedColumnsInRow = selections
+                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+                Selections<T>.Row selectedColumnsInRow = this.selections
                         .getSelectedColumns(rowId);
                 if (hasRowSelectedColumns(selectedColumnsInRow)) {
                     for (Integer columnPosition : selectedColumnsInRow
@@ -505,14 +502,14 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
         return hasContinuousSection(selectedColumnPositions, rowWidth);
     }
 
     /**
      * Determines if there are selected cells in a row
-     * 
+     *
      * @param row
      *            collections of selected cells for a row
      * @return whether there are selected cells in row
@@ -523,7 +520,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     /**
      * Retrieves the row ID for a row position
-     * 
+     *
      * @param rowPosition
      *            row position for retrieving row ID
      * @return row ID for rowPosition, or null if undefined
@@ -531,23 +528,23 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     private Serializable getRowIdByPosition(int rowPosition) {
         T rowObject = getRowObjectByPosition(rowPosition);
         if (rowObject != null) {
-            return rowIdAccessor.getRowId(rowObject);
+            return this.rowIdAccessor.getRowId(rowObject);
         }
         return null;
     }
 
     /**
      * Retrieves the row object for a row position
-     * 
+     *
      * @param rowPosition
      *            row position for retrieving row object
      * @return row object for rowPosition, or null if undefined
      */
     private T getRowObjectByPosition(int rowPosition) {
-        int rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
+        int rowIndex = this.selectionLayer.getRowIndexByPosition(rowPosition);
         if (rowIndex >= 0) {
             try {
-                return rowDataProvider.getRowObject(rowIndex);
+                return this.rowDataProvider.getRowObject(rowIndex);
             } catch (Exception e) {
                 // row index is invalid for the data provider
             }
@@ -557,36 +554,36 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     /**
      * Retrieves the row position for a row object
-     * 
+     *
      * @param rowObject
      *            row object for retrieving row position
      * @return row position for rowObject, or -1 if undefined
      */
     private int getRowPositionByRowObject(T rowObject) {
-        int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
+        int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
         if (rowIndex == -1) {
             return -1;
         }
-        return selectionLayer.getRowPositionByIndex(rowIndex);
+        return this.selectionLayer.getRowPositionByIndex(rowIndex);
     }
 
     @Override
     public Point getSelectionAnchor() {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            return createMarkerPoint(selectionAnchor);
+            return createMarkerPoint(this.selectionAnchor);
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
     @Override
     public Point getLastSelectedCell() {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            return createMarkerPoint(lastSelectedCell);
+            return createMarkerPoint(this.lastSelectedCell);
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
@@ -595,7 +592,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * position and column position. The row position is calculated by
      * translating the row object of the cell position. It uses the column
      * position of the cell position without translation.
-     * 
+     *
      * @param cellPosition
      *            cell position to translate into a point
      * @return cellPosition expressed in row position and column position
@@ -611,7 +608,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     /**
      * Creates an undefined point, using the SelectionLayer.NO_SELECTION
      * constant.
-     * 
+     *
      * @return an undefined point
      */
     private Point createUndefinedPoint() {
@@ -621,16 +618,16 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
     @Override
     public Rectangle getLastSelectedRegion() {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            if (lastSelectedRegion == null) {
+            if (this.lastSelectedRegion == null) {
                 return null;
             } else {
                 correctLastSelectedRegion();
-                return lastSelectedRegion;
+                return this.lastSelectedRegion;
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
@@ -640,56 +637,56 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * object.
      */
     private void correctLastSelectedRegion() {
-        lastSelectedRegion.y = getRowPositionByRowObject(lastSelectedRegionOriginRowObject);
+        this.lastSelectedRegion.y = getRowPositionByRowObject(this.lastSelectedRegionOriginRowObject);
     }
 
     @Override
     public void setSelectionAnchor(Point coordinate) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
-            selectionAnchor = new CellPosition<T>(
+            this.selectionAnchor = new CellPosition<T>(
                     getRowObjectByPosition(coordinate.y), coordinate.x);
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
     @Override
     public void setLastSelectedCell(Point coordinate) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
-            lastSelectedCell = new CellPosition<T>(
+            this.lastSelectedCell = new CellPosition<T>(
                     getRowObjectByPosition(coordinate.y), coordinate.x);
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
     @Override
     public void setLastSelectedRegion(Rectangle region) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
-            lastSelectedRegion = region;
+            this.lastSelectedRegion = region;
             if (region != null) {
-                lastSelectedRegionOriginRowObject = getRowObjectByPosition(region.y);
+                this.lastSelectedRegionOriginRowObject = getRowObjectByPosition(region.y);
             }
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
     @Override
     public void setLastSelectedRegion(int x, int y, int width, int height) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
-            lastSelectedRegion.x = x;
-            lastSelectedRegion.y = y;
-            lastSelectedRegion.width = width;
-            lastSelectedRegion.height = height;
+            this.lastSelectedRegion.x = x;
+            this.lastSelectedRegion.y = y;
+            this.lastSelectedRegion.width = width;
+            this.lastSelectedRegion.height = height;
 
-            lastSelectedRegionOriginRowObject = getRowObjectByPosition(y);
+            this.lastSelectedRegionOriginRowObject = getRowObjectByPosition(y);
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,21 +21,21 @@ import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Tracks the selections made in the table. All selections are tracked in terms
  * of Rectangles.
- * 
+ *
  * For example if the table has 10 rows and column 2 is selected, the Rectangle
  * tracked is (0, 2, 10, 1)
- * 
+ *
  * Coordinates are in <i>Selection Layer positions</i>
- * 
+ *
  * @see SelectionLayer
  */
 public class SelectionModel implements ISelectionModel {
@@ -55,13 +55,13 @@ public class SelectionModel implements ISelectionModel {
         this.selectionLayer = selectionLayer;
         this.multipleSelectionAllowed = multipleSelectionAllowed;
 
-        selections = new LinkedList<Rectangle>();
-        selectionsLock = new ReentrantReadWriteLock();
+        this.selections = new LinkedList<Rectangle>();
+        this.selectionsLock = new ReentrantReadWriteLock();
     }
 
     @Override
     public boolean isMultipleSelectionAllowed() {
-        return multipleSelectionAllowed;
+        return this.multipleSelectionAllowed;
     }
 
     @Override
@@ -83,11 +83,11 @@ public class SelectionModel implements ISelectionModel {
     }
 
     private void addSelectionIntoList(Rectangle selection) {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
-            if (multipleSelectionAllowed) {
+            if (this.multipleSelectionAllowed) {
                 ArrayList<Rectangle> itemsToRemove = null;
-                for (Rectangle r : selections) {
+                for (Rectangle r : this.selections) {
                     if (selection.intersects(r)) {
                         if (r.equals(selection)) {
                             break;
@@ -108,10 +108,10 @@ public class SelectionModel implements ISelectionModel {
                 }
 
                 if (itemsToRemove != null) {
-                    selections.removeAll(itemsToRemove);
+                    this.selections.removeAll(itemsToRemove);
                 }
             } else {
-                selections.clear();
+                this.selections.clear();
                 // as no multiple selection is allowed, ensure that only one
                 // column
                 // and one row will be selected
@@ -119,20 +119,20 @@ public class SelectionModel implements ISelectionModel {
                 selection.width = 1;
             }
 
-            selections.add(selection);
+            this.selections.add(selection);
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
 
     }
 
     @Override
     public void clearSelection() {
-        selectionsLock.writeLock().lock();
+        this.selectionsLock.writeLock().lock();
         try {
-            selections.clear();
+            this.selections.clear();
         } finally {
-            selectionsLock.writeLock().unlock();
+            this.selectionsLock.writeLock().unlock();
         }
     }
 
@@ -147,10 +147,10 @@ public class SelectionModel implements ISelectionModel {
         List<Rectangle> removedItems = new LinkedList<Rectangle>();
         List<Rectangle> addedItems = new LinkedList<Rectangle>();
 
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
         try {
-            for (Rectangle r : selections) {
+            for (Rectangle r : this.selections) {
                 if (r.intersects(removedSelection)) {
                     Rectangle intersection = removedSelection.intersection(r);
                     removedItems.add(r);
@@ -176,26 +176,26 @@ public class SelectionModel implements ISelectionModel {
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
 
         if (removedItems.size() > 0) {
-            selectionsLock.writeLock().lock();
+            this.selectionsLock.writeLock().lock();
             try {
-                selections.removeAll(removedItems);
+                this.selections.removeAll(removedItems);
             } finally {
-                selectionsLock.writeLock().unlock();
+                this.selectionsLock.writeLock().unlock();
             }
 
             removedItems.clear();
         }
 
         if (addedItems.size() > 0) {
-            selectionsLock.writeLock().lock();
+            this.selectionsLock.writeLock().lock();
             try {
-                selections.addAll(addedItems);
+                this.selections.addAll(addedItems);
             } finally {
-                selectionsLock.writeLock().unlock();
+                this.selectionsLock.writeLock().unlock();
             }
 
             addedItems.clear();
@@ -205,27 +205,27 @@ public class SelectionModel implements ISelectionModel {
 
     @Override
     public boolean isEmpty() {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
         try {
-            return selections.isEmpty();
+            return this.selections.isEmpty();
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
     @Override
     public List<Rectangle> getSelections() {
-        return selections;
+        return this.selections;
     }
 
     // Cell features
 
     @Override
     public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
         try {
-            ILayerCell cell = selectionLayer.getCellByPosition(columnPosition,
+            ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition,
                     rowPosition);
             if (cell != null) {
                 Rectangle cellRectangle = new Rectangle(
@@ -233,13 +233,13 @@ public class SelectionModel implements ISelectionModel {
                         cell.getOriginRowPosition(), cell.getColumnSpan(),
                         cell.getRowSpan());
 
-                for (Rectangle selectionRectangle : selections) {
+                for (Rectangle selectionRectangle : this.selections) {
                     if (selectionRectangle.intersects(cellRectangle))
                         return true;
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
 
         return false;
@@ -251,11 +251,11 @@ public class SelectionModel implements ISelectionModel {
     public int[] getSelectedColumnPositions() {
         TreeSet<Integer> selectedColumns = new TreeSet<Integer>();
 
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
-        int columnCount = selectionLayer.getColumnCount();
+        int columnCount = this.selectionLayer.getColumnCount();
         try {
-            for (Rectangle r : selections) {
+            for (Rectangle r : this.selections) {
                 int startColumn = r.x;
                 if (startColumn < columnCount) {
                     int numColumns = (r.x + r.width <= columnCount) ? r.width
@@ -269,7 +269,7 @@ public class SelectionModel implements ISelectionModel {
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
 
         // Convert to array
@@ -278,7 +278,7 @@ public class SelectionModel implements ISelectionModel {
 
     @Override
     public boolean isColumnPositionSelected(int columnPosition) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
         try {
             for (int column : getSelectedColumnPositions()) {
@@ -287,7 +287,7 @@ public class SelectionModel implements ISelectionModel {
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
 
         return false;
@@ -304,8 +304,7 @@ public class SelectionModel implements ISelectionModel {
             }
         }
 
-        return index > 0 ? ArrayUtils.subarray(columnsToHide, 0, index)
-                : new int[0];
+        return index > 0 ? ArrayUtil.subarray(columnsToHide, 0, index) : new int[0];
     }
 
     /**
@@ -313,13 +312,13 @@ public class SelectionModel implements ISelectionModel {
      * might aggregate to cover the entire column. We need to take into account
      * any overlapping selections or any selection rectangles contained within
      * each other.
-     * 
+     *
      * See the related tests for a better understanding.
      */
     @Override
     public boolean isColumnPositionFullySelected(int columnPosition,
             int columnHeight) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
         try {
             // Aggregate all rectangles in the column which are in the selection
@@ -327,7 +326,7 @@ public class SelectionModel implements ISelectionModel {
             List<Rectangle> selectedRectanglesInColumn = new ArrayList<Rectangle>();
 
             // If X is same add up the height of the selected area
-            for (Rectangle r : selections) {
+            for (Rectangle r : this.selections) {
                 // Column is within the bounds of the selcted rectangle
                 if (columnPosition >= r.x && columnPosition < r.x + r.width) {
                     selectedRectanglesInColumn.add(new Rectangle(
@@ -361,7 +360,7 @@ public class SelectionModel implements ISelectionModel {
             }
             return finalRectangle.height >= columnHeight;
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
@@ -381,11 +380,11 @@ public class SelectionModel implements ISelectionModel {
     public Set<Range> getSelectedRowPositions() {
         Set<Range> selectedRowsRange = new HashSet<Range>();
 
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
-        int rowCount = selectionLayer.getRowCount();
+        int rowCount = this.selectionLayer.getRowCount();
         try {
-            for (Rectangle r : selections) {
+            for (Rectangle r : this.selections) {
                 if (r.y < rowCount) {
                     int height = (r.y + r.height <= rowCount) ? r.height
                             : rowCount - r.y;
@@ -393,7 +392,7 @@ public class SelectionModel implements ISelectionModel {
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
 
         ArrayList<Range> ranges = new ArrayList<Range>(selectedRowsRange);
@@ -423,7 +422,7 @@ public class SelectionModel implements ISelectionModel {
 
     @Override
     public boolean isRowPositionSelected(int rowPosition) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
         try {
             for (Range rowRange : getSelectedRowPositions()) {
@@ -432,7 +431,7 @@ public class SelectionModel implements ISelectionModel {
                 }
             }
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
 
         return false;
@@ -452,13 +451,12 @@ public class SelectionModel implements ISelectionModel {
             }
         }
 
-        return index > 0 ? ArrayUtils.subarray(fullySelectedRows, 0, index)
-                : new int[0];
+        return index > 0 ? ArrayUtil.subarray(fullySelectedRows, 0, index) : new int[0];
     }
 
     @Override
     public boolean isRowPositionFullySelected(int rowPosition, int rowWidth) {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
         try {
             // Aggregate all rectangles in the row which are in the selection
@@ -466,7 +464,7 @@ public class SelectionModel implements ISelectionModel {
             List<Rectangle> selectedRectanglesInRow = new ArrayList<Rectangle>();
 
             // If X is same add up the width of the selected area
-            for (Rectangle r : selections) {
+            for (Rectangle r : this.selections) {
                 // Row is within the bounds of the selcted rectangle
                 if (rowPosition >= r.y && rowPosition < r.y + r.height) {
                     selectedRectanglesInRow.add(new Rectangle(r.x, rowPosition,
@@ -499,7 +497,7 @@ public class SelectionModel implements ISelectionModel {
             }
             return finalRectangle.width >= rowWidth;
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
@@ -590,12 +588,12 @@ public class SelectionModel implements ISelectionModel {
 
     @Override
     public String toString() {
-        selectionsLock.readLock().lock();
+        this.selectionsLock.readLock().lock();
 
         try {
-            return selections.toString();
+            return this.selections.toString();
         } finally {
-            selectionsLock.readLock().unlock();
+            this.selectionsLock.readLock().unlock();
         }
     }
 
