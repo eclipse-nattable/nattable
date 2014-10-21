@@ -210,6 +210,33 @@ public class GUIHelper {
         return image;
     }
 
+    public static URL getScaledImageURL(URL url) {
+        if (needScaling()) {
+            // modify url to contain scaling information in filename
+            // create the matching URL for the scaled image
+            String urlString = url.toString();
+            int extIndex = urlString.lastIndexOf('.');
+            String ext = urlString.substring(extIndex, urlString.length());
+            String base = urlString.substring(0, extIndex);
+
+            // check if there is a upscaled image available
+            try {
+                URL scaleURL = new URL(base + getScalingImageSuffix() + ext);
+                URLConnection con = scaleURL.openConnection();
+                con.connect();
+                // as the connection could be established, the file exists
+                // this check is working in plain SWT aswell as in the OSGi
+                // context
+                return scaleURL;
+            } catch (IOException e) {
+                // do nothing, there is no upscaled image available, so we
+                // simply use the given URL
+            }
+        }
+        // scaling is not necessary, so just return the given URL
+        return url;
+    }
+
     /**
      * Returns the {@link Image} representation of a NatTable internal image
      * resource.
@@ -281,9 +308,10 @@ public class GUIHelper {
      *         there is no image found for the given name at the internal image
      *         resource location.
      */
-    private static URL getInternalImageUrl(String imageName) {
+    public static URL getInternalImageUrl(String imageName) {
         for (String dir : IMAGE_DIRS) {
             for (String ext : IMAGE_EXTENSIONS) {
+                // TODO remove direct scaling information addition
                 // add search for scaled image
                 // e.g. imageName = checkbox -->
                 // org/eclipse/nebula/widgets/nattable/images/checkbox_128_128.png

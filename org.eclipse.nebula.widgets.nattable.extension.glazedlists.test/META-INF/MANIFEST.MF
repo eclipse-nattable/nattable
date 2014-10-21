@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists.t
 Bundle-Version: 1.2.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit4
+Require-Bundle: org.junit;bundle-version="4.11.0"
 Import-Package: org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow,
  org.eclipse.nebula.widgets.nattable.filterrow.command,

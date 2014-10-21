@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NatTable SWT UI
+Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.ui.swt
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-ExtensibleAPI: true
+Import-Package: org.apache.commons.logging;version="[1.0.0,2.0.0)",
+ org.eclipse.core.commands.common,
+ org.eclipse.jface.action,
+ org.eclipse.jface.dialogs,
+ org.eclipse.jface.fieldassist,
+ org.eclipse.jface.layout,
+ org.eclipse.jface.menus,
+ org.eclipse.jface.resource,
+ org.eclipse.jface.util,
+ org.eclipse.jface.viewers,
+ org.eclipse.jface.window,
+ org.eclipse.nebula.widgets.nattable.core.geometry;version="2.0.0",
+ org.eclipse.nebula.widgets.nattable.core.ui.rendering;version="2.0.0",
+ org.eclipse.nebula.widgets.nattable.style;version="2.0.0",
+ org.eclipse.swt,
+ org.eclipse.swt.custom,
+ org.eclipse.swt.dnd,
+ org.eclipse.swt.events,
+ org.eclipse.swt.graphics,
+ org.eclipse.swt.layout,
+ org.eclipse.swt.printing,
+ org.eclipse.swt.program,
+ org.eclipse.swt.widgets
+Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0"
+Bundle-Vendor: Eclipse Nebula NatTable
