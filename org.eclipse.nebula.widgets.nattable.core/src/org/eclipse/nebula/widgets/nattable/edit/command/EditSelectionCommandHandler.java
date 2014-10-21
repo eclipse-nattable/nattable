@@ -52,7 +52,7 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
                 && EditUtils.activateLastSelectedCellEditor(this.selectionLayer, configRegistry, command.isByTraversal())) {
 
             // check how many cells are selected
-            Collection<ILayerCell> selectedCells = this.selectionLayer.getSelectedCells();
+            Collection<ILayerCell> selectedCells = EditUtils.getSelectedCellsForEditing(this.selectionLayer);
             if (selectedCells.size() == 1) {
                 // editing is triggered by key for a single cell
                 // we need to fire the InlineCellEditEvent here because we
