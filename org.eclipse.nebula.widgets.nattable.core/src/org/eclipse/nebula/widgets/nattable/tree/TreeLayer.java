@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -47,6 +47,12 @@ public class TreeLayer extends AbstractRowHideShowLayer {
     public static final int TREE_COLUMN_NUMBER = 0;
 
     /**
+     * Flag to configure whether the tree column should be identified by
+     * position or by index. Default is position.
+     */
+    private boolean useTreeColumnIndex = false;
+
+    /**
      * The ITreeRowModelListener that is used to get information about the tree
      * structure.
      */
@@ -66,7 +72,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * default IndentedTreeImagePainter that uses 10 pixels for indentation and
      * simple + and - icons for expand/collapse icons. It also uses the
      * DefaultTreeLayerConfiguration.
-     * 
+     *
      * @param underlyingLayer
      *            The underlying layer on whose top this layer will be set.
      * @param treeRowModel
@@ -82,7 +88,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * Creates a TreeLayer instance based on the given information. Allows to
      * specify the IndentedTreeImagePainter while using the
      * DefaultTreeLayerConfiguration.
-     * 
+     *
      * @param underlyingLayer
      *            The underlying layer on whose top this layer will be set.
      * @param treeRowModel
@@ -104,7 +110,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * Creates a TreeLayer instance based on the given information. Will use a
      * default IndentedTreeImagePainter that uses 10 pixels for indentation and
      * simple + and - icons for expand/collapse icons.
-     * 
+     *
      * @param underlyingLayer
      *            The underlying layer on whose top this layer will be set.
      * @param treeRowModel
@@ -123,7 +129,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
     /**
      * Creates a TreeLayer instance based on the given information.
-     * 
+     *
      * @param underlyingLayer
      *            The underlying layer on whose top this layer will be set.
      * @param treeRowModel
@@ -171,18 +177,18 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
             int rowIndex = getRowIndexByPosition(rowPosition);
             configLabels
-                    .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE
-                            + this.treeRowModel.depth(rowIndex));
+            .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE
+                    + this.treeRowModel.depth(rowIndex));
             if (!this.treeRowModel.hasChildren(rowIndex)) {
                 configLabels
-                        .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
+                .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
             } else {
                 if (this.treeRowModel.isCollapsed(rowIndex)) {
                     configLabels
-                            .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
+                    .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
                 } else {
                     configLabels
-                            .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
+                    .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
                 }
             }
         }
@@ -201,7 +207,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * @return The IndentedTreeImagePainter that paints indentation to the left
      *         of the configured base painter and icons for expand/collapse if
      *         possible, to render tree structure accordingly.
-     * 
+     *
      * @deprecated since 1.1 the configured TreeImagePainter should be used
      *             instead of the hard referenced one
      */
@@ -217,7 +223,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *         the node state.<br/>
      *         Can be <code>null</code> if set explicitly to the
      *         IndentedTreeImagePainter!
-     * 
+     *
      * @deprecated since 1.1 the configured TreeImagePainter should be used
      *             instead of the hard referenced one
      */
@@ -234,6 +240,9 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *         column, <code>false</code> if not.
      */
     private boolean isTreeColumn(int columnPosition) {
+        if (this.useTreeColumnIndex)
+            return getColumnIndexByPosition(columnPosition) == TREE_COLUMN_NUMBER;
+
         return columnPosition == TREE_COLUMN_NUMBER;
     }
 
@@ -259,7 +268,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                             && innerWrapper != null
                             && innerWrapper instanceof CellPainterWrapper
                             && ((CellPainterWrapper) innerWrapper)
-                                    .getWrappedPainter() != null) {
+                            .getWrappedPainter() != null) {
 
                         innerWrapper = ((CellPainterWrapper) innerWrapper)
                                 .getWrappedPainter();
@@ -278,7 +287,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                             + "using local configured IndentedTreeImagePainter as fallback"); //$NON-NLS-1$
                     // fallback
                     this.indentedTreeImagePainter
-                            .setBaseCellPainter(cellPainter);
+                    .setBaseCellPainter(cellPainter);
                     cellPainter = new BackgroundPainter(
                             this.indentedTreeImagePainter);
                 }
@@ -307,7 +316,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
     /**
      * Performs an expand/collapse action dependent on the current state of the
      * tree node at the given row index.
-     * 
+     *
      * @param parentIndex
      *            The index of the row that shows the tree node for which the
      *            expand/collapse action should be performed.
@@ -322,7 +331,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
     /**
      * Collapses the tree node for the given row index.
-     * 
+     *
      * @param parentIndex
      *            The index of the row that shows the node that should be
      *            collapsed
@@ -364,7 +373,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
     /**
      * Expands the tree node for the given row index.
-     * 
+     *
      * @param parentIndex
      *            The index of the row that shows the node that should be
      *            expanded
@@ -392,7 +401,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
     /**
      * Checks the underlying layer if the row is hidden by another layer.
-     * 
+     *
      * @param rowIndex
      *            The index of the row whose hidden state should be checked
      * @return <code>true</code> if the row at the given index is hidden in the
@@ -418,7 +427,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * Checks if the given command tries to hide a row that is a node that is
      * not collapsed and has children. In that case also the child rows need to
      * be hidden.
-     * 
+     *
      * @param command
      *            The {@link RowHideCommand} to process
      * @return <code>true</code> if the command has been handled,
@@ -450,7 +459,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * Checks if the given command tries to hide rows that are nodes that are
      * not collapsed and have children. In that case also the child rows need to
      * be hidden.
-     * 
+     *
      * @param command
      *            The {@link MultiRowHideCommand} to process
      * @return <code>true</code> if the command has been handled,
@@ -469,7 +478,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                             .getChildIndexes(rowIndex);
                     for (Integer childIndex : childIndexes) {
                         rowPositionsToHide
-                                .add(getRowPositionByIndex(childIndex));
+                        .add(getRowPositionByIndex(childIndex));
                     }
                 }
             }
@@ -482,5 +491,27 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                     .doCommand(new MultiRowHideCommand(this, childPositions));
         }
         return super.doCommand(command);
+    }
+
+    /**
+     * @return <code>true</code> if the column index is used to determine the
+     *         tree column, <code>false</code> if the column position is used.
+     *         Default is <code>false</code>.
+     */
+    public boolean isUseTreeColumnIndex() {
+        return this.useTreeColumnIndex;
+    }
+
+    /**
+     * Configure whether (column index == 0) or (column position == 0) should be
+     * performed to identify the tree column.
+     * 
+     * @param useTreeColumnIndex
+     *            <code>true</code> if the column index should be used to
+     *            determine the tree column, <code>false</code> if the column
+     *            position should be used.
+     */
+    public void setUseTreeColumnIndex(boolean useTreeColumnIndex) {
+        this.useTreeColumnIndex = useTreeColumnIndex;
     }
 }
