@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -128,23 +128,45 @@ public class ViewportLayer extends AbstractLayerTransform implements
     public void dispose() {
         super.dispose();
 
-        if (hBarListener != null) {
-            hBarListener.dispose();
+        if (this.hBarListener != null) {
+            this.hBarListener.dispose();
         }
 
-        if (vBarListener != null) {
-            vBarListener.dispose();
+        if (this.vBarListener != null) {
+            this.vBarListener.dispose();
         }
 
         cancelEdgeHoverScroll();
     }
 
+    /**
+     * Set a different horizontal scroller than the default one.
+     *
+     * @param scroller
+     *            The scroller that should be used for horizontal scrolling.
+     */
     public void setHorizontalScroller(IScroller<?> scroller) {
-        horizontalScroller = scroller;
+        this.horizontalScroller = scroller;
+        // ensure to dispose and remove the already registered listener
+        if (this.hBarListener != null) {
+            this.hBarListener.dispose();
+            this.hBarListener = null;
+        }
     }
 
+    /**
+     * Set a different vertical scroller than the default one.
+     *
+     * @param scroller
+     *            The scroller that should be used for vertical scrolling.
+     */
     public void setVerticalScroller(IScroller<?> scroller) {
-        verticalScroller = scroller;
+        this.verticalScroller = scroller;
+        // ensure to dispose and remove the already registered listener
+        if (this.vBarListener != null) {
+            this.vBarListener.dispose();
+            this.vBarListener = null;
+        }
     }
 
     public int getMaxWidth() {
@@ -153,7 +175,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
         } else {
             int maxWidth = 0;
             for (int i = 0; i < getMaxColumnPosition(); i++) {
-                maxWidth += scrollableLayer.getColumnWidthByPosition(i);
+                maxWidth += this.scrollableLayer.getColumnWidthByPosition(i);
             }
             return maxWidth;
         }
@@ -165,7 +187,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
         } else {
             int minStart = 0;
             for (int i = 0; i < getMinColumnPosition(); i++) {
-                minStart += scrollableLayer.getColumnWidthByPosition(i);
+                minStart += this.scrollableLayer.getColumnWidthByPosition(i);
             }
             return minStart;
         }
@@ -201,26 +223,26 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * @return The minimum origin pixel position.
      */
     public PixelCoordinate getMinimumOrigin() {
-        return minimumOrigin;
+        return this.minimumOrigin;
     }
 
     /**
      * @return The minimum origin column position
      */
     public int getMinimumOriginColumnPosition() {
-        return minimumOriginColumnPosition;
+        return this.minimumOriginColumnPosition;
     }
 
     /**
      * @return The minimum origin row position
      */
     public int getMinimumOriginRowPosition() {
-        return minimumOriginRowPosition;
+        return this.minimumOriginRowPosition;
     }
 
     /**
      * Set the minimum origin X pixel position.
-     * 
+     *
      * @param newMinimumOriginX
      */
     public void setMinimumOriginX(int newMinimumOriginX) {
@@ -231,17 +253,17 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 newMinimumOriginX = minStart;
             }
 
-            PixelCoordinate previousMinimumOrigin = minimumOrigin;
+            PixelCoordinate previousMinimumOrigin = this.minimumOrigin;
 
-            if (newMinimumOriginX != minimumOrigin.getX()) {
-                minimumOrigin = new PixelCoordinate(newMinimumOriginX,
-                        minimumOrigin.getY());
-                minimumOriginColumnPosition = scrollableLayer
-                        .getColumnPositionByX(minimumOrigin.getX());
+            if (newMinimumOriginX != this.minimumOrigin.getX()) {
+                this.minimumOrigin = new PixelCoordinate(newMinimumOriginX,
+                        this.minimumOrigin.getY());
+                this.minimumOriginColumnPosition = this.scrollableLayer
+                        .getColumnPositionByX(this.minimumOrigin.getX());
             }
 
-            int delta = minimumOrigin.getX() - previousMinimumOrigin.getX();
-            setOriginX(origin.getX() + delta);
+            int delta = this.minimumOrigin.getX() - previousMinimumOrigin.getX();
+            setOriginX(this.origin.getX() + delta);
 
             recalculateHorizontalScrollBar();
         }
@@ -249,7 +271,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
     /**
      * Set the minimum origin Y pixel position.
-     * 
+     *
      * @param newMinimumOriginY
      */
     public void setMinimumOriginY(int newMinimumOriginY) {
@@ -260,17 +282,17 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 newMinimumOriginY = minStart;
             }
 
-            PixelCoordinate previousMinimumOrigin = minimumOrigin;
+            PixelCoordinate previousMinimumOrigin = this.minimumOrigin;
 
-            if (newMinimumOriginY != minimumOrigin.getY()) {
-                minimumOrigin = new PixelCoordinate(minimumOrigin.getX(),
+            if (newMinimumOriginY != this.minimumOrigin.getY()) {
+                this.minimumOrigin = new PixelCoordinate(this.minimumOrigin.getX(),
                         newMinimumOriginY);
-                minimumOriginRowPosition = scrollableLayer
-                        .getRowPositionByY(minimumOrigin.getY());
+                this.minimumOriginRowPosition = this.scrollableLayer
+                        .getRowPositionByY(this.minimumOrigin.getY());
             }
 
-            int delta = minimumOrigin.getY() - previousMinimumOrigin.getY();
-            setOriginY(origin.getY() + delta);
+            int delta = this.minimumOrigin.getY() - previousMinimumOrigin.getY();
+            setOriginY(this.origin.getY() + delta);
 
             recalculateVerticalScrollBar();
         }
@@ -278,7 +300,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
     /**
      * Set the minimum origin pixel position to the given values.
-     * 
+     *
      * @param newMinimumOriginX
      * @param newMinimumOriginY
      */
@@ -293,32 +315,32 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * @return The origin pixel position
      */
     public PixelCoordinate getOrigin() {
-        return viewportOff ? minimumOrigin : origin;
+        return this.viewportOff ? this.minimumOrigin : this.origin;
     }
 
     /**
      * @return The origin column position
      */
     private int getOriginColumnPosition() {
-        return scrollableLayer.getColumnPositionByX(getOrigin().getX());
+        return this.scrollableLayer.getColumnPositionByX(getOrigin().getX());
     }
 
     /**
      * @return The origin row position
      */
     private int getOriginRowPosition() {
-        return scrollableLayer.getRowPositionByY(getOrigin().getY());
+        return this.scrollableLayer.getRowPositionByY(getOrigin().getY());
     }
 
     /**
      * Range checking for origin X pixel position.
-     * 
+     *
      * @param x
      * @return A valid x value within bounds: minimum origin x < x < max x (=
      *         column 0 x + width)
      */
     private int boundsCheckOriginX(int x) {
-        int min = minimumOrigin.getX();
+        int min = this.minimumOrigin.getX();
         if (x <= min) {
             return min;
         }
@@ -332,13 +354,13 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
     /**
      * Range checking for origin Y pixel position.
-     * 
+     *
      * @param y
      * @return A valid y value within bounds: minimum origin y < y < max y (=
      *         row 0 y + height)
      */
     private int boundsCheckOriginY(int y) {
-        int min = minimumOrigin.getY();
+        int min = this.minimumOrigin.getY();
         if (y <= min) {
             return min;
         }
@@ -352,55 +374,55 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
     /**
      * Set the origin X pixel position.
-     * 
+     *
      * @param newOriginX
      */
     public void setOriginX(int newOriginX) {
         newOriginX = boundsCheckOriginX(newOriginX);
         newOriginX = boundsCheckOriginX(adjustOriginX(newOriginX));
 
-        if (newOriginX != origin.getX()) {
+        if (newOriginX != this.origin.getX()) {
             invalidateHorizontalStructure();
-            origin = new PixelCoordinate(newOriginX, origin.getY());
+            this.origin = new PixelCoordinate(newOriginX, this.origin.getY());
             fireScrollEvent();
         }
     }
 
     /**
      * Set the origin Y pixel position.
-     * 
+     *
      * @param newOriginY
      */
     public void setOriginY(int newOriginY) {
         newOriginY = boundsCheckOriginY(newOriginY);
         newOriginY = boundsCheckOriginY(adjustOriginY(newOriginY));
 
-        if (newOriginY != origin.getY()) {
+        if (newOriginY != this.origin.getY()) {
             invalidateVerticalStructure();
-            origin = new PixelCoordinate(origin.getX(), newOriginY);
+            this.origin = new PixelCoordinate(this.origin.getX(), newOriginY);
             fireScrollEvent();
         }
     }
 
     /**
      * Reset the origin pixel position to the given values.
-     * 
+     *
      * @param newOriginX
      * @param newOriginY
      */
     public void resetOrigin(int newOriginX, int newOriginY) {
-        PixelCoordinate previousOrigin = origin;
+        PixelCoordinate previousOrigin = this.origin;
 
-        minimumOrigin = new PixelCoordinate(0, 0);
-        minimumOriginColumnPosition = 0;
-        minimumOriginRowPosition = 0;
-        origin = new PixelCoordinate(newOriginX, newOriginY);
+        this.minimumOrigin = new PixelCoordinate(0, 0);
+        this.minimumOriginColumnPosition = 0;
+        this.minimumOriginRowPosition = 0;
+        this.origin = new PixelCoordinate(newOriginX, newOriginY);
 
-        if (origin.getX() != previousOrigin.getX()) {
+        if (this.origin.getX() != previousOrigin.getX()) {
             invalidateHorizontalStructure();
         }
 
-        if (origin.getY() != previousOrigin.getY()) {
+        if (this.origin.getY() != previousOrigin.getY()) {
             invalidateVerticalStructure();
         }
     }
@@ -435,7 +457,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
     /**
      * Sets the minimum column position for a split viewport and directly sets
      * the minimum origin x value dependent on the configuration.
-     * 
+     *
      * @param minColumnPosition
      *            The left most column position in case split viewport need to
      *            be configured.
@@ -443,7 +465,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
     public void setMinColumnPosition(int minColumnPosition) {
         this.minColumnPosition = minColumnPosition;
         // set the minimum origin x dependent to the min column position
-        int newMinOriginX = scrollableLayer
+        int newMinOriginX = this.scrollableLayer
                 .getStartXOfColumnPosition(this.minColumnPosition);
         setMinimumOriginX(newMinOriginX);
     }
@@ -476,7 +498,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
     /**
      * Sets the minimum row position for a split viewport and directly sets the
      * minimum origin y value dependent on the configuration.
-     * 
+     *
      * @param minRowPosition
      *            The left most row position in case split viewport need to be
      *            configured.
@@ -484,7 +506,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
     public void setMinRowPosition(int minRowPosition) {
         this.minRowPosition = minRowPosition;
         // set the minimum origin y dependent to the min row position
-        int newMinOriginY = scrollableLayer
+        int newMinOriginY = this.scrollableLayer
                 .getStartYOfRowPosition(this.minRowPosition);
         setMinimumOriginY(newMinOriginY);
     }
@@ -513,48 +535,46 @@ public class ViewportLayer extends AbstractLayerTransform implements
      */
     @Override
     public int getColumnCount() {
-        if (viewportOff) {
+        if (this.viewportOff) {
             // in case of split viewports we only return the number of columns
             // in the split
             if (getMaxColumnPosition() >= 0) {
                 return getMaxColumnPosition();
             } else if (getMinColumnPosition() >= 0) {
-                return Math.max(scrollableLayer.getColumnCount()
-                        - getMinColumnPosition(), 0);
+                return Math.max(this.scrollableLayer.getColumnCount() - getMinColumnPosition(), 0);
             }
 
-            return Math.max(scrollableLayer.getColumnCount()
+            return Math.max(this.scrollableLayer.getColumnCount()
                     - getMinimumOriginColumnPosition(), 0);
         } else {
-            if (cachedColumnCount < 0) {
+            if (this.cachedColumnCount < 0) {
                 int availableWidth = getClientAreaWidth();
                 if (availableWidth >= 0) {
 
                     // lower bound check
-                    if (origin.getX() < minimumOrigin.getX()) {
-                        origin = new PixelCoordinate(minimumOrigin.getX(),
-                                origin.getY());
+                    if (this.origin.getX() < this.minimumOrigin.getX()) {
+                        this.origin = new PixelCoordinate(
+                                this.minimumOrigin.getX(), this.origin.getY());
                     }
 
                     recalculateAvailableWidthAndColumnCount();
                 }
             }
 
-            return cachedColumnCount;
+            return this.cachedColumnCount;
         }
     }
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return scrollableLayer.getColumnPositionByIndex(columnIndex)
+        return this.scrollableLayer.getColumnPositionByIndex(columnIndex)
                 - getOriginColumnPosition();
     }
 
     @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
 
-        int underlyingPosition = getOriginColumnPosition()
-                + localColumnPosition;
+        int underlyingPosition = getOriginColumnPosition() + localColumnPosition;
 
         if (underlyingPosition < getMinimumOriginColumnPosition()) {
             return -1;
@@ -564,8 +584,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
     }
 
     @Override
-    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
-            int underlyingColumnPosition) {
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
         if (sourceUnderlyingLayer != getUnderlyingLayer()) {
             return -1;
         }
@@ -580,10 +599,9 @@ public class ViewportLayer extends AbstractLayerTransform implements
      */
     @Override
     public int getWidth() {
-        if (viewportOff) {
-            int width = scrollableLayer.getWidth()
-                    - scrollableLayer
-                            .getStartXOfColumnPosition(getMinimumOriginColumnPosition());
+        if (this.viewportOff) {
+            int width = this.scrollableLayer.getWidth()
+                    - this.scrollableLayer.getStartXOfColumnPosition(getMinimumOriginColumnPosition());
             if (getMaxColumnPosition() >= 0) {
                 int maxWidth = getMaxWidth();
                 if (maxWidth < width) {
@@ -593,10 +611,10 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 return width;
             }
         }
-        if (cachedWidth < 0) {
+        if (this.cachedWidth < 0) {
             recalculateAvailableWidthAndColumnCount();
         }
-        return cachedWidth;
+        return this.cachedWidth;
     }
 
     @Override
@@ -638,40 +656,40 @@ public class ViewportLayer extends AbstractLayerTransform implements
      */
     @Override
     public int getRowCount() {
-        if (viewportOff) {
+        if (this.viewportOff) {
             // in case of split viewports we only return the number of rows in
             // the split
             if (getMaxRowPosition() >= 0) {
                 return getMaxRowPosition();
             } else if (getMinRowPosition() >= 0) {
-                return Math.max(scrollableLayer.getRowCount()
+                return Math.max(this.scrollableLayer.getRowCount()
                         - getMinRowPosition(), 0);
             }
 
-            return Math.max(scrollableLayer.getRowCount()
+            return Math.max(this.scrollableLayer.getRowCount()
                     - getMinimumOriginRowPosition(), 0);
         } else {
-            if (cachedRowCount < 0) {
+            if (this.cachedRowCount < 0) {
                 int availableHeight = getClientAreaHeight();
                 if (availableHeight >= 0) {
 
                     // lower bound check
-                    if (origin.getY() < minimumOrigin.getY()) {
-                        origin = new PixelCoordinate(origin.getX(),
-                                minimumOrigin.getY());
+                    if (this.origin.getY() < this.minimumOrigin.getY()) {
+                        this.origin = new PixelCoordinate(this.origin.getX(),
+                                this.minimumOrigin.getY());
                     }
 
                     recalculateAvailableHeightAndRowCount();
                 }
             }
 
-            return cachedRowCount;
+            return this.cachedRowCount;
         }
     }
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return scrollableLayer.getRowPositionByIndex(rowIndex)
+        return this.scrollableLayer.getRowPositionByIndex(rowIndex)
                 - getOriginRowPosition();
     }
 
@@ -701,9 +719,9 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
     @Override
     public int getHeight() {
-        if (viewportOff) {
-            int height = scrollableLayer.getHeight()
-                    - scrollableLayer
+        if (this.viewportOff) {
+            int height = this.scrollableLayer.getHeight()
+                    - this.scrollableLayer
                             .getStartYOfRowPosition(getMinimumOriginRowPosition());
             if (getMaxRowPosition() >= 0) {
                 int maxHeight = getMaxHeight();
@@ -714,10 +732,10 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 return height;
             }
         }
-        if (cachedHeight < 0) {
+        if (this.cachedHeight < 0) {
             recalculateAvailableHeightAndRowCount();
         }
-        return cachedHeight;
+        return this.cachedHeight;
     }
 
     @Override
@@ -760,18 +778,18 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * Clear horizontal caches
      */
     public void invalidateHorizontalStructure() {
-        cachedColumnCount = -1;
-        cachedClientAreaWidth = 0;
-        cachedWidth = -1;
+        this.cachedColumnCount = -1;
+        this.cachedClientAreaWidth = 0;
+        this.cachedWidth = -1;
     }
 
     /**
      * Clear vertical caches
      */
     public void invalidateVerticalStructure() {
-        cachedRowCount = -1;
-        cachedClientAreaHeight = 0;
-        cachedHeight = -1;
+        this.cachedRowCount = -1;
+        this.cachedClientAreaHeight = 0;
+        this.cachedHeight = -1;
     }
 
     /**
@@ -791,8 +809,8 @@ public class ViewportLayer extends AbstractLayerTransform implements
         int maxColumnCount = getMaxColumnPosition() < 0 ? getUnderlyingLayer()
                 .getColumnCount() : getMaxColumnPosition();
 
-        cachedWidth = 0;
-        cachedColumnCount = 0;
+        this.cachedWidth = 0;
+        this.cachedColumnCount = 0;
 
         for (int columnPosition = originColumnPosition; columnPosition >= 0
                 && columnPosition < maxColumnCount && availableWidth > 0; columnPosition++) {
@@ -800,16 +818,16 @@ public class ViewportLayer extends AbstractLayerTransform implements
             int width = getUnderlyingLayer().getColumnWidthByPosition(
                     columnPosition);
             availableWidth -= width;
-            cachedWidth += width;
-            cachedColumnCount++;
+            this.cachedWidth += width;
+            this.cachedColumnCount++;
         }
 
-        if (cachedWidth > clientAreaWidth)
-            cachedWidth = clientAreaWidth;
+        if (this.cachedWidth > clientAreaWidth)
+            this.cachedWidth = clientAreaWidth;
 
-        int checkedOriginX = boundsCheckOriginX(origin.getX());
-        if (checkedOriginX != origin.getX()) {
-            origin = new PixelCoordinate(checkedOriginX, origin.getY());
+        int checkedOriginX = boundsCheckOriginX(this.origin.getX());
+        if (checkedOriginX != this.origin.getX()) {
+            this.origin = new PixelCoordinate(checkedOriginX, this.origin.getY());
         }
     }
 
@@ -827,34 +845,33 @@ public class ViewportLayer extends AbstractLayerTransform implements
                             originRowPosition);
         }
 
-        int maxRowCount = getMaxRowPosition() < 0 ? getUnderlyingLayer()
-                .getRowCount() : getMaxRowPosition();
+        int maxRowCount = getMaxRowPosition() < 0 ? getUnderlyingLayer().getRowCount() : getMaxRowPosition();
 
-        cachedHeight = 0;
-        cachedRowCount = 0;
+        this.cachedHeight = 0;
+        this.cachedRowCount = 0;
 
         for (int rowPosition = originRowPosition; rowPosition >= 0
                 && rowPosition < maxRowCount && availableHeight > 0; rowPosition++) {
             int height = getUnderlyingLayer().getRowHeightByPosition(
                     rowPosition);
             availableHeight -= height;
-            cachedHeight += height;
-            cachedRowCount++;
+            this.cachedHeight += height;
+            this.cachedRowCount++;
         }
 
-        if (cachedHeight > clientAreaHeight)
-            cachedHeight = clientAreaHeight;
+        if (this.cachedHeight > clientAreaHeight)
+            this.cachedHeight = clientAreaHeight;
 
-        int checkedOriginY = boundsCheckOriginY(origin.getY());
-        if (checkedOriginY != origin.getY()) {
-            origin = new PixelCoordinate(origin.getX(), checkedOriginY);
+        int checkedOriginY = boundsCheckOriginY(this.origin.getY());
+        if (checkedOriginY != this.origin.getY()) {
+            this.origin = new PixelCoordinate(this.origin.getX(), checkedOriginY);
         }
     }
 
     /**
      * Srcolls the table so that the specified cell is visible i.e. in the
      * Viewport
-     * 
+     *
      * @param scrollableColumnPosition
      * @param scrollableRowPosition
      */
@@ -867,7 +884,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
     /**
      * Scrolls the viewport (if required) so that the specified column is
      * visible.
-     * 
+     *
      * @param scrollableColumnPosition
      *            column position in terms of the Scrollable Layer
      */
@@ -875,21 +892,19 @@ public class ViewportLayer extends AbstractLayerTransform implements
         ILayer underlyingLayer = getUnderlyingLayer();
         int maxWidth = getMaxWidth();
         if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0
-                && (maxWidth < 0 || (maxWidth >= 0 && underlyingLayer
-                        .getStartXOfColumnPosition(scrollableColumnPosition) < maxWidth))) {
+                && (maxWidth < 0 || (maxWidth >= 0
+                && underlyingLayer.getStartXOfColumnPosition(scrollableColumnPosition) < maxWidth))) {
             if (scrollableColumnPosition >= getMinimumOriginColumnPosition()) {
                 int originColumnPosition = getOriginColumnPosition();
 
                 if (scrollableColumnPosition <= originColumnPosition) {
                     // Move left
-                    setOriginX(scrollableLayer
-                            .getStartXOfColumnPosition(scrollableColumnPosition));
+                    setOriginX(this.scrollableLayer.getStartXOfColumnPosition(scrollableColumnPosition));
                 } else {
                     int scrollableColumnStartX = underlyingLayer
                             .getStartXOfColumnPosition(scrollableColumnPosition);
                     int scrollableColumnEndX = scrollableColumnStartX
-                            + underlyingLayer
-                                    .getColumnWidthByPosition(scrollableColumnPosition);
+                            + underlyingLayer.getColumnWidthByPosition(scrollableColumnPosition);
                     int clientAreaWidth = getClientAreaWidth();
                     int viewportEndX = getOrigin().getX() + clientAreaWidth;
 
@@ -915,21 +930,18 @@ public class ViewportLayer extends AbstractLayerTransform implements
         ILayer underlyingLayer = getUnderlyingLayer();
         int maxHeight = getMaxHeight();
         if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0
-                && (maxHeight < 0 || (maxHeight >= 0 && underlyingLayer
-                        .getStartYOfRowPosition(scrollableRowPosition) < maxHeight))) {
+                && (maxHeight < 0 || (maxHeight >= 0
+                && underlyingLayer.getStartYOfRowPosition(scrollableRowPosition) < maxHeight))) {
             if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
                 int originRowPosition = getOriginRowPosition();
 
                 if (scrollableRowPosition <= originRowPosition) {
                     // Move up
-                    setOriginY(scrollableLayer
-                            .getStartYOfRowPosition(scrollableRowPosition));
+                    setOriginY(this.scrollableLayer.getStartYOfRowPosition(scrollableRowPosition));
                 } else {
-                    int scrollableRowStartY = underlyingLayer
-                            .getStartYOfRowPosition(scrollableRowPosition);
+                    int scrollableRowStartY = underlyingLayer.getStartYOfRowPosition(scrollableRowPosition);
                     int scrollableRowEndY = scrollableRowStartY
-                            + underlyingLayer
-                                    .getRowHeightByPosition(scrollableRowPosition);
+                            + underlyingLayer.getRowHeightByPosition(scrollableRowPosition);
                     int clientAreaHeight = getClientAreaHeight();
                     int viewportEndY = getOrigin().getY() + clientAreaHeight;
 
@@ -949,15 +961,14 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 // viewport for 100ms
                 // this is necessary for keeping the cell in the viewport if
                 // automatically resize events are generated (see Bug 411670)
-                if (resizeEventHandler == null) {
-                    resizeEventHandler = new KeepRowInsideViewportEventHandler(
-                            scrollableRowPosition);
-                    registerEventHandler(resizeEventHandler);
+                if (this.resizeEventHandler == null) {
+                    this.resizeEventHandler = new KeepRowInsideViewportEventHandler(scrollableRowPosition);
+                    registerEventHandler(this.resizeEventHandler);
                     Display.getCurrent().timerExec(100, new Runnable() {
                         @Override
                         public void run() {
-                            unregisterEventHandler(resizeEventHandler);
-                            resizeEventHandler = null;
+                            unregisterEventHandler(ViewportLayer.this.resizeEventHandler);
+                            ViewportLayer.this.resizeEventHandler = null;
                         }
                     });
                 }
@@ -975,10 +986,10 @@ public class ViewportLayer extends AbstractLayerTransform implements
     public boolean doCommand(ILayerCommand command) {
         if (command instanceof ClientAreaResizeCommand
                 && command.convertToTargetLayer(this)) {
-            if (processingClientAreaResizeCommand)
+            if (this.processingClientAreaResizeCommand)
                 return false;
 
-            processingClientAreaResizeCommand = true;
+            this.processingClientAreaResizeCommand = true;
 
             ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
 
@@ -991,36 +1002,35 @@ public class ViewportLayer extends AbstractLayerTransform implements
             int widthDiff = clientArea.width - calcArea.width;
             int heightDiff = clientArea.height - calcArea.height;
 
-            if (hBarListener == null && horizontalScrollbarEnabled) {
+            if (this.hBarListener == null && this.horizontalScrollbarEnabled) {
                 ScrollBar hBar = scrollable.getHorizontalBar();
-                if (horizontalScroller != null
-                        && horizontalScroller.getUnderlying() != hBar) {
+                if (this.horizontalScroller != null
+                        && this.horizontalScroller.getUnderlying() == hBar) {
                     hBar.setEnabled(false);
                     hBar.setVisible(false);
                 } else {
-                    horizontalScroller = new ScrollBarScroller(hBar);
+                    this.horizontalScroller = new ScrollBarScroller(hBar);
                 }
 
-                hBarListener = new HorizontalScrollBarHandler(this,
-                        horizontalScroller);
+                this.hBarListener = new HorizontalScrollBarHandler(this, this.horizontalScroller);
                 if (scrollable instanceof NatTable) {
-                    hBarListener.setTable((NatTable) scrollable);
+                    this.hBarListener.setTable((NatTable) scrollable);
                 }
             }
-            if (vBarListener == null && verticalScrollbarEnabled) {
+
+            if (this.vBarListener == null && this.verticalScrollbarEnabled) {
                 ScrollBar vBar = scrollable.getVerticalBar();
-                if (verticalScroller != null
-                        && verticalScroller.getUnderlying() != vBar) {
+                if (this.verticalScroller != null
+                        && this.verticalScroller.getUnderlying() == vBar) {
                     vBar.setEnabled(false);
                     vBar.setVisible(false);
                 } else {
-                    verticalScroller = new ScrollBarScroller(vBar);
+                    this.verticalScroller = new ScrollBarScroller(vBar);
                 }
 
-                vBarListener = new VerticalScrollBarHandler(this,
-                        verticalScroller);
+                this.vBarListener = new VerticalScrollBarHandler(this, this.verticalScroller);
                 if (scrollable instanceof NatTable) {
-                    vBarListener.setTable((NatTable) scrollable);
+                    this.vBarListener.setTable((NatTable) scrollable);
                 }
             }
 
@@ -1033,7 +1043,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
             possibleArea.height = possibleArea.height - heightDiff;
             clientAreaResizeCommand.setCalcArea(possibleArea);
 
-            processingClientAreaResizeCommand = false;
+            this.processingClientAreaResizeCommand = false;
             // we don't return true here because the ClientAreaResizeCommand
             // needs to be handled
             // by the DataLayer in case percentage sizing is enabled
@@ -1041,12 +1051,12 @@ public class ViewportLayer extends AbstractLayerTransform implements
             // calculate the column/row
             // sizes regarding the client area
         } else if (command instanceof TurnViewportOffCommand) {
-            savedOrigin = origin;
-            viewportOff = true;
+            this.savedOrigin = this.origin;
+            this.viewportOff = true;
             return true;
         } else if (command instanceof TurnViewportOnCommand) {
-            viewportOff = false;
-            origin = savedOrigin;
+            this.viewportOff = false;
+            this.origin = this.savedOrigin;
             // only necessary in case of split viewports and auto resizing, but
             // shouldn't hurt in other cases
             recalculateScrollBars();
@@ -1061,13 +1071,13 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * Recalculate horizontal scrollbar characteristics.
      */
     private void recalculateHorizontalScrollBar() {
-        if (hBarListener != null) {
-            hBarListener.recalculateScrollBarSize();
+        if (this.hBarListener != null) {
+            this.hBarListener.recalculateScrollBarSize();
 
-            if (!hBarListener.scroller.getEnabled()) {
-                setOriginX(minimumOrigin.getX());
+            if (!this.hBarListener.scroller.getEnabled()) {
+                setOriginX(this.minimumOrigin.getX());
             } else {
-                setOriginX(origin.getX());
+                setOriginX(this.origin.getX());
             }
         }
     }
@@ -1076,13 +1086,13 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * Recalculate vertical scrollbar characteristics;
      */
     private void recalculateVerticalScrollBar() {
-        if (vBarListener != null) {
-            vBarListener.recalculateScrollBarSize();
+        if (this.vBarListener != null) {
+            this.vBarListener.recalculateScrollBarSize();
 
-            if (!vBarListener.scroller.getEnabled()) {
-                setOriginY(minimumOrigin.getY());
+            if (!this.vBarListener.scroller.getEnabled()) {
+                setOriginY(this.minimumOrigin.getY());
             } else {
-                setOriginY(origin.getY());
+                setOriginY(this.origin.getY());
             }
         }
     }
@@ -1099,9 +1109,9 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * Recalculate viewport characteristics when the grid has been resized.
      */
     protected void handleGridResize() {
-        setOriginX(origin.getX());
+        setOriginX(this.origin.getX());
         recalculateHorizontalScrollBar();
-        setOriginY(origin.getY());
+        setOriginY(this.origin.getY());
         recalculateVerticalScrollBar();
     }
 
@@ -1115,11 +1125,10 @@ public class ViewportLayer extends AbstractLayerTransform implements
         }
 
         int availableWidth = getClientAreaWidth()
-                - (scrollableLayer.getWidth() - originX);
+                - (this.scrollableLayer.getWidth() - originX);
         if (availableWidth <= 0) {
             // in case there is a maximum number of columns configured for
-            // multiple viewports
-            // we need to ensure that there is no gap
+            // multiple viewports we need to ensure that there is no gap
             int clientAreaWidth = getClientAreaWidth();
 
             if (getMaxColumnPosition() >= 0 && clientAreaWidth >= getWidth()) {
@@ -1143,15 +1152,14 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * rendering for the set origin compared to the client area width. In this
      * case the originX needs to be adjusted to fill a gap that would exist
      * otherwise.
-     * 
+     *
      * @param originX
      *            The originX that is currently set.
      * @return The width of the visible columns for the current set origin.
      */
     private int calculateVisibleWidth(int originX) {
         int partialVisibleColumnWidth = getUnderlyingLayer()
-                .getStartXOfColumnPosition(getOriginColumnPosition() + 1)
-                - originX;
+                .getStartXOfColumnPosition(getOriginColumnPosition() + 1) - originX;
         int visibleWidth = partialVisibleColumnWidth;
         for (int i = getOriginColumnPosition() + 1; i < getMaxColumnPosition(); i++) {
             visibleWidth += getUnderlyingLayer().getColumnWidthByPosition(i);
@@ -1168,8 +1176,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
             return 0;
         }
 
-        int availableHeight = getClientAreaHeight()
-                - (scrollableLayer.getHeight() - originY);
+        int availableHeight = getClientAreaHeight() - (this.scrollableLayer.getHeight() - originY);
         if (availableHeight <= 0) {
             // in case there is a maximum number of rows configured for multiple
             // viewports
@@ -1196,7 +1203,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * rendering for the set origin compared to the client area height. In this
      * case the originY needs to be adjusted to fill a gap that would exist
      * otherwise.
-     * 
+     *
      * @param originY
      *            The originY that is currently set.
      * @return The height of the visible rows for the current set origin.
@@ -1215,20 +1222,17 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * Scrolls the viewport vertically by a page. This is done by creating a
      * MoveSelectionCommand to move the selection, which will then trigger an
      * update of the viewport.
-     * 
+     *
      * @param scrollSelectionCommand
      */
-    public void scrollVerticallyByAPage(
-            ScrollSelectionCommand scrollSelectionCommand) {
-        getUnderlyingLayer().doCommand(
-                scrollVerticallyByAPageCommand(scrollSelectionCommand));
+    public void scrollVerticallyByAPage(ScrollSelectionCommand scrollSelectionCommand) {
+        getUnderlyingLayer().doCommand(scrollVerticallyByAPageCommand(scrollSelectionCommand));
     }
 
-    protected MoveSelectionCommand scrollVerticallyByAPageCommand(
-            ScrollSelectionCommand scrollSelectionCommand) {
-        return new MoveSelectionCommand(scrollSelectionCommand.getDirection(),
-                getRowCount(), scrollSelectionCommand.isShiftMask(),
-                scrollSelectionCommand.isControlMask());
+    protected MoveSelectionCommand scrollVerticallyByAPageCommand(ScrollSelectionCommand scrollSelectionCommand) {
+        return new MoveSelectionCommand(
+                scrollSelectionCommand.getDirection(), getRowCount(),
+                scrollSelectionCommand.isShiftMask(), scrollSelectionCommand.isControlMask());
     }
 
     /**
@@ -1236,8 +1240,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
      */
     protected boolean isLastColumnCompletelyDisplayed() {
         int lastDisplayableColumnIndex = getUnderlyingLayer()
-                .getColumnIndexByPosition(
-                        getUnderlyingLayer().getColumnCount() - 1);
+                .getColumnIndexByPosition(getUnderlyingLayer().getColumnCount() - 1);
         int visibleColumnCount = getColumnCount();
         int lastVisibleColumnIndex = getColumnIndexByPosition(visibleColumnCount - 1);
 
@@ -1268,7 +1271,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 invalidateHorizontalStructure();
 
                 // saved origin correction for multi viewports
-                if (viewportOff
+                if (this.viewportOff
                         && (getMaxColumnPosition() >= 0 || getMinColumnPosition() >= 0)
                         && event instanceof ColumnResizeEvent) {
                     correctSavedOriginX();
@@ -1278,7 +1281,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 invalidateVerticalStructure();
 
                 // saved origin correction for multi viewports
-                if (viewportOff
+                if (this.viewportOff
                         && (getMaxRowPosition() >= 0 || getMinRowPosition() >= 0)
                         && event instanceof RowResizeEvent) {
                     correctSavedOriginY();
@@ -1307,44 +1310,44 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * viewport minimum/maximum origins.
      */
     private void correctSavedOriginX() {
-        int newOriginX = savedOrigin.getX();
+        int newOriginX = this.savedOrigin.getX();
 
         int columnPosition = 0;
         if (getMinColumnPosition() >= 0) {
             int possibleWidth = 0;
             for (int col = columnPosition; col < getMinColumnPosition(); col++) {
-                possibleWidth += scrollableLayer.getColumnWidthByPosition(col);
+                possibleWidth += this.scrollableLayer.getColumnWidthByPosition(col);
             }
-            if (possibleWidth != minimumOrigin.getX()) {
-                int delta = minimumOrigin.getX() - possibleWidth;
+            if (possibleWidth != this.minimumOrigin.getX()) {
+                int delta = this.minimumOrigin.getX() - possibleWidth;
                 newOriginX = newOriginX - delta;
                 // as the width of the other split viewport has changed, we need
                 // to update the minimum width too
-                minimumOrigin = new PixelCoordinate(minimumOrigin.getX()
-                        - delta, minimumOrigin.getY());
+                this.minimumOrigin = new PixelCoordinate(this.minimumOrigin.getX()
+                        - delta, this.minimumOrigin.getY());
             }
         } else {
-            int originX = savedOrigin.getX();
+            int originX = this.savedOrigin.getX();
             int visibleWidth = calculateVisibleWidth(originX);
             int clientAreaWidth = getClientAreaWidth();
             if (visibleWidth < clientAreaWidth) {
                 int possibleWidth = 0;
                 int columnCount = getMaxColumnPosition() >= 0 ? getMaxColumnPosition()
-                        : scrollableLayer.getColumnCount();
+                        : this.scrollableLayer.getColumnCount();
                 for (int col = columnPosition; col < columnCount; col++) {
-                    possibleWidth += scrollableLayer
+                    possibleWidth += this.scrollableLayer
                             .getColumnWidthByPosition(col);
                 }
                 if (possibleWidth >= clientAreaWidth) {
-                    newOriginX = scrollableLayer
+                    newOriginX = this.scrollableLayer
                             .getStartXOfColumnPosition(columnPosition);
                 } else {
-                    newOriginX = scrollableLayer.getWidth() - clientAreaWidth;
+                    newOriginX = this.scrollableLayer.getWidth() - clientAreaWidth;
                 }
                 newOriginX = Math.max(0, newOriginX);
             }
         }
-        savedOrigin = new PixelCoordinate(newOriginX, savedOrigin.getY());
+        this.savedOrigin = new PixelCoordinate(newOriginX, this.savedOrigin.getY());
     }
 
     /**
@@ -1357,49 +1360,49 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * viewport minimum/maximum origins.
      */
     private void correctSavedOriginY() {
-        int newOriginY = savedOrigin.getY();
+        int newOriginY = this.savedOrigin.getY();
 
         int rowPosition = 0;
         if (getMinRowPosition() >= 0) {
             int possibleHeight = 0;
             for (int row = rowPosition; row < getMinRowPosition(); row++) {
-                possibleHeight += scrollableLayer.getRowHeightByPosition(row);
+                possibleHeight += this.scrollableLayer.getRowHeightByPosition(row);
             }
-            if (possibleHeight != minimumOrigin.getY()) {
-                int delta = minimumOrigin.getY() - possibleHeight;
+            if (possibleHeight != this.minimumOrigin.getY()) {
+                int delta = this.minimumOrigin.getY() - possibleHeight;
                 newOriginY = newOriginY - delta;
                 // as the height of the other split viewport has changed, we
                 // need to update the minimum height too
-                minimumOrigin = new PixelCoordinate(minimumOrigin.getX(),
-                        minimumOrigin.getY() - delta);
+                this.minimumOrigin = new PixelCoordinate(this.minimumOrigin.getX(),
+                        this.minimumOrigin.getY() - delta);
             }
         } else {
-            int originY = savedOrigin.getY();
+            int originY = this.savedOrigin.getY();
             int visibleHeight = calculateVisibleHeight(originY);
             int clientAreaHeight = getClientAreaHeight();
             if (visibleHeight < clientAreaHeight) {
                 int possibleHeight = 0;
                 int rowCount = getMaxRowPosition() >= 0 ? getMaxRowPosition()
-                        : scrollableLayer.getRowCount();
+                        : this.scrollableLayer.getRowCount();
                 for (int row = rowPosition; row < rowCount; row++) {
-                    possibleHeight += scrollableLayer
+                    possibleHeight += this.scrollableLayer
                             .getRowHeightByPosition(row);
                 }
                 if (possibleHeight >= clientAreaHeight) {
-                    newOriginY = scrollableLayer
+                    newOriginY = this.scrollableLayer
                             .getStartYOfRowPosition(rowPosition);
                 } else {
-                    newOriginY = scrollableLayer.getHeight() - clientAreaHeight;
+                    newOriginY = this.scrollableLayer.getHeight() - clientAreaHeight;
                 }
                 newOriginY = Math.max(0, newOriginY);
             }
         }
-        savedOrigin = new PixelCoordinate(savedOrigin.getX(), newOriginY);
+        this.savedOrigin = new PixelCoordinate(this.savedOrigin.getX(), newOriginY);
     }
 
     /**
      * Handle {@link CellSelectionEvent}
-     * 
+     *
      * @param selectionEvent
      */
     private void processSelection(CellSelectionEvent selectionEvent) {
@@ -1411,7 +1414,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
     /**
      * Handle {@link ColumnSelectionEvent}
-     * 
+     *
      * @param selectionEvent
      */
     private void processColumnSelection(ColumnSelectionEvent selectionEvent) {
@@ -1424,7 +1427,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
     /**
      * Handle {@link RowSelectionEvent}
-     * 
+     *
      * @param selectionEvent
      */
     private void processRowSelection(RowSelectionEvent selectionEvent) {
@@ -1440,8 +1443,8 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * Adjusts horizontal scrollbar to sync with current state of viewport.
      */
     private void adjustHorizontalScrollBar() {
-        if (hBarListener != null) {
-            hBarListener.adjustScrollBar();
+        if (this.hBarListener != null) {
+            this.hBarListener.adjustScrollBar();
         }
     }
 
@@ -1449,8 +1452,8 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * Adjusts vertical scrollbar to sync with current state of viewport.
      */
     private void adjustVerticalScrollBar() {
-        if (vBarListener != null) {
-            vBarListener.adjustScrollBar();
+        if (this.vBarListener != null) {
+            this.vBarListener.adjustScrollBar();
         }
     }
 
@@ -1462,11 +1465,11 @@ public class ViewportLayer extends AbstractLayerTransform implements
      */
     public int getClientAreaWidth() {
         int clientAreaWidth = getClientAreaProvider().getClientArea().width;
-        if (clientAreaWidth != cachedClientAreaWidth) {
+        if (clientAreaWidth != this.cachedClientAreaWidth) {
             invalidateHorizontalStructure();
-            cachedClientAreaWidth = clientAreaWidth;
+            this.cachedClientAreaWidth = clientAreaWidth;
         }
-        return cachedClientAreaWidth;
+        return this.cachedClientAreaWidth;
     }
 
     /**
@@ -1475,18 +1478,18 @@ public class ViewportLayer extends AbstractLayerTransform implements
      */
     public int getClientAreaHeight() {
         int clientAreaHeight = getClientAreaProvider().getClientArea().height;
-        if (clientAreaHeight != cachedClientAreaHeight) {
+        if (clientAreaHeight != this.cachedClientAreaHeight) {
             invalidateVerticalStructure();
-            cachedClientAreaHeight = clientAreaHeight;
+            this.cachedClientAreaHeight = clientAreaHeight;
         }
-        return cachedClientAreaHeight;
+        return this.cachedClientAreaHeight;
     }
 
     /**
      * @return The scrollable layer underlying the viewport.
      */
     public IUniqueIndexLayer getScrollableLayer() {
-        return scrollableLayer;
+        return this.scrollableLayer;
     }
 
     @Override
@@ -1499,7 +1502,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
     /**
      * Used for edge hover scrolling. Called from the
      * ViewportDragCommandHandler.
-     * 
+     *
      * @param x
      * @param y
      */
@@ -1549,7 +1552,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * Cancels an edge hover scroll.
      */
     private void cancelEdgeHoverScroll() {
-        edgeHoverRunnable = null;
+        this.edgeHoverRunnable = null;
     }
 
     /**
@@ -1564,7 +1567,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * NatTable, and try to remove SWT.H_SCROLL which is set in the default
      * style options.
      * </p>
-     * 
+     *
      * @param enabled
      *            <code>false</code> to disable the horizontal scrollbar,
      *            <code>true</code> to enable it.
@@ -1584,7 +1587,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * is a disabled scrollbar rendered check the style bits of the NatTable,
      * and try to remove SWT.V_SCROLL which is set in the default style options.
      * </p>
-     * 
+     *
      * @param enabled
      *            <code>false</code> to disable the vertical scrollbar,
      *            <code>true</code> to enable it.
@@ -1609,7 +1612,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
         public void schedule() {
             if (ViewportLayer.this.edgeHoverRunnable != this) {
                 ViewportLayer.this.edgeHoverRunnable = this;
-                display.timerExec(500, this);
+                this.display.timerExec(500, this);
             }
         }
 
@@ -1619,16 +1622,16 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 return;
             }
 
-            if (x != 0) {
+            if (this.x != 0) {
                 setOriginX(getUnderlyingLayer().getStartXOfColumnPosition(
-                        getOriginColumnPosition() + x));
+                        getOriginColumnPosition() + this.x));
             }
-            if (y != 0) {
+            if (this.y != 0) {
                 setOriginY(getUnderlyingLayer().getStartYOfRowPosition(
-                        getOriginRowPosition() + y));
+                        getOriginRowPosition() + this.y));
             }
 
-            display.timerExec(100, this);
+            this.display.timerExec(100, this);
         }
 
     }
@@ -1649,7 +1652,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
         @Override
         public void handleLayerEvent(RowResizeEvent event) {
-            moveRowPositionIntoViewport(rowPosition);
+            moveRowPositionIntoViewport(this.rowPosition);
         }
 
         @Override
