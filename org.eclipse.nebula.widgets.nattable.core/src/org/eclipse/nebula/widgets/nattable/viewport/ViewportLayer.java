@@ -130,10 +130,12 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
         if (this.hBarListener != null) {
             this.hBarListener.dispose();
+            this.hBarListener = null;
         }
 
         if (this.vBarListener != null) {
             this.vBarListener.dispose();
+            this.vBarListener = null;
         }
 
         cancelEdgeHoverScroll();
@@ -544,17 +546,14 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 return Math.max(this.scrollableLayer.getColumnCount() - getMinColumnPosition(), 0);
             }
 
-            return Math.max(this.scrollableLayer.getColumnCount()
-                    - getMinimumOriginColumnPosition(), 0);
+            return Math.max(this.scrollableLayer.getColumnCount() - getMinimumOriginColumnPosition(), 0);
         } else {
             if (this.cachedColumnCount < 0) {
                 int availableWidth = getClientAreaWidth();
                 if (availableWidth >= 0) {
-
                     // lower bound check
                     if (this.origin.getX() < this.minimumOrigin.getX()) {
-                        this.origin = new PixelCoordinate(
-                                this.minimumOrigin.getX(), this.origin.getY());
+                        this.origin = new PixelCoordinate(this.minimumOrigin.getX(), this.origin.getY());
                     }
 
                     recalculateAvailableWidthAndColumnCount();
@@ -600,8 +599,8 @@ public class ViewportLayer extends AbstractLayerTransform implements
     @Override
     public int getWidth() {
         if (this.viewportOff) {
-            int width = this.scrollableLayer.getWidth()
-                    - this.scrollableLayer.getStartXOfColumnPosition(getMinimumOriginColumnPosition());
+            int width = this.scrollableLayer.getWidth() - this.scrollableLayer.getStartXOfColumnPosition(getMinimumOriginColumnPosition());
+
             if (getMaxColumnPosition() >= 0) {
                 int maxWidth = getMaxWidth();
                 if (maxWidth < width) {
@@ -1004,8 +1003,8 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
             if (this.hBarListener == null && this.horizontalScrollbarEnabled) {
                 ScrollBar hBar = scrollable.getHorizontalBar();
-                if (this.horizontalScroller != null
-                        && this.horizontalScroller.getUnderlying() == hBar) {
+
+                if (this.horizontalScroller != null && this.horizontalScroller.getUnderlying() == hBar) {
                     hBar.setEnabled(false);
                     hBar.setVisible(false);
                 } else {
@@ -1013,6 +1012,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 }
 
                 this.hBarListener = new HorizontalScrollBarHandler(this, this.horizontalScroller);
+
                 if (scrollable instanceof NatTable) {
                     this.hBarListener.setTable((NatTable) scrollable);
                 }
@@ -1020,8 +1020,8 @@ public class ViewportLayer extends AbstractLayerTransform implements
 
             if (this.vBarListener == null && this.verticalScrollbarEnabled) {
                 ScrollBar vBar = scrollable.getVerticalBar();
-                if (this.verticalScroller != null
-                        && this.verticalScroller.getUnderlying() == vBar) {
+
+                if (this.verticalScroller != null && this.verticalScroller.getUnderlying() == vBar) {
                     vBar.setEnabled(false);
                     vBar.setVisible(false);
                 } else {
@@ -1029,6 +1029,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
                 }
 
                 this.vBarListener = new VerticalScrollBarHandler(this, this.verticalScroller);
+
                 if (scrollable instanceof NatTable) {
                     this.vBarListener.setTable((NatTable) scrollable);
                 }
@@ -1177,6 +1178,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
         }
 
         int availableHeight = getClientAreaHeight() - (this.scrollableLayer.getHeight() - originY);
+
         if (availableHeight <= 0) {
             // in case there is a maximum number of rows configured for multiple
             // viewports
