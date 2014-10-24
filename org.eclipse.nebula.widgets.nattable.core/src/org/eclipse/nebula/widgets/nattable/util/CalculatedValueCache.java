@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,11 +7,12 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Roman Flueckiger <roman.flueckiger@mac.com - switched to concurrent hash maps to prevent a concurrency issue
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,7 +54,7 @@ public class CalculatedValueCache {
      * updates, and will be used to determine whether a new calculation is
      * necessary.
      */
-    private Map<ICalculatedValueCacheKey, Object> cache = new HashMap<ICalculatedValueCacheKey, Object>();
+    private Map<ICalculatedValueCacheKey, Object> cache = new ConcurrentHashMap<ICalculatedValueCacheKey, Object>();
 
     /**
      * Cache copy of the calculated values.
@@ -66,7 +67,7 @@ public class CalculatedValueCache {
      * calculation has finished instead of switching to the default calculation
      * value on updates.
      */
-    private Map<ICalculatedValueCacheKey, Object> cacheCopy = new HashMap<ICalculatedValueCacheKey, Object>();
+    private Map<ICalculatedValueCacheKey, Object> cacheCopy = new ConcurrentHashMap<ICalculatedValueCacheKey, Object>();
 
     /**
      * Flag to specify if the column position should be used as cache key.
@@ -187,11 +188,11 @@ public class CalculatedValueCache {
             final ICalculator calculator) {
 
         ICalculatedValueCacheKey key = null;
-        if (useColumnAsKey && useRowAsKey) {
+        if (this.useColumnAsKey && this.useRowAsKey) {
             key = new CoordinateValueCacheKey(columnPosition, rowPosition);
-        } else if (useColumnAsKey && !useRowAsKey) {
+        } else if (this.useColumnAsKey && !this.useRowAsKey) {
             key = new PositionValueCacheKey(columnPosition);
-        } else if (!useColumnAsKey && useRowAsKey) {
+        } else if (!this.useColumnAsKey && this.useRowAsKey) {
             key = new PositionValueCacheKey(rowPosition);
         } else {
             throw new IllegalStateException(
@@ -254,7 +255,7 @@ public class CalculatedValueCache {
                     result = null;
                 }
 
-                executor.execute(new Runnable() {
+                this.executor.execute(new Runnable() {
                     @Override
                     public void run() {
                         Object summaryValue = calculator.executeCalculation();
@@ -264,9 +265,9 @@ public class CalculatedValueCache {
                         // is
                         // different to the value in the cache copy
                         if (!cacheValuesEqual(summaryValue, cacheCopyValue)
-                                && layer != null) {
-                            layer.fireLayerEvent(new CellVisualChangeEvent(
-                                    layer, columnPosition, rowPosition));
+                                && CalculatedValueCache.this.layer != null) {
+                            CalculatedValueCache.this.layer.fireLayerEvent(new CellVisualChangeEvent(
+                                    CalculatedValueCache.this.layer, columnPosition, rowPosition));
                         }
                     }
                 });
@@ -314,8 +315,13 @@ public class CalculatedValueCache {
      *            The value for the given coordinates to be cached.
      */
     protected void addToCache(ICalculatedValueCacheKey key, Object value) {
-        this.cache.put(key, value);
-        this.cacheCopy.put(key, value);
+        if (value != null) {
+            this.cache.put(key, value);
+            this.cacheCopy.put(key, value);
+        } else {
+            this.cache.remove(key);
+            this.cacheCopy.remove(key);
+        }
     }
 
     /**
@@ -374,7 +380,7 @@ public class CalculatedValueCache {
             final int prime = 31;
             int result = 1;
             result = prime * result + getOuterType().hashCode();
-            result = prime * result + position;
+            result = prime * result + this.position;
             return result;
         }
 
@@ -389,7 +395,7 @@ public class CalculatedValueCache {
             PositionValueCacheKey other = (PositionValueCacheKey) obj;
             if (!getOuterType().equals(other.getOuterType()))
                 return false;
-            if (position != other.position)
+            if (this.position != other.position)
                 return false;
             return true;
         }
@@ -403,7 +409,6 @@ public class CalculatedValueCache {
      * ICalculatedValueCacheKey that uses the column and row position as key.
      * 
      * @author Dirk Fauth
-     *
      */
     class CoordinateValueCacheKey implements ICalculatedValueCacheKey {
 
@@ -420,8 +425,8 @@ public class CalculatedValueCache {
             final int prime = 31;
             int result = 1;
             result = prime * result + getOuterType().hashCode();
-            result = prime * result + columnPosition;
-            result = prime * result + rowPosition;
+            result = prime * result + this.columnPosition;
+            result = prime * result + this.rowPosition;
             return result;
         }
 
@@ -436,9 +441,9 @@ public class CalculatedValueCache {
             CoordinateValueCacheKey other = (CoordinateValueCacheKey) obj;
             if (!getOuterType().equals(other.getOuterType()))
                 return false;
-            if (columnPosition != other.columnPosition)
+            if (this.columnPosition != other.columnPosition)
                 return false;
-            if (rowPosition != other.rowPosition)
+            if (this.rowPosition != other.rowPosition)
                 return false;
             return true;
         }
