@@ -98,19 +98,13 @@ public class SizeConfig implements IPersistable {
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        properties.put(prefix + PERSISTENCE_KEY_DEFAULT_SIZE,
-                String.valueOf(this.defaultSize));
-        saveMap(this.defaultSizeMap, prefix + PERSISTENCE_KEY_DEFAULT_SIZES,
-                properties);
+        properties.put(prefix + PERSISTENCE_KEY_DEFAULT_SIZE, String.valueOf(this.defaultSize));
+        saveMap(this.defaultSizeMap, prefix + PERSISTENCE_KEY_DEFAULT_SIZES, properties);
         saveMap(this.sizeMap, prefix + PERSISTENCE_KEY_SIZES, properties);
-        properties.put(prefix + PERSISTENCE_KEY_RESIZABLE_BY_DEFAULT,
-                String.valueOf(this.resizableByDefault));
-        saveMap(this.resizablesMap, prefix + PERSISTENCE_KEY_RESIZABLE_INDEXES,
-                properties);
-        properties.put(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING,
-                String.valueOf(this.percentageSizing));
-        saveMap(this.percentageSizingMap, prefix
-                + PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES, properties);
+        properties.put(prefix + PERSISTENCE_KEY_RESIZABLE_BY_DEFAULT, String.valueOf(this.resizableByDefault));
+        saveMap(this.resizablesMap, prefix + PERSISTENCE_KEY_RESIZABLE_INDEXES, properties);
+        properties.put(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING, String.valueOf(this.percentageSizing));
+        saveMap(this.percentageSizingMap, prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING_INDEXES, properties);
     }
 
     private void saveMap(Map<Integer, ?> map, String key, Properties properties) {
@@ -219,9 +213,8 @@ public class SizeConfig implements IPersistable {
             return 0;
         } else if (isAllPositionsSameSize() && !isPercentageSizing()) {
             // if percentage sizing is used, the sizes in defaultSize are used
-            // as percentage values
-            // and not as pixel values, therefore another value needs to be
-            // considered
+            // as percentage values and not as pixel values, therefore another
+            // value needs to be considered
             return position * this.defaultSize;
         } else {
             // See if the cache is valid, if not clear it.
@@ -290,9 +283,8 @@ public class SizeConfig implements IPersistable {
                     } else {
                         // there was no percentage value before
                         // we need to calculate the before value out of the
-                        // realSizeMap
-                        // otherwise the resizing effect would have strange
-                        // effects
+                        // realSizeMap otherwise the resizing effect would
+                        // have strange effects
                         if (this.realSizeMap.containsKey(position)) {
                             Double calculated = ((double) this.realSizeMap
                                     .get(position) * 100) / this.availableSpace;
@@ -319,13 +311,11 @@ public class SizeConfig implements IPersistable {
 
                     if (diff != 0 && oldValue == null) {
                         // if the diff is not 0 and there was no size value set
-                        // before
-                        // we will remove the prior set value again
+                        // before we will remove the prior set value again
                         // this is because the position was configured as the
-                        // only percentage
-                        // sizing position with no specified value, which
-                        // technically means that it
-                        // should always take the remaining space
+                        // only percentage sizing position with no specified
+                        // value, which technically means that it should always
+                        // take the remaining space
                         this.sizeMap.remove(position);
                     }
                 }
@@ -559,10 +549,8 @@ public class SizeConfig implements IPersistable {
                     this.realSizeMap.put(i, real);
                 } else {
                     // remember the position for which no size information
-                    // exists
-                    // needed to calculate the size for those positions
-                    // dependent on the
-                    // remaining space
+                    // exists needed to calculate the size for those positions
+                    // dependent on the remaining space
                     noInfoPositions.add(i);
                 }
             }
@@ -579,35 +567,34 @@ public class SizeConfig implements IPersistable {
                 Double remainingColSpace = remaining / noInfoPositions.size();
                 for (Integer position : noInfoPositions) {
                     sum += (remainingColSpace / space) * 100;
-                    this.realSizeMap
-                    .put(position, remainingColSpace.intValue());
+                    this.realSizeMap.put(position, remainingColSpace.intValue());
                 }
                 // If there are positions for which no size information exist,
-                // the size config
-                // will use 100 percent of the available space on percentage
-                // sizing. To handle
-                // rounding issues just set the sum to 100 for correct
-                // calculation results.
+                // the size config will use 100 percent of the available space
+                // on percentage sizing. To handle rounding issues just set the
+                // sum to 100 for correct calculation results.
                 sum = 100;
             }
             if (sum == 100) {
                 // check if the sum of the calculated values is the same as the
-                // given space
-                // if not add the missing pixels to the last value
-                // this is needed because of rounding issues on 100% with
-                // odd-numbered pixel values
+                // given space if not distribute the missing pixels to some of
+                // the other columns this is needed because of rounding issues
+                // on 100% with odd-numbered pixel values
                 int valueSum = 0;
                 int lastPos = -1;
-                for (Map.Entry<Integer, Integer> entry : this.realSizeMap
-                        .entrySet()) {
+                for (Map.Entry<Integer, Integer> entry : this.realSizeMap.entrySet()) {
                     valueSum += entry.getValue();
                     lastPos = Math.max(lastPos, entry.getKey());
                 }
 
-                if (valueSum < space) {
-                    int lastPosValue = this.realSizeMap.get(lastPos);
-                    this.realSizeMap.put(lastPos, lastPosValue
-                            + (space - valueSum));
+                if (space > 0 && valueSum < space) {
+                    // distribute the missing pixels
+                    int missingPixels = (space - valueSum);
+                    for (int i = missingPixels; i > 0; i--) {
+                        int lastPosValue = this.realSizeMap.get(lastPos);
+                        this.realSizeMap.put(lastPos, lastPosValue + 1);
+                        lastPos--;
+                    }
                 }
             }
         }
