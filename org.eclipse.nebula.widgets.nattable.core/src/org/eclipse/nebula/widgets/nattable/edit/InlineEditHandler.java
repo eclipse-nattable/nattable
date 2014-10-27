@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,7 +37,7 @@ public class InlineEditHandler implements ICellEditHandler {
     private final int rowPosition;
 
     /**
-     * 
+     *
      * @param layer
      *            The {@link ILayer} to which the column and row positions are
      *            related to and on which the update command should be executed
@@ -54,36 +54,37 @@ public class InlineEditHandler implements ICellEditHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler#commit(java
      * .lang.Object,
      * org.eclipse.nebula.widgets.nattable.selection.SelectionLayer
      * .MoveDirectionEnum)
      */
+    @Override
     public boolean commit(Object canonicalValue, MoveDirectionEnum direction) {
-        boolean committed = layer.doCommand(new UpdateDataCommand(layer,
-                columnPosition, rowPosition, canonicalValue));
+        boolean committed = this.layer.doCommand(new UpdateDataCommand(this.layer,
+                this.columnPosition, this.rowPosition, canonicalValue));
 
         // only move the selection if the update succeeded, otherwise the editor
         // will stay open
         if (committed) {
             switch (direction) {
                 case LEFT:
-                    layer.doCommand(new MoveSelectionCommand(
-                            MoveDirectionEnum.LEFT, 1, false, false));
+                    this.layer.doCommand(new MoveSelectionCommand(
+                            MoveDirectionEnum.LEFT, false, false));
                     break;
                 case UP:
-                    layer.doCommand(new MoveSelectionCommand(
-                            MoveDirectionEnum.UP, 1, false, false));
+                    this.layer.doCommand(new MoveSelectionCommand(
+                            MoveDirectionEnum.UP, false, false));
                     break;
                 case RIGHT:
-                    layer.doCommand(new MoveSelectionCommand(
-                            MoveDirectionEnum.RIGHT, 1, false, false));
+                    this.layer.doCommand(new MoveSelectionCommand(
+                            MoveDirectionEnum.RIGHT, false, false));
                     break;
                 case DOWN:
-                    layer.doCommand(new MoveSelectionCommand(
-                            MoveDirectionEnum.DOWN, 1, false, false));
+                    this.layer.doCommand(new MoveSelectionCommand(
+                            MoveDirectionEnum.DOWN, false, false));
                     break;
             }
         }
