@@ -721,4 +721,16 @@ public class SizeConfig implements IPersistable {
                 + (resizeAggregate - (resizedColumns * this.defaultSize));
     }
 
+    /**
+     * Recalculate the percentage values for the given amount of columns. Needed
+     * for structural changes that aren't caused by a client are resize, e.g.
+     * adding a column.
+     *
+     * @param positionCount
+     *            The number of columns that should be used to calculate the
+     *            percentage values.
+     */
+    public void updatePercentageValues(int positionCount) {
+        calculatePercentages(this.availableSpace, positionCount);
+    }
 }

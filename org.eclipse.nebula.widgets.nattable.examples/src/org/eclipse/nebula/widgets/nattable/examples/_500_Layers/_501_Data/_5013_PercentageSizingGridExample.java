@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Dirk Fauth
  ******************************************************************************/
@@ -73,28 +73,24 @@ public class _5013_PercentageSizingGridExample extends AbstractNatExample {
         buttonPanel.setLayout(new RowLayout());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
-        final DummyModifiableBodyDataProvider dataProvider = new DummyModifiableBodyDataProvider(
-                3, 2);
+        final DummyModifiableBodyDataProvider dataProvider =
+                new DummyModifiableBodyDataProvider(3, 2);
 
         // example for percentage calculation with default sizing in a grid
         // all columns will be same size while the NatTable itself will have
         // 100%
-        SimpleGridLayer gridLayer = new SimpleGridLayer();
+        SimpleGridLayer gridLayer = new SimpleGridLayer(dataProvider);
         final DataLayer n4DataLayer = (DataLayer) gridLayer.getBodyDataLayer();
         n4DataLayer.setColumnPercentageSizing(true);
         n4DataLayer.setRowPercentageSizing(true);
         // use different style bits to avoid rendering of inactive scrollbars
-        // for small table
-        // when using percentage sizing, typically there should be no
-        // scrollbars, as the table
-        // should take the available space
+        // for small table when using percentage sizing, typically there should
+        // be no scrollbars, as the table should take the available space
         // Note: The enabling/disabling and showing of the scrollbars is handled
-        // by the ViewportLayer.
-        // Without the ViewportLayer the scrollbars will always be visible with
-        // the default
-        // style bits of NatTable.
-        final NatTable n4 = new NatTable(gridPanel, SWT.NO_BACKGROUND
-                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
+        // by the ViewportLayer. Without the ViewportLayer the scrollbars will
+        // always be visible with the default style bits of NatTable.
+        final NatTable n4 = new NatTable(
+                gridPanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
         n4.addConfiguration(new DefaultNatTableStyleConfiguration());
         n4.addConfiguration(new HeaderMenuConfiguration(n4));
         n4.configure();
@@ -102,79 +98,64 @@ public class _5013_PercentageSizingGridExample extends AbstractNatExample {
 
         // example for fixed percentage sizing in a grid
         // ensure that the sum of column sizes is not greater than 100
-        gridLayer = new SimpleGridLayer();
+        gridLayer = new SimpleGridLayer(dataProvider);
         final DataLayer n5DataLayer = (DataLayer) gridLayer.getBodyDataLayer();
         n5DataLayer.setColumnWidthByPosition(0, 25);
         n5DataLayer.setColumnWidthByPosition(1, 25);
         n5DataLayer.setColumnWidthByPosition(2, 50);
         n5DataLayer.setColumnPercentageSizing(true);
         // use different style bits to avoid rendering of inactive scrollbars
-        // for small table
-        // when using percentage sizing, typically there should be no
-        // scrollbars, as the table
-        // should take the available space
+        // for small table when using percentage sizing, typically there should
+        // be no scrollbars, as the table should take the available space
         // Note: The enabling/disabling and showing of the scrollbars is handled
-        // by the ViewportLayer.
-        // Without the ViewportLayer the scrollbars will always be visible with
-        // the default
-        // style bits of NatTable.
-        final NatTable n5 = new NatTable(gridPanel, SWT.NO_BACKGROUND
-                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
+        // by the ViewportLayer. Without the ViewportLayer the scrollbars will
+        // always be visible with the default style bits of NatTable.
+        final NatTable n5 = new NatTable(
+                gridPanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
         n5.addConfiguration(new DefaultNatTableStyleConfiguration());
         n5.addConfiguration(new HeaderMenuConfiguration(n5));
         n5.configure();
         GridDataFactory.fillDefaults().grab(true, true).applyTo(n5);
 
-        // example for mixed percentage sizing in a grid
-        // configure not every column with the exact percentage value, this way
-        // the columns for which
-        // no exact values are set will use the remaining space
-        gridLayer = new SimpleGridLayer();
+        // example for mixed percentage sizing in a grid configure not every
+        // column with the exact percentage value, this way the columns for
+        // which no exact values are set will use the remaining space
+        gridLayer = new SimpleGridLayer(dataProvider);
         final DataLayer n6DataLayer = (DataLayer) gridLayer.getBodyDataLayer();
         n6DataLayer.setColumnWidthByPosition(0, 20);
         n6DataLayer.setColumnWidthByPosition(2, 20);
         n6DataLayer.setColumnPercentageSizing(true);
         // use different style bits to avoid rendering of inactive scrollbars
-        // for small table
-        // when using percentage sizing, typically there should be no
-        // scrollbars, as the table
-        // should take the available space
+        // for small table when using percentage sizing, typically there should
+        // be no scrollbars, as the table should take the available space
         // Note: The enabling/disabling and showing of the scrollbars is handled
-        // by the ViewportLayer.
-        // Without the ViewportLayer the scrollbars will always be visible with
-        // the default
-        // style bits of NatTable.
-        final NatTable n6 = new NatTable(gridPanel, SWT.NO_BACKGROUND
-                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
+        // by the ViewportLayer. Without the ViewportLayer the scrollbars will
+        // always be visible with the default style bits of NatTable.
+        final NatTable n6 = new NatTable(
+                gridPanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
         n6.addConfiguration(new DefaultNatTableStyleConfiguration());
         n6.addConfiguration(new HeaderMenuConfiguration(n6));
         n6.configure();
         GridDataFactory.fillDefaults().grab(true, true).applyTo(n6);
 
-        // example for mixed fixed/percentage sizing in a grid
-        // configure not every column with the exact percentage value, this way
-        // the columns for which
-        // no exact values are set will use the remaining space
-        gridLayer = new SimpleGridLayer();
-        final DataLayer mixGridDataLayer = (DataLayer) gridLayer
-                .getBodyDataLayer();
+        // example for mixed fixed/percentage sizing in a grid configure not
+        // every column with the exact percentage value, this way the columns
+        // for which no exact values are set will use the remaining space
+        gridLayer = new SimpleGridLayer(dataProvider);
+        final DataLayer mixGridDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
         mixGridDataLayer.setColumnPercentageSizing(true);
         mixGridDataLayer.setColumnPercentageSizing(0, false);
         mixGridDataLayer.setColumnPercentageSizing(1, false);
         mixGridDataLayer.setColumnWidthByPosition(0, 100);
         mixGridDataLayer.setColumnWidthByPosition(1, 100);
         // use different style bits to avoid rendering of inactive scrollbars
-        // for small table
-        // when using percentage sizing, typically there should be no
-        // scrollbars, as the table
-        // should take the available space
+        // for small table when using percentage sizing, typically there should
+        // be no scrollbars, as the table should take the available space
         // Note: The enabling/disabling and showing of the scrollbars is handled
-        // by the ViewportLayer.
-        // Without the ViewportLayer the scrollbars will always be visible with
-        // the default
-        // style bits of NatTable.
-        final NatTable mixGrid = new NatTable(gridPanel, SWT.NO_BACKGROUND
-                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
+        // by the ViewportLayer. Without the ViewportLayer the scrollbars will
+        // always be visible with the default style bits of NatTable.
+        final NatTable mixGrid = new NatTable(
+                gridPanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, gridLayer, false);
         mixGrid.addConfiguration(new DefaultNatTableStyleConfiguration());
         mixGrid.addConfiguration(new HeaderMenuConfiguration(mixGrid));
         mixGrid.configure();
@@ -223,59 +204,50 @@ public class _5013_PercentageSizingGridExample extends AbstractNatExample {
      * Simple grid implementation that doesn't contain a ViewportLayer in the
      * body layer stack. This is because it is used for percentage sizing and we
      * do not want to show scrollbars.
-     * 
+     *
      * @author Dirk Fauth
      *
      */
     class SimpleGridLayer extends GridLayer {
 
-        IDataProvider bodyDataProvider = new DummyModifiableBodyDataProvider(3,
-                2);
+        IDataProvider bodyDataProvider;
         DataLayer bodyDataLayer;
 
         SelectionLayer selectionLayer;
 
-        protected SimpleGridLayer() {
+        protected SimpleGridLayer(IDataProvider bodyDataProvider) {
             super(true);
+
+            this.bodyDataProvider = bodyDataProvider;
 
             // create and set the body layer stack
             this.bodyDataLayer = new DataLayer(bodyDataProvider);
-            ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                    bodyDataLayer);
-            ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                    columnReorderLayer);
-            selectionLayer = new SelectionLayer(columnHideShowLayer);
-            setBodyLayer(selectionLayer);
+            ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(this.bodyDataLayer);
+            ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
+            this.selectionLayer = new SelectionLayer(columnHideShowLayer);
+            setBodyLayer(this.selectionLayer);
 
             // create and set the column header layer stack
-            IDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(
-                    bodyDataProvider);
-            DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                    columnHeaderDataProvider);
-            ILayer columnHeaderLayer = new ColumnHeaderLayer(
-                    columnHeaderDataLayer, selectionLayer, selectionLayer);
+            IDataProvider columnHeaderDataProvider = new DummyColumnHeaderDataProvider(bodyDataProvider);
+            DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+            ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, this.selectionLayer, this.selectionLayer);
             setColumnHeaderLayer(columnHeaderLayer);
 
             // create and set the row header layer stack
-            IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                    bodyDataProvider);
-            DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                    rowHeaderDataProvider);
-            ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                    selectionLayer, selectionLayer);
+            IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
+            DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+            ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, this.selectionLayer, this.selectionLayer);
             setRowHeaderLayer(rowHeaderLayer);
 
             // create and set the corner layer stack
-            IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                    columnHeaderDataProvider, rowHeaderDataProvider);
+            IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
             DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-            ILayer cornerLayer = new CornerLayer(cornerDataLayer,
-                    rowHeaderLayer, columnHeaderLayer);
+            ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
             setCornerLayer(cornerLayer);
         }
 
         public IUniqueIndexLayer getBodyDataLayer() {
-            return bodyDataLayer;
+            return this.bodyDataLayer;
         }
 
     }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Dirk Fauth
  ******************************************************************************/
@@ -58,8 +58,8 @@ public class _5012_PercentageSizingDataLayerExample extends AbstractNatExample {
         buttonPanel.setLayout(new RowLayout());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(buttonPanel);
 
-        final DummyModifiableBodyDataProvider dataProvider = new DummyModifiableBodyDataProvider(
-                3, 2);
+        final DummyModifiableBodyDataProvider dataProvider =
+                new DummyModifiableBodyDataProvider(3, 2);
 
         // example for percentage calculation with default sizing
         // all columns will be same size while the NatTable itself will have
@@ -70,17 +70,13 @@ public class _5012_PercentageSizingDataLayerExample extends AbstractNatExample {
         SelectionLayer layer = new SelectionLayer(n1DataLayer);
         layer.setRegionName(GridRegion.BODY);
         // use different style bits to avoid rendering of inactive scrollbars
-        // for small table
-        // when using percentage sizing, typically there should be no
-        // scrollbars, as the table
-        // should take the available space
+        // for small table when using percentage sizing, typically there should
+        // be no scrollbars, as the table should take the available space
         // Note: The enabling/disabling and showing of the scrollbars is handled
-        // by the ViewportLayer.
-        // Without the ViewportLayer the scrollbars will always be visible with
-        // the default
-        // style bits of NatTable.
-        final NatTable n1 = new NatTable(simplePanel, SWT.NO_BACKGROUND
-                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, layer);
+        // by the ViewportLayer. Without the ViewportLayer the scrollbars will
+        // always be visible with the default style bits of NatTable.
+        final NatTable n1 = new NatTable(
+                simplePanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, layer);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(n1);
 
         // example for fixed percentage sizing
@@ -92,23 +88,19 @@ public class _5012_PercentageSizingDataLayerExample extends AbstractNatExample {
         layer = new SelectionLayer(n2DataLayer);
         layer.setRegionName(GridRegion.BODY);
         // use different style bits to avoid rendering of inactive scrollbars
-        // for small table
-        // when using percentage sizing, typically there should be no
-        // scrollbars, as the table
-        // should take the available space
+        // for small table when using percentage sizing, typically there should
+        // be no scrollbars, as the table should take the available space
         // Note: The enabling/disabling and showing of the scrollbars is handled
-        // by the ViewportLayer.
-        // Without the ViewportLayer the scrollbars will always be visible with
-        // the default
-        // style bits of NatTable.
-        final NatTable n2 = new NatTable(simplePanel, SWT.NO_BACKGROUND
-                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, layer);
+        // by the ViewportLayer. Without the ViewportLayer the scrollbars will
+        // always be visible with the default style bits of NatTable.
+        final NatTable n2 = new NatTable(
+                simplePanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, layer);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(n2);
 
         // example for mixed percentage sizing
         // configure not every column with the exact percentage value, this way
-        // the columns for which
-        // no exact values are set will use the remaining space
+        // the columns for which no exact values are set will use the remaining
+        // space
         final DataLayer n3DataLayer = new DataLayer(dataProvider);
         n3DataLayer.setColumnPercentageSizing(true);
         n3DataLayer.setColumnWidthPercentageByPosition(0, 40);
@@ -116,23 +108,19 @@ public class _5012_PercentageSizingDataLayerExample extends AbstractNatExample {
         layer = new SelectionLayer(n3DataLayer);
         layer.setRegionName(GridRegion.BODY);
         // use different style bits to avoid rendering of inactive scrollbars
-        // for small table
-        // when using percentage sizing, typically there should be no
-        // scrollbars, as the table
-        // should take the available space
+        // for small table when using percentage sizing, typically there should
+        // be no scrollbars, as the table should take the available space
         // Note: The enabling/disabling and showing of the scrollbars is handled
-        // by the ViewportLayer.
-        // Without the ViewportLayer the scrollbars will always be visible with
-        // the default
-        // style bits of NatTable.
-        final NatTable n3 = new NatTable(simplePanel, SWT.NO_BACKGROUND
-                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, layer);
+        // by the ViewportLayer. Without the ViewportLayer the scrollbars will
+        // always be visible with the default style bits of NatTable.
+        final NatTable n3 = new NatTable(
+                simplePanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, layer);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(n3);
 
         // example for mixed fixed/percentage sizing
         // configure not every column with the exact percentage value, this way
-        // the columns for which
-        // no exact values are set will use the remaining space
+        // the columns for which no exact values are set will use the remaining
+        // space
         final DataLayer mixDataLayer = new DataLayer(dataProvider);
         mixDataLayer.setColumnPercentageSizing(true);
         mixDataLayer.setColumnPercentageSizing(0, false);
@@ -142,17 +130,13 @@ public class _5012_PercentageSizingDataLayerExample extends AbstractNatExample {
         layer = new SelectionLayer(mixDataLayer);
         layer.setRegionName(GridRegion.BODY);
         // use different style bits to avoid rendering of inactive scrollbars
-        // for small table
-        // when using percentage sizing, typically there should be no
-        // scrollbars, as the table
-        // should take the available space
+        // for small table when using percentage sizing, typically there should
+        // be no scrollbars, as the table should take the available space
         // Note: The enabling/disabling and showing of the scrollbars is handled
-        // by the ViewportLayer.
-        // Without the ViewportLayer the scrollbars will always be visible with
-        // the default
-        // style bits of NatTable.
-        final NatTable mix = new NatTable(simplePanel, SWT.NO_BACKGROUND
-                | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, layer);
+        // by the ViewportLayer. Without the ViewportLayer the scrollbars will
+        // always be visible with the default style bits of NatTable.
+        final NatTable mix = new NatTable(
+                simplePanel, SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED, layer);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(mix);
 
         Button addColumnButton = new Button(buttonPanel, SWT.PUSH);

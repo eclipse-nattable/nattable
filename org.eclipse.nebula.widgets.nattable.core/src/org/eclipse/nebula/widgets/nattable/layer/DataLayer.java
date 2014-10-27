@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -16,6 +16,7 @@ import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -67,8 +68,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     protected DataLayer(int defaultColumnWidth, int defaultRowHeight) {
-        columnWidthConfig = new SizeConfig(defaultColumnWidth);
-        rowHeightConfig = new SizeConfig(defaultRowHeight);
+        this.columnWidthConfig = new SizeConfig(defaultColumnWidth);
+        this.rowHeightConfig = new SizeConfig(defaultRowHeight);
 
         registerCommandHandlers();
     }
@@ -78,18 +79,18 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     @Override
     public void saveState(String prefix, Properties properties) {
         super.saveState(prefix, properties);
-        columnWidthConfig.saveState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
+        this.columnWidthConfig.saveState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
                 properties);
-        rowHeightConfig.saveState(prefix + PERSISTENCE_KEY_ROW_HEIGHT,
+        this.rowHeightConfig.saveState(prefix + PERSISTENCE_KEY_ROW_HEIGHT,
                 properties);
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
         super.loadState(prefix, properties);
-        columnWidthConfig.loadState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
+        this.columnWidthConfig.loadState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
                 properties);
-        rowHeightConfig.loadState(prefix + PERSISTENCE_KEY_ROW_HEIGHT,
+        this.rowHeightConfig.loadState(prefix + PERSISTENCE_KEY_ROW_HEIGHT,
                 properties);
 
         if (!properties.containsKey(NatTable.INITIAL_PAINT_COMPLETE_FLAG))
@@ -110,7 +111,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     public IDataProvider getDataProvider() {
-        return dataProvider;
+        return this.dataProvider;
     }
 
     protected void setDataProvider(IDataProvider dataProvider) {
@@ -155,7 +156,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     @Override
     public int getColumnCount() {
-        return dataProvider.getColumnCount();
+        return this.dataProvider.getColumnCount();
     }
 
     @Override
@@ -211,7 +212,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     @Override
     public int getWidth() {
-        return columnWidthConfig.getAggregateSize(getColumnCount());
+        return this.columnWidthConfig.getAggregateSize(getColumnCount());
     }
 
     @Override
@@ -221,7 +222,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     @Override
     public int getColumnWidthByPosition(int columnPosition) {
-        return columnWidthConfig.getSize(columnPosition);
+        return this.columnWidthConfig.getSize(columnPosition);
     }
 
     public void setColumnWidthByPosition(int columnPosition, int width) {
@@ -230,37 +231,37 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     public void setColumnWidthByPosition(int columnPosition, int width,
             boolean fireEvent) {
-        columnWidthConfig.setSize(columnPosition, width);
+        this.columnWidthConfig.setSize(columnPosition, width);
         if (fireEvent)
             fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
     }
 
     public void setColumnWidthPercentageByPosition(int columnPosition, int width) {
-        columnWidthConfig.setPercentage(columnPosition, width);
+        this.columnWidthConfig.setPercentage(columnPosition, width);
         fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
     }
 
     public void setDefaultColumnWidth(int width) {
-        columnWidthConfig.setDefaultSize(width);
+        this.columnWidthConfig.setDefaultSize(width);
     }
 
     public void setDefaultColumnWidthByPosition(int columnPosition, int width) {
-        columnWidthConfig.setDefaultSize(columnPosition, width);
+        this.columnWidthConfig.setDefaultSize(columnPosition, width);
     }
 
     // Column resize
 
     @Override
     public boolean isColumnPositionResizable(int columnPosition) {
-        return columnWidthConfig.isPositionResizable(columnPosition);
+        return this.columnWidthConfig.isPositionResizable(columnPosition);
     }
 
     public void setColumnPositionResizable(int columnPosition, boolean resizable) {
-        columnWidthConfig.setPositionResizable(columnPosition, resizable);
+        this.columnWidthConfig.setPositionResizable(columnPosition, resizable);
     }
 
     public void setColumnsResizableByDefault(boolean resizableByDefault) {
-        columnWidthConfig.setResizableByDefault(resizableByDefault);
+        this.columnWidthConfig.setResizableByDefault(resizableByDefault);
     }
 
     // Underlying
@@ -277,7 +278,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     @Override
     public int getRowCount() {
-        return dataProvider.getRowCount();
+        return this.dataProvider.getRowCount();
     }
 
     @Override
@@ -333,7 +334,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     @Override
     public int getHeight() {
-        return rowHeightConfig.getAggregateSize(getRowCount());
+        return this.rowHeightConfig.getAggregateSize(getRowCount());
     }
 
     @Override
@@ -343,7 +344,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     @Override
     public int getRowHeightByPosition(int rowPosition) {
-        return rowHeightConfig.getSize(rowPosition);
+        return this.rowHeightConfig.getSize(rowPosition);
     }
 
     public void setRowHeightByPosition(int rowPosition, int height) {
@@ -352,37 +353,37 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     public void setRowHeightByPosition(int rowPosition, int height,
             boolean fireEvent) {
-        rowHeightConfig.setSize(rowPosition, height);
+        this.rowHeightConfig.setSize(rowPosition, height);
         if (fireEvent)
             fireLayerEvent(new RowResizeEvent(this, rowPosition));
     }
 
     public void setRowHeightPercentageByPosition(int rowPosition, int height) {
-        rowHeightConfig.setPercentage(rowPosition, height);
+        this.rowHeightConfig.setPercentage(rowPosition, height);
         fireLayerEvent(new ColumnResizeEvent(this, rowPosition));
     }
 
     public void setDefaultRowHeight(int height) {
-        rowHeightConfig.setDefaultSize(height);
+        this.rowHeightConfig.setDefaultSize(height);
     }
 
     public void setDefaultRowHeightByPosition(int rowPosition, int height) {
-        rowHeightConfig.setDefaultSize(rowPosition, height);
+        this.rowHeightConfig.setDefaultSize(rowPosition, height);
     }
 
     // Row resize
 
     @Override
     public boolean isRowPositionResizable(int rowPosition) {
-        return rowHeightConfig.isPositionResizable(rowPosition);
+        return this.rowHeightConfig.isPositionResizable(rowPosition);
     }
 
     public void setRowPositionResizable(int rowPosition, boolean resizable) {
-        rowHeightConfig.setPositionResizable(rowPosition, resizable);
+        this.rowHeightConfig.setPositionResizable(rowPosition, resizable);
     }
 
     public void setRowsResizableByDefault(boolean resizableByDefault) {
-        rowHeightConfig.setResizableByDefault(resizableByDefault);
+        this.rowHeightConfig.setResizableByDefault(resizableByDefault);
     }
 
     // Underlying
@@ -420,12 +421,12 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     @Override
     public int getStartXOfColumnPosition(int columnPosition) {
-        return columnWidthConfig.getAggregateSize(columnPosition);
+        return this.columnWidthConfig.getAggregateSize(columnPosition);
     }
 
     @Override
     public int getStartYOfRowPosition(int rowPosition) {
-        return rowHeightConfig.getAggregateSize(rowPosition);
+        return this.rowHeightConfig.getAggregateSize(rowPosition);
     }
 
     @Override
@@ -460,6 +461,16 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
             return refresh;
         }
+        else if (command instanceof StructuralRefreshCommand) {
+            // if we receive a StructuralRefreshCommand we need to ensure
+            // that the percentage values are re-calculated
+            if (isColumnPercentageSizing()) {
+                this.columnWidthConfig.updatePercentageValues(getColumnCount());
+            }
+            if (isRowPercentageSizing()) {
+                this.rowHeightConfig.updatePercentageValues(getRowCount());
+            }
+        }
         return super.doCommand(command);
     }
 
@@ -477,7 +488,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      * Default is pixel sizing. If percentage sizing should be used you have to
      * ensure that the size value for every column is set explicitly and that
      * the sum of the column sizes doesn't exceed 100.
-     * 
+     *
      * @param percentageSizing
      *            <code>true</code> if the column sizing should be done by
      *            percentage calculation, <code>false</code> if the column
@@ -504,7 +515,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      * Default is pixel sizing. If percentage sizing should be used you have to
      * ensure that the size value for every column is set explicitly and that
      * the sum of the column sizes doesn't exceed 100.
-     * 
+     *
      * @param position
      *            The position for which the sizing configuration should be set.
      * @param percentageSizing
@@ -530,7 +541,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      * Default is pixel sizing. If percentage sizing should be used you have to
      * ensure that the size value for every row is set explicitly and that the
      * sum of the row sizes doesn't exceed 100.
-     * 
+     *
      * @param percentageSizing
      *            <code>true</code> if the row sizing should be done by
      *            percentage calculation, <code>false</code> if the row sizing
@@ -557,7 +568,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
      * Default is pixel sizing. If percentage sizing should be used you have to
      * ensure that the size value for every row is set explicitly and that the
      * sum of the row sizes doesn't exceed 100.
-     * 
+     *
      * @param position
      *            The row position for which the sizing configuration should be
      *            set.
