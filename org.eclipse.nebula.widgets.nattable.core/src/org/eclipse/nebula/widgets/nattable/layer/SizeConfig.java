@@ -590,10 +590,11 @@ public class SizeConfig implements IPersistable {
                 if (space > 0 && valueSum < space) {
                     // distribute the missing pixels
                     int missingPixels = (space - valueSum);
+                    int pos = 0;
                     for (int i = missingPixels; i > 0; i--) {
-                        int lastPosValue = this.realSizeMap.get(lastPos);
-                        this.realSizeMap.put(lastPos, lastPosValue + 1);
-                        lastPos--;
+                        int posValue = this.realSizeMap.get(pos);
+                        this.realSizeMap.put(pos, posValue + 1);
+                        pos++;
                     }
                 }
             }

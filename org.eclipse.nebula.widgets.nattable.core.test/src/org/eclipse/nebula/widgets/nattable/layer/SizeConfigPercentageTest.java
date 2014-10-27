@@ -75,16 +75,16 @@ public class SizeConfigPercentageTest {
     public void percentageOverrideCalculationMode() throws Exception {
         this.sizeConfigCalculationMode.setPercentage(5, 20);
 
-        Assert.assertEquals(88, this.sizeConfigCalculationMode.getSize(0));
-        Assert.assertEquals(88, this.sizeConfigCalculationMode.getSize(1));
+        Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(0));
+        Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(1));
         Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(2));
         Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(3));
         Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(4));
         Assert.assertEquals(201, this.sizeConfigCalculationMode.getSize(5));
         Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(6));
         Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(7));
-        Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(8));
-        Assert.assertEquals(89, this.sizeConfigCalculationMode.getSize(9));
+        Assert.assertEquals(88, this.sizeConfigCalculationMode.getSize(8));
+        Assert.assertEquals(88, this.sizeConfigCalculationMode.getSize(9));
     }
 
     @Test
@@ -92,15 +92,15 @@ public class SizeConfigPercentageTest {
             throws Exception {
         this.sizeConfigCalculationMode.setPercentage(5, 20);
 
-        Assert.assertEquals(88, this.sizeConfigCalculationMode.getAggregateSize(1));
-        Assert.assertEquals(176, this.sizeConfigCalculationMode.getAggregateSize(2));
-        Assert.assertEquals(265, this.sizeConfigCalculationMode.getAggregateSize(3));
-        Assert.assertEquals(354, this.sizeConfigCalculationMode.getAggregateSize(4));
-        Assert.assertEquals(443, this.sizeConfigCalculationMode.getAggregateSize(5));
-        Assert.assertEquals(644, this.sizeConfigCalculationMode.getAggregateSize(6));
-        Assert.assertEquals(733, this.sizeConfigCalculationMode.getAggregateSize(7));
-        Assert.assertEquals(822, this.sizeConfigCalculationMode.getAggregateSize(8));
-        Assert.assertEquals(911, this.sizeConfigCalculationMode.getAggregateSize(9));
+        Assert.assertEquals(89, this.sizeConfigCalculationMode.getAggregateSize(1));
+        Assert.assertEquals(178, this.sizeConfigCalculationMode.getAggregateSize(2));
+        Assert.assertEquals(267, this.sizeConfigCalculationMode.getAggregateSize(3));
+        Assert.assertEquals(356, this.sizeConfigCalculationMode.getAggregateSize(4));
+        Assert.assertEquals(445, this.sizeConfigCalculationMode.getAggregateSize(5));
+        Assert.assertEquals(646, this.sizeConfigCalculationMode.getAggregateSize(6));
+        Assert.assertEquals(735, this.sizeConfigCalculationMode.getAggregateSize(7));
+        Assert.assertEquals(824, this.sizeConfigCalculationMode.getAggregateSize(8));
+        Assert.assertEquals(912, this.sizeConfigCalculationMode.getAggregateSize(9));
         Assert.assertEquals(1000,
                 this.sizeConfigCalculationMode.getAggregateSize(10));
     }
@@ -169,18 +169,18 @@ public class SizeConfigPercentageTest {
 
         this.sizeConfigCalculationMode.setPercentage(5, 20);
 
-        Assert.assertEquals(443, this.sizeConfigCalculationMode.getAggregateSize(5));
+        Assert.assertEquals(445, this.sizeConfigCalculationMode.getAggregateSize(5));
     }
 
     @Test
     public void getSizeConfigFixedMode() throws Exception {
-        Assert.assertEquals(127, this.sizeConfigFixedMode.getSize(0));
-        Assert.assertEquals(128, this.sizeConfigFixedMode.getSize(1));
+        Assert.assertEquals(128, this.sizeConfigFixedMode.getSize(0));
+        Assert.assertEquals(127, this.sizeConfigFixedMode.getSize(1));
     }
 
     @Test
     public void getAggregateSizeConfigFixedMode() throws Exception {
-        Assert.assertEquals(127, this.sizeConfigFixedMode.getAggregateSize(1));
+        Assert.assertEquals(128, this.sizeConfigFixedMode.getAggregateSize(1));
         Assert.assertEquals(255, this.sizeConfigFixedMode.getAggregateSize(2));
     }
 
@@ -213,15 +213,13 @@ public class SizeConfigPercentageTest {
         this.sizeConfigFixedMode.setPercentage(2, 50);
         this.sizeConfigFixedMode.setPercentage(3, 50);
 
-        // the correct double value would be 127.5 - because of the rounding as
-        // there are no
-        // double pixels, the values for the first 3 positions will be 127
-        Assert.assertEquals(127, this.sizeConfigFixedMode.getSize(0));
-        Assert.assertEquals(127, this.sizeConfigFixedMode.getSize(1));
-        // to correct the rounding issues in rendering, the last two positions
-        // will have the increased size to fill the available space 100%
-        Assert.assertEquals(128, this.sizeConfigFixedMode.getSize(2));
-        Assert.assertEquals(128, this.sizeConfigFixedMode.getSize(3));
+        // the correct double value would be 127.5 - because of the rounding, as
+        // there are no double pixels, and the distribution of the missing
+        // pixels the values for the first 2 positions will be 128
+        Assert.assertEquals(128, this.sizeConfigFixedMode.getSize(0));
+        Assert.assertEquals(128, this.sizeConfigFixedMode.getSize(1));
+        Assert.assertEquals(127, this.sizeConfigFixedMode.getSize(2));
+        Assert.assertEquals(127, this.sizeConfigFixedMode.getSize(3));
     }
 
     @Test
@@ -249,9 +247,9 @@ public class SizeConfigPercentageTest {
         this.sizeConfigFixedMode.setPercentage(2, 50);
         this.sizeConfigFixedMode.setPercentage(3, 50);
 
-        Assert.assertEquals(127, this.sizeConfigFixedMode.getAggregateSize(1));
-        Assert.assertEquals(254, this.sizeConfigFixedMode.getAggregateSize(2));
-        Assert.assertEquals(382, this.sizeConfigFixedMode.getAggregateSize(3));
+        Assert.assertEquals(128, this.sizeConfigFixedMode.getAggregateSize(1));
+        Assert.assertEquals(256, this.sizeConfigFixedMode.getAggregateSize(2));
+        Assert.assertEquals(383, this.sizeConfigFixedMode.getAggregateSize(3));
         Assert.assertEquals(510, this.sizeConfigFixedMode.getAggregateSize(4));
     }
 
@@ -268,7 +266,7 @@ public class SizeConfigPercentageTest {
     @Test
     public void getAggregateSizeFixedModeSpaceChangeCacheCheck()
             throws Exception {
-        Assert.assertEquals(127, this.sizeConfigFixedMode.getAggregateSize(1));
+        Assert.assertEquals(128, this.sizeConfigFixedMode.getAggregateSize(1));
         Assert.assertEquals(255, this.sizeConfigFixedMode.getAggregateSize(2));
 
         this.sizeConfigFixedMode.calculatePercentages(500, 2);
@@ -286,7 +284,7 @@ public class SizeConfigPercentageTest {
     @Test
     public void getAggregateSizeFixedModeSizeChangeCacheCheck()
             throws Exception {
-        Assert.assertEquals(127, this.sizeConfigFixedMode.getAggregateSize(1));
+        Assert.assertEquals(128, this.sizeConfigFixedMode.getAggregateSize(1));
         Assert.assertEquals(255, this.sizeConfigFixedMode.getAggregateSize(2));
 
         this.sizeConfigFixedMode.setPercentage(1, 40);
@@ -589,7 +587,7 @@ public class SizeConfigPercentageTest {
         // as they are
         // configured to take the remaining space
         Assert.assertEquals(94, this.sizeConfigCalculationMode.getSize(4));
-        Assert.assertEquals(95, this.sizeConfigCalculationMode.getSize(6));
+        Assert.assertEquals(94, this.sizeConfigCalculationMode.getSize(6));
 
         // as we're in percentage mode, the aggregate size shouldn't have
         // changed
