@@ -36,6 +36,58 @@ public class CellSelectionTraversalTest {
         this.selectionLayer.clear();
     }
 
+    // non movement
+
+    @Test
+    public void testMoveNone() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move none
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.NONE, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move none 4 steps
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.NONE, 4, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    // override strategy by command
+
+    @Test
+    public void testMoveRightAxisOverride() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(9, 4);
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move on to right at end -> stay
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
+
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move on to right at end with axis cycle strategy -> move to beginning
+        // same row
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT,
+                ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY, false, false));
+
+        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
     // move right
 
     @Test

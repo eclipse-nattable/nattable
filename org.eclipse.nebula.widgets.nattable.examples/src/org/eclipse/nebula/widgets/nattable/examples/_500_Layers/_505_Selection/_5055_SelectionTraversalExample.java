@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.examples._500_Layers._505_Selection;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
@@ -26,11 +25,6 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
-import org.eclipse.nebula.widgets.nattable.selection.action.MoveSelectionAction;
-import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
-import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -146,31 +140,16 @@ public class _5055_SelectionTraversalExample extends AbstractNatExample {
         viewportLayer.setRegionName(GridRegion.BODY);
 
         // register a MoveCellSelectionCommandHandler with
-        // TABLE_CYCLE_TRAVERSAL_STRATEGY
+        // TABLE_CYCLE_TRAVERSAL_STRATEGY for horizontal traversal
+        // and AXIS_CYCLE_TRAVERSAL_STRATEGY for vertical traversal
+        // NOTE:
+        // You could achieve the same by registering a command handler
+        // with TABLE_CYCLE_TRAVERSAL_STRATEGY and registering
+        // MoveSelectionActions with a customized ITraversalStrategy, e.g.
+        // AXIS_CYCLE_TRAVERSAL_STRATEGY
         viewportLayer.registerCommandHandler(
-                new MoveCellSelectionCommandHandler(selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
-
-        viewportLayer.addConfiguration(new AbstractUiBindingConfiguration() {
-
-            @Override
-            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-                // register move action with AXIS_CYCLE_TRAVERSAL_STRATEGY
-                IKeyAction traversalAction =
-                        new MoveSelectionAction(MoveDirectionEnum.UP, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY);
-                uiBindingRegistry.registerFirstKeyBinding(new KeyEventMatcher(SWT.NONE,
-                        SWT.ARROW_UP), traversalAction);
-                uiBindingRegistry.registerFirstKeyBinding(new KeyEventMatcher(SWT.SHIFT,
-                        SWT.ARROW_UP), traversalAction);
-
-                // register move action with AXIS_CYCLE_TRAVERSAL_STRATEGY
-                traversalAction =
-                        new MoveSelectionAction(MoveDirectionEnum.DOWN, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY);
-                uiBindingRegistry.registerFirstKeyBinding(new KeyEventMatcher(SWT.NONE,
-                        SWT.ARROW_DOWN), traversalAction);
-                uiBindingRegistry.registerFirstKeyBinding(new KeyEventMatcher(SWT.SHIFT,
-                        SWT.ARROW_DOWN), traversalAction);
-            }
-        });
+                new MoveCellSelectionCommandHandler(selectionLayer,
+                        ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
 
         natTable = new NatTable(panel, viewportLayer);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);

@@ -46,6 +46,25 @@ public class MoveRowSelectionCommandHandler extends MoveCellSelectionCommandHand
         super(selectionLayer, traversalStrategy);
     }
 
+    /**
+     * Create a MoveRowSelectionCommandHandler for the given
+     * {@link SelectionLayer} .
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} on which the selection should be
+     *            performed.
+     * @param horizontalTraversalStrategy
+     *            The strategy that should be used for horizontal selection
+     *            movements. Can not be <code>null</code>.
+     * @param verticalTraversalStrategy
+     *            The strategy that should be used for vertical selection
+     *            movements. Can not be <code>null</code>.
+     */
+    public MoveRowSelectionCommandHandler(SelectionLayer selectionLayer,
+            ITraversalStrategy horizontalTraversalStrategy, ITraversalStrategy verticalTraversalStrategy) {
+        super(selectionLayer, horizontalTraversalStrategy, verticalTraversalStrategy);
+    }
+
     @Override
     protected void moveLastSelectedLeft(ITraversalStrategy traversalStrategy, boolean withShiftMask, boolean withControlMask) {
         super.moveLastSelectedLeft(traversalStrategy, withShiftMask, withControlMask);

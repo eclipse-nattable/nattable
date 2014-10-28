@@ -55,6 +55,25 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
         super(selectionLayer, traversalStrategy);
     }
 
+    /**
+     * Create a MoveCellSelectionCommandHandler for the given
+     * {@link SelectionLayer} .
+     *
+     * @param selectionLayer
+     *            The {@link SelectionLayer} on which the selection should be
+     *            performed.
+     * @param horizontalTraversalStrategy
+     *            The strategy that should be used for horizontal selection
+     *            movements. Can not be <code>null</code>.
+     * @param verticalTraversalStrategy
+     *            The strategy that should be used for vertical selection
+     *            movements. Can not be <code>null</code>.
+     */
+    public MoveCellSelectionCommandHandler(SelectionLayer selectionLayer,
+            ITraversalStrategy horizontalTraversalStrategy, ITraversalStrategy verticalTraversalStrategy) {
+        super(selectionLayer, horizontalTraversalStrategy, verticalTraversalStrategy);
+    }
+
     @Override
     protected void moveLastSelectedLeft(ITraversalStrategy traversalStrategy, boolean withShiftMask, boolean withControlMask) {
         if (this.selectionLayer.hasColumnSelection()) {
@@ -126,53 +145,53 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                 int stepSize = traversalStrategy.getStepCount();
                 this.newSelectedColumnPosition = (stepSize >= 0)
                         ? (lastSelectedCell.getOriginColumnPosition() + lastSelectedCell.getColumnSpan() - 1 + stepSize)
-                                : (this.selectionLayer.getColumnCount() - 1);
+                        : (this.selectionLayer.getColumnCount() - 1);
 
-                this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
+                        this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
 
-                if (this.newSelectedColumnPosition >= this.selectionLayer.getColumnCount()) {
-                    if (traversalStrategy.getTraversalScope().equals(TraversalScope.AXIS)) {
-                        if (!traversalStrategy.isCycle()) {
-                            // on axis scope with no cycle, stop moving
-                            this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
-                        }
-                        else {
-                            // on axis scope with cycle, move to 0
-                            // TODO check if 0 is valid using step count
-                            this.newSelectedColumnPosition = 0;
-                        }
-                    }
-                    else if (traversalStrategy.getTraversalScope().equals(TraversalScope.TABLE)) {
-                        // on table scope, move to 0
-                        // TODO check if 0 is valid using step count
-                        this.newSelectedColumnPosition = 0;
-                        this.newSelectedRowPosition = this.newSelectedRowPosition + 1;
-                        if (this.newSelectedRowPosition >= this.selectionLayer.getRowCount()) {
-                            if (traversalStrategy.isCycle()) {
-                                // at the bottom and cycle so go to top
-                                this.newSelectedRowPosition = 0;
+                        if (this.newSelectedColumnPosition >= this.selectionLayer.getColumnCount()) {
+                            if (traversalStrategy.getTraversalScope().equals(TraversalScope.AXIS)) {
+                                if (!traversalStrategy.isCycle()) {
+                                    // on axis scope with no cycle, stop moving
+                                    this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
+                                }
+                                else {
+                                    // on axis scope with cycle, move to 0
+                                    // TODO check if 0 is valid using step count
+                                    this.newSelectedColumnPosition = 0;
+                                }
                             }
-                            else {
-                                // at the bottom and no cycle so stop moving
-                                this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
-                                this.newSelectedRowPosition = this.selectionLayer.getRowCount() - 1;
+                            else if (traversalStrategy.getTraversalScope().equals(TraversalScope.TABLE)) {
+                                // on table scope, move to 0
+                                // TODO check if 0 is valid using step count
+                                this.newSelectedColumnPosition = 0;
+                                this.newSelectedRowPosition = this.newSelectedRowPosition + 1;
+                                if (this.newSelectedRowPosition >= this.selectionLayer.getRowCount()) {
+                                    if (traversalStrategy.isCycle()) {
+                                        // at the bottom and cycle so go to top
+                                        this.newSelectedRowPosition = 0;
+                                    }
+                                    else {
+                                        // at the bottom and no cycle so stop moving
+                                        this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
+                                        this.newSelectedRowPosition = this.selectionLayer.getRowCount() - 1;
+                                    }
+                                }
                             }
                         }
-                    }
-                }
 
-                if (this.newSelectedColumnPosition != this.lastSelectedCellPosition.columnPosition) {
-                    if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
-                        this.selectionLayer.clear(false);
-                    }
-                    this.selectionLayer.selectCell(
-                            this.newSelectedColumnPosition, this.newSelectedRowPosition,
-                            withShiftMask, withControlMask);
-                    this.selectionLayer.fireCellSelectionEvent(
-                            this.lastSelectedCellPosition.columnPosition,
-                            this.lastSelectedCellPosition.rowPosition, true,
-                            withShiftMask, withControlMask);
-                }
+                        if (this.newSelectedColumnPosition != this.lastSelectedCellPosition.columnPosition) {
+                            if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
+                                this.selectionLayer.clear(false);
+                            }
+                            this.selectionLayer.selectCell(
+                                    this.newSelectedColumnPosition, this.newSelectedRowPosition,
+                                    withShiftMask, withControlMask);
+                            this.selectionLayer.fireCellSelectionEvent(
+                                    this.lastSelectedCellPosition.columnPosition,
+                                    this.lastSelectedCellPosition.rowPosition, true,
+                                    withShiftMask, withControlMask);
+                        }
             }
         }
     }
@@ -248,7 +267,7 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 
                 this.newSelectedRowPosition = (stepSize >= 0)
                         ? lastSelectedCell.getOriginRowPosition() + lastSelectedCell.getRowSpan() - 1 + stepSize
-                        : this.selectionLayer.getRowCount() - 1;
+                                : this.selectionLayer.getRowCount() - 1;
 
                 if (this.newSelectedRowPosition >= this.selectionLayer.getRowCount()) {
                     if (traversalStrategy.getTraversalScope().equals(TraversalScope.AXIS)) {
