@@ -592,6 +592,11 @@ public class SizeConfig implements IPersistable {
                     int missingPixels = (space - valueSum);
                     int pos = 0;
                     for (int i = missingPixels; i > 0; i--) {
+                        if (!this.realSizeMap.containsKey(pos)) {
+                            // there are more missing pixels than columns
+                            // start over at position 0
+                            pos = 0;
+                        }
                         int posValue = this.realSizeMap.get(pos);
                         this.realSizeMap.put(pos, posValue + 1);
                         pos++;
