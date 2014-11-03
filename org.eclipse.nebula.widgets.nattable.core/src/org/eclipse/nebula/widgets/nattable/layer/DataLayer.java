@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     neal zhang <nujiah001@126.com> - Bug 448934
  ******************************************************************************/
 
 package org.eclipse.nebula.widgets.nattable.layer;
@@ -49,8 +50,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
     protected IDataProvider dataProvider;
 
-    private final SizeConfig columnWidthConfig;
-    private final SizeConfig rowHeightConfig;
+    protected SizeConfig columnWidthConfig;
+    protected SizeConfig rowHeightConfig;
 
     public DataLayer(IDataProvider dataProvider) {
         this(dataProvider, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
