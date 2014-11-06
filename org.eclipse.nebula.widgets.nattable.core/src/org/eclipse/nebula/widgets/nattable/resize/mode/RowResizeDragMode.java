@@ -64,8 +64,7 @@ public class RowResizeDragMode implements IDragMode {
         this.currentY = event.y;
         // redraw the space after the bottom of the last row
         // to be able to render the resize drag indicator
-        natTable.redraw(0, natTable.getHeight(), natTable.getClientArea().width,
-                natTable.getClientArea().height - natTable.getHeight(), true);
+        natTable.repaintVerticalLeftOver();
 
         if (this.checkMinimumWidth
                 && this.currentY < this.gridRowStartY + getRowHeightMinimum()) {

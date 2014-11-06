@@ -64,8 +64,7 @@ public class ColumnResizeDragMode implements IDragMode {
         this.currentX = event.x;
         // redraw the space to the right of the last column
         // to be able to render the resize drag indicator
-        natTable.redraw(natTable.getWidth(), 0, natTable.getClientArea().width - natTable.getWidth(),
-                natTable.getHeight(), true);
+        natTable.repaintHorizontalLeftOver();
 
         if (this.checkMinimumWidth
                 && this.currentX < this.gridColumnStartX + getColumnWidthMinimum()) {
