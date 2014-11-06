@@ -125,6 +125,40 @@ public class CellSelectionTraversalTest {
     }
 
     @Test
+    public void testMoveRightStepCountAxis() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 3, false, false));
+
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderAxis() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 4);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 4, false, false));
+
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
     public void testMoveRightAxisCycle() {
         // register axis traversal
         this.viewportLayer.registerCommandHandler(
@@ -155,6 +189,57 @@ public class CellSelectionTraversalTest {
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
 
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 3, false, false));
+
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 4);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 4, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderMultipleAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 4);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 24, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
@@ -204,6 +289,74 @@ public class CellSelectionTraversalTest {
 
         // move one to right at end -> stay
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, false, false));
+
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 3, false, false));
+
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 4);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 4, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderMultipleTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 4);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 24, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderAtEndBottomMultipleTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 8);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 24, false, false));
 
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
@@ -260,6 +413,74 @@ public class CellSelectionTraversalTest {
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
+    @Test
+    public void testMoveRightStepCountTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 3, false, false));
+
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 4);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 4, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(5, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderMultipleTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 4);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 24, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveRightStepCountOverBorderAtEndBottomMultipleTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(7, 8);
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 34 steps to right
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.RIGHT, 34, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
     // move left
 
     @Test
@@ -297,6 +518,40 @@ public class CellSelectionTraversalTest {
     }
 
     @Test
+    public void testMoveLeftStepCountAxis() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 3, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderAxis() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(1, 4);
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 4, false, false));
+
+        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
     public void testMoveLeftAxisCycle() {
         // register axis traversal
         this.viewportLayer.registerCommandHandler(
@@ -327,6 +582,57 @@ public class CellSelectionTraversalTest {
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
 
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 3, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 4);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 4, false, false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderMultipleAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 4);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 24, false, false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
@@ -376,6 +682,74 @@ public class CellSelectionTraversalTest {
 
         // move one to left at beginning -> stay
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, false, false));
+
+        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 3, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 4);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 4, false, false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(3, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderMultipleTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 4);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 24, false, false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderAtEndBottomMultipleTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 1);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 24, false, false));
 
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
@@ -432,6 +806,74 @@ public class CellSelectionTraversalTest {
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
+    @Test
+    public void testMoveLeftStepCountTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 3, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 4);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 4, false, false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(3, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderMultipleTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 4);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 24, false, false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveLeftStepCountOverBorderAtEndBottomMultipleTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 1);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 34 steps to left
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.LEFT, 34, false, false));
+
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
     // move down
 
     @Test
@@ -469,6 +911,40 @@ public class CellSelectionTraversalTest {
     }
 
     @Test
+    public void testMoveDownStepCountAxis() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 3, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderAxis() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 7);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 4, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
     public void testMoveDownAxisCycle() {
         // register axis traversal
         this.viewportLayer.registerCommandHandler(
@@ -500,6 +976,57 @@ public class CellSelectionTraversalTest {
 
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 3, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 7);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 4, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderMultipleAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 7);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 24, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
     @Test
@@ -546,8 +1073,76 @@ public class CellSelectionTraversalTest {
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
-        // move one to right at end -> stay
+        // move one down at end -> stay
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
+
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 3, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 7);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 4, false, false));
+
+        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderMultipleTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 7);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 24, false, false));
+
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderAtEndBottomMultipleTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(8, 7);
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 24, false, false));
 
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
@@ -597,11 +1192,79 @@ public class CellSelectionTraversalTest {
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
 
-        // move one to right at end -> relocate at beginning, top
+        // move one to down at end -> relocate at beginning, top
         this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, false, false));
 
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 3, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 7);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 4, false, false));
+
+        assertEquals(5, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderMultipleTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 7);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 24, false, false));
+
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveDownStepCountOverBorderAtEndBottomMultipleTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(8, 7);
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 34 steps down
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, 34, false, false));
+
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
     // move up
@@ -641,6 +1304,40 @@ public class CellSelectionTraversalTest {
     }
 
     @Test
+    public void testMoveUpStepCountAxis() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 3, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderAxis() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 2);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 4, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
     public void testMoveUpAxisCycle() {
         // register axis traversal
         this.viewportLayer.registerCommandHandler(
@@ -672,6 +1369,57 @@ public class CellSelectionTraversalTest {
 
         assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 3, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 2);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 4, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderMultipleAxisCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 2);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 24, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
     @Test
@@ -726,6 +1474,74 @@ public class CellSelectionTraversalTest {
     }
 
     @Test
+    public void testMoveUpStepCountTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 3, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 2);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 4, false, false));
+
+        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderMultipleTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 2);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 24, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderAtEndBottomMultipleTable() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(2, 1);
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 24, false, false));
+
+        assertEquals(0, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(0, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
     public void testMoveUpTableCycle() {
         // register axis traversal
         this.viewportLayer.registerCommandHandler(
@@ -774,6 +1590,74 @@ public class CellSelectionTraversalTest {
 
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getColumnPosition());
         assertEquals(9, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 4);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 3 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 3, false, false));
+
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 2);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 4 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 4, false, false));
+
+        assertEquals(3, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderMultipleTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(4, 2);
+        assertEquals(4, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 24 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 24, false, false));
+
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
+    }
+
+    @Test
+    public void testMoveUpStepCountOverBorderAtEndBottomMultipleTableCycle() {
+        // register axis traversal
+        this.viewportLayer.registerCommandHandler(
+                new MoveCellSelectionCommandHandler(this.selectionLayer, ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY));
+        // select a cell
+        this.selectionLayer.setSelectedCell(1, 2);
+        assertEquals(1, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(2, this.selectionLayer.getLastSelectedCell().getRowPosition());
+
+        // move 34 steps up
+        this.viewportLayer.doCommand(new MoveSelectionCommand(MoveDirectionEnum.UP, 34, false, false));
+
+        assertEquals(7, this.selectionLayer.getLastSelectedCell().getColumnPosition());
+        assertEquals(8, this.selectionLayer.getLastSelectedCell().getRowPosition());
     }
 
 }
