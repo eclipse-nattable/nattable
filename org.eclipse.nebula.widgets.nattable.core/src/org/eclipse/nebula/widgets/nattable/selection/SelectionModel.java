@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 450334
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -40,7 +41,7 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class SelectionModel implements ISelectionModel {
 
-    private final SelectionLayer selectionLayer;
+    protected final SelectionLayer selectionLayer;
     private boolean multipleSelectionAllowed;
 
     private final List<Rectangle> selections;
