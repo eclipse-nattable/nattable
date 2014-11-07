@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Roman Flueckiger <roman.flueckiger@mac.com> - added expand/collapse key bindings
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
@@ -85,6 +86,7 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKeyBindings;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -107,9 +109,6 @@ import ca.odell.glazedlists.TransformedList;
  * Simple example showing how to add the group by feature to the layer
  * composition of a grid in conjunction with showing summary values of
  * groupings.
- * 
- * @author Dirk Fauth
- *
  */
 public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
@@ -225,7 +224,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
         // build the grid layer
         GridLayer gridLayer = new GridLayer(bodyLayerStack, sortHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+                rowHeaderLayer, cornerLayer, false);
 
         // set the group by header on top of the grid
         CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
@@ -296,9 +295,9 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         // add sorting configuration
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
-        sumMoneyGroupBySummaryProvider = new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(
+        this.sumMoneyGroupBySummaryProvider = new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(
                 columnPropertyAccessor);
-        avgMoneyGroupBySummaryProvider = new AverageMoneyGroupBySummaryProvider();
+        this.avgMoneyGroupBySummaryProvider = new AverageMoneyGroupBySummaryProvider();
 
         // create a new IDataProvider that operates on the basic underlying list
         // this is necessary because the IDataProvider in the body layer stack
@@ -308,9 +307,9 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         // has effect on the summary value.
         final IDataProvider summaryDataProvider = new ListDataProvider<ExtendedPersonWithAddress>(
                 persons, columnPropertyAccessor);
-        sumMoneySummaryProvider = new SummationSummaryProvider(
+        this.sumMoneySummaryProvider = new SummationSummaryProvider(
                 summaryDataProvider, false);
-        avgMoneySummaryProvider = new AverageMoneySummaryProvider(
+        this.avgMoneySummaryProvider = new AverageMoneySummaryProvider(
                 summaryDataProvider);
 
         // add group by summary configuration
@@ -321,7 +320,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 // GroupBy summary configuration
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                        sumMoneyGroupBySummaryProvider, DisplayMode.NORMAL,
+                        _809_GroupBySummarySummaryRowExample.this.sumMoneyGroupBySummaryProvider, DisplayMode.NORMAL,
                         GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
                 configRegistry.registerConfigAttribute(
@@ -347,7 +346,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 configRegistry
                         .registerConfigAttribute(
                                 SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                sumMoneySummaryProvider,
+                                _809_GroupBySummarySummaryRowExample.this.sumMoneySummaryProvider,
                                 DisplayMode.NORMAL,
                                 SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 
@@ -389,6 +388,10 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                         .withStateManagerMenuItemProvider();
             }
         });
+
+        // adds the key bindings that allow space bar to be pressed to
+        // expand/collapse tree nodes
+        natTable.addConfiguration(new TreeLayerExpandCollapseKeyBindings(bodyLayerStack.getTreeLayer(), bodyLayerStack.getSelectionLayer()));
 
         natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
@@ -455,30 +458,30 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 // calculation gets triggered
                 bodyLayerStack.getBodyDataLayer().clearCache();
 
-                useMoneySum = !useMoneySum;
-                if (useMoneySum) {
+                _809_GroupBySummarySummaryRowExample.this.useMoneySum = !_809_GroupBySummarySummaryRowExample.this.useMoneySum;
+                if (_809_GroupBySummarySummaryRowExample.this.useMoneySum) {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            sumMoneyGroupBySummaryProvider, DisplayMode.NORMAL,
+                            _809_GroupBySummarySummaryRowExample.this.sumMoneyGroupBySummaryProvider, DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
                     configRegistry
                             .registerConfigAttribute(
                                     SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                    sumMoneySummaryProvider,
+                                    _809_GroupBySummarySummaryRowExample.this.sumMoneySummaryProvider,
                                     DisplayMode.NORMAL,
                                     SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 
                 } else {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            avgMoneyGroupBySummaryProvider, DisplayMode.NORMAL,
+                            _809_GroupBySummarySummaryRowExample.this.avgMoneyGroupBySummaryProvider, DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
                     configRegistry
                             .registerConfigAttribute(
                                     SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                    avgMoneySummaryProvider,
+                                    _809_GroupBySummarySummaryRowExample.this.avgMoneySummaryProvider,
                                     DisplayMode.NORMAL,
                                     SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
                 }
@@ -491,15 +494,15 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         toggleThemeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (currentTheme == 0) {
+                if (_809_GroupBySummarySummaryRowExample.this.currentTheme == 0) {
                     natTable.setTheme(modernTheme);
-                    currentTheme++;
-                } else if (currentTheme == 1) {
+                    _809_GroupBySummarySummaryRowExample.this.currentTheme++;
+                } else if (_809_GroupBySummarySummaryRowExample.this.currentTheme == 1) {
                     natTable.setTheme(darkTheme);
-                    currentTheme++;
-                } else if (currentTheme == 2) {
+                    _809_GroupBySummarySummaryRowExample.this.currentTheme++;
+                } else if (_809_GroupBySummarySummaryRowExample.this.currentTheme == 2) {
                     natTable.setTheme(defaultTheme);
-                    currentTheme = 0;
+                    _809_GroupBySummarySummaryRowExample.this.currentTheme = 0;
                 }
             }
         });
@@ -510,7 +513,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -522,6 +525,8 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         private final GroupByDataLayer<T> bodyDataLayer;
 
         private final SelectionLayer selectionLayer;
+
+        private final TreeLayer treeLayer;
 
         private final GroupByModel groupByModel = new GroupByModel();
 
@@ -541,16 +546,16 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
             // Use the GroupByDataLayer instead of the default DataLayer
             this.bodyDataLayer = new GroupByDataLayer<T>(getGroupByModel(),
-                    sortedList, columnPropertyAccessor, configRegistry);
+                    this.sortedList, columnPropertyAccessor, configRegistry);
             // get the IDataProvider that was created by the GroupByDataLayer
-            this.bodyDataProvider = bodyDataLayer.getDataProvider();
+            this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             SummaryRowLayer summaryRowLayer = new SummaryRowLayer(
-                    bodyDataLayer, configRegistry, false);
+                    this.bodyDataLayer, configRegistry, false);
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    summaryRowLayer, sortedList);
+                    summaryRowLayer, this.sortedList);
 
             ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
                     glazedListsEventLayer);
@@ -559,16 +564,20 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
             this.selectionLayer = new SelectionLayer(columnHideShowLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(selectionLayer,
-                    bodyDataLayer.getTreeRowModel());
+            this.treeLayer = new TreeLayer(this.selectionLayer,
+                    this.bodyDataLayer.getTreeRowModel());
 
-            ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+            ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
 
             setUnderlyingLayer(viewportLayer);
         }
 
         public SelectionLayer getSelectionLayer() {
             return this.selectionLayer;
+        }
+
+        public TreeLayer getTreeLayer() {
+            return this.treeLayer;
         }
 
         public SortedList<T> getSortedList() {
@@ -648,11 +657,11 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         @Override
         public Object summarize(int columnIndex) {
             double total = 0;
-            int rowCount = dataProvider.getRowCount();
+            int rowCount = this.dataProvider.getRowCount();
             int valueRows = 0;
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = dataProvider.getDataValue(columnIndex,
+                Object dataValue = this.dataProvider.getDataValue(columnIndex,
                         rowIndex);
                 // this check is necessary because of the GroupByObject
                 if (dataValue instanceof Number) {
@@ -680,11 +689,11 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         @Override
         public Object summarize(int columnIndex) {
             double total = 0;
-            int rowCount = dataProvider.getRowCount();
+            int rowCount = this.dataProvider.getRowCount();
             int valueRows = 0;
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = dataProvider.getDataValue(columnIndex,
+                Object dataValue = this.dataProvider.getDataValue(columnIndex,
                         rowIndex);
                 // this check is necessary because of the GroupByObject
                 if (dataValue instanceof Number) {

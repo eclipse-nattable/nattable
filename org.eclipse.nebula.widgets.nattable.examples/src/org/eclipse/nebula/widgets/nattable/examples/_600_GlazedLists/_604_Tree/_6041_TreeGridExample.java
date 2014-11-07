@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Roman Flueckiger <roman.flueckiger@mac.com> - added expand/collapse key bindings
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._604_Tree;
 
@@ -54,6 +55,7 @@ import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKeyBindings;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -72,9 +74,6 @@ import ca.odell.glazedlists.TreeList;
 
 /**
  * Simple example showing how to create a tree within a grid.
- * 
- * @author Dirk Fauth
- *
  */
 public class _6041_TreeGridExample extends AbstractNatExample {
 
@@ -173,6 +172,10 @@ public class _6041_TreeGridExample extends AbstractNatExample {
             }
         });
 
+        // adds the key bindings that allows pressing space bar to
+        // expand/collapse tree nodes
+        natTable.addConfiguration(new TreeLayerExpandCollapseKeyBindings(bodyLayerStack.getTreeLayer(), bodyLayerStack.getSelectionLayer()));
+
         natTable.configure();
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
@@ -205,7 +208,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -215,6 +218,8 @@ public class _6041_TreeGridExample extends AbstractNatExample {
         private final IDataProvider bodyDataProvider;
 
         private final SelectionLayer selectionLayer;
+
+        private final TreeLayer treeLayer;
 
         @SuppressWarnings("unchecked")
         public BodyLayerStack(List<T> values,
@@ -235,7 +240,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
             this.treeList = new TreeList<T>(sortedList, treeFormat,
                     TreeList.NODES_START_EXPANDED);
 
-            this.bodyDataProvider = new GlazedListsDataProvider<T>(treeList,
+            this.bodyDataProvider = new GlazedListsDataProvider<T>(this.treeList,
                     columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
@@ -245,9 +250,9 @@ public class _6041_TreeGridExample extends AbstractNatExample {
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, treeList);
+                    bodyDataLayer, this.treeList);
 
-            GlazedListTreeData<T> treeData = new GlazedListTreeData<T>(treeList) {
+            GlazedListTreeData<T> treeData = new GlazedListTreeData<T>(this.treeList) {
                 @Override
                 public String formatDataForDepth(int depth, T object) {
                     if (object instanceof PersonWithAddress) {
@@ -261,14 +266,18 @@ public class _6041_TreeGridExample extends AbstractNatExample {
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
-            TreeLayer treeLayer = new TreeLayer(selectionLayer, treeRowModel);
-            ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+            this.treeLayer = new TreeLayer(this.selectionLayer, treeRowModel);
+            ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
 
             setUnderlyingLayer(viewportLayer);
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
+        }
+
+        public TreeLayer getTreeLayer() {
+            return this.treeLayer;
         }
 
         public TreeList<T> getTreeList() {
@@ -276,7 +285,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
     }
 
@@ -304,17 +313,17 @@ public class _6041_TreeGridExample extends AbstractNatExample {
         @Override
         public void getPath(List<PersonWithAddress> path,
                 PersonWithAddress element) {
-            if (parentMapping.get(element.getLastName()) != null) {
-                path.add(parentMapping.get(element.getLastName()));
+            if (this.parentMapping.get(element.getLastName()) != null) {
+                path.add(this.parentMapping.get(element.getLastName()));
             } else {
-                parentMapping.put(element.getLastName(), element);
+                this.parentMapping.put(element.getLastName(), element);
             }
             path.add(element);
         }
 
         /**
          * Simply always return <code>true</code>.
-         * 
+         *
          * @return <code>true</code> if this element can have child elements, or
          *         <code>false</code> if it is always a leaf node.
          */
