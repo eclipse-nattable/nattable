@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
@@ -45,6 +46,11 @@ public class CellSelectionTest {
         @Override
         public int getStepCount() {
             return SelectionLayer.MOVE_ALL;
+        }
+
+        @Override
+        public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+            return true;
         }
 
     };
@@ -361,6 +367,11 @@ public class CellSelectionTest {
                 return 6;
             }
 
+            @Override
+            public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                return true;
+            }
+
         };
 
         this.moveCommandHandler.moveSelection(
@@ -391,6 +402,11 @@ public class CellSelectionTest {
                 return 10;
             }
 
+            @Override
+            public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                return true;
+            }
+
         };
 
         // Should not have moved
@@ -416,6 +432,11 @@ public class CellSelectionTest {
             @Override
             public int getStepCount() {
                 return 60;
+            }
+
+            @Override
+            public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                return true;
             }
 
         };
@@ -450,6 +471,11 @@ public class CellSelectionTest {
             @Override
             public int getStepCount() {
                 return 10;
+            }
+
+            @Override
+            public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                return true;
             }
 
         };
@@ -497,6 +523,11 @@ public class CellSelectionTest {
                 return 6;
             }
 
+            @Override
+            public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                return true;
+            }
+
         };
 
         this.moveCommandHandler.moveSelection(
@@ -517,6 +548,11 @@ public class CellSelectionTest {
             @Override
             public int getStepCount() {
                 return 60;
+            }
+
+            @Override
+            public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                return true;
             }
 
         };
@@ -551,6 +587,11 @@ public class CellSelectionTest {
             @Override
             public int getStepCount() {
                 return 6;
+            }
+
+            @Override
+            public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                return true;
             }
 
         };

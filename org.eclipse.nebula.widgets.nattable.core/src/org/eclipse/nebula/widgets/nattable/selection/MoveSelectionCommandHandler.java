@@ -14,6 +14,7 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
 
@@ -194,6 +195,11 @@ public abstract class MoveSelectionCommandHandler<T extends MoveSelectionCommand
                     public int getStepCount() {
                         return command.getStepSize();
                     }
+
+                    @Override
+                    public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                        return baseTraversalStrategy.isValidTarget(from, to);
+                    }
                 };
             }
             else {
@@ -304,5 +310,4 @@ public abstract class MoveSelectionCommandHandler<T extends MoveSelectionCommand
      */
     protected abstract void moveLastSelectedDown(ITraversalStrategy traversalStrategy,
             boolean withShiftMask, boolean withControlMask);
-
 }

@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.IRowSelectionModel;
@@ -161,21 +162,20 @@ public class EditUtils {
      * Note: The coordinates need to be related to the given SelectionLayer,
      * otherwise the wrong cell will be used for the check.
      *
-     * @param selectionLayer
-     *            The {@link SelectionLayer} to check the cell coordinates
-     *            against.
+     * @param layer
+     *            The {@link ILayer} to check the cell coordinates against.
      * @param configRegistry
      *            The {@link IConfigRegistry} needed to access the configured
      *            {@link IEditableRule}s.
      * @param cellCoords
      *            The coordinates of the cell to check the editable state,
-     *            related to the given {@link SelectionLayer}
+     *            related to the given {@link ILayer}
      * @return <code>true</code> if the cell is editable, <code>false</code> if
      *         not
      */
-    public static boolean isCellEditable(SelectionLayer selectionLayer,
+    public static boolean isCellEditable(ILayer layer,
             IConfigRegistry configRegistry, PositionCoordinate cellCoords) {
-        ILayerCell layerCell = selectionLayer.getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition);
+        ILayerCell layerCell = layer.getCellByPosition(cellCoords.columnPosition, cellCoords.rowPosition);
         LabelStack labelStack = layerCell.getConfigLabels();
 
         IEditableRule editableRule = configRegistry.getConfigAttribute(

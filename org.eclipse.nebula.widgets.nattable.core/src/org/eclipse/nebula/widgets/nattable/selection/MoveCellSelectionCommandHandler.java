@@ -87,11 +87,17 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 
                 this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
 
+                // boolean flag to stop traversal if calculated target is
+                // invalid needed to avoid endless loop if there are no further
+                // valid traversal targets
+                boolean stopTraversalOnInvalid = false;
+
                 if (this.newSelectedColumnPosition < 0) {
                     if (traversalStrategy.getTraversalScope().equals(TraversalScope.AXIS)) {
                         if (!traversalStrategy.isCycle()) {
                             // on axis scope with no cycle, stop moving
                             this.newSelectedColumnPosition = 0;
+                            stopTraversalOnInvalid = true;
                         }
                         else {
                             // on axis scope with cycle, move to end
@@ -117,29 +123,50 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                 // at the top and no cycle so stop moving
                                 this.newSelectedColumnPosition = 0;
                                 this.newSelectedRowPosition = 0;
+                                stopTraversalOnInvalid = true;
                             }
                         }
                     }
                 }
 
-                if (this.newSelectedColumnPosition != this.lastSelectedCellPosition.columnPosition) {
-                    if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
-                        this.selectionLayer.clear(false);
+                if (positionMoved()) {
+                    // check if calculated target is valid, otherwise move to
+                    // adjacent
+                    if (!traversalStrategy.isValidTarget(lastSelectedCell,
+                            this.selectionLayer.getCellByPosition(this.newSelectedColumnPosition, this.newSelectedRowPosition))) {
+
+                        if (!stopTraversalOnInvalid) {
+                            moveLastSelectedLeft(
+                                    createIncrementalStrategy(traversalStrategy),
+                                    withShiftMask, withControlMask);
+                        }
+                        else {
+                            // since the calculated target is invalid and
+                            // invalid traversal movement should stop, the new
+                            // selected position is the last valid one
+                            this.newSelectedColumnPosition = this.lastSelectedCellPosition.columnPosition;
+                            this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
+                        }
                     }
-                    this.selectionLayer.selectCell(this.newSelectedColumnPosition,
-                            this.newSelectedRowPosition,
-                            withShiftMask, withControlMask);
-                    this.selectionLayer.fireCellSelectionEvent(
-                            this.lastSelectedCellPosition.columnPosition,
-                            this.lastSelectedCellPosition.rowPosition, true,
-                            withShiftMask, withControlMask);
+                    else {
+                        if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
+                            this.selectionLayer.clear(false);
+                        }
+                        this.selectionLayer.selectCell(this.newSelectedColumnPosition,
+                                this.newSelectedRowPosition,
+                                withShiftMask, withControlMask);
+                        this.selectionLayer.fireCellSelectionEvent(
+                                this.lastSelectedCellPosition.columnPosition,
+                                this.lastSelectedCellPosition.rowPosition, true,
+                                withShiftMask, withControlMask);
+                    }
                 }
             }
         }
     }
 
     @Override
-    protected void moveLastSelectedRight(ITraversalStrategy traversalStrategy, boolean withShiftMask, boolean withControlMask) {
+    protected void moveLastSelectedRight(final ITraversalStrategy traversalStrategy, boolean withShiftMask, boolean withControlMask) {
         if (this.selectionLayer.hasColumnSelection()) {
             this.lastSelectedCellPosition = this.selectionLayer.getCellPositionToMoveFrom(withShiftMask, withControlMask);
             ILayerCell lastSelectedCell = this.selectionLayer.getCellByPosition(
@@ -149,58 +176,86 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                 int stepSize = traversalStrategy.getStepCount();
                 this.newSelectedColumnPosition = (stepSize >= 0)
                         ? (lastSelectedCell.getOriginColumnPosition() + lastSelectedCell.getColumnSpan() - 1 + stepSize)
-                        : (this.selectionLayer.getColumnCount() - 1);
+                                : (this.selectionLayer.getColumnCount() - 1);
 
-                        this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
+                this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
 
-                        if (this.newSelectedColumnPosition >= this.selectionLayer.getColumnCount()) {
-                            if (traversalStrategy.getTraversalScope().equals(TraversalScope.AXIS)) {
-                                if (!traversalStrategy.isCycle()) {
-                                    // on axis scope with no cycle, stop moving
-                                    this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
-                                }
-                                else {
-                                    // on axis scope with cycle, start over at table
-                                    // beginning
-                                    while (this.newSelectedColumnPosition >= this.selectionLayer.getColumnCount()) {
-                                        this.newSelectedColumnPosition = this.newSelectedColumnPosition - this.selectionLayer.getColumnCount();
-                                    }
-                                }
-                            }
-                            else if (traversalStrategy.getTraversalScope().equals(TraversalScope.TABLE)) {
-                                // on table scope, start over at table beginning
-                                int rowMove = 0;
-                                while (this.newSelectedColumnPosition >= this.selectionLayer.getColumnCount()) {
-                                    this.newSelectedColumnPosition = this.newSelectedColumnPosition - this.selectionLayer.getColumnCount();
-                                    rowMove++;
-                                }
-                                this.newSelectedRowPosition = this.newSelectedRowPosition + rowMove;
-                                if (this.newSelectedRowPosition >= this.selectionLayer.getRowCount()) {
-                                    if (traversalStrategy.isCycle()) {
-                                        // at the bottom and cycle so go to top
-                                        this.newSelectedRowPosition = this.newSelectedRowPosition - this.selectionLayer.getRowCount();
-                                    }
-                                    else {
-                                        // at the bottom and no cycle so stop moving
-                                        this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
-                                        this.newSelectedRowPosition = this.selectionLayer.getRowCount() - 1;
-                                    }
-                                }
+                // boolean flag to stop traversal if calculated target is
+                // invalid needed to avoid endless loop if there are no further
+                // valid traversal targets
+                boolean stopTraversalOnInvalid = false;
+
+                if (this.newSelectedColumnPosition >= this.selectionLayer.getColumnCount()) {
+                    if (traversalStrategy.getTraversalScope().equals(TraversalScope.AXIS)) {
+                        if (!traversalStrategy.isCycle()) {
+                            // on axis scope with no cycle, stop moving
+                            this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
+                            stopTraversalOnInvalid = true;
+                        }
+                        else {
+                            // on axis scope with cycle, start over at table
+                            // beginning
+                            while (this.newSelectedColumnPosition >= this.selectionLayer.getColumnCount()) {
+                                this.newSelectedColumnPosition = this.newSelectedColumnPosition - this.selectionLayer.getColumnCount();
                             }
                         }
-
-                        if (this.newSelectedColumnPosition != this.lastSelectedCellPosition.columnPosition) {
-                            if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
-                                this.selectionLayer.clear(false);
+                    }
+                    else if (traversalStrategy.getTraversalScope().equals(TraversalScope.TABLE)) {
+                        // on table scope, start over at table beginning
+                        int rowMove = 0;
+                        while (this.newSelectedColumnPosition >= this.selectionLayer.getColumnCount()) {
+                            this.newSelectedColumnPosition = this.newSelectedColumnPosition - this.selectionLayer.getColumnCount();
+                            rowMove++;
+                        }
+                        this.newSelectedRowPosition = this.newSelectedRowPosition + rowMove;
+                        if (this.newSelectedRowPosition >= this.selectionLayer.getRowCount()) {
+                            if (traversalStrategy.isCycle()) {
+                                // at the bottom and cycle so go to top
+                                this.newSelectedRowPosition = this.newSelectedRowPosition - this.selectionLayer.getRowCount();
                             }
-                            this.selectionLayer.selectCell(
-                                    this.newSelectedColumnPosition, this.newSelectedRowPosition,
-                                    withShiftMask, withControlMask);
-                            this.selectionLayer.fireCellSelectionEvent(
-                                    this.lastSelectedCellPosition.columnPosition,
-                                    this.lastSelectedCellPosition.rowPosition, true,
+                            else {
+                                // at the bottom and no cycle so stop moving
+                                this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
+                                this.newSelectedRowPosition = this.selectionLayer.getRowCount() - 1;
+                                stopTraversalOnInvalid = true;
+                            }
+                        }
+                    }
+                }
+
+                if (positionMoved()) {
+                    if (stepSize == SelectionLayer.MOVE_ALL && !withShiftMask) {
+                        this.selectionLayer.clear(false);
+                    }
+
+                    // check if calculated target is valid, otherwise move to
+                    // adjacent
+                    if (!traversalStrategy.isValidTarget(lastSelectedCell,
+                            this.selectionLayer.getCellByPosition(this.newSelectedColumnPosition, this.newSelectedRowPosition))) {
+
+                        if (!stopTraversalOnInvalid) {
+                            moveLastSelectedRight(
+                                    createIncrementalStrategy(traversalStrategy),
                                     withShiftMask, withControlMask);
                         }
+                        else {
+                            // since the calculated target is invalid and
+                            // invalid traversal movement should stop, the new
+                            // selected position is the last valid one
+                            this.newSelectedColumnPosition = this.lastSelectedCellPosition.columnPosition;
+                            this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
+                        }
+                    }
+                    else {
+                        this.selectionLayer.selectCell(
+                                this.newSelectedColumnPosition, this.newSelectedRowPosition,
+                                withShiftMask, withControlMask);
+                        this.selectionLayer.fireCellSelectionEvent(
+                                this.lastSelectedCellPosition.columnPosition,
+                                this.lastSelectedCellPosition.rowPosition, true,
+                                withShiftMask, withControlMask);
+                    }
+                }
             }
         }
     }
@@ -218,11 +273,17 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 
                 this.newSelectedRowPosition = (stepSize >= 0) ? lastSelectedCell.getOriginRowPosition() - stepSize : 0;
 
+                // boolean flag to stop traversal if calculated target is
+                // invalid needed to avoid endless loop if there are no further
+                // valid traversal targets
+                boolean stopTraversalOnInvalid = false;
+
                 if (this.newSelectedRowPosition < 0) {
                     if (traversalStrategy.getTraversalScope().equals(TraversalScope.AXIS)) {
                         if (!traversalStrategy.isCycle()) {
                             // on axis scope with no cycle, stop moving
                             this.newSelectedRowPosition = 0;
+                            stopTraversalOnInvalid = true;
                         }
                         else {
                             // on axis scope with cycle, move to bottom
@@ -248,20 +309,41 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                 // at the top and no cycle so stop moving
                                 this.newSelectedColumnPosition = 0;
                                 this.newSelectedRowPosition = 0;
+                                stopTraversalOnInvalid = true;
                             }
                         }
                     }
                 }
 
-                if (this.newSelectedRowPosition != this.lastSelectedCellPosition.rowPosition) {
-                    this.selectionLayer.selectCell(
-                            this.newSelectedColumnPosition,
-                            this.newSelectedRowPosition,
-                            withShiftMask, withControlMask);
-                    this.selectionLayer.fireCellSelectionEvent(
-                            this.lastSelectedCellPosition.columnPosition,
-                            this.lastSelectedCellPosition.rowPosition, true,
-                            withShiftMask, withControlMask);
+                if (positionMoved()) {
+                    // check if calculated target is valid, otherwise move to
+                    // adjacent
+                    if (!traversalStrategy.isValidTarget(lastSelectedCell,
+                            this.selectionLayer.getCellByPosition(this.newSelectedColumnPosition, this.newSelectedRowPosition))) {
+
+                        if (!stopTraversalOnInvalid) {
+                            moveLastSelectedUp(
+                                    createIncrementalStrategy(traversalStrategy),
+                                    withShiftMask, withControlMask);
+                        }
+                        else {
+                            // since the calculated target is invalid and
+                            // invalid traversal movement should stop, the new
+                            // selected position is the last valid one
+                            this.newSelectedColumnPosition = this.lastSelectedCellPosition.columnPosition;
+                            this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
+                        }
+                    }
+                    else {
+                        this.selectionLayer.selectCell(
+                                this.newSelectedColumnPosition,
+                                this.newSelectedRowPosition,
+                                withShiftMask, withControlMask);
+                        this.selectionLayer.fireCellSelectionEvent(
+                                this.lastSelectedCellPosition.columnPosition,
+                                this.lastSelectedCellPosition.rowPosition, true,
+                                withShiftMask, withControlMask);
+                    }
                 }
             }
         }
@@ -280,13 +362,19 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
 
                 this.newSelectedRowPosition = (stepSize >= 0)
                         ? lastSelectedCell.getOriginRowPosition() + lastSelectedCell.getRowSpan() - 1 + stepSize
-                                : this.selectionLayer.getRowCount() - 1;
+                        : this.selectionLayer.getRowCount() - 1;
+
+                // boolean flag to stop traversal if calculated target is
+                // invalid needed to avoid endless loop if there are no further
+                // valid traversal targets
+                boolean stopTraversalOnInvalid = false;
 
                 if (this.newSelectedRowPosition >= this.selectionLayer.getRowCount()) {
                     if (traversalStrategy.getTraversalScope().equals(TraversalScope.AXIS)) {
                         if (!traversalStrategy.isCycle()) {
                             // on axis scope with no cycle, stop moving
                             this.newSelectedRowPosition = this.selectionLayer.getRowCount() - 1;
+                            stopTraversalOnInvalid = true;
                         }
                         else {
                             // on axis scope with cycle, move to top
@@ -312,22 +400,90 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                                 // at the end and no cycle so stop moving
                                 this.newSelectedColumnPosition = this.selectionLayer.getColumnCount() - 1;
                                 this.newSelectedRowPosition = this.selectionLayer.getRowCount() - 1;
+                                stopTraversalOnInvalid = true;
                             }
                         }
                     }
                 }
 
-                if (this.newSelectedRowPosition != this.lastSelectedCellPosition.rowPosition) {
-                    this.selectionLayer.selectCell(
-                            this.newSelectedColumnPosition, this.newSelectedRowPosition,
-                            withShiftMask, withControlMask);
-                    this.selectionLayer.fireCellSelectionEvent(
-                            this.lastSelectedCellPosition.columnPosition,
-                            this.lastSelectedCellPosition.rowPosition, true,
-                            withShiftMask, withControlMask);
+                if (positionMoved()) {
+                    // check if calculated target is valid, otherwise move to
+                    // adjacent
+                    if (!traversalStrategy.isValidTarget(lastSelectedCell,
+                            this.selectionLayer.getCellByPosition(this.newSelectedColumnPosition, this.newSelectedRowPosition))) {
+
+                        if (!stopTraversalOnInvalid) {
+                            moveLastSelectedDown(
+                                    createIncrementalStrategy(traversalStrategy),
+                                    withShiftMask, withControlMask);
+                        }
+                        else {
+                            // since the calculated target is invalid and
+                            // invalid traversal movement should stop, the new
+                            // selected position is the last valid one
+                            this.newSelectedColumnPosition = this.lastSelectedCellPosition.columnPosition;
+                            this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
+                        }
+                    }
+                    else {
+                        this.selectionLayer.selectCell(
+                                this.newSelectedColumnPosition, this.newSelectedRowPosition,
+                                withShiftMask, withControlMask);
+                        this.selectionLayer.fireCellSelectionEvent(
+                                this.lastSelectedCellPosition.columnPosition,
+                                this.lastSelectedCellPosition.rowPosition, true,
+                                withShiftMask, withControlMask);
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * Creates a {@link ITraversalStrategy} that wraps the given base strategy
+     * but returning the step count + 1. Used to perform incremental movement in
+     * case the base strategy specifies logic to determine whether a target cell
+     * is a valid move target or not.
+     *
+     * @param baseStrategy
+     *            The {@link ITraversalStrategy} to wrap.
+     * @return A {@link ITraversalStrategy} that wraps the given base strategy
+     *         using the given step count.
+     */
+    protected ITraversalStrategy createIncrementalStrategy(final ITraversalStrategy baseStrategy) {
+        return new ITraversalStrategy() {
+
+            @Override
+            public TraversalScope getTraversalScope() {
+                return baseStrategy.getTraversalScope();
+            }
+
+            @Override
+            public boolean isCycle() {
+                return baseStrategy.isCycle();
+            }
+
+            @Override
+            public int getStepCount() {
+                return baseStrategy.getStepCount() + 1;
+            }
+
+            @Override
+            public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+                return baseStrategy.isValidTarget(from, to);
+            }
+
+        };
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the selection moved in any direction,
+     *         <code>false</code> if the selection stays at the same position
+     */
+    protected boolean positionMoved() {
+        return (this.newSelectedColumnPosition != this.lastSelectedCellPosition.columnPosition
+        || this.newSelectedRowPosition != this.lastSelectedCellPosition.rowPosition);
     }
 
     @Override

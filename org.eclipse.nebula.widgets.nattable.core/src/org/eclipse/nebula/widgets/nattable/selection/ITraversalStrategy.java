@@ -10,11 +10,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+
 /**
  * This interface is used to configure the traversal behavior when moving the
  * selection in a NatTable via key actions, e.g. tab or the arrow keys. You can
  * specify the scope, if the traversal should cycle and specify logic to
- * determine the step count if necessary.
+ * determine the step count if necessary. It is also possible to add logic that
+ * determines whether a target is a valid selection movement target. This allows
+ * traversal of editable cells while non-editable cells would be skipped.
  */
 public interface ITraversalStrategy {
 
@@ -59,11 +63,34 @@ public interface ITraversalStrategy {
     int getStepCount();
 
     /**
+     * Checks whether the {@link ILayerCell} that would be selected after the
+     * selection movement is valid or not. In case the target is invalid, the
+     * responsible command handler is able to react accordingly, e.g. move the
+     * next valid cell.
+     * <p>
+     * This is for example useful for editing traversal. If the selection
+     * movement is triggered on committing a value in an editor, the next
+     * editable cell should be selected and the editor opened immediately.
+     * </p>
+     *
+     * @param from
+     *            The {@link ILayerCell} from which the selection movement is
+     *            started.
+     * @param to
+     *            The {@link ILayerCell} to which the selection movement should
+     *            be performed.
+     * @return <code>true</code> if the target is a valid target for selection
+     *         movement, <code>false</code> if not
+     */
+    boolean isValidTarget(ILayerCell from, ILayerCell to);
+
+    /**
      * {@link ITraversalStrategy} that specifies the following:<br>
      * <ul>
      * <li>traversal scope = axis</li>
      * <li>cycle = false</li>
      * <li>step count = 1</li>
+     * <li>valid = true</li>
      * </ul>
      * This means for example, on moving a selection to the right, the selection
      * will move one cell at a time and stop at the right border.
@@ -86,6 +113,11 @@ public interface ITraversalStrategy {
         @Override
         public int getStepCount() {
             return 1;
+        }
+
+        @Override
+        public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+            return true;
         };
     };
 
@@ -95,6 +127,7 @@ public interface ITraversalStrategy {
      * <li>traversal scope = axis</li>
      * <li>cycle = true</li>
      * <li>step count = 1</li>
+     * <li>valid = true</li>
      * </ul>
      * This means for example, on moving a selection to the right, the selection
      * will move one cell at a time and jump to the first column when moving
@@ -115,6 +148,11 @@ public interface ITraversalStrategy {
         @Override
         public int getStepCount() {
             return 1;
+        }
+
+        @Override
+        public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+            return true;
         };
     };
 
@@ -124,6 +162,7 @@ public interface ITraversalStrategy {
      * <li>traversal scope = table</li>
      * <li>cycle = false</li>
      * <li>step count = 1</li>
+     * <li>valid = true</li>
      * </ul>
      * This means for example, on moving a selection to the right, the selection
      * will move one cell at a time and jump to the first column and move one
@@ -145,6 +184,11 @@ public interface ITraversalStrategy {
         @Override
         public int getStepCount() {
             return 1;
+        }
+
+        @Override
+        public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+            return true;
         };
     };
 
@@ -154,6 +198,7 @@ public interface ITraversalStrategy {
      * <li>traversal scope = table</li>
      * <li>cycle = true</li>
      * <li>step count = 1</li>
+     * <li>valid = true</li>
      * </ul>
      * This means for example, on moving a selection to the right, the selection
      * will move one cell at a time and jump to the first column and move one
@@ -175,6 +220,11 @@ public interface ITraversalStrategy {
         @Override
         public int getStepCount() {
             return 1;
+        }
+
+        @Override
+        public boolean isValidTarget(ILayerCell from, ILayerCell to) {
+            return true;
         };
     };
 }

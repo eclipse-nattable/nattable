@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -65,20 +65,26 @@ public class SWTUtils {
     }
 
     public static void pressKey(int keyCode, int stateMask, Widget natTable) {
-        Event keyEvent = keyEvent(keyCode);
-        keyEvent.stateMask = stateMask;
-        natTable.notifyListeners(SWT.KeyDown, keyEvent);
+        natTable.notifyListeners(SWT.KeyDown, keyEventWithModifier(keyCode, stateMask));
     }
 
     public static void pressKeyOnControl(int keyCode, Control control) {
         control.notifyListeners(SWT.KeyDown, keyEvent(keyCode));
     }
 
+    public static void pressKeyOnControl(int keyCode, int stateMask, Control control) {
+        control.notifyListeners(SWT.KeyDown, keyEventWithModifier(keyCode, stateMask));
+    }
+
     public static Event keyEvent(int keyCode) {
+        return keyEventWithModifier(keyCode, SWT.NONE);
+    }
+
+    public static Event keyEventWithModifier(int keyCode, int stateMask) {
         Event event = new Event();
         event.type = SWT.KeyDown;
         event.keyCode = keyCode;
-        event.stateMask = SWT.NONE;
+        event.stateMask = stateMask;
         return event;
     }
 
