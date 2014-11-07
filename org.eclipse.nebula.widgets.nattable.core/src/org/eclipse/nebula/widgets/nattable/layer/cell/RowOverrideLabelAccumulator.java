@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,16 +27,15 @@ public class RowOverrideLabelAccumulator<T> extends AbstractOverrider {
     private IRowDataProvider<T> dataProvider;
     private IRowIdAccessor<T> idAccessor;
 
-    public RowOverrideLabelAccumulator(IRowDataProvider<T> dataProvider,
-            IRowIdAccessor<T> idAccessor) {
+    public RowOverrideLabelAccumulator(IRowDataProvider<T> dataProvider, IRowIdAccessor<T> idAccessor) {
         this.dataProvider = dataProvider;
         this.idAccessor = idAccessor;
     }
 
-    public void accumulateConfigLabels(LabelStack configLabels,
-            int columnPosition, int rowPosition) {
-        T rowObject = dataProvider.getRowObject(rowPosition);
-        Serializable rowId = idAccessor.getRowId(rowObject);
+    @Override
+    public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+        T rowObject = this.dataProvider.getRowObject(rowPosition);
+        Serializable rowId = this.idAccessor.getRowId(rowObject);
         List<String> overrides = getOverrides(rowId);
         if (overrides != null) {
             for (String configLabel : overrides) {
@@ -45,9 +44,18 @@ public class RowOverrideLabelAccumulator<T> extends AbstractOverrider {
         }
     }
 
-    public void registerOverrides(int rowIndex, String... configLabels) {
-        Serializable id = idAccessor.getRowId(dataProvider
-                .getRowObject(rowIndex));
+    /**
+     * Gets the unique id for the row with the given index and registers the
+     * labels for that id.
+     * 
+     * @param rowIndex
+     *            The index of the row for which element the override should be
+     *            registered.
+     * @param configLabels
+     *            The labels to register.
+     */
+    public void registerRowOverrides(int rowIndex, String... configLabels) {
+        Serializable id = this.idAccessor.getRowId(this.dataProvider.getRowObject(rowIndex));
         registerOverrides(id, configLabels);
     }
 
