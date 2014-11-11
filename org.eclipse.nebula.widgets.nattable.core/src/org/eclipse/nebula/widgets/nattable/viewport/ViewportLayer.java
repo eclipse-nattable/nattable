@@ -1004,7 +1004,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
             if (this.hBarListener == null && this.horizontalScrollbarEnabled) {
                 ScrollBar hBar = scrollable.getHorizontalBar();
 
-                if (this.horizontalScroller != null && this.horizontalScroller.getUnderlying() == hBar) {
+                if (this.horizontalScroller != null) {
                     hBar.setEnabled(false);
                     hBar.setVisible(false);
                 } else {
@@ -1021,7 +1021,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
             if (this.vBarListener == null && this.verticalScrollbarEnabled) {
                 ScrollBar vBar = scrollable.getVerticalBar();
 
-                if (this.verticalScroller != null && this.verticalScroller.getUnderlying() == vBar) {
+                if (this.verticalScroller != null) {
                     vBar.setEnabled(false);
                     vBar.setVisible(false);
                 } else {
