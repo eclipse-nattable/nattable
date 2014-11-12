@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -47,8 +47,7 @@ import org.eclipse.nebula.widgets.nattable.util.ICalculator;
  *
  * @see DefaultSummaryRowConfiguration
  */
-public class SummaryRowLayer extends AbstractLayerTransform implements
-        IUniqueIndexLayer {
+public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
     /**
      * Label that gets attached to the LabelStack for every cell in the summary
@@ -79,20 +78,28 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
     private CalculatedValueCache valueCache;
 
     /**
+     * Flag to configure whether the summary row should be rendered below an
+     * underlying layer or if it should be rendered standalone. Setting this
+     * value to <code>true</code> will enable rendering of the single summary
+     * row in a composite region.
+     */
+    private boolean standalone = false;
+
+    /**
      * Creates a SummaryRowLayer on top of the given underlying layer. It uses
      * smooth value updates as default.
      * <p>
      * Note: This constructor will create the SummaryRowLayer by using the
      * default configuration. The default configuration doesn't fit the needs so
      * you usually will use your custom summary row configuration.
-     * 
+     *
      * @param underlyingDataLayer
      *            The underlying layer on which the SummaryRowLayer should be
      *            build.
      * @param configRegistry
      *            The ConfigRegistry for retrieving the ISummaryProvider per
      *            column.
-     * 
+     *
      * @see DefaultSummaryRowConfiguration
      */
     public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer,
@@ -111,7 +118,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
      * custom configuration you should use this constructor setting autoConfig
      * to <code>false</code>. Otherwise you might get strange behaviour as the
      * default configuration will be set additionally to your configuration.
-     * 
+     *
      * @param underlyingDataLayer
      *            The underlying layer on which the SummaryRowLayer should be
      *            build.
@@ -122,7 +129,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
      *            <code>true</code> to use the DefaultSummaryRowConfiguration,
      *            <code>false</code> if a custom configuration will be set after
      *            the creation.
-     * 
+     *
      * @see DefaultSummaryRowConfiguration
      */
     public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer,
@@ -140,7 +147,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
      * custom configuration you should use this constructor setting autoConfig
      * to <code>false</code>. Otherwise you might get strange behaviour as the
      * default configuration will be set additionally to your configuration.
-     * 
+     *
      * @param underlyingDataLayer
      *            The underlying layer on which the SummaryRowLayer should be
      *            build.
@@ -155,7 +162,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
      *            <code>true</code> to use the DefaultSummaryRowConfiguration,
      *            <code>false</code> if a custom configuration will be set after
      *            the creation.
-     * 
+     *
      * @see DefaultSummaryRowConfiguration
      */
     public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer,
@@ -197,7 +204,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
      * trigger calculation prior printing or exporting to ensure that the values
      * are calculated. This is necessary because usually the calculation will be
      * done when the data value is requested the first time.
-     * 
+     *
      * @param columnPosition
      *            The column position of the requested summary value.
      * @param calculateInBackground
@@ -223,12 +230,12 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
 
                     @Override
                     public Object executeCalculation() {
-                        LabelStack labelStack = getConfigLabelsByPosition(
+                        LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(
                                 columnPosition, getSummaryRowPosition());
                         String[] configLabels = labelStack.getLabels().toArray(
                                 ArrayUtil.STRING_TYPE_ARRAY);
 
-                        final ISummaryProvider summaryProvider = configRegistry
+                        final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry
                                 .getConfigAttribute(
                                         SummaryRowConfigAttributes.SUMMARY_PROVIDER,
                                         DisplayMode.NORMAL, configLabels);
@@ -267,7 +274,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
         if (command instanceof RowResizeCommand) {
             RowResizeCommand rowResizeCommand = (RowResizeCommand) command;
             if (isSummaryRowPosition(rowResizeCommand.getRowPosition())) {
-                summaryRowHeight = rowResizeCommand.getNewHeight();
+                this.summaryRowHeight = rowResizeCommand.getNewHeight();
                 return true;
             }
         } else if (command instanceof CalculateSummaryRowValuesCommand) {
@@ -298,7 +305,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
      * Usually it is not necessary to call this method manually. But for certain
      * use cases it might be useful, e.g. changing the summary provider
      * implementation at runtime.
-     * 
+     *
      * @see CalculatedValueCache#clearCache()
      */
     public void clearCache() {
@@ -313,26 +320,50 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
      * Usually it is not necessary to call this method manually. But for certain
      * use cases it might be useful, e.g. changing the summary provider
      * implementation at runtime.
-     * 
+     *
      * @see CalculatedValueCache#killCache()
      */
     public void killCache() {
         this.valueCache.killCache();
     }
 
+    /**
+     * This method is a wrapper for calling
+     * {@link #getConfigLabelsByPosition(int, int)}. It is needed because
+     * sub-classes of the {@link SummaryRowLayer} might perform column
+     * position-index transformations, which would be executed again if the call
+     * for config labels is nested, e.g. in
+     * {@link #calculateNewSummaryValue(int, boolean)}. By providing and using
+     * this implementation, sub-classes that perform position-index
+     * transformations are able to implement this method by directly accessing
+     * the super implementation.
+     * 
+     * @param columnPosition
+     *            The column position of the cell for which the config labels
+     *            are requested. If transformations are necessary, this value
+     *            should be already transformed.
+     * @param rowPosition
+     *            The row position of the cell for which the config labels are
+     *            requested. If transformations are necessary, this value should
+     *            be already transformed.
+     * @return The {@link LabelStack} for the cell at the given coordinates.
+     */
+    protected LabelStack getConfigLabelsByPositionWithoutTransformation(
+            int columnPosition, int rowPosition) {
+        return this.getConfigLabelsByPosition(columnPosition, rowPosition);
+    }
+
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         if (isSummaryRowPosition(rowPosition)) {
             // create a new LabelStack that takes the config labels into account
             LabelStack labelStack = new LabelStack();
             if (getConfigLabelAccumulator() != null) {
-                getConfigLabelAccumulator().accumulateConfigLabels(labelStack,
-                        columnPosition, rowPosition);
+                getConfigLabelAccumulator().accumulateConfigLabels(
+                        labelStack, columnPosition, rowPosition);
             }
             labelStack.addLabelOnTop(DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
-            labelStack.addLabelOnTop(DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX
-                    + columnPosition);
+            labelStack.addLabelOnTop(DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + columnPosition);
             return labelStack;
         }
         return super.getConfigLabelsByPosition(columnPosition, rowPosition);
@@ -348,18 +379,27 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
 
     @Override
     public int getHeight() {
+        if (this.standalone) {
+            return getRowHeightByPosition(getSummaryRowPosition());
+        }
         return super.getHeight()
                 + getRowHeightByPosition(getSummaryRowPosition());
     }
 
     @Override
     public int getPreferredHeight() {
+        if (this.standalone) {
+            return getRowHeightByPosition(getSummaryRowPosition());
+        }
         return super.getPreferredHeight()
                 + getRowHeightByPosition(getSummaryRowPosition());
     }
 
     @Override
     public int getRowCount() {
+        if (this.standalone) {
+            return 1;
+        }
         return super.getRowCount() + 1;
     }
 
@@ -384,7 +424,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
     @Override
     public int getRowHeightByPosition(int rowPosition) {
         if (isSummaryRowPosition(rowPosition)) {
-            return summaryRowHeight;
+            return this.summaryRowHeight;
         }
         return super.getRowHeightByPosition(rowPosition);
     }
@@ -405,5 +445,27 @@ public class SummaryRowLayer extends AbstractLayerTransform implements
         } else {
             return -1;
         }
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the summary row is rendered standalone,
+     *         <code>false</code> if it is rendered below the underlying layer.
+     */
+    public boolean isStandalone() {
+        return this.standalone;
+    }
+
+    /**
+     * Configure whether the summary row should be rendered below the underlying
+     * layer (<code>false</code>) or if it should be rendered standalone in a
+     * separate region of a composite (<code>true</code>).
+     *
+     * @param standalone
+     *            Whether the summary row should be rendered standalone or below
+     *            the underlying layer.
+     */
+    public void setStandalone(boolean standalone) {
+        this.standalone = standalone;
     }
 }
