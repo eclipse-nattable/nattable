@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -45,16 +45,15 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      */
     public static final String NEW_LINE_REGEX = "\\n\\r|\\r\\n|\\n|\\r"; //$NON-NLS-1$
 
-    public static final String LINE_SEPARATOR = System
-            .getProperty("line.separator"); //$NON-NLS-1$
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 
     protected final boolean wrapText;
     protected final boolean paintBg;
     protected boolean paintFg = true;
     protected int spacing = 5;
     // can only grow but will not calculate the minimal length
-    protected final boolean calculateByTextLength;
-    protected final boolean calculateByTextHeight;
+    protected boolean calculateByTextLength;
+    protected boolean calculateByTextHeight;
     private boolean underline;
     private boolean strikethrough;
 
@@ -169,22 +168,19 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * Convert the data value of the cell using the {@link IDisplayConverter}
      * from the {@link IConfigRegistry}
      */
-    protected String convertDataType(ILayerCell cell,
-            IConfigRegistry configRegistry) {
+    protected String convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
         return CellDisplayConversionUtils.convertDataType(cell, configRegistry);
     }
 
     /**
      * Setup the GC by the values defined in the given cell style.
-     * 
+     *
      * @param gc
      * @param cellStyle
      */
     public void setupGCFromConfig(GC gc, IStyle cellStyle) {
-        Color fg = cellStyle
-                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
-        Color bg = cellStyle
-                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
+        Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
+        Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
         Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
 
         gc.setAntialias(GUIHelper.DEFAULT_ANTIALIAS);
@@ -197,7 +193,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     /**
      * Checks if there is a underline text decoration configured within the
      * given cell style.
-     * 
+     *
      * @param cellStyle
      *            The cell style of the current cell to check for the text
      *            decoration.
@@ -205,11 +201,10 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      *         configured, <code>false</code> otherwise.
      */
     protected boolean renderUnderlined(IStyle cellStyle) {
-        TextDecorationEnum decoration = cellStyle
-                .getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
+        TextDecorationEnum decoration = cellStyle.getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
         if (decoration != null) {
-            return (decoration.equals(TextDecorationEnum.UNDERLINE) || decoration
-                    .equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
+            return (decoration.equals(TextDecorationEnum.UNDERLINE)
+                    || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
         }
         return this.underline;
     }
@@ -217,7 +212,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     /**
      * Checks if there is a strikethrough text decoration configured within the
      * given cell style.
-     * 
+     *
      * @param cellStyle
      *            The cell style of the current cell to check for the text
      *            decoration.
@@ -225,11 +220,10 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      *         configured, <code>false</code> otherwise.
      */
     protected boolean renderStrikethrough(IStyle cellStyle) {
-        TextDecorationEnum decoration = cellStyle
-                .getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
+        TextDecorationEnum decoration = cellStyle.getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
         if (decoration != null) {
-            return (decoration.equals(TextDecorationEnum.STRIKETHROUGH) || decoration
-                    .equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
+            return (decoration.equals(TextDecorationEnum.STRIKETHROUGH)
+                    || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
         }
         return this.strikethrough;
     }
@@ -237,7 +231,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     /**
      * Scans for new line characters and counts the number of lines for the
      * given text.
-     * 
+     *
      * @param text
      *            the text to scan
      * @return the number of lines for the given text
@@ -252,7 +246,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * count of calculations, the calculation result will be stored within a
      * Map, so the next time the length of the same text is asked for, the
      * result is only returned by cache and is not calculated again.
-     * 
+     *
      * @param gc
      *            the current GC
      * @param text
@@ -294,7 +288,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * enabled, the space is automatically widened for the text to display, and
      * if no calculation is enabled the text is cut and modified to end with
      * "..." to fit into the available space
-     * 
+     *
      * @param cell
      *            the current cell to paint
      * @param gc
@@ -305,18 +299,17 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      *            the text that should be modified for display
      * @return the modified text
      */
-    protected String getTextToDisplay(ILayerCell cell, GC gc,
-            int availableLength, String text) {
+    protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
         StringBuilder output = new StringBuilder();
 
         text = text.trim();
 
         // take the whole width of the text
         int textLength = getLengthFromCache(gc, text);
-        if (calculateByTextLength && wrapText) {
+        if (this.calculateByTextLength && this.wrapText) {
             if (availableLength < textLength) {
                 // calculate length by finding the longest word in text
-                textLength = (availableLength - (2 * spacing));
+                textLength = (availableLength - (2 * this.spacing));
 
                 String[] lines = text.split(NEW_LINE_REGEX);
                 for (String line : lines) {
@@ -326,16 +319,14 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
                     String[] words = line.split("\\s"); //$NON-NLS-1$
                     for (String word : words) {
-                        textLength = Math.max(textLength,
-                                getLengthFromCache(gc, word));
+                        textLength = Math.max(textLength, getLengthFromCache(gc, word));
                     }
 
                     // concat the words with spaces and newlines to be always
                     // smaller then available
                     String computedText = ""; //$NON-NLS-1$
                     for (String word : words) {
-                        computedText = computeTextToDisplay(computedText, word,
-                                gc, textLength);
+                        computedText = computeTextToDisplay(computedText, word, gc, textLength);
                     }
                     output.append(computedText);
                 }
@@ -343,21 +334,16 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                 output.append(text);
             }
 
-            setNewMinLength(cell,
-                    textLength + calculatePadding(cell, availableLength)
-                            + (2 * spacing));
-        } else if (calculateByTextLength && !wrapText) {
+            setNewMinLength(cell, textLength + calculatePadding(cell, availableLength) + (2 * this.spacing));
+        } else if (this.calculateByTextLength && !this.wrapText) {
             output.append(modifyTextToDisplay(text, gc, textLength));
 
             // add padding and spacing to textLength because they are needed for
             // correct sizing
             // padding can occur on using decorators like the
-            // BeveledBorderDecorator or the
-            // PaddingDecorator
-            setNewMinLength(cell,
-                    textLength + calculatePadding(cell, availableLength)
-                            + (2 * spacing));
-        } else if (!calculateByTextLength && wrapText) {
+            // BeveledBorderDecorator or the PaddingDecorator
+            setNewMinLength(cell, textLength + calculatePadding(cell, availableLength) + (2 * this.spacing));
+        } else if (!this.calculateByTextLength && this.wrapText) {
             String[] lines = text.split(NEW_LINE_REGEX);
             for (String line : lines) {
                 if (output.length() > 0) {
@@ -369,16 +355,14 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                 // concat the words with spaces and newlines
                 String computedText = ""; //$NON-NLS-1$
                 for (String word : words) {
-                    computedText = computeTextToDisplay(computedText, word, gc,
-                            availableLength);
+                    computedText = computeTextToDisplay(computedText, word, gc, availableLength);
                 }
 
                 output.append(computedText);
             }
 
-        } else if (!calculateByTextLength && !wrapText) {
-            output.append(modifyTextToDisplay(text, gc, availableLength
-                    + (2 * spacing)));
+        } else if (!this.calculateByTextLength && !this.wrapText) {
+            output.append(modifyTextToDisplay(text, gc, availableLength + (2 * this.spacing)));
         }
 
         return output.toString();
@@ -390,7 +374,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * concatenating those two words with a space as delimiter does fit into the
      * available space the return value is exactly this. Else instead of a space
      * there will be a new line character used as delimiter.
-     * 
+     *
      * @param one
      *            the first word or the whole text before the next word
      * @param two
@@ -401,8 +385,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      *            the available space
      * @return the concatenated String of the first two parameters
      */
-    private String computeTextToDisplay(String one, String two, GC gc,
-            int availableSpace) {
+    private String computeTextToDisplay(String one, String two, GC gc, int availableSpace) {
         String result = one;
         // if one is empty or one ends with newline just add two
         if (one == null || one.length() == 0 || one.endsWith(LINE_SEPARATOR)) {
@@ -421,8 +404,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
             }
         } else {
             // get the end of the last part after the last newline
-            String endString = one
-                    .substring(one.lastIndexOf(LINE_SEPARATOR) + 1);
+            String endString = one.substring(one.lastIndexOf(LINE_SEPARATOR) + 1);
             if (getLengthFromCache(gc, endString) == availableSpace
                     || getLengthFromCache(gc, endString + " " + two) >= availableSpace) { //$NON-NLS-1$
                 result += LINE_SEPARATOR;
@@ -440,7 +422,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * given text is simply returned without modification. If the text does not
      * fit into the available space, it will be modified by cutting and adding
      * three dots.
-     * 
+     *
      * @param text
      *            the text to compute
      * @param gc
@@ -456,8 +438,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         int textLength = getLengthFromCache(gc, text);
         if (textLength > availableLength) {
             // as looking at the text length without taking new lines into
-            // account
-            // we have to look at every line itself
+            // account we have to look at every line itself
             StringBuilder result = new StringBuilder();
             String[] lines = text.split(NEW_LINE_REGEX);
             for (String line : lines) {
@@ -466,8 +447,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                 }
 
                 // now modify every line if it is longer than the available
-                // space
-                // this way every line will get ... if it doesn't fit
+                // space this way every line will get ... if it doesn't fit
                 int lineLength = getLengthFromCache(gc, line);
                 if (lineLength > availableLength) {
                     int numExtraChars = 0;
@@ -476,18 +456,14 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                     String trialLabelText = line + DOT;
                     int newTextExtent = getLengthFromCache(gc, trialLabelText);
 
-                    while (newTextExtent > availableLength + 1
-                            && newStringLength > 0) {
-                        double avgWidthPerChar = (double) newTextExtent
-                                / trialLabelText.length();
+                    while (newTextExtent > availableLength + 1 && newStringLength > 0) {
+                        double avgWidthPerChar = (double) newTextExtent / trialLabelText.length();
                         numExtraChars += 1 + (int) ((newTextExtent - availableLength) / avgWidthPerChar);
 
                         newStringLength = line.length() - numExtraChars;
                         if (newStringLength > 0) {
-                            trialLabelText = line.substring(0, newStringLength)
-                                    + DOT;
-                            newTextExtent = getLengthFromCache(gc,
-                                    trialLabelText);
+                            trialLabelText = line.substring(0, newStringLength) + DOT;
+                            newTextExtent = getLengthFromCache(gc, trialLabelText);
                         }
                     }
 
@@ -499,9 +475,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                     // to exceed the width...
                     String testString = line;
                     for (int i = 0; i < line.length(); i++) {
-                        testString = line.substring(0, line.length() + i
-                                - numExtraChars)
-                                + DOT;
+                        testString = line.substring(0, line.length() + i - numExtraChars) + DOT;
                         textLength = getLengthFromCache(gc, testString);
 
                         if (textLength >= availableLength) {
@@ -511,9 +485,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
                             if (line.length() + i - numExtraChars < 1) {
                                 line = EMPTY;
                             } else {
-                                line = line.substring(0, line.length() + i
-                                        - numExtraChars - 1)
-                                        + DOT;
+                                line = line.substring(0, line.length() + i - numExtraChars - 1) + DOT;
                             }
                             break;
                         }
@@ -533,7 +505,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * the difference from current cell width/height to available length. If the
      * calculated cell is greater than the current set contentLength, update the
      * contentLength and execute a corresponding resize command.
-     * 
+     *
      * @param cell
      *            the current cell that is painted
      * @param contentLength
@@ -551,7 +523,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      * to be calculated for automatic resizing. Abstract because a horizontal
      * TextPainter uses the width while a VerticalTextPainter uses the height of
      * the cell and the Rectangle.
-     * 
+     *
      * @param cell
      *            the current cell which should be resized
      * @param availableLength
@@ -563,7 +535,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
     /**
      * Set if the text should be rendered underlined or not.
-     * 
+     *
      * @param underline
      *            <code>true</code> if the text should be printed underlined,
      *            <code>false</code> if not
@@ -574,7 +546,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
     /**
      * Set if the text should be rendered strikethrough or not.
-     * 
+     *
      * @param strikethrough
      *            <code>true</code> if the text should be printed strikethrough,
      *            <code>false</code> if not
@@ -582,4 +554,57 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     public void setStrikethrough(boolean strikethrough) {
         this.strikethrough = strikethrough;
     }
+
+    /**
+     * @return <code>true</code> if this text painter is calculating the cell
+     *         dimensions by containing text length. For horizontal text
+     *         rendering, this means the <b>width</b> of the cell is calculated
+     *         by content, for vertical text rendering the <b>height</b> is
+     *         calculated.
+     */
+    public boolean isCalculateByTextLength() {
+        return this.calculateByTextLength;
+    }
+
+    /**
+     * Configure whether the text painter should calculate the cell dimensions
+     * by containing text length. For horizontal text rendering, this means the
+     * <b>width</b> of the cell is calculated by content, for vertical text
+     * rendering the <b>height</b> is calculated.
+     *
+     * @param calculateByTextLength
+     *            <code>true</code> to calculate and modify the cell dimension
+     *            according to the text length, <code>false</code> to not
+     *            modifying the cell dimensions.
+     */
+    public void setCalculateByTextLength(boolean calculateByTextLength) {
+        this.calculateByTextLength = calculateByTextLength;
+    }
+
+    /**
+     * @return <code>true</code> if this text painter is calculating the cell
+     *         dimensions by containing text height. For horizontal text
+     *         rendering, this means the <b>height</b> of the cell is calculated
+     *         by content, for vertical text rendering the <b>width</b> is
+     *         calculated.
+     */
+    public boolean isCalculateByTextHeight() {
+        return this.calculateByTextHeight;
+    }
+
+    /**
+     * Configure whether the text painter should calculate the cell dimensions
+     * by containing text height. For horizontal text rendering, this means the
+     * <b>height</b> of the cell is calculated by content, for vertical text
+     * rendering the <b>width</b> is calculated.
+     *
+     * @param calculateByTextHeight
+     *            <code>true</code> to calculate and modify the cell dimension
+     *            according to the text height, <code>false</code> to not
+     *            modifying the cell dimensions.
+     */
+    public void setCalculateByTextHeight(boolean calculateByTextHeight) {
+        this.calculateByTextHeight = calculateByTextHeight;
+    }
+
 }
