@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 451217
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze;
 
@@ -23,6 +24,9 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DimensionallyDependentInde
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -35,8 +39,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class CompositeFreezeLayer extends CompositeLayer implements
-        IUniqueIndexLayer {
+public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndexLayer {
 
     private final FreezeLayer freezeLayer;
     private final ViewportLayer viewportLayer;
@@ -57,10 +60,12 @@ public class CompositeFreezeLayer extends CompositeLayer implements
         this.selectionLayer = selectionLayer;
 
         setChildLayer("FROZEN_REGION", freezeLayer, 0, 0); //$NON-NLS-1$
-        setChildLayer(
-                "FROZEN_ROW_REGION", new DimensionallyDependentIndexLayer(viewportLayer.getScrollableLayer(), viewportLayer, freezeLayer), 1, 0); //$NON-NLS-1$
-        setChildLayer(
-                "FROZEN_COLUMN_REGION", new DimensionallyDependentIndexLayer(viewportLayer.getScrollableLayer(), freezeLayer, viewportLayer), 0, 1); //$NON-NLS-1$
+        setChildLayer("FROZEN_ROW_REGION", //$NON-NLS-1$
+                new DimensionallyDependentIndexLayer(
+                        viewportLayer.getScrollableLayer(), viewportLayer, freezeLayer), 1, 0);
+        setChildLayer("FROZEN_COLUMN_REGION", //$NON-NLS-1$
+                new DimensionallyDependentIndexLayer(
+                        viewportLayer.getScrollableLayer(), freezeLayer, viewportLayer), 0, 1);
         setChildLayer("NONFROZEN_REGION", viewportLayer, 1, 1); //$NON-NLS-1$
 
         registerCommandHandlers();
@@ -70,108 +75,130 @@ public class CompositeFreezeLayer extends CompositeLayer implements
         }
     }
 
+    @Override
+    public void handleLayerEvent(ILayerEvent event) {
+        // Bug 451217
+        // if structural change events are fired that carry no explicit diff
+        // information it is likely that the event handlers in the underlying
+        // layers are not executed. The following code is intended to "repair"
+        // possible inconsistent freeze-viewport states
+        if (event instanceof RowStructuralChangeEvent
+                && (((RowStructuralChangeEvent) event).getRowDiffs() == null
+                || ((RowStructuralChangeEvent) event).getRowDiffs().isEmpty())) {
+            if (this.viewportLayer.getMinimumOriginRowPosition() < this.freezeLayer.getRowCount()) {
+                this.viewportLayer.setMinimumOriginY(this.freezeLayer.getHeight());
+            }
+        }
+        if (event instanceof ColumnStructuralChangeEvent
+                && (((ColumnStructuralChangeEvent) event).getColumnDiffs() == null
+                || ((ColumnStructuralChangeEvent) event).getColumnDiffs().isEmpty())) {
+            if (this.viewportLayer.getMinimumOriginColumnPosition() < this.freezeLayer.getColumnCount()) {
+                this.viewportLayer.setMinimumOriginX(this.freezeLayer.getWidth());
+            }
+        }
+        super.handleLayerEvent(event);
+    }
+
     public boolean isFrozen() {
-        return freezeLayer.isFrozen();
+        return this.freezeLayer.isFrozen();
     }
 
     @Override
     public ILayerPainter getLayerPainter() {
-        return layerPainter;
+        return this.layerPainter;
     }
 
     @Override
     protected void registerCommandHandlers() {
-        registerCommandHandler(new FreezeCommandHandler(freezeLayer,
-                viewportLayer, selectionLayer));
+        registerCommandHandler(new FreezeCommandHandler(this.freezeLayer,
+                this.viewportLayer, this.selectionLayer));
 
-        final DimensionallyDependentIndexLayer frozenRowLayer = (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(
-                1, 0);
-        frozenRowLayer
-                .registerCommandHandler(new ViewportSelectRowCommandHandler(
-                        frozenRowLayer));
+        final DimensionallyDependentIndexLayer frozenRowLayer =
+                (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(1, 0);
+        frozenRowLayer.registerCommandHandler(
+                new ViewportSelectRowCommandHandler(frozenRowLayer));
 
-        final DimensionallyDependentIndexLayer frozenColumnLayer = (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(
-                0, 1);
-        frozenColumnLayer
-                .registerCommandHandler(new ViewportSelectColumnCommandHandler(
-                        frozenColumnLayer));
+        final DimensionallyDependentIndexLayer frozenColumnLayer =
+                (DimensionallyDependentIndexLayer) getChildLayerByLayoutCoordinate(0, 1);
+        frozenColumnLayer.registerCommandHandler(
+                new ViewportSelectColumnCommandHandler(frozenColumnLayer));
     }
 
     @Override
     public boolean doCommand(ILayerCommand command) {
         // if this layer should handle a ClientAreaResizeCommand we have to
-        // ensure that
-        // it is only called on the ViewportLayer, as otherwise an undefined
-        // behaviour
-        // could occur because the ViewportLayer isn't informed about potential
-        // refreshes
+        // ensure that it is only called on the ViewportLayer, as otherwise
+        // an undefined behaviour could occur because the ViewportLayer
+        // isn't informed about potential refreshes
         if (command instanceof ClientAreaResizeCommand) {
             this.viewportLayer.doCommand(command);
         }
         return super.doCommand(command);
     }
 
+    @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        int columnPosition = freezeLayer.getColumnPositionByIndex(columnIndex);
+        int columnPosition = this.freezeLayer.getColumnPositionByIndex(columnIndex);
         if (columnPosition >= 0) {
             return columnPosition;
         }
-        return freezeLayer.getColumnCount()
-                + viewportLayer.getColumnPositionByIndex(columnIndex);
+        return this.freezeLayer.getColumnCount()
+                + this.viewportLayer.getColumnPositionByIndex(columnIndex);
     }
 
+    @Override
     public int getRowPositionByIndex(int rowIndex) {
-        int rowPosition = freezeLayer.getRowPositionByIndex(rowIndex);
+        int rowPosition = this.freezeLayer.getRowPositionByIndex(rowIndex);
         if (rowPosition >= 0) {
             return rowPosition;
         }
-        return freezeLayer.getRowCount()
-                + viewportLayer.getRowPositionByIndex(rowIndex);
+        return this.freezeLayer.getRowCount()
+                + this.viewportLayer.getRowPositionByIndex(rowIndex);
     }
 
     // Persistence
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        PositionCoordinate coord = freezeLayer.getTopLeftPosition();
-        properties.setProperty(prefix
-                + FreezeLayer.PERSISTENCE_TOP_LEFT_POSITION,
-                coord.columnPosition + IPersistable.VALUE_SEPARATOR
-                        + coord.rowPosition);
+        PositionCoordinate coord = this.freezeLayer.getTopLeftPosition();
+        properties.setProperty(
+                prefix + FreezeLayer.PERSISTENCE_TOP_LEFT_POSITION,
+                coord.columnPosition + IPersistable.VALUE_SEPARATOR + coord.rowPosition);
 
-        coord = freezeLayer.getBottomRightPosition();
-        properties.setProperty(prefix
-                + FreezeLayer.PERSISTENCE_BOTTOM_RIGHT_POSITION,
-                coord.columnPosition + IPersistable.VALUE_SEPARATOR
-                        + coord.rowPosition);
+        coord = this.freezeLayer.getBottomRightPosition();
+        properties.setProperty(
+                prefix + FreezeLayer.PERSISTENCE_BOTTOM_RIGHT_POSITION,
+                coord.columnPosition + IPersistable.VALUE_SEPARATOR + coord.rowPosition);
 
         super.saveState(prefix, properties);
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
-        String property = properties.getProperty(prefix
-                + FreezeLayer.PERSISTENCE_TOP_LEFT_POSITION);
+        String property = properties.getProperty(
+                prefix + FreezeLayer.PERSISTENCE_TOP_LEFT_POSITION);
         PositionCoordinate topLeftPosition = null;
         if (property != null) {
             StringTokenizer tok = new StringTokenizer(property,
                     IPersistable.VALUE_SEPARATOR);
             String columnPosition = tok.nextToken();
             String rowPosition = tok.nextToken();
-            topLeftPosition = new PositionCoordinate(this.freezeLayer,
+            topLeftPosition = new PositionCoordinate(
+                    this.freezeLayer,
                     Integer.valueOf(columnPosition),
                     Integer.valueOf(rowPosition));
         }
 
-        property = properties.getProperty(prefix
-                + FreezeLayer.PERSISTENCE_BOTTOM_RIGHT_POSITION);
+        property = properties.getProperty(
+                prefix + FreezeLayer.PERSISTENCE_BOTTOM_RIGHT_POSITION);
         PositionCoordinate bottomRightPosition = null;
         if (property != null) {
-            StringTokenizer tok = new StringTokenizer(property,
-                    IPersistable.VALUE_SEPARATOR);
+            StringTokenizer tok =
+                    new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             String columnPosition = tok.nextToken();
             String rowPosition = tok.nextToken();
-            bottomRightPosition = new PositionCoordinate(this.freezeLayer,
+            bottomRightPosition = new PositionCoordinate(
+                    this.freezeLayer,
                     Integer.valueOf(columnPosition),
                     Integer.valueOf(rowPosition));
         }
@@ -199,13 +226,11 @@ public class CompositeFreezeLayer extends CompositeLayer implements
         @Override
         public void paintLayer(ILayer natLayer, GC gc, int xOffset,
                 int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-            super.paintLayer(natLayer, gc, xOffset, yOffset, rectangle,
-                    configRegistry);
+            super.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 
-            Color separatorColor = configRegistry
-                    .getConfigAttribute(
-                            IFreezeConfigAttributes.SEPARATOR_COLOR,
-                            DisplayMode.NORMAL);
+            Color separatorColor = configRegistry.getConfigAttribute(
+                    IFreezeConfigAttributes.SEPARATOR_COLOR,
+                    DisplayMode.NORMAL);
             if (separatorColor == null) {
                 separatorColor = GUIHelper.COLOR_BLUE;
             }
@@ -213,15 +238,21 @@ public class CompositeFreezeLayer extends CompositeLayer implements
             gc.setClipping(rectangle);
             Color oldFg = gc.getForeground();
             gc.setForeground(separatorColor);
-            final int freezeWidth = freezeLayer.getWidth() - 1;
+            final int freezeWidth = CompositeFreezeLayer.this.freezeLayer.getWidth() - 1;
             if (freezeWidth > 0) {
-                gc.drawLine(xOffset + freezeWidth, yOffset, xOffset
-                        + freezeWidth, yOffset + getHeight() - 1);
+                gc.drawLine(
+                        xOffset + freezeWidth,
+                        yOffset,
+                        xOffset + freezeWidth,
+                        yOffset + getHeight() - 1);
             }
-            final int freezeHeight = freezeLayer.getHeight() - 1;
+            final int freezeHeight = CompositeFreezeLayer.this.freezeLayer.getHeight() - 1;
             if (freezeHeight > 0) {
-                gc.drawLine(xOffset, yOffset + freezeHeight, xOffset
-                        + getWidth() - 1, yOffset + freezeHeight);
+                gc.drawLine(
+                        xOffset,
+                        yOffset + freezeHeight,
+                        xOffset + getWidth() - 1,
+                        yOffset + freezeHeight);
             }
             gc.setForeground(oldFg);
         }
