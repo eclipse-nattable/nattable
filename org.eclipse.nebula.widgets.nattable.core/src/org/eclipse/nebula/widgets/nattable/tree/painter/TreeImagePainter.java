@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,11 +27,11 @@ public class TreeImagePainter extends ImagePainter {
     /**
      * Create a TreeImagePainter that uses the default icons to show the tree
      * state.
-     * 
+     *
      * @param treeRowModel
      *            The ITreeRowModel to determine the tree state. <b>Is not used
      *            anymore!</b>
-     * 
+     *
      * @deprecated Use constructor without ITreeRowModel parameter
      */
     @Deprecated
@@ -43,7 +43,7 @@ public class TreeImagePainter extends ImagePainter {
     /**
      * Create a TreeImagePainter that uses the given icons to show the tree
      * state.
-     * 
+     *
      * @param treeRowModel
      *            The ITreeRowModel to determine the tree state. <b>Is not used
      *            anymore!</b>
@@ -53,7 +53,7 @@ public class TreeImagePainter extends ImagePainter {
      *            The image that should be shown for expanded tree nodes.
      * @param leafImage
      *            The image that should be shown for leafs without children.
-     * 
+     *
      * @deprecated Use constructor without ITreeRowModel parameter
      */
     @Deprecated
@@ -73,7 +73,7 @@ public class TreeImagePainter extends ImagePainter {
     /**
      * Create a TreeImagePainter that uses the default icons to show the tree
      * state.
-     * 
+     *
      * @param paintBg
      *            <code>true</code> if it should render the background itself,
      *            <code>false</code> if the background rendering should be
@@ -88,7 +88,7 @@ public class TreeImagePainter extends ImagePainter {
     /**
      * Create a TreeImagePainter that uses the given icons to show the tree
      * state and renders the background.
-     * 
+     *
      * @param plusImage
      *            The image that should be shown for collapsed tree nodes.
      * @param minusImage
@@ -103,7 +103,7 @@ public class TreeImagePainter extends ImagePainter {
     /**
      * Create a TreeImagePainter that uses the given icons to show the tree
      * state.
-     * 
+     *
      * @param paintBg
      *            <code>true</code> if it should render the background itself,
      *            <code>false</code> if the background rendering should be
@@ -125,15 +125,15 @@ public class TreeImagePainter extends ImagePainter {
     }
 
     public Image getPlusImage() {
-        return collapsedImage;
+        return this.collapsedImage;
     }
 
     public Image getMinusImage() {
-        return expandedImage;
+        return this.expandedImage;
     }
 
     public Image getLeafImage() {
-        return leafImage;
+        return this.leafImage;
     }
 
     @Override
@@ -168,7 +168,7 @@ public class TreeImagePainter extends ImagePainter {
 
     /**
      * Set the images that should be used to indicate the current tree state.
-     * 
+     *
      * @param collapsedImage
      *            The image that should be shown for collapsed tree nodes.
      * @param expandedImage

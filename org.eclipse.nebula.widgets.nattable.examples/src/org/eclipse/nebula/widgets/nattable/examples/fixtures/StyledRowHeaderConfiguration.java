@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,24 +19,22 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Customize the default row header style. This has to be add back to the table.
  *
  * @see _000_Styled_grid
  */
-public class StyledRowHeaderConfiguration extends
-        DefaultRowHeaderStyleConfiguration {
+public class StyledRowHeaderConfiguration extends DefaultRowHeaderStyleConfiguration {
 
     public StyledRowHeaderConfiguration() {
-        font = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
+        this.font = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
 
-        Image bgImage = new Image(Display.getDefault(), getClass()
-                .getResourceAsStream("row_header_bg.png"));
+        Image bgImage = GUIHelper.getImageByURL("rowHeaderBg",
+                getClass().getResource("row_header_bg.png"));
         TextPainter txtPainter = new TextPainter(false, false);
-        ICellPainter bgImagePainter = new BackgroundImagePainter(txtPainter,
-                bgImage, null);
-        cellPainter = bgImagePainter;
+        ICellPainter bgImagePainter =
+                new BackgroundImagePainter(txtPainter, bgImage, null);
+        this.cellPainter = bgImagePainter;
     }
 }

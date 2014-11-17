@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,9 +25,10 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
     private final Image uncheckedImg;
 
     public TreeCheckBoxPainter() {
-        this(GUIHelper.getImage("checked"), //$NON-NLS-1$
-                GUIHelper.getImage("semichecked"), //$NON-NLS-1$
-                GUIHelper.getImage("unchecked") //$NON-NLS-1$
+        this(
+        		GUIHelper.getImage("checked"), //$NON-NLS-1$
+        		GUIHelper.getImage("semichecked"), //$NON-NLS-1$
+        		GUIHelper.getImage("unchecked") //$NON-NLS-1$
         );
     }
 
@@ -39,18 +40,16 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
     }
 
     public int getPreferredWidth(boolean checked) {
-        return checked ? checkedImg.getBounds().width : uncheckedImg
-                .getBounds().width;
+        return getImage(checked).getBounds().width;
     }
 
     public int getPreferredHeight(boolean checked) {
-        return checked ? checkedImg.getBounds().height : uncheckedImg
-                .getBounds().height;
+        return getImage(checked).getBounds().height;
     }
 
     public void paintIconImage(GC gc, Rectangle rectangle, int yOffset,
             boolean checked) {
-        Image checkBoxImage = checked ? checkedImg : uncheckedImg;
+        Image checkBoxImage = getImage(checked);
 
         // Center image
         int x = rectangle.x + (rectangle.width / 2)
@@ -59,16 +58,22 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
         gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
     }
 
+    public Image getImage(boolean checked) {
+        return checked ? this.checkedImg : this.uncheckedImg;
+    }
+
     @Override
     protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
+        Image result = null;
         switch (getCheckBoxState(cell)) {
             case CHECKED:
-                return checkedImg;
+                result = this.checkedImg;
             case SEMICHECKED:
-                return semicheckedImg;
+                result = this.semicheckedImg;
             default:
-                return uncheckedImg;
+                result = this.uncheckedImg;
         }
+        return result;
     }
 
     protected abstract CheckBoxStateEnum getCheckBoxState(ILayerCell cell);

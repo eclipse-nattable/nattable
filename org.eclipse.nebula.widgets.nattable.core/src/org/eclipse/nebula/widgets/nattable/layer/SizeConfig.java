@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,8 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Added percentage sizing
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Added scaling
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
@@ -83,6 +85,10 @@ public class SizeConfig implements IPersistable {
      * to get recalculated.
      */
     private boolean isAggregatedSizeCacheValid = true;
+    /**
+     * The {@link IDpiConverter} that is used for scaling DPI conversion.
+     */
+    private IDpiConverter dpiConverter;
 
     /**
      * Create a new {@link SizeConfig} with the given default size.
@@ -179,12 +185,27 @@ public class SizeConfig implements IPersistable {
 
     // Default size
 
+    /**
+     * Set the default size that should be used in case there is no position
+     * based size configured.
+     *
+     * @param size
+     *            The default size to set.
+     */
     public void setDefaultSize(int size) {
         if (size < 0) {
             throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
         }
         this.defaultSize = size;
         this.isAggregatedSizeCacheValid = false;
+    }
+
+    /**
+     * @return The default size that is used in case there is no position based
+     *         size configured.
+     */
+    public int getDefaultSize() {
+        return upScale(this.defaultSize);
     }
 
     public void setDefaultSize(int position, int size) {
@@ -215,7 +236,7 @@ public class SizeConfig implements IPersistable {
             // if percentage sizing is used, the sizes in defaultSize are used
             // as percentage values and not as pixel values, therefore another
             // value needs to be considered
-            return position * this.defaultSize;
+            return upScale(position * this.defaultSize);
         } else {
             // See if the cache is valid, if not clear it.
             if (!this.isAggregatedSizeCacheValid) {
@@ -232,16 +253,18 @@ public class SizeConfig implements IPersistable {
     }
 
     public int getSize(int position) {
-        Integer size;
+        Integer size = null;
         if (isPercentageSizing()) {
             size = this.realSizeMap.get(position);
         } else {
-            size = this.sizeMap.get(position);
+            if (this.sizeMap.containsKey(position)) {
+                size = upScale(this.sizeMap.get(position));
+            }
         }
         if (size != null) {
             return size.intValue();
         } else {
-            return getDefaultSize(position);
+            return upScale(getDefaultSize(position));
         }
     }
 
@@ -271,7 +294,7 @@ public class SizeConfig implements IPersistable {
             // check whether the given value should be remembered as is or if it
             // needs to be calculated
             if (!isPercentageSizing(position)) {
-                this.sizeMap.put(position, size);
+                this.sizeMap.put(position, downScale(size));
             } else {
                 if (this.availableSpace > 0) {
                     Double percentage = ((double) size * 100) / this.availableSpace;
@@ -286,8 +309,7 @@ public class SizeConfig implements IPersistable {
                         // realSizeMap otherwise the resizing effect would
                         // have strange effects
                         if (this.realSizeMap.containsKey(position)) {
-                            Double calculated = ((double) this.realSizeMap
-                                    .get(position) * 100) / this.availableSpace;
+                            Double calculated = ((double) this.realSizeMap.get(position) * 100) / this.availableSpace;
                             diff = diff - calculated.intValue();
                         }
 
@@ -384,8 +406,7 @@ public class SizeConfig implements IPersistable {
         if (isPositionResizable(position)) {
             this.percentageSizingMap.put(position, Boolean.TRUE);
             this.sizeMap.put(position, percentage);
-            this.realSizeMap.put(position,
-                    calculatePercentageValue(percentage, this.availableSpace));
+            this.realSizeMap.put(position, calculatePercentageValue(percentage, this.availableSpace));
             calculatePercentages(this.availableSpace, this.realSizeMap.size());
         }
     }
@@ -697,8 +718,7 @@ public class SizeConfig implements IPersistable {
         int resizeAggregate = 0;
         int resizedColumns = 0;
 
-        Map<Integer, Integer> mapToUse = isPercentageSizing() ? this.realSizeMap
-                : this.sizeMap;
+        Map<Integer, Integer> mapToUse = isPercentageSizing() ? this.realSizeMap : this.sizeMap;
 
         for (Integer resizedPosition : mapToUse.keySet()) {
             if (resizedPosition.intValue() < position) {
@@ -714,16 +734,15 @@ public class SizeConfig implements IPersistable {
             if (defaultPosition.intValue() < position) {
                 if (!mapToUse.containsKey(defaultPosition)) {
                     resizedColumns++;
-                    resizeAggregate += this.defaultSizeMap.get(defaultPosition)
-                            .intValue();
+                    resizeAggregate += this.defaultSizeMap.get(defaultPosition).intValue();
                 }
             } else {
                 break;
             }
         }
 
-        return (position * this.defaultSize)
-                + (resizeAggregate - (resizedColumns * this.defaultSize));
+        int result = (position * this.defaultSize) + resizeAggregate - (resizedColumns * this.defaultSize);
+        return isPercentageSizing() ? result : upScale(result);
     }
 
     /**
@@ -737,5 +756,52 @@ public class SizeConfig implements IPersistable {
      */
     public void updatePercentageValues(int positionCount) {
         calculatePercentages(this.availableSpace, positionCount);
+    }
+
+    /**
+     * Calculates the size value dependent on a possible configured scaling from
+     * pixel to DPI value.
+     *
+     * @param value
+     *            The value that should be up scaled.
+     * @return The scaled value if a {@link IDpiConverter} is configured, the
+     *         value itself if no {@link IDpiConverter} is set.
+     *
+     * @see IDpiConverter#convertPixelToDpi(int)
+     */
+    protected int upScale(int value) {
+        if (this.dpiConverter == null) {
+            return value;
+        }
+        return this.dpiConverter.convertPixelToDpi(value);
+    }
+
+    /**
+     * Calculates the size value dependent on a possible configured scaling from
+     * DPI to pixel value.
+     *
+     * <p>
+     * This method is used for percentage sizing calculations.
+     * </p>
+     *
+     * @param value
+     *            The value that should be down scaled.
+     * @return The scaled value if a {@link IDpiConverter} is configured, the
+     *         value itself if no {@link IDpiConverter} is set.
+     */
+    protected int downScale(int value) {
+        if (this.dpiConverter == null) {
+            return value;
+        }
+        return this.dpiConverter.convertDpiToPixel(value);
+    }
+
+    /**
+     *
+     * @param dpiConverter
+     *            The {@link IDpiConverter} to use for size scaling.
+     */
+    public void setDpiConverter(IDpiConverter dpiConverter) {
+        this.dpiConverter = dpiConverter;
     }
 }

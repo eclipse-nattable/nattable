@@ -35,10 +35,12 @@ import org.eclipse.nebula.widgets.nattable.edit.CellEditorCreatedEvent;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -80,6 +82,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -279,8 +282,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
                         getDisplay().syncExec(new Runnable() {
                             @Override
                             public void run() {
-                                Rectangle natClientArea = NatTable.this
-                                        .getClientArea();
+                                Rectangle natClientArea = NatTable.this.getClientArea();
                                 clientArea.x = natClientArea.x;
                                 clientArea.y = natClientArea.y;
                                 clientArea.width = natClientArea.width;
@@ -293,6 +295,35 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
 
             });
             this.underlyingLayer.addLayerListener(this);
+
+            // register the DPI scaling
+            this.underlyingLayer.doCommand(new ConfigureScalingCommand(
+                    new AbstractDpiConverter() {
+
+                        @Override
+                        protected void readDpiFromDisplay() {
+                            Display.getDefault().syncExec(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    dpi = Display.getDefault().getDPI().x;
+                                }
+                            });
+                        }
+                    },
+                    new AbstractDpiConverter() {
+
+                        @Override
+                        protected void readDpiFromDisplay() {
+                            Display.getDefault().syncExec(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    dpi = Display.getDefault().getDPI().y;
+                                }
+                            });
+                        }
+                    }));
         }
     }
 
@@ -445,8 +476,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
         if (xOffset < 0) {
             return;
         }
-        redraw(xOffset, 0, getColumnWidthByPosition(columnPosition),
-                getHeight(), true);
+        redraw(xOffset, 0, getColumnWidthByPosition(columnPosition), getHeight(), true);
     }
 
     /**
@@ -461,8 +491,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
         if (yOffset < 0) {
             return;
         }
-        redraw(0, yOffset, getWidth(), getRowHeightByPosition(rowPosition),
-                true);
+        redraw(0, yOffset, getWidth(), getRowHeightByPosition(rowPosition), true);
     }
 
     /**
@@ -531,8 +560,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
     }
 
     @Override
-    public void configure(ConfigRegistry configRegistry,
-            UiBindingRegistry uiBindingRegistry) {
+    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         throw new UnsupportedOperationException("Cannot use this method to configure NatTable. Use no-argument configure() instead."); //$NON-NLS-1$
     }
 
@@ -775,8 +803,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
     }
 
     @Override
-    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
-            int underlyingColumnPosition) {
+    public int underlyingToLocalColumnPosition(
+            ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
         if (sourceUnderlyingLayer != this.underlyingLayer) {
             return -1;
         }
@@ -834,8 +862,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
     // Underlying
 
     @Override
-    public Collection<ILayer> getUnderlyingLayersByColumnPosition(
-            int columnPosition) {
+    public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
         Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
         underlyingLayers.add(this.underlyingLayer);
         return underlyingLayers;
@@ -864,8 +891,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
     }
 
     @Override
-    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
-            int underlyingRowPosition) {
+    public int underlyingToLocalRowPosition(
+            ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
         if (sourceUnderlyingLayer != this.underlyingLayer) {
             return -1;
         }
@@ -948,8 +975,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         return this.underlyingLayer.getConfigLabelsByPosition(columnPosition,
                 rowPosition);
     }
@@ -975,8 +1001,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
     }
 
     @Override
-    public ILayer getUnderlyingLayerByPosition(int columnPosition,
-            int rowPosition) {
+    public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
         return this.underlyingLayer;
     }
 

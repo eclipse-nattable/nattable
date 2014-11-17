@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - enhancement for extensions
@@ -42,7 +42,7 @@ public class SortIconPainter extends ImagePainter {
 
     /**
      * Create a SortIconPainter that uses the default icons (black triangles).
-     * 
+     *
      * @param paintBg
      *            <code>true</code> if it should render the background itself,
      *            <code>false</code> if the background rendering should be
@@ -54,7 +54,7 @@ public class SortIconPainter extends ImagePainter {
 
     /**
      * Create a SortIconPainter.
-     * 
+     *
      * @param paintBg
      *            <code>true</code> if it should render the background itself,
      *            <code>false</code> if the background rendering should be
@@ -94,21 +94,18 @@ public class SortIconPainter extends ImagePainter {
     }
 
     private boolean isSortedAscending(ILayerCell cell) {
-        return cell.getConfigLabels().hasLabel(
-                DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+        return cell.getConfigLabels().hasLabel(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
     }
 
     private boolean isSortedDescending(ILayerCell cell) {
-        return cell.getConfigLabels().hasLabel(
-                DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+        return cell.getConfigLabels().hasLabel(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
     }
 
     private int getSortSequence(ILayerCell cell) {
         int sortSeq = 0;
 
         for (String configLabel : cell.getConfigLabels().getLabels()) {
-            if (configLabel
-                    .startsWith(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE)) {
+            if (configLabel.startsWith(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE)) {
                 String[] tokens = configLabel.split("_"); //$NON-NLS-1$
                 sortSeq = Integer.valueOf(tokens[tokens.length - 1]).intValue();
             }
@@ -119,7 +116,7 @@ public class SortIconPainter extends ImagePainter {
     /**
      * Returns the sort icon that should be used to indicate ascending sorting
      * state.
-     * 
+     *
      * @param sortSequence
      *            The sort sequence number for which the sort icon is requested.
      * @return The sort icon that should be rendered to indicate the current
@@ -141,7 +138,7 @@ public class SortIconPainter extends ImagePainter {
     /**
      * Returns the sort icon that should be used to indicate descending sorting
      * state.
-     * 
+     *
      * @param sortSequence
      *            The sort sequence number for which the sort icon is requested.
      * @return The sort icon that should be rendered to indicate the current
@@ -162,7 +159,7 @@ public class SortIconPainter extends ImagePainter {
 
     /**
      * Set the images that should be used to indicate the current sort state.
-     * 
+     *
      * @param upImage0
      *            Image to be used to indicate first level ascending sorting.
      * @param upImage1

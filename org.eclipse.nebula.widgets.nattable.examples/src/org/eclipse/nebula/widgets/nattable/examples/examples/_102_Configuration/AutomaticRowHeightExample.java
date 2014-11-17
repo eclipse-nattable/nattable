@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Dirk Fauth and others.
+ * Copyright (c) 2012, 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth - initial API and implementation and/or initial documentation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - Added improved resource handling
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._102_Configuration;
 
@@ -17,6 +18,8 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -39,9 +42,9 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -49,8 +52,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * @author Dirk Fauth
- *
+ * Example showing a NatTable with dynamic row height that is increasing and
+ * shrinking the row height dependent to the content.
  */
 public class AutomaticRowHeightExample extends AbstractNatExample {
 
@@ -65,6 +68,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
     /**
      * @Override
      */
+    @Override
     public String getDescription() {
         return "Demonstrates how to implement a log viewer using NatTable with the percentage "
                 + "sizing and the automatic row height calculation feature. If you resize the "
@@ -72,18 +76,11 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
                 + "by wrapping the text and resizing the row heights.";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
-     * (org.eclipse.swt.widgets.Composite)
-     */
+    @Override
     public Control createExampleControl(Composite parent) {
         Composite panel = new Composite(parent, SWT.NONE);
 
-        GridData layoutData = GridDataFactory.fillDefaults().grab(true, true)
-                .create();
+        GridData layoutData = GridDataFactory.fillDefaults().grab(true, true).create();
 
         GridLayout layout = new GridLayout();
         layout.numColumns = 1;
@@ -95,19 +92,17 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
         loadMessages();
 
         ListDataProvider<LogRecord> dataProvider = new ListDataProvider<LogRecord>(
-                logMessages, new ReflectiveColumnPropertyAccessor<LogRecord>(
+                this.logMessages, new ReflectiveColumnPropertyAccessor<LogRecord>(
                         new String[] { "message" })); //$NON-NLS-1$
         DataLayer dataLayer = new DataLayer(dataProvider);
         dataLayer.setColumnPercentageSizing(true);
         dataLayer.setColumnWidthPercentageByPosition(0, 100);
-        dataLayer
-                .setConfigLabelAccumulator(new ValidatorMessageLabelAccumulator());
+        dataLayer.setConfigLabelAccumulator(new ValidatorMessageLabelAccumulator());
 
         ViewportLayer layer = new ViewportLayer(dataLayer);
         layer.setRegionName(GridRegion.BODY);
 
-        NatTable natTable = new NatTable(panel, NatTable.DEFAULT_STYLE_OPTIONS
-                | SWT.BORDER, layer, false);
+        NatTable natTable = new NatTable(panel, NatTable.DEFAULT_STYLE_OPTIONS | SWT.BORDER, layer, false);
         natTable.addConfiguration(new ValidationMessageTableStyleConfiguration());
 
         natTable.configure();
@@ -133,38 +128,43 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
             for (int j = 0; j < randWords; j++) {
                 msg += words[j] + " ";
             }
-            logMessages.add(new LogRecord(levels[levelRandom
-                    .nextInt(levels.length)], msg));
+            this.logMessages.add(
+                    new LogRecord(levels[levelRandom.nextInt(levels.length)], msg));
         }
     }
 
-    public class ValidatorMessageLabelAccumulator implements
-            IConfigLabelAccumulator {
-        public void accumulateConfigLabels(LabelStack configLabels,
-                int columnPosition, int rowPosition) {
-            LogRecord vm = logMessages.get(rowPosition);
+    public class ValidatorMessageLabelAccumulator implements IConfigLabelAccumulator {
+        @Override
+        public void accumulateConfigLabels(
+                LabelStack configLabels, int columnPosition, int rowPosition) {
+            LogRecord vm = AutomaticRowHeightExample.this.logMessages.get(rowPosition);
             configLabels.addLabel(vm.getLevel().toString());
         }
     }
 
-    public class ValidationMessageTableStyleConfiguration extends
-            DefaultNatTableStyleConfiguration {
-        private int IMAGE_SIZE = 16;
-        private final Image ERROR_IMAGE = new Image(DISPLAY, DISPLAY
-                .getSystemImage(SWT.ICON_ERROR).getImageData()
-                .scaledTo(IMAGE_SIZE, IMAGE_SIZE));
-        private final Image WARNING_IMAGE = new Image(DISPLAY, DISPLAY
-                .getSystemImage(SWT.ICON_WARNING).getImageData()
-                .scaledTo(IMAGE_SIZE, IMAGE_SIZE));
-        private final Image INFORMATION_IMAGE = new Image(DISPLAY, DISPLAY
-                .getSystemImage(SWT.ICON_INFORMATION).getImageData()
-                .scaledTo(IMAGE_SIZE, IMAGE_SIZE));
+    public class ValidationMessageTableStyleConfiguration extends DefaultNatTableStyleConfiguration {
+        private int IMAGE_SIZE = GUIHelper.convertHorizontalPixelToDpi(16);
+
         {
-            hAlign = HorizontalAlignmentEnum.LEFT;
-            cellPainter = new LineBorderDecorator(new PaddingDecorator(
-                    new CellPainterDecorator(new AutomaticRowHeightTextPainter(
-                            2), CellEdgeEnum.LEFT, new ImagePainter()), 0, 2,
-                    0, 2));
+            JFaceResources.getImageRegistry().put("errorImage",
+                    ImageDescriptor.createFromImageData(
+                            DISPLAY.getSystemImage(SWT.ICON_ERROR).getImageData()
+                            .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
+            JFaceResources.getImageRegistry().put("warningImage",
+                    ImageDescriptor.createFromImageData(
+                            DISPLAY.getSystemImage(SWT.ICON_WARNING).getImageData()
+                            .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
+            JFaceResources.getImageRegistry().put("infoImage",
+                    ImageDescriptor.createFromImageData(
+                            DISPLAY.getSystemImage(SWT.ICON_INFORMATION).getImageData()
+                            .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
+
+            this.hAlign = HorizontalAlignmentEnum.LEFT;
+            this.cellPainter = new LineBorderDecorator(
+                    new PaddingDecorator(
+                            new CellPainterDecorator(
+                                    new AutomaticRowHeightTextPainter(2),
+                                    CellEdgeEnum.LEFT, new ImagePainter()), 0, 2, 0, 2));
         }
 
         @Override
@@ -172,25 +172,34 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
             super.configureRegistry(configRegistry);
 
             Style errorStyle = new Style();
-            errorStyle
-                    .setAttributeValue(CellStyleAttributes.IMAGE, ERROR_IMAGE);
+            errorStyle.setAttributeValue(
+                    CellStyleAttributes.IMAGE,
+                    JFaceResources.getImageRegistry().get("errorImage"));
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, errorStyle,
-                    DisplayMode.NORMAL, Level.SEVERE.toString());
+                    CellConfigAttributes.CELL_STYLE,
+                    errorStyle,
+                    DisplayMode.NORMAL,
+                    Level.SEVERE.toString());
 
             Style warningStyle = new Style();
-            warningStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                    WARNING_IMAGE);
+            warningStyle.setAttributeValue(
+                    CellStyleAttributes.IMAGE,
+                    JFaceResources.getImageRegistry().get("warningImage"));
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, warningStyle,
-                    DisplayMode.NORMAL, Level.WARNING.toString());
+                    CellConfigAttributes.CELL_STYLE,
+                    warningStyle,
+                    DisplayMode.NORMAL,
+                    Level.WARNING.toString());
 
             Style informationStyle = new Style();
-            informationStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                    INFORMATION_IMAGE);
+            informationStyle.setAttributeValue(
+                    CellStyleAttributes.IMAGE,
+                    JFaceResources.getImageRegistry().get("infoImage"));
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, informationStyle,
-                    DisplayMode.NORMAL, Level.INFO.toString());
+                    CellConfigAttributes.CELL_STYLE,
+                    informationStyle,
+                    DisplayMode.NORMAL,
+                    Level.INFO.toString());
         }
     }
 }

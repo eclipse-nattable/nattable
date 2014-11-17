@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,7 +24,6 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Extends the default column header style configuration to add custom painters
@@ -34,10 +33,10 @@ import org.eclipse.swt.widgets.Display;
  * @see _000_Styled_grid
  */
 public class StyledColumnHeaderConfiguration extends
-        DefaultColumnHeaderStyleConfiguration {
+DefaultColumnHeaderStyleConfiguration {
 
     public StyledColumnHeaderConfiguration() {
-        font = GUIHelper.getFont(new FontData("Verdana", 10, SWT.BOLD));
+        this.font = GUIHelper.getFont(new FontData("Verdana", 10, SWT.BOLD));
     }
 
     @Override
@@ -48,8 +47,8 @@ public class StyledColumnHeaderConfiguration extends
     }
 
     private void addSelectedModeStyling(IConfigRegistry configRegistry) {
-        Image selectedBgImage = new Image(Display.getDefault(), getClass()
-                .getResourceAsStream("selected_column_header_bg.png"));
+        Image selectedBgImage = GUIHelper.getImageByURL("selectedColumnHeaderBg",
+                getClass().getResource("selected_column_header_bg.png"));
 
         TextPainter txtPainter = new TextPainter(false, false);
         ICellPainter selectedCellPainter = new BackgroundImagePainter(
@@ -64,8 +63,8 @@ public class StyledColumnHeaderConfiguration extends
     }
 
     private void addNormalModeStyling(IConfigRegistry configRegistry) {
-        Image bgImage = new Image(Display.getDefault(), getClass()
-                .getResourceAsStream("column_header_bg.png"));
+        Image bgImage = GUIHelper.getImageByURL("columnHeaderBg",
+                getClass().getResource("column_header_bg.png"));
 
         TextPainter txtPainter = new TextPainter(false, false);
         ICellPainter bgImagePainter = new BackgroundImagePainter(txtPainter,

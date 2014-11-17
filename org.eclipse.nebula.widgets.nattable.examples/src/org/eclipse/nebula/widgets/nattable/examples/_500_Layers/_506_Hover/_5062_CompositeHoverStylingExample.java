@@ -44,14 +44,10 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Simple example showing how to add the {@link HoverLayer} to a layer
  * composition with column header and body.
- * 
- * @author Dirk Fauth
- *
  */
 public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
 
@@ -82,9 +78,8 @@ public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
+        // AbstractIndexLayerTransform and setting the ViewportLayer
+        // as underlying layer. But in this case using the ViewportLayer
         // directly as body layer is also working.
         IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
                 PersonService.getPersons(10), propertyNames);
@@ -94,24 +89,22 @@ public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        HoverLayer columnHoverLayer = new HoverLayer(columnHeaderDataLayer,
-                false);
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHoverLayer, viewportLayer, selectionLayer, false);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        HoverLayer columnHoverLayer =
+                new HoverLayer(columnHeaderDataLayer, false);
+        ColumnHeaderLayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHoverLayer, viewportLayer, selectionLayer, false);
 
         // add ColumnHeaderHoverLayerConfiguration to ensure that hover styling
         // and resizing is working together
-        columnHeaderLayer
-                .addConfiguration(new ColumnHeaderHoverLayerConfiguration(
-                        columnHoverLayer));
+        columnHeaderLayer.addConfiguration(
+                new ColumnHeaderHoverLayerConfiguration(columnHoverLayer));
 
         CompositeLayer compLayer = new CompositeLayer(1, 2);
-        compLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0,
-                0);
+        compLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
         compLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
         // turn the auto configuration off as we want to add our hover styling
@@ -119,8 +112,7 @@ public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
         NatTable natTable = new NatTable(parent, compLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration manually
+        // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
         // add the style configuration for hover
@@ -129,43 +121,45 @@ public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
             @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
                 Style style = new Style();
-                style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                style.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
                         GUIHelper.getColor(217, 232, 251));
 
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, style,
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
                         DisplayMode.HOVER);
 
-                Image bgImage = new Image(
-                        Display.getDefault(),
-                        getClass()
-                                .getResourceAsStream(
-                                        "/org/eclipse/nebula/widgets/nattable/examples/resources/column_header_bg.png"));
-                Image hoverBgImage = new Image(
-                        Display.getDefault(),
-                        getClass()
-                                .getResourceAsStream(
-                                        "/org/eclipse/nebula/widgets/nattable/examples/resources/hovered_column_header_bg.png"));
+                Image bgImage = GUIHelper.getImageByURL("columnHeaderBg",
+                        getClass().getResource("/org/eclipse/nebula/widgets/nattable/examples/resources/column_header_bg.png"));
+
+                Image hoverBgImage = GUIHelper.getImageByURL("hoverColumnHeaderBg",
+                        getClass().getResource("/org/eclipse/nebula/widgets/nattable/examples/resources/hovered_column_header_bg.png"));
 
                 TextPainter txtPainter = new TextPainter(false, false);
 
-                ICellPainter bgImagePainter = new BackgroundImagePainter(
-                        txtPainter, bgImage, GUIHelper.getColor(192, 192, 192));
-
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_PAINTER, bgImagePainter,
-                        DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_PAINTER, bgImagePainter,
-                        DisplayMode.NORMAL, GridRegion.CORNER);
-
-                ICellPainter hoveredHeaderPainter = new BackgroundImagePainter(
-                        txtPainter, hoverBgImage, GUIHelper.getColor(192, 192,
-                                192));
+                ICellPainter bgImagePainter =
+                        new BackgroundImagePainter(txtPainter, bgImage, GUIHelper.getColor(192, 192, 192));
 
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.CELL_PAINTER,
-                        hoveredHeaderPainter, DisplayMode.HOVER,
+                        bgImagePainter,
+                        DisplayMode.NORMAL,
+                        GridRegion.COLUMN_HEADER);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        bgImagePainter,
+                        DisplayMode.NORMAL,
+                        GridRegion.CORNER);
+
+                ICellPainter hoveredHeaderPainter =
+                        new BackgroundImagePainter(
+                                txtPainter, hoverBgImage, GUIHelper.getColor(192, 192, 192));
+
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        hoveredHeaderPainter,
+                        DisplayMode.HOVER,
                         GridRegion.COLUMN_HEADER);
             }
         });

@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - added automatic size calculation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - added scaling
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
@@ -140,8 +141,8 @@ public class ImagePainter extends BackgroundPainter {
      *         {@link ImagePainter}.
      */
     protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-        return this.image != null ? this.image : CellStyleUtil.getCellStyle(cell,
-                configRegistry).getAttributeValue(CellStyleAttributes.IMAGE);
+        return this.image != null ? this.image : CellStyleUtil.getCellStyle(
+                cell, configRegistry).getAttributeValue(CellStyleAttributes.IMAGE);
     }
 
     /**

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -57,7 +57,6 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
 public class _4222_CellPainterExample extends AbstractNatExample {
 
@@ -92,7 +91,7 @@ public class _4222_CellPainterExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "password",
                 "description", "age", "money", "married", "gender",
                 "address.street", "address.city", "favouriteFood",
-                "favouriteDrinks" };
+        "favouriteDrinks" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -109,35 +108,33 @@ public class _4222_CellPainterExample extends AbstractNatExample {
         propertyToLabelMap.put("favouriteFood", "Food");
         propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
-        IDataProvider bodyDataProvider = new ListDataProvider<ExtendedPersonWithAddress>(
-                PersonService.getExtendedPersonsWithAddress(10),
-                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(
-                        propertyNames));
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<ExtendedPersonWithAddress>(
+                        PersonService.getExtendedPersonsWithAddress(10),
+                        new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames));
 
-        DefaultGridLayer gridLayer = new DefaultGridLayer(bodyDataProvider,
-                new DefaultColumnHeaderDataProvider(propertyNames,
-                        propertyToLabelMap));
+        DefaultGridLayer gridLayer =
+                new DefaultGridLayer(bodyDataProvider,
+                        new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap));
 
-        final DataLayer bodyDataLayer = (DataLayer) gridLayer
-                .getBodyDataLayer();
+        final DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 
-        final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyDataLayer);
+        final ColumnOverrideLabelAccumulator columnLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(bodyDataLayer);
         bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
         registerColumnLabels(columnLabelAccumulator);
 
-        natTable = new NatTable(parent, gridLayer, false);
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.addConfiguration(new PainterConfiguration());
-        natTable.configure();
+        this.natTable = new NatTable(parent, gridLayer, false);
+        this.natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.natTable.addConfiguration(new PainterConfiguration());
+        this.natTable.configure();
 
-        new NatTableContentTooltip(natTable, GridRegion.BODY);
+        new NatTableContentTooltip(this.natTable, GridRegion.BODY);
 
-        return natTable;
+        return this.natTable;
     }
 
-    private void registerColumnLabels(
-            ColumnOverrideLabelAccumulator columnLabelAccumulator) {
+    private void registerColumnLabels(ColumnOverrideLabelAccumulator columnLabelAccumulator) {
         columnLabelAccumulator.registerColumnOverrides(0, COLUMN_ONE_LABEL);
         columnLabelAccumulator.registerColumnOverrides(1, COLUMN_TWO_LABEL);
         columnLabelAccumulator.registerColumnOverrides(2, COLUMN_THREE_LABEL);
@@ -146,8 +143,7 @@ public class _4222_CellPainterExample extends AbstractNatExample {
         columnLabelAccumulator.registerColumnOverrides(5, COLUMN_SIX_LABEL);
         // add this label so the CustomLineBorderDecorator knows where to render
         // the additional border
-        columnLabelAccumulator.registerColumnOverrides(5,
-                CustomLineBorderDecorator.RIGHT_LINE_BORDER_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(5, CustomLineBorderDecorator.RIGHT_LINE_BORDER_LABEL);
         columnLabelAccumulator.registerColumnOverrides(6, COLUMN_SEVEN_LABEL);
         columnLabelAccumulator.registerColumnOverrides(7, COLUMN_EIGHT_LABEL);
         columnLabelAccumulator.registerColumnOverrides(8, COLUMN_NINE_LABEL);
@@ -185,52 +181,51 @@ public class _4222_CellPainterExample extends AbstractNatExample {
 
         private void registerColumnHeaderStyle(IConfigRegistry configRegistry) {
 
-            Image bgImage = new Image(
-                    Display.getDefault(),
-                    getClass()
-                            .getResourceAsStream(
-                                    "/org/eclipse/nebula/widgets/nattable/examples/resources/column_header_bg.png"));
-            Image selectedBgImage = new Image(
-                    Display.getDefault(),
-                    getClass()
-                            .getResourceAsStream(
-                                    "/org/eclipse/nebula/widgets/nattable/examples/resources/selected_column_header_bg.png"));
+            Image bgImage = GUIHelper.getImageByURL("columnHeaderBg",
+                    getClass().getResource("/org/eclipse/nebula/widgets/nattable/examples/resources/column_header_bg.png"));
+            Image selectedBgImage = GUIHelper.getImageByURL("selectedColumnHeaderBg",
+                    getClass().getResource("/org/eclipse/nebula/widgets/nattable/examples/resources/selected_column_header_bg.png"));
 
             TextPainter txtPainter = new TextPainter(false, false);
 
-            ICellPainter bgImagePainter = new BackgroundImagePainter(
-                    txtPainter, bgImage, GUIHelper.getColor(192, 192, 192));
+            ICellPainter bgImagePainter =
+                    new BackgroundImagePainter(txtPainter, bgImage, GUIHelper.getColor(192, 192, 192));
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, bgImagePainter,
-                    DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    bgImagePainter,
+                    DisplayMode.NORMAL,
+                    GridRegion.COLUMN_HEADER);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, bgImagePainter,
-                    DisplayMode.NORMAL, GridRegion.CORNER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    bgImagePainter,
+                    DisplayMode.NORMAL,
+                    GridRegion.CORNER);
 
-            ICellPainter selectedHeaderPainter = new BackgroundImagePainter(
-                    txtPainter, selectedBgImage, GUIHelper.getColor(192, 192,
-                            192));
+            ICellPainter selectedHeaderPainter =
+                    new BackgroundImagePainter(
+                            txtPainter, selectedBgImage, GUIHelper.getColor(192, 192, 192));
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, selectedHeaderPainter,
-                    DisplayMode.SELECT, GridRegion.COLUMN_HEADER);
+                    CellConfigAttributes.CELL_PAINTER,
+                    selectedHeaderPainter,
+                    DisplayMode.SELECT,
+                    GridRegion.COLUMN_HEADER);
         }
 
-        private void registerColumnTwoTextPainterStyle(
-                IConfigRegistry configRegistry) {
+        private void registerColumnTwoTextPainterStyle(IConfigRegistry configRegistry) {
             Style style = new Style();
             style.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                    new BorderStyle(2, GUIHelper.COLOR_BLUE,
-                            LineStyleEnum.DASHDOT));
+                    new BorderStyle(2, GUIHelper.COLOR_BLUE, LineStyleEnum.DASHDOT));
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_TWO_LABEL);
         }
 
-        private void registerColumnThreePasswordPainter(
-                IConfigRegistry configRegistry) {
+        private void registerColumnThreePasswordPainter(IConfigRegistry configRegistry) {
             Style style = new Style();
             style.setAttributeValue(
                     CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -240,53 +235,64 @@ public class _4222_CellPainterExample extends AbstractNatExample {
                     GUIHelper.COLOR_RED);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_THREE_LABEL);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new GradientBackgroundPainter(new PasswordTextPainter(
-                            false, false)), DisplayMode.NORMAL,
+                    new GradientBackgroundPainter(new PasswordTextPainter(false, false)),
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_THREE_LABEL);
         }
 
         private void registerColumnFourPainter(IConfigRegistry configRegistry) {
             Style style = new Style();
-            style.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+            style.setAttributeValue(
+                    CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                     HorizontalAlignmentEnum.LEFT);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_FOUR_LABEL);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new GradientBackgroundPainter(new TextPainter(false, false,
-                            false, true), true), DisplayMode.NORMAL,
+                    new GradientBackgroundPainter(new TextPainter(false, false, false, true), true),
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_FOUR_LABEL);
         }
 
         private void registerColumnFivePainter(IConfigRegistry configRegistry) {
             Style style = new Style();
-            style.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+            style.setAttributeValue(
+                    CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                     HorizontalAlignmentEnum.RIGHT);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_FIVE_LABEL);
 
             // don't forget to register the Integer converter!
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_FIVE_LABEL);
         }
 
-        private void registerColumnSixDoublePainter(
-                IConfigRegistry configRegistry) {
+        private void registerColumnSixDoublePainter(IConfigRegistry configRegistry) {
             Style style = new Style();
-            style.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+            style.setAttributeValue(
+                    CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                     HorizontalAlignmentEnum.RIGHT);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_SIX_LABEL);
 
             // the CustomLineBorderDecorator needs an additional border label to
@@ -294,23 +300,25 @@ public class _4222_CellPainterExample extends AbstractNatExample {
             // within the cell
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new CustomLineBorderDecorator(new PaddingDecorator(
-                            new TextPainter(), 0, 5, 0, 0), new BorderStyle(2,
-                            GUIHelper.COLOR_GREEN, LineStyleEnum.SOLID)),
-                    DisplayMode.NORMAL,
-                    _4222_CellPainterExample.COLUMN_SIX_LABEL);
+                    new CustomLineBorderDecorator(
+                            new PaddingDecorator(
+                                    new TextPainter(), 0, 5, 0, 0), new BorderStyle(2,
+                                    GUIHelper.COLOR_GREEN, LineStyleEnum.SOLID)),
+                                            DisplayMode.NORMAL,
+                                            _4222_CellPainterExample.COLUMN_SIX_LABEL);
 
             // don't forget to register the Double converter!
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultDoubleDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultDoubleDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_SIX_LABEL);
         }
 
-        private void registerColumnSevenCheckboxPainter(
-                IConfigRegistry configRegistry) {
+        private void registerColumnSevenCheckboxPainter(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new CheckBoxPainter(),
+                    CellConfigAttributes.CELL_PAINTER,
+                    new CheckBoxPainter(),
                     DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_SEVEN_LABEL);
 
@@ -318,16 +326,15 @@ public class _4222_CellPainterExample extends AbstractNatExample {
             // work correctly
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultBooleanDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultBooleanDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_SEVEN_LABEL);
         }
 
-        private void registerColumnEightCheckboxPainter(
-                IConfigRegistry configRegistry) {
+        private void registerColumnEightCheckboxPainter(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new CheckBoxPainter(GUIHelper.getImage("arrow_up"),
-                            GUIHelper.getImage("arrow_down")),
+                    new CheckBoxPainter(GUIHelper.getImage("arrow_up"), GUIHelper.getImage("arrow_down")),
                     DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_EIGHT_LABEL);
 
@@ -335,24 +342,25 @@ public class _4222_CellPainterExample extends AbstractNatExample {
             // work correctly
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    getGenderBooleanConverter(), DisplayMode.NORMAL,
+                    getGenderBooleanConverter(),
+                    DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_EIGHT_LABEL);
         }
 
         private void registerColumnNineComboBox(IConfigRegistry configRegistry) {}
 
-        private void registerColumnTenComboBoxPainter(
-                IConfigRegistry configRegistry) {
+        private void registerColumnTenComboBoxPainter(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new ComboBoxPainter(),
+                    CellConfigAttributes.CELL_PAINTER,
+                    new ComboBoxPainter(),
                     DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_TEN_LABEL);
         }
 
-        private void registerColumnElevenTablePainter(
-                IConfigRegistry configRegistry) {
+        private void registerColumnElevenTablePainter(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new TableCellPainter(),
+                    CellConfigAttributes.CELL_PAINTER,
+                    new TableCellPainter(),
                     DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_ELEVEN_LABEL);
 
@@ -393,8 +401,7 @@ public class _4222_CellPainterExample extends AbstractNatExample {
 
                 @Override
                 public Object displayToCanonicalValue(Object displayValue) {
-                    Boolean displayBoolean = Boolean.valueOf(displayValue
-                            .toString());
+                    Boolean displayBoolean = Boolean.valueOf(displayValue.toString());
                     return displayBoolean ? Gender.MALE : Gender.FEMALE;
                 }
 

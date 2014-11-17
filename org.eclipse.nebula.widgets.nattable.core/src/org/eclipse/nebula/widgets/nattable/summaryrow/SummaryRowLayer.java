@@ -15,14 +15,17 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
+import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
@@ -69,6 +72,10 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      * The row height of the summary row. As the summary row itself is not
      * connected to a DataLayer, this layer needs to store the height for
      * itself.
+     * <p>
+     * Note: We are not using a SizeConfig here because the position of the
+     * summary row might change in case rows are added.
+     * </p>
      */
     private int summaryRowHeight = DataLayer.DEFAULT_ROW_HEIGHT;
     /**
@@ -76,6 +83,11 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      * calculation in background processes if necessary.
      */
     private CalculatedValueCache valueCache;
+    /**
+     * Converter that is used to ensure the row height of the summary row is
+     * scaled correctly.
+     */
+    private IDpiConverter dpiConverter;
 
     /**
      * Flag to configure whether the summary row should be rendered below an
@@ -172,8 +184,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
         super(underlyingDataLayer);
         this.configRegistry = configRegistry;
 
-        this.valueCache = new CalculatedValueCache(this, true, false,
-                smoothUpdates);
+        this.valueCache = new CalculatedValueCache(this, true, false, smoothUpdates);
 
         if (autoConfigure) {
             addConfiguration(new DefaultSummaryRowConfiguration());
@@ -191,8 +202,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      * {@link DataLayer}, columnPosition == columnIndex
      */
     @Override
-    public Object getDataValueByPosition(final int columnPosition,
-            final int rowPosition) {
+    public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
         if (isSummaryRowPosition(rowPosition)) {
             return calculateNewSummaryValue(columnPosition, true);
         }
@@ -219,36 +229,35 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
             boolean calculateInBackground) {
 
         // as we only care about one row in the value cache, the real row
-        // position doesn't matter
-        // in fact using the real summary row position would cause issues if
-        // rows are added or
-        // removed because the value cache takes into account column and row
-        // position for caching.
+        // position doesn't matter in fact using the real summary row
+        // position would cause issues if rows are added or removed because
+        // the value cache takes into account column and row position for
+        // caching.
         return this.valueCache.getCalculatedValue(columnPosition,
                 getSummaryRowPosition(), calculateInBackground,
                 new ICalculator() {
 
-                    @Override
-                    public Object executeCalculation() {
-                        LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(
-                                columnPosition, getSummaryRowPosition());
-                        String[] configLabels = labelStack.getLabels().toArray(
-                                ArrayUtil.STRING_TYPE_ARRAY);
+            @Override
+            public Object executeCalculation() {
+                LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(
+                        columnPosition, getSummaryRowPosition());
+                String[] configLabels = labelStack.getLabels().toArray(
+                        ArrayUtil.STRING_TYPE_ARRAY);
 
-                        final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry
-                                .getConfigAttribute(
-                                        SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                        DisplayMode.NORMAL, configLabels);
+                final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry
+                        .getConfigAttribute(
+                                SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                                DisplayMode.NORMAL, configLabels);
 
-                        // If there is no Summary provider - skip processing
-                        if (summaryProvider == ISummaryProvider.NONE
-                                || summaryProvider == null) {
-                            return null;
-                        }
+                // If there is no Summary provider - skip processing
+                if (summaryProvider == ISummaryProvider.NONE
+                        || summaryProvider == null) {
+                    return null;
+                }
 
-                        return summaryProvider.summarize(columnPosition);
-                    }
-                });
+                return summaryProvider.summarize(columnPosition);
+            }
+        });
     }
 
     /**
@@ -274,7 +283,13 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
         if (command instanceof RowResizeCommand) {
             RowResizeCommand rowResizeCommand = (RowResizeCommand) command;
             if (isSummaryRowPosition(rowResizeCommand.getRowPosition())) {
-                this.summaryRowHeight = rowResizeCommand.getNewHeight();
+                if (this.dpiConverter != null) {
+                    this.summaryRowHeight = this.dpiConverter.convertDpiToPixel(rowResizeCommand.getNewHeight());
+                }
+                else {
+                    this.summaryRowHeight = rowResizeCommand.getNewHeight();
+                }
+                fireLayerEvent(new RowResizeEvent(this, getSummaryRowPosition()));
                 return true;
             }
         } else if (command instanceof CalculateSummaryRowValuesCommand) {
@@ -282,11 +297,13 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
                 calculateNewSummaryValue(i, false);
             }
             // we do not return true here, as there might be other layers
-            // involved in
-            // the composition that also need to calculate the summary values
-            // immediately
+            // involved in the composition that also need to calculate
+            // the summary values immediately
         } else if (command instanceof DisposeResourcesCommand) {
             this.valueCache.dispose();
+        }
+        else if (command instanceof ConfigureScalingCommand) {
+            this.dpiConverter = ((ConfigureScalingCommand) command).getVerticalDpiConverter();
         }
         return super.doCommand(command);
     }
@@ -337,7 +354,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      * this implementation, sub-classes that perform position-index
      * transformations are able to implement this method by directly accessing
      * the super implementation.
-     * 
+     *
      * @param columnPosition
      *            The column position of the cell for which the config labels
      *            are requested. If transformations are necessary, this value
@@ -424,6 +441,9 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
     @Override
     public int getRowHeightByPosition(int rowPosition) {
         if (isSummaryRowPosition(rowPosition)) {
+            if (this.dpiConverter != null) {
+                return this.dpiConverter.convertPixelToDpi(this.summaryRowHeight);
+            }
             return this.summaryRowHeight;
         }
         return super.getRowHeightByPosition(rowPosition);

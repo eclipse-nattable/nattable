@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.Image;
  * <li>comboImage - Image that is rendered if no filter is applied for that cell
  * </li>
  * </ul>
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -93,12 +93,14 @@ public class ComboBoxFilterIconPainter extends ImagePainter {
 
         Object cellData = cell.getDataValue();
 
+        Image result = null;
         if (cellData instanceof Collection
-                && ((Collection) cellData).size() == this.comboBoxDataProvider
-                        .getValues(cell.getColumnIndex(), 0).size()) {
-            return this.comboImage;
+                && ((Collection) cellData).size() == 
+                    this.comboBoxDataProvider.getValues(cell.getColumnIndex(), 0).size()) {
+            result = this.comboImage;
         } else {
-            return this.removeFilterImage;
+            result = this.removeFilterImage;
         }
+        return result;
     }
 }

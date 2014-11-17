@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     neal zhang <nujiah001@126.com> - Bug 448934
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Added scaling
  ******************************************************************************/
 
 package org.eclipse.nebula.widgets.nattable.layer;
@@ -24,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
+import org.eclipse.nebula.widgets.nattable.layer.command.ConfigureScalingCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.ResizeStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
@@ -57,8 +59,9 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         this(dataProvider, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
     }
 
-    public DataLayer(IDataProvider dataProvider, int defaultColumnWidth,
-            int defaultRowHeight) {
+    public DataLayer(IDataProvider dataProvider,
+            int defaultColumnWidth, int defaultRowHeight) {
+
         this(defaultColumnWidth, defaultRowHeight);
 
         setDataProvider(dataProvider);
@@ -109,6 +112,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         registerCommandHandler(new UpdateDataCommandHandler(this));
         registerCommandHandler(new StructuralRefreshCommandHandler());
         registerCommandHandler(new VisualRefreshCommandHandler());
+        registerCommandHandler(new ConfigureScalingCommandHandler(
+                this.columnWidthConfig, this.rowHeightConfig));
     }
 
     public IDataProvider getDataProvider() {
@@ -219,6 +224,14 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     @Override
     public int getPreferredWidth() {
         return getWidth();
+    }
+
+    /**
+     * @return The default column width that is used if no specialized width is
+     *         configured for a column.
+     */
+    public int getDefaultColumnWidth() {
+        return this.columnWidthConfig.getDefaultSize();
     }
 
     @Override
@@ -341,6 +354,14 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     @Override
     public int getPreferredHeight() {
         return getHeight();
+    }
+
+    /**
+     * @return The default row height that is used if no specialized height is
+     *         configured for a row.
+     */
+    public int getDefaultRowHeight() {
+        return this.rowHeightConfig.getDefaultSize();
     }
 
     @Override

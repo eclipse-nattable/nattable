@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,8 +25,8 @@ public class CheckBoxPainter extends ImagePainter {
     private final Image uncheckedImg;
 
     public CheckBoxPainter() {
-        checkedImg = GUIHelper.getImage("checked"); //$NON-NLS-1$
-        uncheckedImg = GUIHelper.getImage("unchecked"); //$NON-NLS-1$
+        this.checkedImg = GUIHelper.getImage("checked"); //$NON-NLS-1$
+        this.uncheckedImg = GUIHelper.getImage("unchecked"); //$NON-NLS-1$
     }
 
     public CheckBoxPainter(Image checkedImg, Image uncheckedImg) {
@@ -36,48 +36,48 @@ public class CheckBoxPainter extends ImagePainter {
     }
 
     public int getPreferredWidth(boolean checked) {
-        return checked ? checkedImg.getBounds().width : uncheckedImg
-                .getBounds().width;
+        return getImage(checked).getBounds().width;
     }
 
     public int getPreferredHeight(boolean checked) {
-        return checked ? checkedImg.getBounds().height : uncheckedImg
-                .getBounds().height;
+        return getImage(checked).getBounds().height;
     }
 
-    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset,
-            boolean checked) {
-        Image checkBoxImage = checked ? checkedImg : uncheckedImg;
+    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset, boolean checked) {
+        Image checkBoxImage = getImage(checked);
 
         // Center image
-        int x = rectangle.x + (rectangle.width / 2)
-                - (checkBoxImage.getBounds().width / 2);
+        int x = rectangle.x + (rectangle.width / 2) - (checkBoxImage.getBounds().width / 2);
 
         gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
     }
 
+    public Image getImage(boolean checked) {
+        return checked ? this.checkedImg : this.uncheckedImg;
+    }
+
     @Override
     protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-        return isChecked(cell, configRegistry) ? checkedImg : uncheckedImg;
+        return isChecked(cell, configRegistry) ? this.checkedImg : this.uncheckedImg;
     }
 
     protected boolean isChecked(ILayerCell cell, IConfigRegistry configRegistry) {
         return convertDataType(cell, configRegistry).booleanValue();
     }
 
-    protected Boolean convertDataType(ILayerCell cell,
-            IConfigRegistry configRegistry) {
+    protected Boolean convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
         if (cell.getDataValue() instanceof Boolean) {
             return (Boolean) cell.getDataValue();
         }
         IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
-                CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(),
+                CellConfigAttributes.DISPLAY_CONVERTER,
+                cell.getDisplayMode(),
                 cell.getConfigLabels().getLabels());
         Boolean convertedValue = null;
         if (displayConverter != null) {
-            convertedValue = (Boolean) displayConverter
-                    .canonicalToDisplayValue(cell, configRegistry,
-                            cell.getDataValue());
+            convertedValue =
+                    (Boolean) displayConverter.canonicalToDisplayValue(
+                            cell, configRegistry, cell.getDataValue());
         }
         if (convertedValue == null) {
             convertedValue = Boolean.FALSE;

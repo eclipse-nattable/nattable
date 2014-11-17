@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow;
 
@@ -33,9 +33,6 @@ import org.eclipse.swt.graphics.Image;
  * <li>filterImage (optional) - Image that is rendered if no filter is applied
  * for that cell.</li>
  * </ul>
- * 
- * @author Dirk Fauth
- *
  */
 public class FilterIconPainter extends ImagePainter {
 
@@ -72,7 +69,7 @@ public class FilterIconPainter extends ImagePainter {
      * Creates a {@link FilterIconPainter} that uses the default images for
      * removeFilter and combo box icons. Will apply the given image for
      * indicating the filter row to a user.
-     * 
+     *
      * @param filterImage
      *            Icon that will be rendered if no filter is applied for a cell
      *            in a filter row.
@@ -84,7 +81,7 @@ public class FilterIconPainter extends ImagePainter {
     /**
      * Creates a {@link FilterIconPainter} that uses the given images for the
      * icons in the filter row cells.
-     * 
+     *
      * @param filterImage
      *            Icon that will be rendered if no filter is applied for a cell
      *            in a filter row.
@@ -96,8 +93,7 @@ public class FilterIconPainter extends ImagePainter {
      *            filter row, and the configured cell editor for that cell is a
      *            {@link ComboBoxCellEditor}.
      */
-    public FilterIconPainter(Image filterImage, Image removeFilterImage,
-            Image comboImage) {
+    public FilterIconPainter(Image filterImage, Image removeFilterImage, Image comboImage) {
         if (filterImage != null) {
             this.filterImage = filterImage;
         }
@@ -122,8 +118,9 @@ public class FilterIconPainter extends ImagePainter {
         }
 
         ICellEditor cellEditor = configRegistry.getConfigAttribute(
-                EditConfigAttributes.CELL_EDITOR, cell.getDisplayMode(), cell
-                        .getConfigLabels().getLabels());
+                EditConfigAttributes.CELL_EDITOR,
+                cell.getDisplayMode(),
+                cell.getConfigLabels().getLabels());
 
         // If a combo box is specified as the editor, draw the combo box arrow
         if (ObjectUtils.isNotNull(cellEditor)

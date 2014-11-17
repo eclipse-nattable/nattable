@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,8 +25,7 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class ColumnHeaderCheckBoxPainter extends ImagePainter {
 
-    private static final Log log = LogFactory
-            .getLog(ColumnHeaderCheckBoxPainter.class);
+    private static final Log log = LogFactory.getLog(ColumnHeaderCheckBoxPainter.class);
 
     private final Image checkedImg;
     private final Image semicheckedImg;
@@ -35,9 +34,11 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
     private final IUniqueIndexLayer columnDataLayer;
 
     public ColumnHeaderCheckBoxPainter(IUniqueIndexLayer columnDataLayer) {
-        this(columnDataLayer, GUIHelper.getImage("checked"), //$NON-NLS-1$
-                GUIHelper.getImage("semichecked"), //$NON-NLS-1$
-                GUIHelper.getImage("unchecked") //$NON-NLS-1$
+        this(
+        		columnDataLayer, 
+        		GUIHelper.getImage("checked"), //$NON-NLS-1$
+        		GUIHelper.getImage("semichecked"), //$NON-NLS-1$
+        		GUIHelper.getImage("unchecked") //$NON-NLS-1$
         );
     }
 
@@ -50,52 +51,52 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
     }
 
     public int getPreferredWidth(boolean checked) {
-        return checked ? checkedImg.getBounds().width : uncheckedImg
-                .getBounds().width;
+        return getImage(checked).getBounds().width;
     }
 
     public int getPreferredHeight(boolean checked) {
-        return checked ? checkedImg.getBounds().height : uncheckedImg
-                .getBounds().height;
+        return getImage(checked).getBounds().height;
     }
 
-    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset,
-            boolean checked) {
-        Image checkBoxImage = checked ? checkedImg : uncheckedImg;
+    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset, boolean checked) {
+        Image checkBoxImage = getImage(checked);
 
         // Center image
-        int x = rectangle.x + (rectangle.width / 2)
-                - (checkBoxImage.getBounds().width / 2);
+        int x = rectangle.x + (rectangle.width / 2) - (checkBoxImage.getBounds().width / 2);
 
         gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
     }
 
-    @Override
-    protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-        int columnPosition = LayerUtil.convertColumnPosition(cell.getLayer(),
-                cell.getColumnPosition(), columnDataLayer);
-
-        int checkedCellsCount = getCheckedCellsCount(columnPosition,
-                configRegistry);
-
-        if (checkedCellsCount > 0) {
-            if (checkedCellsCount == columnDataLayer.getRowCount()) {
-                return checkedImg;
-            } else {
-                return semicheckedImg;
-            }
-        } else {
-            return uncheckedImg;
-        }
+    public Image getImage(boolean checked) {
+        return checked ? this.checkedImg : this.uncheckedImg;
     }
 
-    public int getCheckedCellsCount(int columnPosition,
-            IConfigRegistry configRegistry) {
+    @Override
+    protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
+        int columnPosition = LayerUtil.convertColumnPosition(
+                cell.getLayer(), cell.getColumnPosition(), this.columnDataLayer);
+
+        int checkedCellsCount = getCheckedCellsCount(columnPosition, configRegistry);
+
+        Image result = null;
+        if (checkedCellsCount > 0) {
+            if (checkedCellsCount == this.columnDataLayer.getRowCount()) {
+                result = this.checkedImg;
+            } else {
+                result = this.semicheckedImg;
+            }
+        } else {
+            result = this.uncheckedImg;
+        }
+
+        return result;
+    }
+
+    public int getCheckedCellsCount(int columnPosition, IConfigRegistry configRegistry) {
         int checkedCellsCount = 0;
 
-        for (int rowPosition = 0; rowPosition < columnDataLayer.getRowCount(); rowPosition++) {
-            ILayerCell columnCell = columnDataLayer.getCellByPosition(
-                    columnPosition, rowPosition);
+        for (int rowPosition = 0; rowPosition < this.columnDataLayer.getRowCount(); rowPosition++) {
+            ILayerCell columnCell = this.columnDataLayer.getCellByPosition(columnPosition, rowPosition);
             if (isChecked(columnCell, configRegistry)) {
                 checkedCellsCount++;
             }
@@ -107,20 +108,20 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
         return convertDataType(cell, configRegistry).booleanValue();
     }
 
-    protected Boolean convertDataType(ILayerCell cell,
-            IConfigRegistry configRegistry) {
+    protected Boolean convertDataType(ILayerCell cell, IConfigRegistry configRegistry) {
         if (cell.getDataValue() instanceof Boolean) {
             return (Boolean) cell.getDataValue();
         }
         IDisplayConverter displayConverter = configRegistry.getConfigAttribute(
-                CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(),
+                CellConfigAttributes.DISPLAY_CONVERTER,
+                cell.getDisplayMode(),
                 cell.getConfigLabels().getLabels());
         Boolean convertedValue = null;
         if (displayConverter != null) {
             try {
-                convertedValue = (Boolean) displayConverter
-                        .canonicalToDisplayValue(cell, configRegistry,
-                                cell.getDataValue());
+                convertedValue =
+                        (Boolean) displayConverter.canonicalToDisplayValue(
+                                cell, configRegistry, cell.getDataValue());
             } catch (Exception e) {
                 log.debug(e);
             }

@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.painter;
 
@@ -38,7 +38,7 @@ public class RowGroupExpandCollapseImagePainter extends ImagePainter {
     /**
      * Create a RowGroupExpandCollapseImagePainter that uses the default icons
      * (black triangles).
-     * 
+     *
      * @param paintBg
      *            <code>true</code> if it should render the background itself,
      *            <code>false</code> if the background rendering should be
@@ -50,7 +50,7 @@ public class RowGroupExpandCollapseImagePainter extends ImagePainter {
 
     /**
      * Create a RowGroupExpandCollapseImagePainter.
-     * 
+     *
      * @param paintBg
      *            <code>true</code> if it should render the background itself,
      *            <code>false</code> if the background rendering should be
@@ -60,8 +60,7 @@ public class RowGroupExpandCollapseImagePainter extends ImagePainter {
      *            triangles) or if inverted icons should be used (white
      *            triangles).
      */
-    public RowGroupExpandCollapseImagePainter(boolean paintBg,
-            boolean invertIcons) {
+    public RowGroupExpandCollapseImagePainter(boolean paintBg, boolean invertIcons) {
         super(null, paintBg);
 
         String postFix = ""; //$NON-NLS-1$
@@ -86,30 +85,23 @@ public class RowGroupExpandCollapseImagePainter extends ImagePainter {
     }
 
     private boolean isCollapsed(ILayerCell cell) {
-        return cell
-                .getConfigLabels()
-                .hasLabel(
-                        DefaultRowGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
+        return cell.getConfigLabels().hasLabel(DefaultRowGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
     }
 
     private boolean isExpanded(ILayerCell cell) {
-        return cell
-                .getConfigLabels()
-                .hasLabel(
-                        DefaultRowGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
+        return cell.getConfigLabels().hasLabel(DefaultRowGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
     }
 
     /**
      * Set the images that should be used to indicate the current row group
      * expand/collapse state.
-     * 
+     *
      * @param expandedImage
      *            Image to be used to indicate that a row group is expanded.
      * @param collapsedImage
      *            Image to be used to indicate that a row group is collapsed.
      */
-    public void setExpandCollapseImages(Image expandedImage,
-            Image collapsedImage) {
+    public void setExpandCollapseImages(Image expandedImage, Image collapsedImage) {
         this.collapsedImage = collapsedImage;
         this.expandedImage = expandedImage;
     }
