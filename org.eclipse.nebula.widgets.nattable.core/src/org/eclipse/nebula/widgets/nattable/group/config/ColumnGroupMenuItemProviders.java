@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Edwin Park - initial API and implementation
  ******************************************************************************/
@@ -17,12 +17,18 @@ import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupComman
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
+/**
+ * @deprecated Use {@link MenuItemProviders} or the {@link PopupMenuBuilder}
+ *             directly
+ */
+@Deprecated
 public class ColumnGroupMenuItemProviders {
 
     public static IMenuItemProvider renameColumnGroupMenuItemProvider() {
@@ -34,6 +40,7 @@ public class ColumnGroupMenuItemProviders {
             final String menuLabel) {
         return new IMenuItemProvider() {
 
+            @Override
             public void addMenuItem(final NatTable natTable,
                     final Menu popupMenu) {
                 MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
@@ -63,6 +70,7 @@ public class ColumnGroupMenuItemProviders {
             final String menuLabel) {
         return new IMenuItemProvider() {
 
+            @Override
             public void addMenuItem(final NatTable natTable,
                     final Menu popupMenu) {
                 MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);

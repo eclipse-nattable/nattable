@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - changed key for NatEventData and added column group menu items
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
@@ -17,7 +18,9 @@ import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnCh
 import org.eclipse.nebula.widgets.nattable.columnRename.DisplayColumnRenameDialogCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
+import org.eclipse.nebula.widgets.nattable.group.command.DisplayColumnGroupRenameDialogCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.OpenCreateColumnGroupDialog;
+import org.eclipse.nebula.widgets.nattable.group.command.RemoveColumnGroupCommand;
 import org.eclipse.nebula.widgets.nattable.group.command.UngroupColumnCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
@@ -46,6 +49,11 @@ import org.eclipse.swt.widgets.Widget;
 public class MenuItemProviders {
 
     /**
+     * Key that is used to put the NatEventData into the data of a menu.
+     */
+    public static final String NAT_EVENT_DATA_KEY = "natEventData"; //$NON-NLS-1$
+
+    /**
      * Walk up the MenuItems (in case they are nested) and find the parent
      * {@link Menu}
      *
@@ -63,10 +71,10 @@ public class MenuItemProviders {
         Menu parentMenu = menuItem.getParent();
         Object data = null;
         while (parentMenu != null) {
-            if (parentMenu.getData() == null) {
+            if (parentMenu.getData(NAT_EVENT_DATA_KEY) == null) {
                 parentMenu = parentMenu.getParentMenu();
             } else {
-                data = parentMenu.getData();
+                data = parentMenu.getData(NAT_EVENT_DATA_KEY);
                 break;
             }
         }
@@ -78,15 +86,14 @@ public class MenuItemProviders {
      * Will create and return the {@link IMenuItemProvider} that adds the action
      * for executing the {@link ColumnHideCommand} to a popup menu. This command
      * is intended to hide the current selected column immediately.
-     * 
+     *
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link ColumnHideCommand}. The {@link MenuItem} will
      *         be shown with the localized default text configured in NatTable
      *         core.
      */
     public static IMenuItemProvider hideColumnMenuItemProvider() {
-        return hideColumnMenuItemProvider(Messages
-                .getString("MenuItemProviders.hideColumn")); //$NON-NLS-1$
+        return hideColumnMenuItemProvider(Messages.getString("MenuItemProviders.hideColumn")); //$NON-NLS-1$
     }
 
     /**
@@ -95,19 +102,18 @@ public class MenuItemProviders {
      * is intended to hide the current selected column immediately.
      * <p>
      * The {@link MenuItem} will be shown with the given menu label.
-     * 
+     *
      * @param menuLabel
      *            The text that will be showed for the generated
      *            {@link MenuItem}
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link ColumnHideCommand}.
      */
-    public static IMenuItemProvider hideColumnMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider hideColumnMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(menuLabel);
                 menuItem.setImage(GUIHelper.getImage("hide_column")); //$NON-NLS-1$
@@ -116,10 +122,9 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int columnPosition = getNatEventData(event)
-                                .getColumnPosition();
-                        natTable.doCommand(new ColumnHideCommand(natTable,
-                                columnPosition));
+                        int columnPosition = getNatEventData(event).getColumnPosition();
+                        natTable.doCommand(
+                                new ColumnHideCommand(natTable, columnPosition));
                     }
                 });
             }
@@ -131,15 +136,14 @@ public class MenuItemProviders {
      * for executing the {@link ShowAllColumnsCommand} to a popup menu. This
      * command is intended to show all columns of the NatTable and is used to
      * unhide previous hidden columns.
-     * 
+     *
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link ShowAllColumnsCommand}. The {@link MenuItem}
      *         will be shown with the localized default text configured in
      *         NatTable core.
      */
     public static IMenuItemProvider showAllColumnsMenuItemProvider() {
-        return showAllColumnsMenuItemProvider(Messages
-                .getString("MenuItemProviders.showAllColumns")); //$NON-NLS-1$
+        return showAllColumnsMenuItemProvider(Messages.getString("MenuItemProviders.showAllColumns")); //$NON-NLS-1$
     }
 
     /**
@@ -149,17 +153,17 @@ public class MenuItemProviders {
      * unhide previous hidden columns.
      * <p>
      * The {@link MenuItem} will be shown with the given menu label.
-     * 
+     *
      * @param menuLabel
      *            The text that will be showed for the generated
      *            {@link MenuItem}
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link ShowAllColumnsCommand}.
      */
-    public static IMenuItemProvider showAllColumnsMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider showAllColumnsMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
+            @Override
             public void addMenuItem(final NatTable natTable, Menu popupMenu) {
                 MenuItem showAllColumns = new MenuItem(popupMenu, SWT.PUSH);
                 showAllColumns.setText(menuLabel);
@@ -180,15 +184,14 @@ public class MenuItemProviders {
      * Will create and return the {@link IMenuItemProvider} that adds the action
      * for executing the {@link RowHideCommand} to a popup menu. This command is
      * intended to hide the current selected row immediately.
-     * 
+     *
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link RowHideCommand}. The {@link MenuItem} will be
      *         shown with the localized default text configured in NatTable
      *         core.
      */
     public static IMenuItemProvider hideRowMenuItemProvider() {
-        return hideRowMenuItemProvider(Messages
-                .getString("MenuItemProviders.hideRow")); //$NON-NLS-1$
+        return hideRowMenuItemProvider(Messages.getString("MenuItemProviders.hideRow")); //$NON-NLS-1$
     }
 
     /**
@@ -197,19 +200,18 @@ public class MenuItemProviders {
      * intended to hide the current selected row immediately.
      * <p>
      * The {@link MenuItem} will be shown with the given menu label.
-     * 
+     *
      * @param menuLabel
      *            The text that will be showed for the generated
      *            {@link MenuItem}
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link RowHideCommand}.
      */
-    public static IMenuItemProvider hideRowMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider hideRowMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(menuLabel);
                 menuItem.setImage(GUIHelper.getImage("hide_row")); //$NON-NLS-1$
@@ -218,10 +220,9 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int rowPosition = getNatEventData(event)
-                                .getRowPosition();
-                        natTable.doCommand(new RowHideCommand(natTable,
-                                rowPosition));
+                        int rowPosition = getNatEventData(event).getRowPosition();
+                        natTable.doCommand(
+                                new RowHideCommand(natTable, rowPosition));
                     }
                 });
             }
@@ -233,15 +234,14 @@ public class MenuItemProviders {
      * for executing the {@link ShowAllRowsCommand} to a popup menu. This
      * command is intended to show all rows of the NatTable and is used to
      * unhide previous hidden rows.
-     * 
+     *
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link ShowAllRowsCommand}. The {@link MenuItem}
      *         will be shown with the localized default text configured in
      *         NatTable core.
      */
     public static IMenuItemProvider showAllRowsMenuItemProvider() {
-        return showAllRowsMenuItemProvider(Messages
-                .getString("MenuItemProviders.showAllRows")); //$NON-NLS-1$
+        return showAllRowsMenuItemProvider(Messages.getString("MenuItemProviders.showAllRows")); //$NON-NLS-1$
     }
 
     /**
@@ -251,17 +251,17 @@ public class MenuItemProviders {
      * unhide previous hidden rows.
      * <p>
      * The {@link MenuItem} will be shown with the given menu label.
-     * 
+     *
      * @param menuLabel
      *            The text that will be showed for the generated
      *            {@link MenuItem}
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link ShowAllRowsCommand}.
      */
-    public static IMenuItemProvider showAllRowsMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider showAllRowsMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
+            @Override
             public void addMenuItem(final NatTable natTable, Menu popupMenu) {
                 MenuItem showAllRows = new MenuItem(popupMenu, SWT.PUSH);
                 showAllRows.setText(menuLabel);
@@ -279,16 +279,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider autoResizeColumnMenuItemProvider() {
-        return autoResizeColumnMenuItemProvider(Messages
-                .getString("MenuItemProviders.autoResizeColumn")); //$NON-NLS-1$
+        return autoResizeColumnMenuItemProvider(Messages.getString("MenuItemProviders.autoResizeColumn")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider autoResizeColumnMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider autoResizeColumnMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem autoResizeColumns = new MenuItem(popupMenu, SWT.PUSH);
                 autoResizeColumns.setText(menuLabel);
                 autoResizeColumns.setImage(GUIHelper.getImage("auto_resize")); //$NON-NLS-1$
@@ -297,12 +295,13 @@ public class MenuItemProviders {
                 autoResizeColumns.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int columnPosition = getNatEventData(event)
-                                .getColumnPosition();
-                        natTable.doCommand(new InitializeAutoResizeColumnsCommand(
-                                natTable, columnPosition, natTable
-                                        .getConfigRegistry(), new GCFactory(
-                                        natTable)));
+                        int columnPosition = getNatEventData(event).getColumnPosition();
+                        natTable.doCommand(
+                                new InitializeAutoResizeColumnsCommand(
+                                        natTable,
+                                        columnPosition,
+                                        natTable.getConfigRegistry(),
+                                        new GCFactory(natTable)));
                     }
                 });
             }
@@ -310,16 +309,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider autoResizeRowMenuItemProvider() {
-        return autoResizeRowMenuItemProvider(Messages
-                .getString("MenuItemProviders.autoResizeRow")); //$NON-NLS-1$
+        return autoResizeRowMenuItemProvider(Messages.getString("MenuItemProviders.autoResizeRow")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider autoResizeRowMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider autoResizeRowMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem autoResizeRows = new MenuItem(popupMenu, SWT.PUSH);
                 autoResizeRows.setText(menuLabel);
                 autoResizeRows.setEnabled(true);
@@ -327,12 +324,13 @@ public class MenuItemProviders {
                 autoResizeRows.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int rowPosition = getNatEventData(event)
-                                .getRowPosition();
-                        natTable.doCommand(new InitializeAutoResizeRowsCommand(
-                                natTable, rowPosition, natTable
-                                        .getConfigRegistry(), new GCFactory(
-                                        natTable)));
+                        int rowPosition = getNatEventData(event).getRowPosition();
+                        natTable.doCommand(
+                                new InitializeAutoResizeRowsCommand(
+                                        natTable,
+                                        rowPosition,
+                                        natTable.getConfigRegistry(),
+                                        new GCFactory(natTable)));
                     }
                 });
             }
@@ -340,16 +338,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider autoResizeAllSelectedColumnMenuItemProvider() {
-        return autoResizeAllSelectedColumnMenuItemProvider(Messages
-                .getString("MenuItemProviders.autoResizeAllSelectedColumns")); //$NON-NLS-1$
+        return autoResizeAllSelectedColumnMenuItemProvider(Messages.getString("MenuItemProviders.autoResizeAllSelectedColumns")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider autoResizeAllSelectedColumnMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider autoResizeAllSelectedColumnMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem autoResizeColumns = new MenuItem(popupMenu, SWT.PUSH);
                 autoResizeColumns.setText(menuLabel);
                 autoResizeColumns.setEnabled(true);
@@ -357,12 +353,13 @@ public class MenuItemProviders {
                 autoResizeColumns.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int columnPosition = getNatEventData(event)
-                                .getColumnPosition();
-                        natTable.doCommand(new InitializeAutoResizeColumnsCommand(
-                                natTable, columnPosition, natTable
-                                        .getConfigRegistry(), new GCFactory(
-                                        natTable)));
+                        int columnPosition = getNatEventData(event).getColumnPosition();
+                        natTable.doCommand(
+                                new InitializeAutoResizeColumnsCommand(
+                                        natTable,
+                                        columnPosition,
+                                        natTable.getConfigRegistry(),
+                                        new GCFactory(natTable)));
                     }
                 });
             }
@@ -371,16 +368,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider columnChooserMenuItemProvider() {
-        return columnChooserMenuItemProvider(Messages
-                .getString("MenuItemProviders.chooseColumns")); //$NON-NLS-1$
+        return columnChooserMenuItemProvider(Messages.getString("MenuItemProviders.chooseColumns")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider columnChooserMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider columnChooserMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem columnChooser = new MenuItem(popupMenu, SWT.PUSH);
                 columnChooser.setText(menuLabel);
                 columnChooser.setImage(GUIHelper.getImage("column_chooser")); //$NON-NLS-1$
@@ -389,8 +384,8 @@ public class MenuItemProviders {
                 columnChooser.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        natTable.doCommand(new DisplayColumnChooserCommand(
-                                natTable));
+                        natTable.doCommand(
+                                new DisplayColumnChooserCommand(natTable));
                     }
                 });
             }
@@ -398,16 +393,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider columnStyleEditorMenuItemProvider() {
-        return columnStyleEditorMenuItemProvider(Messages
-                .getString("MenuItemProviders.editStyles")); //$NON-NLS-1$
+        return columnStyleEditorMenuItemProvider(Messages.getString("MenuItemProviders.editStyles")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider columnStyleEditorMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider columnStyleEditorMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
                 columnStyleEditor.setText(menuLabel);
                 columnStyleEditor.setImage(GUIHelper.getImage("preferences")); //$NON-NLS-1$
@@ -416,13 +409,14 @@ public class MenuItemProviders {
                 columnStyleEditor.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        int rowPosition = getNatEventData(event)
-                                .getRowPosition();
-                        int columnPosition = getNatEventData(event)
-                                .getColumnPosition();
-                        natTable.doCommand(new DisplayColumnStyleEditorCommand(
-                                natTable, natTable.getConfigRegistry(),
-                                columnPosition, rowPosition));
+                        int rowPosition = getNatEventData(event).getRowPosition();
+                        int columnPosition = getNatEventData(event).getColumnPosition();
+                        natTable.doCommand(
+                                new DisplayColumnStyleEditorCommand(
+                                        natTable,
+                                        natTable.getConfigRegistry(),
+                                        columnPosition,
+                                        rowPosition));
                     }
                 });
             }
@@ -431,16 +425,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider renameColumnMenuItemProvider() {
-        return renameColumnMenuItemProvider(Messages
-                .getString("MenuItemProviders.renameColumn")); //$NON-NLS-1$
+        return renameColumnMenuItemProvider(Messages.getString("MenuItemProviders.renameColumn")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider renameColumnMenuItemProvider(
-            final String label) {
+    public static IMenuItemProvider renameColumnMenuItemProvider(final String label) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(label);
                 menuItem.setEnabled(true);
@@ -448,9 +440,10 @@ public class MenuItemProviders {
                 menuItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        natTable.doCommand(new DisplayColumnRenameDialogCommand(
-                                natTable, getNatEventData(event)
-                                        .getColumnPosition()));
+                        natTable.doCommand(
+                                new DisplayColumnRenameDialogCommand(
+                                        natTable,
+                                        getNatEventData(event).getColumnPosition()));
                     }
                 });
             }
@@ -458,16 +451,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider createColumnGroupMenuItemProvider() {
-        return createColumnGroupMenuItemProvider(Messages
-                .getString("MenuItemProviders.createColumnGroup")); //$NON-NLS-1$
+        return createColumnGroupMenuItemProvider(Messages.getString("MenuItemProviders.createColumnGroup")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider createColumnGroupMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider createColumnGroupMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
                 columnStyleEditor.setText(menuLabel);
                 columnStyleEditor.setEnabled(true);
@@ -475,8 +466,8 @@ public class MenuItemProviders {
                 columnStyleEditor.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        natTable.doCommand(new OpenCreateColumnGroupDialog(
-                                natTable.getShell()));
+                        natTable.doCommand(
+                                new OpenCreateColumnGroupDialog(natTable.getShell()));
                     }
                 });
             }
@@ -484,16 +475,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider ungroupColumnsMenuItemProvider() {
-        return ungroupColumnsMenuItemProvider(Messages
-                .getString("MenuItemProviders.ungroupColumns")); //$NON-NLS-1$
+        return ungroupColumnsMenuItemProvider(Messages.getString("MenuItemProviders.ungroupColumns")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider ungroupColumnsMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider ungroupColumnsMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
                 columnStyleEditor.setText(menuLabel);
                 columnStyleEditor.setEnabled(true);
@@ -511,71 +500,59 @@ public class MenuItemProviders {
     public static IMenuItemProvider inspectLabelsMenuItemProvider() {
         return new IMenuItemProvider() {
 
+            @Override
             public void addMenuItem(NatTable natTable, Menu popupMenu) {
-                MenuItem inspectLabelsMenuItem = new MenuItem(popupMenu,
-                        SWT.PUSH);
-                inspectLabelsMenuItem.setText(Messages
-                        .getString("MenuItemProviders.debugInfo")); //$NON-NLS-1$
+                MenuItem inspectLabelsMenuItem = new MenuItem(popupMenu, SWT.PUSH);
+                inspectLabelsMenuItem.setText(Messages.getString("MenuItemProviders.debugInfo")); //$NON-NLS-1$
                 inspectLabelsMenuItem.setEnabled(true);
 
-                inspectLabelsMenuItem
-                        .addSelectionListener(new SelectionAdapter() {
-                            @Override
-                            public void widgetSelected(SelectionEvent e) {
-                                NatEventData natEventData = getNatEventData(e);
-                                NatTable natTable = natEventData.getNatTable();
-                                int columnPosition = natEventData
-                                        .getColumnPosition();
-                                int rowPosition = natEventData.getRowPosition();
+                inspectLabelsMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        NatEventData natEventData = getNatEventData(e);
+                        NatTable natTable = natEventData.getNatTable();
+                        int columnPosition = natEventData.getColumnPosition();
+                        int rowPosition = natEventData.getRowPosition();
 
-                                String msg = "Display mode: " + natTable.getDisplayModeByPosition(columnPosition, rowPosition) + "\nConfig labels: " //$NON-NLS-1$ //$NON-NLS-2$
-                                        + natTable.getConfigLabelsByPosition(
-                                                columnPosition, rowPosition)
-                                        + "\nData value: " //$NON-NLS-1$
-                                        + natTable.getDataValueByPosition(
-                                                columnPosition, rowPosition)
-                                        + "\n\nColumn position: " + columnPosition + "\nColumn index: " //$NON-NLS-1$ //$NON-NLS-2$
-                                        + natTable
-                                                .getColumnIndexByPosition(columnPosition)
-                                        + "\n\nRow position: " + rowPosition + "\nRow index: " //$NON-NLS-1$ //$NON-NLS-2$
-                                        + natTable
-                                                .getRowIndexByPosition(rowPosition);
+                        String msg = "Display mode: " + natTable.getDisplayModeByPosition(columnPosition, rowPosition) + "\nConfig labels: " //$NON-NLS-1$ //$NON-NLS-2$
+                                + natTable.getConfigLabelsByPosition(columnPosition, rowPosition)
+                                + "\nData value: " //$NON-NLS-1$
+                                + natTable.getDataValueByPosition(columnPosition, rowPosition)
+                                + "\n\nColumn position: " + columnPosition + "\nColumn index: " //$NON-NLS-1$ //$NON-NLS-2$
+                                + natTable.getColumnIndexByPosition(columnPosition)
+                                + "\n\nRow position: " + rowPosition + "\nRow index: " //$NON-NLS-1$ //$NON-NLS-2$
+                                + natTable.getRowIndexByPosition(rowPosition);
 
-                                MessageBox messageBox = new MessageBox(natTable
-                                        .getShell(), SWT.ICON_INFORMATION
-                                        | SWT.OK);
-                                messageBox.setText(Messages
-                                        .getString("MenuItemProviders.debugInformation")); //$NON-NLS-1$
-                                messageBox.setMessage(msg);
-                                messageBox.open();
-                            }
-                        });
+                        MessageBox messageBox =
+                                new MessageBox(natTable.getShell(), SWT.ICON_INFORMATION | SWT.OK);
+                        messageBox.setText(Messages.getString("MenuItemProviders.debugInformation")); //$NON-NLS-1$
+                        messageBox.setMessage(msg);
+                        messageBox.open();
+                    }
+                });
             }
         };
     }
 
     public static IMenuItemProvider categoriesBasedColumnChooserMenuItemProvider() {
-        return categoriesBasedColumnChooserMenuItemProvider(Messages
-                .getString("MenuItemProviders.columnCategoriesChooser")); //$NON-NLS-1$
+        return categoriesBasedColumnChooserMenuItemProvider(Messages.getString("MenuItemProviders.columnCategoriesChooser")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider categoriesBasedColumnChooserMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider categoriesBasedColumnChooserMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem columnChooser = new MenuItem(popupMenu, SWT.PUSH);
                 columnChooser.setText(menuLabel);
-                columnChooser.setImage(GUIHelper
-                        .getImage("column_categories_chooser")); //$NON-NLS-1$
+                columnChooser.setImage(GUIHelper.getImage("column_categories_chooser")); //$NON-NLS-1$
                 columnChooser.setEnabled(true);
 
                 columnChooser.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        natTable.doCommand(new ChooseColumnsFromCategoriesCommand(
-                                natTable));
+                        natTable.doCommand(
+                                new ChooseColumnsFromCategoriesCommand(natTable));
                     }
                 });
             }
@@ -583,16 +560,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider clearAllFiltersMenuItemProvider() {
-        return clearAllFiltersMenuItemProvider(Messages
-                .getString("MenuItemProviders.clearAllFilters")); //$NON-NLS-1$
+        return clearAllFiltersMenuItemProvider(Messages.getString("MenuItemProviders.clearAllFilters")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider clearAllFiltersMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider clearAllFiltersMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(menuLabel);
                 menuItem.setImage(GUIHelper.getImage("remove_filter")); //$NON-NLS-1$
@@ -609,16 +584,14 @@ public class MenuItemProviders {
     }
 
     public static IMenuItemProvider clearToggleFilterRowMenuItemProvider() {
-        return clearToggleFilterRowMenuItemProvider(Messages
-                .getString("MenuItemProviders.toggleFilterRow")); //$NON-NLS-1$
+        return clearToggleFilterRowMenuItemProvider(Messages.getString("MenuItemProviders.toggleFilterRow")); //$NON-NLS-1$
     }
 
-    public static IMenuItemProvider clearToggleFilterRowMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider clearToggleFilterRowMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                 menuItem.setText(menuLabel);
                 menuItem.setImage(GUIHelper.getImage("toggle_filter")); //$NON-NLS-1$
@@ -639,15 +612,14 @@ public class MenuItemProviders {
      * for executing the {@link DisplayPersistenceDialogCommand} to a popup
      * menu. This command is intended to open the DisplayPersistenceDialog for
      * managing NatTable states (also called view management).
-     * 
+     *
      * @return The {@link IMenuItemProvider} for the {@link MenuItem} that
      *         executes the {@link DisplayPersistenceDialogCommand} The
      *         {@link MenuItem} will be shown with the localized default text
      *         configured in NatTable core.
      */
     public static IMenuItemProvider stateManagerMenuItemProvider() {
-        return stateManagerMenuItemProvider(Messages
-                .getString("MenuItemProviders.stateManager")); //$NON-NLS-1$
+        return stateManagerMenuItemProvider(Messages.getString("MenuItemProviders.stateManager")); //$NON-NLS-1$
     }
 
     /**
@@ -657,7 +629,7 @@ public class MenuItemProviders {
      * managing NatTable states (also called view management).
      * <p>
      * The {@link MenuItem} will be shown with the given menu label.
-     * 
+     *
      * @param menuLabel
      *            The text that will be showed for the generated
      *            {@link MenuItem}
@@ -666,12 +638,11 @@ public class MenuItemProviders {
      *         {@link MenuItem} will be shown with the localized default text
      *         configured in NatTable core.
      */
-    public static IMenuItemProvider stateManagerMenuItemProvider(
-            final String menuLabel) {
+    public static IMenuItemProvider stateManagerMenuItemProvider(final String menuLabel) {
         return new IMenuItemProvider() {
 
-            public void addMenuItem(final NatTable natTable,
-                    final Menu popupMenu) {
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
                 MenuItem saveState = new MenuItem(popupMenu, SWT.PUSH);
                 saveState.setText(menuLabel);
                 saveState.setImage(GUIHelper.getImage("table_icon")); //$NON-NLS-1$
@@ -680,8 +651,8 @@ public class MenuItemProviders {
                 saveState.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        natTable.doCommand(new DisplayPersistenceDialogCommand(
-                                natTable));
+                        natTable.doCommand(
+                                new DisplayPersistenceDialogCommand(natTable));
                     }
                 });
             }
@@ -694,8 +665,62 @@ public class MenuItemProviders {
      */
     public static IMenuItemProvider separatorMenuItemProvider() {
         return new IMenuItemProvider() {
+            @Override
             public void addMenuItem(NatTable natTable, Menu popupMenu) {
                 new MenuItem(popupMenu, SWT.SEPARATOR);
+            }
+        };
+    }
+
+    public static IMenuItemProvider renameColumnGroupMenuItemProvider() {
+        return renameColumnGroupMenuItemProvider(Messages.getString("ColumnGroups.renameColumnGroup")); //$NON-NLS-1$
+    }
+
+    public static IMenuItemProvider renameColumnGroupMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
+                columnStyleEditor.setText(menuLabel);
+                columnStyleEditor.setEnabled(true);
+
+                columnStyleEditor.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        NatEventData natEventData = MenuItemProviders.getNatEventData(e);
+                        int columnPosition = natEventData.getColumnPosition();
+                        natTable.doCommand(
+                                new DisplayColumnGroupRenameDialogCommand(natTable, columnPosition));
+                    }
+                });
+            }
+        };
+    }
+
+    public static IMenuItemProvider removeColumnGroupMenuItemProvider() {
+        return removeColumnGroupMenuItemProvider(Messages.getString("ColumnGroups.removeColumnGroup")); //$NON-NLS-1$
+    }
+
+    public static IMenuItemProvider removeColumnGroupMenuItemProvider(final String menuLabel) {
+        return new IMenuItemProvider() {
+
+            @Override
+            public void addMenuItem(final NatTable natTable, final Menu popupMenu) {
+                MenuItem columnStyleEditor = new MenuItem(popupMenu, SWT.PUSH);
+                columnStyleEditor.setText(menuLabel);
+                columnStyleEditor.setEnabled(true);
+
+                columnStyleEditor.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        NatEventData natEventData = MenuItemProviders.getNatEventData(e);
+                        int columnPosition = natEventData.getColumnPosition();
+                        int columnIndex = natEventData.getNatTable().getColumnIndexByPosition(columnPosition);
+                        natTable.doCommand(
+                                new RemoveColumnGroupCommand(columnIndex));
+                    }
+                });
             }
         };
     }
