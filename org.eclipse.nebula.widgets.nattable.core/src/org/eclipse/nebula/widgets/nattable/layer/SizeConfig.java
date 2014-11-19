@@ -9,6 +9,7 @@
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Added percentage sizing
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Added scaling
+ *     neal zhang <nujiah001@126.com> - change some methods and fields visibility
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
@@ -42,53 +43,53 @@ public class SizeConfig implements IPersistable {
     /**
      * The global default size of this {@link SizeConfig}.
      */
-    private int defaultSize;
+    protected int defaultSize;
     /**
      * Map that contains default sizes per column.
      */
-    private final Map<Integer, Integer> defaultSizeMap = new TreeMap<Integer, Integer>();
+    protected final Map<Integer, Integer> defaultSizeMap = new TreeMap<Integer, Integer>();
     /**
      * Map that contains sizes per column.
      */
-    private final Map<Integer, Integer> sizeMap = new TreeMap<Integer, Integer>();
+    protected final Map<Integer, Integer> sizeMap = new TreeMap<Integer, Integer>();
     /**
      * Map that contains the resizable information per row/column.
      */
-    private final Map<Integer, Boolean> resizablesMap = new TreeMap<Integer, Boolean>();
+    protected final Map<Integer, Boolean> resizablesMap = new TreeMap<Integer, Boolean>();
     /**
      * The global resizable information of this {@link SizeConfig}.
      */
-    private boolean resizableByDefault = true;
+    protected boolean resizableByDefault = true;
     /**
      * Map that contains the percentage sizing information per row/column.
      */
-    private final Map<Integer, Boolean> percentageSizingMap = new TreeMap<Integer, Boolean>();
+    protected final Map<Integer, Boolean> percentageSizingMap = new TreeMap<Integer, Boolean>();
     /**
      * Flag to tell whether the sizing is done for pixel or percentage values.
      */
-    private boolean percentageSizing = false;
+    protected boolean percentageSizing = false;
     /**
      * The available space needed for percentage calculation on resizing.
      */
-    private int availableSpace = -1;
+    protected int availableSpace = -1;
     /**
      * Map that contains the real pixel size. Will only be used on percentage
      * sizing. This map is not persisted as it will be calculated on resize.
      */
-    private final Map<Integer, Integer> realSizeMap = new TreeMap<Integer, Integer>();
+    protected final Map<Integer, Integer> realSizeMap = new TreeMap<Integer, Integer>();
     /**
      * Map that contains the cached aggregated sizes.
      */
-    private final Map<Integer, Integer> aggregatedSizeCacheMap = new HashMap<Integer, Integer>();
+    protected final Map<Integer, Integer> aggregatedSizeCacheMap = new HashMap<Integer, Integer>();
     /**
      * Flag that indicates if the aggregated size cache is valid or if it needs
      * to get recalculated.
      */
-    private boolean isAggregatedSizeCacheValid = true;
+    protected boolean isAggregatedSizeCacheValid = true;
     /**
      * The {@link IDpiConverter} that is used for scaling DPI conversion.
      */
-    private IDpiConverter dpiConverter;
+    protected IDpiConverter dpiConverter;
 
     /**
      * Create a new {@link SizeConfig} with the given default size.
@@ -652,7 +653,7 @@ public class SizeConfig implements IPersistable {
      *         the width of all fixed sized positions is greater than the
      *         available space.
      */
-    private int calculateAvailableSpace(int space) {
+    protected int calculateAvailableSpace(int space) {
         if (!this.percentageSizingMap.isEmpty()) {
             if (this.percentageSizing) {
                 for (Map.Entry<Integer, Boolean> entry : this.percentageSizingMap
@@ -681,7 +682,7 @@ public class SizeConfig implements IPersistable {
      *         corrections took place. Will return <code>null</code> in case no
      *         correction happened.
      */
-    private int[] correctPercentageValues(int sum, int positionCount) {
+    protected int[] correctPercentageValues(int sum, int positionCount) {
         Map<Integer, Integer> toModify = new TreeMap<Integer, Integer>();
         for (int i = 0; i < positionCount; i++) {
             Integer positionValue = this.sizeMap.get(i);

@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     neal zhang <nujiah001@126.com> - change some methods and fields visibility
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -280,7 +281,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
                 .getDisplayMode() == DisplayMode.SELECT_HOVER);
     }
 
-    private void applyBorderStyle(GC gc, IConfigRegistry configRegistry) {
+    protected void applyBorderStyle(GC gc, IConfigRegistry configRegistry) {
         // Note: If there is no style configured for the
         // SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE
         // label, the style configured for DisplayMode.SELECT will be retrieved

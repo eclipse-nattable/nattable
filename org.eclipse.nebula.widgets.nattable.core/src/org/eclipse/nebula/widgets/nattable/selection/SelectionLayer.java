@@ -11,6 +11,7 @@
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - Delegate markers to model iff
  *         model is an IMarkerSelectionModel. Add getters and setters for marker
  *         fields.
+ *     neal zhang <nujiah001@126.com> - change some methods and fields visibility
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -75,9 +76,9 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     protected final PositionCoordinate selectionAnchor;
     protected Rectangle lastSelectedRegion;
 
-    private final SelectRowCommandHandler selectRowCommandHandler;
-    private final SelectCellCommandHandler selectCellCommandHandler;
-    private final SelectColumnCommandHandler selectColumnCommandHandler;
+    protected SelectRowCommandHandler selectRowCommandHandler;
+    protected SelectCellCommandHandler selectCellCommandHandler;
+    protected SelectColumnCommandHandler selectColumnCommandHandler;
 
     public SelectionLayer(IUniqueIndexLayer underlyingLayer) {
         this(underlyingLayer, null, true);
