@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 450443
+ *     Jan Haensli <jan.haensli@inventage.com> - Bug 452453
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export.excel;
 
@@ -59,7 +60,7 @@ public class ExcelExporter implements ILayerExporter {
      */
     public ExcelExporter() {
         this(new FileOutputStreamProvider("table_export.xls", //$NON-NLS-1$
-                new String[] { "Excel Workbok (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$
+                new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
