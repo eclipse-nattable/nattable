@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -677,13 +680,19 @@ public class PopupMenuBuilder {
 
         @Override
         public void fill(Menu menu, int index) {
+            List<MenuItem> beforeItems = Arrays.asList(menu.getItems());
             this.provider.addMenuItem(PopupMenuBuilder.this.natTable, menu);
+            MenuItem[] afterItems = menu.getItems();
 
-            // isEnabled() seems to be not called by the framework on opening a
-            // menu therefore we set it ourself. For this we also need to ensure
-            // isDynamic() returns true for rerendering.
-            MenuItem item = menu.getItem(index);
-            item.setEnabled(isEnabled());
+            for (MenuItem item : afterItems) {
+                if (!beforeItems.contains(item)) {
+                    // isEnabled() seems to be not called by the framework on
+                    // opening a menu therefore we set it ourself. For this we
+                    // also need to ensure isDynamic() returns true for
+                    // rerendering.
+                    item.setEnabled(isEnabled());
+                }
+            }
         }
 
         @Override
