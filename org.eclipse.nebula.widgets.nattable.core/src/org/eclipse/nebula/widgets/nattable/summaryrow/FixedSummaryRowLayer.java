@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
+import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
@@ -26,7 +27,8 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 
 /**
  * This layer is a specialization of the {@link SummaryRowLayer} and is intended
- * to be used in a composition below a {@link GridLayer}. It is horizontal
+ * to be used in a composition below a {@link GridLayer} or a vertical
+ * composition like one with a column header and a body. It is horizontal
  * dependent to the layer above and configured as a standalone summary row,
  * which means that only the summary row is rendered.
  * <p>
@@ -44,7 +46,7 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
  * | | RowHeader |     Body      | |<br>
  * | +-----------+---------------+ |<br>
  * +-------------------------------+<br>
- * |    FixedGridSummaryRowLayer   |<br>
+ * |      FixedSummaryRowLayer     |<br>
  * +-------------------------------+<br>
  * </pre>
  * <p>
@@ -53,13 +55,13 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
  *
  * <pre>
  *      GridLayer gridLayer = new GridLayer(...);
- *      FixedGridSummaryRowLayer summaryRowLayer =
- *          new FixedGridSummaryRowLayer(bodyDataLayer, gridLayer, configRegistry);
- * 
+ *      FixedSummaryRowLayer summaryRowLayer =
+ *          new FixedSummaryRowLayer(bodyDataLayer, gridLayer, configRegistry);
+ *
  *      CompositeLayer composite = new CompositeLayer(1, 2);
  *      composite.setChildLayer("GRID", gridLayer, 0, 0);
  *      composite.setChildLayer(SUMMARY_REGION, summaryRowLayer, 0, 1);
- * 
+ *
  *      NatTable natTable = new NatTable(panel, composite);
  * </pre>
  * <p>
@@ -75,67 +77,76 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
  * of the body region.
  * </p>
  */
-public class FixedGridSummaryRowLayer extends SummaryRowLayer {
+public class FixedSummaryRowLayer extends SummaryRowLayer {
 
     public static final String DEFAULT_SUMMARY_ROW_LABEL = "Summary"; //$NON-NLS-1$
     protected String summaryRowLabel = DEFAULT_SUMMARY_ROW_LABEL;
 
     /**
-     * The grid layer to which fixed summary row should be horizontally
-     * dependent.
+     * The layer to which fixed summary row should be horizontally dependent.
+     * Typically a {@link GridLayer} or the body layer stack in case of a simple
+     * vertical composition.
      */
-    protected ILayer gridLayer;
+    protected ILayer horizontalLayerDependency;
 
     /**
-     * Creates a standalone {@link FixedGridSummaryRowLayer} that is horizontal
-     * dependent to the given gridLayer and calculates the summary values from
-     * the given bodyDataLayer. It will register the default configurations and
+     * Flag to tell whether the horizontal dependency is a composite or not. For
+     * example, if the horizontal dependency is a {@link GridLayer} it contains
+     * a row header, which means this {@link FixedSummaryRowLayer} needs to
+     * handle an additional column at position 1.
+     */
+    private boolean horizontalCompositeDependency = true;
+
+    /**
+     * Creates a standalone {@link FixedSummaryRowLayer} that is horizontal
+     * dependent to the given layer and calculates the summary values from the
+     * given bodyDataLayer. It will register the default configurations and
      * perform smooth value updates.
      *
      * <p>
      * <b>Note:</b><br>
-     * The {@link FixedGridSummaryRowLayer} constructor is setting a
+     * The {@link FixedSummaryRowLayer} constructor is setting a
      * {@link GridLineCellLayerPainter} that is configured for clipTop to the
      * given bodyDataLayer. This is necessary as otherwise the body region would
      * paint over the summary row. In case you want to use a different
      * {@link ILayerPainter} ensure to set it AFTER creating the
-     * {@link FixedGridSummaryRowLayer}.
+     * {@link FixedSummaryRowLayer}.
      * </p>
      *
      * @param bodyDataLayer
      *            The underlying layer on which this layer should be build.
      *            Typically the {@link DataLayer} of the body region.
-     * @param gridLayer
+     * @param horizontalLayerDependency
      *            The layer that is above this layer in the surrounding
      *            composition. Typically a {@link GridLayer}.
      * @param configRegistry
      *            The ConfigRegistry for retrieving the ISummaryProvider per
      *            column.
      */
-    public FixedGridSummaryRowLayer(
-            IUniqueIndexLayer bodyDataLayer, ILayer gridLayer, IConfigRegistry configRegistry) {
-        this(bodyDataLayer, gridLayer, configRegistry, true, true);
+    public FixedSummaryRowLayer(
+            IUniqueIndexLayer bodyDataLayer, ILayer horizontalLayerDependency, IConfigRegistry configRegistry) {
+        this(bodyDataLayer, horizontalLayerDependency, configRegistry, true, true);
     }
 
     /**
-     * Creates a standalone {@link FixedGridSummaryRowLayer} that is horizontal
-     * dependent to the given gridLayer and calculates the summary values from
-     * the given bodyDataLayer. It will perform smooth value updates.
+     * Creates a standalone {@link FixedSummaryRowLayer} that is horizontal
+     * dependent to the given layer and calculates the summary values from the
+     * given bodyDataLayer. It will perform smooth value updates.
      *
      * <p>
      * <b>Note:</b><br>
-     * The {@link FixedGridSummaryRowLayer} constructor is setting a
+     * The {@link FixedSummaryRowLayer} constructor is setting a
      * {@link GridLineCellLayerPainter} that is configured for clipTop to the
      * given bodyDataLayer. This is necessary as otherwise the body region would
      * paint over the summary row. In case you want to use a different
      * {@link ILayerPainter} ensure to set it AFTER creating the
-     * {@link FixedGridSummaryRowLayer}.
+     * {@link FixedSummaryRowLayer}.
      * </p>
      *
      * @param bodyDataLayer
      *            The underlying layer on which this layer should be build.
      *            Typically the {@link DataLayer} of the body region.
-     * @param gridLayer
+     * @param horizontalLayerDependency
      *            The layer that is above this layer in the surrounding
      *            composition. Typically a {@link GridLayer}.
      * @param configRegistry
@@ -146,31 +157,31 @@ public class FixedGridSummaryRowLayer extends SummaryRowLayer {
      *            <code>false</code> if a custom configuration will be set after
      *            the creation.
      */
-    public FixedGridSummaryRowLayer(
-            IUniqueIndexLayer bodyDataLayer, ILayer gridLayer, IConfigRegistry configRegistry,
+    public FixedSummaryRowLayer(
+            IUniqueIndexLayer bodyDataLayer, ILayer horizontalLayerDependency, IConfigRegistry configRegistry,
             boolean autoConfigure) {
-        this(bodyDataLayer, gridLayer, configRegistry, true, autoConfigure);
+        this(bodyDataLayer, horizontalLayerDependency, configRegistry, true, autoConfigure);
     }
 
     /**
-     * Creates a standalone {@link FixedGridSummaryRowLayer} that is horizontal
-     * dependent to the given gridLayer and calculates the summary values from
-     * the given bodyDataLayer.
+     * Creates a standalone {@link FixedSummaryRowLayer} that is horizontal
+     * dependent to the given layer and calculates the summary values from the
+     * given bodyDataLayer.
      *
      * <p>
      * <b>Note:</b><br>
-     * The {@link FixedGridSummaryRowLayer} constructor is setting a
+     * The {@link FixedSummaryRowLayer} constructor is setting a
      * {@link GridLineCellLayerPainter} that is configured for clipTop to the
      * given bodyDataLayer. This is necessary as otherwise the body region would
      * paint over the summary row. In case you want to use a different
      * {@link ILayerPainter} ensure to set it AFTER creating the
-     * {@link FixedGridSummaryRowLayer}.
+     * {@link FixedSummaryRowLayer}.
      * </p>
      *
      * @param bodyDataLayer
      *            The underlying layer on which this layer should be build.
      *            Typically the {@link DataLayer} of the body region.
-     * @param gridLayer
+     * @param horizontalLayerDependency
      *            The layer that is above this layer in the surrounding
      *            composition. Typically a {@link GridLayer}.
      * @param configRegistry
@@ -185,11 +196,11 @@ public class FixedGridSummaryRowLayer extends SummaryRowLayer {
      *            <code>false</code> if a custom configuration will be set after
      *            the creation.
      */
-    public FixedGridSummaryRowLayer(
-            IUniqueIndexLayer bodyDataLayer, ILayer gridLayer, IConfigRegistry configRegistry,
+    public FixedSummaryRowLayer(
+            IUniqueIndexLayer bodyDataLayer, ILayer horizontalLayerDependency, IConfigRegistry configRegistry,
             boolean smoothUpdates, boolean autoConfigure) {
         super(bodyDataLayer, configRegistry, smoothUpdates, autoConfigure);
-        this.gridLayer = gridLayer;
+        this.horizontalLayerDependency = horizontalLayerDependency;
         setStandalone(true);
 
         // register a GridLineCellLayerPainter that is configured for clipping
@@ -201,13 +212,51 @@ public class FixedGridSummaryRowLayer extends SummaryRowLayer {
 
     @Override
     public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-        if (columnPosition == 0) {
+        if (!isBodyColumn(columnPosition)) {
             return getSummaryRowLabel();
         }
 
         int columnIndex = LayerUtil.convertColumnPosition(
-                this.gridLayer, columnPosition, (IUniqueIndexLayer) this.underlyingLayer);
+                this.horizontalLayerDependency, columnPosition, (IUniqueIndexLayer) this.underlyingLayer);
         return super.getDataValueByPosition(columnIndex, rowPosition);
+    }
+
+    /**
+     *
+     * @param columnPosition
+     *            The column position that should be checked.
+     * @return <code>true</code> if the column at the given position is a column
+     *         of the body, <code>false</code> if it is a column of another
+     *         region, e.g. the row header in a grid.
+     */
+    protected boolean isBodyColumn(int columnPosition) {
+        return !(this.horizontalCompositeDependency && (columnPosition == 0));
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the horizontal dependency is itself a
+     *         composite that has an additional column, e.g. a {@link GridLayer}
+     *         with a row header. <code>false</code> if the horizontal
+     *         dependency is not a composite, e.g. the body layer stack.
+     */
+    public boolean hasHorizontalCompositeDependency() {
+        return this.horizontalCompositeDependency;
+    }
+
+    /**
+     * Specify if the horizontal dependency is a {@link CompositeLayer} that
+     * adds additional columns.
+     *
+     * @param compositeDependency
+     *            <code>true</code> to specify that the horizontal dependency is
+     *            itself a composite that has an additional column, e.g. a
+     *            {@link GridLayer} with a row header. <code>false</code> if the
+     *            horizontal dependency is not a composite, e.g. the body layer
+     *            stack.
+     */
+    public void setHorizontalCompositeDependency(boolean compositeDependency) {
+        this.horizontalCompositeDependency = compositeDependency;
     }
 
     /**
@@ -242,15 +291,15 @@ public class FixedGridSummaryRowLayer extends SummaryRowLayer {
 
     @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-        if (columnPosition == 0) {
-            LabelStack labelStack = this.gridLayer.getConfigLabelsByPosition(
-                    columnPosition, this.gridLayer.getRowCount() - 1);
+        if (!isBodyColumn(columnPosition)) {
+            LabelStack labelStack = this.horizontalLayerDependency.getConfigLabelsByPosition(
+                    columnPosition, this.horizontalLayerDependency.getRowCount() - 1);
             labelStack.addLabelOnTop(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
             return labelStack;
         }
 
         int columnIndex = LayerUtil.convertColumnPosition(
-                this.gridLayer, columnPosition, (IUniqueIndexLayer) this.underlyingLayer);
+                this.horizontalLayerDependency, columnPosition, (IUniqueIndexLayer) this.underlyingLayer);
         return super.getConfigLabelsByPosition(columnIndex, rowPosition);
     }
 
@@ -258,31 +307,31 @@ public class FixedGridSummaryRowLayer extends SummaryRowLayer {
 
     @Override
     public int getColumnCount() {
-        return this.gridLayer.getColumnCount();
+        return this.horizontalLayerDependency.getColumnCount();
     }
 
     @Override
     public int getPreferredColumnCount() {
-        return this.gridLayer.getPreferredColumnCount();
+        return this.horizontalLayerDependency.getPreferredColumnCount();
     }
 
     @Override
     public int getColumnIndexByPosition(int columnPosition) {
-        return this.gridLayer.getColumnIndexByPosition(columnPosition);
+        return this.horizontalLayerDependency.getColumnIndexByPosition(columnPosition);
     }
 
     @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
-        return this.gridLayer.localToUnderlyingColumnPosition(localColumnPosition);
+        return this.horizontalLayerDependency.localToUnderlyingColumnPosition(localColumnPosition);
     }
 
     @Override
     public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
             int underlyingColumnPosition) {
-        if (sourceUnderlyingLayer == this.gridLayer) {
+        if (sourceUnderlyingLayer == this.horizontalLayerDependency) {
             return underlyingColumnPosition;
         }
-        return this.gridLayer.underlyingToLocalColumnPosition(
+        return this.horizontalLayerDependency.underlyingToLocalColumnPosition(
                 sourceUnderlyingLayer, underlyingColumnPosition);
     }
 
@@ -290,10 +339,10 @@ public class FixedGridSummaryRowLayer extends SummaryRowLayer {
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingColumnPositionRanges) {
-        if (sourceUnderlyingLayer == this.gridLayer) {
+        if (sourceUnderlyingLayer == this.horizontalLayerDependency) {
             return underlyingColumnPositionRanges;
         }
-        return this.gridLayer.underlyingToLocalColumnPositions(
+        return this.horizontalLayerDependency.underlyingToLocalColumnPositions(
                 sourceUnderlyingLayer, underlyingColumnPositionRanges);
     }
 
@@ -301,36 +350,36 @@ public class FixedGridSummaryRowLayer extends SummaryRowLayer {
 
     @Override
     public int getWidth() {
-        return this.gridLayer.getWidth();
+        return this.horizontalLayerDependency.getWidth();
     }
 
     @Override
     public int getPreferredWidth() {
-        return this.gridLayer.getPreferredWidth();
+        return this.horizontalLayerDependency.getPreferredWidth();
     }
 
     @Override
     public int getColumnWidthByPosition(int columnPosition) {
-        return this.gridLayer.getColumnWidthByPosition(columnPosition);
+        return this.horizontalLayerDependency.getColumnWidthByPosition(columnPosition);
     }
 
     // Column resize
 
     @Override
     public boolean isColumnPositionResizable(int columnPosition) {
-        return this.gridLayer.isColumnPositionResizable(columnPosition);
+        return this.horizontalLayerDependency.isColumnPositionResizable(columnPosition);
     }
 
     // X
 
     @Override
     public int getColumnPositionByX(int x) {
-        return this.gridLayer.getColumnPositionByX(x);
+        return this.horizontalLayerDependency.getColumnPositionByX(x);
     }
 
     @Override
     public int getStartXOfColumnPosition(int columnPosition) {
-        return this.gridLayer.getStartXOfColumnPosition(columnPosition);
+        return this.horizontalLayerDependency.getStartXOfColumnPosition(columnPosition);
     }
 
 }
