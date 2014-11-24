@@ -280,7 +280,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 
     @Override
     public boolean doCommand(ILayerCommand command) {
-        if (command instanceof RowResizeCommand) {
+        if (command instanceof RowResizeCommand && command.convertToTargetLayer(this)) {
             RowResizeCommand rowResizeCommand = (RowResizeCommand) command;
             if (isSummaryRowPosition(rowResizeCommand.getRowPosition())) {
                 if (this.dpiConverter != null) {
