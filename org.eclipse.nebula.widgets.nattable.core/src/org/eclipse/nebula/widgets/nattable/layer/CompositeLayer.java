@@ -51,8 +51,6 @@ public class CompositeLayer extends AbstractLayer {
 
     private final Map<String, IConfigLabelAccumulator> regionNameToConfigLabelAccumulatorMap = new HashMap<String, IConfigLabelAccumulator>();
 
-    private final Map<ILayer, LayoutCoordinate> childLayerToLayoutCoordinateMap = new HashMap<ILayer, LayoutCoordinate>();
-
     /** Data struct. for child Layers */
     private final ILayer[][] childLayerLayout;
 
@@ -136,10 +134,13 @@ public class CompositeLayer extends AbstractLayer {
     }
 
     protected boolean doCommandOnChildLayers(ILayerCommand command) {
-        for (ILayer childLayer : this.childLayerToLayoutCoordinateMap.keySet()) {
-            ILayerCommand childCommand = command.cloneCommand();
-            if (childLayer.doCommand(childCommand)) {
-                return true;
+        for (int layoutX = 0; layoutX < this.layoutXCount; layoutX++) {
+            for (int layoutY = 0; layoutY < this.layoutYCount; layoutY++) {
+                ILayer childLayer = this.childLayerLayout[layoutX][layoutY];
+                ILayerCommand childCommand = command.cloneCommand();
+                if (childLayer.doCommand(childCommand)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -632,8 +633,6 @@ public class CompositeLayer extends AbstractLayer {
         this.regionNameToChildLayerMap.put(regionName, childLayer);
 
         childLayer.addLayerListener(this);
-        this.childLayerToLayoutCoordinateMap.put(
-                childLayer, new LayoutCoordinate(layoutX, layoutY));
         this.childLayerLayout[layoutX][layoutY] = childLayer;
 
         childLayer.setClientAreaProvider(new IClientAreaProvider() {
