@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 451486
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnChooser;
 
@@ -35,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 public class ColumnChooser {
 
     private static final Comparator<ColumnEntry> COLUMN_ENTRY_LABEL_COMPARATOR = new Comparator<ColumnEntry>() {
+        @Override
         public int compare(ColumnEntry o1, ColumnEntry o2) {
             return o1.getLabel().compareToIgnoreCase(o2.getLabel());
         }
@@ -49,78 +51,91 @@ public class ColumnChooser {
     protected final ColumnGroupModel columnGroupModel;
     protected final SelectionLayer selectionLayer;
     protected final boolean sortAvailableColumns;
+    protected final boolean preventHidingAllColumns;
 
     public ColumnChooser(Shell shell, SelectionLayer selectionLayer,
             ColumnHideShowLayer columnHideShowLayer,
             ColumnHeaderLayer columnHeaderLayer,
             DataLayer columnHeaderDataLayer,
             ColumnGroupHeaderLayer columnGroupHeaderLayer,
-            ColumnGroupModel columnGroupModel, boolean sortAvailableColumns) {
+            ColumnGroupModel columnGroupModel,
+            boolean sortAvailableColumns) {
+
+        this(shell, selectionLayer, columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel, sortAvailableColumns, false);
+    }
+
+    public ColumnChooser(Shell shell, SelectionLayer selectionLayer,
+            ColumnHideShowLayer columnHideShowLayer,
+            ColumnHeaderLayer columnHeaderLayer,
+            DataLayer columnHeaderDataLayer,
+            ColumnGroupHeaderLayer columnGroupHeaderLayer,
+            ColumnGroupModel columnGroupModel,
+            boolean sortAvailableColumns,
+            boolean preventHidingAllColumns) {
+
         this.selectionLayer = selectionLayer;
         this.columnHideShowLayer = columnHideShowLayer;
         this.columnHeaderLayer = columnHeaderLayer;
         this.columnHeaderDataLayer = columnHeaderDataLayer;
         this.columnGroupModel = columnGroupModel;
         this.sortAvailableColumns = sortAvailableColumns;
+        this.preventHidingAllColumns = preventHidingAllColumns;
 
-        columnChooserDialog = new ColumnChooserDialog(
-                shell,
-                Messages.getString("ColumnChooser.availableColumns"), Messages.getString("ColumnChooser.selectedColumns")); //$NON-NLS-1$ //$NON-NLS-2$
+        this.columnChooserDialog = new ColumnChooserDialog(shell, Messages.getString("ColumnChooser.availableColumns"), Messages.getString("ColumnChooser.selectedColumns")); //$NON-NLS-1$ //$NON-NLS-2$
+        this.columnChooserDialog.setPreventHidingAllColumns(preventHidingAllColumns);
     }
 
     public void setDialogSettings(IDialogSettings dialogSettings) {
-        columnChooserDialog.setDialogSettings(dialogSettings);
+        this.columnChooserDialog.setDialogSettings(dialogSettings);
     }
 
     public void openDialog() {
-        columnChooserDialog.create();
+        this.columnChooserDialog.create();
 
-        hiddenColumnEntries = getHiddenColumnEntries();
-        columnChooserDialog.populateAvailableTree(hiddenColumnEntries,
-                columnGroupModel);
+        this.hiddenColumnEntries = getHiddenColumnEntries();
+        this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
 
-        visibleColumnsEntries = ColumnChooserUtils.getVisibleColumnsEntries(
-                columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer);
-        columnChooserDialog.populateSelectedTree(visibleColumnsEntries,
-                columnGroupModel);
+        this.visibleColumnsEntries = ColumnChooserUtils.getVisibleColumnsEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer);
+        this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupModel);
 
-        columnChooserDialog.expandAllLeaves();
+        this.columnChooserDialog.expandAllLeaves();
 
         addListenersOnColumnChooserDialog();
-        columnChooserDialog.open();
+        this.columnChooserDialog.open();
     }
 
     private void addListenersOnColumnChooserDialog() {
 
-        columnChooserDialog.addListener(new ISelectionTreeListener() {
+        this.columnChooserDialog.addListener(new ISelectionTreeListener() {
 
+            @Override
             public void itemsRemoved(List<ColumnEntry> removedItems) {
-                ColumnChooserUtils.hideColumnEntries(removedItems,
-                        columnHideShowLayer);
+                ColumnChooserUtils.hideColumnEntries(removedItems, ColumnChooser.this.columnHideShowLayer);
                 refreshColumnChooserDialog();
             }
 
+            @Override
             public void itemsSelected(List<ColumnEntry> addedItems) {
-                ColumnChooserUtils.showColumnEntries(addedItems,
-                        columnHideShowLayer);
+                ColumnChooserUtils.showColumnEntries(addedItems, ColumnChooser.this.columnHideShowLayer);
                 refreshColumnChooserDialog();
-                columnChooserDialog
-                        .setSelectionIncludingNested(ColumnChooserUtils
-                                .getColumnEntryIndexes(addedItems));
+                ColumnChooser.this.columnChooserDialog
+                        .setSelectionIncludingNested(ColumnChooserUtils.getColumnEntryIndexes(addedItems));
             }
 
+            @Override
             public void itemsMoved(MoveDirectionEnum direction,
                     List<ColumnGroupEntry> movedColumnGroupEntries,
                     List<ColumnEntry> movedColumnEntries,
-                    List<List<Integer>> fromPositions, List<Integer> toPositions) {
-                moveItems(direction, movedColumnGroupEntries,
-                        movedColumnEntries, fromPositions, toPositions);
+                    List<List<Integer>> fromPositions,
+                    List<Integer> toPositions) {
+
+                moveItems(direction, movedColumnGroupEntries, movedColumnEntries, fromPositions, toPositions);
             }
 
             /**
              * Fire appropriate commands depending on the events received from
              * the column chooser dialog
-             * 
+             *
              * @param direction
              * @param movedColumnGroupEntries
              * @param movedColumnEntries
@@ -130,46 +145,36 @@ public class ColumnChooser {
             private void moveItems(MoveDirectionEnum direction,
                     List<ColumnGroupEntry> movedColumnGroupEntries,
                     List<ColumnEntry> movedColumnEntries,
-                    List<List<Integer>> fromPositions, List<Integer> toPositions) {
+                    List<List<Integer>> fromPositions,
+                    List<Integer> toPositions) {
 
                 for (int i = 0; i < fromPositions.size(); i++) {
-                    boolean columnGroupMoved = columnGroupMoved(
-                            fromPositions.get(i), movedColumnGroupEntries);
+                    boolean columnGroupMoved = columnGroupMoved(fromPositions.get(i), movedColumnGroupEntries);
                     boolean multipleColumnsMoved = fromPositions.get(i).size() > 1;
 
                     ILayerCommand command = null;
                     if (!columnGroupMoved && !multipleColumnsMoved) {
-                        int fromPosition = fromPositions.get(i).get(0)
-                                .intValue();
-                        int toPosition = adjustToPosition(direction,
-                                toPositions.get(i).intValue());
-                        command = new ColumnReorderCommand(columnHideShowLayer,
-                                fromPosition, toPosition);
+                        int fromPosition = fromPositions.get(i).get(0).intValue();
+                        int toPosition = adjustToPosition(direction, toPositions.get(i).intValue());
+                        command = new ColumnReorderCommand(ColumnChooser.this.columnHideShowLayer, fromPosition, toPosition);
                     } else if (columnGroupMoved && multipleColumnsMoved) {
-                        command = new ReorderColumnsAndGroupsCommand(
-                                columnHideShowLayer, fromPositions.get(i),
+                        command = new ReorderColumnsAndGroupsCommand(ColumnChooser.this.columnHideShowLayer, fromPositions.get(i),
                                 adjustToPosition(direction, toPositions.get(i)));
                     } else if (!columnGroupMoved && multipleColumnsMoved) {
-                        command = new MultiColumnReorderCommand(
-                                columnHideShowLayer, fromPositions.get(i),
+                        command = new MultiColumnReorderCommand(ColumnChooser.this.columnHideShowLayer, fromPositions.get(i),
                                 adjustToPosition(direction, toPositions.get(i)));
                     } else if (columnGroupMoved && !multipleColumnsMoved) {
-                        command = new ReorderColumnGroupCommand(
-                                columnHideShowLayer, fromPositions.get(i)
-                                        .get(0), adjustToPosition(direction,
-                                        toPositions.get(i)));
+                        command = new ReorderColumnGroupCommand(ColumnChooser.this.columnHideShowLayer, fromPositions.get(i)
+                                .get(0), adjustToPosition(direction, toPositions.get(i)));
                     }
-                    columnHideShowLayer.doCommand(command);
+                    ColumnChooser.this.columnHideShowLayer.doCommand(command);
                 }
 
                 refreshColumnChooserDialog();
-                columnChooserDialog
-                        .setSelectionIncludingNested(ColumnChooserUtils
-                                .getColumnEntryIndexes(movedColumnEntries));
+                ColumnChooser.this.columnChooserDialog.setSelectionIncludingNested(ColumnChooserUtils.getColumnEntryIndexes(movedColumnEntries));
             }
 
-            private int adjustToPosition(MoveDirectionEnum direction,
-                    Integer toColumnPosition) {
+            private int adjustToPosition(MoveDirectionEnum direction, Integer toColumnPosition) {
                 if (MoveDirectionEnum.DOWN == direction) {
                     return toColumnPosition + 1;
                 } else {
@@ -177,51 +182,45 @@ public class ColumnChooser {
                 }
             }
 
-            private boolean columnGroupMoved(List<Integer> fromPositions,
-                    List<ColumnGroupEntry> movedColumnGroupEntries) {
+            private boolean columnGroupMoved(List<Integer> fromPositions, List<ColumnGroupEntry> movedColumnGroupEntries) {
                 for (ColumnGroupEntry columnGroupEntry : movedColumnGroupEntries) {
-                    if (fromPositions.contains(columnGroupEntry
-                            .getFirstElementPosition()))
+                    if (fromPositions.contains(columnGroupEntry.getFirstElementPosition())) {
                         return true;
+                    }
                 }
                 return false;
             }
 
+            @Override
             public void itemsCollapsed(ColumnGroupEntry columnGroupEntry) {
                 int index = columnGroupEntry.getFirstElementIndex().intValue();
-                int position = selectionLayer.getColumnPositionByIndex(index);
-                selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(
-                        selectionLayer, position));
+                int position = ColumnChooser.this.selectionLayer.getColumnPositionByIndex(index);
+                ColumnChooser.this.selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(ColumnChooser.this.selectionLayer, position));
             }
 
+            @Override
             public void itemsExpanded(ColumnGroupEntry columnGroupEntry) {
                 int index = columnGroupEntry.getFirstElementIndex().intValue();
-                int position = selectionLayer.getColumnPositionByIndex(index);
-                selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(
-                        selectionLayer, position));
+                int position = ColumnChooser.this.selectionLayer.getColumnPositionByIndex(index);
+                ColumnChooser.this.selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(ColumnChooser.this.selectionLayer, position));
             }
         });
     }
 
     private void refreshColumnChooserDialog() {
-        hiddenColumnEntries = getHiddenColumnEntries();
-        visibleColumnsEntries = ColumnChooserUtils.getVisibleColumnsEntries(
-                columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer);
+        this.hiddenColumnEntries = getHiddenColumnEntries();
+        this.visibleColumnsEntries = ColumnChooserUtils.getVisibleColumnsEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer);
 
-        columnChooserDialog.removeAllLeaves();
+        this.columnChooserDialog.removeAllLeaves();
 
-        columnChooserDialog.populateSelectedTree(visibleColumnsEntries,
-                columnGroupModel);
-        columnChooserDialog.populateAvailableTree(hiddenColumnEntries,
-                columnGroupModel);
-        columnChooserDialog.expandAllLeaves();
+        this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupModel);
+        this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
+        this.columnChooserDialog.expandAllLeaves();
     }
 
     protected List<ColumnEntry> getHiddenColumnEntries() {
-        List<ColumnEntry> columnEntries = ColumnChooserUtils
-                .getHiddenColumnEntries(columnHideShowLayer, columnHeaderLayer,
-                        columnHeaderDataLayer);
-        if (sortAvailableColumns) {
+        List<ColumnEntry> columnEntries = ColumnChooserUtils.getHiddenColumnEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer);
+        if (this.sortAvailableColumns) {
             Collections.sort(columnEntries, COLUMN_ENTRY_LABEL_COMPARATOR);
         }
         return columnEntries;
