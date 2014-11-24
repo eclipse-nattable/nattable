@@ -49,7 +49,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
-import org.eclipse.nebula.widgets.nattable.summaryrow.FixedGridSummaryRowLayer;
+import org.eclipse.nebula.widgets.nattable.summaryrow.FixedSummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
@@ -89,7 +89,7 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
      * (org.eclipse.swt.widgets.Composite)
@@ -121,18 +121,17 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         // Summary row on top
-        // The summary row is within the grid so it can be placed BETWEEN column
-        // header and body
+        // The summary row is within the grid so it can be placed BETWEEN
+        // column header and body
         // The body itself is a CompositeLayer with 1 column and 2 rows
         // The first row is the SummaryRowLayer configured as standalone
         // The second row is the body layer stack
         // for correct rendering of the row header you should use the
-        // FixedSummaryRowHeaderLayer
-        // which is adding the correct labels and shows a special configurable
-        // label for the summary row
-        final SummaryRowGridLayer gridLayerWithSummary = new SummaryRowGridLayer(
-                dataProvider, configRegistry, propertyNames, propertyToLabelMap,
-                true);
+        // FixedSummaryRowHeaderLayer which is adding the correct labels and
+        // shows a special configurable label for the summary row
+        final SummaryRowGridLayer gridLayerWithSummary =
+                new SummaryRowGridLayer(dataProvider, configRegistry,
+                        propertyNames, propertyToLabelMap, true);
 
         NatTable natTable = new NatTable(panel, gridLayerWithSummary, false);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
@@ -156,8 +155,8 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
 
         // create a standalone summary row
         // for a grid this is the FixedGridSummaryRowLayer
-        FixedGridSummaryRowLayer summaryRowLayer =
-                new FixedGridSummaryRowLayer(gridLayer.getBodyDataLayer(), gridLayer, configRegistry, false);
+        FixedSummaryRowLayer summaryRowLayer =
+                new FixedSummaryRowLayer(gridLayer.getBodyDataLayer(), gridLayer, configRegistry, false);
         summaryRowLayer.addConfiguration(
                 new ExampleSummaryRowGridConfiguration(gridLayer.getBodyDataLayer().getDataProvider()));
         summaryRowLayer.setSummaryRowLabel("\u2211");
@@ -274,9 +273,16 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
             this.viewportLayer = new ViewportLayer(this.selectionLayer);
 
             if (summaryRowOnTop) {
-                // create a standalone SummaryRowLayer
-                SummaryRowLayer summaryRowLayer = new SummaryRowLayer(
-                        this.bodyDataLayer, configRegistry, false);
+                // create a standalone FixedSummaryRowLayer
+                // since the summary row should be fixed at the top of the body
+                // region the horizontal dependency of the FixedSummaryRowLayer
+                // is the ViewportLayer
+                FixedSummaryRowLayer summaryRowLayer =
+                        new FixedSummaryRowLayer(this.bodyDataLayer, this.viewportLayer, configRegistry, false);
+                // because the horizontal dependency is the ViewportLayer
+                // we need to set the composite dependency to false
+                summaryRowLayer.setHorizontalCompositeDependency(false);
+
                 // configure the SummaryRowLayer to be rendered standalone
                 summaryRowLayer.setStandalone(true);
                 summaryRowLayer.addConfiguration(
@@ -301,6 +307,10 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
 
         public SelectionLayer getSelectionLayer() {
             return this.selectionLayer;
+        }
+
+        public ViewportLayer getViewportLayer() {
+            return this.viewportLayer;
         }
     }
 
@@ -331,17 +341,19 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
             // Column header
             IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
                     propertyNames, propertyToLabelMap);
+
+            // we should be always dependent to the ViewportLayer because the
+            // dependency to a CompositeLayer would hide the transformations
+            // like reorder and resize
             ILayer columnHeaderLayer = new ColumnHeaderLayer(
                     new DefaultColumnHeaderDataLayer(columnHeaderDataProvider),
-                    bodyLayer, selectionLayer);
+                    bodyLayer.getViewportLayer(), selectionLayer);
 
             // Row header
             IDataProvider rowHeaderDataProvider =
                     new DefaultRowHeaderDataProvider(bodyLayer.getDataLayer().getDataProvider());
             final DataLayer rowHeaderDataLayer =
-                    new DefaultRowHeaderDataLayer(rowHeaderDataProvider) {
-
-            };
+                    new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
 
             ILayer rowHeaderLayer = null;
             if (summaryRowOnTop) {
@@ -360,7 +372,7 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
             ILayer cornerLayer = new CornerLayer(new DataLayer(
                     new DefaultCornerDataProvider(columnHeaderDataProvider,
                             rowHeaderDataProvider)), rowHeaderLayer,
-                            columnHeaderLayer);
+                    columnHeaderLayer);
 
             setBodyLayer(bodyLayer);
             setColumnHeaderLayer(columnHeaderLayer);
