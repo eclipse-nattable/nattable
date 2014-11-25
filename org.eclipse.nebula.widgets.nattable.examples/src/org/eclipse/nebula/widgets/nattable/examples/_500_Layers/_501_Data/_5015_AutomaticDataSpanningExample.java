@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453219
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._501_Data;
 
@@ -35,8 +36,6 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -47,15 +46,11 @@ import org.eclipse.swt.widgets.MenuItem;
 /**
  * Example to show the SpanningDataLayer for automatic spanning of equal shown
  * data.
- * 
- * @author Dirk Fauth
- *
  */
 public class _5015_AutomaticDataSpanningExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 300,
-                new _5015_AutomaticDataSpanningExample());
+        StandaloneNatExampleRunner.run(600, 300, new _5015_AutomaticDataSpanningExample());
     }
 
     @Override
@@ -72,12 +67,12 @@ public class _5015_AutomaticDataSpanningExample extends AbstractNatExample {
         String[] propertyNames = { "columnOneNumber", "columnTwoNumber",
                 "columnThreeNumber", "columnFourNumber", "columnFiveNumber" };
 
-        IColumnPropertyAccessor<NumberValues> cpa = new ReflectiveColumnPropertyAccessor<NumberValues>(
-                propertyNames);
-        IDataProvider dataProvider = new ListDataProvider<NumberValues>(
-                createNumberValueList(), cpa);
-        AutomaticSpanningDataProvider spanningDataProvider = new AutomaticSpanningDataProvider(
-                dataProvider, true, false);
+        IColumnPropertyAccessor<NumberValues> cpa =
+                new ReflectiveColumnPropertyAccessor<NumberValues>(propertyNames);
+        IDataProvider dataProvider =
+                new ListDataProvider<NumberValues>(createNumberValueList(), cpa);
+        AutomaticSpanningDataProvider spanningDataProvider =
+                new AutomaticSpanningDataProvider(dataProvider, true, false);
 
         // spanningDataProvider.addAutoSpanningColumnPositions(0, 1, 2);
         // spanningDataProvider.addAutoSpanningColumnPositions(2, 3, 4);
@@ -87,13 +82,13 @@ public class _5015_AutomaticDataSpanningExample extends AbstractNatExample {
         // spanningDataProvider.addAutoSpanningRowPositions(0, 1, 3, 4);
 
         NatTable natTable = new NatTable(parent,
-                new ViewportLayer(new SelectionLayer(new SpanningDataLayer(
-                        spanningDataProvider))), false);
+                new ViewportLayer(
+                        new SelectionLayer(
+                                new SpanningDataLayer(spanningDataProvider))), false);
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
-        natTable.addConfiguration(new BodyMenuConfiguration(natTable,
-                spanningDataProvider));
+        natTable.addConfiguration(new BodyMenuConfiguration(natTable, spanningDataProvider));
 
         natTable.configure();
 
@@ -151,43 +146,30 @@ public class _5015_AutomaticDataSpanningExample extends AbstractNatExample {
         private Menu bodyMenu;
         private AutomaticSpanningDataProvider dataProvider;
 
-        public BodyMenuConfiguration(NatTable natTable,
-                AutomaticSpanningDataProvider dataProvider) {
+        public BodyMenuConfiguration(NatTable natTable, AutomaticSpanningDataProvider dataProvider) {
             this.bodyMenu = createBodyMenu(natTable).build();
             this.dataProvider = dataProvider;
-
-            natTable.addDisposeListener(new DisposeListener() {
-
-                @Override
-                public void widgetDisposed(DisposeEvent e) {
-                    if (bodyMenu != null)
-                        bodyMenu.dispose();
-                }
-
-            });
         }
 
         protected PopupMenuBuilder createBodyMenu(final NatTable natTable) {
             return new PopupMenuBuilder(natTable).withMenuItemProvider(
                     new IMenuItemProvider() {
                         @Override
-                        public void addMenuItem(final NatTable natTable,
-                                Menu popupMenu) {
-                            MenuItem menuItem = new MenuItem(popupMenu,
-                                    SWT.PUSH);
+                        public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                            MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                             menuItem.setText("Toggle auto spanning");
                             menuItem.setEnabled(true);
 
                             menuItem.addSelectionListener(new SelectionAdapter() {
                                 @Override
                                 public void widgetSelected(SelectionEvent event) {
-                                    if (dataProvider.isAutoColumnSpan()) {
-                                        dataProvider.setAutoColumnSpan(false);
-                                        dataProvider.setAutoRowSpan(true);
-                                    } else if (dataProvider.isAutoRowSpan()) {
-                                        dataProvider.setAutoRowSpan(false);
+                                    if (BodyMenuConfiguration.this.dataProvider.isAutoColumnSpan()) {
+                                        BodyMenuConfiguration.this.dataProvider.setAutoColumnSpan(false);
+                                        BodyMenuConfiguration.this.dataProvider.setAutoRowSpan(true);
+                                    } else if (BodyMenuConfiguration.this.dataProvider.isAutoRowSpan()) {
+                                        BodyMenuConfiguration.this.dataProvider.setAutoRowSpan(false);
                                     } else {
-                                        dataProvider.setAutoColumnSpan(true);
+                                        BodyMenuConfiguration.this.dataProvider.setAutoColumnSpan(true);
                                     }
                                     natTable.doCommand(new VisualRefreshCommand());
                                 }
@@ -200,8 +182,7 @@ public class _5015_AutomaticDataSpanningExample extends AbstractNatExample {
         public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
             if (this.bodyMenu != null) {
                 uiBindingRegistry.registerMouseDownBinding(
-                        new MouseEventMatcher(SWT.NONE, null,
-                                MouseEventMatcher.RIGHT_BUTTON),
+                        new MouseEventMatcher(SWT.NONE, null, MouseEventMatcher.RIGHT_BUTTON),
                         new PopupMenuAction(this.bodyMenu));
             }
         }

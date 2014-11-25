@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 451490
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 451490, 453219
  *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 451490
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.menu;
@@ -19,6 +19,8 @@ import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
@@ -599,10 +601,25 @@ public class PopupMenuBuilder {
 
     /**
      * Builds and returns the created {@link Menu}.
+     * <p>
+     * <b>Note:</b> Calling this method will also add a {@link DisposeListener}
+     * to the NatTable instance to ensure the created {@link Menu} is disposed
+     * when the NatTable itself gets disposed.
+     * </p>
      *
      * @return The {@link Menu} that is created by this builder.
      */
     public Menu build() {
+
+        this.natTable.addDisposeListener(new DisposeListener() {
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                if (PopupMenuBuilder.this.popupMenu != null
+                        && !PopupMenuBuilder.this.popupMenu.isDisposed())
+                    PopupMenuBuilder.this.popupMenu.dispose();
+            }
+        });
+
         return this.popupMenu;
     }
 
