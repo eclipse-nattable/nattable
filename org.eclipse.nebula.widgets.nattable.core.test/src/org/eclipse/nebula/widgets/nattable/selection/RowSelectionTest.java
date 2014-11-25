@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,51 +31,44 @@ public class RowSelectionTest {
 
     @Before
     public void setUp() {
-        selectionLayer = new SelectionLayer(new DataLayerFixture());
+        this.selectionLayer = new SelectionLayer(new DataLayerFixture());
         // Selection grid origin as starting point
-        selectionLayer.setSelectedCell(0, 0);
+        this.selectionLayer.setSelectedCell(0, 0);
     }
 
     @After
     public void cleanUp() {
-        selectionLayer.clear();
+        this.selectionLayer.clear();
     }
 
     @Test
     public void shouldSelectAllCellsInARow() {
-        final int columnCount = selectionLayer.getColumnCount();
+        final int columnCount = this.selectionLayer.getColumnCount();
         // User has clicked on second row header cell
-        selectionLayer.selectRow(1, 2, false, false);
+        this.selectionLayer.selectRow(1, 2, false, false);
 
         // Selection anchor should be at row 2, column 0
-        Assert.assertEquals(1, selectionLayer.getSelectionAnchor()
-                .getColumnPosition());
-        Assert.assertEquals(2, selectionLayer.getSelectionAnchor()
-                .getRowPosition());
+        Assert.assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
         // Last selected cell should be part of last column
-        Assert.assertEquals(1, selectionLayer.getLastSelectedCellPosition()
-                .getColumnPosition());
-        Assert.assertEquals(2, selectionLayer.getLastSelectedCellPosition()
-                .getRowPosition());
+        Assert.assertEquals(1, this.selectionLayer.getLastSelectedCellPosition().getColumnPosition());
+        Assert.assertEquals(2, this.selectionLayer.getLastSelectedCellPosition().getRowPosition());
 
         // Cells in between should have been selected
-        Assert.assertEquals(columnCount,
-                selectionLayer.getSelectedColumnPositions().length);
+        Assert.assertEquals(columnCount, this.selectionLayer.getSelectedColumnPositions().length);
     }
 
     @Test
     public void shouldExtendSelectionUpWithShiftKey() {
         // User selects cell
-        selectionLayer.selectCell(2, 2, false, false);
+        this.selectionLayer.selectCell(2, 2, false, false);
         // User selects column using shift key mask
-        selectionLayer.selectRow(1, 1, true, false);
+        this.selectionLayer.selectRow(1, 1, true, false);
 
         // Selection Anchor should not have changed
-        Assert.assertEquals(2,
-                selectionLayer.getSelectionAnchor().columnPosition);
-        Assert.assertEquals(2, selectionLayer.getSelectionAnchor()
-                .getRowPosition());
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().columnPosition);
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
         assertCellsSelectedBetween(2, 1);
     }
@@ -83,15 +76,13 @@ public class RowSelectionTest {
     @Test
     public void shouldExtendSelectionDownWithShiftKey() {
         // User selects cell
-        selectionLayer.selectCell(2, 2, false, false);
+        this.selectionLayer.selectCell(2, 2, false, false);
         // User selects column using shift key mask
-        selectionLayer.selectRow(1, 4, true, false);
+        this.selectionLayer.selectRow(1, 4, true, false);
 
         // Selection Anchor should not have changed
-        Assert.assertEquals(2,
-                selectionLayer.getSelectionAnchor().columnPosition);
-        Assert.assertEquals(2, selectionLayer.getSelectionAnchor()
-                .getRowPosition());
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().columnPosition);
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
         assertCellsSelectedBetween(2, 4);
     }
@@ -99,129 +90,156 @@ public class RowSelectionTest {
     @Test
     public void shouldAppendSelectionUpWithShiftKey() {
         // User selects cell
-        selectionLayer.selectCell(2, 2, false, false);
+        this.selectionLayer.selectCell(2, 2, false, false);
         // User selects column using shift key mask
-        selectionLayer.selectRow(1, 1, true, false);
+        this.selectionLayer.selectRow(1, 1, true, false);
 
         // Selection Anchor should not have changed
-        Assert.assertEquals(2,
-                selectionLayer.getSelectionAnchor().columnPosition);
-        Assert.assertEquals(2, selectionLayer.getSelectionAnchor()
-                .getRowPosition());
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().columnPosition);
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
         assertCellsSelectedBetween(2, 1);
 
-        selectionLayer.selectRow(1, 0, true, false);
+        this.selectionLayer.selectRow(1, 0, true, false);
         assertCellsSelectedBetween(2, 0);
     }
 
     @Test
     public void shouldAppendSelectionDownWithShiftKey() {
         // User selects cell
-        selectionLayer.selectCell(2, 2, false, false);
+        this.selectionLayer.selectCell(2, 2, false, false);
         // User selects column using shift key mask
-        selectionLayer.selectRow(1, 3, true, false);
+        this.selectionLayer.selectRow(1, 3, true, false);
 
         // Selection Anchor should not have changed
-        Assert.assertEquals(2,
-                selectionLayer.getSelectionAnchor().columnPosition);
-        Assert.assertEquals(2, selectionLayer.getSelectionAnchor()
-                .getRowPosition());
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().columnPosition);
+        Assert.assertEquals(2, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
         assertCellsSelectedBetween(2, 3);
 
-        selectionLayer.selectRow(1, 5, true, false);
+        this.selectionLayer.selectRow(1, 5, true, false);
         assertCellsSelectedBetween(2, 5);
     }
 
-    private void assertCellsSelectedBetween(int startRowPosition,
-            int endRowPosition) {
+    private void assertCellsSelectedBetween(int startRowPosition, int endRowPosition) {
         for (int row = startRowPosition; row <= endRowPosition; row++) {
             for (int col = 0; col <= 4; col++) {
                 assertTrue("[" + col + ", " + row + "] not selected",
-                        selectionLayer.isCellPositionSelected(col, row));
+                        this.selectionLayer.isCellPositionSelected(col, row));
             }
         }
     }
 
     @Test
     public void shouldExtendSelectionWithAllCellsInARowUsingTheCtrlKey() {
-        final int columnCount = selectionLayer.getColumnCount();
+        final int columnCount = this.selectionLayer.getColumnCount();
 
         // User has selected 3 non-consecutive cells
-        selectionLayer.selectCell(2, 2, false, false);
-        selectionLayer.selectCell(3, 2, false, true);
-        selectionLayer.selectCell(2, 0, false, true);
+        this.selectionLayer.selectCell(2, 2, false, false);
+        this.selectionLayer.selectCell(3, 2, false, true);
+        this.selectionLayer.selectCell(2, 0, false, true);
 
         // User has clicked on second row header cell
-        selectionLayer.selectRow(1, 1, false, true);
+        this.selectionLayer.selectRow(1, 1, false, true);
 
         // Selection anchor should be at row 1, col 0
-        Assert.assertEquals(1, selectionLayer.getSelectionAnchor()
-                .getColumnPosition());
-        Assert.assertEquals(1, selectionLayer.getSelectionAnchor()
-                .getRowPosition());
+        Assert.assertEquals(1, this.selectionLayer.getSelectionAnchor().getColumnPosition());
+        Assert.assertEquals(1, this.selectionLayer.getSelectionAnchor().getRowPosition());
 
         // Last selected cell should be part of last column
-        Assert.assertEquals(1, selectionLayer.getLastSelectedCellPosition()
-                .getRowPosition());
-        final int lastColumnPosition = selectionLayer
-                .getLastSelectedCellPosition().getColumnPosition();
+        Assert.assertEquals(1, this.selectionLayer.getLastSelectedCellPosition().getRowPosition());
+        final int lastColumnPosition = this.selectionLayer.getLastSelectedCellPosition().getColumnPosition();
         Assert.assertEquals(1, lastColumnPosition);
 
         // Cells in row should have been selected
-        final int[] selectedColumns = selectionLayer
-                .getSelectedColumnPositions();
+        final int[] selectedColumns = this.selectionLayer.getSelectedColumnPositions();
         Assert.assertEquals(columnCount, selectedColumns.length);
-        Assert.assertTrue(selectionLayer.isCellPositionSelected(4, 1));
+        Assert.assertTrue(this.selectionLayer.isCellPositionSelected(4, 1));
 
         // Test extending column selection to the right of previous column
         // selection
-        selectionLayer.selectRow(1, 3, false, true);
+        this.selectionLayer.selectRow(1, 3, false, true);
 
         // Selection model should contain all previously selected cells
-        Assert.assertTrue(selectionLayer.isCellPositionSelected(2, 2));
-        Assert.assertTrue(selectionLayer.isCellPositionSelected(3, 2));
-        Assert.assertTrue(selectionLayer.isCellPositionSelected(2, 0));
+        Assert.assertTrue(this.selectionLayer.isCellPositionSelected(2, 2));
+        Assert.assertTrue(this.selectionLayer.isCellPositionSelected(3, 2));
+        Assert.assertTrue(this.selectionLayer.isCellPositionSelected(2, 0));
 
         // 3rd row cells should be selected
-        Assert.assertTrue(selectionLayer.isCellPositionSelected(1, 3));
-        Assert.assertTrue(selectionLayer.isCellPositionSelected(3, 3));
+        Assert.assertTrue(this.selectionLayer.isCellPositionSelected(1, 3));
+        Assert.assertTrue(this.selectionLayer.isCellPositionSelected(3, 3));
     }
 
     @Test
     public void onlyOneCellSelectedAtAnyTime() {
-        selectionLayer.getSelectionModel().setMultipleSelectionAllowed(false);
+        this.selectionLayer.getSelectionModel().setMultipleSelectionAllowed(false);
 
-        selectionLayer.clear();
-        selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 0,
-                false, true));
+        this.selectionLayer.clear();
+        this.selectionLayer.doCommand(
+                new SelectRowsCommand(this.selectionLayer, 1, 0, false, true));
 
-        Collection<PositionCoordinate> cells = ArrayUtil
-                .asCollection(selectionLayer.getSelectedCellPositions());
+        Collection<PositionCoordinate> cells =
+                ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
         assertEquals(1, cells.size());
-        assertEquals(1, selectionLayer.getSelectedRowPositions().size());
-        assertEquals(1, selectionLayer.getSelectedRowCount());
+        assertEquals(1, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
 
         // select another row with control mask
-        selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 2,
-                false, true));
+        this.selectionLayer.doCommand(
+                new SelectRowsCommand(this.selectionLayer, 1, 2, false, true));
 
-        cells = ArrayUtil.asCollection(selectionLayer
-                .getSelectedCellPositions());
+        cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
         assertEquals(1, cells.size());
-        assertEquals(1, selectionLayer.getSelectedRowPositions().size());
-        assertEquals(1, selectionLayer.getSelectedRowCount());
+        assertEquals(1, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
 
         // select additional rows with shift mask
-        selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 1, 5,
+        this.selectionLayer.doCommand(new SelectRowsCommand(this.selectionLayer, 1, 5,
                 true, false));
 
-        cells = ArrayUtil.asCollection(selectionLayer
-                .getSelectedCellPositions());
+        cells = ArrayUtil.asCollection(this.selectionLayer.getSelectedCellPositions());
         assertEquals(1, cells.size());
-        assertEquals(1, selectionLayer.getSelectedRowPositions().size());
-        assertEquals(1, selectionLayer.getSelectedRowCount());
+        assertEquals(1, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
     }
 
+    @Test
+    public void testMultiSelectionRestore() {
+        this.selectionLayer.clear();
+        this.selectionLayer.doCommand(
+                new SelectRowsCommand(this.selectionLayer, 1, 0, false, false));
+
+        assertEquals(1, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
+
+        this.selectionLayer.doCommand(
+                new SelectRowsCommand(this.selectionLayer, 1, 2, true, false));
+
+        assertEquals(1, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(3, this.selectionLayer.getSelectedRowCount());
+
+        this.selectionLayer.doCommand(
+                new SelectRowsCommand(this.selectionLayer, 1, 2, false, true));
+
+        assertEquals(1, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(2, this.selectionLayer.getSelectedRowCount());
+
+        this.selectionLayer.doCommand(
+                new SelectRowsCommand(this.selectionLayer, 1, 1, false, true));
+
+        assertEquals(1, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
+
+        this.selectionLayer.doCommand(
+                new SelectRowsCommand(this.selectionLayer, 1, 0, false, true));
+
+        assertEquals(0, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(0, this.selectionLayer.getSelectedRowCount());
+
+        this.selectionLayer.doCommand(
+                new SelectRowsCommand(this.selectionLayer, 1, 0, false, true));
+
+        assertEquals(1, this.selectionLayer.getSelectedRowPositions().size());
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
+    }
 }

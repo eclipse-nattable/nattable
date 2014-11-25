@@ -10,7 +10,7 @@
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - Use getters and setters for
  *         the markers of SelectionLayer instead of the fields.
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447256
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447256, 447261
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -152,10 +152,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
 
         if (this.selectionLayer.isRowPositionFullySelected(rowPosition)) {
             this.selectionLayer.clearSelection(selectedRowRectangle);
-            if (this.selectionLayer.getLastSelectedRegion() != null
-                    && this.selectionLayer.getLastSelectedRegion().equals(selectedRowRectangle)) {
-                this.selectionLayer.setLastSelectedRegion(null);
-            }
+            this.selectionLayer.setLastSelectedRegion(null);
 
             // if there is still a row selected but no selection anchor, we
             // need to set one for a consistent state
