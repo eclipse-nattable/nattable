@@ -342,7 +342,6 @@ public class RowSelectionEditUtilsTest {
                 this.natTable.getConfigRegistry()));
     }
 
-    // TODO
     @Test
     public void testIsConverterSameWithSingleSelectionOneChangedConverter() {
         DataLayer bodyDataLayer = (DataLayer) this.gridLayerStack.getBodyDataLayer();
