@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
+import org.eclipse.nebula.widgets.nattable.summaryrow.FixedSummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
@@ -91,9 +92,8 @@ public class _5123_SummaryRowPositionExample extends AbstractNatExample {
         ViewportLayer viewportLayer = new ViewportLayer(dataLayer);
 
         // Plug in the SummaryRowLayer
-        SummaryRowLayer summaryRowLayer = new SummaryRowLayer(dataLayer, configRegistry, false);
-        // configure the SummaryRowLayer to be rendered standalone
-        summaryRowLayer.setStandalone(true);
+        FixedSummaryRowLayer summaryRowLayer = new FixedSummaryRowLayer(dataLayer, viewportLayer, configRegistry, false);
+        summaryRowLayer.setHorizontalCompositeDependency(false);
 
         CompositeLayer composite = new CompositeLayer(1, 2);
         composite.setChildLayer("SUMMARY", summaryRowLayer, 0, 0);
@@ -120,9 +120,8 @@ public class _5123_SummaryRowPositionExample extends AbstractNatExample {
         viewportLayer = new ViewportLayer(dataLayer);
 
         // Plug in the SummaryRowLayer
-        summaryRowLayer = new SummaryRowLayer(dataLayer, configRegistry, false);
-        // configure the SummaryRowLayer to be rendered standalone
-        summaryRowLayer.setStandalone(true);
+        summaryRowLayer = new FixedSummaryRowLayer(dataLayer, viewportLayer, configRegistry, false);
+        summaryRowLayer.setHorizontalCompositeDependency(false);
 
         composite = new CompositeLayer(1, 2);
         composite.setChildLayer(GridRegion.BODY, viewportLayer, 0, 0);
