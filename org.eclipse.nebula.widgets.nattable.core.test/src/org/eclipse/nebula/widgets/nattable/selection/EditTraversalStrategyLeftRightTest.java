@@ -71,7 +71,9 @@ public class EditTraversalStrategyLeftRightTest {
     @After
     public void cleanUp() {
         this.selectionLayer.clear();
-        this.natTable.commitAndCloseActiveCellEditor();
+        // since we are not interested in commit operations it is sufficient to
+        // close the editor
+        this.natTable.getActiveCellEditor().close();
     }
 
     // move right
