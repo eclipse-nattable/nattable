@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Deprecated expand/collapse methods since they should reside in ITreeRowModel
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree;
 
@@ -15,13 +16,14 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
+import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 
 import ca.odell.glazedlists.TreeList;
 import ca.odell.glazedlists.TreeList.Node;
 
 /**
  * Implementation of ITreeData that operates on a GlazedLists TreeList.
- * 
+ *
  * @param <T>
  *            The type of objects that are contained in the TreeList.
  */
@@ -139,30 +141,39 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 
     /**
      * Collapse the tree node that represent the given object.
-     * 
+     *
      * @param object
      *            The object that represents the tree node to collapse.
+     * @deprecated expand/collapse operations should be performed on
+     *             {@link ITreeRowModel}!
      */
+    @Deprecated
     public void collapse(T object) {
         collapse(indexOf(object));
     };
 
     /**
      * Expand the tree node that represent the given object.
-     * 
+     *
      * @param object
      *            The object that represents the tree node to expand.
+     * @deprecated expand/collapse operations should be performed on
+     *             {@link ITreeRowModel}!
      */
+    @Deprecated
     public void expand(T object) {
         expand(indexOf(object));
     };
 
     /**
      * Collapse the tree node at the given visible index.
-     * 
+     *
      * @param index
      *            The index of the tree node to collapse.
+     * @deprecated expand/collapse operations should be performed on
+     *             {@link ITreeRowModel}!
      */
+    @Deprecated
     public void collapse(int index) {
         if (!isValidIndex(index)) {
             return;
@@ -173,10 +184,13 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
 
     /**
      * Expand the tree node at the given visible index.
-     * 
+     *
      * @param index
      *            The index of the tree node to expand.
+     * @deprecated expand/collapse operations should be performed on
+     *             {@link ITreeRowModel}!
      */
+    @Deprecated
     public void expand(int index) {
         if (!isValidIndex(index)) {
             return;
@@ -189,7 +203,11 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
      * Will check the whole TreeList for its nodes and collapses them if they
      * are expanded. After executing this method, all nodes in the TreeList will
      * be collapsed.
+     *
+     * @deprecated expand/collapse operations should be performed on
+     *             {@link ITreeRowModel}!
      */
+    @Deprecated
     public void collapseAll() {
         this.treeList.getReadWriteLock().writeLock().lock();
         try {
@@ -218,15 +236,17 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
      * Will check the whole TreeList for its nodes and expands them if they are
      * collapsed. After executing this method, all nodes in the TreeList will be
      * expanded.
+     *
+     * @deprecated expand/collapse operations should be performed on
+     *             {@link ITreeRowModel}!
      */
+    @Deprecated
     public void expandAll() {
         boolean expandPerformed = false;
         this.treeList.getReadWriteLock().writeLock().lock();
         try {
             // iterating directly over the TreeList is a lot faster than
             // checking the nodes
-            // which is related that on collapsing we only need to iterate once
-            // from bottom to top
             for (int i = (this.treeList.size() - 1); i >= 0; i--) {
                 /*
                  * Checks if the node at the given visible index has children
@@ -245,8 +265,7 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
         }
 
         // if at least one element was expanded we need to perform the step
-        // again
-        // as we are only able to retrieve the visible nodes
+        // again as we are only able to retrieve the visible nodes
         if (expandPerformed) {
             expandAll();
         }
@@ -257,24 +276,30 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
      * <p>
      * Note: The check only works for visible elements, therefore a check for an
      * element that is below an collapsed element does not work.
-     * 
+     *
      * @param object
      *            The element that should be checked.
      * @return <code>true</code> if the children of the given element are
      *         visible, <code>false</code> if not
+     * @deprecated expand/collapse operations should be performed on
+     *             {@link ITreeRowModel}!
      */
+    @Deprecated
     public boolean isExpanded(T object) {
         return isExpanded(indexOf(object));
     }
 
     /**
      * Checks if the element at the given visual index is expanded or not.
-     * 
+     *
      * @param index
      *            The visual index of the element to check.
      * @return <code>true</code> if the children of the element at given index
      *         are visible, <code>false</code> if not
+     * @deprecated expand/collapse operations should be performed on
+     *             {@link ITreeRowModel}!
      */
+    @Deprecated
     public boolean isExpanded(int index) {
         if (!isValidIndex(index)) {
             return false;
@@ -286,5 +311,13 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
     @Override
     public boolean isValidIndex(int index) {
         return (!(index < 0) && index < this.treeList.size());
+    }
+
+    /**
+     * @return The underlying {@link TreeList} this {@link GlazedListTreeData}
+     *         is operating on.
+     */
+    public TreeList<T> getTreeList() {
+        return this.treeList;
     }
 }

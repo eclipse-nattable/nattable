@@ -47,6 +47,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandToLevelCommand;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -67,9 +68,6 @@ import ca.odell.glazedlists.TransformedList;
 /**
  * Simple example showing how to add the group by feature to the layer
  * composition of a grid.
- * 
- * @author Dirk Fauth
- *
  */
 public class _6051_GroupByExample extends AbstractNatExample {
 
@@ -108,47 +106,47 @@ public class _6051_GroupByExample extends AbstractNatExample {
         propertyToLabelMap.put("address.postalCode", "Postal Code");
         propertyToLabelMap.put("address.city", "City");
 
-        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(
-                propertyNames);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 
-        BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
-                PersonService.getPersonsWithAddress(100),
-                columnPropertyAccessor);
+        BodyLayerStack<PersonWithAddress> bodyLayerStack =
+                new BodyLayerStack<PersonWithAddress>(
+                        PersonService.getPersonsWithAddress(100), columnPropertyAccessor);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyLayerStack.getBodyDataProvider());
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // set the group by header on top of the grid
         CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
-        final GroupByHeaderLayer groupByHeaderLayer = new GroupByHeaderLayer(
-                bodyLayerStack.getGroupByModel(), gridLayer,
-                columnHeaderDataProvider);
-        compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION,
-                groupByHeaderLayer, 0, 0);
+        final GroupByHeaderLayer groupByHeaderLayer =
+                new GroupByHeaderLayer(bodyLayerStack.getGroupByModel(),
+                        gridLayer, columnHeaderDataProvider);
+        compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
 
         // turn the auto configuration off as we want to add our header menu
@@ -156,13 +154,12 @@ public class _6051_GroupByExample extends AbstractNatExample {
         NatTable natTable = new NatTable(parent, compositeGridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         // add group by configuration
-        natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable,
-                groupByHeaderLayer));
+        natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
 
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
             @Override
@@ -172,37 +169,29 @@ public class _6051_GroupByExample extends AbstractNatExample {
                         .withMenuItemProvider(new IMenuItemProvider() {
 
                             @Override
-                            public void addMenuItem(NatTable natTable,
-                                    Menu popupMenu) {
-                                MenuItem menuItem = new MenuItem(popupMenu,
-                                        SWT.PUSH);
+                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                                 menuItem.setText("Toggle Group By Header"); //$NON-NLS-1$
                                 menuItem.setEnabled(true);
 
                                 menuItem.addSelectionListener(new SelectionAdapter() {
                                     @Override
-                                    public void widgetSelected(
-                                            SelectionEvent event) {
-                                        groupByHeaderLayer
-                                                .setVisible(!groupByHeaderLayer
-                                                        .isVisible());
+                                    public void widgetSelected(SelectionEvent event) {
+                                        groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
                                     }
                                 });
                             }
                         }).withMenuItemProvider(new IMenuItemProvider() {
 
                             @Override
-                            public void addMenuItem(final NatTable natTable,
-                                    Menu popupMenu) {
-                                MenuItem menuItem = new MenuItem(popupMenu,
-                                        SWT.PUSH);
+                            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                                 menuItem.setText("Collapse All"); //$NON-NLS-1$
                                 menuItem.setEnabled(true);
 
                                 menuItem.addSelectionListener(new SelectionAdapter() {
                                     @Override
-                                    public void widgetSelected(
-                                            SelectionEvent event) {
+                                    public void widgetSelected(SelectionEvent event) {
                                         natTable.doCommand(new TreeCollapseAllCommand());
                                     }
                                 });
@@ -210,18 +199,30 @@ public class _6051_GroupByExample extends AbstractNatExample {
                         }).withMenuItemProvider(new IMenuItemProvider() {
 
                             @Override
-                            public void addMenuItem(final NatTable natTable,
-                                    Menu popupMenu) {
-                                MenuItem menuItem = new MenuItem(popupMenu,
-                                        SWT.PUSH);
+                            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                                 menuItem.setText("Expand All"); //$NON-NLS-1$
                                 menuItem.setEnabled(true);
 
                                 menuItem.addSelectionListener(new SelectionAdapter() {
                                     @Override
-                                    public void widgetSelected(
-                                            SelectionEvent event) {
+                                    public void widgetSelected(SelectionEvent event) {
                                         natTable.doCommand(new TreeExpandAllCommand());
+                                    }
+                                });
+                            }
+                        }).withMenuItemProvider(new IMenuItemProvider() {
+
+                            @Override
+                            public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                                menuItem.setText("Expand to Level 2"); //$NON-NLS-1$
+                                menuItem.setEnabled(true);
+
+                                menuItem.addSelectionListener(new SelectionAdapter() {
+                                    @Override
+                                    public void widgetSelected(SelectionEvent event) {
+                                        natTable.doCommand(new TreeExpandToLevelCommand(2));
                                     }
                                 });
                             }
@@ -231,8 +232,7 @@ public class _6051_GroupByExample extends AbstractNatExample {
 
         natTable.configure();
 
-        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                natTable));
+        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
 
         return natTable;
     }
@@ -240,7 +240,7 @@ public class _6051_GroupByExample extends AbstractNatExample {
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -253,34 +253,32 @@ public class _6051_GroupByExample extends AbstractNatExample {
 
         private final GroupByModel groupByModel = new GroupByModel();
 
-        public BodyLayerStack(List<T> values,
-                IColumnPropertyAccessor<T> columnPropertyAccessor) {
+        public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
             EventList<T> eventList = GlazedLists.eventList(values);
-            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(eventList);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 
             // Use the GroupByDataLayer instead of the default DataLayer
-            GroupByDataLayer<T> bodyDataLayer = new GroupByDataLayer<T>(
-                    getGroupByModel(), sortedList, columnPropertyAccessor);
+            GroupByDataLayer<T> bodyDataLayer =
+                    new GroupByDataLayer<T>(getGroupByModel(), this.sortedList, columnPropertyAccessor);
             // get the IDataProvider that was created by the GroupByDataLayer
             this.bodyDataProvider = bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, sortedList);
+            GlazedListsEventLayer<T> glazedListsEventLayer =
+                    new GlazedListsEventLayer<T>(bodyDataLayer, this.sortedList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(selectionLayer,
-                    bodyDataLayer.getTreeRowModel());
+            TreeLayer treeLayer =
+                    new TreeLayer(this.selectionLayer, bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
@@ -288,7 +286,7 @@ public class _6051_GroupByExample extends AbstractNatExample {
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public SortedList<T> getSortedList() {
@@ -296,11 +294,11 @@ public class _6051_GroupByExample extends AbstractNatExample {
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
 
         public GroupByModel getGroupByModel() {
-            return groupByModel;
+            return this.groupByModel;
         }
     }
 }

@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453707
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree;
 
@@ -37,8 +38,7 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
 
     @Override
     public int depth(int index) {
-        return this.treeData
-                .getDepthOfData(this.treeData.getDataAtIndex(index));
+        return this.treeData.getDepthOfData(this.treeData.getDataAtIndex(index));
     }
 
     @Override
@@ -56,13 +56,31 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
         return this.treeData.hasChildren(index);
     }
 
+    @Override
+    public boolean isCollapsed(T object) {
+        return isCollapsed(this.getTreeData().indexOf(object));
+    }
+
     /**
-     * @return TRUE if the row group this index is collapseable
+     * {@inheritDoc}
+     *
+     * @return <code>true</code> if the tree node at the given index has
+     *         children, <code>false</code> if not.
      */
     @Override
-    public boolean isCollapseable(int index) {
+    public boolean isCollapsible(int index) {
         return hasChildren(index);
     }
+
+    @Override
+    public List<Integer> collapse(T object) {
+        return collapse(this.getTreeData().indexOf(object));
+    };
+
+    @Override
+    public List<Integer> expand(T object) {
+        return expand(this.getTreeData().indexOf(object));
+    };
 
     @Override
     public List<Integer> getChildIndexes(int parentIndex) {

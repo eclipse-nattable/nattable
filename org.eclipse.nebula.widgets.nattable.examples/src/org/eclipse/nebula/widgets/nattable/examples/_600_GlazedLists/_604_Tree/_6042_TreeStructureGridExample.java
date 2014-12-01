@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - modified example for correct unique handling of elements
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._604_Tree;
 
@@ -14,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -59,6 +61,7 @@ import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandToLevelCommand;
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
 import org.eclipse.nebula.widgets.nattable.tree.painter.TreeImagePainter;
@@ -82,9 +85,6 @@ import ca.odell.glazedlists.TreeList;
 
 /**
  * Simple example showing how to create a tree within a grid.
- * 
- * @author Dirk Fauth
- *
  */
 public class _6042_TreeStructureGridExample extends AbstractNatExample {
 
@@ -125,49 +125,51 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
         propertyToLabelMap.put("married", "Married");
         propertyToLabelMap.put("birthday", "Birthday");
 
-        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<PersonWithAddress>(
-                propertyNames);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 
-        final BodyLayerStack bodyLayerStack = new BodyLayerStack(
-                PersonService.getPersonsWithAddress(50),
-                columnPropertyAccessor,
-                new PersonWithAddressTwoLevelTreeFormat());
+        final BodyLayerStack bodyLayerStack =
+                new BodyLayerStack(
+                        PersonService.getPersonsWithAddress(5),
+                        columnPropertyAccessor,
+                        new PersonWithAddressTwoLevelTreeFormat());
         // new PersonWithAddressTreeFormat());
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyLayerStack.getBodyDataProvider());
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
         final NatTable natTable = new NatTable(container, gridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
@@ -179,32 +181,37 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
                 // information
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.CELL_PAINTER,
-                        new CheckBoxPainter(), DisplayMode.NORMAL,
+                        new CheckBoxPainter(),
+                        DisplayMode.NORMAL,
                         MARRIED_LABEL);
 
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
                         new DefaultDateDisplayConverter("MM/dd/yyyy"),
-                        DisplayMode.NORMAL, DATE_LABEL);
+                        DisplayMode.NORMAL,
+                        DATE_LABEL);
 
                 // exchange the painter that is used to render the tree
-                // structure
-                // the following will use triangles instead of plus/minus icons
-                // to show the
-                // tree structure and expand/collapse state and adds padding
-                // between cell
+                // structure the following will use triangles instead of
+                // plus/minus icons to show the tree structure and
+                // expand/collapse state and adds padding between cell
                 // border and tree icons.
-                TreeImagePainter treeImagePainter = new TreeImagePainter(
-                        false,
-                        GUIHelper.getImage("right"), GUIHelper.getImage("right_down"), null); //$NON-NLS-1$//$NON-NLS-2$
-                ICellPainter treeStructurePainter = new BackgroundPainter(
-                        new PaddingDecorator(new IndentedTreeImagePainter(10,
-                                null, CellEdgeEnum.LEFT, treeImagePainter,
-                                false, 2, true), 0, 5, 0, 5, false));
+                TreeImagePainter treeImagePainter =
+                        new TreeImagePainter(
+                                false,
+                                GUIHelper.getImage("right"), //$NON-NLS-1$
+                                GUIHelper.getImage("right_down"), null); //$NON-NLS-1$
+                ICellPainter treeStructurePainter =
+                        new BackgroundPainter(
+                                new PaddingDecorator(
+                                        new IndentedTreeImagePainter(10,
+                                                null, CellEdgeEnum.LEFT, treeImagePainter,
+                                                false, 2, true), 0, 5, 0, 5, false));
 
                 configRegistry.registerConfigAttribute(
                         TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
-                        treeStructurePainter, DisplayMode.NORMAL);
+                        treeStructurePainter,
+                        DisplayMode.NORMAL);
 
             }
         });
@@ -235,13 +242,22 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
             }
         });
 
+        Button expandToLevelButton = new Button(buttonPanel, SWT.PUSH);
+        expandToLevelButton.setText("Expand To Level");
+        expandToLevelButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                natTable.doCommand(new TreeExpandToLevelCommand(1));
+            }
+        });
+
         return container;
     }
 
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <PersonWithAddress>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -259,33 +275,30 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
                 TreeList.Format treeFormat) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
-            EventList<PersonWithAddress> eventList = GlazedLists
-                    .eventList(values);
-            TransformedList<PersonWithAddress, PersonWithAddress> rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(eventList);
+            EventList<PersonWithAddress> eventList = GlazedLists.eventList(values);
+            TransformedList<PersonWithAddress, PersonWithAddress> rowObjectsGlazedList =
+                    GlazedLists.threadSafeList(eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            SortedList<PersonWithAddress> sortedList = new SortedList<PersonWithAddress>(
-                    rowObjectsGlazedList, null);
+            SortedList<PersonWithAddress> sortedList =
+                    new SortedList<PersonWithAddress>(rowObjectsGlazedList, null);
             // wrap the SortedList with the TreeList
-            this.treeList = new TreeList(sortedList, treeFormat,
-                    TreeList.nodesStartExpanded());
+            this.treeList =
+                    new TreeList(sortedList, treeFormat, TreeList.nodesStartExpanded());
 
-            this.bodyDataProvider = new GlazedListsDataProvider<Object>(
-                    treeList, new PersonWithAddressTreeColumnPropertyAccessor(
-                            columnPropertyAccessor));
+            this.bodyDataProvider =
+                    new GlazedListsDataProvider<Object>(
+                            this.treeList, new PersonWithAddressTreeColumnPropertyAccessor(columnPropertyAccessor));
             DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
             // simply apply labels for every column by index
             bodyDataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
 
                 @Override
-                public void accumulateConfigLabels(LabelStack configLabels,
-                        int columnPosition, int rowPosition) {
-                    Object rowObject = bodyDataProvider
-                            .getRowObject(rowPosition);
+                public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+                    Object rowObject = BodyLayerStack.this.bodyDataProvider.getRowObject(rowPosition);
                     if (rowObject instanceof PersonWithAddress) {
                         if (columnPosition == 3) {
                             configLabels.addLabel(MARRIED_LABEL);
@@ -297,11 +310,11 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
             });
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<PersonWithAddress> glazedListsEventLayer = new GlazedListsEventLayer<PersonWithAddress>(
-                    bodyDataLayer, treeList);
+            GlazedListsEventLayer<PersonWithAddress> glazedListsEventLayer =
+                    new GlazedListsEventLayer<PersonWithAddress>(bodyDataLayer, this.treeList);
 
-            GlazedListTreeData<Object> treeData = new GlazedListTreeData<Object>(
-                    treeList) {
+            GlazedListTreeData<Object> treeData =
+                    new GlazedListTreeData<Object>(this.treeList) {
                 @Override
                 public String formatDataForDepth(int depth, Object object) {
                     if (object instanceof PersonWithAddress) {
@@ -310,19 +323,21 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
                     return object.toString();
                 }
             };
-            ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<Object>(
-                    treeData);
+            ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
+
+            // ITreeRowModel<Object> treeRowModel = new
+            // TreeRowModel<Object>(treeData);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
-            TreeLayer treeLayer = new TreeLayer(selectionLayer, treeRowModel);
+            TreeLayer treeLayer = new TreeLayer(this.selectionLayer, treeRowModel);
             ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
             setUnderlyingLayer(viewportLayer);
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public TreeList<PersonWithAddress> getTreeList() {
@@ -330,25 +345,22 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
     }
 
-    private class PersonWithAddressTreeColumnPropertyAccessor implements
-            IColumnPropertyAccessor<Object> {
+    private class PersonWithAddressTreeColumnPropertyAccessor implements IColumnPropertyAccessor<Object> {
 
         private IColumnPropertyAccessor<PersonWithAddress> cpa;
 
-        public PersonWithAddressTreeColumnPropertyAccessor(
-                IColumnPropertyAccessor<PersonWithAddress> cpa) {
+        public PersonWithAddressTreeColumnPropertyAccessor(IColumnPropertyAccessor<PersonWithAddress> cpa) {
             this.cpa = cpa;
         }
 
         @Override
         public Object getDataValue(Object rowObject, int columnIndex) {
             if (rowObject instanceof PersonWithAddress) {
-                return this.cpa.getDataValue((PersonWithAddress) rowObject,
-                        columnIndex);
+                return this.cpa.getDataValue((PersonWithAddress) rowObject, columnIndex);
             } else if (columnIndex == 0) {
                 return rowObject;
             }
@@ -356,8 +368,7 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
         }
 
         @Override
-        public void setDataValue(Object rowObject, int columnIndex,
-                Object newValue) {
+        public void setDataValue(Object rowObject, int columnIndex, Object newValue) {
             if (rowObject instanceof PersonWithAddress) {
                 this.cpa.setDataValue((PersonWithAddress) rowObject,
                         columnIndex, newValue);
@@ -382,14 +393,13 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
     }
 
     @SuppressWarnings("unused")
-    private class PersonWithAddressTreeFormat implements
-            TreeList.Format<Object> {
+    private class PersonWithAddressTreeFormat implements TreeList.Format<Object> {
 
         @Override
         public void getPath(List<Object> path, Object element) {
             if (element instanceof PersonWithAddress) {
                 PersonWithAddress ele = (PersonWithAddress) element;
-                path.add(ele.getLastName());
+                path.add(new LastNameGroup(ele.getId(), ele.getLastName()));
             }
             path.add(element);
         }
@@ -405,10 +415,8 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
 
                 @Override
                 public int compare(Object o1, Object o2) {
-                    String e1 = (o1 instanceof PersonWithAddress) ? ((PersonWithAddress) o1)
-                            .getLastName() : o1.toString();
-                    String e2 = (o2 instanceof PersonWithAddress) ? ((PersonWithAddress) o2)
-                            .getLastName() : o2.toString();
+                    String e1 = (o1 instanceof PersonWithAddress) ? ((PersonWithAddress) o1).getLastName() : o1.toString();
+                    String e2 = (o2 instanceof PersonWithAddress) ? ((PersonWithAddress) o2).getLastName() : o2.toString();
                     return e1.compareTo(e2);
                 }
 
@@ -416,15 +424,26 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
         }
     }
 
-    private class PersonWithAddressTwoLevelTreeFormat implements
-            TreeList.Format<Object> {
+    private class PersonWithAddressTwoLevelTreeFormat implements TreeList.Format<Object> {
+
+        AtomicInteger counter = new AtomicInteger();
+        Map<String, LastNameGroup> lastNames = new HashMap<String, LastNameGroup>();
+        Map<String, FirstNameGroup> firstNames = new HashMap<String, FirstNameGroup>();
 
         @Override
         public void getPath(List<Object> path, Object element) {
             if (element instanceof PersonWithAddress) {
                 PersonWithAddress ele = (PersonWithAddress) element;
-                path.add(ele.getLastName());
-                path.add(ele.getFirstName());
+                if (!this.lastNames.containsKey(ele.getLastName())) {
+                    this.lastNames.put(ele.getLastName(), new LastNameGroup(this.counter.incrementAndGet(), ele.getLastName()));
+                }
+                path.add(this.lastNames.get(ele.getLastName()));
+
+                String firstNameKey = ele.getLastName() + "_" + ele.getFirstName();
+                if (!this.firstNames.containsKey(firstNameKey)) {
+                    this.firstNames.put(firstNameKey, new FirstNameGroup(ele.getLastName(), ele.getFirstName()));
+                }
+                path.add(this.firstNames.get(firstNameKey));
             }
             path.add(element);
         }
@@ -440,14 +459,10 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
 
                 @Override
                 public int compare(Object o1, Object o2) {
-                    String e1 = (o1 instanceof PersonWithAddress) ? (depth == 0 ? ((PersonWithAddress) o1)
-                            .getLastName() : ((PersonWithAddress) o1)
-                            .getFirstName())
-                            : o1.toString();
-                    String e2 = (o2 instanceof PersonWithAddress) ? (depth == 0 ? ((PersonWithAddress) o2)
-                            .getLastName() : ((PersonWithAddress) o2)
-                            .getFirstName())
-                            : o2.toString();
+                    String e1 = (o1 instanceof PersonWithAddress)
+                            ? (depth == 0 ? ((PersonWithAddress) o1).getLastName() : ((PersonWithAddress) o1).getFirstName()) : o1.toString();
+                            String e2 = (o2 instanceof PersonWithAddress)
+                            ? (depth == 0 ? ((PersonWithAddress) o2).getLastName() : ((PersonWithAddress) o2).getFirstName()) : o2.toString();
                     return e1.compareTo(e2);
                 }
 
@@ -455,4 +470,106 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
         }
     }
 
+    // To make expand/collapse work correctly with the TreeRowModel, the
+    // elements in the TreeList needs to be identifiable. This is necessary so
+    // List#indexOf() returns the correct positions
+    class LastNameGroup implements Comparable<LastNameGroup> {
+        int id;
+        String lastName;
+
+        public LastNameGroup(int id, String lastName) {
+            this.id = id;
+            this.lastName = lastName;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + this.id;
+            result = prime * result + ((this.lastName == null) ? 0 : this.lastName.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LastNameGroup other = (LastNameGroup) obj;
+            if (this.id != other.id)
+                return false;
+            if (this.lastName == null) {
+                if (other.lastName != null)
+                    return false;
+            } else if (!this.lastName.equals(other.lastName))
+                return false;
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return this.lastName;
+        }
+
+        @Override
+        public int compareTo(LastNameGroup o) {
+            return this.lastName.compareTo(o.lastName);
+        }
+    }
+
+    // firstname group is unique within a lastname group
+    class FirstNameGroup implements Comparable<FirstNameGroup> {
+        String lastName;
+        String firstName;
+
+        public FirstNameGroup(String lastName, String firstName) {
+            this.lastName = lastName;
+            this.firstName = firstName;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((this.firstName == null) ? 0 : this.firstName.hashCode());
+            result = prime * result + ((this.lastName == null) ? 0 : this.lastName.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            FirstNameGroup other = (FirstNameGroup) obj;
+            if (this.firstName == null) {
+                if (other.firstName != null)
+                    return false;
+            } else if (!this.firstName.equals(other.firstName))
+                return false;
+            if (this.lastName == null) {
+                if (other.lastName != null)
+                    return false;
+            } else if (!this.lastName.equals(other.lastName))
+                return false;
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return this.firstName;
+        }
+
+        @Override
+        public int compareTo(FirstNameGroup o) {
+            return this.firstName.compareTo(o.firstName);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 448021, 453707
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree;
 
@@ -34,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandCollapseCommandHandler;
+import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandToLevelCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
@@ -58,7 +60,17 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      */
     private final ITreeRowModel<?> treeRowModel;
 
-    private final Set<Integer> hiddenRowIndexes;
+    /**
+     * Collection of all row indexes that are hidden if tree nodes are
+     * collapsed.
+     * <p>
+     * Note: This collection is only in use if the used {@link ITreeRowModel}
+     * implementation is returning the row indexes of affected rows on
+     * expand/collapse. There are also implementations that use another approach
+     * where the hide/show approach is not used (e.g. GlazedListTreeRowModel)
+     * </p>
+     */
+    private final Set<Integer> hiddenRowIndexes = new TreeSet<Integer>();
 
     /**
      * The IndentedTreeImagePainter that paints indentation to the left of the
@@ -79,8 +91,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            The ITreeRowModelListener that is used to get information
      *            about the tree structure.
      */
-    public TreeLayer(IUniqueIndexLayer underlyingLayer,
-            ITreeRowModel<?> treeRowModel) {
+    public TreeLayer(IUniqueIndexLayer underlyingLayer, ITreeRowModel<?> treeRowModel) {
         this(underlyingLayer, treeRowModel, new IndentedTreeImagePainter());
     }
 
@@ -100,7 +111,8 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            expand/collapse if possible, to render tree structure
      *            accordingly.
      */
-    public TreeLayer(IUniqueIndexLayer underlyingLayer,
+    public TreeLayer(
+            IUniqueIndexLayer underlyingLayer,
             ITreeRowModel<?> treeRowModel,
             IndentedTreeImagePainter indentedTreeImagePainter) {
         this(underlyingLayer, treeRowModel, indentedTreeImagePainter, true);
@@ -121,9 +133,13 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            <code>false</code> if you want to specify your own
      *            configuration.
      */
-    public TreeLayer(IUniqueIndexLayer underlyingLayer,
-            ITreeRowModel<?> treeRowModel, boolean useDefaultConfiguration) {
-        this(underlyingLayer, treeRowModel, new IndentedTreeImagePainter(),
+    public TreeLayer(
+            IUniqueIndexLayer underlyingLayer,
+            ITreeRowModel<?> treeRowModel,
+            boolean useDefaultConfiguration) {
+        this(underlyingLayer,
+                treeRowModel,
+                new IndentedTreeImagePainter(),
                 useDefaultConfiguration);
     }
 
@@ -145,15 +161,14 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      *            <code>false</code> if you want to specify your own
      *            configuration.
      */
-    public TreeLayer(IUniqueIndexLayer underlyingLayer,
+    public TreeLayer(
+            IUniqueIndexLayer underlyingLayer,
             ITreeRowModel<?> treeRowModel,
             IndentedTreeImagePainter indentedTreeImagePainter,
             boolean useDefaultConfiguration) {
 
         super(underlyingLayer);
         this.treeRowModel = treeRowModel;
-
-        this.hiddenRowIndexes = new TreeSet<Integer>();
 
         if (useDefaultConfiguration) {
             addConfiguration(new DefaultTreeLayerConfiguration(this));
@@ -164,31 +179,26 @@ public class TreeLayer extends AbstractRowHideShowLayer {
         registerCommandHandler(new TreeExpandCollapseCommandHandler(this));
         registerCommandHandler(new TreeCollapseAllCommandHandler(this));
         registerCommandHandler(new TreeExpandAllCommandHandler(this));
+        registerCommandHandler(new TreeExpandToLevelCommandHandler(this));
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
-        LabelStack configLabels = super.getConfigLabelsByPosition(
-                columnPosition, rowPosition);
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 
         if (isTreeColumn(columnPosition)) {
             configLabels.addLabelOnTop(TREE_COLUMN_CELL);
 
             int rowIndex = getRowIndexByPosition(rowPosition);
-            configLabels
-            .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE
-                    + this.treeRowModel.depth(rowIndex));
+            configLabels.addLabelOnTop(
+                    DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + this.treeRowModel.depth(rowIndex));
             if (!this.treeRowModel.hasChildren(rowIndex)) {
-                configLabels
-                .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
+                configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
             } else {
                 if (this.treeRowModel.isCollapsed(rowIndex)) {
-                    configLabels
-                    .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
+                    configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
                 } else {
-                    configLabels
-                    .addLabelOnTop(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
+                    configLabels.addLabelOnTop(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
                 }
             }
         }
@@ -247,16 +257,18 @@ public class TreeLayer extends AbstractRowHideShowLayer {
     }
 
     @Override
-    public ICellPainter getCellPainter(int columnPosition, int rowPosition,
+    public ICellPainter getCellPainter(
+            int columnPosition, int rowPosition,
             ILayerCell cell, IConfigRegistry configRegistry) {
-        ICellPainter cellPainter = super.getCellPainter(columnPosition,
-                rowPosition, cell, configRegistry);
+        ICellPainter cellPainter = super.getCellPainter(
+                columnPosition, rowPosition, cell, configRegistry);
 
         if (cell.getConfigLabels().hasLabel(TREE_COLUMN_CELL)) {
 
             ICellPainter treeCellPainter = configRegistry.getConfigAttribute(
                     TreeConfigAttributes.TREE_STRUCTURE_PAINTER,
-                    cell.getDisplayMode(), cell.getConfigLabels().getLabels());
+                    cell.getDisplayMode(),
+                    cell.getConfigLabels().getLabels());
 
             if (treeCellPainter != null) {
                 ICellPainter innerWrapper = treeCellPainter;
@@ -267,11 +279,9 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                     while (treePainter == null
                             && innerWrapper != null
                             && innerWrapper instanceof CellPainterWrapper
-                            && ((CellPainterWrapper) innerWrapper)
-                            .getWrappedPainter() != null) {
+                            && ((CellPainterWrapper) innerWrapper).getWrappedPainter() != null) {
 
-                        innerWrapper = ((CellPainterWrapper) innerWrapper)
-                                .getWrappedPainter();
+                        innerWrapper = ((CellPainterWrapper) innerWrapper).getWrappedPainter();
                         if (innerWrapper instanceof IndentedTreeImagePainter) {
                             treePainter = (IndentedTreeImagePainter) innerWrapper;
                         }
@@ -286,16 +296,13 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                     log.warn("There is no IndentedTreeImagePainter found for TREE_STRUCTURE_PAINTER, " //$NON-NLS-1$
                             + "using local configured IndentedTreeImagePainter as fallback"); //$NON-NLS-1$
                     // fallback
-                    this.indentedTreeImagePainter
-                    .setBaseCellPainter(cellPainter);
-                    cellPainter = new BackgroundPainter(
-                            this.indentedTreeImagePainter);
+                    this.indentedTreeImagePainter.setBaseCellPainter(cellPainter);
+                    cellPainter = new BackgroundPainter(this.indentedTreeImagePainter);
                 }
             } else {
                 // backwards compatibility fallback
                 this.indentedTreeImagePainter.setBaseCellPainter(cellPainter);
-                cellPainter = new BackgroundPainter(
-                        this.indentedTreeImagePainter);
+                cellPainter = new BackgroundPainter(this.indentedTreeImagePainter);
             }
         }
 
@@ -399,6 +406,17 @@ public class TreeLayer extends AbstractRowHideShowLayer {
         fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
     }
 
+    public void expandToLevel(int level) {
+        List<Integer> rowIndexes = this.treeRowModel.expandToLevel(level);
+        // Bug 432865: iterating and removing every single item is faster than
+        // removeAll()
+        for (final Integer expandedChildRowIndex : rowIndexes) {
+            this.hiddenRowIndexes.remove(expandedChildRowIndex);
+        }
+        invalidateCache();
+        fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
+    }
+
     /**
      * Checks the underlying layer if the row is hidden by another layer.
      *
@@ -439,17 +457,14 @@ public class TreeLayer extends AbstractRowHideShowLayer {
             int rowIndex = getRowIndexByPosition(command.getRowPosition());
             if (this.treeRowModel.hasChildren(rowIndex)
                     && !this.treeRowModel.isCollapsed(rowIndex)) {
-                List<Integer> childIndexes = this.treeRowModel
-                        .getChildIndexes(rowIndex);
+                List<Integer> childIndexes = this.treeRowModel.getChildIndexes(rowIndex);
                 int[] childPositions = new int[childIndexes.size() + 1];
                 childPositions[0] = command.getRowPosition();
                 for (int i = 1; i < childIndexes.size() + 1; i++) {
-                    int childPos = getRowPositionByIndex(childIndexes
-                            .get(i - 1));
+                    int childPos = getRowPositionByIndex(childIndexes.get(i - 1));
                     childPositions[i] = childPos;
                 }
-                return super.doCommand(new MultiRowHideCommand(this,
-                        childPositions));
+                return super.doCommand(new MultiRowHideCommand(this, childPositions));
             }
         }
         return super.doCommand(command);
@@ -474,11 +489,9 @@ public class TreeLayer extends AbstractRowHideShowLayer {
                 int rowIndex = getRowIndexByPosition(rowPos);
                 if (this.treeRowModel.hasChildren(rowIndex)
                         && !this.treeRowModel.isCollapsed(rowIndex)) {
-                    List<Integer> childIndexes = this.treeRowModel
-                            .getChildIndexes(rowIndex);
+                    List<Integer> childIndexes = this.treeRowModel.getChildIndexes(rowIndex);
                     for (Integer childIndex : childIndexes) {
-                        rowPositionsToHide
-                        .add(getRowPositionByIndex(childIndex));
+                        rowPositionsToHide.add(getRowPositionByIndex(childIndex));
                     }
                 }
             }
@@ -487,8 +500,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
             for (int i = 0; i < rowPositionsToHide.size(); i++) {
                 childPositions[i] = rowPositionsToHide.get(i);
             }
-            return super
-                    .doCommand(new MultiRowHideCommand(this, childPositions));
+            return super.doCommand(new MultiRowHideCommand(this, childPositions));
         }
         return super.doCommand(command);
     }
@@ -505,7 +517,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
     /**
      * Configure whether (column index == 0) or (column position == 0) should be
      * performed to identify the tree column.
-     * 
+     *
      * @param useTreeColumnIndex
      *            <code>true</code> if the column index should be used to
      *            determine the tree column, <code>false</code> if the column
