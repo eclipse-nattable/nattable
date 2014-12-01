@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453791
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._505_Selection;
 
@@ -38,8 +39,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionBindings;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
+import org.eclipse.nebula.widgets.nattable.selection.config.DefaultRowSelectionLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -47,15 +47,11 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Example showing how selection works in a NatTable grid composition. This
  * example also uses row selection.
- * 
- * @author Dirk Fauth
- *
  */
 public class _5052_RowSelectionExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400,
-                new _5052_RowSelectionExample());
+        StandaloneNatExampleRunner.run(600, 400, new _5052_RowSelectionExample());
     }
 
     @Override
@@ -79,17 +75,23 @@ public class _5052_RowSelectionExample extends AbstractNatExample {
         propertyToLabelMap.put("married", "Married");
         propertyToLabelMap.put("birthday", "Birthday");
 
-        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
-                propertyNames);
+        IColumnPropertyAccessor<Person> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
 
         final List<Person> data = PersonService.getPersons(10);
 
         // create the body layer stack
-        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(
-                data, columnPropertyAccessor);
-        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-        final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        IRowDataProvider<Person> bodyDataProvider =
+                new ListDataProvider<Person>(data, columnPropertyAccessor);
+        final DataLayer bodyDataLayer =
+                new DataLayer(bodyDataProvider);
+        // create a SelectionLayer without using the default configuration
+        // this enables us to add the row selection configuration cleanly
+        // afterwards
+        final SelectionLayer selectionLayer =
+                new SelectionLayer(bodyDataLayer, false);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
         // use a RowSelectionModel that will perform row selections and is able
         // to identify a row via unique ID
@@ -103,40 +105,40 @@ public class _5052_RowSelectionExample extends AbstractNatExample {
 
                 }));
 
-        // register different selection move command handler that always moves
-        // by row
-        selectionLayer
-                .addConfiguration(new RowOnlySelectionConfiguration<Person>());
-
-        // register selection bindings that will perform row selections instead
-        // of cell selections
-        // registering the bindings on a layer that is above the SelectionLayer
-        // will consume the
-        // commands before they are handled by the SelectionLayer
-        viewportLayer.addConfiguration(new RowOnlySelectionBindings());
+        // register the DefaultRowSelectionLayerConfiguration that contains the
+        // default styling and functionality bindings (search, tick update)
+        // and different configurations for a move command handler that always
+        // moves by a row and row only selection bindings
+        selectionLayer.addConfiguration(new DefaultRowSelectionLayerConfiguration());
 
         // create the column header layer stack
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(
-                columnHeaderDataProvider), viewportLayer, selectionLayer);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(
+                        new DataLayer(columnHeaderDataProvider), viewportLayer, selectionLayer);
 
         // create the row header layer stack
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(
-                new DefaultRowHeaderDataLayer(new DefaultRowHeaderDataProvider(
-                        bodyDataProvider)), viewportLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(
+                        new DefaultRowHeaderDataLayer(
+                                new DefaultRowHeaderDataProvider(bodyDataProvider)),
+                        viewportLayer,
+                        selectionLayer);
 
         // create the corner layer stack
-        ILayer cornerLayer = new CornerLayer(new DataLayer(
-                new DefaultCornerDataProvider(columnHeaderDataProvider,
-                        rowHeaderDataProvider)), rowHeaderLayer,
-                columnHeaderLayer);
+        ILayer cornerLayer =
+                new CornerLayer(
+                        new DataLayer(
+                                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)),
+                        rowHeaderLayer,
+                        columnHeaderLayer);
 
         // create the grid layer composed with the prior created layer stacks
-        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         return new NatTable(parent, gridLayer);
     }
