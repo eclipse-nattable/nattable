@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453914
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.gui;
 
@@ -196,17 +197,16 @@ public class SearchDialog extends Dialog {
     private ILayer findSelectionLayer(ILayer layer) {
         if (layer == null || layer instanceof SelectionLayer) {
             return layer;
-        } else if (layer instanceof CompositeLayer) {
+        }
+        else if (layer instanceof CompositeLayer) {
             // if the layer is a CompositeLayer, search for the SelectionLayer
-            // in every region
-            // as the SelectionLayer is typically placed in the bottom/right
-            // most region (e.g. the body
-            // in a grid, the search is performed backwards
+            // in every region as the SelectionLayer is typically placed in the
+            // bottom/right most region (e.g. the body in a grid, the search is
+            // performed backwards
             CompositeLayer composite = (CompositeLayer) layer;
             for (int x = composite.getLayoutXCount(); x >= 0; x--) {
                 for (int y = composite.getLayoutYCount(); y >= 0; y--) {
-                    ILayer childStack = composite
-                            .getChildLayerByLayoutCoordinate(x, y);
+                    ILayer childStack = composite.getChildLayerByLayoutCoordinate(x, y);
                     ILayer result = findSelectionLayer(childStack);
                     if (result instanceof SelectionLayer) {
                         return result;
@@ -220,13 +220,13 @@ public class SearchDialog extends Dialog {
     }
 
     private String getTextForSelection(PositionCoordinate selection) {
-        if (this.selectionLayer == null || selection == null
+        if (this.selectionLayer == null
+                || selection == null
                 || selection.columnPosition == SelectionLayer.NO_SELECTION) {
             return ""; //$NON-NLS-1$
         }
-        final ILayerCell cell = this.selectionLayer.getCellByPosition(
-                selection.columnPosition, selection.rowPosition);
-        return cell == null ? "" : cell.getDataValue().toString(); //$NON-NLS-1$
+        final ILayerCell cell = this.selectionLayer.getCellByPosition(selection.columnPosition, selection.rowPosition);
+        return (cell == null || cell.getDataValue() == null) ? "" : cell.getDataValue().toString(); //$NON-NLS-1$
     }
 
     @Override
@@ -291,7 +291,9 @@ public class SearchDialog extends Dialog {
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER)
                 .grab(true, false).applyTo(label);
 
-        this.findButton = createButton(panel, IDialogConstants.CLIENT_ID,
+        this.findButton = createButton(
+                panel,
+                IDialogConstants.CLIENT_ID,
                 Messages.getString("Search.findButtonLabel"), false); //$NON-NLS-1$
         int buttonWidth = getButtonWidthHint(this.findButton);
         GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
@@ -321,10 +323,8 @@ public class SearchDialog extends Dialog {
     public static int getButtonWidthHint(Button button) {
         button.setFont(JFaceResources.getDialogFont());
         PixelConverter converter = new PixelConverter(button);
-        int widthHint = converter
-                .convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
-        return Math.max(widthHint,
-                button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+        int widthHint = converter.convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+        return Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
     }
 
     private Composite createInputPanel(final Composite composite) {
@@ -383,8 +383,7 @@ public class SearchDialog extends Dialog {
             }
         });
         final Button backwardButton = new Button(directionGroup, SWT.RADIO);
-        backwardButton
-                .setText(Messages.getString("Search.backwardButtonLabel")); //$NON-NLS-1$
+        backwardButton.setText(Messages.getString("Search.backwardButtonLabel")); //$NON-NLS-1$
         backwardButton.setSelection(!this.forwardValue);
 
         final Group scopeGroup = new Group(row, SWT.SHADOW_ETCHED_IN);
@@ -407,26 +406,21 @@ public class SearchDialog extends Dialog {
         this.selectionButton.setSelection(!this.allValue);
 
         final Group optionsGroup = new Group(row, SWT.SHADOW_ETCHED_IN);
-        GridDataFactory.fillDefaults().grab(true, true).span(2, 1)
-                .applyTo(optionsGroup);
+        GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(optionsGroup);
         optionsGroup.setText(Messages.getString("Search.options")); //$NON-NLS-1$
         optionsGroup.setLayout(new GridLayout(2, true));
         this.caseSensitiveButton = new Button(optionsGroup, SWT.CHECK);
-        this.caseSensitiveButton.setText(Messages
-                .getString("Search.caseSensitiveButtonLabel")); //$NON-NLS-1$
+        this.caseSensitiveButton.setText(Messages.getString("Search.caseSensitiveButtonLabel")); //$NON-NLS-1$
         this.caseSensitiveButton.setSelection(this.caseSensitiveValue);
         this.wrapSearchButton = new Button(optionsGroup, SWT.CHECK);
-        this.wrapSearchButton.setText(Messages
-                .getString("Search.wrapSearchButtonLabel")); //$NON-NLS-1$
+        this.wrapSearchButton.setText(Messages.getString("Search.wrapSearchButtonLabel")); //$NON-NLS-1$
         this.wrapSearchButton.setSelection(this.wrapSearchValue);
         this.wholeWordButton = new Button(optionsGroup, SWT.CHECK);
-        this.wholeWordButton.setText(Messages
-                .getString("Search.wholeWordButtonLabel")); //$NON-NLS-1$
+        this.wholeWordButton.setText(Messages.getString("Search.wholeWordButtonLabel")); //$NON-NLS-1$
         this.wholeWordButton.setSelection(this.wholeWordValue);
         this.wholeWordButton.setEnabled(!this.regexValue);
         this.incrementalButton = new Button(optionsGroup, SWT.CHECK);
-        this.incrementalButton.setText(Messages
-                .getString("Search.incrementalButtonLabel")); //$NON-NLS-1$
+        this.incrementalButton.setText(Messages.getString("Search.incrementalButtonLabel")); //$NON-NLS-1$
         this.incrementalButton.setSelection(this.incrementalValue);
         this.incrementalButton.setEnabled(!this.regexValue);
         this.incrementalButton.addSelectionListener(new SelectionAdapter() {
@@ -447,8 +441,7 @@ public class SearchDialog extends Dialog {
             }
         });
         this.columnFirstButton = new Button(optionsGroup, SWT.CHECK);
-        this.columnFirstButton
-                .setText(Messages.getString("Search.columnFirstLabel")); //$NON-NLS-1$
+        this.columnFirstButton.setText(Messages.getString("Search.columnFirstLabel")); //$NON-NLS-1$
         this.columnFirstButton.setSelection(this.columnFirstValue);
         // TODO
         // includeCollapsedButton = new Button(optionsGroup, SWT.CHECK);
@@ -503,8 +496,7 @@ public class SearchDialog extends Dialog {
             PositionCoordinate pos = getPosition();
             if (!pos.equals(this.selections.peek().pos)) {
                 this.selections.clear();
-                this.selections
-                        .push(new SelectionItem(getTextForSelection(pos), pos));
+                this.selections.push(new SelectionItem(getTextForSelection(pos), pos));
             }
         }
     }
@@ -544,44 +536,36 @@ public class SearchDialog extends Dialog {
 
             @Override
             public void run() {
-                PositionCoordinate previous = new PositionCoordinate(SearchDialog.this.selections
-                        .peek().pos);
+                PositionCoordinate previous =
+                        new PositionCoordinate(SearchDialog.this.selections.peek().pos);
                 try {
-                    final SearchCommand searchCommand = createSearchCommand(
-                            text, isIncremental);
+                    final SearchCommand searchCommand = createSearchCommand(text, isIncremental);
                     final SearchEventListener searchEventListener = new SearchEventListener();
                     searchCommand.setSearchEventListener(searchEventListener);
                     SearchDialog.this.natTable.doCommand(searchCommand);
                     if (searchEventListener.pos == null) {
                         // Beep and show status if not found
-                        SearchDialog.this.statusLabel.setText(Messages
-                                .getString("Search.textNotFound")); //$NON-NLS-1$
+                        SearchDialog.this.statusLabel.setText(Messages.getString("Search.textNotFound")); //$NON-NLS-1$
                         getShell().getDisplay().beep();
                     } else {
-                        SelectionItem selection = new SelectionItem(text,
-                                searchEventListener.pos);
+                        SelectionItem selection = new SelectionItem(text, searchEventListener.pos);
                         SearchDialog.this.selections.push(selection);
                         if (!isIncremental) {
                             resetIncrementalSelections();
                         }
                         // Beep and show status if wrapped
                         if (previous != null && previous.columnPosition > -1) {
-                            int columnDelta = selection.pos.columnPosition
-                                    - previous.columnPosition;
-                            int rowDelta = selection.pos.rowPosition
-                                    - previous.rowPosition;
+                            int columnDelta = selection.pos.columnPosition - previous.columnPosition;
+                            int rowDelta = selection.pos.rowPosition - previous.rowPosition;
                             if (!SearchDialog.this.forwardValue) {
                                 columnDelta = -columnDelta;
                                 rowDelta = -rowDelta;
                             }
-                            int primaryDelta = SearchDialog.this.columnFirstValue ? columnDelta
-                                    : rowDelta;
-                            int secondaryDelta = SearchDialog.this.columnFirstValue ? rowDelta
-                                    : columnDelta;
+                            int primaryDelta = SearchDialog.this.columnFirstValue ? columnDelta : rowDelta;
+                            int secondaryDelta = SearchDialog.this.columnFirstValue ? rowDelta : columnDelta;
                             if (primaryDelta < 0 || !isIncremental
                                     && primaryDelta == 0 && secondaryDelta <= 0) {
-                                SearchDialog.this.statusLabel.setText(Messages
-                                        .getString("Search.wrappedSearch")); //$NON-NLS-1$
+                                SearchDialog.this.statusLabel.setText(Messages.getString("Search.wrappedSearch")); //$NON-NLS-1$
                                 getShell().getDisplay().beep();
                             }
                         }
@@ -591,8 +575,7 @@ public class SearchDialog extends Dialog {
                     }
                 } catch (PatternSyntaxException e) {
                     SearchDialog.this.statusLabel.setText(e.getLocalizedMessage());
-                    SearchDialog.this.statusLabel.setForeground(JFaceColors
-                            .getErrorText(SearchDialog.this.statusLabel.getDisplay()));
+                    SearchDialog.this.statusLabel.setForeground(JFaceColors.getErrorText(SearchDialog.this.statusLabel.getDisplay()));
                     getShell().getDisplay().beep();
                 }
             }
@@ -601,13 +584,14 @@ public class SearchDialog extends Dialog {
 
     private PositionCoordinate getPosition() {
         if (this.selectionLayer == null) {
-            return new PositionCoordinate(null, SelectionLayer.NO_SELECTION,
+            return new PositionCoordinate(
+                    null,
+                    SelectionLayer.NO_SELECTION,
                     SelectionLayer.NO_SELECTION);
         }
         // The SelectionLayer keeps its anchor even if it has no selection.
         // Seems wrong to me, so here I clear out the anchor.
-        PositionCoordinate pos = new PositionCoordinate(
-                this.selectionLayer.getSelectionAnchor());
+        PositionCoordinate pos = new PositionCoordinate(this.selectionLayer.getSelectionAnchor());
         if (this.selectionLayer.getSelectedCellPositions().length == 0
                 && pos.rowPosition != SelectionLayer.NO_SELECTION) {
             this.selectionLayer.clear(false);
@@ -622,11 +606,14 @@ public class SearchDialog extends Dialog {
         this.selections.push(selection);
     }
 
-    private SelectCellCommand createSelectCellCommand(
-            PositionCoordinate selection) {
-        SelectCellCommand selectCellCommand = new SelectCellCommand(
-                selection.getLayer(), selection.columnPosition,
-                selection.rowPosition, false, false);
+    private SelectCellCommand createSelectCellCommand(PositionCoordinate selection) {
+        SelectCellCommand selectCellCommand =
+                new SelectCellCommand(
+                        selection.getLayer(),
+                        selection.columnPosition,
+                        selection.rowPosition,
+                        false,
+                        false);
         selectCellCommand.setForcingEntireCellIntoViewport(true);
         return selectCellCommand;
     }
@@ -643,23 +630,26 @@ public class SearchDialog extends Dialog {
         // includeCollapsedValue = includeCollapsedButton.getSelection();
         this.columnFirstValue = this.columnFirstButton.getSelection();
 
-        String searchDirection = this.forwardValue ? ISearchDirection.SEARCH_FORWARD
-                : ISearchDirection.SEARCH_BACKWARDS;
+        String searchDirection = this.forwardValue ? ISearchDirection.SEARCH_FORWARD : ISearchDirection.SEARCH_BACKWARDS;
         ISearchStrategy searchStrategy;
         if (this.allValue) {
-            searchStrategy = new GridSearchStrategy(
-                    this.natTable.getConfigRegistry(), true, this.columnFirstValue);
+            searchStrategy = new GridSearchStrategy(this.natTable.getConfigRegistry(), true, this.columnFirstValue);
         } else {
-            searchStrategy = new SelectionSearchStrategy(
-                    this.natTable.getConfigRegistry(), this.columnFirstValue);
+            searchStrategy = new SelectionSearchStrategy(this.natTable.getConfigRegistry(), this.columnFirstValue);
         }
-        return new SearchCommand(text, this.natTable, searchStrategy,
-                searchDirection, this.wrapSearchValue, this.caseSensitiveValue,
-                !this.regexValue && this.wholeWordValue, !this.regexValue && this.allValue
-                        && isIncremental, this.regexValue,
+        return new SearchCommand(
+                text,
+                this.natTable,
+                searchStrategy,
+                searchDirection,
+                this.wrapSearchValue,
+                this.caseSensitiveValue,
+                !this.regexValue && this.wholeWordValue,
+                !this.regexValue && this.allValue && isIncremental, this.regexValue,
                 // TODO
                 // includeCollapsedValue, comparator);
-                false, this.comparator);
+                false,
+                this.comparator);
     }
 
     /**
@@ -807,8 +797,7 @@ public class SearchDialog extends Dialog {
      * @param sectionName
      *            the section name
      */
-    private void writeHistory(List<String> history, IDialogSettings settings,
-            String sectionName) {
+    private void writeHistory(List<String> history, IDialogSettings settings, String sectionName) {
         int itemCount = history.size();
         Set<String> distinctItems = new HashSet<String>(itemCount);
         for (int i = 0; i < itemCount; i++) {
