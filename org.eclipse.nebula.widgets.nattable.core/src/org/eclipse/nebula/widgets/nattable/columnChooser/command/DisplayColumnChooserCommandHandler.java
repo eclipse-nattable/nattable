@@ -11,6 +11,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnChooser.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooser;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
@@ -32,6 +35,7 @@ public class DisplayColumnChooserCommandHandler extends AbstractLayerCommandHand
     private final boolean sortAvailableColumns;
     private final boolean preventHidingAllColumns;
     private IDialogSettings dialogSettings;
+    private List<Integer> nonModifiableColumns = new ArrayList<Integer>();
 
     public DisplayColumnChooserCommandHandler(SelectionLayer selectionLayer,
             ColumnHideShowLayer columnHideShowLayer,
@@ -80,6 +84,7 @@ public class DisplayColumnChooserCommandHandler extends AbstractLayerCommandHand
                 this.sortAvailableColumns, this.preventHidingAllColumns);
 
         columnChooser.setDialogSettings(this.dialogSettings);
+        columnChooser.addNonModifiableColumn(this.nonModifiableColumns.toArray(new Integer[] {}));
         columnChooser.openDialog();
         return true;
     }
@@ -88,9 +93,20 @@ public class DisplayColumnChooserCommandHandler extends AbstractLayerCommandHand
         this.dialogSettings = dialogSettings;
     }
 
+    public void addNonModifiableColumn(Integer... columnIndexes) {
+        for (int column : columnIndexes) {
+            this.nonModifiableColumns.add(column);
+        }
+    }
+
+    public void removeNonModifiableColumn(Integer... columnIndexes) {
+        for (int column : columnIndexes) {
+            this.nonModifiableColumns.remove(column);
+        }
+    }
+
     @Override
     public Class<DisplayColumnChooserCommand> getCommandClass() {
         return DisplayColumnChooserCommand.class;
     }
-
 }

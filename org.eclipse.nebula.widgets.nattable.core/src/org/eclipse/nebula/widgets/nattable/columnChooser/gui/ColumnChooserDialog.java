@@ -500,7 +500,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
                 List<Integer> toPositions = new ArrayList<Integer>();
 
-                int shift = 0;
+                int shift = getUpperMostIndex();
                 for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
                     toPositions.add(shift);
                     shift += groupedPositions.size();
@@ -540,11 +540,11 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                     }
 
                     // Column entry
-                    ColumnEntry columnEntry = getColumnEntryForPosition(this.selectedTree, firstPositionInGroup);
+                    ColumnEntry columnEntry = getPreviousColumnEntryForPosition(this.selectedTree, firstPositionInGroup);
                     int columnEntryIndex = columnEntry.getIndex();
 
                     // Previous column entry
-                    ColumnEntry previousColumnEntry = getColumnEntryForPosition(this.selectedTree, firstPositionInGroup - 1);
+                    ColumnEntry previousColumnEntry = getPreviousColumnEntryForPosition(this.selectedTree, firstPositionInGroup - 1);
                     int previousColumnEntryIndex = previousColumnEntry.getIndex();
 
                     if (columnGroupMoved) {
@@ -625,11 +625,11 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                     int lastPositionInGroup = groupedPositions.get(lastListIndex);
 
                     // Column entry
-                    ColumnEntry columnEntry = getColumnEntryForPosition(this.selectedTree, lastPositionInGroup);
+                    ColumnEntry columnEntry = getNextColumnEntryForPosition(this.selectedTree, lastPositionInGroup);
                     int columnEntryIndex = columnEntry.getIndex();
 
                     // Next Column Entry
-                    ColumnEntry nextColumnEntry = getColumnEntryForPosition(this.selectedTree, lastPositionInGroup + 1);
+                    ColumnEntry nextColumnEntry = getNextColumnEntryForPosition(this.selectedTree, lastPositionInGroup + 1);
 
                     // Next column entry will be null the last leaf in the tree
                     // is selected
@@ -686,11 +686,11 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 List<List<Integer>> reversed = new ArrayList<List<Integer>>(postionsGroupedByContiguous);
                 Collections.reverse(reversed);
 
-                int totalSelItemCount = getColumnEntriesIncludingNested(this.selectedTree.getItems()).size();
+                int lowerMost = getLowerMostIndex();
 
                 int shift = 0;
                 for (List<Integer> groupedPositions : reversed) {
-                    toPositions.add(Integer.valueOf(totalSelItemCount - shift - 1));
+                    toPositions.add(Integer.valueOf(lowerMost - shift));
                     shift += groupedPositions.size();
                 }
 
@@ -719,6 +719,28 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
             }
         }
         return null;
+    }
+
+    private ColumnEntry getPreviousColumnEntryForPosition(Tree tree, int columnEntryPosition) {
+        ColumnEntry result = null;
+        while (result == null && columnEntryPosition >= 0) {
+            result = getColumnEntryForPosition(tree, columnEntryPosition);
+            if (result == null) {
+                columnEntryPosition--;
+            }
+        }
+        return result;
+    }
+
+    private ColumnEntry getNextColumnEntryForPosition(Tree tree, int columnEntryPosition) {
+        ColumnEntry result = null;
+        while (result == null && columnEntryPosition <= getLowerMostIndex()) {
+            result = getColumnEntryForPosition(tree, columnEntryPosition);
+            if (result == null) {
+                columnEntryPosition++;
+            }
+        }
+        return result;
     }
 
     // Leaf related methods
@@ -932,6 +954,28 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 return true;
             }
         }
+    }
+
+    private int getUpperMostIndex() {
+        List<ColumnEntry> entries = getColumnEntriesIncludingNested(this.selectedTree.getItems());
+        int result = Integer.MAX_VALUE;
+
+        for (ColumnEntry entry : entries) {
+            result = Math.min(result, entry.getIndex());
+        }
+
+        return result;
+    }
+
+    private int getLowerMostIndex() {
+        List<ColumnEntry> entries = getColumnEntriesIncludingNested(this.selectedTree.getItems());
+        int result = -1;
+
+        for (ColumnEntry entry : entries) {
+            result = Math.max(result, entry.getIndex());
+        }
+
+        return result;
     }
 
 }

@@ -11,8 +11,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnChooser;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -95,7 +97,7 @@ public class ColumnChooser {
         this.hiddenColumnEntries = getHiddenColumnEntries();
         this.columnChooserDialog.populateAvailableTree(this.hiddenColumnEntries, this.columnGroupModel);
 
-        this.visibleColumnsEntries = ColumnChooserUtils.getVisibleColumnsEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer);
+        this.visibleColumnsEntries = getVisibleColumnEntries();
         this.columnChooserDialog.populateSelectedTree(this.visibleColumnsEntries, this.columnGroupModel);
 
         this.columnChooserDialog.expandAllLeaves();
@@ -119,7 +121,7 @@ public class ColumnChooser {
                 ColumnChooserUtils.showColumnEntries(addedItems, ColumnChooser.this.columnHideShowLayer);
                 refreshColumnChooserDialog();
                 ColumnChooser.this.columnChooserDialog
-                        .setSelectionIncludingNested(ColumnChooserUtils.getColumnEntryIndexes(addedItems));
+                .setSelectionIncludingNested(ColumnChooserUtils.getColumnEntryIndexes(addedItems));
             }
 
             @Override
@@ -209,7 +211,7 @@ public class ColumnChooser {
 
     private void refreshColumnChooserDialog() {
         this.hiddenColumnEntries = getHiddenColumnEntries();
-        this.visibleColumnsEntries = ColumnChooserUtils.getVisibleColumnsEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer);
+        this.visibleColumnsEntries = getVisibleColumnEntries();
 
         this.columnChooserDialog.removeAllLeaves();
 
@@ -220,10 +222,50 @@ public class ColumnChooser {
 
     protected List<ColumnEntry> getHiddenColumnEntries() {
         List<ColumnEntry> columnEntries = ColumnChooserUtils.getHiddenColumnEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer);
+
+        if (!this.nonModifiableColumns.isEmpty()) {
+            for (Iterator<ColumnEntry> it = columnEntries.iterator(); it.hasNext();) {
+                ColumnEntry entry = it.next();
+                if (this.nonModifiableColumns.contains(entry.getIndex())) {
+                    it.remove();
+                }
+            }
+        }
+
         if (this.sortAvailableColumns) {
             Collections.sort(columnEntries, COLUMN_ENTRY_LABEL_COMPARATOR);
         }
+
         return columnEntries;
+    }
+
+    private List<ColumnEntry> getVisibleColumnEntries() {
+        List<ColumnEntry> columnEntries = ColumnChooserUtils.getVisibleColumnsEntries(this.columnHideShowLayer, this.columnHeaderLayer, this.columnHeaderDataLayer);
+
+        if (!this.nonModifiableColumns.isEmpty()) {
+            for (Iterator<ColumnEntry> it = columnEntries.iterator(); it.hasNext();) {
+                ColumnEntry entry = it.next();
+                if (this.nonModifiableColumns.contains(entry.getIndex())) {
+                    it.remove();
+                }
+            }
+        }
+
+        return columnEntries;
+    }
+
+    List<Integer> nonModifiableColumns = new ArrayList<Integer>();
+
+    public void addNonModifiableColumn(Integer... columnIndexes) {
+        for (int column : columnIndexes) {
+            this.nonModifiableColumns.add(column);
+        }
+    }
+
+    public void removeNonModifiableColumn(Integer... columnIndexes) {
+        for (int column : columnIndexes) {
+            this.nonModifiableColumns.remove(column);
+        }
     }
 
 }
