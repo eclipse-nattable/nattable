@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Jonas Hugo, Markus Wahl.
+ * Copyright (c) 2014 Jonas Hugo, Markus Wahl, Dirk Fauth.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453851
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.preserve;
 
@@ -105,8 +106,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * @param rowIdAccessor
      *            provider of unique IDs for the rows
      */
-    public PreserveSelectionModel(IUniqueIndexLayer selectionLayer,
-            IRowDataProvider<T> rowDataProvider, IRowIdAccessor<T> rowIdAccessor) {
+    public PreserveSelectionModel(
+            IUniqueIndexLayer selectionLayer,
+            IRowDataProvider<T> rowDataProvider,
+            IRowIdAccessor<T> rowIdAccessor) {
         this.selectionLayer = selectionLayer;
         this.rowDataProvider = rowDataProvider;
         this.rowIdAccessor = rowIdAccessor;
@@ -212,29 +215,22 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * @param selectionOperation
      *            the operation to be perform on every cell in the area.
      */
-    private void performOnKnownCells(Rectangle selection,
-            SelectionOperation selectionOperation) {
+    private void performOnKnownCells(Rectangle selection, SelectionOperation selectionOperation) {
         int columnCount = this.selectionLayer.getColumnCount();
         int rowCount = this.selectionLayer.getRowCount();
         int startColumnPosition = selection.x;
         int startRowPosition = selection.y;
         if (startColumnPosition < columnCount && startRowPosition < rowCount) {
 
-            int columnStartIndex = this.selectionLayer
-                    .getColumnIndexByPosition(selection.x);
-            int numberOfVisibleColumnsToBeSelected = (selection.x
-                    + selection.width <= columnCount) ? selection.width
-                            : columnCount - columnStartIndex;
-            int rowStartIndex = this.selectionLayer
-                    .getRowIndexByPosition(selection.y);
-            int numberOfVisibleRowsToBeSelected = (selection.y
-                    + selection.height <= rowCount) ? selection.height
-                            : rowCount - rowStartIndex;
+            int columnStartIndex = this.selectionLayer.getColumnIndexByPosition(selection.x);
+            int numberOfVisibleColumnsToBeSelected = (selection.x + selection.width <= columnCount)
+                    ? selection.width : columnCount - columnStartIndex;
+            int rowStartIndex = this.selectionLayer.getRowIndexByPosition(selection.y);
+            int numberOfVisibleRowsToBeSelected = (selection.y + selection.height <= rowCount)
+                    ? selection.height : rowCount - rowStartIndex;
 
-            for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition
-                    + numberOfVisibleColumnsToBeSelected; columnPosition++) {
-                for (int rowPosition = startRowPosition; rowPosition < startRowPosition
-                        + numberOfVisibleRowsToBeSelected; rowPosition++) {
+            for (int columnPosition = startColumnPosition; columnPosition < startColumnPosition + numberOfVisibleColumnsToBeSelected; columnPosition++) {
+                for (int rowPosition = startRowPosition; rowPosition < startRowPosition + numberOfVisibleRowsToBeSelected; rowPosition++) {
                     selectionOperation.run(columnPosition, rowPosition);
                 }
             }
@@ -258,12 +254,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         this.selectionsLock.readLock().lock();
         try {
             for (CellPosition<T> cellPosition : this.selections.getSelections()) {
-                int rowPosition = getRowPositionByRowObject(cellPosition
-                        .getRowObject());
+                int rowPosition = getRowPositionByRowObject(cellPosition.getRowObject());
                 if (isRowVisible(rowPosition)) {
                     Integer columnPosition = cellPosition.getColumnPosition();
-                    Rectangle selectedCell = new Rectangle(columnPosition,
-                            rowPosition, 1, 1);
+                    Rectangle selectedCell = new Rectangle(columnPosition, rowPosition, 1, 1);
                     selectedCells.add(selectedCell);
                 }
             }
@@ -289,17 +283,14 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         this.selectionsLock.readLock().lock();
 
         try {
-            ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition,
-                    rowPosition);
+            ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition, rowPosition);
             int cellOriginRowPosition = cell.getOriginRowPosition();
 
-            for (int candidateRowPosition = cellOriginRowPosition; candidateRowPosition < cellOriginRowPosition
-                    + cell.getRowSpan(); candidateRowPosition++) {
+            for (int candidateRowPosition = cellOriginRowPosition; candidateRowPosition < cellOriginRowPosition + cell.getRowSpan(); candidateRowPosition++) {
                 Serializable rowId = getRowIdByPosition(candidateRowPosition);
 
                 int cellOriginColumnPosition = cell.getOriginColumnPosition();
-                for (int candidateColumnPosition = cellOriginColumnPosition; candidateColumnPosition < cellOriginColumnPosition
-                        + cell.getColumnSpan(); candidateColumnPosition++) {
+                for (int candidateColumnPosition = cellOriginColumnPosition; candidateColumnPosition < cellOriginColumnPosition + cell.getColumnSpan(); candidateColumnPosition++) {
                     if (this.selections.isSelected(rowId, candidateColumnPosition)) {
                         return true;
                     }
@@ -316,8 +307,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public int[] getSelectedColumnPositions() {
         this.selectionsLock.readLock().lock();
         try {
-            Collection<Integer> columnPositions = this.selections
-                    .getColumnPositions();
+            Collection<Integer> columnPositions = this.selections.getColumnPositions();
             return ArrayUtil.asIntArray(columnPositions);
         } finally {
             this.selectionsLock.readLock().unlock();
@@ -357,17 +347,14 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     }
 
     @Override
-    public boolean isColumnPositionFullySelected(int columnPosition,
-            int columnHeight) {
+    public boolean isColumnPositionFullySelected(int columnPosition, int columnHeight) {
         TreeSet<Integer> selectedRowIndices = new TreeSet<Integer>();
         this.selectionsLock.readLock().lock();
         try {
-            Selections<T>.Column selectedRowsInColumn = this.selections
-                    .getSelectedRows(columnPosition);
+            Selections<T>.Column selectedRowsInColumn = this.selections.getSelectedRows(columnPosition);
             if (hasColumnsSelectedRows(selectedRowsInColumn)) {
                 for (Serializable rowId : selectedRowsInColumn.getItems()) {
-                    Selections<T>.Row row = this.selections
-                            .getSelectedColumns(rowId);
+                    Selections<T>.Row row = this.selections.getSelectedColumns(rowId);
                     T rowObject = row.getRowObject();
                     int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
                     selectedRowIndices.add(rowIndex);
@@ -401,8 +388,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * @return whether there is a long enough continuous section of integers in
      *         sequence
      */
-    private boolean hasContinuousSection(TreeSet<Integer> sequence,
-            int minimumLength) {
+    private boolean hasContinuousSection(TreeSet<Integer> sequence, int minimumLength) {
         int counter = 0;
         Integer previousValue = null;
         for (Integer index : sequence) {
@@ -442,8 +428,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             for (Selections<T>.Row row : this.selections.getRows()) {
                 int rowPosition = getRowPositionByRowObject(row.getRowObject());
                 if (isRowVisible(rowPosition)) {
-                    visiblySelectedRowPositions.add(new Range(rowPosition,
-                            rowPosition + 1));
+                    visiblySelectedRowPositions.add(new Range(rowPosition, rowPosition + 1));
                 }
             }
         } finally {
@@ -492,11 +477,9 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             T rowObject = getRowObjectByPosition(rowPosition);
             if (rowObject != null) {
                 Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
-                Selections<T>.Row selectedColumnsInRow = this.selections
-                        .getSelectedColumns(rowId);
+                Selections<T>.Row selectedColumnsInRow = this.selections.getSelectedColumns(rowId);
                 if (hasRowSelectedColumns(selectedColumnsInRow)) {
-                    for (Integer columnPosition : selectedColumnsInRow
-                            .getItems()) {
+                    for (Integer columnPosition : selectedColumnsInRow.getItems()) {
                         selectedColumnPositions.add(columnPosition);
                     }
                 }
@@ -612,8 +595,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      * @return an undefined point
      */
     private Point createUndefinedPoint() {
-        return new Point(SelectionLayer.NO_SELECTION,
-                SelectionLayer.NO_SELECTION);
+        return new Point(SelectionLayer.NO_SELECTION, SelectionLayer.NO_SELECTION);
     }
 
     @Override
@@ -644,8 +626,8 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void setSelectionAnchor(Point coordinate) {
         this.selectionsLock.writeLock().lock();
         try {
-            this.selectionAnchor = new CellPosition<T>(
-                    getRowObjectByPosition(coordinate.y), coordinate.x);
+            this.selectionAnchor =
+                    new CellPosition<T>(getRowObjectByPosition(coordinate.y), coordinate.x);
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
@@ -655,8 +637,8 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void setLastSelectedCell(Point coordinate) {
         this.selectionsLock.writeLock().lock();
         try {
-            this.lastSelectedCell = new CellPosition<T>(
-                    getRowObjectByPosition(coordinate.y), coordinate.x);
+            this.lastSelectedCell =
+                    new CellPosition<T>(getRowObjectByPosition(coordinate.y), coordinate.x);
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
@@ -666,7 +648,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void setLastSelectedRegion(Rectangle region) {
         this.selectionsLock.writeLock().lock();
         try {
+            this.selections.clear();
+
             this.lastSelectedRegion = region;
+
             if (region != null) {
                 this.lastSelectedRegionOriginRowObject = getRowObjectByPosition(region.y);
             }

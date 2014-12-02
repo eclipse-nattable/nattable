@@ -1,15 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - Use getters and setters for
  *         the markers of SelectionLayer instead of the fields.
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453851
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -21,8 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class SelectCellCommandHandler implements
-        ILayerCommandHandler<SelectCellCommand> {
+public class SelectCellCommandHandler implements ILayerCommandHandler<SelectCellCommand> {
 
     private final SelectionLayer selectionLayer;
 
@@ -32,14 +32,19 @@ public class SelectCellCommandHandler implements
 
     @Override
     public boolean doCommand(ILayer targetLayer, SelectCellCommand command) {
-        if (command.convertToTargetLayer(selectionLayer)) {
-            toggleCell(command.getColumnPosition(), command.getRowPosition(),
-                    command.isShiftMask(), command.isControlMask(),
+        if (command.convertToTargetLayer(this.selectionLayer)) {
+            toggleCell(
+                    command.getColumnPosition(),
+                    command.getRowPosition(),
+                    command.isShiftMask(),
+                    command.isControlMask(),
                     command.isForcingEntireCellIntoViewport());
-            selectionLayer.fireCellSelectionEvent(command.getColumnPosition(),
+            this.selectionLayer.fireCellSelectionEvent(
+                    command.getColumnPosition(),
                     command.getRowPosition(),
                     command.isForcingEntireCellIntoViewport(),
-                    command.isShiftMask(), command.isControlMask());
+                    command.isShiftMask(),
+                    command.isControlMask());
             return true;
         }
         return false;
@@ -48,26 +53,25 @@ public class SelectCellCommandHandler implements
     /**
      * Toggles the selection state of the given row and column.
      */
-    protected void toggleCell(int columnPosition, int rowPosition,
+    protected void toggleCell(
+            int columnPosition, int rowPosition,
             boolean withShiftMask, boolean withControlMask,
             boolean forcingEntireCellIntoViewport) {
         boolean selectCell = true;
         if (isControlOnly(withShiftMask, withControlMask)) {
-            if (selectionLayer.isCellPositionSelected(columnPosition,
-                    rowPosition)) {
-                ILayerCell cell = selectionLayer.getCellByPosition(
-                        columnPosition, rowPosition);
+            if (this.selectionLayer.isCellPositionSelected(columnPosition, rowPosition)) {
+                ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition, rowPosition);
                 Rectangle cellRect = new Rectangle(
                         cell.getOriginColumnPosition(),
-                        cell.getOriginRowPosition(), cell.getColumnSpan(),
+                        cell.getOriginRowPosition(),
+                        cell.getColumnSpan(),
                         cell.getRowSpan());
-                selectionLayer.clearSelection(cellRect);
+                this.selectionLayer.clearSelection(cellRect);
                 selectCell = false;
             }
         }
         if (selectCell) {
-            selectCell(columnPosition, rowPosition, withShiftMask,
-                    withControlMask);
+            selectCell(columnPosition, rowPosition, withShiftMask, withControlMask);
         }
     }
 
@@ -76,71 +80,72 @@ public class SelectCellCommandHandler implements
      */
     public void selectCell(int columnPosition, int rowPosition,
             boolean withShiftMask, boolean withControlMask) {
+
         if (!withShiftMask && !withControlMask) {
-            selectionLayer.clear(false);
+            this.selectionLayer.clear(false);
         }
 
-        ILayerCell cell = selectionLayer.getCellByPosition(columnPosition,
+        ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition,
                 rowPosition);
 
         if (cell != null) {
-            selectionLayer.setLastSelectedCell(cell.getOriginColumnPosition(),
+            this.selectionLayer.setLastSelectedCell(cell.getOriginColumnPosition(),
                     cell.getOriginRowPosition());
 
             // Shift pressed + row selected
-            if (selectionLayer.getSelectionModel().isMultipleSelectionAllowed()
+            if (this.selectionLayer.getSelectionModel().isMultipleSelectionAllowed()
                     && withShiftMask
-                    && selectionLayer.getLastSelectedRegion() != null
-                    && selectionLayer.hasRowSelection()
-                    && (selectionLayer.getSelectionAnchor().rowPosition != SelectionLayer.NO_SELECTION)
-                    && (selectionLayer.getSelectionAnchor().columnPosition != SelectionLayer.NO_SELECTION)) {
+                    && this.selectionLayer.getLastSelectedRegion() != null
+                    && this.selectionLayer.hasRowSelection()
+                    && (this.selectionLayer.getSelectionAnchor().rowPosition != SelectionLayer.NO_SELECTION)
+                    && (this.selectionLayer.getSelectionAnchor().columnPosition != SelectionLayer.NO_SELECTION)) {
                 // if cell.rowPosition > getSelectionAnchor().rowPositon, then
                 // use cell.rowPosition + span - 1 (maxRowPosition)
                 // else use cell.originRowPosition (minRowPosition)
                 // and compare with selectionAnchor.rowPosition
-                if (cell.getRowPosition() > selectionLayer.getSelectionAnchor().rowPosition) {
-                    int maxRowPosition = cell.getOriginRowPosition()
-                            + cell.getRowSpan() - 1;
-                    selectionLayer.getLastSelectedRegion().height = Math
-                            .abs(selectionLayer.getSelectionAnchor().rowPosition
-                                    - maxRowPosition) + 1;
+                Rectangle lastSelected = new Rectangle(
+                        this.selectionLayer.getLastSelectedRegion().x,
+                        this.selectionLayer.getLastSelectedRegion().y,
+                        this.selectionLayer.getLastSelectedRegion().width,
+                        this.selectionLayer.getLastSelectedRegion().height);
+
+                if (cell.getRowPosition() > this.selectionLayer.getSelectionAnchor().rowPosition) {
+                    int maxRowPosition = cell.getOriginRowPosition() + cell.getRowSpan() - 1;
+                    lastSelected.height = Math.abs(
+                            this.selectionLayer.getSelectionAnchor().rowPosition - maxRowPosition) + 1;
                 } else {
                     int minRowPosition = cell.getOriginRowPosition();
-                    selectionLayer.getLastSelectedRegion().height = Math
-                            .abs(selectionLayer.getSelectionAnchor().rowPosition
-                                    - minRowPosition) + 1;
+                    lastSelected.height = Math.abs(
+                            this.selectionLayer.getSelectionAnchor().rowPosition - minRowPosition) + 1;
                 }
-                selectionLayer.getLastSelectedRegion().y = Math.min(
-                        selectionLayer.getSelectionAnchor().rowPosition,
+                lastSelected.y = Math.min(
+                        this.selectionLayer.getSelectionAnchor().rowPosition,
                         cell.getOriginRowPosition());
 
-                if (cell.getColumnPosition() > selectionLayer
-                        .getSelectionAnchor().columnPosition) {
-                    int maxColumnPosition = cell.getOriginColumnPosition()
-                            + cell.getColumnSpan() - 1;
-                    selectionLayer.getLastSelectedRegion().width = Math
-                            .abs(selectionLayer.getSelectionAnchor().columnPosition
-                                    - maxColumnPosition) + 1;
+                if (cell.getColumnPosition() > this.selectionLayer.getSelectionAnchor().columnPosition) {
+                    int maxColumnPosition = cell.getOriginColumnPosition() + cell.getColumnSpan() - 1;
+                    lastSelected.width = Math.abs(
+                            this.selectionLayer.getSelectionAnchor().columnPosition - maxColumnPosition) + 1;
                 } else {
                     int minColumnPosition = cell.getOriginColumnPosition();
-                    selectionLayer.getLastSelectedRegion().width = Math
-                            .abs(selectionLayer.getSelectionAnchor().columnPosition
-                                    - minColumnPosition) + 1;
+                    lastSelected.width = Math.abs(
+                            this.selectionLayer.getSelectionAnchor().columnPosition - minColumnPosition) + 1;
                 }
-                selectionLayer.getLastSelectedRegion().x = Math.min(
-                        selectionLayer.getSelectionAnchor().columnPosition,
+                lastSelected.x = Math.min(
+                        this.selectionLayer.getSelectionAnchor().columnPosition,
                         cell.getOriginColumnPosition());
 
-                selectionLayer.addSelection(selectionLayer
-                        .getLastSelectedRegion());
+                this.selectionLayer.setLastSelectedRegion(lastSelected);
+                this.selectionLayer.addSelection(this.selectionLayer.getLastSelectedRegion());
             } else {
-                selectionLayer.setLastSelectedRegion(null);
+                this.selectionLayer.setLastSelectedRegion(null);
                 Rectangle selection = new Rectangle(
                         cell.getOriginColumnPosition(),
-                        cell.getOriginRowPosition(), cell.getColumnSpan(),
+                        cell.getOriginRowPosition(),
+                        cell.getColumnSpan(),
                         cell.getRowSpan());
 
-                selectionLayer.addSelection(selection);
+                this.selectionLayer.addSelection(selection);
             }
         }
     }

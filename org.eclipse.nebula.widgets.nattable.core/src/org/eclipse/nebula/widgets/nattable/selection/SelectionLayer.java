@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
- *       Markus Wahl <Markus.Wahl@jeppesen.com> - Delegate markers to model iff
- *         model is an IMarkerSelectionModel. Add getters and setters for marker
- *         fields.
+ *       Markus Wahl <Markus.Wahl@jeppesen.com> - Delegate markers to model if
+ *         model is an IMarkerSelectionModel. Add getters and setters for marker fields
  *     neal zhang <nujiah001@126.com> - change some methods and fields visibility
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453851
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -84,41 +84,35 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         this(underlyingLayer, null, true);
     }
 
-    public SelectionLayer(IUniqueIndexLayer underlyingLayer,
-            boolean useDefaultConfiguration) {
+    public SelectionLayer(IUniqueIndexLayer underlyingLayer, boolean useDefaultConfiguration) {
         this(underlyingLayer, null, useDefaultConfiguration);
     }
 
-    public SelectionLayer(IUniqueIndexLayer underlyingLayer,
-            ISelectionModel selectionModel, boolean useDefaultConfiguration) {
+    public SelectionLayer(IUniqueIndexLayer underlyingLayer, ISelectionModel selectionModel,
+            boolean useDefaultConfiguration) {
         this(underlyingLayer, selectionModel, useDefaultConfiguration, true);
     }
 
-    public SelectionLayer(IUniqueIndexLayer underlyingLayer,
-            ISelectionModel selectionModel, boolean useDefaultConfiguration,
-            boolean registerDefaultEventHandler) {
+    public SelectionLayer(IUniqueIndexLayer underlyingLayer, ISelectionModel selectionModel,
+            boolean useDefaultConfiguration, boolean registerDefaultEventHandler) {
         super(underlyingLayer);
         this.underlyingLayer = underlyingLayer;
 
         setLayerPainter(new SelectionLayerPainter());
 
-        this.selectionModel = selectionModel != null ? selectionModel
-                : new SelectionModel(this);
+        this.selectionModel = selectionModel != null ? selectionModel : new SelectionModel(this);
 
-        lastSelectedCell = new PositionCoordinate(this, NO_SELECTION,
-                NO_SELECTION);
-        selectionAnchor = new PositionCoordinate(this, NO_SELECTION,
-                NO_SELECTION);
+        this.lastSelectedCell = new PositionCoordinate(this, NO_SELECTION, NO_SELECTION);
+        this.selectionAnchor = new PositionCoordinate(this, NO_SELECTION, NO_SELECTION);
 
-        selectRowCommandHandler = new SelectRowCommandHandler(this);
-        selectCellCommandHandler = new SelectCellCommandHandler(this);
-        selectColumnCommandHandler = new SelectColumnCommandHandler(this);
+        this.selectRowCommandHandler = new SelectRowCommandHandler(this);
+        this.selectCellCommandHandler = new SelectCellCommandHandler(this);
+        this.selectColumnCommandHandler = new SelectColumnCommandHandler(this);
 
         registerCommandHandlers();
 
         if (registerDefaultEventHandler) {
-            registerEventHandler(new SelectionLayerStructuralChangeEventHandler(
-                    this));
+            registerEventHandler(new SelectionLayerStructuralChangeEventHandler(this));
         }
         if (useDefaultConfiguration) {
             addConfiguration(new DefaultSelectionLayerConfiguration());
@@ -126,7 +120,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     public ISelectionModel getSelectionModel() {
-        return selectionModel;
+        return this.selectionModel;
     }
 
     public void setSelectionModel(ISelectionModel selectionModel) {
@@ -135,17 +129,17 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
     @Override
     public ILayerPainter getLayerPainter() {
-        return layerPainter;
+        return this.layerPainter;
     }
 
     public void addSelection(Rectangle selection) {
-        if (selection != getLastSelectedRegion()) {
-            setSelectionAnchor(getLastSelectedCell().columnPosition,
-                    getLastSelectedCell().rowPosition);
+        // if (selection != getLastSelectedRegion()) {
+        if (!selection.equals(getLastSelectedRegion())) {
+            setSelectionAnchor(getLastSelectedCell().columnPosition, getLastSelectedCell().rowPosition);
             setLastSelectedRegion(selection);
         }
 
-        selectionModel.addSelection(selection);
+        this.selectionModel.addSelection(selection);
     }
 
     public void clear() {
@@ -153,7 +147,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     public void clear(boolean fireSelectionEvent) {
-        selectionModel.clearSelection();
+        this.selectionModel.clearSelection();
 
         boolean validLastSelectedCell = hasSelection(getLastSelectedCell());
         setLastSelectedCell(NO_SELECTION, NO_SELECTION);
@@ -162,21 +156,24 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         setSelectionAnchor(NO_SELECTION, NO_SELECTION);
 
         if (validLastSelectedCell && fireSelectionEvent) {
-            fireCellSelectionEvent(getLastSelectedCell().columnPosition,
-                    getLastSelectedCell().rowPosition, false, false, false);
+            fireCellSelectionEvent(
+                    getLastSelectedCell().columnPosition,
+                    getLastSelectedCell().rowPosition,
+                    false, false, false);
         }
     }
 
     public void clearSelection(int columnPosition, int rowPosition) {
-        selectionModel.clearSelection(columnPosition, rowPosition);
+        this.selectionModel.clearSelection(columnPosition, rowPosition);
     }
 
     public void clearSelection(Rectangle selection) {
-        selectionModel.clearSelection(selection);
+        this.selectionModel.clearSelection(selection);
 
         // if the selection anchor is within the selection that is removed
         // it needs to be cleared also
-        Point anchorPoint = new Point(getSelectionAnchor().columnPosition,
+        Point anchorPoint = new Point(
+                getSelectionAnchor().columnPosition,
                 getSelectionAnchor().rowPosition);
         if (selection.contains(anchorPoint)) {
             setSelectionAnchor(NO_SELECTION, NO_SELECTION);
@@ -184,22 +181,22 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     public void selectAll() {
-        Rectangle selection = new Rectangle(0, 0, getColumnCount(),
-                getRowCount());
+        Rectangle selection = new Rectangle(0, 0, getColumnCount(), getRowCount());
         if (getLastSelectedCell().columnPosition == SelectionLayer.NO_SELECTION
                 || getLastSelectedCell().rowPosition == SelectionLayer.NO_SELECTION) {
             setLastSelectedCell(0, 0);
         }
         addSelection(selection);
-        fireCellSelectionEvent(getLastSelectedCell().columnPosition,
-                getLastSelectedCell().rowPosition, false, false, false);
+        fireCellSelectionEvent(
+                getLastSelectedCell().columnPosition,
+                getLastSelectedCell().rowPosition,
+                false, false, false);
     }
 
     // Cell features
 
     public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
-        return selectionModel.isCellPositionSelected(columnPosition,
-                rowPosition);
+        return this.selectionModel.isCellPositionSelected(columnPosition, rowPosition);
     }
 
     public void setSelectedCell(int columnPosition, int rowPosition) {
@@ -211,10 +208,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * last selected cell. If we are not extending a selection we need to move
      * from the selection <i>anchor</i>.
      */
-    protected PositionCoordinate getCellPositionToMoveFrom(
-            boolean withShiftMask, boolean withControlMask) {
-        return (!withShiftMask && !withControlMask) ? getSelectionAnchor()
-                : getLastSelectedCellPosition();
+    protected PositionCoordinate getCellPositionToMoveFrom(boolean withShiftMask, boolean withControlMask) {
+        return (!withShiftMask && !withControlMask) ? getSelectionAnchor() : getLastSelectedCellPosition();
     }
 
     public PositionCoordinate[] getSelectedCellPositions() {
@@ -228,10 +223,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
             for (Range rowIndexRange : selectedRowPositions) {
                 for (int rowPositionIndex = rowIndexRange.start; rowPositionIndex < rowIndexRange.end; rowPositionIndex++) {
-                    if (selectionModel.isCellPositionSelected(columnPosition,
-                            rowPositionIndex)) {
-                        selectedCells.add(new PositionCoordinate(this,
-                                columnPosition, rowPositionIndex));
+                    if (this.selectionModel.isCellPositionSelected(columnPosition, rowPositionIndex)) {
+                        selectedCells.add(new PositionCoordinate(this, columnPosition, rowPositionIndex));
                     }
                 }
             }
@@ -242,7 +235,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     /**
      * Retrieves the ILayerCells out of the SelectionLayer that are currently
      * marked as selected in the SelectionModel. Takes spanning into account.
-     * 
+     *
      * @return The selected ILayerCells
      */
     public Collection<ILayerCell> getSelectedCells() {
@@ -250,8 +243,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
         PositionCoordinate[] selectedCoords = getSelectedCellPositions();
         for (PositionCoordinate coord : selectedCoords) {
-            selectedCells.add(getCellByPosition(coord.columnPosition,
-                    coord.rowPosition));
+            selectedCells.add(getCellByPosition(coord.columnPosition, coord.rowPosition));
         }
 
         return selectedCells;
@@ -261,73 +253,91 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * Calculates the selected cells - taking into account Shift and Ctrl key
      * presses.
      */
-    public void selectCell(int columnPosition, int rowPosition,
-            boolean withShiftMask, boolean withControlMask) {
-        selectCellCommandHandler.selectCell(columnPosition, rowPosition,
-                withShiftMask, withControlMask);
+    public void selectCell(int columnPosition, int rowPosition, boolean withShiftMask, boolean withControlMask) {
+        this.selectCellCommandHandler.selectCell(columnPosition, rowPosition, withShiftMask, withControlMask);
     }
 
-    public void selectRegion(int startColumnPosition, int startRowPosition,
-            int regionWidth, int regionHeight) {
+    public void selectRegion(int startColumnPosition, int startRowPosition, int regionWidth, int regionHeight) {
         if (getLastSelectedRegion() == null) {
-            setLastSelectedRegion(new Rectangle(startColumnPosition,
-                    startRowPosition, regionWidth, regionHeight));
+            setLastSelectedRegion(new Rectangle(
+                    startColumnPosition,
+                    startRowPosition,
+                    regionWidth,
+                    regionHeight));
         } else {
-            setLastSelectedRegion(startColumnPosition, startRowPosition,
-                    regionWidth, regionHeight);
+            setLastSelectedRegion(
+                    startColumnPosition,
+                    startRowPosition,
+                    regionWidth,
+                    regionHeight);
         }
-        selectionModel.addSelection(new Rectangle(getLastSelectedRegion().x,
-                getLastSelectedRegion().y, getLastSelectedRegion().width,
+        this.selectionModel.addSelection(new Rectangle(
+                getLastSelectedRegion().x,
+                getLastSelectedRegion().y,
+                getLastSelectedRegion().width,
                 getLastSelectedRegion().height));
     }
 
     protected void setLastSelectedRegion(Rectangle region) {
-        if (selectionModel instanceof IMarkerSelectionModel) {
-            ((IMarkerSelectionModel) selectionModel)
-                    .setLastSelectedRegion(region);
+        if (this.selectionModel instanceof IMarkerSelectionModel) {
+            ((IMarkerSelectionModel) this.selectionModel).setLastSelectedRegion(region);
         } else {
-            lastSelectedRegion = region;
+            // if the given region is null or the current lastSelectedRegion is
+            // null, simply set the reference
+            if (region == null || this.lastSelectedRegion == null) {
+                this.lastSelectedRegion = region;
+            }
+            else {
+                // we are modifying the values of the current lastSelectedRegion
+                // instead of setting a new reference because of reference
+                // issues in other places
+                this.lastSelectedRegion.x = region.x;
+                this.lastSelectedRegion.y = region.y;
+                this.lastSelectedRegion.width = region.width;
+                this.lastSelectedRegion.height = region.height;
+            }
         }
     }
 
-    protected void setLastSelectedRegion(int startColumnPosition,
-            int startRowPosition, int regionWidth, int regionHeight) {
-        if (selectionModel instanceof IMarkerSelectionModel) {
-            ((IMarkerSelectionModel) selectionModel).setLastSelectedRegion(
-                    startColumnPosition, startRowPosition, regionWidth,
+    protected void setLastSelectedRegion(
+            int startColumnPosition, int startRowPosition,
+            int regionWidth, int regionHeight) {
+        if (this.selectionModel instanceof IMarkerSelectionModel) {
+            ((IMarkerSelectionModel) this.selectionModel).setLastSelectedRegion(
+                    startColumnPosition,
+                    startRowPosition,
+                    regionWidth,
                     regionHeight);
         } else {
-            lastSelectedRegion.x = startColumnPosition;
-            lastSelectedRegion.y = startRowPosition;
-            lastSelectedRegion.width = regionWidth;
-            lastSelectedRegion.height = regionHeight;
+            this.lastSelectedRegion.x = startColumnPosition;
+            this.lastSelectedRegion.y = startRowPosition;
+            this.lastSelectedRegion.width = regionWidth;
+            this.lastSelectedRegion.height = regionHeight;
         }
     }
 
     // Selection anchor
 
     public PositionCoordinate getSelectionAnchor() {
-        if (selectionModel instanceof IMarkerSelectionModel) {
-            Point coordinate = ((IMarkerSelectionModel) selectionModel)
-                    .getSelectionAnchor();
+        if (this.selectionModel instanceof IMarkerSelectionModel) {
+            Point coordinate = ((IMarkerSelectionModel) this.selectionModel).getSelectionAnchor();
             return new PositionCoordinate(this, coordinate.x, coordinate.y);
         } else {
-            return selectionAnchor;
+            return this.selectionAnchor;
         }
     }
 
-    public void moveSelectionAnchor(int startColumnPositionInRegion,
-            int startRowPosition) {
+    public void moveSelectionAnchor(int startColumnPositionInRegion, int startRowPosition) {
         setSelectionAnchor(startColumnPositionInRegion, startRowPosition);
     }
 
     void setSelectionAnchor(int columnPosition, int rowPosition) {
-        if (selectionModel instanceof IMarkerSelectionModel) {
-            ((IMarkerSelectionModel) selectionModel)
-                    .setSelectionAnchor(new Point(columnPosition, rowPosition));
+        if (this.selectionModel instanceof IMarkerSelectionModel) {
+            ((IMarkerSelectionModel) this.selectionModel).setSelectionAnchor(
+                    new Point(columnPosition, rowPosition));
         } else {
-            selectionAnchor.columnPosition = columnPosition;
-            selectionAnchor.rowPosition = rowPosition;
+            this.selectionAnchor.columnPosition = columnPosition;
+            this.selectionAnchor.rowPosition = rowPosition;
         }
     }
 
@@ -343,12 +353,11 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     PositionCoordinate getLastSelectedCell() {
-        if (selectionModel instanceof IMarkerSelectionModel) {
-            Point coordinate = ((IMarkerSelectionModel) selectionModel)
-                    .getLastSelectedCell();
+        if (this.selectionModel instanceof IMarkerSelectionModel) {
+            Point coordinate = ((IMarkerSelectionModel) this.selectionModel).getLastSelectedCell();
             return new PositionCoordinate(this, coordinate.x, coordinate.y);
         } else {
-            return lastSelectedCell;
+            return this.lastSelectedCell;
         }
     }
 
@@ -358,21 +367,20 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     public void setLastSelectedCell(int columnPosition, int rowPosition) {
-        if (selectionModel instanceof IMarkerSelectionModel) {
-            ((IMarkerSelectionModel) selectionModel)
-                    .setLastSelectedCell(new Point(columnPosition, rowPosition));
+        if (this.selectionModel instanceof IMarkerSelectionModel) {
+            ((IMarkerSelectionModel) this.selectionModel).setLastSelectedCell(
+                    new Point(columnPosition, rowPosition));
         } else {
-            lastSelectedCell.columnPosition = columnPosition;
-            lastSelectedCell.rowPosition = rowPosition;
+            this.lastSelectedCell.columnPosition = columnPosition;
+            this.lastSelectedCell.rowPosition = rowPosition;
         }
     }
 
     public Rectangle getLastSelectedRegion() {
-        if (selectionModel instanceof IMarkerSelectionModel) {
-            return ((IMarkerSelectionModel) selectionModel)
-                    .getLastSelectedRegion();
+        if (this.selectionModel instanceof IMarkerSelectionModel) {
+            return ((IMarkerSelectionModel) this.selectionModel).getLastSelectedRegion();
         } else {
-            return lastSelectedRegion;
+            return this.lastSelectedRegion;
         }
     }
 
@@ -383,25 +391,26 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     public int[] getSelectedColumnPositions() {
-        return selectionModel.getSelectedColumnPositions();
+        return this.selectionModel.getSelectedColumnPositions();
     }
 
     public boolean isColumnPositionSelected(int columnPosition) {
-        return selectionModel.isColumnPositionSelected(columnPosition);
+        return this.selectionModel.isColumnPositionSelected(columnPosition);
     }
 
     public int[] getFullySelectedColumnPositions() {
-        return selectionModel.getFullySelectedColumnPositions(getRowCount());
+        return this.selectionModel.getFullySelectedColumnPositions(getRowCount());
     }
 
     public boolean isColumnPositionFullySelected(int columnPosition) {
-        return selectionModel.isColumnPositionFullySelected(columnPosition,
-                getRowCount());
+        return this.selectionModel.isColumnPositionFullySelected(columnPosition, getRowCount());
     }
 
-    public void selectColumn(int columnPosition, int rowPosition,
+    public void selectColumn(
+            int columnPosition, int rowPosition,
             boolean withShiftMask, boolean withControlMask) {
-        selectColumnCommandHandler.selectColumn(columnPosition, rowPosition,
+        this.selectColumnCommandHandler.selectColumn(
+                columnPosition, rowPosition,
                 withShiftMask, withControlMask);
     }
 
@@ -412,39 +421,41 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     public int getSelectedRowCount() {
-        return selectionModel.getSelectedRowCount();
+        return this.selectionModel.getSelectedRowCount();
     }
 
     public Set<Range> getSelectedRowPositions() {
-        return selectionModel.getSelectedRowPositions();
+        return this.selectionModel.getSelectedRowPositions();
     }
 
     public boolean isRowPositionSelected(int rowPosition) {
-        return selectionModel.isRowPositionSelected(rowPosition);
+        return this.selectionModel.isRowPositionSelected(rowPosition);
     }
 
     public int[] getFullySelectedRowPositions() {
-        return selectionModel.getFullySelectedRowPositions(getColumnCount());
+        return this.selectionModel.getFullySelectedRowPositions(getColumnCount());
     }
 
     public boolean isRowPositionFullySelected(int rowPosition) {
-        return selectionModel.isRowPositionFullySelected(rowPosition,
-                getColumnCount());
+        return this.selectionModel.isRowPositionFullySelected(rowPosition, getColumnCount());
     }
 
-    public void selectRow(int columnPosition, int rowPosition,
+    public void selectRow(
+            int columnPosition, int rowPosition,
             boolean withShiftMask, boolean withControlMask) {
-        selectRowCommandHandler.selectRows(columnPosition,
-                Arrays.asList(Integer.valueOf(rowPosition)), withShiftMask,
-                withControlMask, rowPosition);
+        this.selectRowCommandHandler.selectRows(
+                columnPosition,
+                Arrays.asList(Integer.valueOf(rowPosition)),
+                withShiftMask,
+                withControlMask,
+                rowPosition);
     }
 
     // ILayer methods
 
     @Override
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-        String displayMode = super.getDisplayModeByPosition(columnPosition,
-                rowPosition);
+        String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
         if (isCellPositionSelected(columnPosition, rowPosition)) {
             if (DisplayMode.HOVER.equals(displayMode)) {
                 return DisplayMode.SELECT_HOVER;
@@ -455,22 +466,19 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
-        LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition,
-                rowPosition);
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 
         ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
         if (cell != null) {
             Rectangle cellRectangle = new Rectangle(
                     cell.getOriginColumnPosition(),
-                    cell.getOriginRowPosition(), cell.getColumnSpan(),
+                    cell.getOriginRowPosition(),
+                    cell.getColumnSpan(),
                     cell.getRowSpan());
 
-            if (cellRectangle.contains(getSelectionAnchor().columnPosition,
-                    getSelectionAnchor().rowPosition)) {
-                labelStack
-                        .addLabel(SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
+            if (cellRectangle.contains(getSelectionAnchor().columnPosition, getSelectionAnchor().rowPosition)) {
+                labelStack.addLabel(SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
             }
         }
 
@@ -483,13 +491,12 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     protected void registerCommandHandlers() {
         // Command handlers also registered by the
         // DefaultSelectionLayerConfiguration
-        registerCommandHandler(selectCellCommandHandler);
-        registerCommandHandler(selectRowCommandHandler);
-        registerCommandHandler(selectColumnCommandHandler);
+        registerCommandHandler(this.selectCellCommandHandler);
+        registerCommandHandler(this.selectRowCommandHandler);
+        registerCommandHandler(this.selectColumnCommandHandler);
 
         registerCommandHandler(new EditSelectionCommandHandler(this));
-        registerCommandHandler(new InitializeAutoResizeColumnsCommandHandler(
-                this));
+        registerCommandHandler(new InitializeAutoResizeColumnsCommandHandler(this));
         registerCommandHandler(new InitializeAutoResizeRowsCommandHandler(this));
         registerCommandHandler(new CopyDataCommandHandler(this));
         registerCommandHandler(new SearchGridCellsCommandHandler(this));
@@ -531,8 +538,12 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             boolean forcingEntireCellIntoViewport, boolean withShiftMask,
             boolean withControlMask) {
 
-        final CellSelectionEvent selectionEvent = new CellSelectionEvent(this,
-                columnPosition, rowPosition, withShiftMask, withControlMask);
+        final CellSelectionEvent selectionEvent =
+                new CellSelectionEvent(this,
+                        columnPosition,
+                        rowPosition,
+                        withShiftMask,
+                        withControlMask);
         fireLayerEvent(selectionEvent);
     }
 
@@ -544,13 +555,13 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * will be consumed and a {@link MultiColumnHideCommand} will be created and
      * executed further down the layer stack, that contains all fully selected
      * column positions. Otherwise the given command will be executed further.<br>
-     * 
+     *
      * This is necessary because neither the ColumnHideShowLayer nor the action
      * that caused the execution of the {@link ColumnHideCommand} is aware of
      * the presence of the {@link SelectionLayer}. Without this transformation,
      * only the column on which the action was called will be hidden instead of
      * all selected ones.
-     * 
+     *
      * @param command
      *            The {@link ColumnHideCommand} to process
      * @return <code>true</code> if the command has been handled,
@@ -558,8 +569,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      */
     protected boolean handleColumnHideCommand(ColumnHideCommand command) {
         if (isColumnPositionFullySelected(command.getColumnPosition())) {
-            return handleMultiColumnHideCommand(new MultiColumnHideCommand(
-                    this, getFullySelectedColumnPositions()));
+            return handleMultiColumnHideCommand(new MultiColumnHideCommand(this, getFullySelectedColumnPositions()));
         } else {
             return super.doCommand(command);
         }
@@ -571,17 +581,19 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * cleared. This is necessary so the selection also disappears for the
      * selected columns. Otherwise after hiding the selection will be showed for
      * different columns.
-     * 
+     *
      * @param command
      *            The {@link MultiColumnHideCommand} to process
      * @return <code>true</code> if the command has been handled,
      *         <code>false</code> otherwise
      */
-    protected boolean handleMultiColumnHideCommand(
-            MultiColumnHideCommand command) {
+    protected boolean handleMultiColumnHideCommand(MultiColumnHideCommand command) {
         for (int columnPosition : command.getColumnPositions()) {
             if (isColumnPositionFullySelected(columnPosition)) {
-                Rectangle selection = new Rectangle(columnPosition, 0, 1,
+                Rectangle selection = new Rectangle(
+                        columnPosition,
+                        0,
+                        1,
                         Integer.MAX_VALUE);
                 clearSelection(selection);
             }
@@ -595,13 +607,13 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * consumed and a {@link MultiRowHideCommand} will be created and executed
      * further down the layer stack, that contains all fully selected row
      * positions. Otherwise the given command will be executed further.<br>
-     * 
+     *
      * This is necessary because neither the RowHideShowLayer nor the action
      * that caused the execution of the {@link RowHideCommand} is aware of the
      * presence of the {@link SelectionLayer}. Without this transformation, only
      * the row on which the action was called will be hidden instead of all
      * selected ones.
-     * 
+     *
      * @param command
      *            The {@link RowHideCommand} to process
      * @return <code>true</code> if the command has been handled,
@@ -609,8 +621,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      */
     protected boolean handleRowHideCommand(RowHideCommand command) {
         if (isRowPositionFullySelected(command.getRowPosition())) {
-            return handleMultiRowHideCommand(new MultiRowHideCommand(this,
-                    getFullySelectedRowPositions()));
+            return handleMultiRowHideCommand(new MultiRowHideCommand(this, getFullySelectedRowPositions()));
         } else {
             return super.doCommand(command);
         }
@@ -622,7 +633,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * cleared. This is necessary so the selection also disappears for the
      * selected rows. Otherwise after hiding the selection will be showed for
      * different rows.
-     * 
+     *
      * @param command
      *            The {@link MultiRowHideCommand} to process
      * @return <code>true</code> if the command has been handled,
@@ -631,8 +642,11 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     protected boolean handleMultiRowHideCommand(MultiRowHideCommand command) {
         for (int rowPosition : command.getRowPositions()) {
             if (isRowPositionFullySelected(rowPosition)) {
-                Rectangle selection = new Rectangle(0, rowPosition,
-                        Integer.MAX_VALUE, 1);
+                Rectangle selection = new Rectangle(
+                        0,
+                        rowPosition,
+                        Integer.MAX_VALUE,
+                        1);
                 clearSelection(selection);
             }
         }
@@ -646,12 +660,12 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * and executed further down the layer stack, that contains all fully
      * selected column positions. Otherwise the given command will be executed
      * further.<br>
-     * 
+     *
      * This is necessary because neither the underlying layers are not aware of
      * the presence of the {@link SelectionLayer}. Without this transformation,
      * only the column on which the action was called will be resized instead of
      * all selected ones.
-     * 
+     *
      * @param command
      *            The {@link ColumnResizeCommand} to process
      * @return <code>true</code> if the command has been handled,
@@ -659,10 +673,10 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      */
     protected boolean handleColumnResizeCommand(ColumnResizeCommand command) {
         if (isColumnPositionFullySelected(command.getColumnPosition())) {
-            return super.doCommand(new MultiColumnResizeCommand(this,
-                    selectionModel
-                            .getFullySelectedColumnPositions(getRowCount()),
-                    command.getNewColumnWidth()));
+            return super.doCommand(
+                    new MultiColumnResizeCommand(this,
+                            this.selectionModel.getFullySelectedColumnPositions(getRowCount()),
+                            command.getNewColumnWidth()));
         } else {
             return super.doCommand(command);
         }
@@ -674,12 +688,12 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * be consumed and a {@link MultiRowResizeCommand} will be created and
      * executed further down the layer stack, that contains all fully selected
      * row positions. Otherwise the given command will be executed further.<br>
-     * 
+     *
      * This is necessary because neither the underlying layers are not aware of
      * the presence of the {@link SelectionLayer}. Without this transformation,
      * only the row on which the action was called will be resized instead of
      * all selected ones.
-     * 
+     *
      * @param command
      *            The {@link RowResizeCommand} to process
      * @return <code>true</code> if the command has been handled,
@@ -687,10 +701,10 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      */
     protected boolean handleRowResizeCommand(RowResizeCommand command) {
         if (isRowPositionFullySelected(command.getRowPosition())) {
-            return super.doCommand(new MultiRowResizeCommand(this,
-                    selectionModel
-                            .getFullySelectedRowPositions(getColumnCount()),
-                    command.getNewHeight()));
+            return super.doCommand(
+                    new MultiRowResizeCommand(this,
+                            this.selectionModel.getFullySelectedRowPositions(getColumnCount()),
+                            command.getNewHeight()));
         } else {
             return super.doCommand(command);
         }
