@@ -35,7 +35,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
-import org.eclipse.nebula.widgets.nattable.group.config.ColumnGroupMenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.stack.ColumnGroupBodyLayerStack;
@@ -44,6 +43,7 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.swt.SWT;
@@ -79,33 +79,31 @@ public class _000_Column_groups extends AbstractNatExample {
         // Body
 
         String[] propertyNames = RowDataListFixture.getPropertyNames();
-        Map<String, String> propertyToLabelMap = RowDataListFixture
-                .getPropertyToLabelMap();
-        DefaultBodyDataProvider<RowDataFixture> bodyDataProvider = new DefaultBodyDataProvider<RowDataFixture>(
-                RowDataListFixture.getList(200), propertyNames);
-        ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(
-                new DataLayer(bodyDataProvider), this.columnGroupModel);
+        Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
+        DefaultBodyDataProvider<RowDataFixture> bodyDataProvider =
+                new DefaultBodyDataProvider<RowDataFixture>(RowDataListFixture.getList(200), propertyNames);
+        ColumnGroupBodyLayerStack bodyLayer =
+                new ColumnGroupBodyLayerStack(new DataLayer(bodyDataProvider), this.columnGroupModel);
 
         // Column header
 
-        DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DefaultColumnHeaderDataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                defaultColumnHeaderDataProvider);
-        this.columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayer, bodyLayer.getSelectionLayer());
-        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
-                this.columnHeaderLayer, bodyLayer.getSelectionLayer(),
-                this.columnGroupModel);
+        DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DefaultColumnHeaderDataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(defaultColumnHeaderDataProvider);
+        this.columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        ColumnGroupHeaderLayer columnGroupHeaderLayer =
+                new ColumnGroupHeaderLayer(
+                        this.columnHeaderLayer,
+                        bodyLayer.getSelectionLayer(),
+                        this.columnGroupModel);
 
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 1", 1, 2);
-        columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 2",
-                4, 5, 6, 7);
-        columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 3",
-                8, 9, 10);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 2", 4, 5, 6, 7);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 3", 8, 9, 10);
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 4", 11, 12, 13);
-        columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 5", 14, 15, 16,
-                17);
+        columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 5", 14, 15, 16, 17);
         columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Group 5", 15, 17);
         columnGroupHeaderLayer.setGroupUnbreakable(4);
         columnGroupHeaderLayer.setGroupUnbreakable(8);
@@ -113,34 +111,39 @@ public class _000_Column_groups extends AbstractNatExample {
 
         // Row header
 
-        final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayer, bodyLayer.getSelectionLayer());
+        final DefaultRowHeaderDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
         // Corner
 
-        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                defaultColumnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnGroupHeaderLayer);
+        final DefaultCornerDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(defaultColumnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnGroupHeaderLayer);
 
         // Grid
-        GridLayer gridLayer = new GridLayer(bodyLayer, columnGroupHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(bodyLayer, columnGroupHeaderLayer, rowHeaderLayer, cornerLayer);
 
         NatTable natTable = new NatTable(parent, gridLayer, false);
 
         // Register create column group command handler
 
         // Register column chooser
-        DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-                bodyLayer.getSelectionLayer(),
-                bodyLayer.getColumnHideShowLayer(), this.columnHeaderLayer,
-                columnHeaderDataLayer, columnGroupHeaderLayer, this.columnGroupModel);
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler =
+                new DisplayColumnChooserCommandHandler(
+                        bodyLayer.getSelectionLayer(),
+                        bodyLayer.getColumnHideShowLayer(),
+                        this.columnHeaderLayer,
+                        columnHeaderDataLayer,
+                        columnGroupHeaderLayer,
+                        this.columnGroupModel);
         bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
@@ -162,12 +165,9 @@ public class _000_Column_groups extends AbstractNatExample {
 
         // Column group header menu
         final Menu columnGroupHeaderMenu = new PopupMenuBuilder(natTable)
-                .withMenuItemProvider(
-                        ColumnGroupMenuItemProviders
-                                .renameColumnGroupMenuItemProvider())
-                .withMenuItemProvider(
-                        ColumnGroupMenuItemProviders
-                                .removeColumnGroupMenuItemProvider()).build();
+                .withMenuItemProvider(MenuItemProviders.renameColumnGroupMenuItemProvider())
+                .withMenuItemProvider(MenuItemProviders.removeColumnGroupMenuItemProvider())
+                .build();
 
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
             @Override

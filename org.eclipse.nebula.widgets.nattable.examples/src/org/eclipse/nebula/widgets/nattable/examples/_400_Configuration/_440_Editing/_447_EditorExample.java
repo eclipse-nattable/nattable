@@ -41,7 +41,6 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.DateCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.MultiLineTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.PasswordCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.FileDialogCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -122,20 +121,19 @@ public class _447_EditorExample extends AbstractNatExample {
         propertyToLabelMap.put("favouriteDrinks", "Drinks");
         propertyToLabelMap.put("filename", "Filename");
 
-        IDataProvider bodyDataProvider = new ListDataProvider<ExtendedPersonWithAddress>(
-                PersonService.getExtendedPersonsWithAddress(10),
-                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(
-                        propertyNames));
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<ExtendedPersonWithAddress>(
+                        PersonService.getExtendedPersonsWithAddress(10),
+                        new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames));
 
-        DefaultGridLayer gridLayer = new DefaultGridLayer(bodyDataProvider,
-                new DefaultColumnHeaderDataProvider(propertyNames,
-                        propertyToLabelMap));
+        DefaultGridLayer gridLayer =
+                new DefaultGridLayer(bodyDataProvider,
+                        new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap));
 
-        final DataLayer bodyDataLayer = (DataLayer) gridLayer
-                .getBodyDataLayer();
+        final DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 
-        final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyDataLayer);
+        final ColumnOverrideLabelAccumulator columnLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(bodyDataLayer);
         bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
         registerColumnLabels(columnLabelAccumulator);
 
@@ -149,8 +147,7 @@ public class _447_EditorExample extends AbstractNatExample {
         return natTable;
     }
 
-    private void registerColumnLabels(
-            ColumnOverrideLabelAccumulator columnLabelAccumulator) {
+    private void registerColumnLabels(ColumnOverrideLabelAccumulator columnLabelAccumulator) {
         columnLabelAccumulator.registerColumnOverrides(0, COLUMN_ONE_LABEL);
         columnLabelAccumulator.registerColumnOverrides(1, COLUMN_TWO_LABEL);
         columnLabelAccumulator.registerColumnOverrides(2, COLUMN_THREE_LABEL);
@@ -163,10 +160,8 @@ public class _447_EditorExample extends AbstractNatExample {
         columnLabelAccumulator.registerColumnOverrides(9, COLUMN_TEN_LABEL);
         columnLabelAccumulator.registerColumnOverrides(10, COLUMN_ELEVEN_LABEL);
         columnLabelAccumulator.registerColumnOverrides(11, COLUMN_TWELVE_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(12,
-                COLUMN_THIRTEEN_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(13,
-                COLUMN_FOURTEEN_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(12, COLUMN_THIRTEEN_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(13, COLUMN_FOURTEEN_LABEL);
     }
 
     class EditorConfiguration extends AbstractRegistryConfiguration {
@@ -198,84 +193,92 @@ public class _447_EditorExample extends AbstractNatExample {
 
         private void registerColumnTwoTextEditor(IConfigRegistry configRegistry) {
             // register a TextCellEditor for column two that commits on key
-            // up/down
-            // moves the selection after commit by enter
+            // up/down moves the selection after commit by enter
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new TextCellEditor(true,
-                            true), DisplayMode.NORMAL,
+                    EditConfigAttributes.CELL_EDITOR,
+                    new TextCellEditor(true, true),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_TWO_LABEL);
 
             // configure to open the adjacent editor after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_ADJACENT_EDITOR, Boolean.TRUE,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_TWO_LABEL);
+                    EditConfigAttributes.OPEN_ADJACENT_EDITOR,
+                    Boolean.TRUE,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_TWO_LABEL);
 
             // configure a custom message for the multi edit dialog
             Map<String, Object> editDialogSettings = new HashMap<String, Object>();
-            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE,
-                    "Please specify the lastname in here:");
+            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE, "Please specify the lastname in here:");
 
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.EDIT_DIALOG_SETTINGS,
-                    editDialogSettings, DisplayMode.EDIT,
+                    editDialogSettings,
+                    DisplayMode.EDIT,
                     _447_EditorExample.COLUMN_TWO_LABEL);
         }
 
-        private void registerColumnThreePasswordEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnThreePasswordEditor(IConfigRegistry configRegistry) {
             // register a PasswordCellEditor for column three
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new PasswordCellEditor(),
-                    DisplayMode.NORMAL, _447_EditorExample.COLUMN_THREE_LABEL);
+                    EditConfigAttributes.CELL_EDITOR,
+                    new PasswordCellEditor(),
+                    DisplayMode.NORMAL,
+                    _447_EditorExample.COLUMN_THREE_LABEL);
 
             // configure the password editor to not support multi editing
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.SUPPORT_MULTI_EDIT, Boolean.FALSE,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_THREE_LABEL);
+                    EditConfigAttributes.SUPPORT_MULTI_EDIT,
+                    Boolean.FALSE,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_THREE_LABEL);
 
             // note that you should also register the corresponding
-            // PasswordTextPainter
-            // to ensure that the password is not rendered in clear text
+            // PasswordTextPainter to ensure that the password is not rendered
+            // in clear text
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
                     new PasswordTextPainter(), DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_THREE_LABEL);
         }
 
-        private void registerColumnFourMultiLineEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnFourMultiLineEditor(IConfigRegistry configRegistry) {
             // configure the multi line text editor for column four
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
-                    new MultiLineTextCellEditor(false), DisplayMode.NORMAL,
+                    new MultiLineTextCellEditor(false),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_FOUR_LABEL);
 
             // configure the multi line text editor to always open in a
             // subdialog
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_IN_DIALOG, Boolean.TRUE,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_FOUR_LABEL);
+                    EditConfigAttributes.OPEN_IN_DIALOG,
+                    Boolean.TRUE,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_FOUR_LABEL);
 
             Style cellStyle = new Style();
             cellStyle.setAttributeValue(
                     CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                     HorizontalAlignmentEnum.LEFT);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, cellStyle,
-                    DisplayMode.NORMAL, _447_EditorExample.COLUMN_FOUR_LABEL);
+                    CellConfigAttributes.CELL_STYLE,
+                    cellStyle,
+                    DisplayMode.NORMAL,
+                    _447_EditorExample.COLUMN_FOUR_LABEL);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, cellStyle,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_FOUR_LABEL);
+                    CellConfigAttributes.CELL_STYLE,
+                    cellStyle,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_FOUR_LABEL);
 
             // configure custom dialog settings
             Display display = Display.getCurrent();
             Map<String, Object> editDialogSettings = new HashMap<String, Object>();
-            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE,
-                    "My custom value");
-            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON,
-                    display.getSystemImage(SWT.ICON_WARNING));
-            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE,
-                    Boolean.TRUE);
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE, "My custom value");
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_WARNING));
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);
 
             Point size = new Point(400, 300);
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_SIZE, size);
@@ -283,77 +286,88 @@ public class _447_EditorExample extends AbstractNatExample {
             int screenWidth = display.getBounds().width;
             int screenHeight = display.getBounds().height;
             Point location = new Point(
-                    (screenWidth / (2 * display.getMonitors().length))
-                            - (size.x / 2), (screenHeight / 2) - (size.y / 2));
-            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_LOCATION,
-                    location);
+                    (screenWidth / (2 * display.getMonitors().length)) - (size.x / 2),
+                    (screenHeight / 2) - (size.y / 2));
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_LOCATION, location);
 
             // add custum message
-            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE,
-                    "Enter some free text in here:");
+            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE, "Enter some free text in here:");
 
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.EDIT_DIALOG_SETTINGS,
-                    editDialogSettings, DisplayMode.EDIT,
+                    editDialogSettings,
+                    DisplayMode.EDIT,
                     _447_EditorExample.COLUMN_FOUR_LABEL);
         }
 
-        private void registerColumnFiveIntegerEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnFiveIntegerEditor(IConfigRegistry configRegistry) {
             // register a TextCellEditor for column five that moves the
             // selection after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new TextCellEditor(false,
-                            true), DisplayMode.NORMAL,
+                    EditConfigAttributes.CELL_EDITOR,
+                    new TextCellEditor(false, true),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_FIVE_LABEL);
 
             // configure to open the adjacent editor after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_ADJACENT_EDITOR, Boolean.TRUE,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_FIVE_LABEL);
+                    EditConfigAttributes.OPEN_ADJACENT_EDITOR,
+                    Boolean.TRUE,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_FIVE_LABEL);
 
             // configure to open always in dialog to show the tick update in
             // normal mode
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_IN_DIALOG, Boolean.TRUE,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_FIVE_LABEL);
+                    EditConfigAttributes.OPEN_IN_DIALOG,
+                    Boolean.TRUE,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_FIVE_LABEL);
 
             // don't forget to register the Integer converter!
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_FIVE_LABEL);
         }
 
-        private void registerColumnSixDoubleEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnSixDoubleEditor(IConfigRegistry configRegistry) {
             // register a TextCellEditor for column five that moves the
             // selection after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new TextCellEditor(false,
-                            true), DisplayMode.NORMAL,
+                    EditConfigAttributes.CELL_EDITOR,
+                    new TextCellEditor(false, true),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_SIX_LABEL);
 
             // configure to open the adjacent editor after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_ADJACENT_EDITOR, Boolean.TRUE,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_SIX_LABEL);
+                    EditConfigAttributes.OPEN_ADJACENT_EDITOR,
+                    Boolean.TRUE,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_SIX_LABEL);
 
             // configure to open always in dialog to show the tick update in
             // normal mode
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_IN_DIALOG, Boolean.TRUE,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_SIX_LABEL);
+                    EditConfigAttributes.OPEN_IN_DIALOG,
+                    Boolean.TRUE,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_SIX_LABEL);
 
             // configure the tick update dialog to use the adjust mode
             configRegistry.registerConfigAttribute(
-                    TickUpdateConfigAttributes.USE_ADJUST_BY, Boolean.TRUE,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_SIX_LABEL);
+                    TickUpdateConfigAttributes.USE_ADJUST_BY,
+                    Boolean.TRUE,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_SIX_LABEL);
 
             // don't forget to register the Double converter!
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultDoubleDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultDoubleDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_SIX_LABEL);
         }
 
@@ -373,23 +387,26 @@ public class _447_EditorExample extends AbstractNatExample {
         private void registerColumnSevenCheckbox(IConfigRegistry configRegistry) {
             // register a CheckBoxCellEditor for column three
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new CheckBoxCellEditor(),
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_SEVEN_LABEL);
+                    EditConfigAttributes.CELL_EDITOR,
+                    new CheckBoxCellEditor(),
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_SEVEN_LABEL);
 
             // if you want to use the CheckBoxCellEditor, you should also
-            // consider
-            // using the corresponding CheckBoxPainter to show the content like
-            // a
-            // checkbox in your NatTable
+            // consider using the corresponding CheckBoxPainter to show the
+            // content like a checkbox in your NatTable
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new CheckBoxPainter(),
-                    DisplayMode.NORMAL, _447_EditorExample.COLUMN_SEVEN_LABEL);
+                    CellConfigAttributes.CELL_PAINTER,
+                    new CheckBoxPainter(),
+                    DisplayMode.NORMAL,
+                    _447_EditorExample.COLUMN_SEVEN_LABEL);
 
             // using a CheckBoxCellEditor also needs a Boolean conversion to
             // work correctly
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultBooleanDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultBooleanDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_SEVEN_LABEL);
         }
 
@@ -412,36 +429,38 @@ public class _447_EditorExample extends AbstractNatExample {
         private void registerColumnEightCheckbox(IConfigRegistry configRegistry) {
             // register a CheckBoxCellEditor for column four
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new CheckBoxCellEditor(),
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_EIGHT_LABEL);
+                    EditConfigAttributes.CELL_EDITOR,
+                    new CheckBoxCellEditor(),
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_EIGHT_LABEL);
 
             // if you want to use the CheckBoxCellEditor, you should also
-            // consider
-            // using the corresponding CheckBoxPainter to show the content like
-            // a
-            // checkbox in your NatTable
+            // consider using the corresponding CheckBoxPainter to show the
+            // content like a checkbox in your NatTable
             // in this case we use different icons to show how this works
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new CheckBoxPainter(GUIHelper.getImage("arrow_up"),
-                            GUIHelper.getImage("arrow_down")),
-                    DisplayMode.NORMAL, _447_EditorExample.COLUMN_EIGHT_LABEL);
+                    new CheckBoxPainter(GUIHelper.getImage("arrow_up"), GUIHelper.getImage("arrow_down")),
+                    DisplayMode.NORMAL,
+                    _447_EditorExample.COLUMN_EIGHT_LABEL);
 
             // using a CheckBoxCellEditor also needs a Boolean conversion to
             // work correctly
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    getGenderBooleanConverter(), DisplayMode.NORMAL,
+                    getGenderBooleanConverter(),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_EIGHT_LABEL);
         }
 
         private void registerColumnNineDateEditor(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new DateCellEditor(),
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_NINE_LABEL);
+                    EditConfigAttributes.CELL_EDITOR,
+                    new DateCellEditor(),
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_NINE_LABEL);
 
-            DateFormat formatter = DateFormat.getDateInstance(
-                    DateFormat.MEDIUM, Locale.getDefault());
+            DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
             String pattern = ((SimpleDateFormat) formatter).toPattern();
 
             // using a DateCellEditor also needs a Date conversion to work
@@ -449,7 +468,8 @@ public class _447_EditorExample extends AbstractNatExample {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new DefaultDateDisplayConverter(pattern),
-                    DisplayMode.NORMAL, _447_EditorExample.COLUMN_NINE_LABEL);
+                    DisplayMode.NORMAL,
+                    _447_EditorExample.COLUMN_NINE_LABEL);
         }
 
         /**
@@ -467,11 +487,13 @@ public class _447_EditorExample extends AbstractNatExample {
          */
         private void registerColumnTenComboBox(IConfigRegistry configRegistry) {
             // register a combobox editor for the street names
-            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-                    Arrays.asList(PersonService.getStreetNames()));
+            ComboBoxCellEditor comboBoxCellEditor =
+                    new ComboBoxCellEditor(Arrays.asList(PersonService.getStreetNames()));
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_TEN_LABEL);
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_TEN_LABEL);
         }
 
         /**
@@ -484,16 +506,20 @@ public class _447_EditorExample extends AbstractNatExample {
          */
         private void registerColumnElevenComboBox(IConfigRegistry configRegistry) {
             // register a combobox for the city names
-            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-                    Arrays.asList(PersonService.getCityNames()), -1);
+            ComboBoxCellEditor comboBoxCellEditor =
+                    new ComboBoxCellEditor(Arrays.asList(PersonService.getCityNames()), -1);
             comboBoxCellEditor.setFreeEdit(true);
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_ELEVEN_LABEL);
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_ELEVEN_LABEL);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new ComboBoxPainter(),
-                    DisplayMode.NORMAL, _447_EditorExample.COLUMN_ELEVEN_LABEL);
+                    CellConfigAttributes.CELL_PAINTER,
+                    new ComboBoxPainter(),
+                    DisplayMode.NORMAL,
+                    _447_EditorExample.COLUMN_ELEVEN_LABEL);
         }
 
         /**
@@ -506,8 +532,8 @@ public class _447_EditorExample extends AbstractNatExample {
          */
         private void registerColumnTwelveComboBox(IConfigRegistry configRegistry) {
             // register a combobox for the city names
-            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-                    Arrays.asList(PersonService.getFoodList()), -1);
+            ComboBoxCellEditor comboBoxCellEditor =
+                    new ComboBoxCellEditor(Arrays.asList(PersonService.getFoodList()), -1);
             comboBoxCellEditor.setMultiselect(true);
             comboBoxCellEditor.setUseCheckbox(true);
 
@@ -523,32 +549,32 @@ public class _447_EditorExample extends AbstractNatExample {
                     new DefaultDisplayConverter() {
 
                         @Override
-                        public Object canonicalToDisplayValue(
-                                Object canonicalValue) {
+                        public Object canonicalToDisplayValue(Object canonicalValue) {
                             if (canonicalValue instanceof Collection) {
                                 // Collection.toString() will add [ and ] around
                                 // the values in the Collection
                                 // So by removing the leading and ending
                                 // character, we remove the brackets
                                 String result = canonicalValue.toString();
-                                result = result.substring(1,
-                                        result.length() - 1);
+                                result = result.substring(1, result.length() - 1);
                                 return result;
                             }
                             // if the value is not a Collection we simply let
                             // the super class do the conversion
                             // this is necessary to show single values in the
                             // ComboBox correctly
-                            return super
-                                    .canonicalToDisplayValue(canonicalValue);
+                            return super.canonicalToDisplayValue(canonicalValue);
                         }
-                    }, DisplayMode.NORMAL,
+                    },
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_TWELVE_LABEL);
 
             comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_TWELVE_LABEL);
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_TWELVE_LABEL);
         }
 
         /**
@@ -560,22 +586,24 @@ public class _447_EditorExample extends AbstractNatExample {
          *
          * @param configRegistry
          */
-        private void registerColumnThirteenComboBox(
-                IConfigRegistry configRegistry) {
+        private void registerColumnThirteenComboBox(IConfigRegistry configRegistry) {
             // register a combobox for the city names
-            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-                    Arrays.asList(PersonService.getDrinkList()), -1);
+            ComboBoxCellEditor comboBoxCellEditor =
+                    new ComboBoxCellEditor(Arrays.asList(PersonService.getDrinkList()), -1);
             comboBoxCellEditor.setFreeEdit(true);
             comboBoxCellEditor.setMultiselect(true);
             comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
-                    DisplayMode.EDIT, _447_EditorExample.COLUMN_THIRTEEN_LABEL);
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_THIRTEEN_LABEL);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new PaddingDecorator(
-                            new ComboBoxPainter(GUIHelper.getImage("plus")), 0,
-                            2, 0, 0), DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    new PaddingDecorator(
+                            new ComboBoxPainter(GUIHelper.getImage("plus")), 0, 2, 0, 0),
+                    DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_THIRTEEN_LABEL);
         }
 
@@ -586,11 +614,11 @@ public class _447_EditorExample extends AbstractNatExample {
          *
          * @param configRegistry
          */
-        private void registerColumnFourteenFileDialogEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnFourteenFileDialogEditor(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
-                    new FileDialogCellEditor(), DisplayMode.EDIT,
+                    new FileDialogCellEditor(),
+                    DisplayMode.EDIT,
                     _447_EditorExample.COLUMN_FOURTEEN_LABEL);
         }
 
@@ -613,8 +641,7 @@ public class _447_EditorExample extends AbstractNatExample {
 
                 @Override
                 public Object displayToCanonicalValue(Object displayValue) {
-                    Boolean displayBoolean = Boolean.valueOf(displayValue
-                            .toString());
+                    Boolean displayBoolean = Boolean.valueOf(displayValue.toString());
                     return displayBoolean ? Gender.MALE : Gender.FEMALE;
                 }
 

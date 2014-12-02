@@ -373,7 +373,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
                 boolean expanded) {}
     }
 
-    private void printTree(TreeList<Datum> treeList, ITreeData<Datum> treeData) {
+    protected void printTree(TreeList<Datum> treeList, ITreeData<Datum> treeData) {
         System.out.println(treeList.size());
         for (int i = 0; i < treeList.size(); i++) {
             final Datum location = treeList.get(i);

@@ -38,7 +38,6 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.MultiLineTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.PasswordCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.FileDialogCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
@@ -96,8 +95,7 @@ import ca.odell.glazedlists.TransformedList;
 public class _804_GlazedListsEditorExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(1024, 400,
-                new _804_GlazedListsEditorExample());
+        StandaloneNatExampleRunner.run(1024, 400, new _804_GlazedListsEditorExample());
     }
 
     @Override
@@ -145,14 +143,15 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        GlazedListsGridEditorGridLayer<ExtendedPersonWithAddress> gridLayer = new GlazedListsGridEditorGridLayer<ExtendedPersonWithAddress>(
-                PersonService.getExtendedPersonsWithAddress(10),
-                configRegistry, propertyNames, propertyToLabelMap);
+        GlazedListsGridEditorGridLayer<ExtendedPersonWithAddress> gridLayer =
+                new GlazedListsGridEditorGridLayer<ExtendedPersonWithAddress>(
+                        PersonService.getExtendedPersonsWithAddress(10),
+                        configRegistry, propertyNames, propertyToLabelMap);
 
         final DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 
-        final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyDataLayer);
+        final ColumnOverrideLabelAccumulator columnLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(bodyDataLayer);
         bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
         registerColumnLabels(columnLabelAccumulator);
 
@@ -168,8 +167,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
         return natTable;
     }
 
-    private void registerColumnLabels(
-            ColumnOverrideLabelAccumulator columnLabelAccumulator) {
+    private void registerColumnLabels(ColumnOverrideLabelAccumulator columnLabelAccumulator) {
         columnLabelAccumulator.registerColumnOverrides(0, COLUMN_ONE_LABEL);
         columnLabelAccumulator.registerColumnOverrides(1, COLUMN_TWO_LABEL);
         columnLabelAccumulator.registerColumnOverrides(2, COLUMN_THREE_LABEL);
@@ -182,8 +180,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
         columnLabelAccumulator.registerColumnOverrides(9, COLUMN_TEN_LABEL);
         columnLabelAccumulator.registerColumnOverrides(10, COLUMN_ELEVEN_LABEL);
         columnLabelAccumulator.registerColumnOverrides(11, COLUMN_TWELVE_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(12,
-                COLUMN_THIRTEEN_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(12, COLUMN_THIRTEEN_LABEL);
     }
 
     class GlazedListsEditorBodyLayerStack<T> extends AbstractLayerTransform {
@@ -200,21 +197,18 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
         private final SortedList<T> sortedList;
         private final FilterList<T> filterList;
 
-        public GlazedListsEditorBodyLayerStack(Collection<T> valuesToShow,
-                IColumnPropertyAccessor<T> cpa, ConfigRegistry configRegistry) {
+        public GlazedListsEditorBodyLayerStack(
+                Collection<T> valuesToShow, IColumnPropertyAccessor<T> cpa, ConfigRegistry configRegistry) {
             this.eventList = GlazedLists.eventList(valuesToShow);
-            this.rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(this.eventList);
+            this.rowObjectsGlazedList = GlazedLists.threadSafeList(this.eventList);
             // NOTE: Remember to use the SortedList constructor with 'null' for
             // the Comparator
             this.sortedList = new SortedList<T>(this.rowObjectsGlazedList, null);
             this.filterList = new FilterList<T>(this.sortedList);
 
-            IDataProvider dataProvider = new GlazedListsDataProvider<T>(
-                    this.filterList, cpa);
+            IDataProvider dataProvider = new GlazedListsDataProvider<T>(this.filterList, cpa);
             this.bodyDataLayer = new DataLayer(dataProvider);
-            this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer,
-                    this.filterList);
+            this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer, this.filterList);
             this.columnReorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
             this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
             this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
@@ -233,8 +227,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
         }
     }
 
-    public class GlazedListsEditorColumnHeaderLayerStack<T> extends
-            AbstractLayerTransform {
+    public class GlazedListsEditorColumnHeaderLayerStack<T> extends AbstractLayerTransform {
 
         public GlazedListsEditorColumnHeaderLayerStack(
                 IDataProvider dataProvider,
@@ -242,25 +235,23 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
                 IColumnPropertyAccessor<T> columnPropertyAccessor,
                 IConfigRegistry configRegistry) {
 
-            DefaultColumnHeaderDataLayer dataLayer = new DefaultColumnHeaderDataLayer(
-                    dataProvider);
-            ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                    dataLayer, bodyLayerStack,
-                    bodyLayerStack.getSelectionLayer());
+            DefaultColumnHeaderDataLayer dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
+            ColumnHeaderLayer columnHeaderLayer =
+                    new ColumnHeaderLayer(dataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
             SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
-                    columnHeaderLayer, new GlazedListsSortModel<T>(
-                            bodyLayerStack.sortedList, columnPropertyAccessor,
-                            configRegistry, dataLayer), false);
+                    columnHeaderLayer,
+                    new GlazedListsSortModel<T>(
+                            bodyLayerStack.sortedList, columnPropertyAccessor, configRegistry, dataLayer),
+                    false);
 
             // Note: The column header layer is wrapped in a filter row
             // composite.
             // This plugs in the filter row functionality
             FilterRowHeaderComposite<T> filterRowHeaderLayer = new FilterRowHeaderComposite<T>(
                     new DefaultGlazedListsFilterStrategy<T>(
-                            bodyLayerStack.filterList, columnPropertyAccessor,
-                            configRegistry), sortHeaderLayer, dataProvider,
-                    configRegistry);
+                            bodyLayerStack.filterList, columnPropertyAccessor, configRegistry),
+                    sortHeaderLayer, dataProvider, configRegistry);
 
             setUnderlyingLayer(filterRowHeaderLayer);
         }
@@ -268,44 +259,48 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
 
     class GlazedListsGridEditorGridLayer<T> extends GridLayer {
 
-        public GlazedListsGridEditorGridLayer(Collection<T> valuesToShow,
-                ConfigRegistry configRegistry, final String[] propertyNames,
+        public GlazedListsGridEditorGridLayer(
+                Collection<T> valuesToShow,
+                ConfigRegistry configRegistry,
+                final String[] propertyNames,
                 Map<String, String> propertyToLabelMap) {
             super(true);
-            init(valuesToShow, configRegistry, propertyNames,
-                    propertyToLabelMap);
+            init(valuesToShow, configRegistry, propertyNames, propertyToLabelMap);
         }
 
-        private void init(Collection<T> valuesToShow,
-                ConfigRegistry configRegistry, final String[] propertyNames,
+        private void init(
+                Collection<T> valuesToShow,
+                ConfigRegistry configRegistry,
+                final String[] propertyNames,
                 Map<String, String> propertyToLabelMap) {
 
             // Body
-            IColumnPropertyAccessor<T> columnAccessor = new ExtendedReflectiveColumnPropertyAccessor<T>(
-                    propertyNames);
-            GlazedListsEditorBodyLayerStack<T> bodyLayer = new GlazedListsEditorBodyLayerStack<T>(
-                    valuesToShow, columnAccessor, configRegistry);
+            IColumnPropertyAccessor<T> columnAccessor =
+                    new ExtendedReflectiveColumnPropertyAccessor<T>(propertyNames);
+            GlazedListsEditorBodyLayerStack<T> bodyLayer =
+                    new GlazedListsEditorBodyLayerStack<T>(valuesToShow, columnAccessor, configRegistry);
 
             SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
 
             // Column header
-            IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                    propertyNames, propertyToLabelMap);
-            GlazedListsEditorColumnHeaderLayerStack<T> columnHeaderLayer = new GlazedListsEditorColumnHeaderLayerStack<T>(
-                    columnHeaderDataProvider, bodyLayer, columnAccessor,
-                    configRegistry);
+            IDataProvider columnHeaderDataProvider =
+                    new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+            GlazedListsEditorColumnHeaderLayerStack<T> columnHeaderLayer =
+                    new GlazedListsEditorColumnHeaderLayerStack<T>(
+                            columnHeaderDataProvider, bodyLayer, columnAccessor, configRegistry);
 
             // Row header
-            IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                    bodyLayer.getDataLayer().getDataProvider());
-            ILayer rowHeaderLayer = new RowHeaderLayer(
-                    new DefaultRowHeaderDataLayer(rowHeaderDataProvider),
-                    bodyLayer, selectionLayer);
+            IDataProvider rowHeaderDataProvider =
+                    new DefaultRowHeaderDataProvider(bodyLayer.getDataLayer().getDataProvider());
+            ILayer rowHeaderLayer =
+                    new RowHeaderLayer(
+                            new DefaultRowHeaderDataLayer(rowHeaderDataProvider), bodyLayer, selectionLayer);
 
             // Corner
-            ILayer cornerLayer = new CornerLayer(new DataLayer(
-                    new DefaultCornerDataProvider(columnHeaderDataProvider,
-                            rowHeaderDataProvider)), rowHeaderLayer,
+            ILayer cornerLayer = new CornerLayer(
+                    new DataLayer(
+                            new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)),
+                    rowHeaderLayer,
                     columnHeaderLayer);
 
             setBodyLayer(bodyLayer);
@@ -316,8 +311,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
 
         @SuppressWarnings("unchecked")
         public DataLayer getBodyDataLayer() {
-            return ((GlazedListsEditorBodyLayerStack<T>) getBodyLayer())
-                    .getDataLayer();
+            return ((GlazedListsEditorBodyLayerStack<T>) getBodyLayer()).getDataLayer();
         }
     }
 
@@ -349,65 +343,69 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
 
         private void registerColumnTwoTextEditor(IConfigRegistry configRegistry) {
             // register a TextCellEditor for column two that commits on key
-            // up/down
-            // moves the selection after commit by enter
+            // up/down moves the selection after commit by enter
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new TextCellEditor(true,
-                            true), DisplayMode.NORMAL,
+                    EditConfigAttributes.CELL_EDITOR,
+                    new TextCellEditor(true, true),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_TWO_LABEL);
 
             // configure to open the adjacent editor after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_ADJACENT_EDITOR, Boolean.TRUE,
+                    EditConfigAttributes.OPEN_ADJACENT_EDITOR,
+                    Boolean.TRUE,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_TWO_LABEL);
 
             // configure a custom message for the multi edit dialog
             Map<String, Object> editDialogSettings = new HashMap<String, Object>();
-            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE,
-                    "Please specify the lastname in here:");
+            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE, "Please specify the lastname in here:");
 
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.EDIT_DIALOG_SETTINGS,
-                    editDialogSettings, DisplayMode.EDIT,
+                    editDialogSettings,
+                    DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_TWO_LABEL);
         }
 
-        private void registerColumnThreePasswordEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnThreePasswordEditor(IConfigRegistry configRegistry) {
             // register a PasswordCellEditor for column three
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new PasswordCellEditor(),
+                    EditConfigAttributes.CELL_EDITOR,
+                    new PasswordCellEditor(),
                     DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_THREE_LABEL);
 
             // configure the password editor to not support multi editing
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.SUPPORT_MULTI_EDIT, Boolean.FALSE,
+                    EditConfigAttributes.SUPPORT_MULTI_EDIT,
+                    Boolean.FALSE,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_THREE_LABEL);
 
             // note that you should also register the corresponding
-            // PasswordTextPainter
-            // to ensure that the password is not rendered in clear text
+            // PasswordTextPainter to ensure that the password is not rendered
+            // in clear text
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new PasswordTextPainter(), DisplayMode.NORMAL,
+                    new PasswordTextPainter(),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_THREE_LABEL);
         }
 
-        private void registerColumnFourMultiLineEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnFourMultiLineEditor(IConfigRegistry configRegistry) {
             // configure the multi line text editor for column four
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
-                    new MultiLineTextCellEditor(false), DisplayMode.NORMAL,
+                    new MultiLineTextCellEditor(false),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
 
             // configure the multi line text editor to always open in a
             // subdialog
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_IN_DIALOG, Boolean.TRUE,
+                    EditConfigAttributes.OPEN_IN_DIALOG,
+                    Boolean.TRUE,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
 
@@ -416,23 +414,22 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
                     CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                     HorizontalAlignmentEnum.LEFT);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, cellStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    cellStyle,
                     DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, cellStyle,
+                    CellConfigAttributes.CELL_STYLE,
+                    cellStyle,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
 
             // configure custom dialog settings
             Display display = Display.getCurrent();
             Map<String, Object> editDialogSettings = new HashMap<String, Object>();
-            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE,
-                    "My custom value");
-            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON,
-                    display.getSystemImage(SWT.ICON_WARNING));
-            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE,
-                    Boolean.TRUE);
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE, "My custom value");
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_WARNING));
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);
 
             Point size = new Point(400, 300);
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_SIZE, size);
@@ -440,82 +437,88 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
             int screenWidth = display.getBounds().width;
             int screenHeight = display.getBounds().height;
             Point location = new Point(
-                    (screenWidth / (2 * display.getMonitors().length))
-                            - (size.x / 2), (screenHeight / 2) - (size.y / 2));
-            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_LOCATION,
-                    location);
+                    (screenWidth / (2 * display.getMonitors().length)) - (size.x / 2),
+                    (screenHeight / 2) - (size.y / 2));
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_LOCATION, location);
 
             // add custum message
-            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE,
-                    "Enter some free text in here:");
+            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE, "Enter some free text in here:");
 
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.EDIT_DIALOG_SETTINGS,
-                    editDialogSettings, DisplayMode.EDIT,
+                    editDialogSettings,
+                    DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_FOUR_LABEL);
         }
 
-        private void registerColumnFiveIntegerEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnFiveIntegerEditor(IConfigRegistry configRegistry) {
             // register a TextCellEditor for column five that moves the
             // selection after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new TextCellEditor(false,
-                            true), DisplayMode.NORMAL,
+                    EditConfigAttributes.CELL_EDITOR,
+                    new TextCellEditor(false, true),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_FIVE_LABEL);
 
             // configure to open the adjacent editor after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_ADJACENT_EDITOR, Boolean.TRUE,
+                    EditConfigAttributes.OPEN_ADJACENT_EDITOR,
+                    Boolean.TRUE,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_FIVE_LABEL);
 
             // configure to open always in dialog to show the tick update in
             // normal mode
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_IN_DIALOG, Boolean.TRUE,
+                    EditConfigAttributes.OPEN_IN_DIALOG,
+                    Boolean.TRUE,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_FIVE_LABEL);
 
             // don't forget to register the Integer converter!
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_FIVE_LABEL);
         }
 
-        private void registerColumnSixDoubleEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnSixDoubleEditor(IConfigRegistry configRegistry) {
             // register a TextCellEditor for column five that moves the
             // selection after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new TextCellEditor(false,
-                            true), DisplayMode.NORMAL,
+                    EditConfigAttributes.CELL_EDITOR,
+                    new TextCellEditor(false, true),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 
             // configure to open the adjacent editor after commit
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_ADJACENT_EDITOR, Boolean.TRUE,
+                    EditConfigAttributes.OPEN_ADJACENT_EDITOR,
+                    Boolean.TRUE,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 
             // configure to open always in dialog to show the tick update in
             // normal mode
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.OPEN_IN_DIALOG, Boolean.TRUE,
+                    EditConfigAttributes.OPEN_IN_DIALOG,
+                    Boolean.TRUE,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 
             // configure the tick update dialog to use the adjust mode
             configRegistry.registerConfigAttribute(
-                    TickUpdateConfigAttributes.USE_ADJUST_BY, Boolean.TRUE,
+                    TickUpdateConfigAttributes.USE_ADJUST_BY,
+                    Boolean.TRUE,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_SIX_LABEL);
 
             // don't forget to register the Double converter!
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultDoubleDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultDoubleDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_SIX_LABEL);
         }
 
@@ -535,17 +538,17 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
         private void registerColumnSevenCheckbox(IConfigRegistry configRegistry) {
             // register a CheckBoxCellEditor for column three
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new CheckBoxCellEditor(),
+                    EditConfigAttributes.CELL_EDITOR,
+                    new CheckBoxCellEditor(),
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_SEVEN_LABEL);
 
             // if you want to use the CheckBoxCellEditor, you should also
-            // consider
-            // using the corresponding CheckBoxPainter to show the content like
-            // a
-            // checkbox in your NatTable
+            // consider using the corresponding CheckBoxPainter to show the
+            // content like a checkbox in your NatTable
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new CheckBoxPainter(),
+                    CellConfigAttributes.CELL_PAINTER,
+                    new CheckBoxPainter(),
                     DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_SEVEN_LABEL);
 
@@ -553,7 +556,8 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
             // work correctly
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultBooleanDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultBooleanDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_SEVEN_LABEL);
         }
 
@@ -576,20 +580,18 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
         private void registerColumnEightCheckbox(IConfigRegistry configRegistry) {
             // register a CheckBoxCellEditor for column four
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, new CheckBoxCellEditor(),
+                    EditConfigAttributes.CELL_EDITOR,
+                    new CheckBoxCellEditor(),
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_EIGHT_LABEL);
 
             // if you want to use the CheckBoxCellEditor, you should also
-            // consider
-            // using the corresponding CheckBoxPainter to show the content like
-            // a
-            // checkbox in your NatTable
-            // in this case we use different icons to show how this works
+            // consider using the corresponding CheckBoxPainter to show the
+            // content like a checkbox in your NatTable in this case we use
+            // different icons to show how this works
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new CheckBoxPainter(GUIHelper.getImage("arrow_up"),
-                            GUIHelper.getImage("arrow_down")),
+                    new CheckBoxPainter(GUIHelper.getImage("arrow_up"), GUIHelper.getImage("arrow_down")),
                     DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_EIGHT_LABEL);
 
@@ -597,7 +599,8 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
             // work correctly
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    getGenderBooleanConverter(), DisplayMode.NORMAL,
+                    getGenderBooleanConverter(),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_EIGHT_LABEL);
         }
 
@@ -616,10 +619,11 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
          */
         private void registerColumnNineComboBox(IConfigRegistry configRegistry) {
             // register a combobox editor for the street names
-            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-                    Arrays.asList(PersonService.getStreetNames()));
+            ComboBoxCellEditor comboBoxCellEditor =
+                    new ComboBoxCellEditor(Arrays.asList(PersonService.getStreetNames()));
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_NINE_LABEL);
         }
@@ -634,16 +638,18 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
          */
         private void registerColumnTenComboBox(IConfigRegistry configRegistry) {
             // register a combobox for the city names
-            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-                    Arrays.asList(PersonService.getCityNames()), -1);
+            ComboBoxCellEditor comboBoxCellEditor =
+                    new ComboBoxCellEditor(Arrays.asList(PersonService.getCityNames()), -1);
             comboBoxCellEditor.setFreeEdit(true);
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_TEN_LABEL);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new ComboBoxPainter(),
+                    CellConfigAttributes.CELL_PAINTER,
+                    new ComboBoxPainter(),
                     DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_TEN_LABEL);
         }
@@ -658,8 +664,8 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
          */
         private void registerColumnElevenComboBox(IConfigRegistry configRegistry) {
             // register a combobox for the city names
-            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-                    Arrays.asList(PersonService.getFoodList()), -1);
+            ComboBoxCellEditor comboBoxCellEditor =
+                    new ComboBoxCellEditor(Arrays.asList(PersonService.getFoodList()), -1);
             comboBoxCellEditor.setMultiselect(true);
             comboBoxCellEditor.setUseCheckbox(true);
 
@@ -675,31 +681,30 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
                     new DefaultDisplayConverter() {
 
                         @Override
-                        public Object canonicalToDisplayValue(
-                                Object canonicalValue) {
+                        public Object canonicalToDisplayValue(Object canonicalValue) {
                             if (canonicalValue instanceof Collection) {
                                 // Collection.toString() will add [ and ] around
                                 // the values in the Collection
                                 // So by removing the leading and ending
                                 // character, we remove the brackets
                                 String result = canonicalValue.toString();
-                                result = result.substring(1,
-                                        result.length() - 1);
+                                result = result.substring(1, result.length() - 1);
                                 return result;
                             }
                             // if the value is not a Collection we simply let
                             // the super class do the conversion
                             // this is necessary to show single values in the
                             // ComboBox correctly
-                            return super
-                                    .canonicalToDisplayValue(canonicalValue);
+                            return super.canonicalToDisplayValue(canonicalValue);
                         }
-                    }, DisplayMode.NORMAL,
+                    },
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_ELEVEN_LABEL);
 
             comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_ELEVEN_LABEL);
         }
@@ -715,19 +720,21 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
          */
         private void registerColumnTwelveComboBox(IConfigRegistry configRegistry) {
             // register a combobox for the city names
-            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(
-                    Arrays.asList(PersonService.getDrinkList()), -1);
+            ComboBoxCellEditor comboBoxCellEditor =
+                    new ComboBoxCellEditor(Arrays.asList(PersonService.getDrinkList()), -1);
             comboBoxCellEditor.setFreeEdit(true);
             comboBoxCellEditor.setMultiselect(true);
             comboBoxCellEditor.setIconImage(GUIHelper.getImage("plus"));
             configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
+                    EditConfigAttributes.CELL_EDITOR,
+                    comboBoxCellEditor,
                     DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_TWELVE_LABEL);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, new ComboBoxPainter(
-                            GUIHelper.getImage("plus")), DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_PAINTER,
+                    new ComboBoxPainter(GUIHelper.getImage("plus")),
+                    DisplayMode.NORMAL,
                     _804_GlazedListsEditorExample.COLUMN_TWELVE_LABEL);
         }
 
@@ -738,11 +745,11 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
          *
          * @param configRegistry
          */
-        private void registerColumnThirteenFileDialogEditor(
-                IConfigRegistry configRegistry) {
+        private void registerColumnThirteenFileDialogEditor(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
-                    new FileDialogCellEditor(), DisplayMode.EDIT,
+                    new FileDialogCellEditor(),
+                    DisplayMode.EDIT,
                     _804_GlazedListsEditorExample.COLUMN_THIRTEEN_LABEL);
         }
 
@@ -765,8 +772,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
 
                 @Override
                 public Object displayToCanonicalValue(Object displayValue) {
-                    Boolean displayBoolean = Boolean.valueOf(displayValue
-                            .toString());
+                    Boolean displayBoolean = Boolean.valueOf(displayValue.toString());
                     return displayBoolean ? Gender.MALE : Gender.FEMALE;
                 }
 

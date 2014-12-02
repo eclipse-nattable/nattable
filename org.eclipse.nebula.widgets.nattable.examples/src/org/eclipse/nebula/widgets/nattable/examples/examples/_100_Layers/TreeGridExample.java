@@ -25,9 +25,9 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -238,7 +238,7 @@ public class TreeGridExample extends AbstractNatExample {
                 boolean expanded) {}
     }
 
-    private void printTree(TreeList<Datum> treeList, ITreeData<Datum> treeData) {
+    protected void printTree(TreeList<Datum> treeList, ITreeData<Datum> treeData) {
         System.out.println(treeList.size());
         for (int i = 0; i < treeList.size(); i++) {
             final Datum location = treeList.get(i);
