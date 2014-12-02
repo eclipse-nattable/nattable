@@ -48,8 +48,7 @@ import ca.odell.glazedlists.event.ListEventListener;
 public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
         IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
 
-    private static final Scheduler scheduler = new Scheduler(
-            "GlazedListsEventLayer"); //$NON-NLS-1$
+    private static final Scheduler scheduler = new Scheduler("GlazedListsEventLayer"); //$NON-NLS-1$
     private final IUniqueIndexLayer underlyingLayer;
     private final ScheduledFuture<?> future;
     private EventList<T> eventList;

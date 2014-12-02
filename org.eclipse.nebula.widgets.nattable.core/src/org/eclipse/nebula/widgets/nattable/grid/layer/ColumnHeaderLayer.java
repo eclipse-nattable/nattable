@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,7 +35,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 
     /**
      * Creates a column header layer using the default configuration and painter
-     * 
+     *
      * @param baseLayer
      *            The data provider for this layer
      * @param horizontalLayerDependency
@@ -82,7 +82,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
         this.layerPainter = layerPainter;
 
         this.renameColumnHelper = new RenameColumnHelper(this);
-        registerPersistable(renameColumnHelper);
+        registerPersistable(this.renameColumnHelper);
 
         selectionLayer
                 .addLayerListener(new ColumnHeaderSelectionListener(this));
@@ -96,10 +96,10 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     @Override
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
         int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(
-                this, columnPosition, selectionLayer);
+                this, columnPosition, this.selectionLayer);
         String displayMode = super.getDisplayModeByPosition(columnPosition,
                 rowPosition);
-        if (selectionLayer
+        if (this.selectionLayer
                 .isColumnPositionSelected(selectionLayerColumnPosition)) {
             if (DisplayMode.HOVER.equals(displayMode)) {
                 return DisplayMode.SELECT_HOVER;
@@ -116,8 +116,8 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
                 rowPosition);
 
         final int selectionLayerColumnPosition = LayerUtil
-                .convertColumnPosition(this, columnPosition, selectionLayer);
-        if (selectionLayer
+                .convertColumnPosition(this, columnPosition, this.selectionLayer);
+        if (this.selectionLayer
                 .isColumnPositionFullySelected(selectionLayerColumnPosition)) {
             labelStack
                     .addLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
@@ -127,7 +127,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 
     @Override
@@ -171,7 +171,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
      *         otherwise
      */
     public String getRenamedColumnLabelByIndex(int columnIndex) {
-        return renameColumnHelper.getRenamedColumnLabel(columnIndex);
+        return this.renameColumnHelper.getRenamedColumnLabel(columnIndex);
     }
 
     /**
@@ -179,12 +179,12 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
      *         name by the user.
      */
     public boolean isColumnRenamed(int columnIndex) {
-        return renameColumnHelper.isColumnRenamed(columnIndex);
+        return this.renameColumnHelper.isColumnRenamed(columnIndex);
     }
 
     public boolean renameColumnPosition(int columnPosition,
             String customColumnName) {
-        boolean renamed = renameColumnHelper.renameColumnPosition(
+        boolean renamed = this.renameColumnHelper.renameColumnPosition(
                 columnPosition, customColumnName);
         if (renamed) {
             fireLayerEvent(new RenameColumnHeaderEvent(this, columnPosition));
@@ -193,7 +193,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     public boolean renameColumnIndex(int columnIndex, String customColumnName) {
-        boolean renamed = renameColumnHelper.renameColumnIndex(columnIndex,
+        boolean renamed = this.renameColumnHelper.renameColumnIndex(columnIndex,
                 customColumnName);
         if (renamed) {
             fireLayerEvent(new RenameColumnHeaderEvent(this, columnIndex));

@@ -59,7 +59,7 @@ import org.eclipse.swt.widgets.Control;
  * Example that demonstrates how to implement a NatTable instance that shows
  * calculated values. Also demonstrates the usage of the SummaryRow on updating
  * the NatTable.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -82,7 +82,7 @@ public class _5122_SummaryRowGridExample extends AbstractNatExample {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
      * (org.eclipse.swt.widgets.Composite)
@@ -190,19 +190,19 @@ class SummaryRowBodyLayerStack extends AbstractLayerTransform {
 
     public SummaryRowBodyLayerStack(IDataProvider dataProvider,
             ConfigRegistry configRegistry) {
-        bodyDataLayer = new DataLayer(dataProvider);
-        summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry,
+        this.bodyDataLayer = new DataLayer(dataProvider);
+        this.summaryRowLayer = new SummaryRowLayer(this.bodyDataLayer, configRegistry,
                 false);
-        summaryRowLayer
+        this.summaryRowLayer
                 .addConfiguration(new ExampleSummaryRowGridConfiguration(
-                        bodyDataLayer.getDataProvider()));
-        columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
-        columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-        selectionLayer = new SelectionLayer(columnHideShowLayer);
-        viewportLayer = new ViewportLayer(selectionLayer);
-        setUnderlyingLayer(viewportLayer);
+                        this.bodyDataLayer.getDataProvider()));
+        this.columnReorderLayer = new ColumnReorderLayer(this.summaryRowLayer);
+        this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
+        this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
+        this.viewportLayer = new ViewportLayer(this.selectionLayer);
+        setUnderlyingLayer(this.viewportLayer);
 
-        registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+        registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
     }
 
     public DataLayer getDataLayer() {
@@ -210,7 +210,7 @@ class SummaryRowBodyLayerStack extends AbstractLayerTransform {
     }
 
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 }
 
@@ -289,8 +289,8 @@ class ExampleSummaryRowGridConfiguration extends DefaultSummaryRowConfiguration 
 
     public ExampleSummaryRowGridConfiguration(IDataProvider dataProvider) {
         this.dataProvider = dataProvider;
-        summaryRowBgColor = GUIHelper.COLOR_BLUE;
-        summaryRowFgColor = GUIHelper.COLOR_WHITE;
+        this.summaryRowBgColor = GUIHelper.COLOR_BLUE;
+        this.summaryRowFgColor = GUIHelper.COLOR_WHITE;
     }
 
     @Override
@@ -302,7 +302,7 @@ class ExampleSummaryRowGridConfiguration extends DefaultSummaryRowConfiguration 
         // Default summary provider
         configRegistry.registerConfigAttribute(
                 SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                new SummationSummaryProvider(dataProvider), DisplayMode.NORMAL,
+                new SummationSummaryProvider(this.dataProvider), DisplayMode.NORMAL,
                 SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
         // Average summary provider for column index 2
@@ -319,10 +319,10 @@ class ExampleSummaryRowGridConfiguration extends DefaultSummaryRowConfiguration 
         @Override
         public Object summarize(int columnIndex) {
             double total = 0;
-            int rowCount = dataProvider.getRowCount();
+            int rowCount = ExampleSummaryRowGridConfiguration.this.dataProvider.getRowCount();
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = dataProvider.getDataValue(columnIndex,
+                Object dataValue = ExampleSummaryRowGridConfiguration.this.dataProvider.getDataValue(columnIndex,
                         rowIndex);
                 total = total + Double.parseDouble(dataValue.toString());
             }

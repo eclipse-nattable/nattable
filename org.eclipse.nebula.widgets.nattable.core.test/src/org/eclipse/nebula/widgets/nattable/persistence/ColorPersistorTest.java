@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,25 +30,25 @@ public class ColorPersistorTest {
 
     @Before
     public void setup() {
-        properties = new Properties();
+        this.properties = new Properties();
     }
 
     @Test
     public void shouldSaveTheColorAsAString() throws Exception {
-        ColorPersistor.saveColor("prefix", properties, TEST_COLOR);
-        assertEquals("255,0,0", properties.getProperty("prefix.color"));
+        ColorPersistor.saveColor("prefix", this.properties, TEST_COLOR);
+        assertEquals("255,0,0", this.properties.getProperty("prefix.color"));
     }
 
     @Test
     public void shouldLoadColorFromSavedRGBString() throws Exception {
-        properties.setProperty("prefix.color", "255, 0, 0");
-        Color actual = ColorPersistor.loadColor("prefix", properties);
+        this.properties.setProperty("prefix.color", "255, 0, 0");
+        Color actual = ColorPersistor.loadColor("prefix", this.properties);
         assertEquals(TEST_COLOR, actual);
     }
 
     @Test
     public void shouldFailToLoadForMissingRGBString() throws Exception {
-        Color actual = ColorPersistor.loadColor("missing", properties);
+        Color actual = ColorPersistor.loadColor("missing", this.properties);
         assertNull(actual);
     }
 }

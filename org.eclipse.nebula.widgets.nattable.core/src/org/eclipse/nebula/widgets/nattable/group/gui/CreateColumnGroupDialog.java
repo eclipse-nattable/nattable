@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -86,15 +86,15 @@ public class CreateColumnGroupDialog extends Dialog {
         layout.horizontalSpacing = 2;
         panel.setLayout(layout);
 
-        createButton = createButton(panel, IDialogConstants.CLIENT_ID,
+        this.createButton = createButton(panel, IDialogConstants.CLIENT_ID,
                 Messages.getString("ColumnGroups.createButtonLabel"), false); //$NON-NLS-1$
         GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.BOTTOM)
-                .grab(true, true).applyTo(createButton);
+                .grab(true, true).applyTo(this.createButton);
 
-        createButton.setEnabled(false);
-        getShell().setDefaultButton(createButton);
+        this.createButton.setEnabled(false);
+        getShell().setDefaultButton(this.createButton);
 
-        createButton.addSelectionListener(new SelectionAdapter() {
+        this.createButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 doColumnGrouping();
@@ -121,18 +121,18 @@ public class CreateColumnGroupDialog extends Dialog {
         GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER)
                 .applyTo(createLabel);
 
-        groupNameText = new Text(row, SWT.SINGLE | SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(groupNameText);
-        groupNameText.addModifyListener(new ModifyListener() {
+        this.groupNameText = new Text(row, SWT.SINGLE | SWT.BORDER);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(this.groupNameText);
+        this.groupNameText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                createButton.setEnabled(groupNameText.getText().length() > 0);
+                CreateColumnGroupDialog.this.createButton.setEnabled(CreateColumnGroupDialog.this.groupNameText.getText().length() > 0);
             }
         });
-        groupNameText.addSelectionListener(new SelectionAdapter() {
+        this.groupNameText.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
-                if (createButton.isEnabled()) {
+                if (CreateColumnGroupDialog.this.createButton.isEnabled()) {
                     doColumnGrouping();
                 }
             }
@@ -155,9 +155,9 @@ public class CreateColumnGroupDialog extends Dialog {
             @Override
             public void run() {
                 final CreateColumnGroupCommand command = new CreateColumnGroupCommand(
-                        groupNameText.getText());
+                        CreateColumnGroupDialog.this.groupNameText.getText());
                 try {
-                    contextLayer.doCommand(command);
+                    CreateColumnGroupDialog.this.contextLayer.doCommand(command);
                 } finally {
                     terminateDialog();
                 }

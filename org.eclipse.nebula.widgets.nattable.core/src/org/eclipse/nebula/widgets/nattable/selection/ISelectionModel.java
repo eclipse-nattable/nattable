@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,14 +23,14 @@ public interface ISelectionModel {
 
     /**
      * Determines whether multiple cells can be selected simultaneously
-     * 
+     *
      * @return whether multiple cells can be selected simultaneously
      */
     public boolean isMultipleSelectionAllowed();
 
     /**
      * Sets whether multiple cells can be selected simultaneously
-     * 
+     *
      * @param multipleSelectionAllowed
      *            whether multiple cells can be selected simultaneously
      */
@@ -38,7 +38,7 @@ public interface ISelectionModel {
 
     /**
      * Selects a specified cell
-     * 
+     *
      * @param columnPosition
      *            column position of the cell to select
      * @param rowPosition
@@ -48,7 +48,7 @@ public interface ISelectionModel {
 
     /**
      * Selects the cells of a specified area
-     * 
+     *
      * @param range
      *            the position based area to select
      */
@@ -61,7 +61,7 @@ public interface ISelectionModel {
 
     /**
      * Deselects a specified cell
-     * 
+     *
      * @param columnPosition
      *            column position of the cell to deselect
      * @param rowPosition
@@ -71,7 +71,7 @@ public interface ISelectionModel {
 
     /**
      * Removes the selection of specified cells
-     * 
+     *
      * @param removedSelection
      *            the position based area to deselect
      */
@@ -79,14 +79,14 @@ public interface ISelectionModel {
 
     /**
      * Determines whether there are any selected cells
-     * 
+     *
      * @return whether there are any selected cells
      */
     public boolean isEmpty();
 
     /**
      * Retrieves the cells that are selected
-     * 
+     *
      * @return the cells that are selected, expressed in position coordinates
      */
     public List<Rectangle> getSelections();
@@ -95,7 +95,7 @@ public interface ISelectionModel {
 
     /**
      * Determines whether a specified cell is selected
-     * 
+     *
      * @param columnPosition
      *            column position of the cell to inspect
      * @param rowPosition
@@ -108,14 +108,14 @@ public interface ISelectionModel {
 
     /**
      * Retrieves the columns that have any selected cells
-     * 
+     *
      * @return the column positions that have any selected cells
      */
     public int[] getSelectedColumnPositions();
 
     /**
      * Determines whether a specified column contains any selected cell
-     * 
+     *
      * @param columnPosition
      *            column position to inspect
      * @return whether the specified column contains any selected cell
@@ -139,14 +139,14 @@ public interface ISelectionModel {
 
     /**
      * Retrieves the number of rows that have any selected cell
-     * 
+     *
      * @return the number of rows that have any selected cell
      */
     public int getSelectedRowCount();
 
     /**
      * Retrieves the rows with a valid row position that have any selected cells
-     * 
+     *
      * @return the row positions with a valid row position that have any
      *         selected cells
      */
@@ -154,7 +154,7 @@ public interface ISelectionModel {
 
     /**
      * Determines whether a specified row contains any selected cell
-     * 
+     *
      * @param rowPosition
      *            row position to inspect
      * @return whether the specified row contains any selected cell
@@ -170,7 +170,7 @@ public interface ISelectionModel {
     /**
      * Check if all cells in a row are selected, which means the row is fully
      * selected.
-     * 
+     *
      * @param rowPosition
      *            The row position that should be checked.
      * @param rowWidth

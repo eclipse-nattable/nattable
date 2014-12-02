@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Shell;
  * up. The warning dialog gives the opportunity to discard the invalid input or
  * change it, which will cause the editor to stay open. Only handles errors on
  * commit.
- * 
+ *
  * @author Dirk Fauth
  */
 public class DialogErrorHandling extends AbstractEditErrorHandler {
@@ -95,7 +95,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * Create a new {@link DialogErrorHandling} with no underlying
      * {@link IEditErrorHandler} that gives the opportunity to configure the
      * error handling for cross validation.
-     * 
+     *
      * @param allowCommit
      *            Flag to configure if this dialog allows to commit invalid
      *            data. If this parameter is set to <code>true</code>, an
@@ -111,7 +111,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * Create a new {@link DialogErrorHandling} using the given
      * {@link IEditErrorHandler} as the underlying to allow chaining of error
      * handling. Using this constructor there is no cross validation support.
-     * 
+     *
      * @param underlyingErrorHandler
      *            The underlying {@link IEditErrorHandler}
      */
@@ -123,7 +123,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * Create a new {@link DialogErrorHandling} using the given
      * {@link IEditErrorHandler} as the underlying to allow chaining of error
      * handling.
-     * 
+     *
      * @param underlyingErrorHandler
      *            The underlying {@link IEditErrorHandler}
      * @param allowCommit
@@ -150,13 +150,13 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
         super.displayError(cellEditor, e);
         this.editor = cellEditor;
 
-        String shellTitle = failureShellTitle;
+        String shellTitle = this.failureShellTitle;
         if (e instanceof ConversionFailedException
-                && conversionFailureShellTitle != null) {
-            shellTitle = conversionFailureShellTitle;
+                && this.conversionFailureShellTitle != null) {
+            shellTitle = this.conversionFailureShellTitle;
         } else if (e instanceof ValidationFailedException
-                && validationFailureShellTitle != null) {
-            shellTitle = validationFailureShellTitle;
+                && this.validationFailureShellTitle != null) {
+            shellTitle = this.validationFailureShellTitle;
         }
         showWarningDialog(e.getLocalizedMessage(), shellTitle);
     }
@@ -171,9 +171,9 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
 
             if (dialogMessage != null) {
                 String[] buttonLabels = this.allowCommit ? new String[] {
-                        changeButtonLabel, discardButtonLabel,
-                        commitButtonLabel } : new String[] { changeButtonLabel,
-                        discardButtonLabel };
+                        this.changeButtonLabel, this.discardButtonLabel,
+                        this.commitButtonLabel } : new String[] { this.changeButtonLabel,
+                        this.discardButtonLabel };
                 MessageDialog warningDialog = new MessageDialog(Display
                         .getCurrent().getActiveShell(), dialogTitle, null,
                         dialogMessage, MessageDialog.WARNING, buttonLabels, 0);
@@ -196,7 +196,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * Checks if the current active Shell is a conversion/validation failure
      * warning dialog. As a Shell has not id it is checked if the Shell title is
      * for conversion or validation failure in localized format.
-     * 
+     *
      * @return <code>true</code> if a warning dialog is active
      */
     protected boolean isWarningDialogActive() {
@@ -204,9 +204,9 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
         // failure warning dialog
         Shell control = Display.getCurrent().getActiveShell();
         if (control != null
-                && (conversionFailureShellTitle.equals(control.getText())
-                        || validationFailureShellTitle
-                                .equals(control.getText()) || failureShellTitle
+                && (this.conversionFailureShellTitle.equals(control.getText())
+                        || this.validationFailureShellTitle
+                                .equals(control.getText()) || this.failureShellTitle
                             .equals(control.getText()))) {
             return true;
         }
@@ -218,7 +218,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *         validation shell title configured.
      */
     public String getFailureShellTitle() {
-        return failureShellTitle;
+        return this.failureShellTitle;
     }
 
     /**
@@ -236,7 +236,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *         {@link ConversionFailedException}.
      */
     public String getConversionFailureShellTitle() {
-        return conversionFailureShellTitle;
+        return this.conversionFailureShellTitle;
     }
 
     /**
@@ -256,7 +256,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *         {@link ValidationFailedException}.
      */
     public String getValidationFailureShellTitle() {
-        return validationFailureShellTitle;
+        return this.validationFailureShellTitle;
     }
 
     /**
@@ -274,7 +274,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * @return The text on the button for changing the entered value.
      */
     public String getChangeButtonLabel() {
-        return changeButtonLabel;
+        return this.changeButtonLabel;
     }
 
     /**
@@ -289,7 +289,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * @return The text on the button to discard the entered value.
      */
     public String getDiscardButtonLabel() {
-        return discardButtonLabel;
+        return this.discardButtonLabel;
     }
 
     /**

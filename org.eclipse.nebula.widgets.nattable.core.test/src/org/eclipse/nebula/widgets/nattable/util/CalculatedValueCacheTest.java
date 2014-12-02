@@ -46,13 +46,13 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), true, true);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, true,
-                calculator);
+                this.calculator);
         // as calculation is performed in background, the immediate return value
         // is null
         assertNull(result);
         // now wait so the background process is able to finish
         Thread.sleep(250);
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
     }
 
@@ -62,7 +62,7 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), true, true);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, false,
-                calculator);
+                this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
     }
 
@@ -73,17 +73,17 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), true, true);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, true,
-                calculator);
+                this.calculator);
         // as calculation is performed in background, the immediate return value
         // is null
         assertNull(result);
         // now wait so the background process is able to finish
         Thread.sleep(250);
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 
         this.valueCache.clearCache();
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         // as the cache is configured for smooth updates, the value should be
         // still there
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
@@ -96,17 +96,17 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), true, true, false);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, true,
-                calculator);
+                this.calculator);
         // as calculation is performed in background, the immediate return value
         // is null
         assertNull(result);
         // now wait so the background process is able to finish
         Thread.sleep(250);
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 
         this.valueCache.clearCache();
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         // as the cache is configured for non smooth updates, the value should
         // be null again
         assertNull(result);
@@ -119,17 +119,17 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), true, true);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, true,
-                calculator);
+                this.calculator);
         // as calculation is performed in background, the immediate return value
         // is null
         assertNull(result);
         // now wait so the background process is able to finish
         Thread.sleep(250);
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
 
         this.valueCache.killCache();
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         // killing the cache should have the same effect as clearing non smooth
         assertNull(result);
     }
@@ -140,13 +140,13 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), true, false);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, true,
-                calculator);
+                this.calculator);
         // as calculation is performed in background, the immediate return value
         // is null
         assertNull(result);
         // now wait so the background process is able to finish
         Thread.sleep(250);
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
     }
 
@@ -156,7 +156,7 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), true, false);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, false,
-                calculator);
+                this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
     }
 
@@ -166,13 +166,13 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), false, true);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, true,
-                calculator);
+                this.calculator);
         // as calculation is performed in background, the immediate return value
         // is null
         assertNull(result);
         // now wait so the background process is able to finish
         Thread.sleep(250);
-        result = this.valueCache.getCalculatedValue(0, 0, true, calculator);
+        result = this.valueCache.getCalculatedValue(0, 0, true, this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
     }
 
@@ -182,7 +182,7 @@ public class CalculatedValueCacheTest {
                 new DummyBodyDataProvider(10, 10)), false, true);
 
         Object result = this.valueCache.getCalculatedValue(0, 0, false,
-                calculator);
+                this.calculator);
         assertEquals(Integer.valueOf(42), Integer.valueOf(result.toString()));
     }
 
@@ -190,7 +190,7 @@ public class CalculatedValueCacheTest {
     public void testIllegalState() {
         this.valueCache = new CalculatedValueCache(new DataLayer(
                 new DummyBodyDataProvider(10, 10)), false, false);
-        this.valueCache.getCalculatedValue(0, 0, false, calculator);
+        this.valueCache.getCalculatedValue(0, 0, false, this.calculator);
     }
 
     @After

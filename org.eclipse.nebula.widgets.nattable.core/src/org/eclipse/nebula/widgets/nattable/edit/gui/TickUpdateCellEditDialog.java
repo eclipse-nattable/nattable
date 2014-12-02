@@ -89,7 +89,7 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
     private IDataValidator validator;
 
     /**
-     * 
+     *
      * @param parentShell
      *            the parent shell, or <code>null</code> to create a top-level
      *            shell
@@ -185,46 +185,46 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
      * Create the combo control that contains the available actions used for
      * tick update. The possible actions in this combo are specified by
      * evaluating the useAdjustBy configuration.
-     * 
+     *
      * @param composite
      *            The composite control that will be the parent for the tick
      *            update combo.
      */
     private void createUpdateCombo(Composite composite) {
-        updateCombo = new Combo(composite, SWT.READ_ONLY | SWT.DROP_DOWN
+        this.updateCombo = new Combo(composite, SWT.READ_ONLY | SWT.DROP_DOWN
                 | SWT.BORDER);
 
-        for (String option : useAdjustBy ? OPTIONS_ADJUST : OPTIONS_DEFAULT) {
-            updateCombo.add(option);
+        for (String option : this.useAdjustBy ? OPTIONS_ADJUST : OPTIONS_DEFAULT) {
+            this.updateCombo.add(option);
         }
 
-        updateCombo.addSelectionListener(new SelectionAdapter() {
+        this.updateCombo.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                int selectionIndex = updateCombo.getSelectionIndex();
+                int selectionIndex = TickUpdateCellEditDialog.this.updateCombo.getSelectionIndex();
 
-                if (useAdjustBy) {
+                if (TickUpdateCellEditDialog.this.useAdjustBy) {
                     switch (selectionIndex) {
                         case 1:
-                            editType = EditTypeEnum.ADJUST;
+                            TickUpdateCellEditDialog.this.editType = EditTypeEnum.ADJUST;
                             break;
                     }
                 } else {
                     switch (selectionIndex) {
                         case 1:
-                            editType = EditTypeEnum.INCREASE;
+                            TickUpdateCellEditDialog.this.editType = EditTypeEnum.INCREASE;
                             break;
                         case 2:
-                            editType = EditTypeEnum.DECREASE;
+                            TickUpdateCellEditDialog.this.editType = EditTypeEnum.DECREASE;
                             break;
                     }
                 }
             }
         });
 
-        updateCombo.select(0);
+        this.updateCombo.select(0);
 
-        GridDataFactory.swtDefaults().applyTo(updateCombo);
+        GridDataFactory.swtDefaults().applyTo(this.updateCombo);
     }
 
     @Override
@@ -249,17 +249,17 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
         Object newValue = null;
         switch (this.editType) {
             case INCREASE:
-                newValue = tickUpdateHandler.getIncrementedValue(currentValue,
+                newValue = this.tickUpdateHandler.getIncrementedValue(currentValue,
                         delta);
                 break;
             case DECREASE:
-                newValue = tickUpdateHandler.getDecrementedValue(currentValue,
+                newValue = this.tickUpdateHandler.getDecrementedValue(currentValue,
                         delta);
                 break;
         }
 
         try {
-            if (validator.validate(cell, configRegistry, newValue)) {
+            if (this.validator.validate(this.cell, this.configRegistry, newValue)) {
                 return newValue;
             } else {
                 log.warn("Tick update failed for value " + newValue //$NON-NLS-1$
@@ -291,7 +291,7 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
 
         @Override
         public boolean validate(int columnIndex, int rowIndex, Object newValue) {
-            if (editType == EditTypeEnum.SET) {
+            if (TickUpdateCellEditDialog.this.editType == EditTypeEnum.SET) {
                 return this.wrappedValidator.validate(columnIndex, rowIndex,
                         newValue);
             }
@@ -301,7 +301,7 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
         @Override
         public boolean validate(ILayerCell cell,
                 IConfigRegistry configRegistry, Object newValue) {
-            if (editType == EditTypeEnum.SET) {
+            if (TickUpdateCellEditDialog.this.editType == EditTypeEnum.SET) {
                 return this.wrappedValidator.validate(cell, configRegistry,
                         newValue);
             }

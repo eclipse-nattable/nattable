@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -74,6 +74,7 @@ public abstract class AbstractColumnHideShowLayer extends
         }
     }
 
+    @Override
     public int getColumnPositionByIndex(int columnIndex) {
         return getCachedVisibleColumnIndexes().indexOf(
                 Integer.valueOf(columnIndex));
@@ -104,7 +105,7 @@ public abstract class AbstractColumnHideShowLayer extends
         if (columnPosition >= 0) {
             return columnPosition;
         } else {
-            Integer hiddenColumnPosition = cachedHiddenColumnIndexToPositionMap
+            Integer hiddenColumnPosition = this.cachedHiddenColumnIndexToPositionMap
                     .get(Integer.valueOf(columnIndex));
             if (hiddenColumnPosition != null) {
                 return hiddenColumnPosition.intValue();
@@ -190,7 +191,7 @@ public abstract class AbstractColumnHideShowLayer extends
 
     @Override
     public int getStartXOfColumnPosition(int localColumnPosition) {
-        Integer cachedStartX = startXCache.get(Integer
+        Integer cachedStartX = this.startXCache.get(Integer
                 .valueOf(localColumnPosition));
         if (cachedStartX != null) {
             return cachedStartX.intValue();
@@ -216,7 +217,7 @@ public abstract class AbstractColumnHideShowLayer extends
             }
         }
 
-        startXCache.put(Integer.valueOf(localColumnPosition),
+        this.startXCache.put(Integer.valueOf(localColumnPosition),
                 Integer.valueOf(underlyingStartX));
         return underlyingStartX;
     }
@@ -225,6 +226,7 @@ public abstract class AbstractColumnHideShowLayer extends
 
     // Rows
 
+    @Override
     public int getRowPositionByIndex(int rowIndex) {
         return ((IUniqueIndexLayer) getUnderlyingLayer())
                 .getRowPositionByIndex(rowIndex);
@@ -237,7 +239,7 @@ public abstract class AbstractColumnHideShowLayer extends
      * this layer and also the sublayers for the visibility. Note: As the
      * {@link ColumnGroup}s are created index based, this method only works
      * correctly with indexes rather than positions.
-     * 
+     *
      * @param columnIndex
      *            The column index of the column whose visibility state should
      *            be checked.
@@ -251,7 +253,7 @@ public abstract class AbstractColumnHideShowLayer extends
      * this layer. Note: It is not intended that it also collects the column
      * indexes of underlying layers. This would cause issues on calculating
      * positions as every layer is responsible for those calculations itself.
-     * 
+     *
      * @return Collection of all column indexes that are hidden in this layer.
      */
     public abstract Collection<Integer> getHiddenColumnIndexes();
@@ -262,21 +264,21 @@ public abstract class AbstractColumnHideShowLayer extends
      * Invalidate the cache to ensure that information is rebuild.
      */
     protected void invalidateCache() {
-        cachedVisibleColumnIndexOrder = null;
-        startXCache.clear();
+        this.cachedVisibleColumnIndexOrder = null;
+        this.startXCache.clear();
     }
 
     private List<Integer> getCachedVisibleColumnIndexes() {
-        if (cachedVisibleColumnIndexOrder == null) {
+        if (this.cachedVisibleColumnIndexOrder == null) {
             cacheVisibleColumnIndexes();
         }
-        return cachedVisibleColumnIndexOrder;
+        return this.cachedVisibleColumnIndexOrder;
     }
 
     private void cacheVisibleColumnIndexes() {
-        cachedVisibleColumnIndexOrder = new ArrayList<Integer>();
-        cachedHiddenColumnIndexToPositionMap = new HashMap<Integer, Integer>();
-        startXCache.clear();
+        this.cachedVisibleColumnIndexOrder = new ArrayList<Integer>();
+        this.cachedHiddenColumnIndexToPositionMap = new HashMap<Integer, Integer>();
+        this.startXCache.clear();
 
         ILayer underlyingLayer = getUnderlyingLayer();
         int columnPosition = 0;
@@ -286,10 +288,10 @@ public abstract class AbstractColumnHideShowLayer extends
                     .getColumnIndexByPosition(parentColumnPosition);
 
             if (!isColumnIndexHidden(columnIndex)) {
-                cachedVisibleColumnIndexOrder.add(Integer.valueOf(columnIndex));
+                this.cachedVisibleColumnIndexOrder.add(Integer.valueOf(columnIndex));
                 columnPosition++;
             } else {
-                cachedHiddenColumnIndexToPositionMap.put(
+                this.cachedHiddenColumnIndexToPositionMap.put(
                         Integer.valueOf(columnIndex),
                         Integer.valueOf(columnPosition));
             }

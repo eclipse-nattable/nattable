@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -61,10 +61,11 @@ public class DefaultDateDisplayConverter extends DisplayConverter {
         }
     }
 
+    @Override
     public Object canonicalToDisplayValue(Object canonicalValue) {
         try {
             if (ObjectUtils.isNotNull(canonicalValue)) {
-                return dateFormat.format(canonicalValue);
+                return this.dateFormat.format(canonicalValue);
             }
         } catch (Exception e) {
             log.warn(e);
@@ -72,13 +73,13 @@ public class DefaultDateDisplayConverter extends DisplayConverter {
         return canonicalValue;
     }
 
+    @Override
     public Object displayToCanonicalValue(Object displayValue) {
         try {
-            return dateFormat.parse(displayValue.toString());
+            return this.dateFormat.parse(displayValue.toString());
         } catch (Exception e) {
-            throw new ConversionFailedException(Messages.getString(
-                    "DefaultDateDisplayConverter.failure", //$NON-NLS-1$
-                    new Object[] { displayValue, dateFormat.toPattern() }), e);
+            throw new ConversionFailedException(Messages.getString("DefaultDateDisplayConverter.failure", //$NON-NLS-1$
+                    new Object[] { displayValue, this.dateFormat.toPattern() }), e);
         }
     }
 

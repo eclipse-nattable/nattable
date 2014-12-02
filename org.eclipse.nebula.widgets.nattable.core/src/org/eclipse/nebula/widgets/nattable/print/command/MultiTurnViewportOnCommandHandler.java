@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
  * also not necessary to process the command any further, this handler is used
  * to ensure that all viewports in the composition get the chance to process the
  * command.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -35,7 +35,7 @@ public class MultiTurnViewportOnCommandHandler implements
 
     @Override
     public boolean doCommand(ILayer targetLayer, TurnViewportOnCommand command) {
-        for (ViewportLayer layer : viewports) {
+        for (ViewportLayer layer : this.viewports) {
             // simply delegate the command to all registered viewports
             layer.doCommand(command);
         }

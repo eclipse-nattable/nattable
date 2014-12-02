@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * An implementation of {@link IRowGroup}.
- * 
+ *
  * @author Stefan Bolton
  *
  * @param <T>
@@ -73,38 +73,46 @@ public class RowGroup<T> implements IRowGroup<T> {
         this.data = new HashMap<String, Object>();
     }
 
+    @Override
     public String getGroupName() {
-        return groupName;
+        return this.groupName;
     }
 
+    @Override
     public Object getData() {
         return this.data.get(DEFAULT_DATA_KEY);
     }
 
+    @Override
     public Object getData(String key) {
         return this.data.get(key);
     }
 
+    @Override
     public void setData(Object data) {
         this.data.put(DEFAULT_DATA_KEY, data);
     }
 
+    @Override
     public void setData(String key, Object data) {
         this.data.put(key, data);
     }
 
+    @Override
     public boolean isCollapsed() {
-        return collapsed;
+        return this.collapsed;
     }
 
+    @Override
     public boolean isCollapseable() {
-        return collapseable;
+        return this.collapseable;
     }
 
     public void setCollapseable(boolean collapseable) {
         this.collapseable = collapseable;
     }
 
+    @Override
     public void collapse() {
         if (isCollapseable() && !isCollapsed()) {
             this.collapsed = true;
@@ -112,6 +120,7 @@ public class RowGroup<T> implements IRowGroup<T> {
         }
     }
 
+    @Override
     public void expand() {
         if (isCollapseable() && isCollapsed()) {
             this.collapsed = false;
@@ -124,16 +133,19 @@ public class RowGroup<T> implements IRowGroup<T> {
         this.rowGroupModel.addMemberRow(row, this);
     }
 
+    @Override
     public void addMemberRow(final T row) {
         addMemberRowAndCache(this.rowMembers, row);
         this.rowGroupModel.notifyListeners();
     }
 
+    @Override
     public void addStaticMemberRow(final T row) {
         addMemberRowAndCache(this.staticRowMembers, row);
         this.rowGroupModel.notifyListeners();
     }
 
+    @Override
     public void addMemberRows(final List<T> rows) {
         for (T row : rows) {
             addMemberRowAndCache(this.rowMembers, row);
@@ -182,7 +194,7 @@ public class RowGroup<T> implements IRowGroup<T> {
                         if (removed) {
                             // Remove empty child groups from the model.
                             if (rowGroup.getOwnMemberRows(false).size() == 0) {
-                                childGroups.remove(rowGroup);
+                                this.childGroups.remove(rowGroup);
                             }
                             break;
                         }
@@ -194,6 +206,7 @@ public class RowGroup<T> implements IRowGroup<T> {
         return removed;
     }
 
+    @Override
     public boolean removeMemberRow(final T row) {
 
         boolean removed = removeMemberRowFromCache(row);
@@ -205,6 +218,7 @@ public class RowGroup<T> implements IRowGroup<T> {
         return removed;
     }
 
+    @Override
     public void removeMemberRows(final List<T> rows) {
         boolean removed = false;
 
@@ -217,60 +231,66 @@ public class RowGroup<T> implements IRowGroup<T> {
         }
     }
 
+    @Override
     public IRowGroup<T> getParentGroup() {
         return this.parentGroup;
     }
 
+    @Override
     public void setParentGroup(IRowGroup<T> parentGroup) {
         this.parentGroup = parentGroup;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.gresham.darwin.ui.widgets.grid.data.rowgroups.IRowGroup#addMemberRowGroup
      * (com.gresham.darwin.ui.widgets.grid.data.rowgroups.IRowGroup)
      */
+    @Override
     public void addRowGroup(final IRowGroup<T> rowGroup) {
         rowGroup.setParentGroup(this);
         this.childGroups.add(rowGroup);
-        rowGroupModel.notifyListeners();
+        this.rowGroupModel.notifyListeners();
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.gresham.darwin.ui.widgets.grid.data.rowgroups.IRowGroup#
      * removeMemberRowGroup
      * (com.gresham.darwin.ui.widgets.grid.data.rowgroups.IRowGroup)
      */
+    @Override
     public boolean removeRowGroup(final IRowGroup<T> rowGroup) {
         // Remove all members in the group.
         rowGroup.setParentGroup(null);
         rowGroup.clear();
         boolean removed = this.childGroups.remove(rowGroup);
-        rowGroupModel.notifyListeners();
+        this.rowGroupModel.notifyListeners();
         return removed;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.gresham.darwin.ui.widgets.grid.data.rowgroups.IRowGroup#
      * getMemnerRowGroups()
      */
+    @Override
     public List<IRowGroup<T>> getRowGroups() {
         return Collections.unmodifiableList(this.childGroups);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.gresham.darwin.ui.widgets.grid.data.rowgroups.IRowGroup#getOwnMemberRows
      * ()
      */
+    @Override
     public List<T> getOwnMemberRows(final boolean includeStaticRows) {
         List<T> rows = new ArrayList<T>(this.rowMembers);
 
@@ -283,14 +303,16 @@ public class RowGroup<T> implements IRowGroup<T> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.gresham.darwin.ui.widgets.grid.data.rowgroups.IRowGroup#
      * getOwnStaticMemberRows()
      */
+    @Override
     public List<T> getOwnStaticMemberRows() {
         return Collections.unmodifiableList(this.staticRowMembers);
     }
 
+    @Override
     public void clear() {
         synchronized (this.childGroups) {
             for (final IRowGroup<T> rowGroup : this.childGroups) {
@@ -298,19 +320,20 @@ public class RowGroup<T> implements IRowGroup<T> {
             }
         }
 
-        synchronized (rowMembers) {
+        synchronized (this.rowMembers) {
             for (T row : new ArrayList<T>(this.rowMembers)) {
                 removeMemberRow(row);
             }
         }
 
-        synchronized (staticRowMembers) {
+        synchronized (this.staticRowMembers) {
             for (T row : new ArrayList<T>(this.staticRowMembers)) {
                 removeMemberRow(row);
             }
         }
     }
 
+    @Override
     public List<T> getMemberRows(final boolean includeStaticRows) {
         final List<T> memberRows = new ArrayList<T>();
 
@@ -327,6 +350,7 @@ public class RowGroup<T> implements IRowGroup<T> {
         return Collections.unmodifiableList(memberRows);
     }
 
+    @Override
     public List<T> getStaticMemberRows() {
         final List<T> staticMemberRows = new ArrayList<T>();
 
@@ -343,6 +367,7 @@ public class RowGroup<T> implements IRowGroup<T> {
         return Collections.unmodifiableList(staticMemberRows);
     }
 
+    @Override
     public IRowGroup<T> getRowGroupForRow(final T row) {
         IRowGroup<T> group = null;
 
@@ -364,6 +389,7 @@ public class RowGroup<T> implements IRowGroup<T> {
         return group;
     }
 
+    @Override
     public boolean isEmpty() {
 
         boolean empty = true;
@@ -374,7 +400,7 @@ public class RowGroup<T> implements IRowGroup<T> {
             }
         }
 
-        return (empty && ((rowMembers.size() + staticRowMembers.size()) == 0));
+        return (empty && ((this.rowMembers.size() + this.staticRowMembers.size()) == 0));
     }
 
     @Override
@@ -393,13 +419,11 @@ public class RowGroup<T> implements IRowGroup<T> {
         }
 
         if (this.childGroups.size() > 0) {
-            sb.append(String.format(
-                    "Start Child Groups for [%s] :- \n", getGroupName())); //$NON-NLS-1$
+            sb.append(String.format("Start Child Groups for [%s] :- \n", getGroupName())); //$NON-NLS-1$
             for (final IRowGroup<T> rowGroup : this.childGroups) {
                 sb.append(rowGroup.toString());
             }
-            sb.append(String.format(
-                    "End Child Groups for [%s]\n", getGroupName())); //$NON-NLS-1$
+            sb.append(String.format("End Child Groups for [%s]\n", getGroupName())); //$NON-NLS-1$
         }
 
         return sb.toString();

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,7 +35,7 @@ public class ParseResult {
         }
 
         public String getSymbol() {
-            return symbol;
+            return this.symbol;
         }
 
         public static MatchType parse(String symbol) {
@@ -62,11 +62,11 @@ public class ParseResult {
     public ParseResult() {}
 
     public MatchType getMatchOperation() {
-        return matchType;
+        return this.matchType;
     }
 
     public String getValueToMatch() {
-        return valueToMatch;
+        return this.valueToMatch;
     }
 
     public void setMatchType(MatchType matchType) {

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,25 +29,29 @@ public class DummyBodyDataProvider implements IDataProvider {
         this.rowCount = rowCount;
     }
 
+    @Override
     public int getColumnCount() {
-        return columnCount;
+        return this.columnCount;
     }
 
+    @Override
     public int getRowCount() {
-        return rowCount;
+        return this.rowCount;
     }
 
+    @Override
     public Object getDataValue(int columnIndex, int rowIndex) {
         Point point = new Point(columnIndex, rowIndex);
-        if (values.containsKey(point)) {
-            return values.get(point);
+        if (this.values.containsKey(point)) {
+            return this.values.get(point);
         } else {
             return "Col: " + (columnIndex + 1) + ", Row: " + (rowIndex + 1); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
+    @Override
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-        values.put(new Point(columnIndex, rowIndex), newValue);
+        this.values.put(new Point(columnIndex, rowIndex), newValue);
     }
 
 }

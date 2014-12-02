@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -54,7 +54,7 @@ public class InlineCellEditEvent implements ILayerEvent {
     private final Object initialValue;
 
     /**
-     * 
+     *
      * @param layer
      *            The layer the cellCoordinates rely on.
      * @param cellCoordinate
@@ -84,18 +84,18 @@ public class InlineCellEditEvent implements ILayerEvent {
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        cellCoordinate.columnPosition = localLayer
-                .underlyingToLocalColumnPosition(layer,
-                        cellCoordinate.columnPosition);
-        if (cellCoordinate.columnPosition < 0
-                || cellCoordinate.columnPosition >= localLayer.getColumnCount()) {
+        this.cellCoordinate.columnPosition = localLayer
+                .underlyingToLocalColumnPosition(this.layer,
+                        this.cellCoordinate.columnPosition);
+        if (this.cellCoordinate.columnPosition < 0
+                || this.cellCoordinate.columnPosition >= localLayer.getColumnCount()) {
             return false;
         }
 
-        cellCoordinate.rowPosition = localLayer.underlyingToLocalRowPosition(
-                layer, cellCoordinate.rowPosition);
-        if (cellCoordinate.rowPosition < 0
-                || cellCoordinate.rowPosition >= localLayer.getRowCount()) {
+        this.cellCoordinate.rowPosition = localLayer.underlyingToLocalRowPosition(
+                this.layer, this.cellCoordinate.rowPosition);
+        if (this.cellCoordinate.rowPosition < 0
+                || this.cellCoordinate.rowPosition >= localLayer.getRowCount()) {
             return false;
         }
 
@@ -107,14 +107,14 @@ public class InlineCellEditEvent implements ILayerEvent {
      * @return The column position of the cell to edit.
      */
     public int getColumnPosition() {
-        return cellCoordinate.columnPosition;
+        return this.cellCoordinate.columnPosition;
     }
 
     /**
      * @return The row position of the cell to edit.
      */
     public int getRowPosition() {
-        return cellCoordinate.rowPosition;
+        return this.cellCoordinate.rowPosition;
     }
 
     /**
@@ -122,7 +122,7 @@ public class InlineCellEditEvent implements ILayerEvent {
      *         control.
      */
     public Composite getParent() {
-        return parent;
+        return this.parent;
     }
 
     /**
@@ -132,20 +132,20 @@ public class InlineCellEditEvent implements ILayerEvent {
      *         architecture are not aware of the instance they are running in.
      */
     public IConfigRegistry getConfigRegistry() {
-        return configRegistry;
+        return this.configRegistry;
     }
 
     /**
      * @return The value that should be put to the activated editor control.
      */
     public Object getInitialValue() {
-        return initialValue;
+        return this.initialValue;
     }
 
     @Override
     public InlineCellEditEvent cloneEvent() {
-        return new InlineCellEditEvent(layer, new PositionCoordinate(
-                cellCoordinate), parent, configRegistry, initialValue);
+        return new InlineCellEditEvent(this.layer, new PositionCoordinate(
+                this.cellCoordinate), this.parent, this.configRegistry, this.initialValue);
     }
 
 }

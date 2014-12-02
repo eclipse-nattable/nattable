@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,7 +38,7 @@ public class Scheduler implements ThreadFactory {
     public synchronized ScheduledFuture<?> scheduleAtFixedRate(
             Runnable runnable, long initialDelayMillis,
             long refreshIntervalMillis) {
-        scheduledTasks++;
+        this.scheduledTasks++;
         return getThreadPool().scheduleAtFixedRate(runnable,
                 initialDelayMillis, refreshIntervalMillis,
                 TimeUnit.MILLISECONDS);
@@ -47,31 +47,31 @@ public class Scheduler implements ThreadFactory {
     public synchronized ScheduledFuture<?> scheduleWithFixedDelay(
             Runnable runnable, long initialDelayMillis,
             long refreshIntervalMillis) {
-        scheduledTasks++;
+        this.scheduledTasks++;
         return getThreadPool().scheduleWithFixedDelay(runnable,
                 initialDelayMillis, refreshIntervalMillis,
                 TimeUnit.MILLISECONDS);
     }
 
     private synchronized ScheduledExecutorService getThreadPool() {
-        if (threadPool == null) {
-            threadPool = Executors.newScheduledThreadPool(1, this);
+        if (this.threadPool == null) {
+            this.threadPool = Executors.newScheduledThreadPool(1, this);
         }
-        return threadPool;
+        return this.threadPool;
     }
 
     public synchronized void unschedule(ScheduledFuture<?> future) {
         future.cancel(false);
-        if (threadPool != null && --scheduledTasks <= 0) {
-            threadPool.shutdownNow();
-            threadPool = null;
+        if (this.threadPool != null && --this.scheduledTasks <= 0) {
+            this.threadPool.shutdownNow();
+            this.threadPool = null;
         }
     }
 
     @Override
     public Thread newThread(Runnable r) {
         return new Thread(ObjectUtils.getNatTableThreadGroup(), r,
-                threadNamePrefix + "-" + counter.incrementAndGet()); //$NON-NLS-1$
+                this.threadNamePrefix + "-" + this.counter.incrementAndGet()); //$NON-NLS-1$
     }
 
     public synchronized Future<?> submit(Runnable runnable) {

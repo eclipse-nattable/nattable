@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * This class contains utility methods for drawing graphics
- * 
+ *
  * @see <a
  *      href="http://java-gui.info/Apress-The.Definitive.Guide.to.SWT.and.JFace/8886final/LiB0095.html">GC
  *      snippets</a>

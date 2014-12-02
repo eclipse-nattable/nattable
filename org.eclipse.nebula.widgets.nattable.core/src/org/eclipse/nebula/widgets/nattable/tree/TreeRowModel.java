@@ -40,7 +40,7 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
 
     /**
      * Clears the parent indexes that indicate a collapsed node.
-     * 
+     *
      * @deprecated Since this is not specified by the ITreeRowModel interface,
      *             this method shouldn't be used directly and therefore be
      *             removed.

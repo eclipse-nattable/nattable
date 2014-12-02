@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
  ******************************************************************************/
@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * cell, with this implementation you are free to choose for which side a border
  * should be painted or not.
  * </p>
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -68,7 +68,7 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
     /**
      * Creates a new LabelLineBorderDecorator wrapping the given interior
      * painter and no default border style.
-     * 
+     *
      * @param interiorPainter
      *            The painter to be wrapped by this decorator.
      */
@@ -79,7 +79,7 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
     /**
      * Creates a new LabelLineBorderDecorator wrapping the given interior
      * painter using the given BorderStyle as default.
-     * 
+     *
      * @param interiorPainter
      *            The painter to be wrapped by this decorator.
      * @param defaultBorderStyle

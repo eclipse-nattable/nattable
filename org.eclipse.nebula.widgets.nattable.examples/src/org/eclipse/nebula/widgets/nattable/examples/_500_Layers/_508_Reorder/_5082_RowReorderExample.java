@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Simple example showing how to add the {@link RowReorderLayer} to the layer
  * composition of a grid.
- * 
+ *
  * @author Dirk Fauth
  *
  */

@@ -23,92 +23,92 @@ public class ScrollBarScroller implements IScroller<ScrollBar> {
 
     @Override
     public ScrollBar getUnderlying() {
-        return scrollBar;
+        return this.scrollBar;
     }
 
     @Override
     public boolean isDisposed() {
-        return scrollBar.isDisposed();
+        return this.scrollBar.isDisposed();
     }
 
     @Override
     public void addListener(int eventType, Listener listener) {
-        scrollBar.addListener(eventType, listener);
+        this.scrollBar.addListener(eventType, listener);
     }
 
     @Override
     public void removeListener(int eventType, Listener listener) {
-        scrollBar.removeListener(eventType, listener);
+        this.scrollBar.removeListener(eventType, listener);
     }
 
     @Override
     public int getSelection() {
-        return scrollBar.getSelection();
+        return this.scrollBar.getSelection();
     }
 
     @Override
     public void setSelection(int value) {
-        scrollBar.setSelection(value);
+        this.scrollBar.setSelection(value);
     }
 
     @Override
     public int getMaximum() {
-        return scrollBar.getMaximum();
+        return this.scrollBar.getMaximum();
     }
 
     @Override
     public void setMaximum(int value) {
-        scrollBar.setMaximum(value);
+        this.scrollBar.setMaximum(value);
     }
 
     @Override
     public int getPageIncrement() {
-        return scrollBar.getPageIncrement();
+        return this.scrollBar.getPageIncrement();
     }
 
     @Override
     public void setPageIncrement(int value) {
-        scrollBar.setPageIncrement(value);
+        this.scrollBar.setPageIncrement(value);
     }
 
     @Override
     public int getThumb() {
-        return scrollBar.getThumb();
+        return this.scrollBar.getThumb();
     }
 
     @Override
     public void setThumb(int value) {
-        scrollBar.setThumb(value);
+        this.scrollBar.setThumb(value);
     }
 
     @Override
     public int getIncrement() {
-        return scrollBar.getIncrement();
+        return this.scrollBar.getIncrement();
     }
 
     @Override
     public void setIncrement(int value) {
-        scrollBar.setIncrement(value);
+        this.scrollBar.setIncrement(value);
     }
 
     @Override
     public boolean getEnabled() {
-        return scrollBar.getEnabled();
+        return this.scrollBar.getEnabled();
     }
 
     @Override
     public void setEnabled(boolean b) {
-        scrollBar.setEnabled(b);
+        this.scrollBar.setEnabled(b);
     }
 
     @Override
     public boolean getVisible() {
-        return scrollBar.getVisible();
+        return this.scrollBar.getVisible();
     }
 
     @Override
     public void setVisible(boolean b) {
-        scrollBar.setVisible(b);
+        this.scrollBar.setVisible(b);
     }
 
 }

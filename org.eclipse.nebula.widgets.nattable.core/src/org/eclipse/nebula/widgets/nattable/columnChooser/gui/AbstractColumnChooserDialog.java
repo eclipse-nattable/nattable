@@ -60,8 +60,8 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
 
         Label separator = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
         GridDataFactory.fillDefaults().grab(true, false)
-        .span(((GridLayout) composite.getLayout()).numColumns, 1)
-        .applyTo(separator);
+                .span(((GridLayout) composite.getLayout()).numColumns, 1)
+                .applyTo(separator);
 
         return composite;
     }
@@ -82,7 +82,7 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
 
             Label filler = new Label(parent, SWT.NONE);
             GridDataFactory.swtDefaults().span(availableSet ? 1 : 2, 1)
-            .applyTo(filler);
+                    .applyTo(filler);
 
             if (selectedSet) {
                 Label selectedLabel = new Label(parent, SWT.NONE);
@@ -107,7 +107,7 @@ public abstract class AbstractColumnChooserDialog extends Dialog {
         }
         Point initialSize = super.getInitialSize();
         return initialSize.x < 500 && initialSize.y < 350 ? new Point(500, 350)
-        : initialSize;
+                : initialSize;
     }
 
     public void setDialogSettings(IDialogSettings dialogSettings) {

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,6 +25,7 @@ public class MultiColumnReorderCommandHandler extends
         this.columnReorderLayer = columnReorderLayer;
     }
 
+    @Override
     public Class<MultiColumnReorderCommand> getCommandClass() {
         return MultiColumnReorderCommand.class;
     }
@@ -35,7 +36,7 @@ public class MultiColumnReorderCommandHandler extends
         int toColumnPosition = command.getToColumnPosition();
         boolean reorderToLeftEdge = command.isReorderToLeftEdge();
 
-        columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
+        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
                 toColumnPosition, reorderToLeftEdge);
 
         return true;

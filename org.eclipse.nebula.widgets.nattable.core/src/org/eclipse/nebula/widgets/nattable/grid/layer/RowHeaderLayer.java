@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,7 +29,7 @@ public class RowHeaderLayer extends DimensionallyDependentLayer {
 
     /**
      * Creates a row header layer using the default configuration and painter
-     * 
+     *
      * @param baseLayer
      *            The data provider for this layer
      * @param verticalLayerDependency
@@ -83,10 +83,10 @@ public class RowHeaderLayer extends DimensionallyDependentLayer {
     @Override
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
         int selectionLayerRowPosition = LayerUtil.convertRowPosition(this,
-                rowPosition, selectionLayer);
+                rowPosition, this.selectionLayer);
         String displayMode = super.getDisplayModeByPosition(columnPosition,
                 rowPosition);
-        if (selectionLayer.isRowPositionSelected(selectionLayerRowPosition)) {
+        if (this.selectionLayer.isRowPositionSelected(selectionLayerRowPosition)) {
             if (DisplayMode.HOVER.equals(displayMode)) {
                 return DisplayMode.SELECT_HOVER;
             }
@@ -102,8 +102,8 @@ public class RowHeaderLayer extends DimensionallyDependentLayer {
                 rowPosition);
 
         final int selectionLayerRowPosition = LayerUtil.convertRowPosition(
-                this, rowPosition, selectionLayer);
-        if (selectionLayer
+                this, rowPosition, this.selectionLayer);
+        if (this.selectionLayer
                 .isRowPositionFullySelected(selectionLayerRowPosition)) {
             labelStack.addLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
         }

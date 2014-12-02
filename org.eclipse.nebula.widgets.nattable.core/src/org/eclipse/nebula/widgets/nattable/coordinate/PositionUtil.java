@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -53,14 +53,14 @@ public class PositionUtil {
      * Creates {@link Range}s out of list of numbers. The contiguous numbers are
      * grouped together in Ranges.
      * </p>
-     * 
+     *
      * <p>
      * Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]
      * </p>
      * <p>
      * The last number in the Range is not inclusive.
      * </p>
-     * 
+     *
      * @param numbers
      *            The numbers to create the Range collection.
      * @return List of Ranges for the given Collection of numbers.
@@ -86,14 +86,14 @@ public class PositionUtil {
      * Creates {@link Range}s out of list of numbers. The contiguous numbers are
      * grouped together in Ranges.
      * </p>
-     * 
+     *
      * <p>
      * Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]
      * </p>
      * <p>
      * The last number in the Range is not inclusive.
      * </p>
-     * 
+     *
      * @param numbers
      *            The numbers to create the Range collection.
      * @return List of Ranges for the given Collection of numbers.

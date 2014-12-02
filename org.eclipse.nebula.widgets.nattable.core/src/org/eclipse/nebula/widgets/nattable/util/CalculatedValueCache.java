@@ -29,7 +29,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
  * {@link ICalculatedValueCacheKey} as the key for the value cache. Usually the
  * internal default implementations for column or row position, or the
  * column-row coordinates should fit most of the use cases.
- * 
+ *
  * @author Dirk Fauth
  */
 public class CalculatedValueCache {
@@ -104,7 +104,7 @@ public class CalculatedValueCache {
      * {@link CalculatedValueCache#getCalculatedValue(int, int, ICalculatedValueCacheKey, boolean, ICalculator)}
      * as it is not possible to determine the ICalculatedValueCacheKey
      * automatically.
-     * 
+     *
      * @param layer
      *            The layer to which the CalculatedValueCache is connected.
      * @param useColumnAsKey
@@ -133,7 +133,7 @@ public class CalculatedValueCache {
      * {@link CalculatedValueCache#getCalculatedValue(int, int, ICalculatedValueCacheKey, boolean, ICalculator)}
      * as it is not possible to determine the ICalculatedValueCacheKey
      * automatically.
-     * 
+     *
      * @param layer
      *            The layer to which the CalculatedValueCache is connected.
      * @param useColumnAsKey
@@ -164,7 +164,7 @@ public class CalculatedValueCache {
      * <p>
      * This method tries to use a predefined cache key dependent on the
      * configuration of this CalculatedValueCache.
-     * 
+     *
      * @param columnPosition
      *            The column position of the requested value.
      * @param rowPosition
@@ -178,7 +178,7 @@ public class CalculatedValueCache {
      *            The {@link ICalculator} that is used for calculating the
      *            values.
      * @return The value for the given coordinates.
-     * 
+     *
      * @throws IllegalStateException
      *             if this CalculatedValueCache is configured to not use the
      *             column and row position for cache key definition.
@@ -213,7 +213,7 @@ public class CalculatedValueCache {
      * This method uses the given ICalculatedValueCacheKey instead of
      * determining the cache key out of the CalculatedValueCache key
      * configuration.
-     * 
+     *
      * @param columnPosition
      *            The column position of the requested value.
      * @param rowPosition
@@ -308,7 +308,7 @@ public class CalculatedValueCache {
     /**
      * Adds the given value to the cache and the cache-copy. This way the new
      * calculated value gets propagated to both cache instances.
-     * 
+     *
      * @param key
      *            The key to which the calculated value belongs to.
      * @param value
@@ -333,7 +333,7 @@ public class CalculatedValueCache {
 
     /**
      * Null-safe equals check.
-     * 
+     *
      * @param value1
      *            The first value.
      * @param value2
@@ -351,7 +351,7 @@ public class CalculatedValueCache {
      * updates after the calculation processing is done. Necessary if the
      * caching is connected to a data provider for example, which is not able to
      * fire events itself.
-     * 
+     *
      * @param layer
      *            The ILayer that should be used to fire the
      *            CellVisualChangeEvent after the background calculation process
@@ -364,7 +364,7 @@ public class CalculatedValueCache {
     /**
      * ICalculatedValueCacheKey that uses either the column or row position as
      * key.
-     * 
+     *
      * @author Dirk Fauth
      */
     class PositionValueCacheKey implements ICalculatedValueCacheKey {
@@ -407,7 +407,7 @@ public class CalculatedValueCache {
 
     /**
      * ICalculatedValueCacheKey that uses the column and row position as key.
-     * 
+     *
      * @author Dirk Fauth
      */
     class CoordinateValueCacheKey implements ICalculatedValueCacheKey {

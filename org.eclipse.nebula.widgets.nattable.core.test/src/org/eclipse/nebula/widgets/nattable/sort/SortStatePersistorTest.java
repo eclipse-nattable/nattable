@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -39,29 +39,29 @@ public class SortStatePersistorTest {
 
     @Before
     public void setup() {
-        properties = new Properties();
-        sortModel = new SortModelFixture();
-        sortHeaderLayer = new SortHeaderLayer<RowDataFixture>(
-                new DataLayerFixture(10, 20, 100, 20), sortModel);
-        sortStatePersistor = new SortStatePersistor<RowDataFixture>(sortModel);
+        this.properties = new Properties();
+        this.sortModel = new SortModelFixture();
+        this.sortHeaderLayer = new SortHeaderLayer<RowDataFixture>(
+                new DataLayerFixture(10, 20, 100, 20), this.sortModel);
+        this.sortStatePersistor = new SortStatePersistor<RowDataFixture>(this.sortModel);
     }
 
     @Test
     public void shouldSaveSortedColumnsAndSortOrder() throws Exception {
-        sortStatePersistor.saveState(TEST_PREFIX, properties);
-        String savedProperty = properties.getProperty(KEY);
+        this.sortStatePersistor.saveState(TEST_PREFIX, this.properties);
+        String savedProperty = this.properties.getProperty(KEY);
         assertEquals("0:DESC:3|5:DESC:1|6:ASC:0|3:ASC:2|", savedProperty);
     }
 
     @Test
     public void shouldNotSaveIfNothingIsSorted() throws Exception {
-        sortModel = SortModelFixture.getEmptyModel();
-        sortHeaderLayer = new SortHeaderLayer<RowDataFixture>(
-                new DataLayerFixture(10, 20, 100, 20), sortModel);
-        sortStatePersistor = new SortStatePersistor<RowDataFixture>(sortModel);
+        this.sortModel = SortModelFixture.getEmptyModel();
+        this.sortHeaderLayer = new SortHeaderLayer<RowDataFixture>(
+                new DataLayerFixture(10, 20, 100, 20), this.sortModel);
+        this.sortStatePersistor = new SortStatePersistor<RowDataFixture>(this.sortModel);
 
-        sortStatePersistor.saveState(TEST_PREFIX, properties);
-        assertNull(properties.getProperty(KEY));
+        this.sortStatePersistor.saveState(TEST_PREFIX, this.properties);
+        assertNull(this.properties.getProperty(KEY));
     }
 
     /**
@@ -69,13 +69,13 @@ public class SortStatePersistorTest {
      */
     @Test
     public void loadStateFromProperties() throws Exception {
-        properties.put(KEY, "0:DESC:3|3:ASC:2|5:DESC:1|6:ASC:0|");
-        sortModel = SortModelFixture.getEmptyModel();
-        sortHeaderLayer = new SortHeaderLayer<RowDataFixture>(
-                new DataLayerFixture(10, 20, 100, 20), sortModel);
-        sortStatePersistor = new SortStatePersistor<RowDataFixture>(sortModel);
-        sortStatePersistor.loadState(TEST_PREFIX, properties);
-        ISortModel sortModel = sortHeaderLayer.getSortModel();
+        this.properties.put(KEY, "0:DESC:3|3:ASC:2|5:DESC:1|6:ASC:0|");
+        this.sortModel = SortModelFixture.getEmptyModel();
+        this.sortHeaderLayer = new SortHeaderLayer<RowDataFixture>(
+                new DataLayerFixture(10, 20, 100, 20), this.sortModel);
+        this.sortStatePersistor = new SortStatePersistor<RowDataFixture>(this.sortModel);
+        this.sortStatePersistor.loadState(TEST_PREFIX, this.properties);
+        ISortModel sortModel = this.sortHeaderLayer.getSortModel();
 
         // Sort direction
         assertEquals(SortDirectionEnum.DESC, sortModel.getSortDirection(0));
@@ -98,7 +98,7 @@ public class SortStatePersistorTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void shouldParseTheSavedStringCorrectly() throws Exception {
-        SortState sortState = sortStatePersistor
+        SortState sortState = this.sortStatePersistor
                 .getSortStateFromString("0:DESC:3");
         assertEquals(0, sortState.columnIndex);
         assertEquals(SortDirectionEnum.DESC, sortState.sortDirection);

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,7 +21,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.IEditErrorHandler;
 /**
  * Error handling strategy that simply writes conversion/validation errors to
  * the log.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -42,7 +42,7 @@ public class LoggingErrorHandling extends AbstractEditErrorHandler {
      * Create a new {@link LoggingErrorHandling} using the given
      * {@link IEditErrorHandler} as the underlying to allow chaining of error
      * handling.
-     * 
+     *
      * @param underlyingErrorHandler
      *            The underlying {@link IEditErrorHandler}
      */

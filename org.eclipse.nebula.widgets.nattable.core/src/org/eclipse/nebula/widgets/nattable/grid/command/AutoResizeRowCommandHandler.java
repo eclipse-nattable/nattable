@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,7 +46,7 @@ public class AutoResizeRowCommandHandler implements
     protected final ILayer positionLayer;
 
     /**
-     * 
+     *
      * @param commandLayer
      *            The layer on which the command should be fired. Usually this
      *            will be the GridLayer.
@@ -61,7 +61,7 @@ public class AutoResizeRowCommandHandler implements
     }
 
     /**
-     * 
+     *
      * @param gridLayer
      *            The {@link GridLayer} to which this command handler should be
      *            registered
@@ -86,9 +86,9 @@ public class AutoResizeRowCommandHandler implements
 
         int[] gridRowHeights = MaxCellBoundsHelper.getPreferredRowHeights(
                 command.getConfigRegistry(), command.getGCFactory(),
-                commandLayer, gridRowPositions);
+                this.commandLayer, gridRowPositions);
 
-        commandLayer.doCommand(new MultiRowResizeCommand(commandLayer,
+        this.commandLayer.doCommand(new MultiRowResizeCommand(this.commandLayer,
                 gridRowPositions, gridRowHeights));
 
         targetLayer.doCommand(new TurnViewportOnCommand());
@@ -100,7 +100,7 @@ public class AutoResizeRowCommandHandler implements
      * Translates the row positions the layer stack upwards as the resulting
      * {@link MultiRowResizeCommand} will be fired on the command layer which is
      * on top of the position layer.
-     * 
+     *
      * @param rowPositions
      *            The row positions to convert to the positions in the command
      *            layer
@@ -110,8 +110,8 @@ public class AutoResizeRowCommandHandler implements
         int[] commandLayerRowPositions = new int[rowPositions.length];
 
         for (int i = 0; i < rowPositions.length; i++) {
-            commandLayerRowPositions[i] = commandLayer
-                    .underlyingToLocalRowPosition(positionLayer,
+            commandLayerRowPositions[i] = this.commandLayer
+                    .underlyingToLocalRowPosition(this.positionLayer,
                             rowPositions[i]);
         }
         return commandLayerRowPositions;

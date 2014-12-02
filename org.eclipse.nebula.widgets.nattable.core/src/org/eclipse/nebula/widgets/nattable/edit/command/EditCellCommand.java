@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -42,7 +42,7 @@ public class EditCellCommand extends AbstractContextFreeCommand {
     private ILayerCell cell;
 
     /**
-     * 
+     *
      * @param parent
      *            The parent Composite, needed for the creation of the editor
      *            control.
@@ -67,7 +67,7 @@ public class EditCellCommand extends AbstractContextFreeCommand {
      *         current NatTable instance the command should be executed for.
      */
     public IConfigRegistry getConfigRegistry() {
-        return configRegistry;
+        return this.configRegistry;
     }
 
     /**
@@ -75,14 +75,14 @@ public class EditCellCommand extends AbstractContextFreeCommand {
      *         control.
      */
     public Composite getParent() {
-        return parent;
+        return this.parent;
     }
 
     /**
      * @return The cell that should be put in edit mode.
      */
     public ILayerCell getCell() {
-        return cell;
+        return this.cell;
     }
 
 }

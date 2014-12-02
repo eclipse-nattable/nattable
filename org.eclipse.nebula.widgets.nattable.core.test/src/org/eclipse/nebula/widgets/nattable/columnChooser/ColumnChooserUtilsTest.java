@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,33 +37,33 @@ public class ColumnChooserUtilsTest {
 
     @Before
     public void setup() {
-        entriesFixture = ColumnEntriesFixture.getEntriesWithOddIndexes();
+        this.entriesFixture = ColumnEntriesFixture.getEntriesWithOddIndexes();
     }
 
     @Test
     public void find() throws Exception {
-        ColumnEntry found = ColumnChooserUtils.find(entriesFixture, 5);
+        ColumnEntry found = ColumnChooserUtils.find(this.entriesFixture, 5);
         assertEquals("Index5", found.getLabel());
     }
 
     @Test
     public void getPositionsFromEntries() throws Exception {
         List<Integer> positions = ColumnChooserUtils
-                .getColumnEntryPositions(entriesFixture);
+                .getColumnEntryPositions(this.entriesFixture);
         assertEquals("[2, 6, 3, 4, 5]", positions.toString());
     }
 
     @Test
     public void getIndexesFromEntries() throws Exception {
         List<Integer> indexes = ColumnChooserUtils
-                .getColumnEntryIndexes(entriesFixture);
+                .getColumnEntryIndexes(this.entriesFixture);
         assertEquals("[1, 3, 5, 7, 9]", indexes.toString());
     }
 
     @Test
     public void listContainsEntry() throws Exception {
-        assertTrue(ColumnChooserUtils.containsIndex(entriesFixture, 9));
-        assertFalse(ColumnChooserUtils.containsIndex(entriesFixture, -9));
+        assertTrue(ColumnChooserUtils.containsIndex(this.entriesFixture, 9));
+        assertFalse(ColumnChooserUtils.containsIndex(this.entriesFixture, -9));
     }
 
     @Test

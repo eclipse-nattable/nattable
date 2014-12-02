@@ -23,7 +23,7 @@ public class ReorderRowCommandTest {
 
     @Before
     public void setup() {
-        rowReorderLayer = new RowReorderLayer(new DataLayerFixture());
+        this.rowReorderLayer = new RowReorderLayer(new DataLayerFixture());
     }
 
     @Test
@@ -31,15 +31,15 @@ public class ReorderRowCommandTest {
         int fromRowPosition = 4;
         int toRowPosition = 1;
         ILayerCommand reorderRowCommand = new RowReorderCommand(
-                rowReorderLayer, fromRowPosition, toRowPosition);
+                this.rowReorderLayer, fromRowPosition, toRowPosition);
 
-        rowReorderLayer.doCommand(reorderRowCommand);
+        this.rowReorderLayer.doCommand(reorderRowCommand);
 
-        Assert.assertEquals(0, rowReorderLayer.getRowIndexByPosition(0));
-        Assert.assertEquals(4, rowReorderLayer.getRowIndexByPosition(1));
-        Assert.assertEquals(1, rowReorderLayer.getRowIndexByPosition(2));
-        Assert.assertEquals(2, rowReorderLayer.getRowIndexByPosition(3));
-        Assert.assertEquals(3, rowReorderLayer.getRowIndexByPosition(4));
+        Assert.assertEquals(0, this.rowReorderLayer.getRowIndexByPosition(0));
+        Assert.assertEquals(4, this.rowReorderLayer.getRowIndexByPosition(1));
+        Assert.assertEquals(1, this.rowReorderLayer.getRowIndexByPosition(2));
+        Assert.assertEquals(2, this.rowReorderLayer.getRowIndexByPosition(3));
+        Assert.assertEquals(3, this.rowReorderLayer.getRowIndexByPosition(4));
     }
 
 }

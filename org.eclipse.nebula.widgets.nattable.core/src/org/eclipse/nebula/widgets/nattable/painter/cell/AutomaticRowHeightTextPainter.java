@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
  ******************************************************************************/
@@ -19,19 +19,19 @@ import org.eclipse.swt.graphics.Rectangle;
  * calculation of the cell height to support showing long texts in a single
  * cell. It will grow/shrink the row height on resizing so always the optimal
  * height is used for the row the cell resides.
- * 
+ *
  * <p>
  * This {@link TextPainter} should preferably be used for tables that use
  * percentage sizing so the calculated row heights for example will grow/shrink
  * correctly when resizing the composite that contains the table.
  * </p>
- * 
+ *
  * <p>
  * It shouldn't be used for large tables that can be scrolled as the
  * growing/shrinking on scrolling can cause some side effects, like jumping
  * layouts on scrolling.
  * </p>
- * 
+ *
  * @author Dirk Fauth
  *
  * @see TextPainter
@@ -49,7 +49,7 @@ public class AutomaticRowHeightTextPainter extends TextPainter {
 
     @Override
     protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
-        return ((contentHeight != rectangle.height) && calculateByTextHeight);
+        return ((contentHeight != rectangle.height) && this.calculateByTextHeight);
     }
 
 }

@@ -68,7 +68,7 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
 
     /**
      * Constructor for internal use to clone this event.
-     * 
+     *
      * @param event
      *            The event out of which the new one should be created
      */
@@ -88,7 +88,7 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
     }
 
     public boolean isReorderToTopEdge() {
-        return reorderToTopEdge;
+        return this.reorderToTopEdge;
     }
 
     @Override
@@ -141,13 +141,13 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
 
     @Override
     public boolean convertToLocal(ILayer targetLayer) {
-        beforeFromRowPositionRanges = targetLayer
+        this.beforeFromRowPositionRanges = targetLayer
                 .underlyingToLocalRowPositions(getLayer(),
-                        beforeFromRowPositionRanges);
-        beforeToRowPosition = targetLayer.underlyingToLocalRowPosition(
-                getLayer(), beforeToRowPosition);
+                        this.beforeFromRowPositionRanges);
+        this.beforeToRowPosition = targetLayer.underlyingToLocalRowPosition(
+                getLayer(), this.beforeToRowPosition);
 
-        if (beforeToRowPosition >= 0) {
+        if (this.beforeToRowPosition >= 0) {
             return super.convertToLocal(targetLayer);
         } else {
             return false;

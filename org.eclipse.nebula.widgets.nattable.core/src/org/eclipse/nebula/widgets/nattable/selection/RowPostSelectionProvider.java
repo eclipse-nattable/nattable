@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -51,19 +51,21 @@ public class RowPostSelectionProvider<T> extends RowSelectionProvider<T>
         });
     }
 
+    @Override
     public void addPostSelectionChangedListener(
             ISelectionChangedListener listener) {
-        postSelectionChangedListeners.add(listener);
+        this.postSelectionChangedListeners.add(listener);
     }
 
+    @Override
     public void removePostSelectionChangedListener(
             ISelectionChangedListener listener) {
-        postSelectionChangedListeners.remove(listener);
+        this.postSelectionChangedListeners.remove(listener);
     }
 
     protected void handlePostSelect(SelectionEvent e) {
         ISelection selection = getSelection();
-        if (!selection.equals(previousSelection)) { // OpenStrategy doesn't
+        if (!selection.equals(this.previousSelection)) { // OpenStrategy doesn't
                                                     // throttle left/right
                                                     // cursor key presses, so
                                                     // only fire event when row
@@ -71,15 +73,16 @@ public class RowPostSelectionProvider<T> extends RowSelectionProvider<T>
             SelectionChangedEvent event = new SelectionChangedEvent(this,
                     selection);
             firePostSelectionChanged(event);
-            previousSelection = selection;
+            this.previousSelection = selection;
         }
     }
 
     protected void firePostSelectionChanged(final SelectionChangedEvent event) {
-        Object[] listeners = postSelectionChangedListeners.getListeners();
+        Object[] listeners = this.postSelectionChangedListeners.getListeners();
         for (int i = 0; i < listeners.length; ++i) {
             final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
             SafeRunnable.run(new SafeRunnable() {
+                @Override
                 public void run() {
                     l.selectionChanged(event);
                 }

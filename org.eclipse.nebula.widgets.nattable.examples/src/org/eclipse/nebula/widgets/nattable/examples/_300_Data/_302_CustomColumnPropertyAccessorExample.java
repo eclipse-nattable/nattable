@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Example showing how to implement and use a custom IColumnPropertyAccessor.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -121,7 +121,7 @@ public class _302_CustomColumnPropertyAccessorExample extends
      * This is an implementation for a custom IColumnPropertyAccessor to access
      * PersonWithAddress objects in a NatTable. It is used for the
      * ListDataProvider in the body aswell as for the column header labels.
-     * 
+     *
      * @author Dirk Fauth
      *
      */

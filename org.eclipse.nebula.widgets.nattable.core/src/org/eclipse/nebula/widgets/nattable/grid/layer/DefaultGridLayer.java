@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -176,7 +176,7 @@ public class DefaultGridLayer extends GridLayer {
     }
 
     public IUniqueIndexLayer getBodyDataLayer() {
-        return bodyDataLayer;
+        return this.bodyDataLayer;
     }
 
     @Override
@@ -185,7 +185,7 @@ public class DefaultGridLayer extends GridLayer {
     }
 
     public IUniqueIndexLayer getColumnHeaderDataLayer() {
-        return columnHeaderDataLayer;
+        return this.columnHeaderDataLayer;
     }
 
     @Override
@@ -194,7 +194,7 @@ public class DefaultGridLayer extends GridLayer {
     }
 
     public IUniqueIndexLayer getRowHeaderDataLayer() {
-        return rowHeaderDataLayer;
+        return this.rowHeaderDataLayer;
     }
 
     @Override
@@ -203,7 +203,7 @@ public class DefaultGridLayer extends GridLayer {
     }
 
     public IUniqueIndexLayer getCornerDataLayer() {
-        return cornerDataLayer;
+        return this.cornerDataLayer;
     }
 
     @Override

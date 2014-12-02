@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -76,7 +76,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
             // Only try to commit and close an possible open editor once
             // when starting the drag operation. Otherwise the conversion
             // and validation errors would raise multiple times.
-            if (table != null && !table.commitAndCloseActiveCellEditor()) {
+            if (this.table != null && !this.table.commitAndCloseActiveCellEditor()) {
                 this.globalHandle = false;
             }
         }
@@ -91,9 +91,9 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
             this.globalHandle = true;
         }
 
-        if (handle && event.widget == scroller.getUnderlying()) {
+        if (handle && event.widget == this.scroller.getUnderlying()) {
             setViewportOrigin(getViewportMinimumOrigin()
-                    + scroller.getSelection());
+                    + this.scroller.getSelection());
             setScrollIncrement();
             event.doit = false;
         } else {
@@ -103,22 +103,22 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 
     void adjustScrollBar() {
 
-        if (scroller.isDisposed()) {
+        if (this.scroller.isDisposed()) {
             return;
         }
         int startPixel = getViewportOrigin() - getViewportMinimumOrigin();
 
-        scroller.setSelection(startPixel);
+        this.scroller.setSelection(startPixel);
     }
 
     void recalculateScrollBarSize() {
-        if (scroller.isDisposed()) {
+        if (this.scroller.isDisposed()) {
             return;
         }
 
         int max = getScrollableLayerSpan() - getViewportMinimumOrigin();
-        if (!scroller.isDisposed()) {
-            scroller.setMaximum(max);
+        if (!this.scroller.isDisposed()) {
+            this.scroller.setMaximum(max);
         }
 
         int viewportWindowSpan = getViewportWindowSpan();
@@ -126,18 +126,18 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
         int thumbSize;
         if (viewportWindowSpan < max && viewportWindowSpan != 0) {
             thumbSize = viewportWindowSpan;
-            scroller.setEnabled(true);
-            scroller.setVisible(true);
+            this.scroller.setEnabled(true);
+            this.scroller.setVisible(true);
 
             setScrollIncrement();
 
-            scroller.setPageIncrement(viewportWindowSpan);
+            this.scroller.setPageIncrement(viewportWindowSpan);
         } else {
             thumbSize = max;
-            scroller.setEnabled(false);
-            scroller.setVisible(false);
+            this.scroller.setEnabled(false);
+            this.scroller.setVisible(false);
         }
-        scroller.setThumb(thumbSize);
+        this.scroller.setThumb(thumbSize);
 
         adjustScrollBar();
     }
@@ -145,7 +145,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
     void setScrollIncrement() {
         int scrollIncrement = Math.min(getScrollIncrement(),
                 getViewportWindowSpan() / 4);
-        scroller.setIncrement(scrollIncrement);
+        this.scroller.setIncrement(scrollIncrement);
     }
 
     /**
@@ -155,7 +155,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
      * table is NOT set then the active editor will stay open during the
      * scrolling leading to drawing errors.
      * </p>
-     * 
+     *
      * @param table
      *            the table
      */
@@ -165,7 +165,7 @@ public abstract class ScrollBarHandlerTemplate implements Listener {
 
     /**
      * Methods to be implemented by the Horizontal/Vertical scroll bar handlers.
-     * 
+     *
      * @return
      */
     abstract int getViewportWindowSpan();

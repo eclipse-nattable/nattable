@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,30 +38,30 @@ public class SelectionIntegrationTest {
 
     @Before
     public void setup() {
-        layerStack = new DummyGridLayerStack(10, 5);
-        selectionLayer = layerStack.getBodyLayer().getSelectionLayer();
-        natTable = new NatTableFixture(layerStack, 1000, 200, true);
+        this.layerStack = new DummyGridLayerStack(10, 5);
+        this.selectionLayer = this.layerStack.getBodyLayer().getSelectionLayer();
+        this.natTable = new NatTableFixture(this.layerStack, 1000, 200, true);
     }
 
     @Test
     public void movingSelectionWithLeftArrow() throws Exception {
-        natTable.doCommand(new SelectCellCommand(natTable, 5, 2, NO_SHIFT,
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT,
                 NO_CTRL));
 
         // Note: the co-ordinates from this point on are in selection later
         // co-ordinates
 
-        SWTUtils.pressKey(SWT.ARROW_LEFT, natTable);
+        SWTUtils.pressKey(SWT.ARROW_LEFT, this.natTable);
         assertPositionEquals(3, 1, getSelectedCells()[0]);
         assertSelectionAnchorEquals(3, 1);
 
-        SWTUtils.pressKey(SWT.ARROW_LEFT, SWT.SHIFT, natTable);
+        SWTUtils.pressKey(SWT.ARROW_LEFT, SWT.SHIFT, this.natTable);
         assertSelectCellsCount(2);
         assertPositionEquals(2, 1, getSelectedCells()[0]);
         assertPositionEquals(3, 1, getSelectedCells()[1]);
         assertSelectionAnchorEquals(3, 1);
 
-        SWTUtils.pressKey(SWT.ARROW_LEFT, SWT.MOD1, natTable);
+        SWTUtils.pressKey(SWT.ARROW_LEFT, SWT.MOD1, this.natTable);
         assertSelectCellsCount(1);
         assertPositionEquals(0, 1, getSelectedCells()[0]);
         assertSelectionAnchorEquals(0, 1);
@@ -69,98 +69,98 @@ public class SelectionIntegrationTest {
 
     @Test
     public void movingSelectionWithRightArrow() throws Exception {
-        natTable.doCommand(new SelectCellCommand(natTable, 5, 2, NO_SHIFT,
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT,
                 NO_CTRL));
 
         // Note: the co-ordinates from this point on are in selection later
         // co-ordinates
 
-        SWTUtils.pressKey(SWT.ARROW_RIGHT, natTable);
-        assertPositionEquals(5, 1, selectionLayer.getLastSelectedCellPosition());
+        SWTUtils.pressKey(SWT.ARROW_RIGHT, this.natTable);
+        assertPositionEquals(5, 1, this.selectionLayer.getLastSelectedCellPosition());
         assertSelectionAnchorEquals(5, 1);
 
-        SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.SHIFT, natTable);
+        SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.SHIFT, this.natTable);
         assertSelectCellsCount(2);
         assertCellSelected(5, 1);
         assertCellSelected(6, 1);
         assertSelectionAnchorEquals(5, 1);
 
-        SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.MOD1, natTable);
+        SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.MOD1, this.natTable);
         assertSelectCellsCount(1);
-        assertPositionEquals(9, 1, selectionLayer.getSelectedCellPositions()[0]);
-        assertPositionEquals(9, 1, selectionLayer.getLastSelectedCellPosition());
+        assertPositionEquals(9, 1, this.selectionLayer.getSelectedCellPositions()[0]);
+        assertPositionEquals(9, 1, this.selectionLayer.getLastSelectedCellPosition());
         assertSelectionAnchorEquals(9, 1);
     }
 
     @Test
     public void movingSelectionWithDownArrow() throws Exception {
-        natTable.doCommand(new SelectCellCommand(natTable, 5, 2, NO_SHIFT,
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 2, NO_SHIFT,
                 NO_CTRL));
 
         // Note: the co-ordinates from this point on are in selection later
         // co-ordinates
 
-        SWTUtils.pressKey(SWT.ARROW_DOWN, natTable);
-        SWTUtils.pressKey(SWT.ARROW_DOWN, natTable);
-        assertPositionEquals(4, 3, selectionLayer.getLastSelectedCellPosition());
+        SWTUtils.pressKey(SWT.ARROW_DOWN, this.natTable);
+        SWTUtils.pressKey(SWT.ARROW_DOWN, this.natTable);
+        assertPositionEquals(4, 3, this.selectionLayer.getLastSelectedCellPosition());
         assertSelectionAnchorEquals(4, 3);
 
-        SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.SHIFT, natTable);
-        SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.SHIFT, natTable);
+        SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.SHIFT, this.natTable);
+        SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.SHIFT, this.natTable);
         assertSelectCellsCount(2);
         assertCellSelected(4, 3);
         assertCellSelected(4, 4);
         assertSelectionAnchorEquals(4, 3);
 
-        SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.MOD1, natTable);
+        SWTUtils.pressKey(SWT.ARROW_DOWN, SWT.MOD1, this.natTable);
         assertSelectCellsCount(1);
-        int lastRow = selectionLayer.getRowCount() - 1;
+        int lastRow = this.selectionLayer.getRowCount() - 1;
         assertPositionEquals(4, lastRow,
-                selectionLayer.getSelectedCellPositions()[0]);
+                this.selectionLayer.getSelectedCellPositions()[0]);
         assertPositionEquals(4, lastRow,
-                selectionLayer.getLastSelectedCellPosition());
+                this.selectionLayer.getLastSelectedCellPosition());
         assertSelectionAnchorEquals(4, lastRow);
     }
 
     @Test
     public void movingSelectionWithUpArrow() throws Exception {
-        natTable.doCommand(new SelectCellCommand(natTable, 5, 4, NO_SHIFT,
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 4, NO_SHIFT,
                 NO_CTRL));
 
         // Note: the co-ordinates from this point on are in selection later
         // co-ordinates
 
-        SWTUtils.pressKey(SWT.ARROW_UP, natTable);
-        assertPositionEquals(4, 2, selectionLayer.getSelectedCellPositions()[0]);
+        SWTUtils.pressKey(SWT.ARROW_UP, this.natTable);
+        assertPositionEquals(4, 2, this.selectionLayer.getSelectedCellPositions()[0]);
         assertSelectionAnchorEquals(4, 2);
 
-        SWTUtils.pressKey(SWT.ARROW_UP, SWT.SHIFT, natTable);
-        SWTUtils.pressKey(SWT.ARROW_UP, SWT.SHIFT, natTable);
+        SWTUtils.pressKey(SWT.ARROW_UP, SWT.SHIFT, this.natTable);
+        SWTUtils.pressKey(SWT.ARROW_UP, SWT.SHIFT, this.natTable);
         assertSelectCellsCount(3);
         assertCellSelected(4, 0);
         assertCellSelected(4, 1);
         assertCellSelected(4, 2);
         assertSelectionAnchorEquals(4, 2);
 
-        natTable.doCommand(new SelectCellCommand(natTable, 5, 4, NO_SHIFT,
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 5, 4, NO_SHIFT,
                 NO_CTRL));
         assertSelectCellsCount(1);
 
-        SWTUtils.pressKey(SWT.ARROW_UP, SWT.MOD1, natTable);
+        SWTUtils.pressKey(SWT.ARROW_UP, SWT.MOD1, this.natTable);
         assertSelectCellsCount(1);
         int lastRow = 0;
         assertPositionEquals(4, lastRow,
-                selectionLayer.getSelectedCellPositions()[0]);
+                this.selectionLayer.getSelectedCellPositions()[0]);
         assertPositionEquals(4, lastRow,
-                selectionLayer.getLastSelectedCellPosition());
+                this.selectionLayer.getLastSelectedCellPosition());
         assertSelectionAnchorEquals(4, lastRow);
     }
 
     @Test
     public void selectingRectangularAreasWithShiftKey() throws Exception {
-        natTable.doCommand(new SelectCellCommand(natTable, 2, 1, NO_SHIFT,
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 2, 1, NO_SHIFT,
                 NO_CTRL));
-        natTable.doCommand(new SelectCellCommand(natTable, 2, 3, SHIFT, NO_CTRL));
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 2, 3, SHIFT, NO_CTRL));
 
         assertSelectCellsCount(3);
         assertSelectionAnchorEquals(1, 0);
@@ -168,7 +168,7 @@ public class SelectionIntegrationTest {
         assertCellSelected(1, 1);
         assertCellSelected(1, 2);
 
-        SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.SHIFT, natTable);
+        SWTUtils.pressKey(SWT.ARROW_RIGHT, SWT.SHIFT, this.natTable);
 
         // Previously selected rectangular area must be extended
         assertSelectCellsCount(6);
@@ -180,7 +180,7 @@ public class SelectionIntegrationTest {
         assertCellSelected(2, 1);
         assertCellSelected(2, 2);
 
-        SWTUtils.pressKey(SWT.ARROW_UP, SWT.SHIFT, natTable);
+        SWTUtils.pressKey(SWT.ARROW_UP, SWT.SHIFT, this.natTable);
         assertSelectCellsCount(4);
         assertSelectionAnchorEquals(1, 0);
         assertCellSelected(1, 0);
@@ -192,7 +192,7 @@ public class SelectionIntegrationTest {
     // Convenience asserts
 
     private void assertCellSelected(int column, int row) {
-        PositionCoordinate[] selectedCells = selectionLayer
+        PositionCoordinate[] selectedCells = this.selectionLayer
                 .getSelectedCellPositions();
         boolean selected = false;
 
@@ -207,15 +207,15 @@ public class SelectionIntegrationTest {
     }
 
     private PositionCoordinate[] getSelectedCells() {
-        return selectionLayer.getSelectedCellPositions();
+        return this.selectionLayer.getSelectedCellPositions();
     }
 
     private void assertSelectCellsCount(int count) {
-        assertEquals(count, selectionLayer.getSelectedCellPositions().length);
+        assertEquals(count, this.selectionLayer.getSelectedCellPositions().length);
     }
 
     private void assertSelectionAnchorEquals(int column, int row) {
-        assertPositionEquals(column, row, selectionLayer.getSelectionAnchor());
+        assertPositionEquals(column, row, this.selectionLayer.getSelectionAnchor());
     }
 
     private void assertPositionEquals(int column, int row,

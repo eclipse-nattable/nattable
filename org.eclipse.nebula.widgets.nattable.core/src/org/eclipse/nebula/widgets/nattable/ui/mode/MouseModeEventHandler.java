@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -51,16 +51,16 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
 
     @Override
     public void mouseUp(final MouseEvent event) {
-        mouseDown = false;
-        doubleClick = false;
+        this.mouseDown = false;
+        this.doubleClick = false;
 
-        if (singleClickAction != null) {
+        if (this.singleClickAction != null) {
             // convert/validate/commit/close possible open editor
             // needed in case of conversion/validation errors to cancel any
             // action
-            if (natTable.commitAndCloseActiveCellEditor()) {
-                if (doubleClickAction != null
-                        && (isActionExclusive(singleClickAction) || isActionExclusive(doubleClickAction))) {
+            if (this.natTable.commitAndCloseActiveCellEditor()) {
+                if (this.doubleClickAction != null
+                        && (isActionExclusive(this.singleClickAction) || isActionExclusive(this.doubleClickAction))) {
                     // If a doubleClick action is registered and either the
                     // single click or the double
                     // click action is exclusive, wait to see if this mouseUp is
@@ -69,17 +69,17 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (!doubleClick && !skipProcessing) {
-                                        executeClickAction(singleClickAction,
+                                    if (!MouseModeEventHandler.this.doubleClick && !MouseModeEventHandler.this.skipProcessing) {
+                                        executeClickAction(MouseModeEventHandler.this.singleClickAction,
                                                 event);
                                     }
                                 }
                             });
                 } else {
-                    executeClickAction(singleClickAction, event);
+                    executeClickAction(this.singleClickAction, event);
                 }
             }
-        } else if (doubleClickAction == null) {
+        } else if (this.doubleClickAction == null) {
             // No single or double click action registered when mouseUp
             // detected. Switch back to normal mode.
             switchMode(Mode.NORMAL_MODE);
@@ -103,7 +103,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
             // ensure the double click runnable is not executed and process
             // single click immediately
             this.skipProcessing = true;
-            executeClickAction(singleClickAction, this.initialMouseDownEvent);
+            executeClickAction(this.singleClickAction, this.initialMouseDownEvent);
 
             // reset to the parent mode
             switchMode(Mode.NORMAL_MODE);
@@ -117,7 +117,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
         // ensure the double click runnable is not executed and process single
         // click immediately
         this.skipProcessing = true;
-        executeClickAction(singleClickAction, this.initialMouseDownEvent);
+        executeClickAction(this.singleClickAction, this.initialMouseDownEvent);
 
         // reset to the parent mode
         switchMode(Mode.NORMAL_MODE);
@@ -131,27 +131,27 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
         // to be set to true here
         // this way the exclusive single click action knows that it should not
         // execute as a double click was performed
-        doubleClick = true;
+        this.doubleClick = true;
 
-        executeClickAction(doubleClickAction, event);
+        executeClickAction(this.doubleClickAction, event);
     }
 
     @Override
     public synchronized void mouseMove(MouseEvent event) {
-        if (mouseDown && dragMode != null) {
-            if (natTable.commitAndCloseActiveCellEditor()) {
-                dragMode.mouseDown(natTable, initialMouseDownEvent);
-                switchMode(new DragModeEventHandler(getModeSupport(), natTable,
-                        dragMode, this, initialMouseDownEvent));
+        if (this.mouseDown && this.dragMode != null) {
+            if (this.natTable.commitAndCloseActiveCellEditor()) {
+                this.dragMode.mouseDown(this.natTable, this.initialMouseDownEvent);
+                switchMode(new DragModeEventHandler(getModeSupport(), this.natTable,
+                        this.dragMode, this, this.initialMouseDownEvent));
             } else {
                 switchMode(Mode.NORMAL_MODE);
             }
         } else {
-            if (!(mouseDown && eventOnSameCell(initialMouseDownEvent, event))) {
+            if (!(this.mouseDown && eventOnSameCell(this.initialMouseDownEvent, event))) {
                 // ensure the double click runnable is not executed and process
                 // single click immediately
                 this.skipProcessing = true;
-                executeClickAction(singleClickAction,
+                executeClickAction(this.singleClickAction,
                         this.initialMouseDownEvent);
 
                 // Bug 436770
@@ -167,7 +167,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
     /**
      * Executes the given IMouseAction and switches the DisplayMode back to
      * normal.
-     * 
+     *
      * @param action
      *            The IMouseAction that should be executed.
      * @param event
@@ -176,10 +176,10 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
     private void executeClickAction(IMouseAction action, MouseEvent event) {
         // convert/validate/commit/close possible open editor
         // needed in case of conversion/validation errors to cancel any action
-        if (natTable.commitAndCloseActiveCellEditor()) {
+        if (this.natTable.commitAndCloseActiveCellEditor()) {
             if (action != null && event != null) {
                 event.data = NatEventData.createInstanceFromEvent(event);
-                action.run(natTable, event);
+                action.run(this.natTable, event);
                 // Single click action complete. Switch back to normal mode.
                 switchMode(Mode.NORMAL_MODE);
             }
@@ -193,7 +193,7 @@ public class MouseModeEventHandler extends AbstractModeEventHandler {
      * behaviour can be modified if the given action is of type
      * IMouseClickAction and configured to be exclusive. In this case the single
      * or the double click action will be performed.
-     * 
+     *
      * @param action
      *            The IMouseAction to check
      * @return <code>true</code> if the given IMouseAction should be called

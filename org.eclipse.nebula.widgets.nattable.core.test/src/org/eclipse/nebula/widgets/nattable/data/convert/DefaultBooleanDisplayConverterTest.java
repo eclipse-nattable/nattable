@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,31 +20,31 @@ public class DefaultBooleanDisplayConverterTest {
     @Test
     public void testNonNullDataToDisplay() {
         Assert.assertEquals("true",
-                booleanConverter.canonicalToDisplayValue(Boolean.TRUE));
+                this.booleanConverter.canonicalToDisplayValue(Boolean.TRUE));
         Assert.assertEquals("false",
-                booleanConverter.canonicalToDisplayValue(Boolean.FALSE));
+                this.booleanConverter.canonicalToDisplayValue(Boolean.FALSE));
     }
 
     @Test
     public void testNullDataToDisplay() {
         Assert.assertEquals(null,
-                booleanConverter.canonicalToDisplayValue(null));
+                this.booleanConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
         Assert.assertEquals(Boolean.TRUE,
-                booleanConverter.displayToCanonicalValue("true"));
+                this.booleanConverter.displayToCanonicalValue("true"));
         Assert.assertEquals(Boolean.FALSE,
-                booleanConverter.displayToCanonicalValue("false"));
+                this.booleanConverter.displayToCanonicalValue("false"));
         Assert.assertEquals(Boolean.FALSE,
-                booleanConverter.displayToCanonicalValue("123"));
+                this.booleanConverter.displayToCanonicalValue("123"));
     }
 
     @Test
     public void testNullDisplayToData() {
         Assert.assertEquals(Boolean.FALSE,
-                booleanConverter.displayToCanonicalValue(""));
+                this.booleanConverter.displayToCanonicalValue(""));
     }
 
 }

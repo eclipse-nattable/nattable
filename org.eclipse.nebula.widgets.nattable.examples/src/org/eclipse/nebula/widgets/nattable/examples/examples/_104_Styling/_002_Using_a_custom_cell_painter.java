@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -49,6 +49,7 @@ public class _002_Using_a_custom_cell_painter extends AbstractNatExample {
         StandaloneNatExampleRunner.run(new _002_Using_a_custom_cell_painter());
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         // Setup the layer stack
         final MyDataProvider myDataProvider = new MyDataProvider();
@@ -76,6 +77,7 @@ public class _002_Using_a_custom_cell_painter extends AbstractNatExample {
 
     class CustomPaintingConfig extends AbstractRegistryConfiguration {
 
+        @Override
         public void configureRegistry(IConfigRegistry configRegistry) {
             // Register cell style
             Style cellStyle = new Style();
@@ -121,19 +123,23 @@ public class _002_Using_a_custom_cell_painter extends AbstractNatExample {
      */
     class MyDataProvider implements IDataProvider {
 
+        @Override
         public int getColumnCount() {
             return 10;
         }
 
+        @Override
         public int getRowCount() {
             return 10;
         }
 
+        @Override
         public Object getDataValue(int columnIndex, int rowIndex) {
             // Create a decimal value
             return Double.valueOf((rowIndex * 10 + columnIndex) / 100D);
         }
 
+        @Override
         public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
             // Do nothing
         }

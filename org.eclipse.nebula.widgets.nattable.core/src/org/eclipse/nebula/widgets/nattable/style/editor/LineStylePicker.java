@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,15 +30,16 @@ public class LineStylePicker extends Composite {
         super(parent, NONE);
         setLayout(new RowLayout());
 
-        combo = new Combo(this, SWT.READ_ONLY | SWT.DROP_DOWN);
-        combo.setItems(new String[] {
-                Messages.getString("LineStylePicker.solid"), Messages.getString("LineStylePicker.dashed"), Messages.getString("LineStylePicker.dotted"), Messages.getString("LineStylePicker.dashdot"), Messages.getString("LineStylePicker.dashdotdot") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        combo.select(0);
+        this.combo = new Combo(this, SWT.READ_ONLY | SWT.DROP_DOWN);
+        this.combo
+                .setItems(new String[] {
+                        Messages.getString("LineStylePicker.solid"), Messages.getString("LineStylePicker.dashed"), Messages.getString("LineStylePicker.dotted"), Messages.getString("LineStylePicker.dashdot"), Messages.getString("LineStylePicker.dashdotdot") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        this.combo.select(0);
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        combo.setEnabled(enabled);
+        this.combo.setEnabled(enabled);
     }
 
     public void setSelectedLineStyle(LineStyleEnum lineStyle) {
@@ -53,11 +54,11 @@ public class LineStylePicker extends Composite {
             index = 3;
         else if (lineStyle.equals(LineStyleEnum.DASHDOTDOT))
             index = 4;
-        combo.select(index);
+        this.combo.select(index);
     }
 
     public LineStyleEnum getSelectedLineStyle() {
-        int index = combo.getSelectionIndex();
+        int index = this.combo.getSelectionIndex();
         if (index == 0)
             return LineStyleEnum.SOLID;
         else if (index == 1)

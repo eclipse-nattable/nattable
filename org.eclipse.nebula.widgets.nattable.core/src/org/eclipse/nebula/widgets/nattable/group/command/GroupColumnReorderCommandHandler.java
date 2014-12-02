@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,6 +37,7 @@ public class GroupColumnReorderCommandHandler extends
         this.model = columnGroupReorderLayer.getModel();
     }
 
+    @Override
     public Class<ColumnReorderCommand> getCommandClass() {
         return ColumnReorderCommand.class;
     }
@@ -50,7 +51,7 @@ public class GroupColumnReorderCommandHandler extends
             System.err
                     .println("Invalid reorder positions, fromPosition: " + fromColumnPosition + ", toPosition: " + toColumnPosition); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        ILayer underlyingLayer = columnGroupReorderLayer.getUnderlyingLayer();
+        ILayer underlyingLayer = this.columnGroupReorderLayer.getUnderlyingLayer();
         int fromColumnIndex = underlyingLayer
                 .getColumnIndexByPosition(fromColumnPosition);
         int toColumnIndex = underlyingLayer
@@ -81,43 +82,43 @@ public class GroupColumnReorderCommandHandler extends
 
     private boolean updateModel(int fromColumnIndex, int toColumnIndex,
             String leftEdgeGroupName, String rightEdgeGroupName) {
-        ColumnGroup fromColumnGroup = model
+        ColumnGroup fromColumnGroup = this.model
                 .getColumnGroupByIndex(fromColumnIndex);
-        ColumnGroup toColumnGroup = model.getColumnGroupByIndex(toColumnIndex);
+        ColumnGroup toColumnGroup = this.model.getColumnGroupByIndex(toColumnIndex);
 
         // If moved to the RIGHT edge of a group - remove from group
         if (rightEdgeGroupName != null) {
-            return (model.isPartOfAGroup(fromColumnIndex)) ? fromColumnGroup
+            return (this.model.isPartOfAGroup(fromColumnIndex)) ? fromColumnGroup
                     .removeColumn(fromColumnIndex) : true;
         }
 
         // If moved to the LEFT edge of a column group - include in the group
         if (leftEdgeGroupName != null) {
             boolean removed = true;
-            if (model.isPartOfAGroup(fromColumnIndex)) {
+            if (this.model.isPartOfAGroup(fromColumnIndex)) {
                 removed = fromColumnGroup.removeColumn(fromColumnIndex);
             }
             return removed
-                    && model.insertColumnIndexes(leftEdgeGroupName,
+                    && this.model.insertColumnIndexes(leftEdgeGroupName,
                             fromColumnIndex);
         }
 
         // Move column INTO a group
-        if (model.isPartOfAGroup(toColumnIndex)
-                && !model.isPartOfAGroup(fromColumnIndex)) {
+        if (this.model.isPartOfAGroup(toColumnIndex)
+                && !this.model.isPartOfAGroup(fromColumnIndex)) {
             String groupName = toColumnGroup.getName();
-            return model.insertColumnIndexes(groupName, fromColumnIndex);
+            return this.model.insertColumnIndexes(groupName, fromColumnIndex);
         }
 
         // Move column OUT of a group
-        if (model.isPartOfAGroup(fromColumnIndex)
-                && !model.isPartOfAGroup(toColumnIndex)) {
+        if (this.model.isPartOfAGroup(fromColumnIndex)
+                && !this.model.isPartOfAGroup(toColumnIndex)) {
             return fromColumnGroup.removeColumn(fromColumnIndex);
         }
 
         // Move column BETWEEN groups
-        if (model.isPartOfAGroup(toColumnIndex)
-                && model.isPartOfAGroup(fromColumnIndex)) {
+        if (this.model.isPartOfAGroup(toColumnIndex)
+                && this.model.isPartOfAGroup(fromColumnIndex)) {
             String toGroupName = toColumnGroup.getName();
             String fromGroupName = fromColumnGroup.getName();
 
@@ -125,7 +126,7 @@ public class GroupColumnReorderCommandHandler extends
                 return true;
             } else {
                 return fromColumnGroup.removeColumn(fromColumnIndex)
-                        && model.insertColumnIndexes(toGroupName,
+                        && this.model.insertColumnIndexes(toGroupName,
                                 fromColumnIndex);
             }
         }
@@ -134,18 +135,18 @@ public class GroupColumnReorderCommandHandler extends
 
     private String movedToRightEdgeOfAGroup(int dropColumnPosition,
             int dropColumnIndex) {
-        if (ColumnGroupUtils.isRightEdgeOfAColumnGroup(columnGroupReorderLayer,
-                dropColumnPosition, dropColumnIndex, model)) {
-            return model.getColumnGroupByIndex(dropColumnIndex).getName();
+        if (ColumnGroupUtils.isRightEdgeOfAColumnGroup(this.columnGroupReorderLayer,
+                dropColumnPosition, dropColumnIndex, this.model)) {
+            return this.model.getColumnGroupByIndex(dropColumnIndex).getName();
         }
         return null;
     }
 
     private String movedToLeftEdgeOfAGroup(int dropColumnPosition,
             int dropColumnIndex) {
-        if (ColumnGroupUtils.isLeftEdgeOfAColumnGroup(columnGroupReorderLayer,
-                dropColumnPosition, dropColumnIndex, model)) {
-            return model.getColumnGroupByIndex(dropColumnIndex).getName();
+        if (ColumnGroupUtils.isLeftEdgeOfAColumnGroup(this.columnGroupReorderLayer,
+                dropColumnPosition, dropColumnIndex, this.model)) {
+            return this.model.getColumnGroupByIndex(dropColumnIndex).getName();
         }
         return null;
     }

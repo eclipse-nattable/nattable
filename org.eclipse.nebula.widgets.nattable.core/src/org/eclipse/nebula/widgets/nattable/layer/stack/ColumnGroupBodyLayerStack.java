@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -44,42 +44,42 @@ public class ColumnGroupBodyLayerStack extends AbstractIndexLayerTransform {
 
     public ColumnGroupBodyLayerStack(IUniqueIndexLayer underlyingLayer,
             ColumnGroupModel... columnGroupModel) {
-        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
-        columnGroupReorderLayer = new ColumnGroupReorderLayer(
-                columnReorderLayer,
+        this.columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+        this.columnGroupReorderLayer = new ColumnGroupReorderLayer(
+                this.columnReorderLayer,
                 columnGroupModel[columnGroupModel.length - 1]);
-        columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
-        columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
-                columnHideShowLayer, columnGroupModel);
-        selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-        viewportLayer = new ViewportLayer(selectionLayer);
-        setUnderlyingLayer(viewportLayer);
+        this.columnHideShowLayer = new ColumnHideShowLayer(this.columnGroupReorderLayer);
+        this.columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
+                this.columnHideShowLayer, columnGroupModel);
+        this.selectionLayer = new SelectionLayer(this.columnGroupExpandCollapseLayer);
+        this.viewportLayer = new ViewportLayer(this.selectionLayer);
+        setUnderlyingLayer(this.viewportLayer);
 
-        registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+        registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
     }
 
     public ColumnReorderLayer getColumnReorderLayer() {
-        return columnReorderLayer;
+        return this.columnReorderLayer;
     }
 
     public ColumnGroupReorderLayer getColumnGroupReorderLayer() {
-        return columnGroupReorderLayer;
+        return this.columnGroupReorderLayer;
     }
 
     public ColumnHideShowLayer getColumnHideShowLayer() {
-        return columnHideShowLayer;
+        return this.columnHideShowLayer;
     }
 
     public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
-        return columnGroupExpandCollapseLayer;
+        return this.columnGroupExpandCollapseLayer;
     }
 
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 
     public ViewportLayer getViewportLayer() {
-        return viewportLayer;
+        return this.viewportLayer;
     }
 
 }

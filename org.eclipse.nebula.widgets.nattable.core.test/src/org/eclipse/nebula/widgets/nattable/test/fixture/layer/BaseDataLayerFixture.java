@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,26 +37,30 @@ public class BaseDataLayerFixture extends DataLayer {
         return new IDataProvider() {
             Map<String, Object> dataStore = new HashMap<String, Object>();
 
+            @Override
             public int getColumnCount() {
                 return colCount;
             }
 
+            @Override
             public int getRowCount() {
                 return rowCount;
             }
 
+            @Override
             public Object getDataValue(int columnIndex, int rowIndex) {
                 String key = "[" + columnIndex + ", " + rowIndex + "]";
-                if (dataStore.get(key) == null) {
+                if (this.dataStore.get(key) == null) {
                     return key;
                 } else {
-                    return dataStore.get(key);
+                    return this.dataStore.get(key);
                 }
             }
 
+            @Override
             public void setDataValue(int columnIndex, int rowIndex,
                     Object newValue) {
-                dataStore.put("[" + columnIndex + ", " + rowIndex + "]",
+                this.dataStore.put("[" + columnIndex + ", " + rowIndex + "]",
                         newValue);
             }
 
@@ -66,6 +70,7 @@ public class BaseDataLayerFixture extends DataLayer {
     private void initCellLabelAccumulator() {
         setConfigLabelAccumulator(new IConfigLabelAccumulator() {
 
+            @Override
             public void accumulateConfigLabels(LabelStack configLabels,
                     int columnPosition, int rowPosition) {
                 configLabels.addLabel("DEFAULT");

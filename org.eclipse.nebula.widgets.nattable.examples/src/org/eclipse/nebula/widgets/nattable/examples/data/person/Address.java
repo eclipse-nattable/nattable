@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,7 +21,7 @@ public class Address {
      * @return the street
      */
     public String getStreet() {
-        return street;
+        return this.street;
     }
 
     /**
@@ -36,7 +36,7 @@ public class Address {
      * @return the housenumber
      */
     public int getHousenumber() {
-        return housenumber;
+        return this.housenumber;
     }
 
     /**
@@ -51,7 +51,7 @@ public class Address {
      * @return the postalCode
      */
     public int getPostalCode() {
-        return postalCode;
+        return this.postalCode;
     }
 
     /**
@@ -66,7 +66,7 @@ public class Address {
      * @return the city
      */
     public String getCity() {
-        return city;
+        return this.city;
     }
 
     /**

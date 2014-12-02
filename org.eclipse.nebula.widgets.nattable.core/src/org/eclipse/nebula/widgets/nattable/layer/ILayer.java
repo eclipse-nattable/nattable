@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,16 +46,16 @@ import org.eclipse.swt.graphics.Rectangle;
  * layer in the layer stack. These concepts are illustrated by the following
  * example:
  * </p>
- * 
+ *
  * <pre>
  * Hide Layer C
  * 0 1 2 3 4 &lt;- column positions
  * 1 0 3 4 5 &lt;- column indexes
- * 
+ *
  * Reorder Layer B
  * 0 1 2 3 4 5 &lt;- column positions
  * 2 1 0 3 4 5 &lt;- column indexes
- * 
+ *
  * Data Layer A
  * 0 1 2 3 4 5 &lt;- column positions
  * 0 1 2 3 4 5 &lt;- column indexes
@@ -98,7 +98,7 @@ public interface ILayer extends ILayerListener, IPersistable {
     /**
      * Persistables registered with a layer will have a chance to write their
      * data out to the {@link Properties} instance when the layer is persisted.
-     * 
+     *
      * @param persistable
      *            the persistable to be registered
      */
@@ -126,7 +126,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Layer can apply its own labels to any cell it wishes.
-     * 
+     *
      * @param x
      *            the x pixel coordinate
      * @param y
@@ -166,7 +166,7 @@ public interface ILayer extends ILayerListener, IPersistable {
      * <p>
      * Example: When the contents of the grid change {@link IVisualChangeEvent}
      * can be fired to notify other layers to refresh their caches etc.
-     * 
+     *
      * @param event
      *            the event to fire
      */
@@ -209,7 +209,7 @@ public interface ILayer extends ILayerListener, IPersistable {
     /**
      * Gets the underlying non-transformed column index for the given column
      * position.
-     * 
+     *
      * @param columnPosition
      *            a column position relative to this coordinate model
      * @return an underlying non-transformed column index, or -1 if the given
@@ -220,7 +220,7 @@ public interface ILayer extends ILayerListener, IPersistable {
     /**
      * Convert a column position to the coordinates of the underlying layer.
      * This is possible since each layer is aware of its underlying layer.
-     * 
+     *
      * @param localColumnPosition
      *            column position in local (the layer's own) coordinates
      * @return column position in the underlying layer's coordinates
@@ -238,7 +238,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Returns the total width in pixels of this layer.
-     * 
+     *
      * @return the width of this layer
      */
     public int getWidth();
@@ -247,12 +247,12 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Returns the width in pixels of the given column.
-     * 
+     *
      * The width of invisible and non-existing columns is 0.
-     * 
+     *
      * @param columnPosition
      *            the column position in this layer
-     * 
+     *
      * @return the width of the column
      */
     public int getColumnWidthByPosition(int columnPosition);
@@ -265,7 +265,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Returns the column position that contains the given x coordinate.
-     * 
+     *
      * @param x
      *            a horizontal pixel location relative to the pixel boundary of
      *            this layer
@@ -276,7 +276,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Returns the x offset in pixels of the given column.
-     * 
+     *
      * @param columnPosition
      *            the column position in this layer
      * @return the x offset of the column, or -1
@@ -301,7 +301,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Gets the underlying non-transformed row index for the given row position.
-     * 
+     *
      * @param rowPosition
      *            a row position relative to this coordinate model
      * @return an underlying non-transformed row index, or -1 if the given row
@@ -322,7 +322,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Returns the total height in pixels of this layer.
-     * 
+     *
      * @return the height of this layer
      */
     public int getHeight();
@@ -331,12 +331,12 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Returns the height in pixels of the given row.
-     * 
+     *
      * The height of invisible and non-existing rows is 0.
-     * 
+     *
      * @param rowPosition
      *            the row position in this layer
-     * 
+     *
      * @return the height of the row
      */
     public int getRowHeightByPosition(int rowPosition);
@@ -349,7 +349,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Returns the row position that contains the given y coordinate.
-     * 
+     *
      * @param y
      *            a vertical pixel location relative to the pixel boundary of
      *            this layer
@@ -360,10 +360,10 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Returns the y offset in pixels of the given row.
-     * 
+     *
      * @param rowPosition
      *            the row position in this layer
-     * 
+     *
      * @return the y offset of the row, or -1
      */
     public int getStartYOfRowPosition(int rowPosition);
@@ -378,12 +378,12 @@ public interface ILayer extends ILayerListener, IPersistable {
 
     /**
      * Calculates the bounds in pixel for the given cell position.
-     * 
+     *
      * @param columnPosition
      *            the column position of the cell
      * @param rowPosition
      *            the row position of the cell
-     * 
+     *
      * @return the bounds, or <code>null</code> if there are no valid bounds
      */
     public Rectangle getBoundsByPosition(int columnPosition, int rowPosition);

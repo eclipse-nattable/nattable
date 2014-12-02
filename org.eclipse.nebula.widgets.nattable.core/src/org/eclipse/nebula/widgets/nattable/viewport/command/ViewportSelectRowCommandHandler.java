@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,13 +23,14 @@ public class ViewportSelectRowCommandHandler extends
         this.viewportLayer = viewportLayer;
     }
 
+    @Override
     public Class<ViewportSelectRowCommand> getCommandClass() {
         return ViewportSelectRowCommand.class;
     }
 
     @Override
     protected boolean doCommand(ViewportSelectRowCommand command) {
-        viewportLayer.doCommand(new SelectRowsCommand(viewportLayer, 0, command
+        this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer, 0, command
                 .getRowPosition(), command.isWithShiftMask(), command
                 .isWithControlMask()));
         return true;

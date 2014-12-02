@@ -18,7 +18,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 /**
  * Command to end row reordering. Will transport the position of the row to
  * which the dragged row should be dropped.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -36,7 +36,7 @@ public class RowReorderEndCommand implements ILayerCommand {
     private boolean reorderToTopEdge;
 
     /**
-     * 
+     *
      * @param layer
      *            The layer the position is related to
      * @param toRowPosition
@@ -45,19 +45,19 @@ public class RowReorderEndCommand implements ILayerCommand {
      */
     public RowReorderEndCommand(ILayer layer, int toRowPosition) {
         if (toRowPosition < layer.getRowCount()) {
-            reorderToTopEdge = true;
+            this.reorderToTopEdge = true;
         } else {
-            reorderToTopEdge = false;
+            this.reorderToTopEdge = false;
             toRowPosition--;
         }
 
-        toRowPositionCoordinate = new RowPositionCoordinate(layer,
+        this.toRowPositionCoordinate = new RowPositionCoordinate(layer,
                 toRowPosition);
     }
 
     /**
      * Constructor used for cloning purposes
-     * 
+     *
      * @param command
      *            The command which is base for the new one
      */
@@ -71,7 +71,7 @@ public class RowReorderEndCommand implements ILayerCommand {
      *         dropped
      */
     public int getToRowPosition() {
-        return toRowPositionCoordinate.getRowPosition();
+        return this.toRowPositionCoordinate.getRowPosition();
     }
 
     /**
@@ -79,16 +79,16 @@ public class RowReorderEndCommand implements ILayerCommand {
      *         layer.
      */
     public boolean isReorderToTopEdge() {
-        return reorderToTopEdge;
+        return this.reorderToTopEdge;
     }
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(toRowPositionCoordinate,
+                .convertRowPositionToTargetContext(this.toRowPositionCoordinate,
                         targetLayer);
         if (targetToRowPositionCoordinate != null) {
-            toRowPositionCoordinate = targetToRowPositionCoordinate;
+            this.toRowPositionCoordinate = targetToRowPositionCoordinate;
             return true;
         } else {
             return false;

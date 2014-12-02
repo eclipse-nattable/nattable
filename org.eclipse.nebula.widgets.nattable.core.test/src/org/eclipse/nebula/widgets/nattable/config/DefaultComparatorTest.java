@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,43 +21,43 @@ public class DefaultComparatorTest {
     @Test
     public void testCompareNonNullComparables() {
         Assert.assertEquals("abc".compareTo("abc"),
-                defaultComparator.compare("abc", "abc"));
+                this.defaultComparator.compare("abc", "abc"));
         Assert.assertEquals("abc".compareTo("def"),
-                defaultComparator.compare("abc", "def"));
+                this.defaultComparator.compare("abc", "def"));
         Assert.assertEquals("def".compareTo("abc"),
-                defaultComparator.compare("def", "abc"));
+                this.defaultComparator.compare("def", "abc"));
     }
 
     @Test
     public void testCompareNullAB() {
-        Assert.assertEquals(0, defaultComparator.compare(null, null));
+        Assert.assertEquals(0, this.defaultComparator.compare(null, null));
     }
 
     @Test
     public void testCompareNullA() {
-        Assert.assertEquals(-1, defaultComparator.compare(null, "abc"));
+        Assert.assertEquals(-1, this.defaultComparator.compare(null, "abc"));
     }
 
     @Test
     public void testCompareNullB() {
-        Assert.assertEquals(1, defaultComparator.compare("abc", null));
+        Assert.assertEquals(1, this.defaultComparator.compare("abc", null));
     }
 
     @Test
     public void testCompareNonComparables() {
-        Assert.assertEquals(0, defaultComparator.compare(new SimpleObject(
+        Assert.assertEquals(0, this.defaultComparator.compare(new SimpleObject(
                 "Test"), new SimpleObject("Test")));
     }
 
     @Test
     public void testCompareNonComparables1() {
-        Assert.assertEquals(-1, defaultComparator.compare(new SimpleObject(
+        Assert.assertEquals(-1, this.defaultComparator.compare(new SimpleObject(
                 "Test1"), new SimpleObject("Test2")));
     }
 
     @Test
     public void testCompareNonComparables2() {
-        Assert.assertEquals(1, defaultComparator.compare(new SimpleObject(
+        Assert.assertEquals(1, this.defaultComparator.compare(new SimpleObject(
                 "Test2"), new SimpleObject("Test1")));
     }
 
@@ -70,7 +70,7 @@ public class DefaultComparatorTest {
 
         @Override
         public String toString() {
-            return value.toString();
+            return this.value.toString();
         }
     }
 }

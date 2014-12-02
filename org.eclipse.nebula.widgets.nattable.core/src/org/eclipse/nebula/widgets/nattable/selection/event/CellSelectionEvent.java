@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -40,8 +40,9 @@ public class CellSelectionEvent extends CellVisualChangeEvent implements
         this.withShiftMask = event.withShiftMask;
     }
 
+    @Override
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 
     @Override
@@ -50,28 +51,29 @@ public class CellSelectionEvent extends CellVisualChangeEvent implements
     }
 
     public boolean isWithShiftMask() {
-        return withShiftMask;
+        return this.withShiftMask;
     }
 
     public boolean isWithControlMask() {
-        return withControlMask;
+        return this.withControlMask;
     }
 
+    @Override
     public boolean convertToLocal(ILayer localLayer) {
-        if (columnPosition == SelectionLayer.NO_SELECTION
-                || rowPosition == SelectionLayer.NO_SELECTION) {
+        if (this.columnPosition == SelectionLayer.NO_SELECTION
+                || this.rowPosition == SelectionLayer.NO_SELECTION) {
             return true;
         }
-        columnPosition = localLayer.underlyingToLocalColumnPosition(getLayer(),
-                columnPosition);
-        rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(),
-                rowPosition);
+        this.columnPosition = localLayer.underlyingToLocalColumnPosition(getLayer(),
+                this.columnPosition);
+        this.rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(),
+                this.rowPosition);
 
-        layer = localLayer;
+        this.layer = localLayer;
 
-        return columnPosition >= 0 && rowPosition >= 0
-                && columnPosition < layer.getColumnCount()
-                && rowPosition < layer.getRowCount();
+        return this.columnPosition >= 0 && this.rowPosition >= 0
+                && this.columnPosition < this.layer.getColumnCount()
+                && this.rowPosition < this.layer.getRowCount();
     }
 
 }

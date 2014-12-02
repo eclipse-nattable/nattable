@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * Event indicating that the user has selected a specific cell in the data grid.
  * This command should be used for implementing all selection handling by
  * layers.
- * 
+ *
  * <strong>Note that this command takes a Grid PositionCoordinate describing a
  * cell on the screen on which the user has clicked. Do not pass it anything
  * else or you will introduce very subtle and very difficult to debug bugs into
@@ -45,15 +45,15 @@ public class SelectCellCommand extends AbstractPositionCommand {
     }
 
     public boolean isShiftMask() {
-        return shiftMask;
+        return this.shiftMask;
     }
 
     public boolean isControlMask() {
-        return controlMask;
+        return this.controlMask;
     }
 
     public boolean isForcingEntireCellIntoViewport() {
-        return forcingEntireCellIntoViewport;
+        return this.forcingEntireCellIntoViewport;
     }
 
     public void setForcingEntireCellIntoViewport(
@@ -61,6 +61,7 @@ public class SelectCellCommand extends AbstractPositionCommand {
         this.forcingEntireCellIntoViewport = forcingEntireCellIntoViewport;
     }
 
+    @Override
     public SelectCellCommand cloneCommand() {
         return new SelectCellCommand(this);
     }

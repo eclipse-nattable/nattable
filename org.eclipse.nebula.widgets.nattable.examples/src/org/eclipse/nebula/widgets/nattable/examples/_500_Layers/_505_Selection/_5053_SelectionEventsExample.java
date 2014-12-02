@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Example showing custom selection event handling in a NatTable grid
  * composition.
- * 
+ *
  * @author Dirk Fauth
  *
  */

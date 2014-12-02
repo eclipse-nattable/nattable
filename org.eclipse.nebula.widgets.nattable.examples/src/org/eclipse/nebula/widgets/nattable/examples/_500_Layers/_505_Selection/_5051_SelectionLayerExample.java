@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Simple example showing the SelectionLayer.
- * 
+ *
  * @author Dirk Fauth
  *
  */

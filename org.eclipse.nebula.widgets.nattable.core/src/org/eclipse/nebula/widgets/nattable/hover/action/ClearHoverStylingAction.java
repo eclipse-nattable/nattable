@@ -21,7 +21,7 @@ import org.eclipse.swt.events.MouseEvent;
  * HoverLayer.
  * <p>
  * Will also clear any set cursor by default.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see HoverLayer
@@ -44,7 +44,7 @@ public class ClearHoverStylingAction extends ClearCursorAction {
      * Create a ClearHoverStylingAction that will trigger clearing the hover
      * styling in every HoverLayer that exists in the layer composition, except
      * the given HoverLayer.
-     * 
+     *
      * @param hoverLayer
      *            The HoverLayer whose hover styling should not be cleared.
      */
@@ -56,6 +56,6 @@ public class ClearHoverStylingAction extends ClearCursorAction {
     public void run(NatTable natTable, MouseEvent event) {
         super.run(natTable, event);
 
-        natTable.doCommand(new ClearHoverStylingCommand(hoverLayer));
+        natTable.doCommand(new ClearHoverStylingCommand(this.hoverLayer));
     }
 }

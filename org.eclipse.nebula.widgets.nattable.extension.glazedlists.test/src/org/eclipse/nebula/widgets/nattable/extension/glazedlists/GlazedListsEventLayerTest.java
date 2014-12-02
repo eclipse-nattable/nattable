@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,53 +37,53 @@ public class GlazedListsEventLayerTest {
 
     @Before
     public void setup() {
-        listFixture = GlazedLists.eventList(RowDataListFixture.getList());
+        this.listFixture = GlazedLists.eventList(RowDataListFixture.getList());
 
-        layerUnderTest = new GlazedListsEventLayer<RowDataFixture>(
-                new DataLayerFixture(), listFixture);
-        layerUnderTest.setTestMode(true);
+        this.layerUnderTest = new GlazedListsEventLayer<RowDataFixture>(
+                new DataLayerFixture(), this.listFixture);
+        this.layerUnderTest.setTestMode(true);
 
-        listenerFixture = new LayerListenerFixture();
-        layerUnderTest.addLayerListener(listenerFixture);
+        this.listenerFixture = new LayerListenerFixture();
+        this.layerUnderTest.addLayerListener(this.listenerFixture);
     }
 
     @Ignore
     // This is failing in hudson, but works fine locally. Ignoring for now.
     @Test
     public void shouldConflateEvents() throws Exception {
-        listFixture.add(RowDataFixture.getInstance("T1", "A"));
+        this.listFixture.add(RowDataFixture.getInstance("T1", "A"));
         Thread.sleep(100);
 
-        listFixture.add(RowDataFixture.getInstance("T2", "A"));
+        this.listFixture.add(RowDataFixture.getInstance("T2", "A"));
         Thread.sleep(100);
 
-        Assert.assertNotNull(listenerFixture
+        Assert.assertNotNull(this.listenerFixture
                 .getReceivedEvent(RowStructuralRefreshEvent.class));
     }
 
     @Test
     public void shouldShutConflaterThreadDownWhenNatTableIsDisposed()
             throws Exception {
-        Assert.assertFalse(layerUnderTest.isDisposed());
+        Assert.assertFalse(this.layerUnderTest.isDisposed());
 
-        listFixture.add(RowDataFixture.getInstance("T1", "A"));
+        this.listFixture.add(RowDataFixture.getInstance("T1", "A"));
         Thread.sleep(100);
 
-        listFixture.add(RowDataFixture.getInstance("T2", "A"));
+        this.listFixture.add(RowDataFixture.getInstance("T2", "A"));
         Thread.sleep(100);
 
-        layerUnderTest.doCommand(new DisposeResourcesCommand());
-        Assert.assertTrue(layerUnderTest.isDisposed());
+        this.layerUnderTest.doCommand(new DisposeResourcesCommand());
+        Assert.assertTrue(this.layerUnderTest.isDisposed());
     }
 
     @Test
     public void propertyChangeEventshouldBePropagatedImmediately()
             throws Exception {
         List<BlinkingRowDataFixture> list = BlinkingRowDataFixture
-                .getList(layerUnderTest);
+                .getList(this.layerUnderTest);
         list.get(0).setAsk_price(100.0F);
 
-        Assert.assertNotNull(listenerFixture
+        Assert.assertNotNull(this.listenerFixture
                 .getReceivedEvent(PropertyUpdateEvent.class));
     }
 }

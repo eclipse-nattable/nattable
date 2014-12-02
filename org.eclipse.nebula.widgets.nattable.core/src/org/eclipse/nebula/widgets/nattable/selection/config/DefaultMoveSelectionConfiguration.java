@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,11 +19,11 @@ import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionComman
 /**
  * Configure the behavior when the selection is moved. Example: by using arrow
  * keys. This default configuration moves by cell.
- * 
+ *
  * {@link MoveSelectionCommand} are fired by the
  * {@link DefaultSelectionBindings}. A suitable handler can be plugged in to
  * handle the move commands as required.
- * 
+ *
  * @see MoveRowSelectionCommandHandler
  */
 public class DefaultMoveSelectionConfiguration extends

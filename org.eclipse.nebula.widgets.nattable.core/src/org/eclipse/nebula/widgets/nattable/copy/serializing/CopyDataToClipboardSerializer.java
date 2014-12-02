@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,14 +29,15 @@ public class CopyDataToClipboardSerializer implements ISerializer {
         this.command = command;
     }
 
+    @Override
     public void serialize() {
-        final String cellDelimeter = command.getCellDelimeter();
-        final String rowDelimeter = command.getRowDelimeter();
+        final String cellDelimeter = this.command.getCellDelimeter();
+        final String rowDelimeter = this.command.getRowDelimeter();
 
         final TextTransfer textTransfer = TextTransfer.getInstance();
         final StringBuilder textData = new StringBuilder();
         int currentRow = 0;
-        for (ILayerCell[] cells : copiedCells) {
+        for (ILayerCell[] cells : this.copiedCells) {
             int currentCell = 0;
             for (ILayerCell cell : cells) {
                 final String delimeter = ++currentCell < cells.length ? cellDelimeter
@@ -47,7 +48,7 @@ public class CopyDataToClipboardSerializer implements ISerializer {
                     textData.append(delimeter);
                 }
             }
-            if (++currentRow < copiedCells.length) {
+            if (++currentRow < this.copiedCells.length) {
                 textData.append(rowDelimeter);
             }
         }
@@ -67,6 +68,6 @@ public class CopyDataToClipboardSerializer implements ISerializer {
     }
 
     final protected CopyDataToClipboardCommand getCommand() {
-        return command;
+        return this.command;
     }
 }

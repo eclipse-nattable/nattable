@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,6 +36,7 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
         return "This example shows how to add a derived fullName column which is computed by concatenating the firstName and lastName column values";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         List<Person> myList = new ArrayList<Person>();
         myList.add(new Person("Homer", "Simpson", "Sargeant", 1234567890L));
@@ -53,6 +54,7 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
         // Add derived 'fullName' column
         final IColumnPropertyAccessor<Person> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Person>() {
 
+            @Override
             public Object getDataValue(Person rowObject, int columnIndex) {
                 if (columnIndex < columnPropertyAccessor.getColumnCount()) {
                     return columnPropertyAccessor.getDataValue(rowObject,
@@ -67,16 +69,19 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
                 }
             }
 
+            @Override
             public void setDataValue(Person rowObject, int columnIndex,
                     Object newValue) {
                 columnPropertyAccessor.setDataValue(rowObject, columnIndex,
                         newValue);
             }
 
+            @Override
             public int getColumnCount() {
                 return columnPropertyAccessor.getColumnCount() + 1;
             }
 
+            @Override
             public String getColumnProperty(int columnIndex) {
                 if (columnIndex < columnPropertyAccessor.getColumnCount()) {
                     return columnPropertyAccessor
@@ -89,6 +94,7 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
                 }
             }
 
+            @Override
             public int getColumnIndex(String propertyName) {
                 if ("fullName".equals(propertyName)) {
                     return columnPropertyAccessor.getColumnCount() + 1;
@@ -104,20 +110,24 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
         // Column header data provider includes derived properties
         IDataProvider columnHeaderDataProvider = new IDataProvider() {
 
+            @Override
             public Object getDataValue(int columnIndex, int rowIndex) {
                 return derivedColumnPropertyAccessor
                         .getColumnProperty(columnIndex);
             }
 
+            @Override
             public void setDataValue(int columnIndex, int rowIndex,
                     Object newValue) {
                 // noop
             }
 
+            @Override
             public int getColumnCount() {
                 return derivedColumnPropertyAccessor.getColumnCount();
             }
 
+            @Override
             public int getRowCount() {
                 return 1;
             }
@@ -145,19 +155,19 @@ public class Derived_or_computed_column_data extends AbstractNatExample {
         }
 
         public String getFirstName() {
-            return firstName;
+            return this.firstName;
         }
 
         public String getLastName() {
-            return lastName;
+            return this.lastName;
         }
 
         public String getRank() {
-            return rank;
+            return this.rank;
         }
 
         public long getSerialNumber() {
-            return serialNumber;
+            return this.serialNumber;
         }
     }
 

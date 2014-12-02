@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,12 +24,14 @@ public class FreezeColumnStrategy implements IFreezeCoordinatesProvider {
         this.columnPosition = columnPosition;
     }
 
+    @Override
     public PositionCoordinate getTopLeftPosition() {
-        return new PositionCoordinate(freezeLayer, 0, -1);
+        return new PositionCoordinate(this.freezeLayer, 0, -1);
     }
 
+    @Override
     public PositionCoordinate getBottomRightPosition() {
-        return new PositionCoordinate(freezeLayer, columnPosition, -1);
+        return new PositionCoordinate(this.freezeLayer, this.columnPosition, -1);
     }
 
 }

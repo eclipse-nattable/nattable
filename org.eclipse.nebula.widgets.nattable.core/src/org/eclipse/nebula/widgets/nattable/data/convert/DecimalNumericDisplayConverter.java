@@ -30,7 +30,7 @@ public abstract class DecimalNumericDisplayConverter extends
     public Object canonicalToDisplayValue(Object canonicalValue) {
         try {
             if (isNotNull(canonicalValue)) {
-                return nf.format(canonicalValue);
+                return this.nf.format(canonicalValue);
             }
             return null;
         } catch (Exception e) {
@@ -41,11 +41,11 @@ public abstract class DecimalNumericDisplayConverter extends
     /**
      * Sets the minimum number of digits allowed in the fraction portion of a
      * number.
-     * 
+     *
      * @param newValue
      *            newValue the minimum number of fraction digits to be shown; if
      *            less than zero, then zero is used.
-     * 
+     *
      * @see NumberFormat#setMinimumFractionDigits(int)
      */
     public void setMinimumFractionDigits(int newValue) {
@@ -55,11 +55,11 @@ public abstract class DecimalNumericDisplayConverter extends
     /**
      * Sets the maximum number of digits allowed in the fraction portion of a
      * number.
-     * 
+     *
      * @param newValue
      *            newValue the maximum number of fraction digits to be shown; if
      *            less than zero, then zero is used.
-     * 
+     *
      * @see NumberFormat#setMaximumFractionDigits(int)
      */
     public void setMaximumFractionDigits(int newValue) {

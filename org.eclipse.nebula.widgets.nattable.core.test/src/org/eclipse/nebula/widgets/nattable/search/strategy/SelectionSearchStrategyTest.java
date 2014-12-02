@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -42,23 +42,27 @@ public class SelectionSearchStrategyTest {
 
     @Before
     public void setUp() {
-        bodyDataProvider = new IDataProvider() {
+        this.bodyDataProvider = new IDataProvider() {
+            @Override
             public int getColumnCount() {
                 return GridLayerFixture.bodyDataProvider.getColumnCount();
             }
 
+            @Override
             public int getRowCount() {
                 return GridLayerFixture.bodyDataProvider.getRowCount();
             }
 
+            @Override
             public Object getDataValue(int columnIndex, int rowIndex) {
                 if (columnIndex == 0 || columnIndex == 9) {
                     return CELL_VALUE;
                 }
-                return (String) GridLayerFixture.bodyDataProvider.getDataValue(
+                return GridLayerFixture.bodyDataProvider.getDataValue(
                         columnIndex, rowIndex);
             }
 
+            @Override
             public void setDataValue(int columnIndex, int rowIndex,
                     Object newValue) {
                 throw new UnsupportedOperationException();
@@ -66,23 +70,24 @@ public class SelectionSearchStrategyTest {
 
         };
 
-        gridLayer = new DefaultGridLayer(bodyDataProvider,
+        this.gridLayer = new DefaultGridLayer(this.bodyDataProvider,
                 GridLayerFixture.colHeaderDataProvider,
                 GridLayerFixture.rowHeaderDataProvider,
                 GridLayerFixture.cornerDataProvider);
-        gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 1050, 250);
             }
 
         });
-        gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
                 .getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
 
-        configRegistry = new ConfigRegistry();
+        this.configRegistry = new ConfigRegistry();
         new DefaultNatTableStyleConfiguration()
-                .configureRegistry(configRegistry);
+                .configureRegistry(this.configRegistry);
     }
 
     @Test
@@ -95,39 +100,39 @@ public class SelectionSearchStrategyTest {
 
         for (int columnPosition = startColumnPosition; columnPosition < lastColumn; columnPosition++) {
             for (int rowPosition = startRowPosition; rowPosition < lastRow; rowPosition++) {
-                gridLayer.doCommand(new SelectCellCommand(gridLayer,
+                this.gridLayer.doCommand(new SelectCellCommand(this.gridLayer,
                         columnPosition, rowPosition, false, true));
             }
         }
 
         // We should get 20 Cells from the body
         SelectionSearchStrategy selectionStrategy = new SelectionSearchStrategy(
-                configRegistry);
+                this.configRegistry);
         PositionCoordinate[] cellsToSearch = selectionStrategy
-                .getSelectedCells(gridLayer.getBodyLayer().getSelectionLayer());
+                .getSelectedCells(this.gridLayer.getBodyLayer().getSelectionLayer());
         Assert.assertEquals(20, cellsToSearch.length);
     }
 
     @Test
     public void shouldOnlySearchWhatIsSelected() {
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 1, 4, false, true));
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 2, 2, false, true));
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 3, 4, false, true));
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 5, 4, false, true));
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 6, 2, false, true));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 1, 4, false, true));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 2, 2, false, true));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, true));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 5, 4, false, true));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 6, 2, false, true));
 
-        Assert.assertEquals(5, gridLayer.getBodyLayer().getSelectionLayer()
+        Assert.assertEquals(5, this.gridLayer.getBodyLayer().getSelectionLayer()
                 .getSelectedCellPositions().length);
 
-        final SelectionLayer selectionLayer = gridLayer.getBodyLayer()
+        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
                 .getSelectionLayer();
         SelectionSearchStrategy selectionStrategy = new SelectionSearchStrategy(
-                configRegistry);
+                this.configRegistry);
         selectionStrategy
                 .setComparator(new CellValueAsStringComparator<Comparable<String>>());
         selectionStrategy.setContextLayer(selectionLayer);
@@ -140,15 +145,15 @@ public class SelectionSearchStrategyTest {
     @Test
     public void shouldSearchSelectionBackwards() {
         // Select entire grid
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 1, 1, false, false));
-        gridLayer.doCommand(new SelectAllCommand());
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 1, 1, false, false));
+        this.gridLayer.doCommand(new SelectAllCommand());
 
         // Should find the first cell in grid
-        final SelectionLayer selectionLayer = gridLayer.getBodyLayer()
+        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
                 .getSelectionLayer();
         SelectionSearchStrategy selectionStrategy = new SelectionSearchStrategy(
-                configRegistry);
+                this.configRegistry);
         selectionStrategy
                 .setComparator(new CellValueAsStringComparator<Comparable<String>>());
         selectionStrategy.setContextLayer(selectionLayer);
@@ -159,7 +164,7 @@ public class SelectionSearchStrategyTest {
         Assert.assertEquals(0, positionCoordinate.rowPosition);
 
         // Should find last cell
-        selectionStrategy = new SelectionSearchStrategy(configRegistry,
+        selectionStrategy = new SelectionSearchStrategy(this.configRegistry,
                 ISearchDirection.SEARCH_BACKWARDS, true);
         selectionStrategy
                 .setComparator(new CellValueAsStringComparator<Comparable<String>>());

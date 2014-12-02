@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -133,7 +133,7 @@ public class TextPainter extends AbstractTextPainter {
             IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
         return getLengthFromCache(gc, convertDataType(cell, configRegistry))
-                + (spacing * 2) + 1;
+                + (this.spacing * 2) + 1;
     }
 
     @Override
@@ -141,17 +141,17 @@ public class TextPainter extends AbstractTextPainter {
             IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
         return gc.textExtent(convertDataType(cell, configRegistry)).y
-                + (spacing * 2) + 1;
+                + (this.spacing * 2) + 1;
     }
 
     @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
             IConfigRegistry configRegistry) {
-        if (paintBg) {
+        if (this.paintBg) {
             super.paintCell(cell, gc, rectangle, configRegistry);
         }
 
-        if (paintFg) {
+        if (this.paintFg) {
             Rectangle originalClipping = gc.getClipping();
             gc.setClipping(rectangle.intersection(originalClipping));
 
@@ -171,7 +171,7 @@ public class TextPainter extends AbstractTextPainter {
 
             // if the content height is bigger than the available row height
             // we're extending the row height (only if word wrapping is enabled)
-            int contentHeight = (fontHeight * numberOfNewLines) + (spacing * 2);
+            int contentHeight = (fontHeight * numberOfNewLines) + (this.spacing * 2);
             int contentToCellDiff = (cell.getBounds().height - rectangle.height);
 
             if (performRowResize(contentHeight, rectangle)) {
@@ -189,11 +189,11 @@ public class TextPainter extends AbstractTextPainter {
                         rectangle.x
                                 + CellStyleUtil.getHorizontalAlignmentPadding(
                                         cellStyle, rectangle, contentWidth)
-                                + spacing,
+                                + this.spacing,
                         rectangle.y
                                 + CellStyleUtil.getVerticalAlignmentPadding(
                                         cellStyle, rectangle, contentHeight)
-                                + spacing, SWT.DRAW_TRANSPARENT
+                                + this.spacing, SWT.DRAW_TRANSPARENT
                                 | SWT.DRAW_DELIMITER);
 
                 if (underline || strikethrough) {
@@ -201,12 +201,12 @@ public class TextPainter extends AbstractTextPainter {
                     int x = rectangle.x
                             + CellStyleUtil.getHorizontalAlignmentPadding(
                                     cellStyle, rectangle, contentWidth)
-                            + spacing;
+                            + this.spacing;
                     // y = start y of text
                     int y = rectangle.y
                             + CellStyleUtil.getVerticalAlignmentPadding(
                                     cellStyle, rectangle, contentHeight)
-                            + spacing;
+                            + this.spacing;
 
                     // check and draw underline and strikethrough separately so
                     // it is possible to combine both
@@ -248,8 +248,8 @@ public class TextPainter extends AbstractTextPainter {
                                     + CellStyleUtil
                                             .getHorizontalAlignmentPadding(
                                                     cellStyle, rectangle,
-                                                    lineContentWidth) + spacing,
-                            yStartPos + spacing, SWT.DRAW_TRANSPARENT
+                                                    lineContentWidth) + this.spacing,
+                            yStartPos + this.spacing, SWT.DRAW_TRANSPARENT
                                     | SWT.DRAW_DELIMITER);
 
                     if (underline || strikethrough) {
@@ -257,9 +257,9 @@ public class TextPainter extends AbstractTextPainter {
                         int x = rectangle.x
                                 + CellStyleUtil.getHorizontalAlignmentPadding(
                                         cellStyle, rectangle, lineContentWidth)
-                                + spacing;
+                                + this.spacing;
                         // y = start y of text
-                        int y = yStartPos + spacing;
+                        int y = yStartPos + this.spacing;
 
                         // check and draw underline and strikethrough separately
                         // so it is possible to combine both
@@ -311,7 +311,7 @@ public class TextPainter extends AbstractTextPainter {
 
     /**
      * Checks if a row resize needs to be triggered.
-     * 
+     *
      * @param contentHeight
      *            The necessary height to show the content completely
      * @param rectangle
@@ -320,6 +320,6 @@ public class TextPainter extends AbstractTextPainter {
      *         <code>false</code> if not
      */
     protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
-        return ((contentHeight > rectangle.height) && calculateByTextHeight);
+        return ((contentHeight > rectangle.height) && this.calculateByTextHeight);
     }
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -75,19 +75,19 @@ public class TestLayer implements IUniqueIndexLayer {
         this.preferredRowCount = preferredRowCount;
         this.preferredHeight = preferredHeight;
 
-        columnIndexes = new int[columnCount];
-        columnWidths = new int[columnCount];
-        underlyingColumnPositions = new int[columnCount];
+        this.columnIndexes = new int[columnCount];
+        this.columnWidths = new int[columnCount];
+        this.underlyingColumnPositions = new int[columnCount];
 
-        rowIndexes = new int[rowCount];
-        rowHeights = new int[rowCount];
-        underlyingRowPositions = new int[rowCount];
+        this.rowIndexes = new int[rowCount];
+        this.rowHeights = new int[rowCount];
+        this.underlyingRowPositions = new int[rowCount];
 
-        cells = new ILayerCell[columnCount][rowCount];
-        bounds = new Rectangle[columnCount][rowCount];
-        displayModes = new String[columnCount][rowCount];
-        configLabels = new String[columnCount][rowCount];
-        dataValues = new Object[columnCount][rowCount];
+        this.cells = new ILayerCell[columnCount][rowCount];
+        this.bounds = new Rectangle[columnCount][rowCount];
+        this.displayModes = new String[columnCount][rowCount];
+        this.configLabels = new String[columnCount][rowCount];
+        this.dataValues = new Object[columnCount][rowCount];
 
         parseColumnsInfo(columnsInfo);
         parseRowsInfo(rowsInfo);
@@ -126,7 +126,7 @@ public class TestLayer implements IUniqueIndexLayer {
                         // Parse underlying column position
                         int underlyingColumnPosition = Integer.valueOf(
                                 nextToken).intValue();
-                        underlyingColumnPositions[columnPosition] = underlyingColumnPosition;
+                        this.underlyingColumnPositions[columnPosition] = underlyingColumnPosition;
                     }
                 } else if (";".equals(token)) {
                     String nextToken = columnInfoFieldTokenizer.nextToken()
@@ -153,7 +153,7 @@ public class TestLayer implements IUniqueIndexLayer {
                 } else {
                     // Parse column index
                     int columnIndex = Integer.valueOf(token).intValue();
-                    columnIndexes[columnPosition] = columnIndex;
+                    this.columnIndexes[columnPosition] = columnIndex;
                 }
             }
 
@@ -164,7 +164,7 @@ public class TestLayer implements IUniqueIndexLayer {
     private void parseColumnWidth(int columnPosition,
             StringTokenizer columnInfoFieldTokenizer, String nextToken) {
         int columnWidth = Integer.valueOf(nextToken).intValue();
-        columnWidths[columnPosition] = columnWidth;
+        this.columnWidths[columnPosition] = columnWidth;
 
         if (columnInfoFieldTokenizer.hasMoreTokens()) {
             System.out
@@ -202,7 +202,7 @@ public class TestLayer implements IUniqueIndexLayer {
                         // Parse underlying row position
                         int underlyingRowPosition = Integer.valueOf(nextToken)
                                 .intValue();
-                        underlyingRowPositions[rowPosition] = underlyingRowPosition;
+                        this.underlyingRowPositions[rowPosition] = underlyingRowPosition;
                     }
                 } else if (";".equals(token)) {
                     String nextToken = rowInfoFieldTokenizer.nextToken().trim();
@@ -228,7 +228,7 @@ public class TestLayer implements IUniqueIndexLayer {
                 } else {
                     // Parse row index
                     int rowIndex = Integer.valueOf(token).intValue();
-                    rowIndexes[rowPosition] = rowIndex;
+                    this.rowIndexes[rowPosition] = rowIndex;
                 }
             }
 
@@ -239,7 +239,7 @@ public class TestLayer implements IUniqueIndexLayer {
     private void parseRowHeight(int rowPosition,
             StringTokenizer rowInfoFieldTokenizer, String nextToken) {
         int rowHeight = Integer.valueOf(nextToken).intValue();
-        rowHeights[rowPosition] = rowHeight;
+        this.rowHeights[rowPosition] = rowHeight;
 
         if (rowInfoFieldTokenizer.hasMoreTokens()) {
             System.out
@@ -268,10 +268,10 @@ public class TestLayer implements IUniqueIndexLayer {
 
                     if ("<".equals(token)) {
                         // Span from left
-                        dataValues[columnPosition][rowPosition] = dataValues[columnPosition - 1][rowPosition];
+                        this.dataValues[columnPosition][rowPosition] = this.dataValues[columnPosition - 1][rowPosition];
 
-                        ILayerCell cell = cells[columnPosition - 1][rowPosition];
-                        Rectangle boundsRect = bounds[columnPosition - 1][rowPosition];
+                        ILayerCell cell = this.cells[columnPosition - 1][rowPosition];
+                        Rectangle boundsRect = this.bounds[columnPosition - 1][rowPosition];
 
                         if (columnPosition >= cell.getColumnPosition()
                                 + cell.getColumnSpan()) {
@@ -291,8 +291,8 @@ public class TestLayer implements IUniqueIndexLayer {
                             };
                         }
 
-                        cells[columnPosition][rowPosition] = cell;
-                        bounds[columnPosition][rowPosition] = boundsRect;
+                        this.cells[columnPosition][rowPosition] = cell;
+                        this.bounds[columnPosition][rowPosition] = boundsRect;
 
                         if (cellInfoFieldTokenizer.hasMoreTokens()) {
                             System.out
@@ -304,10 +304,10 @@ public class TestLayer implements IUniqueIndexLayer {
                         break;
                     } else if ("^".equals(token)) {
                         // Span from above
-                        dataValues[columnPosition][rowPosition] = dataValues[columnPosition][rowPosition - 1];
+                        this.dataValues[columnPosition][rowPosition] = this.dataValues[columnPosition][rowPosition - 1];
 
-                        ILayerCell cell = cells[columnPosition][rowPosition - 1];
-                        Rectangle boundsRect = bounds[columnPosition][rowPosition - 1];
+                        ILayerCell cell = this.cells[columnPosition][rowPosition - 1];
+                        Rectangle boundsRect = this.bounds[columnPosition][rowPosition - 1];
 
                         if (rowPosition >= cell.getRowPosition()
                                 + cell.getRowSpan()) {
@@ -327,8 +327,8 @@ public class TestLayer implements IUniqueIndexLayer {
                             };
                         }
 
-                        cells[columnPosition][rowPosition] = cell;
-                        bounds[columnPosition][rowPosition] = boundsRect;
+                        this.cells[columnPosition][rowPosition] = cell;
+                        this.bounds[columnPosition][rowPosition] = boundsRect;
 
                         if (cellInfoFieldTokenizer.hasMoreTokens()) {
                             System.out
@@ -357,7 +357,7 @@ public class TestLayer implements IUniqueIndexLayer {
                             break;
                         } else {
                             // Parse display mode
-                            displayModes[columnPosition][rowPosition] = nextToken;
+                            this.displayModes[columnPosition][rowPosition] = nextToken;
                         }
                     } else if (":".equals(token)) {
                         String nextToken = cellInfoFieldTokenizer.nextToken()
@@ -385,10 +385,10 @@ public class TestLayer implements IUniqueIndexLayer {
                         }
                     } else {
                         // Parse data value
-                        dataValues[columnPosition][rowPosition] = token;
-                        cells[columnPosition][rowPosition] = new TestLayerCell(
+                        this.dataValues[columnPosition][rowPosition] = token;
+                        this.cells[columnPosition][rowPosition] = new TestLayerCell(
                                 this, columnPosition, rowPosition);
-                        bounds[columnPosition][rowPosition] = new Rectangle(
+                        this.bounds[columnPosition][rowPosition] = new Rectangle(
                                 getStartXOfColumnPosition(columnPosition),
                                 getStartYOfRowPosition(rowPosition),
                                 getColumnWidthByPosition(columnPosition),
@@ -405,7 +405,7 @@ public class TestLayer implements IUniqueIndexLayer {
 
     private void parseConfigLabels(int columnPosition, int rowPosition,
             StringTokenizer cellInfoFieldTokenizer, String nextToken) {
-        configLabels[columnPosition][rowPosition] = nextToken;
+        this.configLabels[columnPosition][rowPosition] = nextToken;
 
         if (cellInfoFieldTokenizer.hasMoreTokens()) {
             System.out
@@ -414,74 +414,91 @@ public class TestLayer implements IUniqueIndexLayer {
         }
     }
 
+    @Override
     public void dispose() {
         // Do nothing
     }
 
+    @Override
     public void registerPersistable(IPersistable persistable) {
         // Do nothing
     }
 
+    @Override
     public void unregisterPersistable(IPersistable persistable) {
         // Do nothing
     }
 
+    @Override
     public void saveState(String prefix, Properties properties) {
         // Do nothing
     }
 
+    @Override
     public void loadState(String prefix, Properties properties) {
         // Do nothing
     }
 
+    @Override
     public void configure(ConfigRegistry configRegistry,
             UiBindingRegistry uiBindingRegistry) {
         // Do nothing
     }
 
+    @Override
     public boolean doCommand(ILayerCommand command) {
         // Do nothing
         return false;
     }
 
+    @Override
     public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
         // Do nothing
     }
 
+    @Override
     public void unregisterCommandHandler(
             Class<? extends ILayerCommand> commandClass) {
         // Do nothing
     }
 
+    @Override
     public void handleLayerEvent(ILayerEvent event) {
         // Do nothing
     }
 
+    @Override
     public void addLayerListener(ILayerListener listener) {
         // Do nothing
     }
 
+    @Override
     public void removeLayerListener(ILayerListener listener) {
         // Do nothing
     }
 
+    @Override
     public boolean hasLayerListener(
             Class<? extends ILayerListener> layerListenerClass) {
         return false;
     }
 
+    @Override
     public ILayerPainter getLayerPainter() {
         return null;
     }
 
+    @Override
     public IClientAreaProvider getClientAreaProvider() {
         return null;
     }
 
+    @Override
     public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
         // Do nothing
     }
 
+    @Override
     public LabelStack getRegionLabelsByXY(int x, int y) {
         return null;
     }
@@ -490,41 +507,48 @@ public class TestLayer implements IUniqueIndexLayer {
 
     // Columns
 
+    @Override
     public int getColumnCount() {
-        return columnCount;
+        return this.columnCount;
     }
 
+    @Override
     public int getPreferredColumnCount() {
-        return preferredColumnCount;
+        return this.preferredColumnCount;
     }
 
+    @Override
     public int getColumnIndexByPosition(int columnPosition) {
-        return columnIndexes[columnPosition];
+        return this.columnIndexes[columnPosition];
     }
 
+    @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
-        return underlyingColumnPositions[localColumnPosition];
+        return this.underlyingColumnPositions[localColumnPosition];
     }
 
+    @Override
     public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
             int underlyingColumnPosition) {
-        for (int localColumnPosition = 0; localColumnPosition < underlyingColumnPositions.length; localColumnPosition++) {
-            if (underlyingColumnPositions[localColumnPosition] == underlyingColumnPosition) {
+        for (int localColumnPosition = 0; localColumnPosition < this.underlyingColumnPositions.length; localColumnPosition++) {
+            if (this.underlyingColumnPositions[localColumnPosition] == underlyingColumnPosition) {
                 return localColumnPosition;
             }
         }
         return -1;
     }
 
+    @Override
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingColumnPositionRanges) {
         throw new RuntimeException("Not yet implemented");
     }
 
+    @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        for (int columnPosition = 0; columnPosition < columnIndexes.length; columnPosition++) {
-            if (columnIndexes[columnPosition] == columnIndex) {
+        for (int columnPosition = 0; columnPosition < this.columnIndexes.length; columnPosition++) {
+            if (this.columnIndexes[columnPosition] == columnIndex) {
                 return columnPosition;
             }
         }
@@ -533,38 +557,43 @@ public class TestLayer implements IUniqueIndexLayer {
 
     // Width
 
+    @Override
     public int getWidth() {
         int width = 0;
         for (int columnPosition = 0; columnPosition < getColumnCount(); columnPosition++) {
-            width += columnWidths[columnPosition];
+            width += this.columnWidths[columnPosition];
         }
         return width;
     }
 
+    @Override
     public int getPreferredWidth() {
-        if (preferredWidth >= 0) {
-            return preferredWidth;
+        if (this.preferredWidth >= 0) {
+            return this.preferredWidth;
         } else {
             return getWidth();
         }
     }
 
+    @Override
     public int getColumnWidthByPosition(int columnPosition) {
-        return columnWidths[columnPosition];
+        return this.columnWidths[columnPosition];
     }
 
     // Column resize
 
+    @Override
     public boolean isColumnPositionResizable(int columnPosition) {
         return true;
     }
 
     // X
 
+    @Override
     public int getColumnPositionByX(int x) {
         int width = 0;
         for (int columnPosition = 0; columnPosition < getColumnCount(); columnPosition++) {
-            width += columnWidths[columnPosition];
+            width += this.columnWidths[columnPosition];
             if (width > x) {
                 return columnPosition;
             }
@@ -572,16 +601,18 @@ public class TestLayer implements IUniqueIndexLayer {
         return -1;
     }
 
+    @Override
     public int getStartXOfColumnPosition(int targetColumnPosition) {
         int width = 0;
         for (int columnPosition = 0; columnPosition < targetColumnPosition; columnPosition++) {
-            width += columnWidths[columnPosition];
+            width += this.columnWidths[columnPosition];
         }
         return width;
     }
 
     // Underlying
 
+    @Override
     public Collection<ILayer> getUnderlyingLayersByColumnPosition(
             int columnPosition) {
         return null;
@@ -591,41 +622,48 @@ public class TestLayer implements IUniqueIndexLayer {
 
     // Rows
 
+    @Override
     public int getRowCount() {
-        return rowCount;
+        return this.rowCount;
     }
 
+    @Override
     public int getPreferredRowCount() {
-        return preferredRowCount;
+        return this.preferredRowCount;
     }
 
+    @Override
     public int getRowIndexByPosition(int rowPosition) {
-        return rowIndexes[rowPosition];
+        return this.rowIndexes[rowPosition];
     }
 
+    @Override
     public int localToUnderlyingRowPosition(int localRowPosition) {
-        return underlyingRowPositions[localRowPosition];
+        return this.underlyingRowPositions[localRowPosition];
     }
 
+    @Override
     public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
             int underlyingRowPosition) {
-        for (int localRowPosition = 0; localRowPosition < underlyingRowPositions.length; localRowPosition++) {
-            if (underlyingRowPositions[localRowPosition] == underlyingRowPosition) {
+        for (int localRowPosition = 0; localRowPosition < this.underlyingRowPositions.length; localRowPosition++) {
+            if (this.underlyingRowPositions[localRowPosition] == underlyingRowPosition) {
                 return localRowPosition;
             }
         }
         return -1;
     }
 
+    @Override
     public Collection<Range> underlyingToLocalRowPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingRowPositionRanges) {
         throw new RuntimeException("Not yet implemented");
     }
 
+    @Override
     public int getRowPositionByIndex(int rowIndex) {
-        for (int rowPosition = 0; rowPosition < rowIndexes.length; rowPosition++) {
-            if (rowIndexes[rowPosition] == rowIndex) {
+        for (int rowPosition = 0; rowPosition < this.rowIndexes.length; rowPosition++) {
+            if (this.rowIndexes[rowPosition] == rowIndex) {
                 return rowPosition;
             }
         }
@@ -634,38 +672,43 @@ public class TestLayer implements IUniqueIndexLayer {
 
     // Height
 
+    @Override
     public int getHeight() {
         int height = 0;
         for (int rowPosition = 0; rowPosition < getRowCount(); rowPosition++) {
-            height += rowHeights[rowPosition];
+            height += this.rowHeights[rowPosition];
         }
         return height;
     }
 
+    @Override
     public int getPreferredHeight() {
-        if (preferredHeight >= 0) {
-            return preferredHeight;
+        if (this.preferredHeight >= 0) {
+            return this.preferredHeight;
         } else {
             return getHeight();
         }
     }
 
+    @Override
     public int getRowHeightByPosition(int rowPosition) {
-        return rowHeights[rowPosition];
+        return this.rowHeights[rowPosition];
     }
 
     // Row resize
 
+    @Override
     public boolean isRowPositionResizable(int rowPosition) {
         return true;
     }
 
     // Y
 
+    @Override
     public int getRowPositionByY(int y) {
         int height = 0;
         for (int rowPosition = 0; rowPosition < getRowCount(); rowPosition++) {
-            height += rowHeights[rowPosition];
+            height += this.rowHeights[rowPosition];
             if (height > y) {
                 return rowPosition;
             }
@@ -673,38 +716,44 @@ public class TestLayer implements IUniqueIndexLayer {
         return -1;
     }
 
+    @Override
     public int getStartYOfRowPosition(int targetRowPosition) {
         int height = 0;
         for (int rowPosition = 0; rowPosition < targetRowPosition; rowPosition++) {
-            height += rowHeights[rowPosition];
+            height += this.rowHeights[rowPosition];
         }
         return height;
     }
 
     // Underlying
 
+    @Override
     public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
         return null;
     }
 
     // Cell features
 
+    @Override
     public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-        return new TestLayerCell(cells[columnPosition][rowPosition]);
+        return new TestLayerCell(this.cells[columnPosition][rowPosition]);
     }
 
+    @Override
     public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
-        return bounds[columnPosition][rowPosition];
+        return this.bounds[columnPosition][rowPosition];
     }
 
+    @Override
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-        return displayModes[columnPosition][rowPosition];
+        return this.displayModes[columnPosition][rowPosition];
     }
 
+    @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition,
             int rowPosition) {
         LabelStack labelStack = new LabelStack();
-        String configLabelsString = configLabels[columnPosition][rowPosition];
+        String configLabelsString = this.configLabels[columnPosition][rowPosition];
         if (configLabelsString != null) {
             StringTokenizer configLabelTokenizer = new StringTokenizer(
                     configLabelsString, ",");
@@ -715,20 +764,24 @@ public class TestLayer implements IUniqueIndexLayer {
         return labelStack;
     }
 
+    @Override
     public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-        return dataValues[columnPosition][rowPosition];
+        return this.dataValues[columnPosition][rowPosition];
     }
 
+    @Override
     public ILayer getUnderlyingLayerByPosition(int columnPosition,
             int rowPosition) {
         return null;
     }
 
+    @Override
     public void fireLayerEvent(ILayerEvent event) {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     public ICellPainter getCellPainter(int columnPosition, int rowPosition,
             ILayerCell cell, IConfigRegistry configRegistry) {
         // TODO Auto-generated method stub

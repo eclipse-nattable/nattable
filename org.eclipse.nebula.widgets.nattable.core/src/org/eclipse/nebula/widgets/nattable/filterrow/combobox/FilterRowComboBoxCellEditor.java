@@ -29,9 +29,9 @@ import org.eclipse.swt.widgets.Display;
  * Specialisation of ComboBoxCellEditor that can only be created using an
  * IComboBoxDataProvider. Will show a multiselect combobox with checkboxes and
  * uses the FilterNatCombo as underlying control.
- * 
+ *
  * @see FilterRowComboBoxDataProvider
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -55,7 +55,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
      * Create a new {@link FilterRowComboBoxCellEditor} based on the given
      * {@link IComboBoxDataProvider}, showing the default number of items in the
      * dropdown of the combo.
-     * 
+     *
      * @param dataProvider
      *            The {@link IComboBoxDataProvider} that is responsible for
      *            populating the items to the dropdown box.
@@ -67,7 +67,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
     /**
      * Create a new {@link FilterRowComboBoxCellEditor} based on the given
      * {@link IComboBoxDataProvider}.
-     * 
+     *
      * @param dataProvider
      *            The {@link IComboBoxDataProvider} that is responsible for
      *            populating the items to the dropdown box.
@@ -106,7 +106,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 commit(MoveDirectionEnum.NONE,
-                        (!multiselect && editMode == EditModeEnum.INLINE));
+                        (!FilterRowComboBoxCellEditor.this.multiselect && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
             }
         });
 
@@ -137,11 +137,11 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
             try {
                 // always do the conversion
                 Object canonicalValue = getCanonicalValue();
-                if ((canonicalValue != null && currentCanonicalValue == null)
-                        || (canonicalValue == null && currentCanonicalValue != null)
+                if ((canonicalValue != null && this.currentCanonicalValue == null)
+                        || (canonicalValue == null && this.currentCanonicalValue != null)
                         || (canonicalValue != null
-                                && currentCanonicalValue != null && !canonicalValue
-                                    .equals(currentCanonicalValue))) {
+                                && this.currentCanonicalValue != null && !canonicalValue
+                                    .equals(this.currentCanonicalValue))) {
                     if (super.commit(direction, closeAfterCommit)) {
                         this.currentCanonicalValue = canonicalValue;
                         return true;

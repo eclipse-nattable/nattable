@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -62,8 +62,8 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
         DefaultBodyDataProvider<RowDataFixture> bodyDataProvider = new DefaultBodyDataProvider<RowDataFixture>(
                 RowDataListFixture.getList(2000), propertyNames);
         ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(
-                new DataLayer(bodyDataProvider), sndColumnGroupModel,
-                columnGroupModel);
+                new DataLayer(bodyDataProvider), this.sndColumnGroupModel,
+                this.columnGroupModel);
 
         // Column header
 
@@ -71,11 +71,11 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
                 propertyNames, propertyToLabelMap);
         DefaultColumnHeaderDataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
                 defaultColumnHeaderDataProvider);
-        columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+        this.columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
                 bodyLayer, bodyLayer.getSelectionLayer());
         ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
-                columnHeaderLayer, bodyLayer.getSelectionLayer(),
-                columnGroupModel);
+                this.columnHeaderLayer, bodyLayer.getSelectionLayer(),
+                this.columnGroupModel);
 
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 1", 1, 2);
         columnGroupHeaderLayer.addColumnsIndexesToGroup("UnBreakable group 2",
@@ -91,7 +91,7 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
 
         ColumnGroupGroupHeaderLayer sndGroup = new ColumnGroupGroupHeaderLayer(
                 columnGroupHeaderLayer, bodyLayer.getSelectionLayer(),
-                sndColumnGroupModel);
+                this.sndColumnGroupModel);
 
         sndGroup.addColumnsIndexesToGroup("GroupGroup 1", 1, 2, 3, 4, 5, 6, 7);
         sndGroup.addColumnsIndexesToGroup("GroupGroup 2", 11, 12, 13, 14, 15,
@@ -127,8 +127,8 @@ public class _001_Two_level_column_groups extends AbstractNatExample {
         // Register column chooser
         DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
                 bodyLayer.getSelectionLayer(),
-                bodyLayer.getColumnHideShowLayer(), columnHeaderLayer,
-                columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel);
+                bodyLayer.getColumnHideShowLayer(), this.columnHeaderLayer,
+                columnHeaderDataLayer, columnGroupHeaderLayer, this.columnGroupModel);
         bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());

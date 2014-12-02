@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,40 +29,40 @@ public class EventConflaterChainTest {
 
     @Before
     public void setup() {
-        conflaterChain = new EventConflaterChain(10, 10);
-        natTableFixture = new NatTableFixture();
-        conflater1 = new VisualChangeEventConflater(natTableFixture);
-        conflater2 = new VisualChangeEventConflater(natTableFixture);
+        this.conflaterChain = new EventConflaterChain(10, 10);
+        this.natTableFixture = new NatTableFixture();
+        this.conflater1 = new VisualChangeEventConflater(this.natTableFixture);
+        this.conflater2 = new VisualChangeEventConflater(this.natTableFixture);
 
-        conflaterChain.add(conflater1);
-        conflaterChain.add(conflater2);
+        this.conflaterChain.add(this.conflater1);
+        this.conflaterChain.add(this.conflater2);
     }
 
     @Test
     public void shouldAddEventsToAllChildren() throws Exception {
-        conflaterChain.addEvent(new LayerEventFixture());
-        conflaterChain.addEvent(new LayerEventFixture());
+        this.conflaterChain.addEvent(new LayerEventFixture());
+        this.conflaterChain.addEvent(new LayerEventFixture());
 
-        assertEquals(2, conflater1.getCount());
-        assertEquals(2, conflater2.getCount());
+        assertEquals(2, this.conflater1.getCount());
+        assertEquals(2, this.conflater2.getCount());
     }
 
     @Test
     public void shouldStartUpAllConflaterTasksAtTheEndOfTheInterval()
             throws Exception {
-        conflaterChain.start();
+        this.conflaterChain.start();
 
-        conflaterChain.addEvent(new LayerEventFixture());
-        conflaterChain.addEvent(new LayerEventFixture());
+        this.conflaterChain.addEvent(new LayerEventFixture());
+        this.conflaterChain.addEvent(new LayerEventFixture());
 
         Thread.sleep(100);
 
-        assertEquals(0, conflater1.getCount());
-        assertEquals(0, conflater2.getCount());
+        assertEquals(0, this.conflater1.getCount());
+        assertEquals(0, this.conflater2.getCount());
     }
 
     @After
     public void teardown() {
-        conflaterChain.stop();
+        this.conflaterChain.stop();
     }
 }

@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * Dialog that supports editing of cells in NatTable. Is used for multi cell
  * editing and for dialog only editors.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -246,7 +246,7 @@ public class CellEditDialog extends Dialog implements ICellEditDialog {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return This implementation will always return processValue, as there is
      *         no processing specified in this {@link ICellEditDialog}
      *         implementation and therefore the value that was committed to the

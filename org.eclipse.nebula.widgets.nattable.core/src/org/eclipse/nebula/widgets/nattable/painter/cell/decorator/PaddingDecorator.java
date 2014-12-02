@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -42,7 +42,7 @@ public class PaddingDecorator extends CellPainterWrapper {
      * If will paint the background color to fill the resulting gaps, in case
      * the PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped
      * by a BackgroundPainter.
-     * 
+     *
      * @param interiorPainter
      *            The painter that should be wrapped.
      */
@@ -58,7 +58,7 @@ public class PaddingDecorator extends CellPainterWrapper {
      * PaddingDecorator is wrapped in another background painter, e.g.
      * BackgroundImagePainter or GradientBackroundPainter, the paintBg parameter
      * needs to be <code>false</code> to avoid rendering issues.
-     * 
+     *
      * @param interiorPainter
      *            The painter that should be wrapped.
      * @param paintBg
@@ -75,7 +75,7 @@ public class PaddingDecorator extends CellPainterWrapper {
      * If will paint the background color to fill the resulting gaps, in case
      * the PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped
      * by a BackgroundPainter.
-     * 
+     *
      * @param interiorPainter
      *            The painter that should be wrapped.
      * @param padding
@@ -94,7 +94,7 @@ public class PaddingDecorator extends CellPainterWrapper {
      * PaddingDecorator is wrapped in another background painter, e.g.
      * BackgroundImagePainter or GradientBackroundPainter, the paintBg parameter
      * needs to be <code>false</code> to avoid rendering issues.
-     * 
+     *
      * @param interiorPainter
      *            The painter that should be wrapped.
      * @param padding
@@ -115,7 +115,7 @@ public class PaddingDecorator extends CellPainterWrapper {
      * If will paint the background color to fill the resulting gaps, in case
      * the PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped
      * by a BackgroundPainter.
-     * 
+     *
      * @param interiorPainter
      *            The painter that should be wrapped.
      * @param topPadding
@@ -144,7 +144,7 @@ public class PaddingDecorator extends CellPainterWrapper {
      * PaddingDecorator is wrapped in another background painter, e.g.
      * BackgroundImagePainter or GradientBackroundPainter, the paintBg parameter
      * needs to be <code>false</code> to avoid rendering issues.
-     * 
+     *
      * @param interiorPainter
      *            The painter that should be wrapped.
      * @param topPadding
@@ -176,15 +176,15 @@ public class PaddingDecorator extends CellPainterWrapper {
     @Override
     public int getPreferredWidth(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
-        return leftPadding + super.getPreferredWidth(cell, gc, configRegistry)
-                + rightPadding;
+        return this.leftPadding + super.getPreferredWidth(cell, gc, configRegistry)
+                + this.rightPadding;
     }
 
     @Override
     public int getPreferredHeight(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
-        return topPadding + super.getPreferredHeight(cell, gc, configRegistry)
-                + bottomPadding;
+        return this.topPadding + super.getPreferredHeight(cell, gc, configRegistry)
+                + this.bottomPadding;
     }
 
     @Override
@@ -192,7 +192,7 @@ public class PaddingDecorator extends CellPainterWrapper {
             IConfigRegistry configRegistry) {
         Rectangle interiorBounds = getInteriorBounds(adjustedCellBounds);
 
-        if (paintBg) {
+        if (this.paintBg) {
             Color originalBg = gc.getBackground();
             Color cellStyleBackground = getBackgroundColor(cell, configRegistry);
             gc.setBackground(cellStyleBackground != null ? cellStyleBackground
@@ -210,21 +210,21 @@ public class PaddingDecorator extends CellPainterWrapper {
      * Calculates the cell bounds that should be used for the internal painter
      * out of the available bounds for this PaddingDecorator and the configured
      * padding.
-     * 
+     *
      * @param adjustedCellBounds
      *            The cell bounds of the cell to render.
      * @return The cell bounds that are available for the interior painter.
      */
     public Rectangle getInteriorBounds(Rectangle adjustedCellBounds) {
-        return new Rectangle(adjustedCellBounds.x + leftPadding,
-                adjustedCellBounds.y + topPadding, adjustedCellBounds.width
-                        - leftPadding - rightPadding, adjustedCellBounds.height
-                        - topPadding - bottomPadding);
+        return new Rectangle(adjustedCellBounds.x + this.leftPadding,
+                adjustedCellBounds.y + this.topPadding, adjustedCellBounds.width
+                        - this.leftPadding - this.rightPadding, adjustedCellBounds.height
+                        - this.topPadding - this.bottomPadding);
     }
 
     /**
      * Extract the background color that is registered for the given ILayerCell.
-     * 
+     *
      * @param cell
      *            The cell for which the background color is requested.
      * @param configRegistry
@@ -249,10 +249,10 @@ public class PaddingDecorator extends CellPainterWrapper {
         int horizontalAlignmentPadding = 0;
         switch (horizontalAlignment) {
             case LEFT:
-                horizontalAlignmentPadding = leftPadding;
+                horizontalAlignmentPadding = this.leftPadding;
                 break;
             case CENTER:
-                horizontalAlignmentPadding = leftPadding / 2;
+                horizontalAlignmentPadding = this.leftPadding / 2;
                 break;
         }
 
@@ -261,10 +261,10 @@ public class PaddingDecorator extends CellPainterWrapper {
         int verticalAlignmentPadding = 0;
         switch (verticalAlignment) {
             case TOP:
-                verticalAlignmentPadding = topPadding;
+                verticalAlignmentPadding = this.topPadding;
                 break;
             case MIDDLE:
-                verticalAlignmentPadding = topPadding / 2;
+                verticalAlignmentPadding = this.topPadding / 2;
                 break;
         }
 

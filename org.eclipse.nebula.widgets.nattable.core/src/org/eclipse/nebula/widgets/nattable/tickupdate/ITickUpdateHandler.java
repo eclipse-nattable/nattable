@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,7 +21,7 @@ public interface ITickUpdateHandler {
     /**
      * Checks if the given object can be handled by this handler. Usually it
      * will simply perform a instanceof check.
-     * 
+     *
      * @param value
      *            The value to check.
      * @return <code>true</code> if this handler is able to perform tick updates
@@ -31,7 +31,7 @@ public interface ITickUpdateHandler {
 
     /**
      * Perform an increment of the current value by a default value.
-     * 
+     *
      * @param currentValue
      *            The value to perform the increment on.
      * @return The new value after increment it by a default value.
@@ -40,7 +40,7 @@ public interface ITickUpdateHandler {
 
     /**
      * Perform an increment of the current value by the given increment value.
-     * 
+     *
      * @param currentValue
      *            The value to perform the increment on.
      * @param incrementSize
@@ -51,7 +51,7 @@ public interface ITickUpdateHandler {
 
     /**
      * Perform an decrement of the current value by a default value.
-     * 
+     *
      * @param currentValue
      *            The value to perform the decrement on.
      * @return The new value after decrement it by a default value.
@@ -60,7 +60,7 @@ public interface ITickUpdateHandler {
 
     /**
      * Perform an decrement of the current value by the given decrement value.
-     * 
+     *
      * @param currentValue
      *            The value to perform the decrement on.
      * @param decrementSize

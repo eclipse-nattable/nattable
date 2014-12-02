@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -39,21 +39,21 @@ public class GridLayerTest {
 
     @Before
     public void setup() {
-        bodyDataLayer = new BaseDataLayerFixture();
-        columnHeaderDataLayer = new BaseDataLayerFixture();
-        rowHeaderDataLayer = new BaseDataLayerFixture();
-        cornerDataLayer = new BaseDataLayerFixture();
+        this.bodyDataLayer = new BaseDataLayerFixture();
+        this.columnHeaderDataLayer = new BaseDataLayerFixture();
+        this.rowHeaderDataLayer = new BaseDataLayerFixture();
+        this.cornerDataLayer = new BaseDataLayerFixture();
 
-        gridLayerUnderTest = new DefaultGridLayer(bodyDataLayer,
-                columnHeaderDataLayer, rowHeaderDataLayer, cornerDataLayer);
+        this.gridLayerUnderTest = new DefaultGridLayer(this.bodyDataLayer,
+                this.columnHeaderDataLayer, this.rowHeaderDataLayer, this.cornerDataLayer);
     }
 
     @Test
     public void getLayers() throws Exception {
-        Assert.assertNotNull(gridLayerUnderTest.getBodyLayer());
-        Assert.assertNotNull(gridLayerUnderTest.getColumnHeaderLayer());
-        Assert.assertNotNull(gridLayerUnderTest.getRowHeaderLayer());
-        Assert.assertNotNull(gridLayerUnderTest.getCornerLayer());
+        Assert.assertNotNull(this.gridLayerUnderTest.getBodyLayer());
+        Assert.assertNotNull(this.gridLayerUnderTest.getColumnHeaderLayer());
+        Assert.assertNotNull(this.gridLayerUnderTest.getRowHeaderLayer());
+        Assert.assertNotNull(this.gridLayerUnderTest.getCornerLayer());
     }
 
     @Test
@@ -65,15 +65,15 @@ public class GridLayerTest {
                 true);
         DummyCommandHandler cornerCommandHandler = new DummyCommandHandler(true);
 
-        bodyDataLayer.registerCommandHandler(bodyCommandHandler);
-        columnHeaderDataLayer
+        this.bodyDataLayer.registerCommandHandler(bodyCommandHandler);
+        this.columnHeaderDataLayer
                 .registerCommandHandler(columnHeaderCommandHandler);
-        rowHeaderDataLayer.registerCommandHandler(rowHeaderCommandHandler);
-        cornerDataLayer.registerCommandHandler(cornerCommandHandler);
+        this.rowHeaderDataLayer.registerCommandHandler(rowHeaderCommandHandler);
+        this.cornerDataLayer.registerCommandHandler(cornerCommandHandler);
 
         final ILayerCommand command = new LayerCommandFixture();
 
-        gridLayerUnderTest.doCommand(command);
+        this.gridLayerUnderTest.doCommand(command);
 
         Assert.assertTrue(bodyCommandHandler.isCommandCaught());
         Assert.assertFalse(columnHeaderCommandHandler.isCommandCaught());
@@ -90,15 +90,15 @@ public class GridLayerTest {
                 false);
         DummyCommandHandler cornerCommandHandler = new DummyCommandHandler(true);
 
-        bodyDataLayer.registerCommandHandler(bodyCommandHandler);
-        columnHeaderDataLayer
+        this.bodyDataLayer.registerCommandHandler(bodyCommandHandler);
+        this.columnHeaderDataLayer
                 .registerCommandHandler(columnHeaderCommandHandler);
-        rowHeaderDataLayer.registerCommandHandler(rowHeaderCommandHandler);
-        cornerDataLayer.registerCommandHandler(cornerCommandHandler);
+        this.rowHeaderDataLayer.registerCommandHandler(rowHeaderCommandHandler);
+        this.cornerDataLayer.registerCommandHandler(cornerCommandHandler);
 
         final ILayerCommand command = new LayerCommandFixture();
 
-        gridLayerUnderTest.doCommand(command);
+        this.gridLayerUnderTest.doCommand(command);
 
         Assert.assertFalse(bodyCommandHandler.isCommandCaught());
         Assert.assertFalse(columnHeaderCommandHandler.isCommandCaught());
@@ -117,6 +117,7 @@ public class GridLayerTest {
 
         ViewportLayer viewport = gridLayer.getBodyLayer().getViewportLayer();
         viewport.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 160, 80);
             }
@@ -165,20 +166,21 @@ public class GridLayerTest {
 
         @Override
         public boolean doCommand(LayerCommandFixture command) {
-            if (catchCommand) {
-                caughtCommand = true;
+            if (this.catchCommand) {
+                this.caughtCommand = true;
                 return true;
             } else {
                 return false;
             }
         }
 
+        @Override
         public Class<LayerCommandFixture> getCommandClass() {
             return LayerCommandFixture.class;
         }
 
         public boolean isCommandCaught() {
-            return caughtCommand;
+            return this.caughtCommand;
         }
 
     }

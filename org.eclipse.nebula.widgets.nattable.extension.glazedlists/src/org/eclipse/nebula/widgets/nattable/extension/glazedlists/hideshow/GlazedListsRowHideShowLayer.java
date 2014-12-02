@@ -342,8 +342,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
                 properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS,
                         new String(Base64.encodeBase64(bos.toByteArray())));
             } catch (Exception e) {
-                log.error(
-                        "Error while persisting GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
+                log.error("Error while persisting GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
             } finally {
                 if (out != null) {
                     try {
@@ -378,8 +377,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
                     this.rowIdsToHide.add(ser);
                 }
             } catch (Exception e) {
-                log.error(
-                        "Error while restoring GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
+                log.error("Error while restoring GlazedListsRowHideShowLayer state", e); //$NON-NLS-1$
             } finally {
                 if (in != null) {
                     try {

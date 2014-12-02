@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 /**
  * Event indicating that one ore more columns were deleted from the layer.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -27,7 +27,7 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
 
     /**
      * Creates a new ColumnDeleteEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given column position matches.
      * @param columnPosition
@@ -39,7 +39,7 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
 
     /**
      * Creates a new ColumnDeleteEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given column positions match.
      * @param columnPositionRanges
@@ -51,7 +51,7 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
 
     /**
      * Creates a new ColumnDeleteEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given column positions match.
      * @param columnPositionRanges
@@ -65,7 +65,7 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
     /**
      * Creates a new ColumnDeleteEvent based on the given instance. Mainly
      * needed for cloning.
-     * 
+     *
      * @param event
      *            The ColumnDeleteEvent out of which the new instance should be
      *            created.

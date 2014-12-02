@@ -32,13 +32,13 @@ import org.eclipse.swt.graphics.FontData;
  * Theme configuration that overrides the stylings set in the
  * {@link DefaultNatTableThemeConfiguration} to give the NatTable a more modern
  * look&feel.
- * 
+ *
  * <p>
  * This default theme configuration does not set a different value for the
  * filter row cell painter, as in this case it would override the specialized
  * painter that needs to be registered for combobox filterrows.
  * </p>
- * 
+ *
  * @author Dirk Fauth
  *
  */

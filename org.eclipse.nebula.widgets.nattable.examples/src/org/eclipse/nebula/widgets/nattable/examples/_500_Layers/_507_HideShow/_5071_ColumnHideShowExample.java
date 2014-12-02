@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Control;
  * Simple example showing how to add the {@link ColumnHideShowLayer} to the
  * layer composition of a grid and how to add the corresponding actions to the
  * column header menu.
- * 
+ *
  * @author Dirk Fauth
  *
  */

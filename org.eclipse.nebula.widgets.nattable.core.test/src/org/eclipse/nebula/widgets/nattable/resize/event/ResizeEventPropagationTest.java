@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,30 +29,30 @@ public class ResizeEventPropagationTest {
     @Before
     public void setUp() {
         // Total width should be 500 and total height should be 280
-        dataLayer = new DataLayerFixture(100, 40);
+        this.dataLayer = new DataLayerFixture(100, 40);
     }
 
     @Test
     public void shouldFireResizeEventAfterColumnResizeCommand() {
-        dataLayer.addLayerListener(new LayerListenerFixture());
-        dataLayer.setColumnWidthByPosition(4, 100);
+        this.dataLayer.addLayerListener(new LayerListenerFixture());
+        this.dataLayer.setColumnWidthByPosition(4, 100);
     }
 
     @Test
     public void shouldFireResizeEventAfterRowResizeCommand() {
-        dataLayer.addLayerListener(new LayerListenerFixture());
-        dataLayer.setRowHeightByPosition(2, 100);
+        this.dataLayer.addLayerListener(new LayerListenerFixture());
+        this.dataLayer.setRowHeightByPosition(2, 100);
     }
 
     @Test
     public void shouldReturnARectangleStartingFromResizedColumnToEndOfGrid() {
         // Mimics resizing the second column
-        layerListener = new LayerListenerFixture();
-        dataLayer.addLayerListener(layerListener);
-        dataLayer.setColumnWidthByPosition(2, 200);
+        this.layerListener = new LayerListenerFixture();
+        this.dataLayer.addLayerListener(this.layerListener);
+        this.dataLayer.setColumnWidthByPosition(2, 200);
 
         // This is the propagated event
-        ColumnResizeEvent columnResizeEvent = (ColumnResizeEvent) layerListener
+        ColumnResizeEvent columnResizeEvent = (ColumnResizeEvent) this.layerListener
                 .getReceivedEvents().get(0);
         Collection<Rectangle> actualRectangles = columnResizeEvent
                 .getChangedPositionRectangles();
@@ -66,12 +66,12 @@ public class ResizeEventPropagationTest {
     @Test
     public void shouldReturnARectangleStartingFromResizedRowToEndOfGrid() {
         // Mimics resizing the third row
-        layerListener = new LayerListenerFixture();
-        dataLayer.addLayerListener(layerListener);
-        dataLayer.setRowHeightByPosition(3, 100);
+        this.layerListener = new LayerListenerFixture();
+        this.dataLayer.addLayerListener(this.layerListener);
+        this.dataLayer.setRowHeightByPosition(3, 100);
 
         // This is the propagated event
-        RowResizeEvent rowResizeEvent = (RowResizeEvent) layerListener
+        RowResizeEvent rowResizeEvent = (RowResizeEvent) this.layerListener
                 .getReceivedEvents().get(0);
         Collection<Rectangle> actualRectangles = rowResizeEvent
                 .getChangedPositionRectangles();

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,7 +43,7 @@ public class NatExporter {
     /**
      * Exports a single ILayer using the ILayerExporter registered in the
      * ConfigRegistry.
-     * 
+     *
      * @param layer
      *            The ILayer to export, usually a NatTable instance.
      * @param configRegistry
@@ -55,7 +55,7 @@ public class NatExporter {
         final ILayerExporter exporter = configRegistry.getConfigAttribute(
                 ExportConfigAttributes.EXPORTER, DisplayMode.NORMAL);
 
-        final OutputStream outputStream = exporter.getOutputStream(shell);
+        final OutputStream outputStream = exporter.getOutputStream(this.shell);
         if (outputStream == null) {
             return;
         }
@@ -66,8 +66,7 @@ public class NatExporter {
                 try {
                     exporter.exportBegin(outputStream);
 
-                    exportLayer(exporter, outputStream,
-                            "", layer, configRegistry); //$NON-NLS-1$
+                    exportLayer(exporter, outputStream, "", layer, configRegistry); //$NON-NLS-1$
 
                     exporter.exportEnd(outputStream);
                 } catch (IOException e) {
@@ -84,9 +83,9 @@ public class NatExporter {
             }
         };
 
-        if (shell != null) {
+        if (this.shell != null) {
             // Run with the SWT display so that the progress bar can paint
-            shell.getDisplay().asyncExec(exportRunnable);
+            this.shell.getDisplay().asyncExec(exportRunnable);
         } else {
             exportRunnable.run();
         }
@@ -95,7 +94,7 @@ public class NatExporter {
     /**
      * Export multiple NatTable instances to one file by using the given
      * ILayerExporter.
-     * 
+     *
      * @param exporter
      *            The ILayerExporter to use for exporting.
      * @param natTablesMap
@@ -105,7 +104,7 @@ public class NatExporter {
      */
     public void exportMultipleNatTables(final ILayerExporter exporter,
             final Map<String, NatTable> natTablesMap) {
-        final OutputStream outputStream = exporter.getOutputStream(shell);
+        final OutputStream outputStream = exporter.getOutputStream(this.shell);
         if (outputStream == null) {
             return;
         }
@@ -137,9 +136,9 @@ public class NatExporter {
             }
         };
 
-        if (shell != null) {
+        if (this.shell != null) {
             // Run with the SWT display so that the progress bar can paint
-            shell.getDisplay().asyncExec(exportRunnable);
+            this.shell.getDisplay().asyncExec(exportRunnable);
         } else {
             exportRunnable.run();
         }
@@ -153,7 +152,7 @@ public class NatExporter {
      * logical export operation, then exporter.exportBegin() will be called once
      * at the very beginning, followed by n calls to this exportLayer() method,
      * and finally followed by exporter.exportEnd().
-     * 
+     *
      * @param exporter
      * @param outputStream
      * @param layerName
@@ -177,8 +176,8 @@ public class NatExporter {
 
         ProgressBar progressBar = null;
 
-        if (shell != null) {
-            Shell childShell = new Shell(shell.getDisplay(), SWT.DIALOG_TRIM
+        if (this.shell != null) {
+            Shell childShell = new Shell(this.shell.getDisplay(), SWT.DIALOG_TRIM
                     | SWT.APPLICATION_MODAL);
             childShell.setText(Messages.getString("NatExporter.exporting")); //$NON-NLS-1$
 

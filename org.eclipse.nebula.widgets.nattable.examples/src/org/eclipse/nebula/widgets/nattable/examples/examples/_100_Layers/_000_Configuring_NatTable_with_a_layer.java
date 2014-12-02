@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,6 +37,7 @@ public class _000_Configuring_NatTable_with_a_layer extends AbstractNatExample {
                 + "nothing else.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         ILayer layer = new DataLayer(new DummyBodyDataProvider(20, 20));
         return new NatTable(parent, layer);

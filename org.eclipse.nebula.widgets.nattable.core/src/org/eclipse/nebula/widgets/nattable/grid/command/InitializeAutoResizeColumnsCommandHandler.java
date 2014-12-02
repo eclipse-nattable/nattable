@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,6 +26,7 @@ public class InitializeAutoResizeColumnsCommandHandler extends
         this.selectionLayer = selectionLayer;
     }
 
+    @Override
     public Class<InitializeAutoResizeColumnsCommand> getCommandClass() {
         return InitializeAutoResizeColumnsCommand.class;
     }
@@ -33,8 +34,8 @@ public class InitializeAutoResizeColumnsCommandHandler extends
     @Override
     protected boolean doCommand(InitializeAutoResizeColumnsCommand initCommand) {
         int columnPosition = initCommand.getColumnPosition();
-        if (selectionLayer.isColumnPositionFullySelected(columnPosition)) {
-            initCommand.setSelectedColumnPositions(selectionLayer
+        if (this.selectionLayer.isColumnPositionFullySelected(columnPosition)) {
+            initCommand.setSelectedColumnPositions(this.selectionLayer
                     .getFullySelectedColumnPositions());
         } else {
             initCommand

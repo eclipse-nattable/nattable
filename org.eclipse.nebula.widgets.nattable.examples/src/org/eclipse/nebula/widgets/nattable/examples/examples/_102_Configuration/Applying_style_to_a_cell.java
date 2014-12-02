@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -50,11 +50,12 @@ public class Applying_style_to_a_cell extends AbstractNatExample {
                 + "Out of the box, labels can be applied to whole columns, rows and cells.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         SelectionExampleGridLayer gridLayer = new SelectionExampleGridLayer();
         NatTable natTable = new NatTable(parent, gridLayer, false);
 
-        DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
+        DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 
         // Label accumulator - adds labels to all cells with the given data
         // value

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -32,17 +32,17 @@ public class NatTableTest {
 
     @Before
     public void setup() {
-        underlyingLayerFixture = new DataLayerFixture(10, 5, 100, 20);
-        natTable = new NatTable(new Shell(Display.getDefault()),
-                underlyingLayerFixture);
+        this.underlyingLayerFixture = new DataLayerFixture(10, 5, 100, 20);
+        this.natTable = new NatTable(new Shell(Display.getDefault()),
+                this.underlyingLayerFixture);
     }
 
     @Test
     public void shouldPassOnLayerEventsToListeners() throws Exception {
         LayerListenerFixture listener = new LayerListenerFixture();
 
-        natTable.addLayerListener(listener);
-        natTable.handleLayerEvent(new LayerEventFixture());
+        this.natTable.addLayerListener(listener);
+        this.natTable.handleLayerEvent(new LayerEventFixture());
 
         assertTrue(listener.containsInstanceOf(LayerEventFixture.class));
     }
@@ -50,9 +50,9 @@ public class NatTableTest {
     @Test
     public void shouldFireDisposeCommandOnDisposal() throws Exception {
         AnyCommandHandlerFixture commandHandler = new AnyCommandHandlerFixture();
-        underlyingLayerFixture.registerCommandHandler(commandHandler);
+        this.underlyingLayerFixture.registerCommandHandler(commandHandler);
 
-        natTable.dispose();
+        this.natTable.dispose();
 
         assertEquals(1, commandHandler.getNumberOfCommandsHandled());
         assertTrue(commandHandler.getCommadHandled() instanceof DisposeResourcesCommand);

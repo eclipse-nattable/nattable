@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,17 +43,17 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
         this.columnFirst = columnFirst;
     }
 
+    @Override
     public PositionCoordinate executeSearch(Object valueToMatch)
             throws PatternSyntaxException {
         ILayer contextLayer = getContextLayer();
         if (!(contextLayer instanceof SelectionLayer)) {
-            throw new RuntimeException(
-                    "For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
+            throw new RuntimeException("For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
         }
         SelectionLayer selectionLayer = (SelectionLayer) contextLayer;
         @SuppressWarnings("unchecked")
         PositionCoordinate coordinate = CellDisplayValueSearchUtil.findCell(
-                selectionLayer, configRegistry,
+                selectionLayer, this.configRegistry,
                 getSelectedCells(selectionLayer), valueToMatch,
                 (Comparator<String>) getComparator(), isCaseSensitive(),
                 isWholeWord(), isRegex(), isIncludeCollapsed());
@@ -63,7 +63,7 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
     protected PositionCoordinate[] getSelectedCells(
             SelectionLayer selectionLayer) {
         PositionCoordinate[] selectedCells = null;
-        if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
+        if (this.searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
             List<PositionCoordinate> coordinates = Arrays.asList(selectionLayer
                     .getSelectedCellPositions());
             Collections.reverse(coordinates);

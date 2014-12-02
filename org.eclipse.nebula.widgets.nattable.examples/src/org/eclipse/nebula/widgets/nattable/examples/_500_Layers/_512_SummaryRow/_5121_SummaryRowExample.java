@@ -57,7 +57,7 @@ public class _5121_SummaryRowExample extends AbstractNatExample {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
      * (org.eclipse.swt.widgets.Composite)

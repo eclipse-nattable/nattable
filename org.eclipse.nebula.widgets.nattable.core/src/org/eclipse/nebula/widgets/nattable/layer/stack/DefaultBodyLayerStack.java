@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,13 +27,13 @@ public class DefaultBodyLayerStack extends AbstractIndexLayerTransform {
     private final ViewportLayer viewportLayer;
 
     public DefaultBodyLayerStack(IUniqueIndexLayer underlyingLayer) {
-        columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
-        columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-        selectionLayer = new SelectionLayer(columnHideShowLayer);
-        viewportLayer = new ViewportLayer(selectionLayer);
-        setUnderlyingLayer(viewportLayer);
+        this.columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
+        this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
+        this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
+        this.viewportLayer = new ViewportLayer(this.selectionLayer);
+        setUnderlyingLayer(this.viewportLayer);
 
-        registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+        registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
     }
 
     @Override
@@ -42,19 +42,19 @@ public class DefaultBodyLayerStack extends AbstractIndexLayerTransform {
     }
 
     public ColumnReorderLayer getColumnReorderLayer() {
-        return columnReorderLayer;
+        return this.columnReorderLayer;
     }
 
     public ColumnHideShowLayer getColumnHideShowLayer() {
-        return columnHideShowLayer;
+        return this.columnHideShowLayer;
     }
 
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 
     public ViewportLayer getViewportLayer() {
-        return viewportLayer;
+        return this.viewportLayer;
     }
 
 }

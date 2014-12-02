@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
@@ -56,10 +56,10 @@ public class SelectRowGroupCommandHandler<T> extends
     @Override
     protected boolean doCommand(SelectRowGroupsCommand command) {
         final List<Integer> rowIndexes = RowGroupUtils.getRowIndexesInGroup(
-                model, rowGroupHeaderLayer.getRowIndexByPosition(command
+                this.model, this.rowGroupHeaderLayer.getRowIndexByPosition(command
                         .getRowPosition()));
         final List<Integer> rowPositions = RowGroupUtils
-                .getRowPositionsInGroup(selectionLayer, rowIndexes);
+                .getRowPositionsInGroup(this.selectionLayer, rowIndexes);
         selectRows(command.getColumnPosition(), rowPositions,
                 command.isWithShiftMask(), command.isWithControlMask(),
                 command.getRowPositionToMoveIntoViewport(),
@@ -84,7 +84,7 @@ public class SelectRowGroupCommandHandler<T> extends
                 changedRows.add(Integer.valueOf(i));
             }
         }
-        selectionLayer.fireLayerEvent(new RowSelectionEvent(selectionLayer,
+        this.selectionLayer.fireLayerEvent(new RowSelectionEvent(this.selectionLayer,
                 changedRows, rowPositionToMoveIntoViewport));
     }
 
@@ -94,12 +94,12 @@ public class SelectRowGroupCommandHandler<T> extends
         Set<Range> changedRowRanges = new HashSet<Range>();
 
         if (noShiftOrControl(withShiftMask, withControlMask)) {
-            changedRowRanges.addAll(selectionLayer.getSelectedRowPositions());
-            selectionLayer.clear(false);
-            selectionLayer.selectCell(0, rowPosition, withShiftMask,
+            changedRowRanges.addAll(this.selectionLayer.getSelectedRowPositions());
+            this.selectionLayer.clear(false);
+            this.selectionLayer.selectCell(0, rowPosition, withShiftMask,
                     withControlMask);
-            selectionLayer.selectRegion(0, rowPosition,
-                    selectionLayer.getColumnCount(), rowCount);
+            this.selectionLayer.selectRegion(0, rowPosition,
+                    this.selectionLayer.getColumnCount(), rowCount);
             changedRowRanges
                     .add(new Range(rowPosition, rowPosition + rowCount));
         } else if (isControlOnly(withShiftMask, withControlMask)) {
@@ -110,11 +110,11 @@ public class SelectRowGroupCommandHandler<T> extends
                     rowPosition, rowCount));
         }
         if (moveAnchorToTopOfGroup) {
-            selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
+            this.selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
         }
-        selectionLayer.getLastSelectedCellPosition().columnPosition = selectionLayer
+        this.selectionLayer.getLastSelectedCellPosition().columnPosition = this.selectionLayer
                 .getColumnCount() - 1;
-        selectionLayer.getLastSelectedCellPosition().rowPosition = rowPosition;
+        this.selectionLayer.getLastSelectedCellPosition().rowPosition = rowPosition;
 
         return changedRowRanges;
     }
@@ -122,26 +122,26 @@ public class SelectRowGroupCommandHandler<T> extends
     private Range selectRowWithCtrlKey(int columnPosition, int rowPosition,
             int rowCount) {
         Rectangle selectedRowRectangle = new Rectangle(0, rowPosition,
-                selectionLayer.getColumnCount(), rowCount);
+                this.selectionLayer.getColumnCount(), rowCount);
 
-        if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
-            selectionLayer.clearSelection(selectedRowRectangle);
-            if (selectionLayer.getLastSelectedRegion() != null
-                    && selectionLayer.getLastSelectedRegion().equals(
+        if (this.selectionLayer.isRowPositionFullySelected(rowPosition)) {
+            this.selectionLayer.clearSelection(selectedRowRectangle);
+            if (this.selectionLayer.getLastSelectedRegion() != null
+                    && this.selectionLayer.getLastSelectedRegion().equals(
                             selectedRowRectangle)) {
-                selectionLayer.setLastSelectedRegion(null);
+                this.selectionLayer.setLastSelectedRegion(null);
             }
         } else {
             // Preserve last selected region
-            if (selectionLayer.getLastSelectedRegion() != null) {
-                selectionLayer.selectionModel.addSelection(new Rectangle(
-                        selectionLayer.getLastSelectedRegion().x,
-                        selectionLayer.getLastSelectedRegion().y,
-                        selectionLayer.getLastSelectedRegion().width,
-                        selectionLayer.getLastSelectedRegion().height));
+            if (this.selectionLayer.getLastSelectedRegion() != null) {
+                this.selectionLayer.selectionModel.addSelection(new Rectangle(
+                        this.selectionLayer.getLastSelectedRegion().x,
+                        this.selectionLayer.getLastSelectedRegion().y,
+                        this.selectionLayer.getLastSelectedRegion().width,
+                        this.selectionLayer.getLastSelectedRegion().height));
             }
-            selectionLayer.selectRegion(0, rowPosition,
-                    selectionLayer.getColumnCount(), rowCount);
+            this.selectionLayer.selectRegion(0, rowPosition,
+                    this.selectionLayer.getColumnCount(), rowCount);
         }
 
         return new Range(rowPosition, rowPosition + 1);
@@ -149,23 +149,23 @@ public class SelectRowGroupCommandHandler<T> extends
 
     private Range selectRowWithShiftKey(int columnPosition, int rowPosition,
             int rowCount) {
-        if (selectionLayer.getLastSelectedRegion() != null) {
-            int start = Math.min(selectionLayer.getLastSelectedRegion().y,
+        if (this.selectionLayer.getLastSelectedRegion() != null) {
+            int start = Math.min(this.selectionLayer.getLastSelectedRegion().y,
                     rowPosition);
-            int end = Math.max(selectionLayer.getLastSelectedRegion().y,
+            int end = Math.max(this.selectionLayer.getLastSelectedRegion().y,
                     rowPosition);
 
             for (int i = start; i <= end; i++) {
-                int index = selectionLayer.getRowIndexByPosition(i);
-                if (RowGroupUtils.isPartOfAGroup(model, index)
-                        && !selectionLayer.isRowPositionFullySelected(i)) {
+                int index = this.selectionLayer.getRowIndexByPosition(i);
+                if (RowGroupUtils.isPartOfAGroup(this.model, index)
+                        && !this.selectionLayer.isRowPositionFullySelected(i)) {
                     List<Integer> rowPositions = new ArrayList<Integer>(
                             RowGroupUtils.getRowPositionsInGroup(
-                                    selectionLayer, RowGroupUtils
-                                            .getRowIndexesInGroup(model, index)));
+                                    this.selectionLayer, RowGroupUtils
+                                            .getRowIndexesInGroup(this.model, index)));
                     Collections.sort(rowPositions);
-                    selectionLayer.selectRegion(0, rowPositions.get(0),
-                            selectionLayer.getColumnCount(),
+                    this.selectionLayer.selectRegion(0, rowPositions.get(0),
+                            this.selectionLayer.getColumnCount(),
                             rowPositions.size());
                     i = ObjectUtils.getLastElement(rowPositions);
                 }

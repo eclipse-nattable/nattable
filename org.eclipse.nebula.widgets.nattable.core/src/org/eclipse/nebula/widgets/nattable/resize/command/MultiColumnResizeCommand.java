@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -39,7 +39,7 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
             int[] columnWidths) {
         super(layer, columnPositions);
         for (int i = 0; i < columnPositions.length; i++) {
-            colPositionToWidth.put(new ColumnPositionCoordinate(layer,
+            this.colPositionToWidth.put(new ColumnPositionCoordinate(layer,
                     columnPositions[i]), Integer.valueOf(columnWidths[i]));
         }
     }
@@ -52,18 +52,18 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
     }
 
     public int getCommonColumnWidth() {
-        return commonColumnWidth;
+        return this.commonColumnWidth;
     }
 
     public int getColumnWidth(int columnPosition) {
-        for (ColumnPositionCoordinate columnPositionCoordinate : colPositionToWidth
+        for (ColumnPositionCoordinate columnPositionCoordinate : this.colPositionToWidth
                 .keySet()) {
             if (columnPositionCoordinate.getColumnPosition() == columnPosition) {
-                return colPositionToWidth.get(columnPositionCoordinate)
+                return this.colPositionToWidth.get(columnPositionCoordinate)
                         .intValue();
             }
         }
-        return commonColumnWidth;
+        return this.commonColumnWidth;
     }
 
     /**
@@ -75,25 +75,26 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
     public boolean convertToTargetLayer(ILayer targetLayer) {
         Map<ColumnPositionCoordinate, Integer> newColPositionToWidth = new HashMap<ColumnPositionCoordinate, Integer>();
 
-        for (ColumnPositionCoordinate columnPositionCoordinate : colPositionToWidth
+        for (ColumnPositionCoordinate columnPositionCoordinate : this.colPositionToWidth
                 .keySet()) {
             ColumnPositionCoordinate convertedColumnPositionCoordinate = LayerCommandUtil
                     .convertColumnPositionToTargetContext(
                             columnPositionCoordinate, targetLayer);
             if (convertedColumnPositionCoordinate != null) {
                 newColPositionToWidth.put(convertedColumnPositionCoordinate,
-                        colPositionToWidth.get(columnPositionCoordinate));
+                        this.colPositionToWidth.get(columnPositionCoordinate));
             }
         }
 
         if (super.convertToTargetLayer(targetLayer)) {
-            colPositionToWidth = newColPositionToWidth;
+            this.colPositionToWidth = newColPositionToWidth;
             return true;
         } else {
             return false;
         }
     }
 
+    @Override
     public MultiColumnResizeCommand cloneCommand() {
         return new MultiColumnResizeCommand(this);
     }

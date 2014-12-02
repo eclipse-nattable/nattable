@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,6 +29,7 @@ public class GroupMultiColumnReorderCommandHandler extends
         this.columnGroupReorderLayer = columnGroupReorderLayer;
     }
 
+    @Override
     public Class<MultiColumnReorderCommand> getCommandClass() {
         return MultiColumnReorderCommand.class;
     }
@@ -37,13 +38,13 @@ public class GroupMultiColumnReorderCommandHandler extends
     protected boolean doCommand(MultiColumnReorderCommand command) {
         int toColumnPosition = command.getToColumnPosition();
 
-        ILayer underlyingLayer = columnGroupReorderLayer.getUnderlyingLayer();
+        ILayer underlyingLayer = this.columnGroupReorderLayer.getUnderlyingLayer();
         int toColumnIndex = underlyingLayer
                 .getColumnIndexByPosition(toColumnPosition);
 
         List<Integer> fromColumnPositions = command.getFromColumnPositions();
 
-        ColumnGroupModel model = columnGroupReorderLayer.getModel();
+        ColumnGroupModel model = this.columnGroupReorderLayer.getModel();
 
         if (updateModel(underlyingLayer, toColumnIndex, fromColumnPositions,
                 model)) {

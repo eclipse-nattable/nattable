@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -34,7 +34,7 @@ public class ViewportSelectColumnAction implements IMouseAction {
         // only perform the selection if the cursor is null
         if (natTable.getCursor() == null)
             natTable.doCommand(new ViewportSelectColumnCommand(natTable,
-                    natTable.getColumnPositionByX(event.x), withShiftMask,
-                    withControlMask));
+                    natTable.getColumnPositionByX(event.x), this.withShiftMask,
+                    this.withControlMask));
     }
 }

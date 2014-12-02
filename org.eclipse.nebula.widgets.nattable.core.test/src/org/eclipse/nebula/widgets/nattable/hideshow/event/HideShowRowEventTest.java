@@ -27,43 +27,43 @@ public class HideShowRowEventTest {
 
     @Before
     public void setUp() {
-        hideShowLayer = new BaseRowHideShowLayerFixture(new DataLayerFixture(
+        this.hideShowLayer = new BaseRowHideShowLayerFixture(new DataLayerFixture(
                 100, 40));
-        layerListener = new LayerListenerFixture();
+        this.layerListener = new LayerListenerFixture();
     }
 
     @Test
     public void willHideColumnShouldThrowsHideShowEvent() {
-        hideShowLayer.addLayerListener(layerListener);
-        hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.addLayerListener(this.layerListener);
+        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
 
-        Assert.assertTrue(hideShowLayer.isRowIndexHidden(1));
-        Assert.assertTrue(hideShowLayer.isRowIndexHidden(4));
+        Assert.assertTrue(this.hideShowLayer.isRowIndexHidden(1));
+        Assert.assertTrue(this.hideShowLayer.isRowIndexHidden(4));
     }
 
     @Test
     public void willShowColumnShouldThrowsHideShowEvent() {
-        hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
-        hideShowLayer.addLayerListener(layerListener);
+        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.addLayerListener(this.layerListener);
 
-        Assert.assertTrue(hideShowLayer.isRowIndexHidden(1));
-        Assert.assertTrue(hideShowLayer.isRowIndexHidden(4));
+        Assert.assertTrue(this.hideShowLayer.isRowIndexHidden(1));
+        Assert.assertTrue(this.hideShowLayer.isRowIndexHidden(4));
 
-        hideShowLayer.showRowIndexes(Arrays.asList(1, 4));
-        Assert.assertFalse(hideShowLayer.isRowIndexHidden(1));
-        Assert.assertFalse(hideShowLayer.isRowIndexHidden(4));
+        this.hideShowLayer.showRowIndexes(Arrays.asList(1, 4));
+        Assert.assertFalse(this.hideShowLayer.isRowIndexHidden(1));
+        Assert.assertFalse(this.hideShowLayer.isRowIndexHidden(4));
     }
 
     @Test
     public void willShowAllColumnsThrowsHideShowEvent() {
-        hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
-        hideShowLayer.addLayerListener(layerListener);
+        this.hideShowLayer.hideRowPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.addLayerListener(this.layerListener);
 
-        Assert.assertTrue(hideShowLayer.isRowIndexHidden(1));
-        Assert.assertTrue(hideShowLayer.isRowIndexHidden(4));
+        Assert.assertTrue(this.hideShowLayer.isRowIndexHidden(1));
+        Assert.assertTrue(this.hideShowLayer.isRowIndexHidden(4));
 
-        hideShowLayer.showAllRows();
-        Assert.assertFalse(hideShowLayer.isRowIndexHidden(1));
-        Assert.assertFalse(hideShowLayer.isRowIndexHidden(4));
+        this.hideShowLayer.showAllRows();
+        Assert.assertFalse(this.hideShowLayer.isRowIndexHidden(1));
+        Assert.assertFalse(this.hideShowLayer.isRowIndexHidden(4));
     }
 }

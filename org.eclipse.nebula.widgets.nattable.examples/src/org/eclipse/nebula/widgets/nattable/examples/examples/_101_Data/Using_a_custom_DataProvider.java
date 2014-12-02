@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -34,17 +34,21 @@ public class Using_a_custom_DataProvider extends AbstractNatExample {
                 + "row number.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         IDataProvider myDataProvider = new IDataProvider() {
 
+            @Override
             public int getColumnCount() {
                 return 26;
             }
 
+            @Override
             public int getRowCount() {
                 return 10;
             }
 
+            @Override
             public Object getDataValue(int columnIndex, int rowIndex) {
                 String columnLetter = String
                         .valueOf((char) ('A' + columnIndex));
@@ -52,6 +56,7 @@ public class Using_a_custom_DataProvider extends AbstractNatExample {
                 return columnLetter + rowNumber;
             }
 
+            @Override
             public void setDataValue(int columnIndex, int rowIndex,
                     Object newValue) {
                 // Do nothing

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,67 +31,67 @@ public class SelectionLayerStructuralChangeEventHandlerTest {
 
     @Before
     public void setup() {
-        dataLayer = new DataLayerFixture(10, 10);
-        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(dataLayer);
+        this.dataLayer = new DataLayerFixture(10, 10);
+        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(this.dataLayer);
 
-        selectionLayer = bodyLayer.getSelectionLayer();
-        selectionModel = selectionLayer.getSelectionModel();
+        this.selectionLayer = bodyLayer.getSelectionLayer();
+        this.selectionModel = this.selectionLayer.getSelectionModel();
     }
 
     @Test
     public void shouldClearSelectionIfASelectedRowIsModified() throws Exception {
-        selectionModel.addSelection(2, 3);
+        this.selectionModel.addSelection(2, 3);
 
         SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(
-                selectionLayer);
-        handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 3));
+                this.selectionLayer);
+        handler.handleLayerEvent(new RowDeleteEvent(this.dataLayer, 3));
 
-        Assert.assertTrue(selectionModel.isEmpty());
+        Assert.assertTrue(this.selectionModel.isEmpty());
     }
 
     @Test
     public void shouldLeaveSelectionUnchangedIfASelectedRowIsNotModified()
             throws Exception {
-        selectionModel.addSelection(2, 3);
+        this.selectionModel.addSelection(2, 3);
 
         SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(
-                selectionLayer);
-        handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 5));
+                this.selectionLayer);
+        handler.handleLayerEvent(new RowDeleteEvent(this.dataLayer, 5));
 
-        Assert.assertFalse(selectionModel.isEmpty());
-        Assert.assertTrue(selectionModel.isRowPositionSelected(3));
+        Assert.assertFalse(this.selectionModel.isEmpty());
+        Assert.assertTrue(this.selectionModel.isRowPositionSelected(3));
     }
 
     @Test
     public void shouldLeaveSelectionUnchangedIfTheFollowingRowIsModified()
             throws Exception {
-        selectionModel.addSelection(3, 4);
+        this.selectionModel.addSelection(3, 4);
 
         SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(
-                selectionLayer);
-        handler.handleLayerEvent(new RowDeleteEvent(dataLayer, 5));
+                this.selectionLayer);
+        handler.handleLayerEvent(new RowDeleteEvent(this.dataLayer, 5));
 
-        Assert.assertFalse(selectionModel.isEmpty());
-        Assert.assertTrue(selectionModel.isRowPositionSelected(4));
+        Assert.assertFalse(this.selectionModel.isEmpty());
+        Assert.assertTrue(this.selectionModel.isRowPositionSelected(4));
     }
 
     @Test
     public void shouldClearSelectionIfListIsCleared() {
-        selectionModel.addSelection(3, 4);
+        this.selectionModel.addSelection(3, 4);
 
         SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(
-                selectionLayer);
-        handler.handleLayerEvent(new RowDeleteEvent(dataLayer, new Range(0, 9)));
+                this.selectionLayer);
+        handler.handleLayerEvent(new RowDeleteEvent(this.dataLayer, new Range(0, 9)));
 
-        Assert.assertTrue(selectionModel.isEmpty());
+        Assert.assertTrue(this.selectionModel.isEmpty());
     }
 
     @Test
     public void shouldClearSelectionIfAllRowsAreHidden() {
-        selectionModel.addSelection(3, 4);
+        this.selectionModel.addSelection(3, 4);
 
         SelectionLayerStructuralChangeEventHandler handler = new SelectionLayerStructuralChangeEventHandler(
-                selectionLayer);
+                this.selectionLayer);
         List<Integer> rows = new ArrayList<Integer>();
         rows.add(0);
         rows.add(1);
@@ -103,8 +103,8 @@ public class SelectionLayerStructuralChangeEventHandlerTest {
         rows.add(7);
         rows.add(8);
         rows.add(9);
-        handler.handleLayerEvent(new HideRowPositionsEvent(dataLayer, rows));
+        handler.handleLayerEvent(new HideRowPositionsEvent(this.dataLayer, rows));
 
-        Assert.assertTrue(selectionModel.isEmpty());
+        Assert.assertTrue(this.selectionModel.isEmpty());
     }
 }

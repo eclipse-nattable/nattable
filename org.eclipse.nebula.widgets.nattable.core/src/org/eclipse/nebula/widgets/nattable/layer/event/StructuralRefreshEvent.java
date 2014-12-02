@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,37 +35,45 @@ public class StructuralRefreshEvent implements IStructuralChangeEvent {
         this.layer = event.layer;
     }
 
+    @Override
     public ILayer getLayer() {
-        return layer;
+        return this.layer;
     }
 
+    @Override
     public boolean convertToLocal(ILayer localLayer) {
-        layer = localLayer;
+        this.layer = localLayer;
 
         return true;
     }
 
+    @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        return Arrays.asList(new Rectangle[] { new Rectangle(0, 0, layer
-                .getColumnCount(), layer.getRowCount()) });
+        return Arrays.asList(new Rectangle[] { new Rectangle(0, 0, this.layer
+                .getColumnCount(), this.layer.getRowCount()) });
     }
 
+    @Override
     public boolean isHorizontalStructureChanged() {
         return true;
     }
 
+    @Override
     public boolean isVerticalStructureChanged() {
         return true;
     }
 
+    @Override
     public Collection<StructuralDiff> getColumnDiffs() {
         return null;
     }
 
+    @Override
     public Collection<StructuralDiff> getRowDiffs() {
         return null;
     }
 
+    @Override
     public ILayerEvent cloneEvent() {
         return this;
     }

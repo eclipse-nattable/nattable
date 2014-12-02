@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,13 +24,14 @@ public class ColumnHideCommandHandler extends
         this.columnHideShowLayer = columnHideShowLayer;
     }
 
+    @Override
     public Class<ColumnHideCommand> getCommandClass() {
         return ColumnHideCommand.class;
     }
 
     @Override
     protected boolean doCommand(ColumnHideCommand command) {
-        columnHideShowLayer.hideColumnPositions(asList(command
+        this.columnHideShowLayer.hideColumnPositions(asList(command
                 .getColumnPosition()));
         return true;
     }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,6 +28,7 @@ public class Tooltips extends AbstractNatExample {
         StandaloneNatExampleRunner.run(new Tooltips());
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         NatTable natTable = new NatTable(parent, new DummyGridLayerStack(20,
                 100));
@@ -55,29 +56,32 @@ public class Tooltips extends AbstractNatExample {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.jface.window.ToolTip#getToolTipArea(org.eclipse.swt.widgets
          * .Event)
-         * 
+         *
          * Implementation here means the tooltip is not redrawn unless mouse
          * hover moves outside of the current cell (the combination of
          * ToolTip.NO_RECREATE style and override of this method).
          */
+        @Override
         protected Object getToolTipArea(Event event) {
-            int col = natTable.getColumnPositionByX(event.x);
-            int row = natTable.getRowPositionByY(event.y);
+            int col = this.natTable.getColumnPositionByX(event.x);
+            int row = this.natTable.getRowPositionByY(event.y);
 
             return new Point(col, row);
         }
 
+        @Override
         protected String getText(Event event) {
-            int col = natTable.getColumnPositionByX(event.x);
-            int row = natTable.getRowPositionByY(event.y);
+            int col = this.natTable.getColumnPositionByX(event.x);
+            int row = this.natTable.getRowPositionByY(event.y);
 
             return "Cell Position: (" + col + "," + row + ")";
         }
 
+        @Override
         protected Composite createToolTipContentArea(Event event,
                 Composite parent) {
             // This is where you could get really creative with your tooltips...

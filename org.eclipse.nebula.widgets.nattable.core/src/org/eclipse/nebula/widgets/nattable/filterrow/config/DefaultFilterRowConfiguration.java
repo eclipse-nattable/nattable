@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,7 +43,7 @@ public class DefaultFilterRowConfiguration extends
         // Plug in custom painter
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, new PaddingDecorator(
-                        cellPainter, 0, 0, 0, 5), DisplayMode.NORMAL,
+                        this.cellPainter, 0, 0, 0, 5), DisplayMode.NORMAL,
                 GridRegion.FILTER_ROW);
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.RENDER_GRID_LINES, Boolean.TRUE,
@@ -57,7 +57,7 @@ public class DefaultFilterRowConfiguration extends
 
         // Default text matching mode
         configRegistry.registerConfigAttribute(
-                FilterRowConfigAttributes.TEXT_MATCHING_MODE, textMatchingMode);
+                FilterRowConfigAttributes.TEXT_MATCHING_MODE, this.textMatchingMode);
 
         // Default display converter. Used to convert the values typed into the
         // text boxes into String objects.
@@ -77,9 +77,9 @@ public class DefaultFilterRowConfiguration extends
         uiBindingRegistry.registerFirstSingleClickBinding(
                 new FilterRowMouseEventMatcher(), new MouseEditAction());
         uiBindingRegistry.registerFirstSingleClickBinding(
-                new ClearFilterIconMouseEventMatcher(cellPainter),
+                new ClearFilterIconMouseEventMatcher(this.cellPainter),
                 new ClearFilterAction());
         uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(
-                showHideKeyConstant), new ToggleFilterRowAction());
+                this.showHideKeyConstant), new ToggleFilterRowAction());
     }
 }

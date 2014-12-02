@@ -61,13 +61,6 @@ public class _5123_SummaryRowPositionExample extends AbstractNatExample {
                 + "2. position the summary row at the bottom.";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
-     * (org.eclipse.swt.widgets.Composite)
-     */
     @Override
     public Control createExampleControl(Composite parent) {
         Composite panel = new Composite(parent, SWT.NONE);

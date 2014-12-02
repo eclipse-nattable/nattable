@@ -51,7 +51,7 @@ public class CellEditorCreatedEvent implements ILayerEvent {
      * @return the created editor
      */
     public ICellEditor getEditor() {
-        return editor;
+        return this.editor;
     }
 
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -73,13 +73,13 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
     private final BasicEventList<Tuple> eventList;
 
     public BlinkingGlazedListExample() {
-        headers.add("Name");
-        headers.add("Value");
-        headers.add("Price");
-        headers.add("Quantity");
+        this.headers.add("Name");
+        this.headers.add("Value");
+        this.headers.add("Price");
+        this.headers.add("Quantity");
 
-        eventList = new BasicEventList<Tuple>();
-        baseTupleList = GlazedLists.threadSafeList(eventList);
+        this.eventList = new BasicEventList<Tuple>();
+        this.baseTupleList = GlazedLists.threadSafeList(this.eventList);
     }
 
     @Override
@@ -90,21 +90,21 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         // Data backing the table
-        baseTupleList.add(new Tuple(headers, new Object[] { "Name 1",
+        this.baseTupleList.add(new Tuple(this.headers, new Object[] { "Name 1",
                 "Value 1", 1.5d, -1000 }, 0));
-        baseTupleList.add(new Tuple(headers, new Object[] { "Name 2",
+        this.baseTupleList.add(new Tuple(this.headers, new Object[] { "Name 2",
                 "Value 2", -2.5d, 2000 }, 1));
-        baseTupleList.add(new Tuple(headers, new Object[] { "Name 3",
+        this.baseTupleList.add(new Tuple(this.headers, new Object[] { "Name 3",
                 "Value 3", 3.5d, -3000 }, 2));
-        baseTupleList.add(new Tuple(headers, new Object[] { "Name 4",
+        this.baseTupleList.add(new Tuple(this.headers, new Object[] { "Name 4",
                 "Value 4", -4.5d, 4000 }, 3));
-        baseTupleList.add(new Tuple(headers, new Object[] { "Name 5",
+        this.baseTupleList.add(new Tuple(this.headers, new Object[] { "Name 5",
                 "Value 5", 5.5d, -5000 }, 4));
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         ObservableElementList<Tuple> observableTupleList = new ObservableElementList<Tuple>(
-                baseTupleList, GlazedLists.beanConnector(Tuple.class));
+                this.baseTupleList, GlazedLists.beanConnector(Tuple.class));
         TupleColumnPropertyAccessor columnPropertyAccessor = new TupleColumnPropertyAccessor();
         ListDataProvider<Tuple> bodyDataProvider = new ListDataProvider<Tuple>(
                 observableTupleList, columnPropertyAccessor);
@@ -112,7 +112,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
         // Enable capturing glazed list update events
         GlazedListsEventLayer<Tuple> glazedListEventsLayer = new GlazedListsEventLayer<Tuple>(
-                bodyDataLayer, baseTupleList);
+                bodyDataLayer, this.baseTupleList);
 
         // Enable blinking
         final BlinkLayer<Tuple> blinkingLayer = new BlinkLayer<Tuple>(
@@ -123,12 +123,12 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
         // Add Listener to existing elements
         try {
-            baseTupleList.getReadWriteLock().readLock().lock();
-            for (Tuple tuple : baseTupleList) {
+            this.baseTupleList.getReadWriteLock().readLock().lock();
+            for (Tuple tuple : this.baseTupleList) {
                 tuple.addPropertyChangeListener(glazedListEventsLayer);
             }
         } finally {
-            baseTupleList.getReadWriteLock().readLock().unlock();
+            this.baseTupleList.getReadWriteLock().readLock().unlock();
         }
 
         // Setup row/column and corner layers
@@ -166,12 +166,12 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
     @Override
     public void onStart() {
-        timer.schedule(new UpdateTupleTask(), 500L, 2000L);
+        this.timer.schedule(new UpdateTupleTask(), 500L, 2000L);
     }
 
     @Override
     public void onStop() {
-        timer.cancel();
+        this.timer.cancel();
     }
 
     public class Tuple implements Comparable<Tuple> {
@@ -186,26 +186,26 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
             this.propertyNames = propertyNames;
             this.objects = objects;
             this.id = id;
-            support = new PropertyChangeSupport(this);
+            this.support = new PropertyChangeSupport(this);
         }
 
         public void addPropertyChangeListener(PropertyChangeListener listener) {
-            support.addPropertyChangeListener(listener);
+            this.support.addPropertyChangeListener(listener);
         }
 
         public void removePropertyChangeListener(PropertyChangeListener listener) {
-            support.removePropertyChangeListener(listener);
+            this.support.removePropertyChangeListener(listener);
         }
 
         public Object getValue(int index) {
-            return objects[index];
+            return this.objects[index];
         }
 
         public void update(int index, Object newValue) {
-            Object oldValue = objects[index];
-            objects[index] = newValue;
+            Object oldValue = this.objects[index];
+            this.objects[index] = newValue;
             System.out.println("Update: " + newValue);
-            support.firePropertyChange(propertyNames.get(index), oldValue,
+            this.support.firePropertyChange(this.propertyNames.get(index), oldValue,
                     newValue);
         }
 
@@ -242,9 +242,9 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
             public String[] resolve(Object oldValue, Object newValue) {
                 int old = ((Integer) oldValue).intValue();
                 int latest = ((Integer) newValue).intValue();
-                configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
+                this.configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
                         : BLINK_DOWN_CONFIG_LABEL);
-                return configLabels;
+                return this.configLabels;
             };
         };
     }
@@ -254,7 +254,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
         @Override
         public int getColumnCount() {
-            return headers.size();
+            return BlinkingGlazedListExample.this.headers.size();
         }
 
         @Override
@@ -269,12 +269,12 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
         @Override
         public int getColumnIndex(String propertyName) {
-            return headers.indexOf(propertyName);
+            return BlinkingGlazedListExample.this.headers.indexOf(propertyName);
         }
 
         @Override
         public String getColumnProperty(int columnIndex) {
-            return headers.get(columnIndex);
+            return BlinkingGlazedListExample.this.headers.get(columnIndex);
         }
 
     }
@@ -283,12 +283,12 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
 
         @Override
         public int getColumnCount() {
-            return headers.size();
+            return BlinkingGlazedListExample.this.headers.size();
         }
 
         @Override
         public Object getDataValue(int columnIndex, int rowIndex) {
-            return headers.get(columnIndex);
+            return BlinkingGlazedListExample.this.headers.get(columnIndex);
         }
 
         @Override
@@ -305,7 +305,7 @@ public class BlinkingGlazedListExample extends AbstractNatExample {
     public class UpdateTupleTask extends TimerTask {
         @Override
         public void run() {
-            Tuple toUpdate = baseTupleList.get(2);
+            Tuple toUpdate = BlinkingGlazedListExample.this.baseTupleList.get(2);
             Integer existingValue = (Integer) toUpdate.getValue(3);
             toUpdate.update(3, existingValue * -1);
         }

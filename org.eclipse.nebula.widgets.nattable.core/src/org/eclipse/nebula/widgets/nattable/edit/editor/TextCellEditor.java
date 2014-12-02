@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -66,13 +66,13 @@ public class TextCellEditor extends AbstractCellEditor {
      * initial value. If it is activated only specifying the original canonical
      * value, the default behaviour is to select the whole text contained in the
      * text editor control.
-     * 
+     *
      * <p>
      * You can override this default behaviour by setting an
      * {@link EditorSelectionEnum} explicitly. With this you are able e.g. to
      * set the selection at the beginning of the contained text, so writing in
      * the text control will result in prefixing.
-     * 
+     *
      * <p>
      * Note that on overriding the behaviour, you override both activation
      * cases.
@@ -93,7 +93,7 @@ public class TextCellEditor extends AbstractCellEditor {
      * red to indicate a conversion error.
      */
     private IEditErrorHandler inputConversionErrorHandler = new RenderErrorHandling(
-            decorationProvider);
+            this.decorationProvider);
 
     /**
      * The {@link IEditErrorHandler} that is used for showing validation errors
@@ -102,7 +102,7 @@ public class TextCellEditor extends AbstractCellEditor {
      * red to indicate a validation error.
      */
     private IEditErrorHandler inputValidationErrorHandler = new RenderErrorHandling(
-            decorationProvider);
+            this.decorationProvider);
 
     /**
      * Flag to determine whether this editor should try to commit and close on
@@ -124,7 +124,7 @@ public class TextCellEditor extends AbstractCellEditor {
     /**
      * Creates a TextCellEditor that will not move the selection on committing a
      * value by pressing enter.
-     * 
+     *
      * @param commitOnUpDown
      *            Flag to configure whether the editor should commit and move
      *            the selection in the corresponding way if the up or down key
@@ -136,7 +136,7 @@ public class TextCellEditor extends AbstractCellEditor {
 
     /**
      * Creates a TextCellEditor.
-     * 
+     *
      * @param commitOnUpDown
      *            Flag to configure whether the editor should commit and move
      *            the selection in the corresponding way if the up or down key
@@ -238,7 +238,7 @@ public class TextCellEditor extends AbstractCellEditor {
     /**
      * Creates the editor control that is wrapped by this ICellEditor. Will use
      * the style configurations in ConfigRegistry for styling the control.
-     * 
+     *
      * @param parent
      *            The Composite that will be the parent of the new editor
      *            control. Can not be <code>null</code>
@@ -268,13 +268,13 @@ public class TextCellEditor extends AbstractCellEditor {
 
             @Override
             public void keyPressed(KeyEvent event) {
-                if (commitOnEnter
+                if (TextCellEditor.this.commitOnEnter
                         && (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR)) {
 
                     boolean commit = (event.stateMask == SWT.ALT) ? false
                             : true;
                     MoveDirectionEnum move = MoveDirectionEnum.NONE;
-                    if (moveSelectionOnEnter && editMode == EditModeEnum.INLINE) {
+                    if (TextCellEditor.this.moveSelectionOnEnter && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
                         if (event.stateMask == 0) {
                             move = MoveDirectionEnum.DOWN;
                         } else if (event.stateMask == SWT.SHIFT) {
@@ -285,12 +285,12 @@ public class TextCellEditor extends AbstractCellEditor {
                     if (commit)
                         commit(move);
 
-                    if (editMode == EditModeEnum.DIALOG) {
+                    if (TextCellEditor.this.editMode == EditModeEnum.DIALOG) {
                         parent.forceFocus();
                     }
                 } else if (event.keyCode == SWT.ESC && event.stateMask == 0) {
                     close();
-                } else if (commitOnUpDown && editMode == EditModeEnum.INLINE) {
+                } else if (TextCellEditor.this.commitOnUpDown && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
                     if (event.keyCode == SWT.ARROW_UP) {
                         commit(MoveDirectionEnum.UP);
                     } else if (event.keyCode == SWT.ARROW_DOWN) {
@@ -303,14 +303,14 @@ public class TextCellEditor extends AbstractCellEditor {
             public void keyReleased(KeyEvent e) {
                 try {
                     // always do the conversion
-                    Object canonicalValue = getCanonicalValue(inputConversionErrorHandler);
+                    Object canonicalValue = getCanonicalValue(TextCellEditor.this.inputConversionErrorHandler);
                     // and always do the validation
                     // even if for commiting the validation should be skipped,
                     // on editing
                     // a validation failure should be made visible
                     // otherwise there would be no need for validation!
                     validateCanonicalValue(canonicalValue,
-                            inputValidationErrorHandler);
+                            TextCellEditor.this.inputValidationErrorHandler);
                 } catch (Exception ex) {
                     // do nothing as exceptions caused by conversion or
                     // validation are handled already
@@ -348,11 +348,11 @@ public class TextCellEditor extends AbstractCellEditor {
      *         <code>false</code> if not.
      */
     public boolean isEditable() {
-        return editable;
+        return this.editable;
     }
 
     /**
-     * 
+     *
      * @param editable
      *            <code>true</code> if the wrapped Text control should be
      *            editable, <code>false</code> if not.
@@ -369,12 +369,12 @@ public class TextCellEditor extends AbstractCellEditor {
      * of the containing text. If it is activated only specifying the original
      * canonical value, the default behaviour is to select the whole text
      * contained in the text editor control.
-     * 
+     *
      * @return The current configured selection mode, <code>null</code> for
      *         default behaviour.
      */
     public final EditorSelectionEnum getSelectionMode() {
-        return selectionMode;
+        return this.selectionMode;
     }
 
     /**
@@ -384,7 +384,7 @@ public class TextCellEditor extends AbstractCellEditor {
      * text editor control with and without an initial value. Setting this value
      * to <code>null</code> will reactivate the default behaviour like described
      * here {@link TextCellEditor#getSelectionMode()}.
-     * 
+     *
      * @param selectionMode
      *            The selection mode that should be used on the content of the
      *            wrapped text editor control when it gets activated.
@@ -396,10 +396,10 @@ public class TextCellEditor extends AbstractCellEditor {
     /**
      * Will set the selection to the wrapped text control regarding the
      * configured {@link EditorSelectionEnum}.
-     * 
+     *
      * <p>
      * This method is called
-     * 
+     *
      * @see Text#setSelection(int, int)
      */
     private void selectText(EditorSelectionEnum selectionMode) {
@@ -425,7 +425,7 @@ public class TextCellEditor extends AbstractCellEditor {
 
     /**
      * Enables/disables the error decoration for the wrapped text control.
-     * 
+     *
      * @param enabled
      *            <code>true</code> if an error decoration should be added to
      *            the wrapped text control, <code>false</code> if not.
@@ -437,11 +437,11 @@ public class TextCellEditor extends AbstractCellEditor {
     /**
      * Set the error description text that will be shown in the decoration
      * hover.
-     * 
+     *
      * @param errorText
      *            The text to be shown as a description for the decoration, or
      *            <code>null</code> if there should be no description.
-     * 
+     *
      * @see ControlDecoration#setDescriptionText(String)
      */
     public void setErrorDecorationText(String errorText) {
@@ -450,10 +450,10 @@ public class TextCellEditor extends AbstractCellEditor {
 
     /**
      * Force the error decoration hover to show immediately.
-     * 
+     *
      * @param customErrorText
      *            The text to show in the hover popup.
-     * 
+     *
      * @see ControlDecoration#show()
      * @see ControlDecoration#showHoverText(String)
      */
@@ -464,12 +464,12 @@ public class TextCellEditor extends AbstractCellEditor {
     /**
      * Set the id of the {@link FieldDecoration} to be used by the local
      * {@link ControlDecorationProvider}.
-     * 
+     *
      * @param fieldDecorationId
      *            The String to determine the {@link FieldDecoration} to use by
      *            the {@link ControlDecoration} that is provided by this
      *            {@link ControlDecorationProvider}.
-     * 
+     *
      * @see FieldDecorationRegistry#getFieldDecoration(String)
      */
     public void setFieldDecorationId(String fieldDecorationId) {
@@ -480,12 +480,12 @@ public class TextCellEditor extends AbstractCellEditor {
      * Set the position of the control decoration relative to the control. It
      * should include style bits describing both the vertical and horizontal
      * orientation.
-     * 
+     *
      * @param decorationPositionOverride
      *            bit-wise or of position constants (<code>SWT.TOP</code>,
      *            <code>SWT.BOTTOM</code>, <code>SWT.LEFT</code>,
      *            <code>SWT.RIGHT</code>, and <code>SWT.CENTER</code>).
-     * 
+     *
      * @see ControlDecoration#ControlDecoration(Control, int)
      */
     public void setDecorationPositionOverride(int decorationPositionOverride) {

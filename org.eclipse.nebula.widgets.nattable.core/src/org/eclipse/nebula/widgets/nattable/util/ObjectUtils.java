@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,7 +25,7 @@ public class ObjectUtils {
 
     /**
      * Transfers the iterator to an unmodifiable collection.
-     * 
+     *
      * @return Contents of the Iterator&lt;Cell&gt; as a Collection.
      */
     public static <T> Collection<T> asCollection(Iterator<T> iterator) {
@@ -51,7 +51,7 @@ public class ObjectUtils {
 
     /**
      * Returns an unmodifiable ordered collection.
-     * 
+     *
      * @param <T>
      * @param iterator
      * @return An unmodified ordered collection.

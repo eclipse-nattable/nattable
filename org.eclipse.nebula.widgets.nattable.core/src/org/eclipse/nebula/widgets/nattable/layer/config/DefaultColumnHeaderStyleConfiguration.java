@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -55,39 +55,39 @@ public class DefaultColumnHeaderStyleConfiguration extends
     public void configureRegistry(IConfigRegistry configRegistry) {
         // configure the painter
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, cellPainter,
+                CellConfigAttributes.CELL_PAINTER, this.cellPainter,
                 DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, cellPainter,
+                CellConfigAttributes.CELL_PAINTER, this.cellPainter,
                 DisplayMode.NORMAL, GridRegion.CORNER);
 
         // configure whether to render grid lines or not
         // e.g. for the BeveledBorderDecorator the rendering of the grid lines
         // should be disabled
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.RENDER_GRID_LINES, renderGridLines,
+                CellConfigAttributes.RENDER_GRID_LINES, this.renderGridLines,
                 DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.RENDER_GRID_LINES, renderGridLines,
+                CellConfigAttributes.RENDER_GRID_LINES, this.renderGridLines,
                 DisplayMode.NORMAL, GridRegion.CORNER);
 
         // configure the normal style
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                bgColor);
+                this.bgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                fgColor);
+                this.fgColor);
         cellStyle.setAttributeValue(
-                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, gradientBgColor);
+                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, this.gradientBgColor);
         cellStyle.setAttributeValue(
-                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, gradientFgColor);
+                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, this.gradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                hAlign);
+                this.hAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                vAlign);
+                this.vAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                borderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
+                this.borderStyle);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.font);
 
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);

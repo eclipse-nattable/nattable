@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.EditableRule;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -163,7 +164,7 @@ public class RowSelectionEditUtilsTest {
         DataLayer bodyDataLayer = (DataLayer) this.gridLayerStack.getBodyDataLayer();
         this.natTable.registerLabelOnColumn(bodyDataLayer, 1, TEST_LABEL);
         this.natTable.getConfigRegistry().registerConfigAttribute(
-                EditConfigAttributes.CELL_EDITABLE_RULE, EditableRule.ALWAYS_EDITABLE,
+                EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE,
                 DisplayMode.EDIT, TEST_LABEL);
 
         this.selectionLayer.selectCell(1, 1, false, false);
@@ -176,7 +177,7 @@ public class RowSelectionEditUtilsTest {
         DataLayer bodyDataLayer = (DataLayer) this.gridLayerStack.getBodyDataLayer();
         this.natTable.registerLabelOnColumn(bodyDataLayer, 1, TEST_LABEL);
         this.natTable.getConfigRegistry().registerConfigAttribute(
-                EditConfigAttributes.CELL_EDITABLE_RULE, EditableRule.ALWAYS_EDITABLE,
+                EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE,
                 DisplayMode.EDIT, TEST_LABEL);
 
         this.selectionLayer.selectCell(2, 1, false, false);
@@ -208,7 +209,7 @@ public class RowSelectionEditUtilsTest {
         DataLayer bodyDataLayer = (DataLayer) this.gridLayerStack.getBodyDataLayer();
         this.natTable.registerLabelOnColumn(bodyDataLayer, 1, TEST_LABEL);
         this.natTable.getConfigRegistry().registerConfigAttribute(
-                EditConfigAttributes.CELL_EDITABLE_RULE, EditableRule.ALWAYS_EDITABLE,
+                EditConfigAttributes.CELL_EDITABLE_RULE, IEditableRule.ALWAYS_EDITABLE,
                 DisplayMode.EDIT, TEST_LABEL);
 
         this.selectionLayer.selectCell(1, 1, false, true);

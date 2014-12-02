@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
  * Command handler that is responsible for handling the
  * ClearHoverStylingCommand. Will clear the current hovered cell position set
  * within the connected HoverLayer to remove the hover styling accordingly.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see HoverLayer

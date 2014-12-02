@@ -44,7 +44,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
  * @see DefaultColumnReorderLayerConfiguration
  */
 public class ColumnReorderLayer extends AbstractLayerTransform implements
-IUniqueIndexLayer {
+        IUniqueIndexLayer {
 
     public static final String PERSISTENCE_KEY_COLUMN_INDEX_ORDER = ".columnIndexOrder"; //$NON-NLS-1$
 
@@ -160,18 +160,18 @@ IUniqueIndexLayer {
     protected boolean isRestoredStateValid(List<Integer> newColumnIndexOrder) {
         if (newColumnIndexOrder.size() != getColumnCount()) {
             System.err
-            .println("Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
-                    "is not the same as the number of columns in the data source (" //$NON-NLS-1$
-                    + getColumnCount() + ").\n" + //$NON-NLS-1$
-                    "Skipping restore of column ordering"); //$NON-NLS-1$
+                    .println("Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
+                            "is not the same as the number of columns in the data source (" //$NON-NLS-1$
+                            + getColumnCount() + ").\n" + //$NON-NLS-1$
+                            "Skipping restore of column ordering"); //$NON-NLS-1$
             return false;
         }
 
         for (Integer index : newColumnIndexOrder) {
             if (!this.columnIndexOrder.contains(index)) {
                 System.err
-                .println("Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
-                        "Skipping restore of column ordering"); //$NON-NLS-1$
+                        .println("Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
+                                "Skipping restore of column ordering"); //$NON-NLS-1$
                 return false;
             }
         }

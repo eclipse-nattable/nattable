@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -48,16 +48,16 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements
 
     public boolean reorderColumnGroup(int fromColumnPosition,
             int toColumnPosition) {
-        int fromColumnIndex = underlyingLayer
+        int fromColumnIndex = this.underlyingLayer
                 .getColumnIndexByPosition(fromColumnPosition);
 
         List<Integer> fromColumnPositions = getColumnGroupPositions(fromColumnIndex);
-        return underlyingLayer.doCommand(new MultiColumnReorderCommand(this,
+        return this.underlyingLayer.doCommand(new MultiColumnReorderCommand(this,
                 fromColumnPositions, toColumnPosition));
     }
 
     public ColumnGroupModel getModel() {
-        return model;
+        return this.model;
     }
 
     @Override
@@ -81,16 +81,18 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements
 
     // Columns
 
+    @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return underlyingLayer.getColumnPositionByIndex(columnIndex);
+        return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
     }
 
     // Vertical features
 
     // Rows
 
+    @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return underlyingLayer.getRowPositionByIndex(rowIndex);
+        return this.underlyingLayer.getRowPositionByIndex(rowIndex);
     }
 
     // Column Groups
@@ -99,12 +101,12 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements
      * @return the column positions for all the columns in this group
      */
     public List<Integer> getColumnGroupPositions(int fromColumnIndex) {
-        List<Integer> fromColumnIndexes = model.getColumnGroupByIndex(
+        List<Integer> fromColumnIndexes = this.model.getColumnGroupByIndex(
                 fromColumnIndex).getMembers();
         List<Integer> fromColumnPositions = new ArrayList<Integer>();
 
         for (Integer columnIndex : fromColumnIndexes) {
-            fromColumnPositions.add(Integer.valueOf(underlyingLayer
+            fromColumnPositions.add(Integer.valueOf(this.underlyingLayer
                     .getColumnPositionByIndex(columnIndex.intValue())));
         }
         // These positions are actually consecutive but the Column Group does
@@ -114,7 +116,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements
     }
 
     public int getReorderFromColumnPosition() {
-        return reorderFromColumnPosition;
+        return this.reorderFromColumnPosition;
     }
 
     public void setReorderFromColumnPosition(int fromColumnPosition) {

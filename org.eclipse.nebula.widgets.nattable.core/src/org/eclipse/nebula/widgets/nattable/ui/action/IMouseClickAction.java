@@ -32,7 +32,7 @@ public interface IMouseClickAction extends IMouseAction {
      * will be executed and the single click action will be cancelled. This also
      * means that the single click action will not be performed until the double
      * click action time is waited.
-     * 
+     *
      * @return <code>true</code> if this action is exclusive, <code>false</code>
      *         if not.
      */

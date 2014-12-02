@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,7 +31,7 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public ILayer getContextLayer() {
-        return contextLayer;
+        return this.contextLayer;
     }
 
     public void setSearchDirection(String searchDirection) {
@@ -39,7 +39,7 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public String getSearchDirection() {
-        return searchDirection;
+        return this.searchDirection;
     }
 
     public void setWrapSearch(boolean wrapSearch) {
@@ -47,7 +47,7 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public boolean isWrapSearch() {
-        return wrapSearch;
+        return this.wrapSearch;
     }
 
     public void setCaseSensitive(boolean caseSensitive) {
@@ -55,7 +55,7 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public boolean isCaseSensitive() {
-        return caseSensitive;
+        return this.caseSensitive;
     }
 
     public void setWholeWord(boolean wholeWord) {
@@ -63,7 +63,7 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public boolean isWholeWord() {
-        return wholeWord;
+        return this.wholeWord;
     }
 
     public void setIncremental(boolean incremental) {
@@ -71,7 +71,7 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public boolean isIncremental() {
-        return incremental;
+        return this.incremental;
     }
 
     public void setRegex(boolean regex) {
@@ -79,7 +79,7 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public boolean isRegex() {
-        return regex;
+        return this.regex;
     }
 
     public void setIncludeCollapsed(boolean includeCollapsed) {
@@ -87,7 +87,7 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public boolean isIncludeCollapsed() {
-        return includeCollapsed;
+        return this.includeCollapsed;
     }
 
     public void setColumnFirst(boolean columnFirst) {
@@ -95,11 +95,11 @@ public abstract class AbstractSearchStrategy implements ISearchStrategy {
     }
 
     public boolean isColumnFirst() {
-        return columnFirst;
+        return this.columnFirst;
     }
 
     public Comparator<?> getComparator() {
-        return comparator;
+        return this.comparator;
     }
 
     public void setComparator(Comparator<?> comparator) {

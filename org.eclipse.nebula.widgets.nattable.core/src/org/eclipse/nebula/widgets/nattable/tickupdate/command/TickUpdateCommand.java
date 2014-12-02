@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -54,7 +54,7 @@ public class TickUpdateCommand implements ILayerCommand {
 
     /**
      * Constructor that is used by local cloning operation.
-     * 
+     *
      * @param command
      *            The command to create a new instance of.
      */
@@ -83,7 +83,7 @@ public class TickUpdateCommand implements ILayerCommand {
      *         {@link IConfigRegistry} needs to be transported.
      */
     public IConfigRegistry getConfigRegistry() {
-        return configRegistry;
+        return this.configRegistry;
     }
 
     /**
@@ -91,6 +91,6 @@ public class TickUpdateCommand implements ILayerCommand {
      *         or decremented.
      */
     public boolean isIncrement() {
-        return increment;
+        return this.increment;
     }
 }

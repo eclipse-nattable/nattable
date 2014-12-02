@@ -73,7 +73,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * Simple example showing how to add the filter row to the layer composition of
  * a grid that is using GlazedLists FilterList for filtering. This example also
  * shows how to combine the filter row with static filtering.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -198,7 +198,7 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -225,13 +225,13 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
             // wrap the SortedList with the FilterList
             this.filterList = new FilterList<T>(sortedList);
 
-            this.bodyDataProvider = new ListDataProvider<T>(filterList,
+            this.bodyDataProvider = new ListDataProvider<T>(this.filterList,
                     columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, filterList);
+                    bodyDataLayer, this.filterList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
             ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
@@ -240,7 +240,7 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public FilterList<T> getFilterList() {
@@ -248,14 +248,14 @@ public class _6033_GlazedListsStaticFilterExample extends AbstractNatExample {
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
     }
 
     /**
      * The configuration to enable the edit mode for the grid and additional
      * edit configurations like converters and validators.
-     * 
+     *
      * @author Dirk Fauth
      */
     class FilterRowConfiguration extends AbstractRegistryConfiguration {

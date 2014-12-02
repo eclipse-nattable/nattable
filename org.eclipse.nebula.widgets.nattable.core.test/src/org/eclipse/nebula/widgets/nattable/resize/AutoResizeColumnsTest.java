@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -54,12 +54,12 @@ public class AutoResizeColumnsTest {
 
     @Before
     public void setUp() {
-        configRegistry = new ConfigRegistry();
+        this.configRegistry = new ConfigRegistry();
         new DefaultNatTableStyleConfiguration()
-                .configureRegistry(configRegistry);
+                .configureRegistry(this.configRegistry);
 
-        img = new Image(Display.getDefault(), new Rectangle(0, 0, 200, 150));
-        gcFactory = new GCFactory(img);
+        this.img = new Image(Display.getDefault(), new Rectangle(0, 0, 200, 150));
+        this.gcFactory = new GCFactory(this.img);
 
         // Use a common, foxed width font to avoid failing the test on a
         // different platform
@@ -67,17 +67,18 @@ public class AutoResizeColumnsTest {
                 SWT.NORMAL));
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.FONT, normalFont);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.NORMAL);
     }
 
     @After
     public void tearDown() {
-        img.dispose();
+        this.img.dispose();
     }
 
     private void setClientAreaProvider(ILayer layer) {
         layer.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 1050, 250);
             }
@@ -100,7 +101,7 @@ public class AutoResizeColumnsTest {
 
         // Auto resize the one column
         InitializeAutoResizeColumnsCommand command = new InitializeAutoResizeColumnsCommand(
-                gridLayer, 2, configRegistry, gcFactory);
+                gridLayer, 2, this.configRegistry, this.gcFactory);
         gridLayer.doCommand(command);
         // Note: the actual resized width is platform specific (font
         // dependency),
@@ -117,7 +118,7 @@ public class AutoResizeColumnsTest {
 
         // Resize all selected columns
         command = new InitializeAutoResizeColumnsCommand(gridLayer, 1,
-                configRegistry, gcFactory);
+                this.configRegistry, this.gcFactory);
         gridLayer.doCommand(command);
 
         for (int columnPosition = 1; columnPosition <= 20; columnPosition++) {
@@ -163,7 +164,7 @@ public class AutoResizeColumnsTest {
 
         // Auto resize column 5
         InitializeAutoResizeColumnsCommand command = new InitializeAutoResizeColumnsCommand(
-                gridLayer, 5, configRegistry, gcFactory);
+                gridLayer, 5, this.configRegistry, this.gcFactory);
         gridLayer.doCommand(command);
 
         // Columns 1 and 2 should not be resized

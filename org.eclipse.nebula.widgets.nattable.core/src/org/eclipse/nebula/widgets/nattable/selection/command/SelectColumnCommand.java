@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -32,13 +32,14 @@ public class SelectColumnCommand extends AbstractPositionCommand {
     }
 
     public boolean isWithShiftMask() {
-        return withShiftMask;
+        return this.withShiftMask;
     }
 
     public boolean isWithControlMask() {
-        return withControlMask;
+        return this.withControlMask;
     }
 
+    @Override
     public SelectColumnCommand cloneCommand() {
         return new SelectColumnCommand(this);
     }

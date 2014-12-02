@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,7 +26,7 @@ public class PricingTypeBean implements Comparable<PricingTypeBean> {
 
     @Override
     public String toString() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -34,6 +34,7 @@ public class PricingTypeBean implements Comparable<PricingTypeBean> {
      */
     public static IDisplayConverter getDisplayConverter() {
         return new DisplayConverter() {
+            @Override
             public Object canonicalToDisplayValue(Object canonicalValue) {
                 if (canonicalValue == null) {
                     return null;
@@ -43,6 +44,7 @@ public class PricingTypeBean implements Comparable<PricingTypeBean> {
                 }
             }
 
+            @Override
             public Object displayToCanonicalValue(Object displayValue) {
                 return displayValue.toString().equals("Manual") ? new PricingTypeBean(
                         "MN") : new PricingTypeBean("AT");
@@ -50,6 +52,7 @@ public class PricingTypeBean implements Comparable<PricingTypeBean> {
         };
     }
 
+    @Override
     public int compareTo(PricingTypeBean o) {
         return this.toString().compareTo(o.toString());
     }

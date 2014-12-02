@@ -25,16 +25,16 @@ public class PixelCoordinate {
     }
 
     public int getX() {
-        return x;
+        return this.x;
     }
 
     public int getY() {
-        return y;
+        return this.y;
     }
 
     @Override
     public String toString() {
-        return "[" + getClass().getName() + " x: " + x + ", y: " + y + "]"; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
+        return "[" + getClass().getName() + " x: " + this.x + ", y: " + this.y + "]"; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
     }
 
 }

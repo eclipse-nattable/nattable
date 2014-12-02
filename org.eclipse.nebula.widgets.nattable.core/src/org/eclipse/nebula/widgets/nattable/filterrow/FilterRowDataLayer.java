@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -60,7 +60,7 @@ public class FilterRowDataLayer<T> extends DataLayer {
 
     @SuppressWarnings("unchecked")
     public FilterRowDataProvider<T> getFilterRowDataProvider() {
-        return (FilterRowDataProvider<T>) dataProvider;
+        return (FilterRowDataProvider<T>) this.dataProvider;
     }
 
     @Override
@@ -109,32 +109,32 @@ public class FilterRowDataLayer<T> extends DataLayer {
 
     @Override
     public int getColumnCount() {
-        return columnHeaderLayer.getColumnCount();
+        return this.columnHeaderLayer.getColumnCount();
     }
 
     @Override
     public int getPreferredColumnCount() {
-        return columnHeaderLayer.getPreferredColumnCount();
+        return this.columnHeaderLayer.getPreferredColumnCount();
     }
 
     @Override
     public int getColumnIndexByPosition(int columnPosition) {
-        return columnHeaderLayer.getColumnIndexByPosition(columnPosition);
+        return this.columnHeaderLayer.getColumnIndexByPosition(columnPosition);
     }
 
     @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
-        return columnHeaderLayer
+        return this.columnHeaderLayer
                 .localToUnderlyingColumnPosition(localColumnPosition);
     }
 
     @Override
     public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
             int underlyingColumnPosition) {
-        if (sourceUnderlyingLayer == columnHeaderLayer) {
+        if (sourceUnderlyingLayer == this.columnHeaderLayer) {
             return underlyingColumnPosition;
         }
-        return columnHeaderLayer.underlyingToLocalColumnPosition(
+        return this.columnHeaderLayer.underlyingToLocalColumnPosition(
                 sourceUnderlyingLayer, underlyingColumnPosition);
     }
 
@@ -142,10 +142,10 @@ public class FilterRowDataLayer<T> extends DataLayer {
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingColumnPositionRanges) {
-        if (sourceUnderlyingLayer == columnHeaderLayer) {
+        if (sourceUnderlyingLayer == this.columnHeaderLayer) {
             return underlyingColumnPositionRanges;
         }
-        return columnHeaderLayer.underlyingToLocalColumnPositions(
+        return this.columnHeaderLayer.underlyingToLocalColumnPositions(
                 sourceUnderlyingLayer, underlyingColumnPositionRanges);
     }
 
@@ -153,36 +153,36 @@ public class FilterRowDataLayer<T> extends DataLayer {
 
     @Override
     public int getWidth() {
-        return columnHeaderLayer.getWidth();
+        return this.columnHeaderLayer.getWidth();
     }
 
     @Override
     public int getPreferredWidth() {
-        return columnHeaderLayer.getPreferredWidth();
+        return this.columnHeaderLayer.getPreferredWidth();
     }
 
     @Override
     public int getColumnWidthByPosition(int columnPosition) {
-        return columnHeaderLayer.getColumnWidthByPosition(columnPosition);
+        return this.columnHeaderLayer.getColumnWidthByPosition(columnPosition);
     }
 
     // Column resize
 
     @Override
     public boolean isColumnPositionResizable(int columnPosition) {
-        return columnHeaderLayer.isColumnPositionResizable(columnPosition);
+        return this.columnHeaderLayer.isColumnPositionResizable(columnPosition);
     }
 
     // X
 
     @Override
     public int getColumnPositionByX(int x) {
-        return columnHeaderLayer.getColumnPositionByX(x);
+        return this.columnHeaderLayer.getColumnPositionByX(x);
     }
 
     @Override
     public int getStartXOfColumnPosition(int columnPosition) {
-        return columnHeaderLayer.getStartXOfColumnPosition(columnPosition);
+        return this.columnHeaderLayer.getStartXOfColumnPosition(columnPosition);
     }
 
 }

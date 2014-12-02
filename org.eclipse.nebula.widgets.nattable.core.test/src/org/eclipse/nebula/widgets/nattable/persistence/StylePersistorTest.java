@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,18 +46,18 @@ public class StylePersistorTest {
 
     @Before
     public void setup() {
-        propertiesFixture = new PropertiesFixture()
+        this.propertiesFixture = new PropertiesFixture()
                 .addStyleProperties(TEST_PREFIX);
     }
 
     @Test
     public void persistColorToProperties() throws Exception {
-        StylePersistor.saveColor(TEST_PREFIX, propertiesFixture,
+        StylePersistor.saveColor(TEST_PREFIX, this.propertiesFixture,
                 CellStyleFixture.TEST_BG_COLOR);
 
         assertEquals(
                 "255,255,255",
-                propertiesFixture.getProperty(TEST_PREFIX + DOT
+                this.propertiesFixture.getProperty(TEST_PREFIX + DOT
                         + ColorPersistor.STYLE_PERSISTENCE_PREFIX));
     }
 
@@ -92,7 +92,7 @@ public class StylePersistorTest {
 
     @Test
     public void loadPersistedColorSettings() throws Exception {
-        Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
+        Style style = StylePersistor.loadStyle(TEST_PREFIX, this.propertiesFixture);
 
         Color fgColor = style.getAttributeValue(FOREGROUND_COLOR);
         assertEquals("RGB {100, 110, 120}", fgColor.getRGB().toString());
@@ -103,7 +103,7 @@ public class StylePersistorTest {
 
     @Test
     public void loadPersistedAlignmentSettings() throws Exception {
-        Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
+        Style style = StylePersistor.loadStyle(TEST_PREFIX, this.propertiesFixture);
 
         HorizontalAlignmentEnum expecetdHAlign = style
                 .getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
@@ -116,7 +116,7 @@ public class StylePersistorTest {
 
     @Test
     public void loadFontSettings() throws Exception {
-        Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
+        Style style = StylePersistor.loadStyle(TEST_PREFIX, this.propertiesFixture);
 
         Font font = style.getAttributeValue(CellStyleAttributes.FONT);
         assertTrue(font.getFontData()[0].toString().contains("|Tahoma|8.25|"));
@@ -124,7 +124,7 @@ public class StylePersistorTest {
 
     @Test
     public void loadBorderStyleSettings() throws Exception {
-        Style style = StylePersistor.loadStyle(TEST_PREFIX, propertiesFixture);
+        Style style = StylePersistor.loadStyle(TEST_PREFIX, this.propertiesFixture);
 
         BorderStyle borderStyle = style
                 .getAttributeValue(CellStyleAttributes.BORDER_STYLE);

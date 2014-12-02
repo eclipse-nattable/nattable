@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,6 +29,7 @@ public class DefaultRowStyleConfiguration extends AbstractRegistryConfiguration 
     public Color evenRowBgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
     public Color oddRowBgColor = GUIHelper.COLOR_WHITE;
 
+    @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configureOddRowStyle(configRegistry);
         configureEvenRowStyle(configRegistry);
@@ -37,7 +38,7 @@ public class DefaultRowStyleConfiguration extends AbstractRegistryConfiguration 
     protected void configureOddRowStyle(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                oddRowBgColor);
+                this.oddRowBgColor);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
@@ -46,7 +47,7 @@ public class DefaultRowStyleConfiguration extends AbstractRegistryConfiguration 
     protected void configureEvenRowStyle(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                evenRowBgColor);
+                this.evenRowBgColor);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);

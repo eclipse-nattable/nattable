@@ -149,15 +149,15 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
             JFaceResources.getImageRegistry().put("errorImage",
                     ImageDescriptor.createFromImageData(
                             DISPLAY.getSystemImage(SWT.ICON_ERROR).getImageData()
-                            .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
+                                    .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
             JFaceResources.getImageRegistry().put("warningImage",
                     ImageDescriptor.createFromImageData(
                             DISPLAY.getSystemImage(SWT.ICON_WARNING).getImageData()
-                            .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
+                                    .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
             JFaceResources.getImageRegistry().put("infoImage",
                     ImageDescriptor.createFromImageData(
                             DISPLAY.getSystemImage(SWT.ICON_INFORMATION).getImageData()
-                            .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
+                                    .scaledTo(this.IMAGE_SIZE, this.IMAGE_SIZE)));
 
             this.hAlign = HorizontalAlignmentEnum.LEFT;
             this.cellPainter = new LineBorderDecorator(

@@ -45,7 +45,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
  * @see DefaultRowReorderLayerConfiguration
  */
 public class RowReorderLayer extends AbstractLayerTransform implements
-IUniqueIndexLayer {
+        IUniqueIndexLayer {
 
     public static final String PERSISTENCE_KEY_ROW_INDEX_ORDER = ".rowIndexOrder"; //$NON-NLS-1$
 
@@ -173,18 +173,18 @@ IUniqueIndexLayer {
     protected boolean isRestoredStateValid(List<Integer> newRowIndexOrder) {
         if (newRowIndexOrder.size() != getRowCount()) {
             System.err
-            .println("Number of persisted rows (" + newRowIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
-                    "is not the same as the number of rows in the data source (" //$NON-NLS-1$
-                    + getRowCount() + ").\n" + //$NON-NLS-1$
-                    "Skipping restore of row ordering"); //$NON-NLS-1$
+                    .println("Number of persisted rows (" + newRowIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
+                            "is not the same as the number of rows in the data source (" //$NON-NLS-1$
+                            + getRowCount() + ").\n" + //$NON-NLS-1$
+                            "Skipping restore of row ordering"); //$NON-NLS-1$
             return false;
         }
 
         for (Integer index : newRowIndexOrder) {
             if (!this.rowIndexOrder.contains(index)) {
                 System.err
-                .println("Row index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
-                        "Skipping restore of row ordering"); //$NON-NLS-1$
+                        .println("Row index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
+                                "Skipping restore of row ordering"); //$NON-NLS-1$
                 return false;
             }
         }

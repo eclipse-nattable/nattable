@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -49,18 +49,19 @@ public class UpdateQueue {
 
     private Runnable runnable = new Runnable() {
 
+        @Override
         public void run() {
             try {
-                while (!stop) {
+                while (!UpdateQueue.this.stop) {
 
                     // Block thread and make sure that we are doing the
                     // latest orders only
 
-                    lock.writeLock().lock();
-                    Runnable[] runnables = runnableMap.values().toArray(
-                            new Runnable[runnableMap.size()]);
-                    runnableMap.clear();
-                    lock.writeLock().unlock();
+                    UpdateQueue.this.lock.writeLock().lock();
+                    Runnable[] runnables = UpdateQueue.this.runnableMap.values().toArray(
+                            new Runnable[UpdateQueue.this.runnableMap.size()]);
+                    UpdateQueue.this.runnableMap.clear();
+                    UpdateQueue.this.lock.writeLock().unlock();
 
                     int len = runnables != null ? runnables.length : 0;
 
@@ -75,16 +76,16 @@ public class UpdateQueue {
                     if (len > 0) {
                         // Allow sleep
                         try {
-                            Thread.sleep(sleep);
+                            Thread.sleep(UpdateQueue.this.sleep);
                         } catch (Exception e) {
                             log.error(e);
                         }
 
                     } else {
                         // Sleep when nothing to do
-                        synchronized (thread) {
+                        synchronized (UpdateQueue.this.thread) {
                             try {
-                                thread.wait();
+                                UpdateQueue.this.thread.wait();
                             } catch (Exception e) {
                                 log.error(e);
                             }
@@ -103,18 +104,18 @@ public class UpdateQueue {
     /**
      * Add a new runnable to a map along with a unique id<br>
      * The last update runnable of an id will be executed only.
-     * 
+     *
      * @param id
      * @param runnable
      */
     public void addRunnable(String id, Runnable runnable) {
         try {
             // Block thread, ensure no one is going to update the vector
-            lock.writeLock().lock();
+            this.lock.writeLock().lock();
             try {
-                runnableMap.put(id, runnable);
+                this.runnableMap.put(id, runnable);
             } finally {
-                lock.writeLock().unlock();
+                this.lock.writeLock().unlock();
             }
             runInThread();
         } catch (Exception e) {
@@ -132,14 +133,14 @@ public class UpdateQueue {
 
     private void runInThread() {
         try {
-            if (thread == null) {
-                thread = new Thread(runnable, "GUI Display Delay Queue " //$NON-NLS-1$
+            if (this.thread == null) {
+                this.thread = new Thread(this.runnable, "GUI Display Delay Queue " //$NON-NLS-1$
                         + System.nanoTime());
-                thread.setDaemon(true);
-                thread.start();
+                this.thread.setDaemon(true);
+                this.thread.start();
             } else {
-                synchronized (thread) {
-                    thread.notify();
+                synchronized (this.thread) {
+                    this.thread.notify();
                 }
             }
         } catch (Exception e) {
@@ -149,10 +150,10 @@ public class UpdateQueue {
 
     public void stopThread() {
         try {
-            if (thread != null) {
-                stop = true;
-                synchronized (thread) {
-                    thread.notify();
+            if (this.thread != null) {
+                this.stop = true;
+                synchronized (this.thread) {
+                    this.thread.notify();
                 }
             }
         } catch (Exception e) {

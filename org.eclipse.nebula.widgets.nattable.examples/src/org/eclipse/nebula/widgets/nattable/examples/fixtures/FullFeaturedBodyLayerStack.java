@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -66,34 +66,34 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
 
         IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
                 propertyNames);
-        bodyDataProvider = new GlazedListsDataProvider<T>(eventList,
+        this.bodyDataProvider = new GlazedListsDataProvider<T>(eventList,
                 columnPropertyAccessor);
-        bodyDataLayer = new DataLayer(bodyDataProvider);
-        glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer,
+        this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
+        this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer,
                 eventList);
-        blinkingLayer = new BlinkLayer<T>(glazedListsEventLayer,
-                bodyDataProvider, rowIdAccessor, columnPropertyAccessor,
+        this.blinkingLayer = new BlinkLayer<T>(this.glazedListsEventLayer,
+                this.bodyDataProvider, rowIdAccessor, columnPropertyAccessor,
                 configRegistry);
-        SummaryRowLayer summaryRowLayer = new SummaryRowLayer(blinkingLayer,
+        SummaryRowLayer summaryRowLayer = new SummaryRowLayer(this.blinkingLayer,
                 configRegistry);
 
-        columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
-        columnGroupReorderLayer = new ColumnGroupReorderLayer(
-                columnReorderLayer, columnGroupModel);
-        columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
-        columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
-                columnHideShowLayer, columnGroupModel);
-        selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-        viewportLayer = new ViewportLayer(selectionLayer);
-        freezeLayer = new FreezeLayer(selectionLayer);
-        compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer,
-                viewportLayer, selectionLayer);
+        this.columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
+        this.columnGroupReorderLayer = new ColumnGroupReorderLayer(
+                this.columnReorderLayer, columnGroupModel);
+        this.columnHideShowLayer = new ColumnHideShowLayer(this.columnGroupReorderLayer);
+        this.columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
+                this.columnHideShowLayer, columnGroupModel);
+        this.selectionLayer = new SelectionLayer(this.columnGroupExpandCollapseLayer);
+        this.viewportLayer = new ViewportLayer(this.selectionLayer);
+        this.freezeLayer = new FreezeLayer(this.selectionLayer);
+        this.compositeFreezeLayer = new CompositeFreezeLayer(this.freezeLayer,
+                this.viewportLayer, this.selectionLayer);
 
-        setUnderlyingLayer(compositeFreezeLayer);
+        setUnderlyingLayer(this.compositeFreezeLayer);
 
         if (useDefaultConfiguration) {
             addConfiguration(new ColumnStyleChooserConfiguration(this,
-                    selectionLayer));
+                    this.selectionLayer));
         }
 
     }
@@ -104,38 +104,38 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
     }
 
     public ColumnReorderLayer getColumnReorderLayer() {
-        return columnReorderLayer;
+        return this.columnReorderLayer;
     }
 
     public ColumnHideShowLayer getColumnHideShowLayer() {
-        return columnHideShowLayer;
+        return this.columnHideShowLayer;
     }
 
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 
     public ViewportLayer getViewportLayer() {
-        return viewportLayer;
+        return this.viewportLayer;
     }
 
     public BlinkLayer<T> getBlinkingLayer() {
-        return blinkingLayer;
+        return this.blinkingLayer;
     }
 
     public DataLayer getBodyDataLayer() {
-        return bodyDataLayer;
+        return this.bodyDataLayer;
     }
 
     public ListDataProvider<T> getBodyDataProvider() {
-        return bodyDataProvider;
+        return this.bodyDataProvider;
     }
 
     public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
-        return columnGroupExpandCollapseLayer;
+        return this.columnGroupExpandCollapseLayer;
     }
 
     public PropertyChangeListener getGlazedListEventsLayer() {
-        return glazedListsEventLayer;
+        return this.glazedListsEventLayer;
     }
 }

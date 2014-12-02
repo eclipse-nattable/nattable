@@ -54,7 +54,7 @@ import org.eclipse.swt.widgets.Text;
  * Usually this combo will be created with the SWT.CHECK style bit. This way the
  * selected items are visualized by showing checked checkboxes. Also adds a
  * <i>Select All</i> item for convenience that de-/selects all items on click.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -72,7 +72,7 @@ public class FilterNatCombo extends NatCombo {
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
      * showing the default number of items at once in the dropdown.
-     * 
+     *
      * @param parent
      *            A widget that will be the parent of this NatCombo
      * @param cellStyle
@@ -90,7 +90,7 @@ public class FilterNatCombo extends NatCombo {
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
      * showing the given amount of items at once in the dropdown.
-     * 
+     *
      * @param parent
      *            A widget that will be the parent of this NatCombo
      * @param cellStyle
@@ -112,7 +112,7 @@ public class FilterNatCombo extends NatCombo {
     /**
      * Creates a new FilterNatCombo using the given IStyle for rendering,
      * showing the given amount of items at once in the dropdown.
-     * 
+     *
      * @param parent
      *            A widget that will be the parent of this NatCombo
      * @param cellStyle
@@ -136,10 +136,10 @@ public class FilterNatCombo extends NatCombo {
 
     @Override
     protected void calculateBounds() {
-        if (dropdownShell != null && !dropdownShell.isDisposed()) {
+        if (this.dropdownShell != null && !this.dropdownShell.isDisposed()) {
             Point size = getSize();
 
-            int gridLineAdjustment = dropdownTable.getGridLineWidth() * 2;
+            int gridLineAdjustment = this.dropdownTable.getGridLineWidth() * 2;
 
             // calculate the height by multiplying the number of visible items
             // with
@@ -152,41 +152,41 @@ public class FilterNatCombo extends NatCombo {
             // the item count of
             // 3 so an empty combo will open
             int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount()
-                    : 3) * dropdownTable.getItemHeight() + gridLineAdjustment;
+                    : 3) * this.dropdownTable.getItemHeight() + gridLineAdjustment;
 
             // since introduced the TableColumn for real full row selection, we
             // call pack() to
             // perform autoresize to ensure the width shows the whole content
-            dropdownTable.getColumn(0).pack();
-            selectAllItemViewer.getTable().getColumn(0).pack();
+            this.dropdownTable.getColumn(0).pack();
+            this.selectAllItemViewer.getTable().getColumn(0).pack();
 
             int listWidth = Math.max(
-                    dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x,
+                    this.dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x,
                     size.x);
 
-            int viewerHeight = selectAllItemViewer.getTable().getItemHeight();
+            int viewerHeight = this.selectAllItemViewer.getTable().getItemHeight();
             listWidth = Math.max(
-                    selectAllItemViewer.getTable().computeSize(SWT.DEFAULT,
+                    this.selectAllItemViewer.getTable().computeSize(SWT.DEFAULT,
                             viewerHeight, true).x, listWidth);
 
-            dropdownTable.setSize(listWidth, listHeight);
-            selectAllItemViewer.getTable().setSize(listWidth, viewerHeight);
+            this.dropdownTable.setSize(listWidth, listHeight);
+            this.selectAllItemViewer.getTable().setSize(listWidth, viewerHeight);
 
             // as we performed auto resize for the columns, we now need to
             // ensure again that the columns
             // span the whole table width in case they shrunk
             calculateColumnWidth();
 
-            Point textPosition = text.toDisplay(text.getLocation());
+            Point textPosition = this.text.toDisplay(this.text.getLocation());
 
             // when scrollbars are enabled, we need to increase the shell width
-            if (dropdownTable.getVerticalBar() != null && maxVisibleItems > -1
-                    && dropdownTable.getItemCount() > maxVisibleItems) {
+            if (this.dropdownTable.getVerticalBar() != null && this.maxVisibleItems > -1
+                    && this.dropdownTable.getItemCount() > this.maxVisibleItems) {
                 listWidth += gridLineAdjustment;
             }
 
-            dropdownShell.setBounds(textPosition.x,
-                    textPosition.y + text.getBounds().height, listWidth,
+            this.dropdownShell.setBounds(textPosition.x,
+                    textPosition.y + this.text.getBounds().height, listWidth,
                     listHeight + viewerHeight);
         }
     }
@@ -195,16 +195,16 @@ public class FilterNatCombo extends NatCombo {
     protected void calculateColumnWidth() {
         super.calculateColumnWidth();
 
-        int width = selectAllItemViewer.getTable().getBounds().width;
-        if (dropdownTable.getVerticalBar() != null && maxVisibleItems > -1
-                && dropdownTable.getItemCount() > maxVisibleItems) {
-            width -= dropdownTable.getVerticalBar().getSize().x;
+        int width = this.selectAllItemViewer.getTable().getBounds().width;
+        if (this.dropdownTable.getVerticalBar() != null && this.maxVisibleItems > -1
+                && this.dropdownTable.getItemCount() > this.maxVisibleItems) {
+            width -= this.dropdownTable.getVerticalBar().getSize().x;
         } else {
             // remove the left and the right grid line width so the column does
             // not exceed the table
-            width -= dropdownTable.getGridLineWidth() * 2;
+            width -= this.dropdownTable.getGridLineWidth() * 2;
         }
-        selectAllItemViewer.getTable().getColumn(0).setWidth(width);
+        this.selectAllItemViewer.getTable().getColumn(0).setWidth(width);
     }
 
     @Override
@@ -215,10 +215,10 @@ public class FilterNatCombo extends NatCombo {
         layout.spacing = 0;
         layout.marginHeight = 0;
         layout.marginWidth = 0;
-        dropdownShell.setLayout(layout);
+        this.dropdownShell.setLayout(layout);
 
         int dropdownListStyle = style | SWT.V_SCROLL
-                | HorizontalAlignmentEnum.getSWTStyle(cellStyle)
+                | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
                 | SWT.FULL_SELECTION;
         this.selectAllItemViewer = CheckboxTableViewer.newCheckList(
                 this.dropdownShell, dropdownListStyle);
@@ -234,19 +234,19 @@ public class FilterNatCombo extends NatCombo {
                 });
 
         FormData data = new FormData();
-        data.top = new FormAttachment(dropdownShell, 0, SWT.TOP);
-        data.left = new FormAttachment(dropdownShell, 0, SWT.LEFT);
-        data.right = new FormAttachment(dropdownShell, 0, SWT.RIGHT);
+        data.top = new FormAttachment(this.dropdownShell, 0, SWT.TOP);
+        data.left = new FormAttachment(this.dropdownShell, 0, SWT.LEFT);
+        data.right = new FormAttachment(this.dropdownShell, 0, SWT.RIGHT);
         this.selectAllItemViewer.getTable().setLayoutData(data);
 
         data = new FormData();
         // need to set the top attachment like this because attaching it to the
         // viewer does some wrong calculations
-        data.top = new FormAttachment(dropdownShell, this.selectAllItemViewer
+        data.top = new FormAttachment(this.dropdownShell, this.selectAllItemViewer
                 .getTable().getItemHeight(), SWT.TOP);
-        data.left = new FormAttachment(dropdownShell, 0, SWT.LEFT);
-        data.right = new FormAttachment(dropdownShell, 0, SWT.RIGHT);
-        dropdownTable.setLayoutData(data);
+        data.left = new FormAttachment(this.dropdownShell, 0, SWT.LEFT);
+        data.right = new FormAttachment(this.dropdownShell, 0, SWT.RIGHT);
+        this.dropdownTable.setLayoutData(data);
 
         this.selectAllItemViewer
                 .setContentProvider(new IStructuredContentProvider() {
@@ -301,15 +301,15 @@ public class FilterNatCombo extends NatCombo {
         this.selectAllItemViewer
                 .getTable()
                 .setBackground(
-                        cellStyle
+                        this.cellStyle
                                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
         this.selectAllItemViewer
                 .getTable()
                 .setForeground(
-                        cellStyle
+                        this.cellStyle
                                 .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
         this.selectAllItemViewer.getTable().setFont(
-                cellStyle.getAttributeValue(CellStyleAttributes.FONT));
+                this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 
         this.selectAllItemViewer.getTable().addFocusListener(
                 new FocusAdapter() {
@@ -326,25 +326,25 @@ public class FilterNatCombo extends NatCombo {
                     public void checkStateChanged(CheckStateChangedEvent event) {
                         // if the select all item is clicked directly, the
                         // grayed state needs to be set to false
-                        selectAllItemViewer.setGrayed(selectAllLabel, false);
+                        FilterNatCombo.this.selectAllItemViewer.setGrayed(selectAllLabel, false);
 
                         if (event.getChecked()) {
                             // select all
-                            dropdownTable.selectAll();
+                            FilterNatCombo.this.dropdownTable.selectAll();
                         } else {
                             // deselect all
-                            dropdownTable.deselectAll();
+                            FilterNatCombo.this.dropdownTable.deselectAll();
                         }
 
                         // after selection is performed we need to ensure that
                         // selection and checkboxes are in sync
-                        for (TableItem tableItem : dropdownTable.getItems()) {
-                            tableItem.setChecked(dropdownTable
-                                    .isSelected(itemList.indexOf(tableItem
+                        for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
+                            tableItem.setChecked(FilterNatCombo.this.dropdownTable
+                                    .isSelected(FilterNatCombo.this.itemList.indexOf(tableItem
                                             .getText())));
                         }
 
-                        updateTextControl(!multiselect);
+                        updateTextControl(!FilterNatCombo.this.multiselect);
                     }
                 });
 
@@ -356,7 +356,7 @@ public class FilterNatCombo extends NatCombo {
 
                     @Override
                     public boolean isGrayed(Object element) {
-                        if (dropdownTable.getSelectionCount() == dropdownTable
+                        if (FilterNatCombo.this.dropdownTable.getSelectionCount() == FilterNatCombo.this.dropdownTable
                                 .getItemCount()) {
                             return false;
                         }
@@ -365,7 +365,7 @@ public class FilterNatCombo extends NatCombo {
 
                     @Override
                     public boolean isChecked(Object element) {
-                        if (dropdownTable.getSelectionCount() == 0) {
+                        if (FilterNatCombo.this.dropdownTable.getSelectionCount() == 0) {
                             return false;
                         }
                         return true;
@@ -377,7 +377,7 @@ public class FilterNatCombo extends NatCombo {
         this.dropdownTable.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                selectAllItemViewer.refresh();
+                FilterNatCombo.this.selectAllItemViewer.refresh();
             }
         });
     }
@@ -385,15 +385,15 @@ public class FilterNatCombo extends NatCombo {
     @Override
     protected void setDropdownSelection(String[] selection) {
         super.setDropdownSelection(selection);
-        if (selectAllItemViewer != null)
-            selectAllItemViewer.refresh();
+        if (this.selectAllItemViewer != null)
+            this.selectAllItemViewer.refresh();
     }
 
     /**
      * Add an ICheckStateListener to the viewer of the dropdown that contains
      * the select all item. Needed so the editor is able to commit after the
      * click on the select all checkbox is performed.
-     * 
+     *
      * @param listener
      *            The listener to add to the select all item
      */

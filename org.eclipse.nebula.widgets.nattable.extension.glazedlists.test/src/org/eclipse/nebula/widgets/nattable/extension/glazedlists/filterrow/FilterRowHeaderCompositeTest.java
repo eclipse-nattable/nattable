@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -42,74 +42,74 @@ public class FilterRowHeaderCompositeTest {
 
     @Before
     public void setup() {
-        columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
+        this.columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
 
-        configRegistry = new ConfigRegistry();
+        this.configRegistry = new ConfigRegistry();
         new DefaultNatTableStyleConfiguration()
-                .configureRegistry(configRegistry);
-        new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
+                .configureRegistry(this.configRegistry);
+        new DefaultFilterRowConfiguration().configureRegistry(this.configRegistry);
 
-        filterList = new FilterList<RowDataFixture>(
+        this.filterList = new FilterList<RowDataFixture>(
                 GlazedLists.eventList(RowDataListFixture.getList()));
 
-        layerUnderTest = new FilterRowHeaderComposite<RowDataFixture>(
+        this.layerUnderTest = new FilterRowHeaderComposite<RowDataFixture>(
                 new DefaultGlazedListsFilterStrategy<RowDataFixture>(
-                        filterList,
+                        this.filterList,
                         new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                                 RowDataListFixture.getPropertyNames()),
-                        configRegistry), columnHeaderLayer,
-                columnHeaderLayer.getDataProvider(), configRegistry);
-        listener = new LayerListenerFixture();
-        layerUnderTest.addLayerListener(listener);
+                        this.configRegistry), this.columnHeaderLayer,
+                this.columnHeaderLayer.getDataProvider(), this.configRegistry);
+        this.listener = new LayerListenerFixture();
+        this.layerUnderTest.addLayerListener(this.listener);
     }
 
     @Test
     public void shouldHandleClearFilterCommand() throws Exception {
-        Assert.assertEquals(13, filterList.size());
+        Assert.assertEquals(13, this.filterList.size());
 
-        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 2,
+        this.layerUnderTest.doCommand(new UpdateDataCommand(this.layerUnderTest, 1, 2,
                 "ford"));
-        Assert.assertEquals(1, filterList.size());
+        Assert.assertEquals(1, this.filterList.size());
 
-        layerUnderTest.doCommand(new ClearFilterCommand(layerUnderTest, 1));
-        Assert.assertEquals(13, filterList.size());
+        this.layerUnderTest.doCommand(new ClearFilterCommand(this.layerUnderTest, 1));
+        Assert.assertEquals(13, this.filterList.size());
 
-        listener.containsInstanceOf(RowStructuralRefreshEvent.class);
+        this.listener.containsInstanceOf(RowStructuralRefreshEvent.class);
     }
 
     @Test
     public void shouldHandleTheClearAllFiltersCommand() throws Exception {
-        Assert.assertEquals(13, filterList.size());
+        Assert.assertEquals(13, this.filterList.size());
 
-        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 2,
+        this.layerUnderTest.doCommand(new UpdateDataCommand(this.layerUnderTest, 1, 2,
                 "ford"));
-        Assert.assertEquals(1, filterList.size());
+        Assert.assertEquals(1, this.filterList.size());
 
-        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 0, 2,
+        this.layerUnderTest.doCommand(new UpdateDataCommand(this.layerUnderTest, 0, 2,
                 "XXX"));
-        Assert.assertEquals(0, filterList.size());
+        Assert.assertEquals(0, this.filterList.size());
 
-        layerUnderTest.doCommand(new ClearAllFiltersCommand());
-        Assert.assertEquals(13, filterList.size());
+        this.layerUnderTest.doCommand(new ClearAllFiltersCommand());
+        Assert.assertEquals(13, this.filterList.size());
 
-        listener.containsInstanceOf(RowStructuralRefreshEvent.class);
+        this.listener.containsInstanceOf(RowStructuralRefreshEvent.class);
     }
 
     @Test
     public void shouldHandleTheToggeleFilterRowCommand() throws Exception {
-        Assert.assertEquals(3, layerUnderTest.getRowCount());
-        layerUnderTest.doCommand(new ToggleFilterRowCommand());
-        Assert.assertEquals(2, layerUnderTest.getRowCount());
-        layerUnderTest.doCommand(new ToggleFilterRowCommand());
-        Assert.assertEquals(3, layerUnderTest.getRowCount());
+        Assert.assertEquals(3, this.layerUnderTest.getRowCount());
+        this.layerUnderTest.doCommand(new ToggleFilterRowCommand());
+        Assert.assertEquals(2, this.layerUnderTest.getRowCount());
+        this.layerUnderTest.doCommand(new ToggleFilterRowCommand());
+        Assert.assertEquals(3, this.layerUnderTest.getRowCount());
     }
 
     @Test
     public void shouldSwitchVisibilityProgrammatically() throws Exception {
-        Assert.assertEquals(3, layerUnderTest.getRowCount());
-        layerUnderTest.setFilterRowVisible(false);
-        Assert.assertEquals(2, layerUnderTest.getRowCount());
-        layerUnderTest.setFilterRowVisible(true);
-        Assert.assertEquals(3, layerUnderTest.getRowCount());
+        Assert.assertEquals(3, this.layerUnderTest.getRowCount());
+        this.layerUnderTest.setFilterRowVisible(false);
+        Assert.assertEquals(2, this.layerUnderTest.getRowCount());
+        this.layerUnderTest.setFilterRowVisible(true);
+        Assert.assertEquals(3, this.layerUnderTest.getRowCount());
     }
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -58,9 +58,9 @@ public class FilterRowExampleGridLayer extends GridLayer {
         // Body layer
         IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                 propertyNames);
-        bodyDataProvider = new ListDataProvider<RowDataFixture>(filterList,
+        this.bodyDataProvider = new ListDataProvider<RowDataFixture>(filterList,
                 columnPropertyAccessor);
-        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
         DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(
                 bodyDataLayer);
         ColumnOverrideLabelAccumulator bodyLabelAccumulator = new ColumnOverrideLabelAccumulator(
@@ -99,7 +99,7 @@ public class FilterRowExampleGridLayer extends GridLayer {
 
         // Row header layer
         DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
+                this.bodyDataProvider);
         DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
                 rowHeaderDataProvider);
         RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,

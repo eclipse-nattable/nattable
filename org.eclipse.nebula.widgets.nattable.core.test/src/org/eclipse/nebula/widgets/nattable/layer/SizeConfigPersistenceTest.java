@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,25 +26,25 @@ public class SizeConfigPersistenceTest {
 
     @Before
     public void setup() {
-        sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        this.sizeConfig = new SizeConfig(DEFAULT_SIZE);
     }
 
     @Test
     public void testSaveState() {
-        sizeConfig.setDefaultSize(5, 50);
-        sizeConfig.setDefaultSize(6, 60);
+        this.sizeConfig.setDefaultSize(5, 50);
+        this.sizeConfig.setDefaultSize(6, 60);
 
-        sizeConfig.setSize(5, 25);
-        sizeConfig.setSize(2, 88);
-        sizeConfig.setSize(4, 57);
+        this.sizeConfig.setSize(5, 25);
+        this.sizeConfig.setSize(2, 88);
+        this.sizeConfig.setSize(4, 57);
 
-        sizeConfig.setResizableByDefault(false);
+        this.sizeConfig.setResizableByDefault(false);
 
-        sizeConfig.setPositionResizable(3, true);
-        sizeConfig.setPositionResizable(9, true);
+        this.sizeConfig.setPositionResizable(3, true);
+        this.sizeConfig.setPositionResizable(9, true);
 
         Properties properties = new Properties();
-        sizeConfig.saveState("prefix", properties);
+        this.sizeConfig.saveState("prefix", properties);
 
         assertEquals(6, properties.size());
         assertEquals("100", properties.getProperty("prefix.defaultSize"));
@@ -68,23 +68,23 @@ public class SizeConfigPersistenceTest {
         properties.setProperty("prefix.resizableByDefault", "true");
         properties.setProperty("prefix.resizableIndexes", "1:false,6:false,");
 
-        sizeConfig.loadState("prefix", properties);
+        this.sizeConfig.loadState("prefix", properties);
 
-        assertEquals(40, sizeConfig.getSize(0));
-        assertEquals(100, sizeConfig.getSize(1));
-        assertEquals(20, sizeConfig.getSize(2));
-        assertEquals(30, sizeConfig.getSize(3));
-        assertEquals(400, sizeConfig.getSize(4));
-        assertEquals(500, sizeConfig.getSize(5));
-        assertEquals(40, sizeConfig.getSize(6));
+        assertEquals(40, this.sizeConfig.getSize(0));
+        assertEquals(100, this.sizeConfig.getSize(1));
+        assertEquals(20, this.sizeConfig.getSize(2));
+        assertEquals(30, this.sizeConfig.getSize(3));
+        assertEquals(400, this.sizeConfig.getSize(4));
+        assertEquals(500, this.sizeConfig.getSize(5));
+        assertEquals(40, this.sizeConfig.getSize(6));
 
-        assertTrue(sizeConfig.isPositionResizable(0));
-        assertFalse(sizeConfig.isPositionResizable(1));
-        assertTrue(sizeConfig.isPositionResizable(2));
-        assertTrue(sizeConfig.isPositionResizable(3));
-        assertTrue(sizeConfig.isPositionResizable(4));
-        assertTrue(sizeConfig.isPositionResizable(5));
-        assertFalse(sizeConfig.isPositionResizable(6));
+        assertTrue(this.sizeConfig.isPositionResizable(0));
+        assertFalse(this.sizeConfig.isPositionResizable(1));
+        assertTrue(this.sizeConfig.isPositionResizable(2));
+        assertTrue(this.sizeConfig.isPositionResizable(3));
+        assertTrue(this.sizeConfig.isPositionResizable(4));
+        assertTrue(this.sizeConfig.isPositionResizable(5));
+        assertFalse(this.sizeConfig.isPositionResizable(6));
     }
 
     @Test
@@ -97,48 +97,48 @@ public class SizeConfigPersistenceTest {
         properties.setProperty("prefix.resizableIndexes", "1:false,6:false,");
         properties.setProperty("prefix.percentageSizing", "true");
 
-        sizeConfig.loadState("prefix", properties);
+        this.sizeConfig.loadState("prefix", properties);
 
-        assertTrue(sizeConfig.isResizableByDefault());
-        assertTrue(sizeConfig.isPercentageSizing());
+        assertTrue(this.sizeConfig.isResizableByDefault());
+        assertTrue(this.sizeConfig.isPercentageSizing());
     }
 
     @Test
     public void loadStateFromEmptyPropertiesObject() throws Exception {
         Properties properties = new Properties();
-        sizeConfig.loadState("prefix", properties);
+        this.sizeConfig.loadState("prefix", properties);
 
-        assertTrue(sizeConfig.isResizableByDefault());
-        assertEquals(DEFAULT_SIZE, sizeConfig.getSize(0));
-        assertEquals(DEFAULT_SIZE, sizeConfig.getSize(1));
-        assertEquals(DEFAULT_SIZE, sizeConfig.getSize(2));
-        assertEquals(DEFAULT_SIZE, sizeConfig.getSize(3));
-        assertEquals(DEFAULT_SIZE, sizeConfig.getSize(4));
-        assertEquals(DEFAULT_SIZE, sizeConfig.getSize(5));
-        assertEquals(DEFAULT_SIZE, sizeConfig.getSize(6));
+        assertTrue(this.sizeConfig.isResizableByDefault());
+        assertEquals(DEFAULT_SIZE, this.sizeConfig.getSize(0));
+        assertEquals(DEFAULT_SIZE, this.sizeConfig.getSize(1));
+        assertEquals(DEFAULT_SIZE, this.sizeConfig.getSize(2));
+        assertEquals(DEFAULT_SIZE, this.sizeConfig.getSize(3));
+        assertEquals(DEFAULT_SIZE, this.sizeConfig.getSize(4));
+        assertEquals(DEFAULT_SIZE, this.sizeConfig.getSize(5));
+        assertEquals(DEFAULT_SIZE, this.sizeConfig.getSize(6));
     }
 
     @Test
     public void testSaveEnhancedPercentageSizingState() {
-        sizeConfig.setDefaultSize(5, 50);
-        sizeConfig.setDefaultSize(6, 60);
+        this.sizeConfig.setDefaultSize(5, 50);
+        this.sizeConfig.setDefaultSize(6, 60);
 
-        sizeConfig.setSize(5, 25);
-        sizeConfig.setSize(2, 88);
-        sizeConfig.setSize(4, 57);
+        this.sizeConfig.setSize(5, 25);
+        this.sizeConfig.setSize(2, 88);
+        this.sizeConfig.setSize(4, 57);
 
-        sizeConfig.setResizableByDefault(false);
+        this.sizeConfig.setResizableByDefault(false);
 
-        sizeConfig.setPositionResizable(3, true);
-        sizeConfig.setPositionResizable(9, true);
+        this.sizeConfig.setPositionResizable(3, true);
+        this.sizeConfig.setPositionResizable(9, true);
 
-        sizeConfig.setPercentageSizing(3, false);
-        sizeConfig.setPercentageSizing(9, false);
-        sizeConfig.setPercentageSizing(7, true);
-        sizeConfig.setPercentageSizing(8, true);
+        this.sizeConfig.setPercentageSizing(3, false);
+        this.sizeConfig.setPercentageSizing(9, false);
+        this.sizeConfig.setPercentageSizing(7, true);
+        this.sizeConfig.setPercentageSizing(8, true);
 
         Properties properties = new Properties();
-        sizeConfig.saveState("prefix", properties);
+        this.sizeConfig.saveState("prefix", properties);
 
         assertEquals(7, properties.size());
         assertEquals("100", properties.getProperty("prefix.defaultSize"));
@@ -167,17 +167,17 @@ public class SizeConfigPersistenceTest {
         properties.setProperty("prefix.percentageSizingIndexes",
                 "3:false,7:true,8:true,9:false,");
 
-        sizeConfig.loadState("prefix", properties);
+        this.sizeConfig.loadState("prefix", properties);
 
-        assertTrue(sizeConfig.isResizableByDefault());
-        assertTrue(sizeConfig.isPercentageSizing());
+        assertTrue(this.sizeConfig.isResizableByDefault());
+        assertTrue(this.sizeConfig.isPercentageSizing());
 
-        assertFalse(sizeConfig.isPercentageSizing(3));
-        assertTrue(sizeConfig.isPercentageSizing(7));
-        assertTrue(sizeConfig.isPercentageSizing(8));
-        assertFalse(sizeConfig.isPercentageSizing(9));
+        assertFalse(this.sizeConfig.isPercentageSizing(3));
+        assertTrue(this.sizeConfig.isPercentageSizing(7));
+        assertTrue(this.sizeConfig.isPercentageSizing(8));
+        assertFalse(this.sizeConfig.isPercentageSizing(9));
 
-        assertTrue(sizeConfig.isPercentageSizing(2));
-        assertTrue(sizeConfig.isPercentageSizing(6));
+        assertTrue(this.sizeConfig.isPercentageSizing(2));
+        assertTrue(this.sizeConfig.isPercentageSizing(6));
     }
 }

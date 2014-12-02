@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -53,6 +53,7 @@ public class FilterRowGridExample extends AbstractNatExample {
                 new FilterRowGridExample()));
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         IConfigRegistry configRegistry = new ConfigRegistry();
         ILayer underlyingLayer = new FilterRowExampleGridLayer(configRegistry);
@@ -88,6 +89,7 @@ public class FilterRowGridExample extends AbstractNatExample {
 
         final DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter();
 
+        @Override
         public void configureRegistry(IConfigRegistry configRegistry) {
             // override the default filter row configuration for painter
             configRegistry.registerConfigAttribute(
@@ -109,7 +111,7 @@ public class FilterRowGridExample extends AbstractNatExample {
             // Configure Bid column
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    doubleDisplayConverter, DisplayMode.NORMAL,
+                    this.doubleDisplayConverter, DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.TEXT_MATCHING_MODE,
@@ -119,7 +121,7 @@ public class FilterRowGridExample extends AbstractNatExample {
             // Configure Ask column
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    doubleDisplayConverter, DisplayMode.NORMAL,
+                    this.doubleDisplayConverter, DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 6);
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.TEXT_MATCHING_MODE,
@@ -163,6 +165,7 @@ public class FilterRowGridExample extends AbstractNatExample {
 
     private static Comparator<?> getIngnorecaseComparator() {
         return new Comparator<String>() {
+            @Override
             public int compare(String o1, String o2) {
                 return o1.compareToIgnoreCase(o2);
             }

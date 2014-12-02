@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -40,24 +40,24 @@ public class DefaultNatTableStyleConfiguration extends
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, cellPainter);
+                CellConfigAttributes.CELL_PAINTER, this.cellPainter);
 
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                bgColor);
+                this.bgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                fgColor);
+                this.fgColor);
         cellStyle.setAttributeValue(
-                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, gradientBgColor);
+                CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, this.gradientBgColor);
         cellStyle.setAttributeValue(
-                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, gradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
+                CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, this.gradientFgColor);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.font);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                hAlign);
+                this.hAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                vAlign);
+                this.vAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                borderStyle);
+                this.borderStyle);
 
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle);

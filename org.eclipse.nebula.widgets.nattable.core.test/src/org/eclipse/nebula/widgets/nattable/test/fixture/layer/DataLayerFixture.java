@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -14,11 +14,11 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 
 /**
  * A DataLayer for use in unit tests with a pre-canned
- * 
+ *
  * Default column layout: DO NOT FORMAT !
- * 
+ *
  * Position: 0 1 2 3 4 Width : 150 100 35 100 80 -------|------|----|------|----
- * 
+ *
  * Default Row layout: Position | Height 0 | 40 1 | 70 2 | 25 3 | 40 4 | 50 5 |
  * 40 6 | 100
  */
@@ -51,7 +51,7 @@ public class DataLayerFixture extends BaseDataLayerFixture {
 
     @Override
     public IDataProvider getDataProvider() {
-        return dataProvider;
+        return this.dataProvider;
     }
 
     @Override

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -41,9 +41,9 @@ public class NatLayerPainter implements ILayerPainter {
             paintBackground(natLayer, gc, xOffset, yOffset, rectangle,
                     configRegistry);
 
-            gc.setForeground(natTable.getForeground());
+            gc.setForeground(this.natTable.getForeground());
 
-            ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
+            ILayerPainter layerPainter = this.natTable.getLayer().getLayerPainter();
             layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle,
                     configRegistry);
 
@@ -57,7 +57,7 @@ public class NatLayerPainter implements ILayerPainter {
 
     protected void paintBackground(ILayer natLayer, GC gc, int xOffset,
             int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-        gc.setBackground(natTable.getBackground());
+        gc.setBackground(this.natTable.getBackground());
 
         // Clean Background
         gc.fillRectangle(rectangle);
@@ -65,15 +65,15 @@ public class NatLayerPainter implements ILayerPainter {
 
     protected void paintOverlays(ILayer natLayer, GC gc, int xOffset,
             int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
-        for (IOverlayPainter overlayPainter : natTable.getOverlayPainters()) {
-            overlayPainter.paintOverlay(gc, natTable);
+        for (IOverlayPainter overlayPainter : this.natTable.getOverlayPainters()) {
+            overlayPainter.paintOverlay(gc, this.natTable);
         }
     }
 
     @Override
     public Rectangle adjustCellBounds(int columnPosition, int rowPosition,
             Rectangle cellBounds) {
-        ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
+        ILayerPainter layerPainter = this.natTable.getLayer().getLayerPainter();
         return layerPainter.adjustCellBounds(columnPosition, rowPosition,
                 cellBounds);
     }

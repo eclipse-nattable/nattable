@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -78,20 +78,21 @@ public class Real_time_data_updates extends AbstractNatExample {
      *      {@link GlazedListsEventLayer} and the backing list needs to be an
      *      {@link EventList}
      */
+    @Override
     public Control createExampleControl(Composite parent) {
-        eventList = GlazedLists.eventList(RowDataListFixture
-                .getList(defaultDatasetSize));
+        this.eventList = GlazedLists.eventList(RowDataListFixture
+                .getList(this.defaultDatasetSize));
 
         ConfigRegistry configRegistry = new ConfigRegistry();
         GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<RowDataFixture>(
-                eventList, RowDataListFixture.getPropertyNames(),
+                this.eventList, RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap(), configRegistry);
 
-        nattable = new NatTable(parent, glazedListsGridLayer, false);
+        this.nattable = new NatTable(parent, glazedListsGridLayer, false);
 
-        nattable.setConfigRegistry(configRegistry);
-        nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        nattable.addConfiguration(new SingleClickSortConfiguration());
+        this.nattable.setConfigRegistry(configRegistry);
+        this.nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.nattable.addConfiguration(new SingleClickSortConfiguration());
 
         SelectionLayer selectionLayer = glazedListsGridLayer
                 .getBodyLayerStack().getSelectionLayer();
@@ -101,42 +102,43 @@ public class Real_time_data_updates extends AbstractNatExample {
         // Select complete rows
         RowOnlySelectionConfiguration<RowDataFixture> selectionConfig = new RowOnlySelectionConfiguration<RowDataFixture>();
         selectionLayer.addConfiguration(selectionConfig);
-        nattable.addConfiguration(new RowOnlySelectionBindings());
+        this.nattable.addConfiguration(new RowOnlySelectionBindings());
 
         // Preserve selection on updates and sort
         selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
                 selectionLayer, bodyDataProvider,
                 new IRowIdAccessor<RowDataFixture>() {
 
+                    @Override
                     public Serializable getRowId(RowDataFixture rowObject) {
                         return rowObject.getSecurity_id();
                     }
 
                 }));
-        nattable.configure();
+        this.nattable.configure();
 
         // Layout widgets
         parent.setLayout(new GridLayout(1, true));
-        nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
+        this.nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
                 true));
 
         setupTextArea(parent);
         setupButtons(parent);
 
-        return nattable;
+        return this.nattable;
     }
 
     @Override
     public void onStart() {
-        scheduledThreadPool = Executors.newScheduledThreadPool(1);
-        scheduledThreadPool.scheduleAtFixedRate(new ListEventsPublisher(),
-                100L, 1000L / updatesPerSecond, MILLISECONDS);
+        this.scheduledThreadPool = Executors.newScheduledThreadPool(1);
+        this.scheduledThreadPool.scheduleAtFixedRate(new ListEventsPublisher(),
+                100L, 1000L / this.updatesPerSecond, MILLISECONDS);
     }
 
     @Override
     public void onStop() {
-        scheduledThreadPool.shutdown();
-        nattable.dispose();
+        this.scheduledThreadPool.shutdown();
+        this.nattable.dispose();
     }
 
     /**
@@ -144,15 +146,17 @@ public class Real_time_data_updates extends AbstractNatExample {
      * its run, it randomly either removes an element or adds one.
      */
     class ListEventsPublisher implements Runnable {
+        @Override
         public void run() {
 
             Display.getDefault().asyncExec(new Runnable() {
+                @Override
                 public void run() {
                     try {
-                        eventList.getReadWriteLock().writeLock().lock();
+                        Real_time_data_updates.this.eventList.getReadWriteLock().writeLock().lock();
 
                         // Delete a random entry
-                        int elementIndexToRemove = getRandomNumber(eventList
+                        int elementIndexToRemove = getRandomNumber(Real_time_data_updates.this.eventList
                                 .size() - 1);
                         elementIndexToRemove = elementIndexToRemove < 0 ? 0
                                 : elementIndexToRemove;
@@ -161,19 +165,19 @@ public class Real_time_data_updates extends AbstractNatExample {
                         boolean removeElements = (getRandomNumber(1000) % 2) == 0;
 
                         if (removeElements) {
-                            final RowDataFixture remove = eventList
+                            final RowDataFixture remove = Real_time_data_updates.this.eventList
                                     .remove(elementIndexToRemove);
                             log("Removed record: " + remove.getSecurity_id());
                         } else {
                             final RowDataFixture added = RowDataFixture
                                     .getInstance("Added by test", ("AAA"));
-                            eventList.add(added);
+                            Real_time_data_updates.this.eventList.add(added);
                             log("Added record: " + added.getSecurity_id());
                         }
                     } catch (Exception e) {
                         log("Ignoring exception: " + e.getMessage());
                     } finally {
-                        eventList.getReadWriteLock().writeLock().unlock();
+                        Real_time_data_updates.this.eventList.getReadWriteLock().writeLock().unlock();
                     }
                 }
             });
@@ -192,7 +196,7 @@ public class Real_time_data_updates extends AbstractNatExample {
         new Label(buttonComposite, SWT.NONE).setText("Clear and add records");
 
         final Text clearText = new Text(buttonComposite, SWT.BORDER);
-        clearText.setText(Integer.toString(defaultDatasetSize));
+        clearText.setText(Integer.toString(this.defaultDatasetSize));
         clearText.setLayoutData(new GridData(100, 14));
         clearText.setSize(100, 20);
 
@@ -204,11 +208,11 @@ public class Real_time_data_updates extends AbstractNatExample {
                 final Integer newRecordCount = Integer.valueOf(clearText
                         .getText());
                 try {
-                    eventList.getReadWriteLock().writeLock().lock();
-                    eventList.clear();
-                    eventList.addAll(RowDataListFixture.getList(newRecordCount));
+                    Real_time_data_updates.this.eventList.getReadWriteLock().writeLock().lock();
+                    Real_time_data_updates.this.eventList.clear();
+                    Real_time_data_updates.this.eventList.addAll(RowDataListFixture.getList(newRecordCount));
                 } finally {
-                    eventList.getReadWriteLock().writeLock().unlock();
+                    Real_time_data_updates.this.eventList.getReadWriteLock().writeLock().unlock();
                     log(">> List cleared. Added " + newRecordCount
                             + " new records.");
                 }
@@ -219,16 +223,16 @@ public class Real_time_data_updates extends AbstractNatExample {
 
         final Text updateSpeedText = new Text(buttonComposite, SWT.BORDER);
         updateSpeedText.setLayoutData(new GridData(100, 14));
-        updateSpeedText.setText(Integer.toString(updatesPerSecond));
+        updateSpeedText.setText(Integer.toString(this.updatesPerSecond));
 
         Button updateSpeedButton = new Button(buttonComposite, SWT.PUSH);
         updateSpeedButton.setText("Apply");
         updateSpeedButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                updatesPerSecond = Integer.parseInt(updateSpeedText.getText());
-                log(">> Update speed: " + updatesPerSecond);
-                scheduledThreadPool.shutdownNow();
+                Real_time_data_updates.this.updatesPerSecond = Integer.parseInt(updateSpeedText.getText());
+                log(">> Update speed: " + Real_time_data_updates.this.updatesPerSecond);
+                Real_time_data_updates.this.scheduledThreadPool.shutdownNow();
                 onStart();
             }
         });
@@ -241,16 +245,16 @@ public class Real_time_data_updates extends AbstractNatExample {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (updatesPaused) {
+                if (this.updatesPaused) {
                     log(">> Starting updates");
-                    updatesPaused = false;
+                    this.updatesPaused = false;
                     pauseButton.setText("Pause updates");
                     onStart();
                 } else {
                     log(">> Pausing updates");
-                    updatesPaused = true;
+                    this.updatesPaused = true;
                     pauseButton.setText("Start updates");
-                    scheduledThreadPool.shutdownNow();
+                    Real_time_data_updates.this.scheduledThreadPool.shutdownNow();
                 }
             }
         });

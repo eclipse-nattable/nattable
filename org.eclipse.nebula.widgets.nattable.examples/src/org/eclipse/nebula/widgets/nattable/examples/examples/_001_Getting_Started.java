@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -50,14 +50,15 @@ public class _001_Getting_Started extends AbstractNatExample {
         StandaloneNatExampleRunner.run(600, 400, new _001_Getting_Started());
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
-        bodyDataProvider = setupBodyDataProvider();
+        this.bodyDataProvider = setupBodyDataProvider();
         DefaultColumnHeaderDataProvider colHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabels);
+                this.propertyNames, this.propertyToLabels);
         DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
+                this.bodyDataProvider);
 
-        bodyLayer = new BodyLayerStack(bodyDataProvider);
+        this.bodyLayer = new BodyLayerStack(this.bodyDataProvider);
         ColumnHeaderLayerStack columnHeaderLayer = new ColumnHeaderLayerStack(
                 colHeaderDataProvider);
         RowHeaderLayerStack rowHeaderLayer = new RowHeaderLayerStack(
@@ -67,7 +68,7 @@ public class _001_Getting_Started extends AbstractNatExample {
         CornerLayer cornerLayer = new CornerLayer(new DataLayer(
                 cornerDataProvider), rowHeaderLayer, columnHeaderLayer);
 
-        GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer,
+        GridLayer gridLayer = new GridLayer(this.bodyLayer, columnHeaderLayer,
                 rowHeaderLayer, cornerLayer);
         NatTable natTable = new NatTable(parent, gridLayer);
 
@@ -82,14 +83,14 @@ public class _001_Getting_Started extends AbstractNatExample {
                         "Cartman", new Date(4000000)), new Person(140,
                         "Dogbert", new Date(5000000)));
 
-        propertyToLabels = new HashMap<String, String>();
-        propertyToLabels.put("id", "ID");
-        propertyToLabels.put("name", "First Name");
-        propertyToLabels.put("birthDate", "DOB");
+        this.propertyToLabels = new HashMap<String, String>();
+        this.propertyToLabels.put("id", "ID");
+        this.propertyToLabels.put("name", "First Name");
+        this.propertyToLabels.put("birthDate", "DOB");
 
-        propertyNames = new String[] { "id", "name", "birthDate" };
+        this.propertyNames = new String[] { "id", "name", "birthDate" };
         return new ListDataProvider<Person>(people,
-                new ReflectiveColumnPropertyAccessor<Person>(propertyNames));
+                new ReflectiveColumnPropertyAccessor<Person>(this.propertyNames));
 
     }
 
@@ -103,13 +104,13 @@ public class _001_Getting_Started extends AbstractNatExample {
                     bodyDataLayer);
             ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
                     columnReorderLayer);
-            selectionLayer = new SelectionLayer(columnHideShowLayer);
-            ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+            this.selectionLayer = new SelectionLayer(columnHideShowLayer);
+            ViewportLayer viewportLayer = new ViewportLayer(this.selectionLayer);
             setUnderlyingLayer(viewportLayer);
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
     }
 
@@ -118,7 +119,7 @@ public class _001_Getting_Started extends AbstractNatExample {
         public ColumnHeaderLayerStack(IDataProvider dataProvider) {
             DataLayer dataLayer = new DataLayer(dataProvider);
             ColumnHeaderLayer colHeaderLayer = new ColumnHeaderLayer(dataLayer,
-                    bodyLayer, bodyLayer.getSelectionLayer());
+                    _001_Getting_Started.this.bodyLayer, _001_Getting_Started.this.bodyLayer.getSelectionLayer());
             setUnderlyingLayer(colHeaderLayer);
         }
     }
@@ -128,7 +129,7 @@ public class _001_Getting_Started extends AbstractNatExample {
         public RowHeaderLayerStack(IDataProvider dataProvider) {
             DataLayer dataLayer = new DataLayer(dataProvider, 50, 20);
             RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(dataLayer,
-                    bodyLayer, bodyLayer.getSelectionLayer());
+                    _001_Getting_Started.this.bodyLayer, _001_Getting_Started.this.bodyLayer.getSelectionLayer());
             setUnderlyingLayer(rowHeaderLayer);
         }
     }

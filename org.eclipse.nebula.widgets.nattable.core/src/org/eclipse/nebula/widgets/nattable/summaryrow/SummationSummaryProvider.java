@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,7 +35,7 @@ public class SummationSummaryProvider implements ISummaryProvider {
      * Using this constructor will set the {@link SummationSummaryProvider} in
      * strict mode which means that if a column contains non Number values,
      * {@link ISummaryProvider#DEFAULT_SUMMARY_VALUE} will be returned.
-     * 
+     *
      * @param dataProvider
      *            The {@link IDataProvider} that should be used to calculate the
      *            sum.
@@ -51,7 +51,7 @@ public class SummationSummaryProvider implements ISummaryProvider {
      * Using this constructor will set the {@link SummationSummaryProvider} in
      * strict mode which means that if a column contains non Number values,
      * {@link ISummaryProvider#DEFAULT_SUMMARY_VALUE} will be returned.
-     * 
+     *
      * @param dataProvider
      *            The {@link IDataProvider} that should be used to calculate the
      *            sum.
@@ -70,7 +70,7 @@ public class SummationSummaryProvider implements ISummaryProvider {
 
     /**
      * Calculates the sum of the values in the column.
-     * 
+     *
      * @return The sum of all Number values in the column as Double or
      *         {@link ISummaryProvider#DEFAULT_SUMMARY_VALUE} if the column
      *         contains non Number values and this SummationSummaryProvider is
@@ -78,15 +78,15 @@ public class SummationSummaryProvider implements ISummaryProvider {
      */
     @Override
     public Object summarize(int columnIndex) {
-        int rowCount = dataProvider.getRowCount();
+        int rowCount = this.dataProvider.getRowCount();
         double summaryValue = 0;
 
         for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-            Object dataValue = dataProvider.getDataValue(columnIndex, rowIndex);
+            Object dataValue = this.dataProvider.getDataValue(columnIndex, rowIndex);
 
             if (dataValue instanceof Number) {
                 summaryValue += ((Number) dataValue).doubleValue();
-            } else if (strict) {
+            } else if (this.strict) {
                 return DEFAULT_SUMMARY_VALUE;
             }
         }

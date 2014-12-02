@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,10 +28,12 @@ public class KittenDataProviderFixture implements
 
     private IColumnAccessor<Kitten> columnAccessor = new IColumnAccessor<Kitten>() {
 
+        @Override
         public int getColumnCount() {
             return 5;
         }
 
+        @Override
         @SuppressWarnings("boxing")
         public Object getDataValue(Kitten k, int columnIndex) {
             if (columnIndex == 0)
@@ -49,6 +51,7 @@ public class KittenDataProviderFixture implements
                         + columnIndex);
         }
 
+        @Override
         public void setDataValue(Kitten rowObj, int columnIndex, Object newValue) {
             throw new UnsupportedOperationException();
         }
@@ -56,47 +59,54 @@ public class KittenDataProviderFixture implements
     };
 
     private IRowIdAccessor<KittenDataProviderFixture.Kitten> rowIdAccessor = new IRowIdAccessor<KittenDataProviderFixture.Kitten>() {
+        @Override
         public Serializable getRowId(Kitten k) {
             return k.getName();
         }
     };
 
     public KittenDataProviderFixture() {
-        kittens.add(new Kitten("Tabitha", 2, "Orange", .5, "Grass"));
-        kittens.add(new Kitten("Midnighter", 3, "Black", .7, "Tabitha"));
-        kittens.add(new Kitten("Lightning", 1, "Black and White", .25, "Wind"));
+        this.kittens.add(new Kitten("Tabitha", 2, "Orange", .5, "Grass"));
+        this.kittens.add(new Kitten("Midnighter", 3, "Black", .7, "Tabitha"));
+        this.kittens.add(new Kitten("Lightning", 1, "Black and White", .25, "Wind"));
     }
 
+    @Override
     public int getColumnCount() {
-        return columnAccessor.getColumnCount();
+        return this.columnAccessor.getColumnCount();
     }
 
+    @Override
     public int getRowCount() {
-        return kittens.size();
+        return this.kittens.size();
     }
 
+    @Override
     public Object getDataValue(int columnIndex, int rowIndex) {
-        return columnAccessor.getDataValue(getRowObject(rowIndex), columnIndex);
+        return this.columnAccessor.getDataValue(getRowObject(rowIndex), columnIndex);
     }
 
+    @Override
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Kitten getRowObject(int rowIndex) {
-        return kittens.get(rowIndex);
+        return this.kittens.get(rowIndex);
     }
 
+    @Override
     public int indexOfRowObject(Kitten rowObject) {
-        return kittens.indexOf(rowObject);
+        return this.kittens.indexOf(rowObject);
     }
 
     public IColumnAccessor<Kitten> getColumnAccessor() {
-        return columnAccessor;
+        return this.columnAccessor;
     }
 
     public IRowIdAccessor<Kitten> getRowIdAccessor() {
-        return rowIdAccessor;
+        return this.rowIdAccessor;
     }
 
     public static class Kitten {
@@ -123,23 +133,23 @@ public class KittenDataProviderFixture implements
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public int getAge() {
-            return age;
+            return this.age;
         }
 
         public String getColor() {
-            return color;
+            return this.color;
         }
 
         public double getWeight() {
-            return weight;
+            return this.weight;
         }
 
         public String getFavoriteToy() {
-            return favoriteToy;
+            return this.favoriteToy;
         }
     }
 

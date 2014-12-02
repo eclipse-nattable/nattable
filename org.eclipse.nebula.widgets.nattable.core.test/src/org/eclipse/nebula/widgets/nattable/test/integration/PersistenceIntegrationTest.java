@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,7 +36,7 @@ public class PersistenceIntegrationTest {
 
     @Before
     public void setup() {
-        natTableFixture = new NatTableFixture(new Shell(),
+        this.natTableFixture = new NatTableFixture(new Shell(),
                 new DummyGridLayerStack() {
 
                     @Override
@@ -51,105 +51,105 @@ public class PersistenceIntegrationTest {
                     }
 
                 });
-        properties = new Properties();
+        this.properties = new Properties();
     }
 
     @Test
     public void stateIsLoadedCorrectlyFromProperties() throws Exception {
         saveStateToPropeties();
-        natTableFixture.loadState(TEST_PERSISTENCE_PREFIX, properties);
+        this.natTableFixture.loadState(TEST_PERSISTENCE_PREFIX, this.properties);
 
         // Originally resized position 2, after reorder became position 1
-        assertEquals(200, natTableFixture.getColumnWidthByPosition(1));
+        assertEquals(200, this.natTableFixture.getColumnWidthByPosition(1));
         // Originally resized position 2, after reorder became position 1
-        assertEquals(100, natTableFixture.getRowHeightByPosition(1));
-        assertEquals(1, natTableFixture.getColumnIndexByPosition(1));
-        assertEquals(0, natTableFixture.getColumnIndexByPosition(3));
+        assertEquals(100, this.natTableFixture.getRowHeightByPosition(1));
+        assertEquals(1, this.natTableFixture.getColumnIndexByPosition(1));
+        assertEquals(0, this.natTableFixture.getColumnIndexByPosition(3));
     }
 
     public void saveStateToPropeties() throws Exception {
         // Resize column 2 to 200px
-        assertEquals(100, natTableFixture.getColumnWidthByPosition(2));
-        natTableFixture.doCommand(new ColumnResizeCommand(natTableFixture, 2,
+        assertEquals(100, this.natTableFixture.getColumnWidthByPosition(2));
+        this.natTableFixture.doCommand(new ColumnResizeCommand(this.natTableFixture, 2,
                 200));
-        assertEquals(200, natTableFixture.getColumnWidthByPosition(2));
+        assertEquals(200, this.natTableFixture.getColumnWidthByPosition(2));
 
         // Resize row 2 to 100px
-        assertEquals(20, natTableFixture.getRowHeightByPosition(2));
-        natTableFixture
-                .doCommand(new RowResizeCommand(natTableFixture, 2, 100));
-        assertEquals(100, natTableFixture.getRowHeightByPosition(2));
+        assertEquals(20, this.natTableFixture.getRowHeightByPosition(2));
+        this.natTableFixture
+                .doCommand(new RowResizeCommand(this.natTableFixture, 2, 100));
+        assertEquals(100, this.natTableFixture.getRowHeightByPosition(2));
 
         // Reorder column 1 --> 5 (grid coordinates)
         // 0, 1, 2, 3, 4, 5,.. --> 1, 2, 3, 0, 4, 5,..
-        assertEquals(0, natTableFixture.getColumnIndexByPosition(1));
-        natTableFixture.doCommand(new ColumnReorderCommand(natTableFixture, 1,
+        assertEquals(0, this.natTableFixture.getColumnIndexByPosition(1));
+        this.natTableFixture.doCommand(new ColumnReorderCommand(this.natTableFixture, 1,
                 5));
-        assertEquals(1, natTableFixture.getColumnIndexByPosition(1));
+        assertEquals(1, this.natTableFixture.getColumnIndexByPosition(1));
 
         // Reorder row 1 --> 5 (grid coordinates)
         // 0, 1, 2, 3, 4, 5,.. --> 1, 2, 3, 0, 4, 5,..
-        assertEquals(0, natTableFixture.getRowIndexByPosition(1));
-        natTableFixture.doCommand(new RowReorderCommand(natTableFixture, 1, 5));
-        assertEquals(1, natTableFixture.getRowIndexByPosition(1));
+        assertEquals(0, this.natTableFixture.getRowIndexByPosition(1));
+        this.natTableFixture.doCommand(new RowReorderCommand(this.natTableFixture, 1, 5));
+        assertEquals(1, this.natTableFixture.getRowIndexByPosition(1));
 
         // Hide column with index 3 (grid coordinates)
-        assertEquals(3, natTableFixture.getColumnIndexByPosition(3));
-        natTableFixture.doCommand(new ColumnHideCommand(natTableFixture, 3));
-        assertEquals(0, natTableFixture.getColumnIndexByPosition(3));
+        assertEquals(3, this.natTableFixture.getColumnIndexByPosition(3));
+        this.natTableFixture.doCommand(new ColumnHideCommand(this.natTableFixture, 3));
+        assertEquals(0, this.natTableFixture.getColumnIndexByPosition(3));
 
-        natTableFixture.saveState(TEST_PERSISTENCE_PREFIX, properties);
+        this.natTableFixture.saveState(TEST_PERSISTENCE_PREFIX, this.properties);
 
         // Ensure that properties got persisted
         assertEquals(
                 "true",
-                properties
+                this.properties
                         .get("testPrefix.COLUMN_HEADER.columnWidth.resizableByDefault"));
         assertEquals(
                 "100",
-                properties
+                this.properties
                         .get("testPrefix.COLUMN_HEADER.columnWidth.defaultSize"));
         assertEquals(
                 "true",
-                properties
+                this.properties
                         .get("testPrefix.COLUMN_HEADER.rowHeight.resizableByDefault"));
 
         assertEquals("40",
-                properties.get("testPrefix.ROW_HEADER.columnWidth.defaultSize"));
+                this.properties.get("testPrefix.ROW_HEADER.columnWidth.defaultSize"));
         assertEquals(
                 "true",
-                properties
+                this.properties
                         .get("testPrefix.ROW_HEADER.rowHeight.resizableByDefault"));
         assertEquals(
                 "true",
-                properties
+                this.properties
                         .get("testPrefix.ROW_HEADER.columnWidth.resizableByDefault"));
         assertEquals("40",
-                properties.get("testPrefix.ROW_HEADER.rowHeight.defaultSize"));
+                this.properties.get("testPrefix.ROW_HEADER.rowHeight.defaultSize"));
 
         assertEquals("20",
-                properties.get("testPrefix.CORNER.rowHeight.defaultSize"));
+                this.properties.get("testPrefix.CORNER.rowHeight.defaultSize"));
         assertEquals(
                 "true",
-                properties
+                this.properties
                         .get("testPrefix.CORNER.columnWidth.resizableByDefault"));
         assertEquals("true",
-                properties
+                this.properties
                         .get("testPrefix.CORNER.rowHeight.resizableByDefault"));
 
         assertEquals("20",
-                properties.get("testPrefix.BODY.rowHeight.defaultSize"));
+                this.properties.get("testPrefix.BODY.rowHeight.defaultSize"));
         assertEquals("true",
-                properties.get("testPrefix.BODY.rowHeight.resizableByDefault"));
+                this.properties.get("testPrefix.BODY.rowHeight.resizableByDefault"));
         assertEquals("true",
-                properties
+                this.properties
                         .get("testPrefix.BODY.columnWidth.resizableByDefault"));
         assertEquals("1,2,3,0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,",
-                properties.get("testPrefix.BODY.columnIndexOrder"));
+                this.properties.get("testPrefix.BODY.columnIndexOrder"));
         assertEquals("1:100,",
-                properties.get("testPrefix.BODY.rowHeight.sizes"));
+                this.properties.get("testPrefix.BODY.rowHeight.sizes"));
         assertEquals("1:200,",
-                properties.get("testPrefix.BODY.columnWidth.sizes"));
+                this.properties.get("testPrefix.BODY.columnWidth.sizes"));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class PersistenceIntegrationTest {
             throws Exception {
         boolean exceptionOccured = false;
         try {
-            natTableFixture.loadState(TEST_PERSISTENCE_PREFIX, properties);
+            this.natTableFixture.loadState(TEST_PERSISTENCE_PREFIX, this.properties);
         } catch (Exception e) {
             e.printStackTrace();
             exceptionOccured = true;

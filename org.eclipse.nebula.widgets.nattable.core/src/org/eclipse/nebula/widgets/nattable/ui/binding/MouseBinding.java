@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,16 +26,16 @@ public class MouseBinding {
     }
 
     public IMouseEventMatcher getMouseEventMatcher() {
-        return mouseEventMatcher;
+        return this.mouseEventMatcher;
     }
 
     public IMouseAction getAction() {
-        return action;
+        return this.action;
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName()
-                + "[mouseEventMatcher=" + mouseEventMatcher + " action=" + action + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                + "[mouseEventMatcher=" + this.mouseEventMatcher + " action=" + this.action + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 }

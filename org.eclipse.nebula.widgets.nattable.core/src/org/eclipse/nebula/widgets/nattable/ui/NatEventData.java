@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -42,23 +42,23 @@ public class NatEventData {
     }
 
     public NatTable getNatTable() {
-        return natTable;
+        return this.natTable;
     }
 
     public LabelStack getRegionLabels() {
-        return regionLabels;
+        return this.regionLabels;
     }
 
     public int getColumnPosition() {
-        return columnPosition;
+        return this.columnPosition;
     }
 
     public int getRowPosition() {
-        return rowPosition;
+        return this.rowPosition;
     }
 
     public MouseEvent getOriginalEvent() {
-        return originalEvent;
+        return this.originalEvent;
     }
 
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -72,32 +72,32 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
         SortedList<T> sortedList = new SortedList<T>(eventList, null);
         IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
                 propertyNames);
-        bodyDataProvider = new ListDataProviderExample<T>(sortedList,
+        this.bodyDataProvider = new ListDataProviderExample<T>(sortedList,
                 columnPropertyAccessor);
 
-        bodyDataLayer = new DataLayer(bodyDataProvider);
+        this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                bodyDataLayer, eventList);
+                this.bodyDataLayer, eventList);
         DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(
                 glazedListsEventLayer);
 
         // Sort Column header
         IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
                 propertyNames, propertyToLabelMap);
-        columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+        this.columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
                 columnHeaderDataProvider);
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+                this.columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
         // Auto configure off. Configurations have to applied manually.
         SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<T>(
                 columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
                         columnPropertyAccessor, configRegistry,
-                        columnHeaderDataLayer), false);
+                        this.columnHeaderDataLayer), false);
 
         // Row header
         DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
+                this.bodyDataProvider);
         DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
                 rowHeaderDataProvider);
         RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
@@ -118,7 +118,7 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
     }
 
     public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
-        return columnLabelAccumulator;
+        return this.columnLabelAccumulator;
     }
 
     @Override
@@ -127,11 +127,11 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
     }
 
     public DataLayer getBodyDataLayer() {
-        return bodyDataLayer;
+        return this.bodyDataLayer;
     }
 
     public AbstractLayer getColumnHeaderDataLayer() {
-        return columnHeaderDataLayer;
+        return this.columnHeaderDataLayer;
     }
 
     public ListDataProviderExample<T> bodyDataProvider;
@@ -146,12 +146,12 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
 
         @Override
         public int getColumnCount() {
-            return mColumnCount == 0 ? 2 : mColumnCount;
+            return this.mColumnCount == 0 ? 2 : this.mColumnCount;
         }
 
         public void setColumnCount(int pColumnCount) {
             this.mColumnCount = pColumnCount;
-            fireColumnCountChangeEvent(bodyDataLayer);
+            fireColumnCountChangeEvent(ColumnStructureUpdatesExampleGridLayer.this.bodyDataLayer);
         }
 
         private void fireColumnCountChangeEvent(ILayer layer) {
@@ -168,6 +168,7 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
                 super(layer);
             }
 
+            @Override
             public Collection<StructuralDiff> getColumnDiffs() {
                 return null;
             }
@@ -182,6 +183,7 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
                 return true;
             }
 
+            @Override
             public ILayerEvent cloneEvent() {
                 return new MultiColumnStructuralChangeEventExtension(getLayer());
             }

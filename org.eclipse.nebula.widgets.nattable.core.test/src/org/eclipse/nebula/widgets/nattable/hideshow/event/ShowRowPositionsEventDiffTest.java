@@ -36,10 +36,10 @@ public class ShowRowPositionsEventDiffTest {
 
     @Before
     public void before() {
-        dataLayer = new DataLayerFixture(20, 20, 100, 40);
-        hideShowLayer = new RowHideShowLayer(dataLayer);
-        viewportLayer = new ViewportLayer(hideShowLayer);
-        viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.dataLayer = new DataLayerFixture(20, 20, 100, 40);
+        this.hideShowLayer = new RowHideShowLayer(this.dataLayer);
+        this.viewportLayer = new ViewportLayer(this.hideShowLayer);
+        this.viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
 
             @Override
             public Rectangle getClientArea() {
@@ -47,19 +47,19 @@ public class ShowRowPositionsEventDiffTest {
             }
 
         });
-        viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(2));
-        viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(2));
+        this.viewportLayer.setOriginX(this.viewportLayer.getStartXOfColumnPosition(2));
+        this.viewportLayer.setOriginY(this.viewportLayer.getStartYOfRowPosition(2));
 
-        event = new ShowRowPositionsEvent(dataLayer,
+        this.event = new ShowRowPositionsEvent(this.dataLayer,
                 Arrays.asList(new Integer[] { 2, 4, 7, 8, 9 }));
     }
 
     @After
     public void after() {
-        Assert.assertFalse(event.isHorizontalStructureChanged());
+        Assert.assertFalse(this.event.isHorizontalStructureChanged());
 
-        Assert.assertTrue(event.isVerticalStructureChanged());
-        Assert.assertNull(event.getColumnDiffs());
+        Assert.assertTrue(this.event.isVerticalStructureChanged());
+        Assert.assertNull(this.event.getColumnDiffs());
     }
 
     /**
@@ -67,7 +67,7 @@ public class ShowRowPositionsEventDiffTest {
      */
     @Test
     public void testColumnDiffs() {
-        Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
+        Collection<StructuralDiff> rowDiffs = this.event.getRowDiffs();
         Assert.assertNotNull(rowDiffs);
         Assert.assertEquals(3, rowDiffs.size());
         Iterator<StructuralDiff> iterator = rowDiffs.iterator();
@@ -84,9 +84,9 @@ public class ShowRowPositionsEventDiffTest {
      */
     @Test
     public void testConvertToLocal() {
-        event.convertToLocal(hideShowLayer);
+        this.event.convertToLocal(this.hideShowLayer);
 
-        Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
+        Collection<StructuralDiff> rowDiffs = this.event.getRowDiffs();
         Assert.assertNotNull(rowDiffs);
         Assert.assertEquals(3, rowDiffs.size());
         Iterator<StructuralDiff> iterator = rowDiffs.iterator();
@@ -97,9 +97,9 @@ public class ShowRowPositionsEventDiffTest {
         Assert.assertEquals(new StructuralDiff(DiffTypeEnum.ADD,
                 new Range(5, 5), new Range(7, 10)), iterator.next());
 
-        event.convertToLocal(viewportLayer);
+        this.event.convertToLocal(this.viewportLayer);
 
-        rowDiffs = event.getRowDiffs();
+        rowDiffs = this.event.getRowDiffs();
         Assert.assertNotNull(rowDiffs);
         Assert.assertEquals(3, rowDiffs.size());
         iterator = rowDiffs.iterator();

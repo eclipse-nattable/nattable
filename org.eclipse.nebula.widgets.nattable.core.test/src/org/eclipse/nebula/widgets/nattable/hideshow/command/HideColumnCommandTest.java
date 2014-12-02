@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,25 +23,25 @@ public class HideColumnCommandTest {
 
     @Before
     public void setup() {
-        columnHideShowLayer = new ColumnHideShowLayer(new DataLayerFixture());
+        this.columnHideShowLayer = new ColumnHideShowLayer(new DataLayerFixture());
     }
 
     @Test
     public void testHideColumnCommand() {
         int columnPosition = 2;
         ILayerCommand hideColumnCommand = new MultiColumnHideCommand(
-                columnHideShowLayer, columnPosition);
+                this.columnHideShowLayer, columnPosition);
 
-        Assert.assertEquals(5, columnHideShowLayer.getColumnCount());
+        Assert.assertEquals(5, this.columnHideShowLayer.getColumnCount());
 
-        columnHideShowLayer.doCommand(hideColumnCommand);
+        this.columnHideShowLayer.doCommand(hideColumnCommand);
 
-        Assert.assertEquals(4, columnHideShowLayer.getColumnCount());
+        Assert.assertEquals(4, this.columnHideShowLayer.getColumnCount());
 
-        Assert.assertEquals(0, columnHideShowLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(1, columnHideShowLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(3, columnHideShowLayer.getColumnIndexByPosition(2));
-        Assert.assertEquals(4, columnHideShowLayer.getColumnIndexByPosition(3));
+        Assert.assertEquals(0, this.columnHideShowLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(1, this.columnHideShowLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(3, this.columnHideShowLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(4, this.columnHideShowLayer.getColumnIndexByPosition(3));
     }
 
 }

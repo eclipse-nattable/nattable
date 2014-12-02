@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,7 +28,7 @@ public class TreeExportFormatter extends DefaultExportFormatter {
             IConfigRegistry configRegistry) {
         int index = cell.getLayer()
                 .getRowIndexByPosition(cell.getRowPosition());
-        int depth = treeRowModel.depth(index);
+        int depth = this.treeRowModel.depth(index);
 
         StringBuilder str = new StringBuilder();
         if (depth > 0) {
@@ -37,10 +37,10 @@ public class TreeExportFormatter extends DefaultExportFormatter {
             }
         }
 
-        if (treeRowModel.isLeaf(index)) {
+        if (this.treeRowModel.isLeaf(index)) {
             str.append(super.formatForExport(cell, configRegistry));
         } else {
-            str.append(treeRowModel.getObjectAtIndexAndDepth(index, depth));
+            str.append(this.treeRowModel.getObjectAtIndexAndDepth(index, depth));
         }
 
         return str.toString();

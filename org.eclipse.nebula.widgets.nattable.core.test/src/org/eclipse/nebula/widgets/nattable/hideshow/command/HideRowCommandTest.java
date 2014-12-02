@@ -23,27 +23,27 @@ public class HideRowCommandTest {
 
     @Before
     public void setup() {
-        rowHideShowLayer = new RowHideShowLayer(new DataLayerFixture());
+        this.rowHideShowLayer = new RowHideShowLayer(new DataLayerFixture());
     }
 
     @Test
     public void testHideRowCommand() {
         int rowPosition = 2;
         ILayerCommand hideRowCommand = new MultiRowHideCommand(
-                rowHideShowLayer, rowPosition);
+                this.rowHideShowLayer, rowPosition);
 
-        Assert.assertEquals(7, rowHideShowLayer.getRowCount());
+        Assert.assertEquals(7, this.rowHideShowLayer.getRowCount());
 
-        rowHideShowLayer.doCommand(hideRowCommand);
+        this.rowHideShowLayer.doCommand(hideRowCommand);
 
-        Assert.assertEquals(6, rowHideShowLayer.getRowCount());
+        Assert.assertEquals(6, this.rowHideShowLayer.getRowCount());
 
-        Assert.assertEquals(0, rowHideShowLayer.getRowIndexByPosition(0));
-        Assert.assertEquals(1, rowHideShowLayer.getRowIndexByPosition(1));
-        Assert.assertEquals(3, rowHideShowLayer.getRowIndexByPosition(2));
-        Assert.assertEquals(4, rowHideShowLayer.getRowIndexByPosition(3));
-        Assert.assertEquals(5, rowHideShowLayer.getRowIndexByPosition(4));
-        Assert.assertEquals(6, rowHideShowLayer.getRowIndexByPosition(5));
+        Assert.assertEquals(0, this.rowHideShowLayer.getRowIndexByPosition(0));
+        Assert.assertEquals(1, this.rowHideShowLayer.getRowIndexByPosition(1));
+        Assert.assertEquals(3, this.rowHideShowLayer.getRowIndexByPosition(2));
+        Assert.assertEquals(4, this.rowHideShowLayer.getRowIndexByPosition(3));
+        Assert.assertEquals(5, this.rowHideShowLayer.getRowIndexByPosition(4));
+        Assert.assertEquals(6, this.rowHideShowLayer.getRowIndexByPosition(5));
     }
 
 }

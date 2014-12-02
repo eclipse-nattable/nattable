@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,7 +36,7 @@ public class ColumnCategoriesLabelProvider extends LabelProvider {
             case COLUMN:
                 int index = Integer.parseInt(node.getData());
                 ColumnEntry columnEntry = ColumnChooserUtils.find(
-                        hiddenEntries, index);
+                        this.hiddenEntries, index);
                 if (ObjectUtils.isNull(columnEntry)) {
                     System.err
                             .println("Column index " + index + " is present " + //$NON-NLS-1$ //$NON-NLS-2$

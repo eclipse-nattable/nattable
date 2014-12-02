@@ -72,7 +72,7 @@ public class ClientAreaAdapter implements IClientAreaProvider {
     }
 
     /**
-     * 
+     *
      * @return The width that should be used by this ClientAreaAdapter. If a
      *         negative number is returned, the width of the base
      *         IClientAreaProvider will be used internally.
@@ -82,7 +82,7 @@ public class ClientAreaAdapter implements IClientAreaProvider {
     }
 
     /**
-     * 
+     *
      * @param width
      *            The width that should be used by this ClientAreaAdapter. If a
      *            negative number is set, the width of the base
@@ -93,7 +93,7 @@ public class ClientAreaAdapter implements IClientAreaProvider {
     }
 
     /**
-     * 
+     *
      * @return The height that should be used by this ClientAreaAdapter. If a
      *         negative number is returned, the height of the base
      *         IClientAreaProvider will be used internally.
@@ -103,7 +103,7 @@ public class ClientAreaAdapter implements IClientAreaProvider {
     }
 
     /**
-     * 
+     *
      * @param height
      *            The height that should be used by this ClientAreaAdapter. If a
      *            negative number is set, the height of the base

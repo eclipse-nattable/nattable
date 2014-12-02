@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,7 +22,7 @@ public abstract class AbstractOverrider implements IConfigLabelAccumulator {
     private Map<Serializable, List<String>> overrides = new HashMap<Serializable, List<String>>();
 
     public void removeOverride(Serializable key) {
-        overrides.remove(key);
+        this.overrides.remove(key);
     }
 
     public void registerOverrides(Serializable key, String... configLabels) {
@@ -32,7 +32,7 @@ public abstract class AbstractOverrider implements IConfigLabelAccumulator {
     public void registerOverrides(Serializable key, List<String> configLabels) {
         List<String> existingOverrides = getOverrides(key);
         if (existingOverrides == null) {
-            overrides.put(key, configLabels);
+            this.overrides.put(key, configLabels);
         } else {
             for (String configLabel : configLabels) {
                 if (!existingOverrides.contains(configLabel)) {
@@ -50,7 +50,7 @@ public abstract class AbstractOverrider implements IConfigLabelAccumulator {
             List<String> configLabels) {
         List<String> existingOverrides = getOverrides(key);
         if (existingOverrides == null) {
-            overrides.put(key, configLabels);
+            this.overrides.put(key, configLabels);
         } else {
             for (int i = configLabels.size() - 1; i >= 0; i--) {
                 String configLabel = configLabels.get(i);
@@ -62,11 +62,11 @@ public abstract class AbstractOverrider implements IConfigLabelAccumulator {
     }
 
     public Map<Serializable, List<String>> getOverrides() {
-        return overrides;
+        return this.overrides;
     }
 
     public List<String> getOverrides(Serializable key) {
-        return overrides.get(key);
+        return this.overrides.get(key);
     }
 
     public void addOverrides(Map<Serializable, List<String>> overrides) {

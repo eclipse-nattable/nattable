@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Example showing a NatTable that contains a row header and a body layer.
- * 
+ *
  * @author Dirk Fauth
  *
  */

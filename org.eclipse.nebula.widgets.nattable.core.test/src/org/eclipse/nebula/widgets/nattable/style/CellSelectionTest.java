@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,19 +24,19 @@ public class CellSelectionTest {
 
     @Before
     public void setUp() {
-        gridLayer = new GridLayerFixture();
-        gridLayer.doCommand(new InitializeClientAreaCommandFixture());
+        this.gridLayer = new GridLayerFixture();
+        this.gridLayer.doCommand(new InitializeClientAreaCommandFixture());
     }
 
     @Test
     public void willSelectBodyCellAndShouldHaveColumnHeaderSelected() {
         // Select body cell
         // The cell position is a grid layer position
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 2, 2, false, false));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 2, 2, false, false));
 
         // Get body layer cell corresponding to the selected body cell
-        ILayer bodyLayer = gridLayer.getBodyLayer();
+        ILayer bodyLayer = this.gridLayer.getBodyLayer();
         // The column position is 1 because it takes into account the offset of
         // the row header
         ILayerCell cell = bodyLayer.getCellByPosition(1, 1);

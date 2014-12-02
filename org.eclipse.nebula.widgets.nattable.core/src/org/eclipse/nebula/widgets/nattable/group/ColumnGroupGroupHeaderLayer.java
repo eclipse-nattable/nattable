@@ -147,7 +147,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
         } else {
             return getRowHeightByPosition(0)
                     + this.columnGroupHeaderLayer
-                    .getStartYOfRowPosition(rowPosition - 1);
+                            .getStartYOfRowPosition(rowPosition - 1);
         }
     }
 
@@ -186,7 +186,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
             return new LayerCell(this,
                     underlyingCell.getOriginColumnPosition(),
                     underlyingCell.getOriginRowPosition()
-                    + (partOfAGroup ? 1 : 0), columnPosition,
+                            + (partOfAGroup ? 1 : 0), columnPosition,
                     rowPosition, underlyingCell.getColumnSpan(),
                     underlyingCell.getRowSpan() + (partOfAGroup ? 0 : 1));
         } else if (rowPosition == 2) {
@@ -197,7 +197,7 @@ public class ColumnGroupGroupHeaderLayer extends AbstractLayerTransform {
             return new LayerCell(this,
                     underlyingCell.getOriginColumnPosition(),
                     underlyingCell.getOriginRowPosition()
-                    + (partOfAGroup ? 1 : 0), columnPosition,
+                            + (partOfAGroup ? 1 : 0), columnPosition,
                     rowPosition, underlyingCell.getColumnSpan(),
                     underlyingCell.getRowSpan() + (partOfAGroup ? 0 : 1));
         }

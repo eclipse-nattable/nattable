@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ public class ComboBoxPainter extends CellPainterWrapper {
     /**
      * Create a new {@link ComboBoxPainter} with the given {@link Image} as the
      * image marking the cell as a combo control.
-     * 
+     *
      * @param comboImage
      *            The image marking the cell as a combo control
      */

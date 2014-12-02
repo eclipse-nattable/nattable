@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Control;
  * Example to show the usage of SpanningDataLayer. For this a
  * DummySpanningBodyDataProvider is used that spans several blocks. Editing is
  * also enabled to show and verify that editing of spanned cells is possible.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -110,19 +110,19 @@ public class _5014_SpanningDataLayerExample extends AbstractNatExample {
 
         @Override
         public int getColumnCount() {
-            return columnCount;
+            return this.columnCount;
         }
 
         @Override
         public int getRowCount() {
-            return rowCount;
+            return this.rowCount;
         }
 
         @Override
         public Object getDataValue(int columnIndex, int rowIndex) {
             Point point = new Point(columnIndex, rowIndex);
-            if (values.containsKey(point)) {
-                return values.get(point);
+            if (this.values.containsKey(point)) {
+                return this.values.get(point);
             } else {
                 return "Col: " + (columnIndex + 1) + ", Row: " + (rowIndex + 1); //$NON-NLS-1$ //$NON-NLS-2$
             }
@@ -130,7 +130,7 @@ public class _5014_SpanningDataLayerExample extends AbstractNatExample {
 
         @Override
         public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-            values.put(new Point(columnIndex, rowIndex), newValue);
+            this.values.put(new Point(columnIndex, rowIndex), newValue);
         }
 
         @Override

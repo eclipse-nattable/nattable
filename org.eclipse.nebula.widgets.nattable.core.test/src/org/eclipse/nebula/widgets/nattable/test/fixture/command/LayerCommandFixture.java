@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -17,15 +17,17 @@ public class LayerCommandFixture implements ILayerCommand {
 
     private ILayer targetLayer;
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         this.targetLayer = targetLayer;
         return true;
     }
 
     public ILayer getTargetLayer() {
-        return targetLayer;
+        return this.targetLayer;
     }
 
+    @Override
     public LayerCommandFixture cloneCommand() {
         return this;
     }

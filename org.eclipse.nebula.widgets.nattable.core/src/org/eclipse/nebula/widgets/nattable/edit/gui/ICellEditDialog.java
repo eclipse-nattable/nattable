@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.Point;
 
 /**
  * Interface for dialogs that can be used as editing dialogs in NatTable.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -80,7 +80,7 @@ public interface ICellEditDialog {
      * In case {@link ICellEditDialog#getEditType()} returns an edit type for
      * processing values, this method should implemented to do that
      * transformation.
-     * 
+     *
      * @param currentValue
      *            The current value for the cell before data model update
      * @param processValue
@@ -96,7 +96,7 @@ public interface ICellEditDialog {
      * Specified in here for convenience so we only need to check against this
      * interface for a dialog.
      * </p>
-     * 
+     *
      * @return the return code
      */
     int open();
@@ -110,11 +110,11 @@ public interface ICellEditDialog {
      * {@link IConfigRegistry} for the key
      * {@link org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes#EDIT_DIALOG_SETTINGS}
      * . The keys that are valid for this map are specified below.
-     * 
+     *
      * @param editDialogSettings
      *            Map containing the settings to customize the edit dialog
      *            appearance.
-     * 
+     *
      * @see ICellEditDialog#DIALOG_SHELL_TITLE
      * @see ICellEditDialog#DIALOG_SHELL_ICON
      * @see ICellEditDialog#DIALOG_SHELL_LOCATION

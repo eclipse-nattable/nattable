@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,7 +28,7 @@ public interface ILayerCommand {
      * convert the command to the target layer, then this method will return
      * false and <b>the state of this command object will remain unchanged</b>.
      * Note: Commands should not be processed if they fail conversion.
-     * 
+     *
      * @param targetLayer
      *            the target layer
      * @return true if the command is valid after conversion, false if the
@@ -39,7 +39,7 @@ public interface ILayerCommand {
     /**
      * Same semantics as {@link Object#clone()} Used to make a copies of the
      * command if has to passed to different layer stacks.
-     * 
+     *
      * @see GridLayer#doCommand(ILayerCommand)
      * @return a cloned instance of the command
      */

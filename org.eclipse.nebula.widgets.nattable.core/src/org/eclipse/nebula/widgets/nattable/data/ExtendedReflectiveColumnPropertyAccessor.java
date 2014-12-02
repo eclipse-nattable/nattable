@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,6 +23,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
         super(propertyNames);
     }
 
+    @Override
     public Object getDataValue(R rowObj, int columnIndex) {
         String propertyName = getColumnProperty(columnIndex);
         if (propertyName.contains(".")) { //$NON-NLS-1$
@@ -32,6 +33,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
         }
     }
 
+    @Override
     public void setDataValue(R rowObj, int columnIndex, Object newValue) {
         String propertyName = getColumnProperty(columnIndex);
         if (propertyName.contains(".")) { //$NON-NLS-1$
@@ -43,7 +45,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
 
     /**
      * Reads the value of a property out of a given bean via reflection.
-     * 
+     *
      * @param object
      *            the bean out of which the property value should be read
      * @param propertyName
@@ -100,7 +102,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
      * Sets a value to the property of a bean via reflection. Also supports dot
      * separated property names to access properties anywhere within the object
      * graph.
-     * 
+     *
      * @param object
      *            the bean where the property value should be set
      * @param propertyName

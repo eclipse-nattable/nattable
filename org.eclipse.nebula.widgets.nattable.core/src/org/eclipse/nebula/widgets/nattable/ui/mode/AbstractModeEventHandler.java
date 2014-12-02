@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,15 +27,15 @@ public class AbstractModeEventHandler implements IModeEventHandler {
     }
 
     protected ModeSupport getModeSupport() {
-        return modeSupport;
+        return this.modeSupport;
     }
 
     protected void switchMode(String mode) {
-        modeSupport.switchMode(mode);
+        this.modeSupport.switchMode(mode);
     }
 
     protected void switchMode(IModeEventHandler modeEventHandler) {
-        modeSupport.switchMode(modeEventHandler);
+        this.modeSupport.switchMode(modeEventHandler);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class AbstractModeEventHandler implements IModeEventHandler {
      * Checks if the mouse down event was processed on the same cell as the
      * mouse up event. Is used to handle small mouse movements when clicking as
      * a click and not as a drag operation.
-     * 
+     *
      * @param downEvent
      *            The MouseEvent for mouse down.
      * @param upEvent
@@ -89,11 +89,11 @@ public class AbstractModeEventHandler implements IModeEventHandler {
      *         cell as the intial mouse down event.
      */
     protected boolean eventOnSameCell(MouseEvent downEvent, MouseEvent upEvent) {
-        int startCol = natTable.getColumnPositionByX(downEvent.x);
-        int startRow = natTable.getRowPositionByY(downEvent.y);
+        int startCol = this.natTable.getColumnPositionByX(downEvent.x);
+        int startRow = this.natTable.getRowPositionByY(downEvent.y);
 
-        int col = natTable.getColumnPositionByX(upEvent.x);
-        int row = natTable.getRowPositionByY(upEvent.y);
+        int col = this.natTable.getColumnPositionByX(upEvent.x);
+        int row = this.natTable.getRowPositionByY(upEvent.y);
 
         return (startCol == col && startRow == row);
     }

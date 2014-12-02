@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,10 +27,10 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * {@link TextPainter} as base {@link ICellPainter} and decorate it with the
      * {@link ColumnGroupExpandCollapseImagePainter} on the right edge of the
      * cell.
-     * 
+     *
      * @param columnGroupModel
      *            the column group model that is used by the grid
-     * 
+     *
      * @deprecated Use constructor without ColumnGroupModel reference
      */
     @Deprecated
@@ -43,12 +43,12 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
      * the {@link ColumnGroupExpandCollapseImagePainter} on the right edge of
      * the cell.
-     * 
+     *
      * @param columnGroupModel
      *            the column group model that is used by the grid
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
-     * 
+     *
      * @deprecated Use constructor without ColumnGroupModel reference
      */
     @Deprecated
@@ -62,7 +62,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
      * the {@link ColumnGroupExpandCollapseImagePainter} on the specified edge
      * of the cell.
-     * 
+     *
      * @param columnGroupModel
      *            the column group model that is used by the grid
      * @param interiorPainter
@@ -70,7 +70,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * @param cellEdge
      *            the edge of the cell on which the column group indicator
      *            decoration should be applied
-     * 
+     *
      * @deprecated Use constructor without ColumnGroupModel reference
      */
     @Deprecated
@@ -95,7 +95,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
      * the {@link ColumnGroupExpandCollapseImagePainter} on the right edge of
      * the cell.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      */
@@ -108,7 +108,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
      * the {@link ColumnGroupExpandCollapseImagePainter} on the specified edge
      * of the cell.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param cellEdge
@@ -126,7 +126,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
      * the given {@link ICellPainter} to use for column group related decoration
      * on the specified edge of the cell.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param cellEdge
@@ -155,7 +155,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * configured to render the background or not via method parameter. With the
      * additional parameters, the behaviour of the created
      * {@link CellPainterDecorator} can be configured in terms of rendering.
-     * 
+     *
      * @param columnGroupModel
      *            the column group model that is used by the grid
      * @param interiorPainter
@@ -177,7 +177,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      *            same coordinates, using the whole cell bounds,
      *            <code>true</code> will cause the bounds of the cell to shrink
      *            for the base painter.
-     * 
+     *
      * @deprecated Use constructor without ColumnGroupModel reference
      */
     @Deprecated
@@ -201,7 +201,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * behaviour of the {@link ColumnGroupExpandCollapseImagePainter} and the
      * {@link CellPainterDecorator} for some attributes. Remains because of
      * downwards compatibility.
-     * 
+     *
      * @param columnGroupModel
      *            the column group model that is used by the grid
      * @param interiorPainter
@@ -213,7 +213,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * @param interiorPainterToSpanFullWidth
      *            flag to configure how the bounds of the base painter should be
      *            calculated
-     * 
+     *
      * @deprecated Use constructor without ColumnGroupModel reference
      */
     @Deprecated
@@ -236,7 +236,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * configured to render the background or not via method parameter. With the
      * additional parameters, the behaviour of the created
      * {@link CellPainterDecorator} can be configured in terms of rendering.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param cellEdge
@@ -277,7 +277,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * or not via method parameter. With the additional parameters, the
      * behaviour of the created {@link CellPainterDecorator} can be configured
      * in terms of rendering.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param cellEdge
@@ -318,7 +318,7 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
      * behaviour of the {@link ColumnGroupExpandCollapseImagePainter} and the
      * {@link CellPainterDecorator} for some attributes. Remains because of
      * downwards compatibility.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param paintBg

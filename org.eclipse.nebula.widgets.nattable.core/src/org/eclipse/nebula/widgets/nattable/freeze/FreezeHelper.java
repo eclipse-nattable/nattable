@@ -23,17 +23,17 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 /**
  * Helper class to deal with freeze and unfreeze of a NatTable.
- * 
+ *
  * <p>
  * This class is intended for internal use only. Consider using the appropriate
  * commands instead of using this helper directly.
- * 
+ *
  * @see FreezeColumnCommand
  * @see FreezeRowCommand
  * @see FreezePositionCommand
  * @see FreezeSelectionCommand
  * @see UnFreezeGridCommand
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -43,7 +43,7 @@ public class FreezeHelper {
      * Freezes the grid at the specified position. This method is for internal
      * use. Consider using the appropriate commands on the NatTable instead to
      * freeze the grid programmatically.
-     * 
+     *
      * @param freezeLayer
      *            The FreezeLayer of the grid to perform the freeze action.
      * @param viewportLayer
@@ -52,7 +52,7 @@ public class FreezeHelper {
      *            The top left position of the freeze area
      * @param bottomRightPosition
      *            The bottom right position of the freeze area
-     * 
+     *
      * @see FreezeColumnCommand
      * @see FreezeRowCommand
      * @see FreezePositionCommand
@@ -63,8 +63,7 @@ public class FreezeHelper {
             PositionCoordinate bottomRightPosition) {
 
         if (freezeLayer == null || viewportLayer == null) {
-            throw new IllegalArgumentException(
-                    "freezeLayer and viewportLayer can not be null!"); //$NON-NLS-1$
+            throw new IllegalArgumentException("freezeLayer and viewportLayer can not be null!"); //$NON-NLS-1$
         }
 
         if (topLeftPosition != null && bottomRightPosition != null) {
@@ -93,19 +92,18 @@ public class FreezeHelper {
      * Unfreezes the grid at the specified position. This method is for internal
      * use. Consider using the appropriate command on the NatTable instead to
      * unfreeze the grid programmatically.
-     * 
+     *
      * @param freezeLayer
      *            The FreezeLayer of the grid to perform the freeze action.
      * @param viewportLayer
      *            The ViewportLayer of the grid to perform the freeze action.
-     * 
+     *
      * @see UnFreezeGridCommand
      */
     public static void unfreeze(FreezeLayer freezeLayer,
             ViewportLayer viewportLayer) {
         if (freezeLayer == null || viewportLayer == null) {
-            throw new IllegalArgumentException(
-                    "freezeLayer and viewportLayer can not be null!"); //$NON-NLS-1$
+            throw new IllegalArgumentException("freezeLayer and viewportLayer can not be null!"); //$NON-NLS-1$
         }
 
         resetViewport(freezeLayer, viewportLayer);
@@ -119,7 +117,7 @@ public class FreezeHelper {
     /**
      * Helper method to reset the origin coordinates of the viewport. Is needed
      * to perform an unfreeze or to override a current frozen state.
-     * 
+     *
      * @param freezeLayer
      *            The FreezeLayer of the grid to perform the freeze action.
      * @param viewportLayer

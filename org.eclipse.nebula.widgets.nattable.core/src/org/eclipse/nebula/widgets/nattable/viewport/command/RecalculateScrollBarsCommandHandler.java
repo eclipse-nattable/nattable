@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,13 +22,14 @@ public class RecalculateScrollBarsCommandHandler extends
         this.viewportLayer = viewportLayer;
     }
 
+    @Override
     public Class<RecalculateScrollBarsCommand> getCommandClass() {
         return RecalculateScrollBarsCommand.class;
     }
 
     @Override
     protected boolean doCommand(RecalculateScrollBarsCommand command) {
-        viewportLayer.recalculateScrollBars();
+        this.viewportLayer.recalculateScrollBars();
         return true;
     }
 

@@ -82,12 +82,11 @@ public class _010_Column_categories extends AbstractNatExample {
         DefaultBodyLayerStack bodyLayer = this.gridLayer.getBodyLayerStack();
         ColumnCategoriesModel model = new ColumnCategoriesModelFixture();
 
-        bodyLayer
-        .registerCommandHandler(new ChooseColumnsFromCategoriesCommandHandler(
-                bodyLayer.getColumnHideShowLayer(), this.gridLayer
-                .getColumnHeaderLayerStack()
-                .getColumnHeaderLayer(), this.gridLayer
-                .getColumnHeaderLayerStack().getDataLayer(),
-                model));
+        bodyLayer.registerCommandHandler(
+                new ChooseColumnsFromCategoriesCommandHandler(
+                        bodyLayer.getColumnHideShowLayer(),
+                        this.gridLayer.getColumnHeaderLayerStack().getColumnHeaderLayer(),
+                        this.gridLayer.getColumnHeaderLayerStack().getDataLayer(),
+                        model));
     }
 }

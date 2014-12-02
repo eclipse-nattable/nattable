@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.DateTime;
  * on setting the focus programmatically and it is not possible to open the
  * dropdown programmatically, we suggest to rather use some Nebula widget or a
  * custom widget for date editing.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -64,7 +64,7 @@ public class DateCellEditor extends AbstractCellEditor {
 
     /**
      * Creates a DateCellEditor.
-     * 
+     *
      * @param moveSelectionOnEnter
      *            Flag to configure whether the selection should move after a
      *            value was committed after pressing enter.
@@ -94,9 +94,9 @@ public class DateCellEditor extends AbstractCellEditor {
 
     @Override
     public Object getCanonicalValue() {
-        if (layerCell.getDataValue() instanceof Calendar) {
+        if (this.layerCell.getDataValue() instanceof Calendar) {
             return getEditorValue();
-        } else if (layerCell.getDataValue() instanceof Date) {
+        } else if (this.layerCell.getDataValue() instanceof Date) {
             return ((Calendar) getEditorValue()).getTime();
         }
         return null;
@@ -146,7 +146,7 @@ public class DateCellEditor extends AbstractCellEditor {
                     boolean commit = (event.stateMask == SWT.ALT) ? false
                             : true;
                     MoveDirectionEnum move = MoveDirectionEnum.NONE;
-                    if (moveSelectionOnEnter && editMode == EditModeEnum.INLINE) {
+                    if (DateCellEditor.this.moveSelectionOnEnter && DateCellEditor.this.editMode == EditModeEnum.INLINE) {
                         if (event.stateMask == 0) {
                             move = MoveDirectionEnum.DOWN;
                         } else if (event.stateMask == SWT.SHIFT) {
@@ -157,7 +157,7 @@ public class DateCellEditor extends AbstractCellEditor {
                     if (commit)
                         commit(move);
 
-                    if (editMode == EditModeEnum.DIALOG) {
+                    if (DateCellEditor.this.editMode == EditModeEnum.DIALOG) {
                         parent.forceFocus();
                     }
                 } else if (event.keyCode == SWT.ESC && event.stateMask == 0) {

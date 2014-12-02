@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,18 +23,22 @@ public class DefaultCornerDataProvider implements IDataProvider {
         this.rowHeaderDataProvider = rowHeaderDataProvider;
     }
 
+    @Override
     public int getColumnCount() {
-        return rowHeaderDataProvider.getColumnCount();
+        return this.rowHeaderDataProvider.getColumnCount();
     }
 
+    @Override
     public int getRowCount() {
-        return columnHeaderDataProvider.getRowCount();
+        return this.columnHeaderDataProvider.getRowCount();
     }
 
+    @Override
     public Object getDataValue(int columnIndex, int rowIndex) {
         return null;
     }
 
+    @Override
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
         throw new UnsupportedOperationException();
     }

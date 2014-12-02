@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -48,20 +48,20 @@ public class ColumnReorderDragMode implements IDragMode {
     @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
         this.natTable = natTable;
-        initialEvent = event;
-        currentEvent = initialEvent;
-        dragFromGridColumnPosition = getDragFromGridColumnPosition();
+        this.initialEvent = event;
+        this.currentEvent = this.initialEvent;
+        this.dragFromGridColumnPosition = getDragFromGridColumnPosition();
 
-        natTable.addOverlayPainter(targetOverlayPainter);
+        natTable.addOverlayPainter(this.targetOverlayPainter);
 
         natTable.doCommand(new ClearAllSelectionsCommand());
 
-        fireMoveStartCommand(natTable, dragFromGridColumnPosition);
+        fireMoveStartCommand(natTable, this.dragFromGridColumnPosition);
     }
 
     @Override
     public void mouseMove(NatTable natTable, MouseEvent event) {
-        currentEvent = event;
+        this.currentEvent = event;
 
         natTable.doCommand(new ViewportDragCommand(event.x, -1));
 
@@ -70,13 +70,13 @@ public class ColumnReorderDragMode implements IDragMode {
 
     @Override
     public void mouseUp(NatTable natTable, MouseEvent event) {
-        natTable.removeOverlayPainter(targetOverlayPainter);
+        natTable.removeOverlayPainter(this.targetOverlayPainter);
 
         int dragToGridColumnPosition = getDragToGridColumnPosition(
                 getMoveDirection(event.x),
                 natTable.getColumnPositionByX(event.x));
 
-        if (!isValidTargetColumnPosition(natTable, dragFromGridColumnPosition,
+        if (!isValidTargetColumnPosition(natTable, this.dragFromGridColumnPosition,
                 dragToGridColumnPosition)) {
             dragToGridColumnPosition = -1;
         }
@@ -91,7 +91,7 @@ public class ColumnReorderDragMode implements IDragMode {
     }
 
     protected int getDragFromGridColumnPosition() {
-        return natTable.getColumnPositionByX(initialEvent.x);
+        return this.natTable.getColumnPositionByX(this.initialEvent.x);
     }
 
     protected int getDragToGridColumnPosition(CellEdgeEnum moveDirection,
@@ -117,16 +117,16 @@ public class ColumnReorderDragMode implements IDragMode {
         if (cell != null) {
             Rectangle selectedColumnHeaderRect = cell.getBounds();
             return CellEdgeDetectUtil.getHorizontalCellEdge(
-                    selectedColumnHeaderRect, new Point(x, initialEvent.y));
+                    selectedColumnHeaderRect, new Point(x, this.initialEvent.y));
         }
 
         return null;
     }
 
     private ILayerCell getColumnCell(int x) {
-        int gridColumnPosition = natTable.getColumnPositionByX(x);
-        int gridRowPosition = natTable.getRowPositionByY(initialEvent.y);
-        return natTable.getCellByPosition(gridColumnPosition, gridRowPosition);
+        int gridColumnPosition = this.natTable.getColumnPositionByX(x);
+        int gridRowPosition = this.natTable.getRowPositionByY(this.initialEvent.y);
+        return this.natTable.getCellByPosition(gridColumnPosition, gridRowPosition);
     }
 
     protected boolean isValidTargetColumnPosition(ILayer natLayer,
@@ -152,22 +152,22 @@ public class ColumnReorderDragMode implements IDragMode {
         public void paintOverlay(GC gc, ILayer layer) {
             int dragFromGridColumnPosition = getDragFromGridColumnPosition();
 
-            if (currentEvent.x > natTable.getWidth()) {
+            if (ColumnReorderDragMode.this.currentEvent.x > ColumnReorderDragMode.this.natTable.getWidth()) {
                 return;
             }
 
-            CellEdgeEnum moveDirection = getMoveDirection(currentEvent.x);
+            CellEdgeEnum moveDirection = getMoveDirection(ColumnReorderDragMode.this.currentEvent.x);
             int dragToGridColumnPosition = getDragToGridColumnPosition(
                     moveDirection,
-                    natTable.getColumnPositionByX(currentEvent.x));
+                    ColumnReorderDragMode.this.natTable.getColumnPositionByX(ColumnReorderDragMode.this.currentEvent.x));
 
-            if (isValidTargetColumnPosition(natTable,
+            if (isValidTargetColumnPosition(ColumnReorderDragMode.this.natTable,
                     dragFromGridColumnPosition, dragToGridColumnPosition)) {
                 int dragToColumnHandleX = -1;
 
                 if (moveDirection != null) {
                     Rectangle selectedColumnHeaderRect = getColumnCell(
-                            currentEvent.x).getBounds();
+                            ColumnReorderDragMode.this.currentEvent.x).getBounds();
 
                     switch (moveDirection) {
                         case LEFT:

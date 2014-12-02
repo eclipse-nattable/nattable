@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,11 +31,11 @@ public class CellLabelMouseEventMatcherTest {
     @Before
     public void setUpCustomCellLabel() {
         DummyGridLayerStack gridLayerStack = new DummyGridLayerStack(5, 5);
-        natTableFixture = new NatTableFixture(gridLayerStack);
+        this.natTableFixture = new NatTableFixture(gridLayerStack);
 
         // Register custom label
         DataLayer bodyDataLayer = (DataLayer) gridLayerStack.getBodyDataLayer();
-        natTableFixture.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
+        this.natTableFixture.registerLabelOnColumn(bodyDataLayer, 0, TEST_LABEL);
     }
 
     @Test
@@ -43,8 +43,8 @@ public class CellLabelMouseEventMatcherTest {
         CellLabelMouseEventMatcher matcher = new CellLabelMouseEventMatcher(
                 GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, TEST_LABEL);
 
-        boolean match = matcher.matches(natTableFixture, new MouseEvent(
-                SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
+        boolean match = matcher.matches(this.natTableFixture, new MouseEvent(
+                SWTUtils.getLeftClickEvent(100, 100, 0, this.natTableFixture)),
                 new LabelStack(GridRegion.BODY));
 
         Assert.assertTrue(match);
@@ -56,8 +56,8 @@ public class CellLabelMouseEventMatcherTest {
                 GridRegion.COLUMN_HEADER, MouseEventMatcher.LEFT_BUTTON,
                 TEST_LABEL);
 
-        boolean match = matcher.matches(natTableFixture, new MouseEvent(
-                SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
+        boolean match = matcher.matches(this.natTableFixture, new MouseEvent(
+                SWTUtils.getLeftClickEvent(100, 100, 0, this.natTableFixture)),
                 new LabelStack(GridRegion.BODY));
 
         Assert.assertFalse(match);
@@ -68,8 +68,8 @@ public class CellLabelMouseEventMatcherTest {
         CellLabelMouseEventMatcher matcher = new CellLabelMouseEventMatcher(
                 GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON, TEST_LABEL);
 
-        boolean match = matcher.matches(natTableFixture, new MouseEvent(
-                SWTUtils.getLeftClickEvent(100, 100, 0, natTableFixture)),
+        boolean match = matcher.matches(this.natTableFixture, new MouseEvent(
+                SWTUtils.getLeftClickEvent(100, 100, 0, this.natTableFixture)),
                 new LabelStack(GridRegion.BODY));
 
         Assert.assertFalse(match);

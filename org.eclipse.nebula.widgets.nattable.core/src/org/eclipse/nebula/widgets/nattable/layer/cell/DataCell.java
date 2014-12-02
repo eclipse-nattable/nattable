@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
-
 public class DataCell {
 
     protected int columnPosition;

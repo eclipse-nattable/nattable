@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,19 +35,20 @@ public abstract class AbstractKeySelectAction implements IKeyAction {
         this.isStateMaskSpecified = true;
     }
 
+    @Override
     public void run(NatTable natTable, KeyEvent event) {
-        if (!isStateMaskSpecified) {
+        if (!this.isStateMaskSpecified) {
             this.shiftMask = (event.stateMask & SWT.SHIFT) != 0;
             this.controlMask = (event.stateMask & SWT.CTRL) != 0;
         }
     }
 
     protected boolean isShiftMask() {
-        return shiftMask;
+        return this.shiftMask;
     }
 
     protected boolean isControlMask() {
-        return controlMask;
+        return this.controlMask;
     }
 
     public void setShiftMask(boolean shiftMask) {
@@ -59,7 +60,7 @@ public abstract class AbstractKeySelectAction implements IKeyAction {
     }
 
     public MoveDirectionEnum getDirection() {
-        return direction;
+        return this.direction;
     }
 
 }

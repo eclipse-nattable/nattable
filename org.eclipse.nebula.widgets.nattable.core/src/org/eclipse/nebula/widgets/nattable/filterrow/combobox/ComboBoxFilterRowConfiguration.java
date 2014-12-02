@@ -32,7 +32,7 @@ import org.eclipse.swt.graphics.GC;
  * Special filter row configuration that configures the
  * FilterRowComboBoxCellEditor as editor for the filter row with its necessary
  * configurations regarding matching mode, converter and painter.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -65,7 +65,7 @@ public class ComboBoxFilterRowConfiguration extends
      * Create a ComboBoxFilterRowConfiguration that uses the default
      * FilterRowComboBoxCellEditor showing the maximum number of 10 items at
      * once and the ComboBoxFilterIconPainter with the default filter icon.
-     * 
+     *
      * @param comboBoxDataProvider
      *            The IComboBoxDataProvider that is used to fill the filter row
      *            comboboxes.

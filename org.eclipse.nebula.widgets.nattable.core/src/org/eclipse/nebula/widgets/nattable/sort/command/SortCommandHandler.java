@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,26 +37,28 @@ public class SortCommandHandler<T> extends
 
         final int columnIndex = command.getLayer().getColumnIndexByPosition(
                 command.getColumnPosition());
-        final SortDirectionEnum newSortDirection = sortModel.getSortDirection(
+        final SortDirectionEnum newSortDirection = this.sortModel.getSortDirection(
                 columnIndex).getNextSortDirection();
 
         // Fire command - with busy indicator
         Runnable sortRunner = new Runnable() {
+            @Override
             public void run() {
-                sortModel.sort(columnIndex, newSortDirection,
+                SortCommandHandler.this.sortModel.sort(columnIndex, newSortDirection,
                         command.isAccumulate());
             }
         };
         BusyIndicator.showWhile(null, sortRunner);
 
         // Fire event
-        SortColumnEvent sortEvent = new SortColumnEvent(sortHeaderLayer,
+        SortColumnEvent sortEvent = new SortColumnEvent(this.sortHeaderLayer,
                 command.getColumnPosition());
-        sortHeaderLayer.fireLayerEvent(sortEvent);
+        this.sortHeaderLayer.fireLayerEvent(sortEvent);
 
         return true;
     }
 
+    @Override
     public Class<SortColumnCommand> getCommandClass() {
         return SortColumnCommand.class;
     }

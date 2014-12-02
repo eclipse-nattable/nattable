@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -41,6 +41,7 @@ public class Using_the_ListDataProvider extends AbstractNatExample {
                 + "retrieve column values from a row object.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         List<Person> myList = new ArrayList<Person>();
         myList.add(new Person("Homer", "Simpson", "Sargeant", 1234567890L));
@@ -76,19 +77,19 @@ public class Using_the_ListDataProvider extends AbstractNatExample {
         }
 
         public String getFirstName() {
-            return firstName;
+            return this.firstName;
         }
 
         public String getLastName() {
-            return lastName;
+            return this.lastName;
         }
 
         public String getRank() {
-            return rank;
+            return this.rank;
         }
 
         public long getSerialNumber() {
-            return serialNumber;
+            return this.serialNumber;
         }
     }
 

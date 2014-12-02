@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -18,19 +18,20 @@ public abstract class AbstractRowCommand implements ILayerCommand {
     private RowPositionCoordinate rowPositionCoordinate;
 
     protected AbstractRowCommand(ILayer layer, int rowPosition) {
-        rowPositionCoordinate = new RowPositionCoordinate(layer, rowPosition);
+        this.rowPositionCoordinate = new RowPositionCoordinate(layer, rowPosition);
     }
 
     protected AbstractRowCommand(AbstractRowCommand command) {
         this.rowPositionCoordinate = command.rowPositionCoordinate;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         RowPositionCoordinate targetRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(rowPositionCoordinate,
+                .convertRowPositionToTargetContext(this.rowPositionCoordinate,
                         targetLayer);
         if (targetRowPositionCoordinate != null) {
-            rowPositionCoordinate = targetRowPositionCoordinate;
+            this.rowPositionCoordinate = targetRowPositionCoordinate;
             return true;
         } else {
             return false;
@@ -38,13 +39,13 @@ public abstract class AbstractRowCommand implements ILayerCommand {
     }
 
     public int getRowPosition() {
-        return rowPositionCoordinate.getRowPosition();
+        return this.rowPositionCoordinate.getRowPosition();
     }
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName()
-                + " rowPosition=" + rowPositionCoordinate.getRowPosition(); //$NON-NLS-1$
+                + " rowPosition=" + this.rowPositionCoordinate.getRowPosition(); //$NON-NLS-1$
     }
 
 }

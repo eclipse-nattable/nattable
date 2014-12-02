@@ -118,10 +118,8 @@ public class EditableGridExample extends AbstractNatExample {
                 RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap());
 
-        DataLayer columnHeaderDataLayer = (DataLayer) gridLayer
-                .getColumnHeaderDataLayer();
-        columnHeaderDataLayer
-        .setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        DataLayer columnHeaderDataLayer = (DataLayer) gridLayer.getColumnHeaderDataLayer();
+        columnHeaderDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         final DataLayer bodyDataLayer = (DataLayer) gridLayer
                 .getBodyDataLayer();
@@ -162,8 +160,8 @@ public class EditableGridExample extends AbstractNatExample {
                                 GridRegion.COLUMN_HEADER,
                                 MouseEventMatcher.LEFT_BUTTON,
                                 columnHeaderCheckBoxPainter),
-                                new ToggleCheckBoxColumnAction(
-                                        columnHeaderCheckBoxPainter, bodyDataLayer));
+                        new ToggleCheckBoxColumnAction(
+                                columnHeaderCheckBoxPainter, bodyDataLayer));
             }
         });
 
@@ -181,8 +179,7 @@ public class EditableGridExample extends AbstractNatExample {
             @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
 
-                EditableGridExample
-                .registerConfigLabelsOnColumns(columnLabelAccumulator);
+                EditableGridExample.registerConfigLabelsOnColumns(columnLabelAccumulator);
 
                 registerISINValidator(configRegistry);
                 registerAskPriceValidator(configRegistry, dataProvider);
@@ -200,9 +197,10 @@ public class EditableGridExample extends AbstractNatExample {
                 registerComboBox(
                         configRegistry,
                         new ComboBoxPainter(),
-                        new ComboBoxCellEditor(Arrays.asList(
-                                new PricingTypeBean("MN"), new PricingTypeBean(
-                                        "AT"))));
+                        new ComboBoxCellEditor(
+                                Arrays.asList(
+                                        new PricingTypeBean("MN"),
+                                        new PricingTypeBean("AT"))));
 
                 registerEditableRules(configRegistry, dataProvider);
             }
@@ -210,86 +208,74 @@ public class EditableGridExample extends AbstractNatExample {
         };
     }
 
-    private static void registerConfigLabelsOnColumns(
-            ColumnOverrideLabelAccumulator columnLabelAccumulator) {
-        columnLabelAccumulator
-        .registerColumnOverrides(
-                RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.SECURITY_ID_PROP_NAME),
+    private static void registerConfigLabelsOnColumns(ColumnOverrideLabelAccumulator columnLabelAccumulator) {
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.SECURITY_ID_PROP_NAME),
                 SECURITY_ID_EDITOR, SECURITY_ID_CONFIG_LABEL);
 
-        columnLabelAccumulator
-        .registerColumnOverrides(
-                RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.SECURITY_DESCRIPTION_PROP_NAME),
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.SECURITY_DESCRIPTION_PROP_NAME),
                 ALIGN_CELL_CONTENTS_LEFT_CONFIG_LABEL);
 
-        columnLabelAccumulator
-        .registerColumnOverrides(
-                RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.ISSUE_DATE_PROP_NAME),
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.ISSUE_DATE_PROP_NAME),
                 FORMAT_DATE_CONFIG_LABEL);
 
-        columnLabelAccumulator
-        .registerColumnOverrides(
-                RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME),
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME),
                 COMBO_BOX_CONFIG_LABEL, COMBO_BOX_EDITOR_CONFIG_LABEL,
                 FORMAT_PRICING_TYPE_CONFIG_LABEL);
 
-        columnLabelAccumulator
-        .registerColumnOverrides(
-                RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.BID_PRICE_PROP_NAME),
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.BID_PRICE_PROP_NAME),
                 BID_PRICE_CONFIG_LABEL,
                 FORMAT_DOUBLE_6_PLACES_CONFIG_LABEL,
                 FORMAT_DOUBLE_2_PLACES_CONFIG_LABEL,
                 ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
 
-        columnLabelAccumulator
-        .registerColumnOverrides(
-                RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME),
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME),
                 ASK_PRICE_CONFIG_LABEL,
                 FORMAT_DOUBLE_6_PLACES_CONFIG_LABEL,
                 FORMAT_DOUBLE_2_PLACES_CONFIG_LABEL,
                 ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
 
-        columnLabelAccumulator.registerColumnOverrides(RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.SPREAD_PROP_NAME),
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.SPREAD_PROP_NAME),
                 SPREAD_CONFIG_LABEL, FORMAT_DOUBLE_6_PLACES_CONFIG_LABEL,
                 ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
 
-        columnLabelAccumulator
-        .registerColumnOverrides(
-                RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME),
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.LOT_SIZE_PROP_NAME),
                 LOT_SIZE_CONFIG_LABEL, FORMAT_IN_MILLIONS_CONFIG_LABEL,
                 ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
 
-        columnLabelAccumulator
-        .registerColumnOverrides(
-                RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.PUBLISH_FLAG_PROP_NAME),
+        columnLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.PUBLISH_FLAG_PROP_NAME),
                 CHECK_BOX_EDITOR_CONFIG_LABEL, CHECK_BOX_CONFIG_LABEL);
     }
 
-    private static void registerSecurityDescriptionCellStyle(
-            IConfigRegistry configRegistry) {
+    private static void registerSecurityDescriptionCellStyle(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 HorizontalAlignmentEnum.LEFT);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL,
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.NORMAL,
                 ALIGN_CELL_CONTENTS_LEFT_CONFIG_LABEL);
     }
 
     private static void registerPricingCellStyle(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 HorizontalAlignmentEnum.RIGHT);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL,
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.NORMAL,
                 ALIGN_CELL_CONTENTS_RIGHT_CONFIG_LABEL);
     }
 
@@ -329,8 +315,8 @@ public class EditableGridExample extends AbstractNatExample {
 
         TextCellEditor textCellEditor = new TextCellEditor();
         textCellEditor.setErrorDecorationEnabled(true);
-        textCellEditor
-        .setErrorDecorationText("Security Id must be 3 alpha characters optionally followed by numbers");
+        textCellEditor.setErrorDecorationText(
+                "Security Id must be 3 alpha characters optionally followed by numbers");
         textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITOR, textCellEditor,

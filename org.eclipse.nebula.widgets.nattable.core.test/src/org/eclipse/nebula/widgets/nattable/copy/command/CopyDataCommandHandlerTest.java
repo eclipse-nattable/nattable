@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -49,41 +49,46 @@ public class CopyDataCommandHandlerTest {
     @Before
     public void setUp() {
         final IDataProvider bodyDataProvider = new DataProviderFixture(10, 10);
-        gridLayer = new DefaultGridLayer(bodyDataProvider,
+        this.gridLayer = new DefaultGridLayer(bodyDataProvider,
                 getColumnHeaderDataProvider(bodyDataProvider),
                 getRowHeaderDataProvider(bodyDataProvider));
-        gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 1050, 1050);
             }
         });
-        gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
                 .getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
-        rowHeaderLayer = gridLayer.getRowHeaderLayer();
-        columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-        selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
+        this.rowHeaderLayer = this.gridLayer.getRowHeaderLayer();
+        this.columnHeaderLayer = this.gridLayer.getColumnHeaderLayer();
+        this.selectionLayer = this.gridLayer.getBodyLayer().getSelectionLayer();
 
-        commandHandler = new CopyDataCommandHandler(selectionLayer,
-                columnHeaderLayer, rowHeaderLayer);
+        this.commandHandler = new CopyDataCommandHandler(this.selectionLayer,
+                this.columnHeaderLayer, this.rowHeaderLayer);
     }
 
     private IDataProvider getRowHeaderDataProvider(
             final IDataProvider bodyDataProvider) {
         return new IDataProvider() {
 
+            @Override
             public int getColumnCount() {
                 return 1;
             }
 
+            @Override
             public Object getDataValue(int columnIndex, int rowIndex) {
                 return Integer.valueOf(rowIndex + 1);
             }
 
+            @Override
             public int getRowCount() {
                 return bodyDataProvider.getRowCount();
             }
 
+            @Override
             public void setDataValue(int columnIndex, int rowIndex,
                     Object newValue) {}
 
@@ -94,18 +99,22 @@ public class CopyDataCommandHandlerTest {
             final IDataProvider dependent) {
         return new IDataProvider() {
 
+            @Override
             public int getColumnCount() {
                 return dependent.getColumnCount();
             }
 
+            @Override
             public Object getDataValue(int columnIndex, int rowIndex) {
                 return "Column " + (columnIndex + 1);
             }
 
+            @Override
             public int getRowCount() {
                 return 1;
             }
 
+            @Override
             public void setDataValue(int columnIndex, int rowIndex,
                     Object newValue) {}
         };
@@ -113,16 +122,16 @@ public class CopyDataCommandHandlerTest {
 
     @Test
     public void shouldReturnArrayOfCellsForColumnsInSelectionModel() {
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 2, 3,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 2, 3,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 4, 1,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 4, 1,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 9, 9,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 9, 9,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 0,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 0,
                 false, true));
 
-        ILayerCell[][] columns = commandHandler.assembleColumnHeaders();
+        ILayerCell[][] columns = this.commandHandler.assembleColumnHeaders();
 
         assertEquals(5, columns.length);
         assertEquals("Column 2", columns[0][1].getDataValue());
@@ -133,56 +142,56 @@ public class CopyDataCommandHandlerTest {
 
     @Test
     public void shouldReturnOnlySelectedBodyCells() {
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 2,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 2,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 7,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 3, 7,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 4, 8,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 4, 8,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 7, 9,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 7, 9,
                 false, true));
-        selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 8, 0,
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 8, 0,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 9, 9,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 9, 9,
                 false, true));
-        selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 5, 0,
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 5, 0,
                 false, true));
 
-        ILayerCell[] bodyCells = commandHandler.assembleBody(0);
+        ILayerCell[] bodyCells = this.commandHandler.assembleBody(0);
         assertEquals(8, bodyCells.length);
         assertEquals("[5,0]", bodyCells[4].getDataValue());
         assertEquals("[8,0]", bodyCells[6].getDataValue());
 
-        bodyCells = commandHandler.assembleBody(9);
+        bodyCells = this.commandHandler.assembleBody(9);
         assertEquals("[9,9]", bodyCells[7].getDataValue());
     }
 
     /**
      * Returns a collection representing a 11 x 11 grid. Only selected cells
      * will have data, those are (col,row): (2,3),(4,1),(1,0),(9,9)
-     * 
+     *
      * TODO: Test is ignored since it passes locally and fails on the build.
      * Can't figure out why.
      */
     @Ignore
     @Test
     public void shouldReturnGridWithSelectedCellsAndHeaders() {
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 2,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 2,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 7,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 3, 7,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 4, 8,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 4, 8,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 7, 9,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 7, 9,
                 false, true));
-        selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 8, 0,
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 8, 0,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 9, 9,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 9, 9,
                 false, true));
-        selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 5, 0,
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 5, 0,
                 false, true));
 
-        ILayerCell[][] copiedGrid = commandHandler
+        ILayerCell[][] copiedGrid = this.commandHandler
                 .assembleCopiedDataStructure();
 
         // Assert structure of assembled copy grid with headers
@@ -194,23 +203,23 @@ public class CopyDataCommandHandlerTest {
 
     @Test
     public void shouldReturnGridWithSelectedCellsNoHeaders() {
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 1, 2,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 1, 2,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 7,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 3, 7,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 4, 8,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 4, 8,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 7, 9,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 7, 9,
                 false, true));
-        selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 8, 0,
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 8, 0,
                 false, true));
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 9, 9,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 9, 9,
                 false, true));
-        selectionLayer.doCommand(new SelectColumnCommand(selectionLayer, 5, 0,
+        this.selectionLayer.doCommand(new SelectColumnCommand(this.selectionLayer, 5, 0,
                 false, true));
 
-        commandHandler = new CopyDataCommandHandler(selectionLayer);
-        ILayerCell[][] copiedGrid = commandHandler
+        this.commandHandler = new CopyDataCommandHandler(this.selectionLayer);
+        ILayerCell[][] copiedGrid = this.commandHandler
                 .assembleCopiedDataStructure();
 
         // Assert structure of assembled copy grid with headers
@@ -221,11 +230,11 @@ public class CopyDataCommandHandlerTest {
 
     @Test
     public void shouldCopySingleCell() {
-        selectionLayer.doCommand(new SelectCellCommand(selectionLayer, 3, 7,
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 3, 7,
                 false, false));
 
         CopyDataCommandHandler commandHandler = new CopyDataCommandHandler(
-                selectionLayer);
+                this.selectionLayer);
         commandHandler.assembleCopiedDataStructure();
         ILayerCell[][] copiedGrid = commandHandler
                 .assembleCopiedDataStructure();
@@ -236,12 +245,12 @@ public class CopyDataCommandHandlerTest {
         // First cell should be blank, this is the corner
         assertNull(cells[0]);
         // Should only have Column headers
-        int[] selectedColumns = gridLayer.getBodyLayer().getSelectionLayer()
+        int[] selectedColumns = this.gridLayer.getBodyLayer().getSelectionLayer()
                 .getSelectedColumnPositions();
         for (int columnPosition = 1; columnPosition < cells.length; columnPosition++) {
             ILayerCell cell = cells[columnPosition];
             // Remember to substract offset from columnPosition
-            assertEquals(columnHeaderLayer.getDataValueByPosition(
+            assertEquals(this.columnHeaderLayer.getDataValueByPosition(
                     selectedColumns[columnPosition - 1], 0),
                     cell.getDataValue());
         }
@@ -249,8 +258,8 @@ public class CopyDataCommandHandlerTest {
 
     private void checkBodyCells(ILayerCell[][] copiedGrid) {
         int cellWithDataCounter = 0;
-        int[] selectedColumns = selectionLayer.getSelectedColumnPositions();
-        Set<Range> selectedRowRanges = selectionLayer.getSelectedRowPositions();
+        int[] selectedColumns = this.selectionLayer.getSelectedColumnPositions();
+        Set<Range> selectedRowRanges = this.selectionLayer.getSelectedRowPositions();
 
         Set<Integer> selectedRows = new HashSet<Integer>();
         for (Range range : selectedRowRanges) {
@@ -263,7 +272,7 @@ public class CopyDataCommandHandlerTest {
             ILayerCell[] cells = copiedGrid[rowPosition];
 
             assertEquals(
-                    rowHeaderLayer.getDataValueByPosition(0, rowPosition - 1),
+                    this.rowHeaderLayer.getDataValueByPosition(0, rowPosition - 1),
                     cells[0].getDataValue());
 
             // Check body data
@@ -273,13 +282,13 @@ public class CopyDataCommandHandlerTest {
                 final ILayerCell cell = cells[columnPosition];
                 if (cell != null) {
                     cellWithDataCounter++;
-                    assertEquals(selectionLayer.getDataValueByPosition(
+                    assertEquals(this.selectionLayer.getDataValueByPosition(
                             selectedColumns[columnPosition - 1],
                             selectedRowPosition), cell.getDataValue());
                 }
             }
         }
-        assertEquals(selectionLayer.getSelectedCellPositions().length,
+        assertEquals(this.selectionLayer.getSelectedCellPositions().length,
                 cellWithDataCounter);
     }
 }

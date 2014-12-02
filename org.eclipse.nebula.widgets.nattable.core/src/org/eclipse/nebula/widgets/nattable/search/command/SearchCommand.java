@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -70,47 +70,47 @@ public class SearchCommand implements ILayerCommand {
     }
 
     public ILayer getContext() {
-        return context;
+        return this.context;
     }
 
     public ISearchStrategy getSearchStrategy() {
-        return searchStrategy;
+        return this.searchStrategy;
     }
 
     public String getSearchText() {
-        return searchText;
+        return this.searchText;
     }
 
     public String getSearchDirection() {
-        return searchDirection;
+        return this.searchDirection;
     }
 
     public boolean isWrapSearch() {
-        return isWrapSearch;
+        return this.isWrapSearch;
     }
 
     public boolean isCaseSensitive() {
-        return isCaseSensitive;
+        return this.isCaseSensitive;
     }
 
     public boolean isWholeWord() {
-        return isWholeWord;
+        return this.isWholeWord;
     }
 
     public boolean isIncremental() {
-        return isIncremental;
+        return this.isIncremental;
     }
 
     public boolean isIncludeCollapsed() {
-        return isIncludeCollapsed;
+        return this.isIncludeCollapsed;
     }
 
     public boolean isRegex() {
-        return isRegex;
+        return this.isRegex;
     }
 
     public ILayerListener getSearchEventListener() {
-        return searchEventListener;
+        return this.searchEventListener;
     }
 
     public void setSearchEventListener(ILayerListener listener) {
@@ -118,14 +118,16 @@ public class SearchCommand implements ILayerCommand {
     }
 
     public Comparator<?> getComparator() {
-        return comparator;
+        return this.comparator;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
-        context = targetLayer;
+        this.context = targetLayer;
         return true;
     }
 
+    @Override
     public SearchCommand cloneCommand() {
         return new SearchCommand(this);
     }

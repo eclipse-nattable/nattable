@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,25 +35,26 @@ public class MultiColumnReorderEventDiffTest {
 
     @Before
     public void before() {
-        dataLayer = new DataLayerFixture(20, 20, 100, 40);
-        viewportLayer = new ViewportLayer(dataLayer);
-        viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.dataLayer = new DataLayerFixture(20, 20, 100, 40);
+        this.viewportLayer = new ViewportLayer(this.dataLayer);
+        this.viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 800, 400);
             }
 
         });
-        viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(2));
-        viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(2));
+        this.viewportLayer.setOriginX(this.viewportLayer.getStartXOfColumnPosition(2));
+        this.viewportLayer.setOriginY(this.viewportLayer.getStartYOfRowPosition(2));
     }
 
     @After
     public void after() {
-        Assert.assertTrue(event.isHorizontalStructureChanged());
+        Assert.assertTrue(this.event.isHorizontalStructureChanged());
 
-        Assert.assertFalse(event.isVerticalStructureChanged());
-        Assert.assertNull(event.getRowDiffs());
+        Assert.assertFalse(this.event.isVerticalStructureChanged());
+        Assert.assertNull(this.event.getRowDiffs());
     }
 
     /**
@@ -61,10 +62,10 @@ public class MultiColumnReorderEventDiffTest {
      */
     @Test
     public void testReorderRightColumnDiffs() {
-        event = new ColumnReorderEvent(dataLayer, Arrays.asList(new Integer[] {
+        this.event = new ColumnReorderEvent(this.dataLayer, Arrays.asList(new Integer[] {
                 2, 3, 4 }), 7, true);
 
-        Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
+        Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
         Assert.assertNotNull(columnDiffs);
         Assert.assertEquals(2, columnDiffs.size());
         Iterator<StructuralDiff> iterator = columnDiffs.iterator();
@@ -79,11 +80,11 @@ public class MultiColumnReorderEventDiffTest {
      */
     @Test
     public void testReorderRightConvertToLocal() {
-        event = new ColumnReorderEvent(dataLayer, Arrays.asList(new Integer[] {
+        this.event = new ColumnReorderEvent(this.dataLayer, Arrays.asList(new Integer[] {
                 2, 3, 4 }), 7, true);
-        event.convertToLocal(viewportLayer);
+        this.event.convertToLocal(this.viewportLayer);
 
-        Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
+        Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
         Assert.assertNotNull(columnDiffs);
         Assert.assertEquals(2, columnDiffs.size());
         Iterator<StructuralDiff> iterator = columnDiffs.iterator();
@@ -99,10 +100,10 @@ public class MultiColumnReorderEventDiffTest {
      */
     @Test
     public void testReorderLeftColumnDiffs() {
-        event = new ColumnReorderEvent(dataLayer, Arrays.asList(new Integer[] {
+        this.event = new ColumnReorderEvent(this.dataLayer, Arrays.asList(new Integer[] {
                 7, 8, 9 }), 2, true);
 
-        Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
+        Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
         Assert.assertNotNull(columnDiffs);
         Assert.assertEquals(2, columnDiffs.size());
         Iterator<StructuralDiff> iterator = columnDiffs.iterator();
@@ -118,11 +119,11 @@ public class MultiColumnReorderEventDiffTest {
      */
     @Test
     public void testReorderLeftConvertToLocal() {
-        event = new ColumnReorderEvent(dataLayer, Arrays.asList(new Integer[] {
+        this.event = new ColumnReorderEvent(this.dataLayer, Arrays.asList(new Integer[] {
                 7, 8, 9 }), 2, true);
-        event.convertToLocal(viewportLayer);
+        this.event.convertToLocal(this.viewportLayer);
 
-        Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
+        Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
         Assert.assertNotNull(columnDiffs);
         Assert.assertEquals(2, columnDiffs.size());
         Iterator<StructuralDiff> iterator = columnDiffs.iterator();

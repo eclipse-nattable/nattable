@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,16 +35,19 @@ public class ColumnCategoriesDialogRunner {
 
 class Listener implements IColumnCategoriesDialogListener {
 
+    @Override
     public void itemsRemoved(List<Integer> removedColumnPositions) {
         System.out.println("Removed positions: "
                 + ObjectUtils.toString(removedColumnPositions));
     }
 
+    @Override
     public void itemsSelected(List<Integer> addedColumnIndexes) {
         System.out.println("Added indexes: "
                 + ObjectUtils.toString(addedColumnIndexes));
     }
 
+    @Override
     public void itemsMoved(MoveDirectionEnum direction,
             List<Integer> toPositions) {
         System.out.println("Moved: " + direction + ", Positions: "

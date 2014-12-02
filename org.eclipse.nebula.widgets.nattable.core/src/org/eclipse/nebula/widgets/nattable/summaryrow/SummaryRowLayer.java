@@ -237,27 +237,27 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
                 getSummaryRowPosition(), calculateInBackground,
                 new ICalculator() {
 
-            @Override
-            public Object executeCalculation() {
-                LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(
-                        columnPosition, getSummaryRowPosition());
-                String[] configLabels = labelStack.getLabels().toArray(
-                        ArrayUtil.STRING_TYPE_ARRAY);
+                    @Override
+                    public Object executeCalculation() {
+                        LabelStack labelStack = getConfigLabelsByPositionWithoutTransformation(
+                                columnPosition, getSummaryRowPosition());
+                        String[] configLabels = labelStack.getLabels().toArray(
+                                ArrayUtil.STRING_TYPE_ARRAY);
 
-                final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry
-                        .getConfigAttribute(
-                                SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                DisplayMode.NORMAL, configLabels);
+                        final ISummaryProvider summaryProvider = SummaryRowLayer.this.configRegistry
+                                .getConfigAttribute(
+                                        SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                                        DisplayMode.NORMAL, configLabels);
 
-                // If there is no Summary provider - skip processing
-                if (summaryProvider == ISummaryProvider.NONE
-                        || summaryProvider == null) {
-                    return null;
-                }
+                        // If there is no Summary provider - skip processing
+                        if (summaryProvider == ISummaryProvider.NONE
+                                || summaryProvider == null) {
+                            return null;
+                        }
 
-                return summaryProvider.summarize(columnPosition);
-            }
-        });
+                        return summaryProvider.summarize(columnPosition);
+                    }
+                });
     }
 
     /**

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,9 +28,10 @@ public class ToggleSelectCellAction implements IMouseAction {
         this.withControlMask = withControlMask;
     }
 
+    @Override
     public void run(NatTable natTable, MouseEvent event) {
         new SelectCellCommand(natTable, natTable.getColumnPositionByX(event.x),
-                natTable.getRowPositionByY(event.y), withShiftMask,
-                withControlMask);
+                natTable.getRowPositionByY(event.y), this.withShiftMask,
+                this.withControlMask);
     }
 }

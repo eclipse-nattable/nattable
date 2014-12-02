@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
 /**
  * Enables sorting of the data. Uses an {@link ISortModel} to do/track the
  * sorting.
- * 
+ *
  * @param <T>
  *            Type of the Beans in the backing data source.
  *
@@ -66,15 +66,15 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements
         LabelStack configLabels = super.getConfigLabelsByPosition(
                 columnPosition, rowPosition);
 
-        if (sortModel != null) {
+        if (this.sortModel != null) {
             int columnIndex = getColumnIndexByPosition(columnPosition);
-            if (sortModel.isColumnIndexSorted(columnIndex)) {
+            if (this.sortModel.isColumnIndexSorted(columnIndex)) {
 
                 String sortConfig = DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE
-                        + sortModel.getSortOrder(columnIndex);
+                        + this.sortModel.getSortOrder(columnIndex);
                 configLabels.addLabelOnTop(sortConfig);
 
-                SortDirectionEnum sortDirection = sortModel
+                SortDirectionEnum sortDirection = this.sortModel
                         .getSortDirection(columnIndex);
 
                 switch (sortDirection) {
@@ -97,6 +97,6 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements
      *         underlying data.
      */
     public ISortModel getSortModel() {
-        return sortModel;
+        return this.sortModel;
     }
 }

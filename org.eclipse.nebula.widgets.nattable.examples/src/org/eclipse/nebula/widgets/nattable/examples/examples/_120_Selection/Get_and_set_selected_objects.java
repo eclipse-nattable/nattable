@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -48,6 +48,7 @@ public class Get_and_set_selected_objects extends AbstractNatExample {
                 + "be configured to return any row that has a selected cell in it (see source code).";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         Person homer = new Person("Homer", "Simpson", "Sargeant", 1234567890L);
         Person smithers = new Person("Waylon", "Smithers", "Admiral",
@@ -83,6 +84,7 @@ public class Get_and_set_selected_objects extends AbstractNatExample {
         selectionProvider
                 .addSelectionChangedListener(new ISelectionChangedListener() {
 
+                    @Override
                     public void selectionChanged(SelectionChangedEvent event) {
                         System.out.println("Selection changed:");
 
@@ -123,24 +125,24 @@ public class Get_and_set_selected_objects extends AbstractNatExample {
         }
 
         public String getFirstName() {
-            return firstName;
+            return this.firstName;
         }
 
         public String getLastName() {
-            return lastName;
+            return this.lastName;
         }
 
         public String getRank() {
-            return rank;
+            return this.rank;
         }
 
         public long getSerialNumber() {
-            return serialNumber;
+            return this.serialNumber;
         }
 
         @Override
         public String toString() {
-            return firstName + " " + lastName + " " + rank + " " + serialNumber;
+            return this.firstName + " " + this.lastName + " " + this.rank + " " + this.serialNumber;
         }
     }
 

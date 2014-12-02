@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,6 +28,7 @@ public class MultiRowResizeCommandHandler extends
         this.dataLayer = dataLayer;
     }
 
+    @Override
     public Class<MultiRowResizeCommand> getCommandClass() {
         return MultiRowResizeCommand.class;
     }
@@ -38,13 +39,13 @@ public class MultiRowResizeCommandHandler extends
 
         for (int rowPosition : command.getRowPositions()) {
             rowPositions.add(rowPosition);
-            dataLayer.setRowHeightByPosition(rowPosition,
+            this.dataLayer.setRowHeightByPosition(rowPosition,
                     command.getRowHeight(rowPosition), false);
         }
 
         List<Range> ranges = PositionUtil.getRanges(rowPositions);
         for (Range range : ranges) {
-            dataLayer.fireLayerEvent(new RowResizeEvent(dataLayer, range));
+            this.dataLayer.fireLayerEvent(new RowResizeEvent(this.dataLayer, range));
         }
 
         return true;

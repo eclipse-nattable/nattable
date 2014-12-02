@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,15 +20,16 @@ import org.eclipse.nebula.widgets.nattable.Messages;
  */
 public class DefaultCharacterDisplayConverter extends DisplayConverter {
 
+    @Override
     public Object canonicalToDisplayValue(Object sourceValue) {
         return sourceValue != null ? sourceValue.toString() : ""; //$NON-NLS-1$
     }
 
+    @Override
     public Object displayToCanonicalValue(Object displayValue) {
         if (isNotNull(displayValue) && isNotEmpty(displayValue.toString())) {
             if (displayValue.toString().length() > 1) {
-                throw new ConversionFailedException(Messages.getString(
-                        "DefaultCharacterDisplayConverter.failure", //$NON-NLS-1$
+                throw new ConversionFailedException(Messages.getString("DefaultCharacterDisplayConverter.failure", //$NON-NLS-1$
                         new Object[] { displayValue }));
             } else {
                 return displayValue.toString().charAt(0);

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
  * {@link IDataValidator#validate(int, int, Object)}. The handling of this
  * exception is done within {@link AbstractCellEditor} where the message is
  * stored and showed within a dialog on trying to commit.
- * 
+ *
  * @author Dirk Fauth
  *
  */

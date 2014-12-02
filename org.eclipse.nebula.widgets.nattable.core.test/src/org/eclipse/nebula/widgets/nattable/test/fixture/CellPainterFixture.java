@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,16 +27,19 @@ public class CellPainterFixture extends AbstractCellPainter {
     private IConfigRegistry configRegistry;
     private boolean painted;
 
+    @Override
     public int getPreferredHeight(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         return cell.getBounds().height;
     }
 
+    @Override
     public int getPreferredWidth(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         return cell.getBounds().width;
     }
 
+    @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle bounds,
             IConfigRegistry configRegistry) {
         this.painted = true;
@@ -48,19 +51,19 @@ public class CellPainterFixture extends AbstractCellPainter {
     // Getters
 
     public ILayerCell getLastPaintedCell() {
-        return cell;
+        return this.cell;
     }
 
     public Rectangle getLastPaintedBounds() {
-        return bounds;
+        return this.bounds;
     }
 
     public IConfigRegistry getLastPaintedConfigRegistry() {
-        return configRegistry;
+        return this.configRegistry;
     }
 
     public boolean isPainted() {
-        return painted;
+        return this.painted;
     }
 
 }

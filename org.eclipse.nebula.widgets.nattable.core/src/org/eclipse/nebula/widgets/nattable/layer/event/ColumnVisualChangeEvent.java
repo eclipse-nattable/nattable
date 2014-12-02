@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,7 +36,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
     /**
      * Creates a new ColumnVisualChangeEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given column position matches.
      * @param columnPosition
@@ -48,7 +48,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
     /**
      * Creates a new ColumnVisualChangeEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given column positions match.
      * @param columnPositionRanges
@@ -60,7 +60,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
     /**
      * Creates a new ColumnVisualChangeEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given column positions match.
      * @param columnPositionRanges
@@ -75,7 +75,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
     /**
      * Creates a new ColumnVisualChangeEvent based on the given instance. Mainly
      * needed for cloning.
-     * 
+     *
      * @param event
      *            The ColumnVisualChangeEvent out of which the new instance
      *            should be created.
@@ -87,21 +87,21 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public ILayer getLayer() {
-        return layer;
+        return this.layer;
     }
 
     /**
      * @return The column position ranges for the columns that have changed.
      */
     public Collection<Range> getColumnPositionRanges() {
-        return columnPositionRanges;
+        return this.columnPositionRanges;
     }
 
     /**
      * Sets the column position ranges for the columns that have changed. Only
      * for internal use in cases where the constructor needs to calculate the
      * column position ranges within the child constructor.
-     * 
+     *
      * @param columnPositionRanges
      *            The column position ranges for the columns that have changed.
      */
@@ -112,19 +112,19 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        columnPositionRanges = localLayer.underlyingToLocalColumnPositions(
-                layer, columnPositionRanges);
-        layer = localLayer;
+        this.columnPositionRanges = localLayer.underlyingToLocalColumnPositions(
+                this.layer, this.columnPositionRanges);
+        this.layer = localLayer;
 
-        return columnPositionRanges != null && columnPositionRanges.size() > 0;
+        return this.columnPositionRanges != null && this.columnPositionRanges.size() > 0;
     }
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
         Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
 
-        int rowCount = layer.getRowCount();
-        for (Range range : columnPositionRanges) {
+        int rowCount = this.layer.getRowCount();
+        for (Range range : this.columnPositionRanges) {
             changedPositionRectangles.add(new Rectangle(range.start, 0,
                     range.end - range.start, rowCount));
         }

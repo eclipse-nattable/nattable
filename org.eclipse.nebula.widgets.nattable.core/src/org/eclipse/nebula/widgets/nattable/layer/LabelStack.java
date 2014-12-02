@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,48 +24,48 @@ public class LabelStack {
     public LabelStack(String... labelNames) {
         for (String label : labelNames) {
             if (label != null) {
-                labels.add(label);
+                this.labels.add(label);
             }
         }
     }
 
     /**
      * Adds a label to the bottom of the label stack.
-     * 
+     *
      * @param label
      */
     public void addLabel(String label) {
         if (!hasLabel(label)) {
-            labels.add(label);
+            this.labels.add(label);
         }
     }
 
     /**
      * Adds a label to the top of the label stack.
-     * 
+     *
      * @param label
      */
     public void addLabelOnTop(String label) {
         if (!hasLabel(label)) {
-            labels.add(0, label);
+            this.labels.add(0, label);
         }
     }
 
     public List<String> getLabels() {
-        return labels;
+        return this.labels;
     }
 
     public boolean hasLabel(String label) {
-        return labels.contains(label);
+        return this.labels.contains(label);
     }
 
     public boolean removeLabel(String label) {
-        return labels.remove(label);
+        return this.labels.remove(label);
     }
 
     @Override
     public String toString() {
-        return labels.toString();
+        return this.labels.toString();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class LabelStack {
 
     @Override
     public int hashCode() {
-        return labels.hashCode();
+        return this.labels.hashCode();
     }
 
 }

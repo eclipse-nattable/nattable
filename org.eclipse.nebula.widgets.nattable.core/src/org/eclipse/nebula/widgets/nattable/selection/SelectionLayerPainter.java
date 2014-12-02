@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     neal zhang <nujiah001@126.com> - change some methods and fields visibility
@@ -33,7 +33,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * selected cells. By default the additional selection anchor border style is
  * black dotted one pixel sized line. This style can be configured via
  * ConfigRegistry.
- * 
+ *
  * @see SelectionStyleLabels#SELECTION_ANCHOR_GRID_LINE_STYLE
  */
 public class SelectionLayerPainter extends GridLineCellLayerPainter {
@@ -41,7 +41,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
     /**
      * Create a SelectionLayerPainter that renders grid lines in the specified
      * color and uses the default clipping behaviour.
-     * 
+     *
      * @param gridColor
      *            The color that should be used to render the grid lines.
      */
@@ -60,7 +60,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
     /**
      * Create a SelectionLayerPainter that renders grid lines in the specified
      * color and uses the specified clipping behaviour.
-     * 
+     *
      * @param gridColor
      *            The color that should be used to render the grid lines.
      * @param clipLeft
@@ -82,7 +82,7 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
     /**
      * Create a SelectionLayerPainter that renders gray grid lines and uses the
      * specified clipping behaviour.
-     * 
+     *
      * @param clipLeft
      *            Configure the rendering behaviour when cells overlap. If set
      *            to <code>true</code> the left cell will be clipped, if set to

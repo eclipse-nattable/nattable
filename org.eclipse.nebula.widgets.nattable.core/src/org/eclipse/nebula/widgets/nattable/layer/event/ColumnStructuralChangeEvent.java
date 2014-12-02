@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,7 +28,7 @@ public abstract class ColumnStructuralChangeEvent extends
 
     /**
      * Creates a new ColumnStructuralChangeEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given column positions match.
      * @param columnPositionRanges
@@ -41,7 +41,7 @@ public abstract class ColumnStructuralChangeEvent extends
 
     /**
      * Creates a new ColumnStructuralChangeEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given column positions match.
      * @param columnPositionRanges
@@ -55,7 +55,7 @@ public abstract class ColumnStructuralChangeEvent extends
     /**
      * Creates a new ColumnStructuralChangeEvent based on the given instance.
      * Mainly needed for cloning.
-     * 
+     *
      * @param event
      *            The ColumnStructuralChangeEvent out of which the new instance
      *            should be created.

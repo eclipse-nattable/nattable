@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -42,14 +42,14 @@ public class Person {
      * @return the id
      */
     public int getId() {
-        return id;
+        return this.id;
     }
 
     /**
      * @return the firstName
      */
     public String getFirstName() {
-        return firstName;
+        return this.firstName;
     }
 
     /**
@@ -64,7 +64,7 @@ public class Person {
      * @return the lastName
      */
     public String getLastName() {
-        return lastName;
+        return this.lastName;
     }
 
     /**
@@ -79,7 +79,7 @@ public class Person {
      * @return the gender
      */
     public Gender getGender() {
-        return gender;
+        return this.gender;
     }
 
     /**
@@ -94,7 +94,7 @@ public class Person {
      * @return the married
      */
     public boolean isMarried() {
-        return married;
+        return this.married;
     }
 
     /**
@@ -109,7 +109,7 @@ public class Person {
      * @return the birthday
      */
     public Date getBirthday() {
-        return birthday;
+        return this.birthday;
     }
 
     /**

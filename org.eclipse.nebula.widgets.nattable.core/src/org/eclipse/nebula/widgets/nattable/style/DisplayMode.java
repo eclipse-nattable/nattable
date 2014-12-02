@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -17,7 +17,7 @@ package org.eclipse.nebula.widgets.nattable.style;
  * <li>If the contents of the cell are being edited, its in EDIT mode.</li>
  * <li>If a cell has been selected, its in SELECT mode.</li>
  * </ol>
- * 
+ *
  * These modes are used to bind different settings to different modes. For
  * example, a different style can be registered for a cell when it is in SELECT
  * mode.

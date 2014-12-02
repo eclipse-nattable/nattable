@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,6 +22,7 @@ public class ColumnReorderCommandHandler extends
         this.columnReorderLayer = columnReorderLayer;
     }
 
+    @Override
     public Class<ColumnReorderCommand> getCommandClass() {
         return ColumnReorderCommand.class;
     }
@@ -32,7 +33,7 @@ public class ColumnReorderCommandHandler extends
         int toColumnPosition = command.getToColumnPosition();
         boolean reorderToLeftEdge = command.isReorderToLeftEdge();
 
-        columnReorderLayer.reorderColumnPosition(fromColumnPosition,
+        this.columnReorderLayer.reorderColumnPosition(fromColumnPosition,
                 toColumnPosition, reorderToLeftEdge);
 
         return true;

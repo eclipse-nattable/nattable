@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -53,47 +53,51 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
 
     @Override
     protected boolean doCommand(ChooseColumnsFromCategoriesCommand command) {
-        dialog = new ColumnCategoriesDialog(command.getShell(), model,
-                getHiddenColumnEntries(columnHideShowLayer, columnHeaderLayer,
-                        columnHeaderDataLayer), getVisibleColumnsEntries(
-                        columnHideShowLayer, columnHeaderLayer,
-                        columnHeaderDataLayer));
+        this.dialog = new ColumnCategoriesDialog(command.getShell(), this.model,
+                getHiddenColumnEntries(this.columnHideShowLayer, this.columnHeaderLayer,
+                        this.columnHeaderDataLayer), getVisibleColumnsEntries(
+                        this.columnHideShowLayer, this.columnHeaderLayer,
+                        this.columnHeaderDataLayer));
 
-        dialog.addListener(this);
-        dialog.open();
+        this.dialog.addListener(this);
+        this.dialog.open();
         return true;
     }
 
+    @Override
     public Class<ChooseColumnsFromCategoriesCommand> getCommandClass() {
         return ChooseColumnsFromCategoriesCommand.class;
     }
 
     // Listen and respond to the dialog events
 
+    @Override
     public void itemsRemoved(List<Integer> removedColumnPositions) {
         ColumnChooserUtils.hideColumnPositions(removedColumnPositions,
-                columnHideShowLayer);
+                this.columnHideShowLayer);
         refreshDialog();
     }
 
+    @Override
     public void itemsSelected(List<Integer> addedColumnIndexes) {
         ColumnChooserUtils.showColumnIndexes(addedColumnIndexes,
-                columnHideShowLayer);
+                this.columnHideShowLayer);
         refreshDialog();
     }
 
     /**
      * Moves the columns up or down by firing commands on the dialog.
-     * 
+     *
      * Individual columns are moved using the {@link ColumnReorderCommand}
      * Contiguously selected columns are moved using the
      * {@link MultiColumnReorderCommand}
-     * 
+     *
      * @param direction
      *            the direction to move
      * @param selectedPositions
      *            the column positions to move
      */
+    @Override
     public void itemsMoved(MoveDirectionEnum direction,
             List<Integer> selectedPositions) {
         List<List<Integer>> fromPositions = PositionUtil
@@ -108,13 +112,13 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
             if (!multipleColumnsMoved) {
                 int fromPosition = fromPositions.get(i).get(0).intValue();
                 int toPosition = toPositions.get(i);
-                command = new ColumnReorderCommand(columnHideShowLayer,
+                command = new ColumnReorderCommand(this.columnHideShowLayer,
                         fromPosition, toPosition);
             } else if (multipleColumnsMoved) {
-                command = new MultiColumnReorderCommand(columnHideShowLayer,
+                command = new MultiColumnReorderCommand(this.columnHideShowLayer,
                         fromPositions.get(i), toPositions.get(i));
             }
-            columnHideShowLayer.doCommand(command);
+            this.columnHideShowLayer.doCommand(command);
         }
 
         refreshDialog();
@@ -159,12 +163,12 @@ public class ChooseColumnsFromCategoriesCommandHandler extends
     }
 
     private void refreshDialog() {
-        if (isNotNull(dialog)) {
-            dialog.refresh(ColumnChooserUtils.getHiddenColumnEntries(
-                    columnHideShowLayer, columnHeaderLayer,
-                    columnHeaderDataLayer), ColumnChooserUtils
-                    .getVisibleColumnsEntries(columnHideShowLayer,
-                            columnHeaderLayer, columnHeaderDataLayer));
+        if (isNotNull(this.dialog)) {
+            this.dialog.refresh(ColumnChooserUtils.getHiddenColumnEntries(
+                    this.columnHideShowLayer, this.columnHeaderLayer,
+                    this.columnHeaderDataLayer), ColumnChooserUtils
+                    .getVisibleColumnsEntries(this.columnHideShowLayer,
+                            this.columnHeaderLayer, this.columnHeaderDataLayer));
         }
     }
 

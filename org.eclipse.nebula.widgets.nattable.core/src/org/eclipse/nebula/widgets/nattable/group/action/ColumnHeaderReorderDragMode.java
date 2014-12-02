@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -49,9 +49,9 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
                 .getColumnIndexByPosition(fromGridColumnPosition);
 
         // Allow moving within the unbreakable group
-        if (model.isPartOfAnUnbreakableGroup(fromColumnIndex)) {
+        if (this.model.isPartOfAnUnbreakableGroup(fromColumnIndex)) {
             return ColumnGroupUtils.isInTheSameGroup(fromColumnIndex,
-                    toColumnIndex, model);
+                    toColumnIndex, this.model);
         }
 
         boolean betweenTwoGroups = false;
@@ -61,10 +61,10 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
             int maxX = this.currentEvent.x
                     + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
             betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer,
-                    minX, maxX, model);
+                    minX, maxX, this.model);
         }
 
-        return (!model.isPartOfAnUnbreakableGroup(toColumnIndex))
+        return (!this.model.isPartOfAnUnbreakableGroup(toColumnIndex))
                 || betweenTwoGroups;
     }
 }

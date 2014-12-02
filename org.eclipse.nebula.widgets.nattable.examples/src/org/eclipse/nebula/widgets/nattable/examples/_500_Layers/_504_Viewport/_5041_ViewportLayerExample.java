@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Simple example showing the viewport.
- * 
+ *
  * @author Dirk Fauth
  *
  */

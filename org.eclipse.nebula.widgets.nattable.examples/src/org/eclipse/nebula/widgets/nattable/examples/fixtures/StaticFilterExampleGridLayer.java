@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -71,7 +71,7 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                 propertyNames);
 
-        bodyDataProvider = new ListDataProvider<RowDataFixture>(filterList,
+        this.bodyDataProvider = new ListDataProvider<RowDataFixture>(filterList,
                 columnPropertyAccessor);
         // add a static filter that only shows RowDataFixtures with a rating
         // other than "AAA"
@@ -84,14 +84,14 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         // }
         // };
 
-        bodyDataLayer = new DataLayer(bodyDataProvider);
+        this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         GlazedListsEventLayer<RowDataFixture> glazedListsEventLayer = new GlazedListsEventLayer<RowDataFixture>(
-                bodyDataLayer, eventList);
+                this.bodyDataLayer, eventList);
         DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(
                 glazedListsEventLayer);
         ColumnOverrideLabelAccumulator bodyLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyDataLayer);
-        bodyDataLayer.setConfigLabelAccumulator(bodyLabelAccumulator);
+                this.bodyDataLayer);
+        this.bodyDataLayer.setConfigLabelAccumulator(bodyLabelAccumulator);
 
         bodyLabelAccumulator
                 .registerColumnOverrides(
@@ -145,7 +145,7 @@ public class StaticFilterExampleGridLayer extends GridLayer {
 
         // Row header layer
         DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
+                this.bodyDataProvider);
         DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
                 rowHeaderDataProvider);
         RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
@@ -172,11 +172,11 @@ public class StaticFilterExampleGridLayer extends GridLayer {
     }
 
     public ListDataProvider<RowDataFixture> getBodyDataProvider() {
-        return bodyDataProvider;
+        return this.bodyDataProvider;
     }
 
     public DataLayer getBodyDataLayer() {
-        return bodyDataLayer;
+        return this.bodyDataLayer;
     }
 
 }

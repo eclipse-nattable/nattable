@@ -60,7 +60,7 @@ public class ExcelExporter implements ILayerExporter {
      */
     public ExcelExporter() {
         this(new FileOutputStreamProvider("table_export.xls", //$NON-NLS-1$
-                new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$
+        new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -179,7 +179,7 @@ public class ExcelExporter implements ILayerExporter {
 
         return String.format("font: %s; font-family: %s", //$NON-NLS-1$
                 fontStyle <= 2 ? HTML_STYLES[fontStyle] : HTML_STYLES[0],
-                        fontName);
+                fontName);
     }
 
     private String getColorInCSSFormat(Color color) {

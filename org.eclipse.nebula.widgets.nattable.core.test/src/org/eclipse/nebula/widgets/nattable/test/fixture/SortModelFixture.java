@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,39 +46,46 @@ public class SortModelFixture implements ISortModel {
                 new ArrayList<Integer>(), new ArrayList<SortDirectionEnum>());
     }
 
+    @Override
     public List<Integer> getSortedColumnIndexes() {
-        return sortedColumnIndexes;
+        return this.sortedColumnIndexes;
     }
 
+    @Override
     public boolean isColumnIndexSorted(int columnIndex) {
-        return sortedColumnIndexes.contains(columnIndex);
+        return this.sortedColumnIndexes.contains(columnIndex);
     }
 
+    @Override
     public int getSortOrder(int columnIndex) {
-        if (sortedColumnIndexes.contains(columnIndex)) {
-            return sortOrder.indexOf(columnIndex);
+        if (this.sortedColumnIndexes.contains(columnIndex)) {
+            return this.sortOrder.indexOf(columnIndex);
         }
         return -1;
     }
 
+    @Override
     public SortDirectionEnum getSortDirection(int columnIndex) {
-        if (sortedColumnIndexes.contains(columnIndex)) {
-            return sortDirection.get(sortOrder.indexOf(columnIndex));
+        if (this.sortedColumnIndexes.contains(columnIndex)) {
+            return this.sortDirection.get(this.sortOrder.indexOf(columnIndex));
         }
         return SortDirectionEnum.NONE;
     }
 
+    @Override
     public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
-        return columnComparators.get(columnIndex);
+        return this.columnComparators.get(columnIndex);
     }
 
+    @Override
     public void sort(int columnIndex, SortDirectionEnum direction,
             boolean accumulate) {
-        sortedColumnIndexes.add(columnIndex);
-        sortOrder.add(columnIndex);
-        sortDirection.add(direction);
+        this.sortedColumnIndexes.add(columnIndex);
+        this.sortOrder.add(columnIndex);
+        this.sortDirection.add(direction);
     }
 
+    @Override
     public void clear() {
         // No op
     }

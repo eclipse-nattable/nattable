@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Edwin Park - initial API and implementation
  ******************************************************************************/
@@ -38,96 +38,115 @@ public class InvertedLayer implements IUniqueIndexLayer {
 
     // ILayerListener
 
+    @Override
     public void handleLayerEvent(ILayerEvent event) {
-        underlyingLayer.handleLayerEvent(event);
+        this.underlyingLayer.handleLayerEvent(event);
     }
 
     // IPersistable
 
+    @Override
     public void saveState(String prefix, Properties properties) {
-        underlyingLayer.saveState(prefix, properties);
+        this.underlyingLayer.saveState(prefix, properties);
     }
 
+    @Override
     public void loadState(String prefix, Properties properties) {
-        underlyingLayer.loadState(prefix, properties);
+        this.underlyingLayer.loadState(prefix, properties);
     }
 
     // Dispose
 
+    @Override
     public void dispose() {
-        underlyingLayer.dispose();
+        this.underlyingLayer.dispose();
     }
 
     // Persistence
 
+    @Override
     public void registerPersistable(IPersistable persistable) {
-        underlyingLayer.registerPersistable(persistable);
+        this.underlyingLayer.registerPersistable(persistable);
     }
 
+    @Override
     public void unregisterPersistable(IPersistable persistable) {
-        underlyingLayer.unregisterPersistable(persistable);
+        this.underlyingLayer.unregisterPersistable(persistable);
     }
 
     // Configuration
 
+    @Override
     public void configure(ConfigRegistry configRegistry,
             UiBindingRegistry uiBindingRegistry) {
-        underlyingLayer.configure(configRegistry, uiBindingRegistry);
+        this.underlyingLayer.configure(configRegistry, uiBindingRegistry);
     }
 
     // Region
 
+    @Override
     public LabelStack getRegionLabelsByXY(int x, int y) {
-        return underlyingLayer.getRegionLabelsByXY(y, x);
+        return this.underlyingLayer.getRegionLabelsByXY(y, x);
     }
 
     // Commands
 
+    @Override
     public boolean doCommand(ILayerCommand command) {
-        return underlyingLayer.doCommand(command);
+        return this.underlyingLayer.doCommand(command);
     }
 
+    @Override
     public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
-        underlyingLayer.registerCommandHandler(commandHandler);
+        this.underlyingLayer.registerCommandHandler(commandHandler);
     }
 
+    @Override
     public void unregisterCommandHandler(
             Class<? extends ILayerCommand> commandClass) {
-        underlyingLayer.unregisterCommandHandler(commandClass);
+        this.underlyingLayer.unregisterCommandHandler(commandClass);
     }
 
     // Events
 
+    @Override
     public void fireLayerEvent(ILayerEvent event) {
-        underlyingLayer.fireLayerEvent(event);
+        this.underlyingLayer.fireLayerEvent(event);
     }
 
+    @Override
     public void addLayerListener(ILayerListener listener) {
-        underlyingLayer.addLayerListener(listener);
+        this.underlyingLayer.addLayerListener(listener);
     }
 
+    @Override
     public void removeLayerListener(ILayerListener listener) {
-        underlyingLayer.removeLayerListener(listener);
+        this.underlyingLayer.removeLayerListener(listener);
     }
 
+    @Override
     public boolean hasLayerListener(
             Class<? extends ILayerListener> layerListenerClass) {
-        return underlyingLayer.hasLayerListener(layerListenerClass);
+        return this.underlyingLayer.hasLayerListener(layerListenerClass);
     }
 
+    @Override
     public ILayerPainter getLayerPainter() {
-        return underlyingLayer.getLayerPainter();
+        return this.underlyingLayer.getLayerPainter();
     }
 
     // Client area
 
+    @Override
     public IClientAreaProvider getClientAreaProvider() {
-        return underlyingLayer.getClientAreaProvider();
+        return this.underlyingLayer.getClientAreaProvider();
     }
 
+    @Override
     public void setClientAreaProvider(
             final IClientAreaProvider clientAreaProvider) {
-        underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
             public Rectangle getClientArea() {
                 return InvertUtil.invertRectangle(clientAreaProvider
                         .getClientArea());
@@ -139,159 +158,188 @@ public class InvertedLayer implements IUniqueIndexLayer {
 
     // Columns
 
+    @Override
     public int getColumnCount() {
-        return underlyingLayer.getRowCount();
+        return this.underlyingLayer.getRowCount();
     }
 
+    @Override
     public int getPreferredColumnCount() {
-        return underlyingLayer.getPreferredRowCount();
+        return this.underlyingLayer.getPreferredRowCount();
     }
 
+    @Override
     public int getColumnIndexByPosition(int columnPosition) {
-        return underlyingLayer.getRowIndexByPosition(columnPosition);
+        return this.underlyingLayer.getRowIndexByPosition(columnPosition);
     }
 
+    @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
-        return underlyingLayer
+        return this.underlyingLayer
                 .localToUnderlyingRowPosition(localColumnPosition);
     }
 
+    @Override
     public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
             int underlyingColumnPosition) {
-        return underlyingLayer.underlyingToLocalRowPosition(
+        return this.underlyingLayer.underlyingToLocalRowPosition(
                 sourceUnderlyingLayer, underlyingColumnPosition);
     }
 
+    @Override
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingColumnPositionRanges) {
-        return underlyingLayer.underlyingToLocalRowPositions(
+        return this.underlyingLayer.underlyingToLocalRowPositions(
                 sourceUnderlyingLayer, underlyingColumnPositionRanges);
     }
 
     // Width
 
+    @Override
     public int getWidth() {
-        return underlyingLayer.getHeight();
+        return this.underlyingLayer.getHeight();
     }
 
+    @Override
     public int getPreferredWidth() {
-        return underlyingLayer.getPreferredHeight();
+        return this.underlyingLayer.getPreferredHeight();
     }
 
+    @Override
     public int getColumnWidthByPosition(int columnPosition) {
-        return underlyingLayer.getRowHeightByPosition(columnPosition);
+        return this.underlyingLayer.getRowHeightByPosition(columnPosition);
     }
 
     // Column resize
 
+    @Override
     public boolean isColumnPositionResizable(int columnPosition) {
-        return underlyingLayer.isRowPositionResizable(columnPosition);
+        return this.underlyingLayer.isRowPositionResizable(columnPosition);
     }
 
     // X
 
+    @Override
     public int getColumnPositionByX(int x) {
-        return underlyingLayer.getRowPositionByY(x);
+        return this.underlyingLayer.getRowPositionByY(x);
     }
 
+    @Override
     public int getStartXOfColumnPosition(int columnPosition) {
-        return underlyingLayer.getStartYOfRowPosition(columnPosition);
+        return this.underlyingLayer.getStartYOfRowPosition(columnPosition);
     }
 
     // Underlying
 
+    @Override
     public Collection<ILayer> getUnderlyingLayersByColumnPosition(
             int columnPosition) {
-        return underlyingLayer.getUnderlyingLayersByRowPosition(columnPosition);
+        return this.underlyingLayer.getUnderlyingLayersByRowPosition(columnPosition);
     }
 
     // Unique index
 
+    @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return underlyingLayer.getRowPositionByIndex(columnIndex);
+        return this.underlyingLayer.getRowPositionByIndex(columnIndex);
     }
 
     // Vertical features
 
     // Rows
 
+    @Override
     public int getRowCount() {
-        return underlyingLayer.getColumnCount();
+        return this.underlyingLayer.getColumnCount();
     }
 
+    @Override
     public int getPreferredRowCount() {
-        return underlyingLayer.getPreferredColumnCount();
+        return this.underlyingLayer.getPreferredColumnCount();
     }
 
+    @Override
     public int getRowIndexByPosition(int rowPosition) {
-        return underlyingLayer.getColumnIndexByPosition(rowPosition);
+        return this.underlyingLayer.getColumnIndexByPosition(rowPosition);
     }
 
+    @Override
     public int localToUnderlyingRowPosition(int localRowPosition) {
-        return underlyingLayer
+        return this.underlyingLayer
                 .localToUnderlyingColumnPosition(localRowPosition);
     }
 
+    @Override
     public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
             int underlyingRowPosition) {
-        return underlyingLayer.underlyingToLocalColumnPosition(
+        return this.underlyingLayer.underlyingToLocalColumnPosition(
                 sourceUnderlyingLayer, underlyingRowPosition);
     }
 
+    @Override
     public Collection<Range> underlyingToLocalRowPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingRowPositionRanges) {
-        return underlyingLayer.underlyingToLocalColumnPositions(
+        return this.underlyingLayer.underlyingToLocalColumnPositions(
                 sourceUnderlyingLayer, underlyingRowPositionRanges);
     }
 
     // Height
 
+    @Override
     public int getHeight() {
-        return underlyingLayer.getWidth();
+        return this.underlyingLayer.getWidth();
     }
 
+    @Override
     public int getPreferredHeight() {
-        return underlyingLayer.getPreferredWidth();
+        return this.underlyingLayer.getPreferredWidth();
     }
 
+    @Override
     public int getRowHeightByPosition(int rowPosition) {
-        return underlyingLayer.getColumnWidthByPosition(rowPosition);
+        return this.underlyingLayer.getColumnWidthByPosition(rowPosition);
     }
 
     // Row resize
 
+    @Override
     public boolean isRowPositionResizable(int rowPosition) {
-        return underlyingLayer.isColumnPositionResizable(rowPosition);
+        return this.underlyingLayer.isColumnPositionResizable(rowPosition);
     }
 
     // Y
 
+    @Override
     public int getRowPositionByY(int y) {
-        return underlyingLayer.getColumnPositionByX(y);
+        return this.underlyingLayer.getColumnPositionByX(y);
     }
 
+    @Override
     public int getStartYOfRowPosition(int rowPosition) {
-        return underlyingLayer.getStartXOfColumnPosition(rowPosition);
+        return this.underlyingLayer.getStartXOfColumnPosition(rowPosition);
     }
 
     // Underlying
 
+    @Override
     public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
-        return underlyingLayer.getUnderlyingLayersByColumnPosition(rowPosition);
+        return this.underlyingLayer.getUnderlyingLayersByColumnPosition(rowPosition);
     }
 
     // Unique index
 
+    @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return underlyingLayer.getColumnPositionByIndex(rowIndex);
+        return this.underlyingLayer.getColumnPositionByIndex(rowIndex);
     }
 
     // Cell features
 
+    @Override
     public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-        ILayerCell cell = underlyingLayer.getCellByPosition(rowPosition,
+        ILayerCell cell = this.underlyingLayer.getCellByPosition(rowPosition,
                 columnPosition);
         if (cell != null)
             return new InvertedLayerCell(cell);
@@ -301,36 +349,42 @@ public class InvertedLayer implements IUniqueIndexLayer {
         // columnPosition);
     }
 
+    @Override
     public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
-        return InvertUtil.invertRectangle(underlyingLayer.getBoundsByPosition(
+        return InvertUtil.invertRectangle(this.underlyingLayer.getBoundsByPosition(
                 rowPosition, columnPosition));
     }
 
+    @Override
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-        return underlyingLayer.getDisplayModeByPosition(rowPosition,
+        return this.underlyingLayer.getDisplayModeByPosition(rowPosition,
                 columnPosition);
     }
 
+    @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition,
             int rowPosition) {
-        return underlyingLayer.getConfigLabelsByPosition(rowPosition,
+        return this.underlyingLayer.getConfigLabelsByPosition(rowPosition,
                 columnPosition);
     }
 
+    @Override
     public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-        return underlyingLayer.getDataValueByPosition(rowPosition,
+        return this.underlyingLayer.getDataValueByPosition(rowPosition,
                 columnPosition);
     }
 
+    @Override
     public ILayer getUnderlyingLayerByPosition(int columnPosition,
             int rowPosition) {
-        return underlyingLayer.getUnderlyingLayerByPosition(rowPosition,
+        return this.underlyingLayer.getUnderlyingLayerByPosition(rowPosition,
                 columnPosition);
     }
 
+    @Override
     public ICellPainter getCellPainter(int columnPosition, int rowPosition,
             ILayerCell cell, IConfigRegistry configRegistry) {
-        return underlyingLayer.getCellPainter(rowPosition, columnPosition,
+        return this.underlyingLayer.getCellPainter(rowPosition, columnPosition,
                 cell, configRegistry);
     }
 

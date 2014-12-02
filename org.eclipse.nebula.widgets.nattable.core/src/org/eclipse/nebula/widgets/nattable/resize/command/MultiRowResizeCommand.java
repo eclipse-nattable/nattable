@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -39,7 +39,7 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
             int[] rowHeights) {
         super(layer, rowPositions);
         for (int i = 0; i < rowPositions.length; i++) {
-            rowPositionToHeight.put(new RowPositionCoordinate(layer,
+            this.rowPositionToHeight.put(new RowPositionCoordinate(layer,
                     rowPositions[i]), Integer.valueOf(rowHeights[i]));
         }
     }
@@ -52,43 +52,44 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
     }
 
     public int getCommonRowHeight() {
-        return commonRowHeight;
+        return this.commonRowHeight;
     }
 
     public int getRowHeight(int rowPosition) {
-        for (RowPositionCoordinate rowPositionCoordinate : rowPositionToHeight
+        for (RowPositionCoordinate rowPositionCoordinate : this.rowPositionToHeight
                 .keySet()) {
             if (rowPositionCoordinate.getRowPosition() == rowPosition) {
-                return rowPositionToHeight.get(rowPositionCoordinate)
+                return this.rowPositionToHeight.get(rowPositionCoordinate)
                         .intValue();
             }
         }
-        return commonRowHeight;
+        return this.commonRowHeight;
     }
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         Map<RowPositionCoordinate, Integer> newRowPositionToHeight = new HashMap<RowPositionCoordinate, Integer>();
 
-        for (RowPositionCoordinate rowPositionCoordinate : rowPositionToHeight
+        for (RowPositionCoordinate rowPositionCoordinate : this.rowPositionToHeight
                 .keySet()) {
             RowPositionCoordinate convertedRowPositionCoordinate = LayerCommandUtil
                     .convertRowPositionToTargetContext(rowPositionCoordinate,
                             targetLayer);
             if (convertedRowPositionCoordinate != null) {
                 newRowPositionToHeight.put(convertedRowPositionCoordinate,
-                        rowPositionToHeight.get(rowPositionCoordinate));
+                        this.rowPositionToHeight.get(rowPositionCoordinate));
             }
         }
 
         if (super.convertToTargetLayer(targetLayer)) {
-            rowPositionToHeight = newRowPositionToHeight;
+            this.rowPositionToHeight = newRowPositionToHeight;
             return true;
         } else {
             return false;
         }
     }
 
+    @Override
     public MultiRowResizeCommand cloneCommand() {
         return new MultiRowResizeCommand(this);
     }

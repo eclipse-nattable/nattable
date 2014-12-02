@@ -38,11 +38,11 @@ import org.eclipse.swt.graphics.Rectangle;
  * doesn'apply to the internal sub cells differently. Instead the same
  * configuration will be applied to all sub cells.</li>
  * </ul>
- * 
+ *
  * <p>
  * This painter is intended for an editable NatTable in combination with the
  * TableCellEditor.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see TableCellEditor
@@ -107,7 +107,7 @@ public class TableCellPainter extends BackgroundPainter {
      * </ul>
      * You can change these settings after creation with the corresponding
      * setters.
-     * 
+     *
      * @param internalPainter
      *            The ICellPainter that should be used to render the internal
      *            sub cells.
@@ -119,7 +119,7 @@ public class TableCellPainter extends BackgroundPainter {
 
     /**
      * Creates a TableCellPainter that uses the given values for configuration.
-     * 
+     *
      * @param internalPainter
      *            The ICellPainter that should be used to render the internal
      *            sub cells.
@@ -243,7 +243,7 @@ public class TableCellPainter extends BackgroundPainter {
      * Checks if the data value of the given cell is of type Collection or
      * Array. Will return the Collection or Array as Object[] or
      * <code>null</code> if the data value is not a Collection or Array.
-     * 
+     *
      * @param cell
      *            The cell that should be checked for its data.
      * @return The Object[] representation of the data value if it is of type
@@ -267,7 +267,7 @@ public class TableCellPainter extends BackgroundPainter {
      * Creating a temporary sub cell that represents one data value in the
      * collection of data to be shown in the cell. This is then used to get the
      * size and paint the cell using the underlying painter.
-     * 
+     *
      * @param cell
      *            The parent cell for which the sub cell should be created
      * @param dataValue
@@ -296,7 +296,7 @@ public class TableCellPainter extends BackgroundPainter {
 
     /**
      * Get the height for the sub cell.
-     * 
+     *
      * @param subCell
      *            The temporary sub cell that is used to ask the internal
      *            painter for rendering
@@ -310,7 +310,7 @@ public class TableCellPainter extends BackgroundPainter {
      */
     protected int getSubCellHeight(ILayerCell subCell, GC gc,
             IConfigRegistry configRegistry) {
-        return (this.fixedSubCellHeight >= 0) ? fixedSubCellHeight : this
+        return (this.fixedSubCellHeight >= 0) ? this.fixedSubCellHeight : this
                 .getInternalPainter().getPreferredHeight(subCell, gc,
                         configRegistry);
     }
@@ -324,12 +324,12 @@ public class TableCellPainter extends BackgroundPainter {
      * not related to NatTable table structure, the NatTable configuration
      * mechanism doesn'apply to the internal sub cells differently. Instead the
      * same configuration will be applied to all sub cells.
-     * 
+     *
      * @return The ICellPainter that should be used to render the internal sub
      *         cells.
      */
     protected ICellPainter getInternalPainter() {
-        return internalPainter;
+        return this.internalPainter;
     }
 
     /**
@@ -337,7 +337,7 @@ public class TableCellPainter extends BackgroundPainter {
      *         in {@link DisplayMode#NORMAL}
      */
     public Color getGridColor() {
-        return gridColor;
+        return this.gridColor;
     }
 
     /**
@@ -354,7 +354,7 @@ public class TableCellPainter extends BackgroundPainter {
      *         in {@link DisplayMode#SELECT}
      */
     public Color getSelectedGridColor() {
-        return selectedGridColor;
+        return this.selectedGridColor;
     }
 
     /**
@@ -372,14 +372,14 @@ public class TableCellPainter extends BackgroundPainter {
      *         dynamically calculated sub cell heights dependent on the content.
      */
     public int getFixedSubCellHeight() {
-        return fixedSubCellHeight;
+        return this.fixedSubCellHeight;
     }
 
     /**
      * Setting a value >= 0 will result in using a fixed height of the sub
      * cells. Setting the value to a negative number will ask the internal
      * painter for the sub cells to calculate the height regarding the content.
-     * 
+     *
      * @param fixedSubCellHeight
      *            The height of the sub cells to use.
      */
@@ -393,7 +393,7 @@ public class TableCellPainter extends BackgroundPainter {
      *         <code>false</code> if not.
      */
     public boolean isCalculateParentCellHeight() {
-        return calculateParentCellHeight;
+        return this.calculateParentCellHeight;
     }
 
     /**

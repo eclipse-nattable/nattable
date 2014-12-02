@@ -90,11 +90,11 @@ public class _781_DragAndDropExample extends AbstractNatExample {
             subData2.add(p);
         }
 
-        firstNatTable = createTable(container, subData1);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(firstNatTable);
+        this.firstNatTable = createTable(container, subData1);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(this.firstNatTable);
 
-        secondNatTable = createTable(container, subData2);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(secondNatTable);
+        this.secondNatTable = createTable(container, subData2);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(this.secondNatTable);
 
         return container;
     }
@@ -191,25 +191,25 @@ public class _781_DragAndDropExample extends AbstractNatExample {
                     .getSelectionModel()).getSelectedRowObjects();
 
             if (!selection.isEmpty()) {
-                draggedPerson = selection.get(0);
+                this.draggedPerson = selection.get(0);
                 StringBuilder builder = new StringBuilder();
-                builder.append(draggedPerson.getId()).append(DATA_SEPARATOR)
-                        .append(draggedPerson.getFirstName())
+                builder.append(this.draggedPerson.getId()).append(DATA_SEPARATOR)
+                        .append(this.draggedPerson.getFirstName())
                         .append(DATA_SEPARATOR)
-                        .append(draggedPerson.getLastName())
+                        .append(this.draggedPerson.getLastName())
                         .append(DATA_SEPARATOR)
-                        .append(draggedPerson.getGender())
+                        .append(this.draggedPerson.getGender())
                         .append(DATA_SEPARATOR)
-                        .append(draggedPerson.isMarried())
+                        .append(this.draggedPerson.isMarried())
                         .append(DATA_SEPARATOR)
-                        .append(sdf.format(draggedPerson.getBirthday()));
+                        .append(this.sdf.format(this.draggedPerson.getBirthday()));
                 event.data = builder.toString();
             }
         }
 
         @Override
         public void dragFinished(DragSourceEvent event) {
-            this.data.remove(draggedPerson);
+            this.data.remove(this.draggedPerson);
             this.draggedPerson = null;
 
             // clear selection
@@ -244,7 +244,7 @@ public class _781_DragAndDropExample extends AbstractNatExample {
                 p.setGender(Gender.valueOf(data[3]));
                 p.setMarried(Boolean.valueOf(data[4]));
                 try {
-                    p.setBirthday(sdf.parse(data[5]));
+                    p.setBirthday(this.sdf.parse(data[5]));
                 } catch (ParseException e) {}
 
                 this.data.add(p);

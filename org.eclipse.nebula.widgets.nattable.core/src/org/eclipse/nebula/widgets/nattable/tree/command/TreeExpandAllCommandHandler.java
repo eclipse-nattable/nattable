@@ -19,9 +19,9 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
  * <p>
  * Will search over the whole tree structure in the associated TreeLayer to
  * identify expandable nodes and expand them one after the other.
- * 
+ *
  * @author Dirk Fauth
- * 
+ *
  * @see TreeLayer
  * @see TreeExpandAllCommand
  *
@@ -35,7 +35,7 @@ public class TreeExpandAllCommandHandler implements
     private final TreeLayer treeLayer;
 
     /**
-     * 
+     *
      * @param treeLayer
      *            The TreeLayer to which this command handler should be
      *            connected.

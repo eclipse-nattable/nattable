@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,11 +21,13 @@ public class PersistableFixture implements IPersistable {
     public boolean stateLoaded = false;
     public boolean stateSaved = false;
 
+    @Override
     public void loadState(String prefix, Properties properties) {
         this.stateLoaded = true;
         this.loadedProperties = properties;
     }
 
+    @Override
     public void saveState(String prefix, Properties properties) {
         this.stateSaved = true;
         this.savedProperties = properties;

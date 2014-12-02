@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,7 +21,7 @@ public class DefaultColumnHeaderDataProvider implements IDataProvider {
     private Map<String, String> propertyToLabelMap;
 
     public DefaultColumnHeaderDataProvider(final String[] columnLabels) {
-        propertyNames = columnLabels;
+        this.propertyNames = columnLabels;
     }
 
     public DefaultColumnHeaderDataProvider(final String[] propertyNames,
@@ -31,9 +31,9 @@ public class DefaultColumnHeaderDataProvider implements IDataProvider {
     }
 
     public String getColumnHeaderLabel(int columnIndex) {
-        String propertyName = propertyNames[columnIndex];
-        if (propertyToLabelMap != null) {
-            String label = propertyToLabelMap.get(propertyName);
+        String propertyName = this.propertyNames[columnIndex];
+        if (this.propertyToLabelMap != null) {
+            String label = this.propertyToLabelMap.get(propertyName);
             if (label != null) {
                 return label;
             }
@@ -41,10 +41,12 @@ public class DefaultColumnHeaderDataProvider implements IDataProvider {
         return propertyName;
     }
 
+    @Override
     public int getColumnCount() {
-        return propertyNames.length;
+        return this.propertyNames.length;
     }
 
+    @Override
     public int getRowCount() {
         return 1;
     }
@@ -52,10 +54,12 @@ public class DefaultColumnHeaderDataProvider implements IDataProvider {
     /**
      * This class does not support multiple rows in the column header layer.
      */
+    @Override
     public Object getDataValue(int columnIndex, int rowIndex) {
         return getColumnHeaderLabel(columnIndex);
     }
 
+    @Override
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
         throw new UnsupportedOperationException();
     }

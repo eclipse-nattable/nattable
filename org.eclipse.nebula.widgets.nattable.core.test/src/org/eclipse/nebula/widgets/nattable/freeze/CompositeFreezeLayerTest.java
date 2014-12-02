@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -45,22 +45,23 @@ public class CompositeFreezeLayerTest {
                         + "A1 | B1 | C1 | D1 \n" + "A2 | B2 | C2 | D2 \n"
                         + "A3 | B3 | C3 | D3 \n");
 
-        reorderLayer = new ColumnReorderLayer(dataLayer);
-        hideShowLayer = new ColumnHideShowLayer(reorderLayer);
-        selectionLayer = new SelectionLayer(hideShowLayer);
-        viewportLayer = new ViewportLayer(selectionLayer);
-        freezeLayer = new FreezeLayer(selectionLayer);
+        this.reorderLayer = new ColumnReorderLayer(dataLayer);
+        this.hideShowLayer = new ColumnHideShowLayer(this.reorderLayer);
+        this.selectionLayer = new SelectionLayer(this.hideShowLayer);
+        this.viewportLayer = new ViewportLayer(this.selectionLayer);
+        this.freezeLayer = new FreezeLayer(this.selectionLayer);
 
-        compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer,
-                viewportLayer, selectionLayer);
-        compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.compositeFreezeLayer = new CompositeFreezeLayer(this.freezeLayer,
+                this.viewportLayer, this.selectionLayer);
+        this.compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 400, 160);
             }
 
         });
-        compositeFreezeLayer
+        this.compositeFreezeLayer
                 .doCommand(new InitializeClientAreaCommandFixture());
     }
 
@@ -76,15 +77,15 @@ public class CompositeFreezeLayerTest {
                         + "A2~:NONFROZEN_REGION | B2~:NONFROZEN_REGION | C2~:NONFROZEN_REGION | D2~:NONFROZEN_REGION \n"
                         + "A3~:NONFROZEN_REGION | B3~:NONFROZEN_REGION | C3~:NONFROZEN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     // Freeze column
 
     @Test
     public void testFreezeAllColumns() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 3));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 3));
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -96,13 +97,13 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | D2~:FROZEN_COLUMN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | D3~:FROZEN_COLUMN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testFreezeColumns() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 1));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 1));
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -114,15 +115,15 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | C2~:NONFROZEN_REGION | D2~:NONFROZEN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | C3~:NONFROZEN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     // Freeze selection
 
     @Test
     public void testFreezeSelectionAtBeginning() {
-        selectionLayer.setSelectedCell(2, 2);
-        compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
+        this.selectionLayer.setSelectedCell(2, 2);
+        this.compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -134,23 +135,24 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | C2~SELECT:selectionAnchor,NONFROZEN_REGION | D2~:NONFROZEN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | C3~:NONFROZEN_REGION                       | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testFreezeSelectionInMiddle() {
-        compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 300, 120);
             }
 
         });
 
-        selectionLayer.setSelectedCell(2, 2);
-        viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(1));
-        viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(1));
-        compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
+        this.selectionLayer.setSelectedCell(2, 2);
+        this.viewportLayer.setOriginX(this.viewportLayer.getStartXOfColumnPosition(1));
+        this.viewportLayer.setOriginY(this.viewportLayer.getStartYOfRowPosition(1));
+        this.compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
 
         TestLayer expectedLayer = new TestLayer(
                 3,
@@ -161,17 +163,17 @@ public class CompositeFreezeLayerTest {
                         + "B2~:FROZEN_COLUMN_REGION | C2~SELECT:selectionAnchor,NONFROZEN_REGION | D2~:NONFROZEN_REGION \n"
                         + "B3~:FROZEN_COLUMN_REGION | C3~:NONFROZEN_REGION                       | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     // Reorder
 
     @Test
     public void testReorderNonFrozenColumnToMiddleOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 1));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 1));
 
-        reorderLayer.reorderColumnPosition(3, 1);
+        this.reorderLayer.reorderColumnPosition(3, 1);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -183,15 +185,15 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | D2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | C2~:NONFROZEN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | D3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | C3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderNonFrozenColumnToEndOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 1));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 1));
 
-        reorderLayer.reorderColumnPosition(3, 2);
+        this.reorderLayer.reorderColumnPosition(3, 2);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -203,15 +205,15 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION | C2~:NONFROZEN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION | C3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderNonFrozenColumnToBeginningOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 1));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 1));
 
-        reorderLayer.reorderColumnPosition(3, 0);
+        this.reorderLayer.reorderColumnPosition(3, 0);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -223,15 +225,15 @@ public class CompositeFreezeLayerTest {
                         + "D2~:FROZEN_COLUMN_REGION | A2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | C2~:NONFROZEN_REGION \n"
                         + "D3~:FROZEN_COLUMN_REGION | A3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | C3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderMiddleFrozenColumnToMiddleOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 3));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 3));
 
-        reorderLayer.reorderColumnPosition(2, 1);
+        this.reorderLayer.reorderColumnPosition(2, 1);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -243,15 +245,15 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | D2~:FROZEN_COLUMN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | D3~:FROZEN_COLUMN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderMiddleFrozenColumnToEndOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        reorderLayer.reorderColumnPosition(1, 3);
+        this.reorderLayer.reorderColumnPosition(1, 3);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -263,15 +265,15 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderMiddleFrozenColumnToBeginningOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        reorderLayer.reorderColumnPosition(1, 0);
+        this.reorderLayer.reorderColumnPosition(1, 0);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -283,15 +285,15 @@ public class CompositeFreezeLayerTest {
                         + "B2~:FROZEN_COLUMN_REGION | A2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "B3~:FROZEN_COLUMN_REGION | A3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderBeginningFrozenColumnToMiddleOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        reorderLayer.reorderColumnPosition(0, 2);
+        this.reorderLayer.reorderColumnPosition(0, 2);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -303,15 +305,15 @@ public class CompositeFreezeLayerTest {
                         + "B2~:FROZEN_COLUMN_REGION | A2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "B3~:FROZEN_COLUMN_REGION | A3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderBeginningFrozenColumnToEndOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        reorderLayer.reorderColumnPosition(0, 3);
+        this.reorderLayer.reorderColumnPosition(0, 3);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -323,15 +325,15 @@ public class CompositeFreezeLayerTest {
                         + "B2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | A2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "B3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | A3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderEndFrozenColumnToMiddleOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        reorderLayer.reorderColumnPosition(2, 1);
+        this.reorderLayer.reorderColumnPosition(2, 1);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -343,15 +345,15 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testReorderEndFrozenColumnToBeginningOfFrozenArea() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        reorderLayer.reorderColumnPosition(2, 0);
+        this.reorderLayer.reorderColumnPosition(2, 0);
 
         TestLayer expectedLayer = new TestLayer(
                 4,
@@ -363,17 +365,17 @@ public class CompositeFreezeLayerTest {
                         + "C2~:FROZEN_COLUMN_REGION | A2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "C3~:FROZEN_COLUMN_REGION | A3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     // Hide/show
 
     @Test
     public void testHideMiddleFrozenColumn() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        hideShowLayer.hideColumnPositions(Arrays.asList(new Integer[] { 1 }));
+        this.hideShowLayer.hideColumnPositions(Arrays.asList(new Integer[] { 1 }));
 
         TestLayer expectedLayer = new TestLayer(
                 3,
@@ -385,15 +387,15 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testHideBeginningFrozenColumn() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        hideShowLayer.hideColumnPositions(Arrays.asList(new Integer[] { 0 }));
+        this.hideShowLayer.hideColumnPositions(Arrays.asList(new Integer[] { 0 }));
 
         TestLayer expectedLayer = new TestLayer(
                 3,
@@ -405,15 +407,15 @@ public class CompositeFreezeLayerTest {
                         + "B2~:FROZEN_COLUMN_REGION | C2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "B3~:FROZEN_COLUMN_REGION | C3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
     @Test
     public void testHideEndFrozenColumn() {
-        compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                compositeFreezeLayer, 2));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
+                this.compositeFreezeLayer, 2));
 
-        hideShowLayer.hideColumnPositions(Arrays.asList(new Integer[] { 2 }));
+        this.hideShowLayer.hideColumnPositions(Arrays.asList(new Integer[] { 2 }));
 
         TestLayer expectedLayer = new TestLayer(
                 3,
@@ -425,7 +427,7 @@ public class CompositeFreezeLayerTest {
                         + "A2~:FROZEN_COLUMN_REGION | B2~:FROZEN_COLUMN_REGION | D2~:NONFROZEN_REGION \n"
                         + "A3~:FROZEN_COLUMN_REGION | B3~:FROZEN_COLUMN_REGION | D3~:NONFROZEN_REGION \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, compositeFreezeLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.compositeFreezeLayer);
     }
 
 }

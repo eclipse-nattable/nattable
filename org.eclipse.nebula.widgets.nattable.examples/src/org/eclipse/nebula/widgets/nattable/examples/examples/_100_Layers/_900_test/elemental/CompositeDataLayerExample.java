@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,6 +27,7 @@ public class CompositeDataLayerExample extends AbstractNatExample {
         StandaloneNatExampleRunner.run(new CompositeDataLayerExample());
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         ILayer dataLayer = new DataLayer(new DummyBodyDataProvider(1000000,
                 1000000));

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  ******************************************************************************/
@@ -42,44 +42,44 @@ public class SelectionModelStructuralChangeEventTest {
 
     @Before
     public void setup() {
-        listFixture = RowDataListFixture.getList(10);
-        bodyDataProvider = new ListDataProvider<RowDataFixture>(listFixture,
+        this.listFixture = RowDataListFixture.getList(10);
+        this.bodyDataProvider = new ListDataProvider<RowDataFixture>(this.listFixture,
                 new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                         RowDataListFixture.getPropertyNames()));
 
-        GridLayerFixture gridLayer = new GridLayerFixture(bodyDataProvider);
-        nattable = new NatTableFixture(gridLayer, false);
+        GridLayerFixture gridLayer = new GridLayerFixture(this.bodyDataProvider);
+        this.nattable = new NatTableFixture(gridLayer, false);
 
-        bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
-        selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
+        this.bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
+        this.selectionLayer = gridLayer.getBodyLayer().getSelectionLayer();
     }
 
     @Test
     public void shouldClearSelectionOnDataUpdates() throws Exception {
         // test SelectionModel updates
-        assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
+        assertEquals(0, this.selectionLayer.getFullySelectedRowPositions().length);
 
-        nattable.doCommand(new SelectRowsCommand(nattable, 1, 1, false, false));
-        assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
+        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 1, 1, false, false));
+        assertEquals(1, this.selectionLayer.getFullySelectedRowPositions().length);
 
         // Ford motor at top and selected
-        assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1)
+        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 1)
                 .toString());
         assertEquals("B Ford Motor", getSelected().getSecurity_description());
 
-        listFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
+        this.listFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
 
         // fire event to trigger structural refresh
-        bodyDataLayer.fireLayerEvent(new StructuralRefreshEvent(bodyDataLayer));
+        this.bodyDataLayer.fireLayerEvent(new StructuralRefreshEvent(this.bodyDataLayer));
 
-        assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
+        assertEquals(0, this.selectionLayer.getFullySelectedRowPositions().length);
     }
 
     @Test
     public void shouldPreserveRowSelectionOnDataUpdates() throws Exception {
         // test RowSelectionModel updates
-        selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
-                selectionLayer, bodyDataProvider,
+        this.selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
+                this.selectionLayer, this.bodyDataProvider,
                 new IRowIdAccessor<RowDataFixture>() {
 
                     @Override
@@ -89,23 +89,23 @@ public class SelectionModelStructuralChangeEventTest {
 
                 }));
 
-        assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
+        assertEquals(0, this.selectionLayer.getFullySelectedRowPositions().length);
 
-        nattable.doCommand(new SelectRowsCommand(nattable, 1, 1, false, false));
-        assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
+        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 1, 1, false, false));
+        assertEquals(1, this.selectionLayer.getFullySelectedRowPositions().length);
 
         // Ford motor at top and selected
-        assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1)
+        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 1)
                 .toString());
         assertEquals("B Ford Motor", getSelected().getSecurity_description());
 
-        listFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
+        this.listFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
 
         // fire event to trigger structural refresh
-        bodyDataLayer.fireLayerEvent(new StructuralRefreshEvent(bodyDataLayer));
+        this.bodyDataLayer.fireLayerEvent(new StructuralRefreshEvent(this.bodyDataLayer));
 
         // Tata motors at top but Ford motors still selected
-        assertEquals("Tata motors", nattable.getDataValueByPosition(2, 1)
+        assertEquals("Tata motors", this.nattable.getDataValueByPosition(2, 1)
                 .toString());
         assertEquals("B Ford Motor", getSelected().getSecurity_description());
     }
@@ -113,9 +113,9 @@ public class SelectionModelStructuralChangeEventTest {
     @Test
     public void shouldPreserveSelectionOnDataUpdates() throws Exception {
         // test PreserveSelectionModel updates
-        selectionLayer
+        this.selectionLayer
                 .setSelectionModel(new PreserveSelectionModel<RowDataFixture>(
-                        selectionLayer, bodyDataProvider,
+                        this.selectionLayer, this.bodyDataProvider,
                         new IRowIdAccessor<RowDataFixture>() {
 
                             @Override
@@ -126,31 +126,31 @@ public class SelectionModelStructuralChangeEventTest {
 
                         }));
 
-        assertEquals(0, selectionLayer.getFullySelectedRowPositions().length);
+        assertEquals(0, this.selectionLayer.getFullySelectedRowPositions().length);
 
-        nattable.doCommand(new SelectRowsCommand(nattable, 1, 1, false, false));
-        assertEquals(1, selectionLayer.getFullySelectedRowPositions().length);
+        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 1, 1, false, false));
+        assertEquals(1, this.selectionLayer.getFullySelectedRowPositions().length);
 
         // Ford motor at top and selected
-        assertEquals("B Ford Motor", nattable.getDataValueByPosition(2, 1)
+        assertEquals("B Ford Motor", this.nattable.getDataValueByPosition(2, 1)
                 .toString());
         assertEquals("B Ford Motor", getSelected().getSecurity_description());
 
-        listFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
+        this.listFixture.add(0, RowDataFixture.getInstance("Tata motors", "A"));
 
         // fire event to trigger structural refresh
-        bodyDataLayer.fireLayerEvent(new StructuralRefreshEvent(bodyDataLayer));
+        this.bodyDataLayer.fireLayerEvent(new StructuralRefreshEvent(this.bodyDataLayer));
 
         // Tata motors at top but Ford motors still selected
-        assertEquals("Tata motors", nattable.getDataValueByPosition(2, 1)
+        assertEquals("Tata motors", this.nattable.getDataValueByPosition(2, 1)
                 .toString());
         assertEquals("B Ford Motor", getSelected().getSecurity_description());
     }
 
     private RowDataFixture getSelected() {
-        Range selection = selectionLayer.getSelectedRowPositions().iterator()
+        Range selection = this.selectionLayer.getSelectedRowPositions().iterator()
                 .next();
-        return listFixture.get(selection.start);
+        return this.listFixture.get(selection.start);
     }
 
 }

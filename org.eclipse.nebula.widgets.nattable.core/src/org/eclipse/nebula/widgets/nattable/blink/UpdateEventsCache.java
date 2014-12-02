@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -59,19 +59,20 @@ public class UpdateEventsCache<T> {
     private Runnable getStaleUpdatesCleanupTask() {
         return new Runnable() {
 
+            @Override
             public void run() {
                 Map<String, TimeStampedEvent> recentEvents = new HashMap<String, TimeStampedEvent>();
                 Date recent = new Date(System.currentTimeMillis()
                         - TIME_TO_LIVE);
 
-                for (Map.Entry<String, TimeStampedEvent> entry : updateEvents
+                for (Map.Entry<String, TimeStampedEvent> entry : UpdateEventsCache.this.updateEvents
                         .entrySet()) {
                     if (entry.getValue().timeRecieved.after(recent)) {
                         recentEvents.put(entry.getKey(), entry.getValue());
                     }
                 }
-                synchronized (updateEvents) {
-                    updateEvents = recentEvents;
+                synchronized (UpdateEventsCache.this.updateEvents) {
+                    UpdateEventsCache.this.updateEvents = recentEvents;
                     checkUpdateEvents();
                 }
             }
@@ -80,14 +81,14 @@ public class UpdateEventsCache<T> {
     }
 
     private void checkUpdateEvents() {
-        if (updateEvents.isEmpty()) {
-            if (scheduledFutureCleanup != null) {
-                scheduledFutureCleanup.cancel(true);
-                scheduledFutureCleanup = null;
+        if (this.updateEvents.isEmpty()) {
+            if (this.scheduledFutureCleanup != null) {
+                this.scheduledFutureCleanup.cancel(true);
+                this.scheduledFutureCleanup = null;
             }
         } else {
-            if (scheduledFutureCleanup == null) {
-                scheduledFutureCleanup = cleanupScheduler.scheduleAtFixedRate(
+            if (this.scheduledFutureCleanup == null) {
+                this.scheduledFutureCleanup = this.cleanupScheduler.scheduleAtFixedRate(
                         getStaleUpdatesCleanupTask(), INITIAL_DELAY,
                         TIME_TO_LIVE, TimeUnit.MILLISECONDS);
             }
@@ -96,42 +97,42 @@ public class UpdateEventsCache<T> {
 
     public void put(PropertyUpdateEvent<T> event) {
         String key = getKey(event);
-        updateEvents.put(key, new TimeStampedEvent(event));
+        this.updateEvents.put(key, new TimeStampedEvent(event));
         checkUpdateEvents();
     }
 
     protected String getKey(PropertyUpdateEvent<T> event) {
-        String rowId = rowIdAccessor.getRowId(event.getSourceBean()).toString();
+        String rowId = this.rowIdAccessor.getRowId(event.getSourceBean()).toString();
         return getKey(event.getPropertyName(), rowId);
     }
 
     public String getKey(String columnProperty, String rowId) {
-        return keyStrategy.getKey(columnProperty, rowId);
+        return this.keyStrategy.getKey(columnProperty, rowId);
     }
 
     public PropertyUpdateEvent<T> getEvent(String key) {
-        return updateEvents.get(key).event;
+        return this.updateEvents.get(key).event;
     }
 
     public int getCount() {
-        return updateEvents.size();
+        return this.updateEvents.size();
     }
 
     public boolean contains(String columnProperty, String rowId) {
-        return updateEvents.containsKey(getKey(columnProperty, rowId));
+        return this.updateEvents.containsKey(getKey(columnProperty, rowId));
     }
 
     public boolean isUpdated(String key) {
-        return updateEvents.containsKey(key);
+        return this.updateEvents.containsKey(key);
     }
 
     public void clear() {
-        updateEvents.clear();
+        this.updateEvents.clear();
         checkUpdateEvents();
     }
 
     public void remove(String key) {
-        updateEvents.remove(key);
+        this.updateEvents.remove(key);
         checkUpdateEvents();
     }
 

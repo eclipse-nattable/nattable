@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -14,7 +14,7 @@ public class ConflationQueue extends UpdateQueue {
     private static ConflationQueue queue = null;
 
     public ConflationQueue() {
-        sleep = 300;
+        this.sleep = 300;
     }
 
     public static ConflationQueue getInstance() {

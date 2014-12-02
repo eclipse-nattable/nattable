@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,6 +37,7 @@ public class LineBorderDecorator extends CellPainterWrapper {
         this.defaultBorderStyle = defaultBorderStyle;
     }
 
+    @Override
     public int getPreferredWidth(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
@@ -47,6 +48,7 @@ public class LineBorderDecorator extends CellPainterWrapper {
                 + (borderThickness * 2);
     }
 
+    @Override
     public int getPreferredHeight(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
@@ -63,11 +65,12 @@ public class LineBorderDecorator extends CellPainterWrapper {
         BorderStyle borderStyle = cellStyle
                 .getAttributeValue(CellStyleAttributes.BORDER_STYLE);
         if (borderStyle == null) {
-            borderStyle = defaultBorderStyle;
+            borderStyle = this.defaultBorderStyle;
         }
         return borderStyle;
     }
 
+    @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
             IConfigRegistry configRegistry) {
         BorderStyle borderStyle = getBorderStyle(cell, configRegistry);

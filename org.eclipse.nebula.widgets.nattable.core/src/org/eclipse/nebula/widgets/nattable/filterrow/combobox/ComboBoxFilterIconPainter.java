@@ -95,8 +95,8 @@ public class ComboBoxFilterIconPainter extends ImagePainter {
 
         Image result = null;
         if (cellData instanceof Collection
-                && ((Collection) cellData).size() == 
-                    this.comboBoxDataProvider.getValues(cell.getColumnIndex(), 0).size()) {
+                && ((Collection) cellData).size() ==
+                this.comboBoxDataProvider.getValues(cell.getColumnIndex(), 0).size()) {
             result = this.comboImage;
         } else {
             result = this.removeFilterImage;

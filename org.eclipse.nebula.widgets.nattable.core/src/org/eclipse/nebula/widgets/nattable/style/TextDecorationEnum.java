@@ -18,7 +18,7 @@ package org.eclipse.nebula.widgets.nattable.style;
  * <li>STRIKETHROUGH - Render the text strike through</li>
  * <li>UNDERLINE_STRIKETHROUGH - Render the text underlined and strike through</li>
  * </ul>
- * 
+ *
  * @author Dirk Fauth
  */
 public enum TextDecorationEnum {

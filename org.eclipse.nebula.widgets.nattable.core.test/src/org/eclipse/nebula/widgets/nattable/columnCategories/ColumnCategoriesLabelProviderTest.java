@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,24 +31,24 @@ public class ColumnCategoriesLabelProviderTest {
 
     @Before
     public void setup() {
-        hiddenEntries = ColumnEntriesFixture.getEntriesWithEvenIndexes();
-        labelProvider = new ColumnCategoriesLabelProvider(hiddenEntries);
+        this.hiddenEntries = ColumnEntriesFixture.getEntriesWithEvenIndexes();
+        this.labelProvider = new ColumnCategoriesLabelProvider(this.hiddenEntries);
     }
 
     @Test
     public void shouldReturnLabelForCategoriesFromTheModel() throws Exception {
-        assertEquals(CATEGORY_B1_LABEL, labelProvider.getText(new Node(
+        assertEquals(CATEGORY_B1_LABEL, this.labelProvider.getText(new Node(
                 CATEGORY_B1_LABEL, Type.CATEGORY)));
         assertEquals(Messages.getString("Unknown"),
-                labelProvider.getText(new Node("2")));
+                this.labelProvider.getText(new Node("2")));
     }
 
     @Test
     public void shouldReturnLabelsFromIndexesFromTheColumnEntry()
             throws Exception {
         assertEquals("Index2",
-                labelProvider.getText(new Node("2", Type.COLUMN)));
-        assertEquals("11", labelProvider.getText(new Node("11", Type.COLUMN)));
+                this.labelProvider.getText(new Node("2", Type.COLUMN)));
+        assertEquals("11", this.labelProvider.getText(new Node("11", Type.COLUMN)));
     }
 
 }

@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
  * Command that can be used to freeze a grid for whole rows.
- * 
+ *
  * @author Dirk Fauth
  */
 public class FreezeRowCommand extends AbstractRowCommand implements
@@ -37,7 +37,7 @@ public class FreezeRowCommand extends AbstractRowCommand implements
     /**
      * Creates a FreezeRowCommand for the given row position related to the
      * given layer, that doesn't toggle or override a current frozen state.
-     * 
+     *
      * @param layer
      *            The layer to which the row position matches.
      * @param rowPosition
@@ -52,7 +52,7 @@ public class FreezeRowCommand extends AbstractRowCommand implements
      * Creates a FreezeRowCommand for the given row position related to the
      * given layer, that doesn't override a current frozen state. If it should
      * toggle the current frozen state can be specified by parameter.
-     * 
+     *
      * @param layer
      *            The layer to which the row position matches.
      * @param rowPosition
@@ -71,7 +71,7 @@ public class FreezeRowCommand extends AbstractRowCommand implements
      * Creates a FreezeRowCommand for the given row position related to the
      * given layer. If it should toggle or override the current frozen state can
      * be specified by parameter.
-     * 
+     *
      * @param layer
      *            The layer to which the row position matches.
      * @param rowPosition
@@ -94,7 +94,7 @@ public class FreezeRowCommand extends AbstractRowCommand implements
 
     /**
      * Constructor used for cloning the command.
-     * 
+     *
      * @param command
      *            The command which is the base for the new cloned instance.
      */
@@ -106,12 +106,12 @@ public class FreezeRowCommand extends AbstractRowCommand implements
 
     @Override
     public boolean isToggle() {
-        return toggle;
+        return this.toggle;
     }
 
     @Override
     public boolean isOverrideFreeze() {
-        return overrideFreeze;
+        return this.overrideFreeze;
     }
 
     @Override

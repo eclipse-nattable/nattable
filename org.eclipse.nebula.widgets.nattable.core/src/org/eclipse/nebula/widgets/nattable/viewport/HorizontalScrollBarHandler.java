@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,17 +37,17 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 
     @Override
     int getViewportOrigin() {
-        return viewportLayer.getOrigin().getX();
+        return this.viewportLayer.getOrigin().getX();
     }
 
     @Override
     int getViewportMinimumOrigin() {
-        return viewportLayer.getMinimumOrigin().getX();
+        return this.viewportLayer.getMinimumOrigin().getX();
     }
 
     @Override
     void setViewportOrigin(int x) {
-        viewportLayer.setOriginX(x);
+        this.viewportLayer.setOriginX(x);
     }
 
     @Override
@@ -58,27 +58,27 @@ public class HorizontalScrollBarHandler extends ScrollBarHandlerTemplate {
 
     @Override
     boolean keepScrolling() {
-        return !viewportLayer.isLastColumnCompletelyDisplayed();
+        return !this.viewportLayer.isLastColumnCompletelyDisplayed();
     }
 
     @Override
     int getViewportWindowSpan() {
-        return viewportLayer.getClientAreaWidth();
+        return this.viewportLayer.getClientAreaWidth();
     }
 
     @Override
     int getScrollableLayerSpan() {
-        if (viewportLayer.getMaxWidth() >= 0
-                && viewportLayer.getMaxWidth() < scrollableLayer.getWidth()) {
-            return viewportLayer.getMaxWidth();
+        if (this.viewportLayer.getMaxWidth() >= 0
+                && this.viewportLayer.getMaxWidth() < this.scrollableLayer.getWidth()) {
+            return this.viewportLayer.getMaxWidth();
         } else {
-            return scrollableLayer.getWidth();
+            return this.scrollableLayer.getWidth();
         }
     }
 
     @Override
     int getScrollIncrement() {
-        return viewportLayer.getColumnCount() > 0 ? viewportLayer
+        return this.viewportLayer.getColumnCount() > 0 ? this.viewportLayer
                 .getColumnWidthByPosition(0) : 0;
     }
 }

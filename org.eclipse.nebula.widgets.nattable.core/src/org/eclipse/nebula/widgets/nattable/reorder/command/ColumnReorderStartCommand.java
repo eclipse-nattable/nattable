@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,7 +20,7 @@ public class ColumnReorderStartCommand implements ILayerCommand {
     private ColumnPositionCoordinate fromColumnPositionCoordinate;
 
     public ColumnReorderStartCommand(ILayer layer, int fromColumnPosition) {
-        fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+        this.fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
                 fromColumnPosition);
     }
 
@@ -29,21 +29,23 @@ public class ColumnReorderStartCommand implements ILayerCommand {
     }
 
     public int getFromColumnPosition() {
-        return fromColumnPositionCoordinate.getColumnPosition();
+        return this.fromColumnPositionCoordinate.getColumnPosition();
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil
                 .convertColumnPositionToTargetContext(
-                        fromColumnPositionCoordinate, targetLayer);
+                        this.fromColumnPositionCoordinate, targetLayer);
         if (targetFromColumnPositionCoordinate != null) {
-            fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
+            this.fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
             return true;
         } else {
             return false;
         }
     }
 
+    @Override
     public ColumnReorderStartCommand cloneCommand() {
         return new ColumnReorderStartCommand(this);
     }

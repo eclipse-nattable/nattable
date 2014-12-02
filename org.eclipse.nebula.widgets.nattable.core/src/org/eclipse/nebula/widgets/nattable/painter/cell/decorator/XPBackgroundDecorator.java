@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -34,27 +34,30 @@ public class XPBackgroundDecorator extends BackgroundPainter {
     public XPBackgroundDecorator(ICellPainter interiorPainter) {
         super(interiorPainter);
 
-        separatorColor = GUIHelper.getColor(199, 197, 178);
+        this.separatorColor = GUIHelper.getColor(199, 197, 178);
 
-        gradientColor1 = GUIHelper.getColor(226, 222, 205);
-        gradientColor2 = GUIHelper.getColor(214, 210, 194);
-        gradientColor3 = GUIHelper.getColor(203, 199, 184);
+        this.gradientColor1 = GUIHelper.getColor(226, 222, 205);
+        this.gradientColor2 = GUIHelper.getColor(214, 210, 194);
+        this.gradientColor3 = GUIHelper.getColor(203, 199, 184);
 
-        highlightColor1 = GUIHelper.getColor(250, 171, 0);
-        highlightColor2 = GUIHelper.getColor(252, 194, 71);
-        highlightColor3 = GUIHelper.getColor(250, 178, 24);
+        this.highlightColor1 = GUIHelper.getColor(250, 171, 0);
+        this.highlightColor2 = GUIHelper.getColor(252, 194, 71);
+        this.highlightColor3 = GUIHelper.getColor(250, 178, 24);
     }
 
+    @Override
     public int getPreferredWidth(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         return super.getPreferredWidth(cell, gc, configRegistry) + 4;
     }
 
+    @Override
     public int getPreferredHeight(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         return super.getPreferredHeight(cell, gc, configRegistry) + 4;
     }
 
+    @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
             IConfigRegistry configRegistry) {
         // Draw background
@@ -75,7 +78,7 @@ public class XPBackgroundDecorator extends BackgroundPainter {
         gc.drawLine(x, rectangle.y + 3, x, rectangle.y + rectangle.height - 6);
 
         x = rectangle.x + rectangle.width - 1;
-        gc.setForeground(separatorColor);
+        gc.setForeground(this.separatorColor);
         gc.drawLine(x, rectangle.y + 3, x, rectangle.y + rectangle.height - 6);
 
         // Restore GC settings
@@ -86,15 +89,15 @@ public class XPBackgroundDecorator extends BackgroundPainter {
         boolean isHighlight = false;
 
         int y = rectangle.y + rectangle.height - 3;
-        gc.setForeground(isHighlight ? highlightColor1 : gradientColor1);
+        gc.setForeground(isHighlight ? this.highlightColor1 : this.gradientColor1);
         gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
 
         y++;
-        gc.setForeground(isHighlight ? highlightColor2 : gradientColor2);
+        gc.setForeground(isHighlight ? this.highlightColor2 : this.gradientColor2);
         gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
 
         y++;
-        gc.setForeground(isHighlight ? highlightColor3 : gradientColor3);
+        gc.setForeground(isHighlight ? this.highlightColor3 : this.gradientColor3);
         gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
     }
 

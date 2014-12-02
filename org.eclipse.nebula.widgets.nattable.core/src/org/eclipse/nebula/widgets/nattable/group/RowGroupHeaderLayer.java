@@ -187,7 +187,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
         } else {
             return getColumnWidthByPosition(0)
                     + this.rowHeaderLayer
-                    .getStartXOfColumnPosition(columnPosition - 1);
+                            .getStartXOfColumnPosition(columnPosition - 1);
         }
     }
 

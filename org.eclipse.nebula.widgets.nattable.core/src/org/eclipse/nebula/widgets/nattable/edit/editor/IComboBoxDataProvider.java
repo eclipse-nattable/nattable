@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ public interface IComboBoxDataProvider {
      * {@link IDisplayConverter} will handle the conversion to display values
      * when the {@link ComboBoxCellEditor} is filled with the selectable items.
      * There is no need to convert within this method.
-     * 
+     *
      * @param columnIndex
      *            The column index of the cell whose {@link ComboBoxCellEditor}
      *            should be filled.

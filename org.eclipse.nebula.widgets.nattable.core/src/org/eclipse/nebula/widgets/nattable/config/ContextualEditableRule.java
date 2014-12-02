@@ -18,7 +18,7 @@ public abstract class ContextualEditableRule implements IEditableRule {
     public boolean isEditable(int columnIndex, int rowIndex) {
         throw new UnsupportedOperationException(
                 this.getClass().getName()
-                + " is a ContextualEditableRule and has therefore to be called with context informations."); //$NON-NLS-1$
+                        + " is a ContextualEditableRule and has therefore to be called with context informations."); //$NON-NLS-1$
     }
 
     @Override

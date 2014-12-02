@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
  * Command for reordering rows.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -42,7 +42,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
     private boolean reorderToTopEdge;
 
     /**
-     * 
+     *
      * @param layer
      *            The layer the positions are related to
      * @param fromRowPositions
@@ -60,7 +60,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
     }
 
     /**
-     * 
+     *
      * @param layer
      *            The layer the positions are related to
      * @param fromRowPositions
@@ -74,13 +74,13 @@ public class MultiRowReorderCommand implements ILayerCommand {
      */
     public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions,
             int toRowPosition, boolean reorderToTopEdge) {
-        fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
+        this.fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
         for (Integer fromRowPosition : fromRowPositions) {
-            fromRowPositionCoordinates.add(new RowPositionCoordinate(layer,
+            this.fromRowPositionCoordinates.add(new RowPositionCoordinate(layer,
                     fromRowPosition));
         }
 
-        toRowPositionCoordinate = new RowPositionCoordinate(layer,
+        this.toRowPositionCoordinate = new RowPositionCoordinate(layer,
                 toRowPosition);
 
         this.reorderToTopEdge = reorderToTopEdge;
@@ -88,7 +88,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
 
     /**
      * Constructor used for cloning purposes
-     * 
+     *
      * @param command
      *            The command which is base for the new one
      */
@@ -104,7 +104,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
      */
     public List<Integer> getFromRowPositions() {
         List<Integer> fromRowPositions = new ArrayList<Integer>();
-        for (RowPositionCoordinate fromRowPositionCoordinate : fromRowPositionCoordinates) {
+        for (RowPositionCoordinate fromRowPositionCoordinate : this.fromRowPositionCoordinates) {
             fromRowPositions.add(fromRowPositionCoordinate.getRowPosition());
         }
         return fromRowPositions;
@@ -115,7 +115,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
      *         dropped
      */
     public int getToRowPosition() {
-        return toRowPositionCoordinate.getRowPosition();
+        return this.toRowPositionCoordinate.getRowPosition();
     }
 
     /**
@@ -123,14 +123,14 @@ public class MultiRowReorderCommand implements ILayerCommand {
      *         layer.
      */
     public boolean isReorderToTopEdge() {
-        return reorderToTopEdge;
+        return this.reorderToTopEdge;
     }
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         List<RowPositionCoordinate> convertedFromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
 
-        for (RowPositionCoordinate fromRowPositionCoordinate : fromRowPositionCoordinates) {
+        for (RowPositionCoordinate fromRowPositionCoordinate : this.fromRowPositionCoordinates) {
             RowPositionCoordinate convertedFromRowPositionCoordinate = LayerCommandUtil
                     .convertRowPositionToTargetContext(
                             fromRowPositionCoordinate, targetLayer);
@@ -141,13 +141,13 @@ public class MultiRowReorderCommand implements ILayerCommand {
         }
 
         RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(toRowPositionCoordinate,
+                .convertRowPositionToTargetContext(this.toRowPositionCoordinate,
                         targetLayer);
 
         if (convertedFromRowPositionCoordinates.size() > 0
                 && targetToRowPositionCoordinate != null) {
-            fromRowPositionCoordinates = convertedFromRowPositionCoordinates;
-            toRowPositionCoordinate = targetToRowPositionCoordinate;
+            this.fromRowPositionCoordinates = convertedFromRowPositionCoordinates;
+            this.toRowPositionCoordinate = targetToRowPositionCoordinate;
             return true;
         } else {
             return false;

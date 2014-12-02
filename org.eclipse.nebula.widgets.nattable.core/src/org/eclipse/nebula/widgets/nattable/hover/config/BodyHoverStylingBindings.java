@@ -24,7 +24,7 @@ import org.eclipse.swt.events.MouseEvent;
  * UI bindings for applying and clearing styles when moving the mouse over
  * NatTable cells. Is registered together with the HoverLayer that is used to
  * add the hover styling functionality.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see HoverLayer
@@ -52,11 +52,11 @@ public class BodyHoverStylingBindings extends AbstractUiBindingConfiguration {
                     @Override
                     public boolean matches(NatTable natTable, MouseEvent event,
                             LabelStack regionLabels) {
-                        return layer.getClientAreaProvider().getClientArea()
+                        return BodyHoverStylingBindings.this.layer.getClientAreaProvider().getClientArea()
                                 .contains(event.x, event.y);
                     }
 
-                }, new HoverStylingAction(layer));
+                }, new HoverStylingAction(this.layer));
 
         // clear any hover styling if the mouse is moved out of the region area
         // uiBindingRegistry.registerMouseMoveBinding(

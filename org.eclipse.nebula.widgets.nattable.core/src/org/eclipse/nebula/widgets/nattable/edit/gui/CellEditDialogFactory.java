@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * Factory to create {@link ICellEditDialog} instances that should be opened for
  * editing cell values.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -38,7 +38,7 @@ public class CellEditDialogFactory {
      * that wrap an edit control. If the {@link ICellEditor} itself is a
      * {@link ICellEditDialog}, it will returned itself without creating a new
      * one.
-     * 
+     *
      * @param parentShell
      *            the parent shell, or <code>null</code> to create a top-level
      *            shell

@@ -64,7 +64,7 @@ import ca.odell.glazedlists.GlazedLists;
 /**
  * Example that demonstrates how to implement a NatTable instance that shows
  * calculated values.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -95,7 +95,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
      * (org.eclipse.swt.widgets.Composite)
@@ -126,12 +126,12 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
         propertyToLabelMap.put("columnFourNumber", "Sum");
         propertyToLabelMap.put("columnFiveNumber", "Percentage");
 
-        valuesToShow.add(createNumberValues());
-        valuesToShow.add(createNumberValues());
+        this.valuesToShow.add(createNumberValues());
+        this.valuesToShow.add(createNumberValues());
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        CalculatingGridLayer gridLayer = new CalculatingGridLayer(valuesToShow,
+        CalculatingGridLayer gridLayer = new CalculatingGridLayer(this.valuesToShow,
                 configRegistry, propertyNames, propertyToLabelMap);
         DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 
@@ -152,7 +152,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
         addRowButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                valuesToShow.add(createNumberValues());
+                _303_CalculatedDataExample.this.valuesToShow.add(createNumberValues());
                 natTable.refresh();
             }
         });
@@ -162,9 +162,9 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
         resetButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                valuesToShow.clear();
-                valuesToShow.add(createNumberValues());
-                valuesToShow.add(createNumberValues());
+                _303_CalculatedDataExample.this.valuesToShow.clear();
+                _303_CalculatedDataExample.this.valuesToShow.add(createNumberValues());
+                _303_CalculatedDataExample.this.valuesToShow.add(createNumberValues());
                 natTable.refresh();
             }
         });
@@ -200,7 +200,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getDataValue
          * (java.lang.Object, int)
@@ -227,7 +227,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#setDataValue
          * (java.lang.Object, int, java.lang.Object)
@@ -252,7 +252,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getColumnCount
          * ()
@@ -288,14 +288,14 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
                 ConfigRegistry configRegistry) {
             IDataProvider dataProvider = new ListDataProvider<NumberValues>(
                     valuesToShow, new CalculatingDataProvider());
-            bodyDataLayer = new DataLayer(dataProvider);
-            columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-            columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-            selectionLayer = new SelectionLayer(columnHideShowLayer);
-            viewportLayer = new ViewportLayer(selectionLayer);
-            setUnderlyingLayer(viewportLayer);
+            this.bodyDataLayer = new DataLayer(dataProvider);
+            this.columnReorderLayer = new ColumnReorderLayer(this.bodyDataLayer);
+            this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
+            this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
+            this.viewportLayer = new ViewportLayer(this.selectionLayer);
+            setUnderlyingLayer(this.viewportLayer);
 
-            registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+            registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
         }
 
         public DataLayer getDataLayer() {
@@ -303,7 +303,7 @@ public class _303_CalculatedDataExample extends AbstractNatExample {
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
     }
 

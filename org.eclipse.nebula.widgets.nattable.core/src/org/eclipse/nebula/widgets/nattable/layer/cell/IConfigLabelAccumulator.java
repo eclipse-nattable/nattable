@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,7 +22,7 @@ public interface IConfigLabelAccumulator {
 
     /**
      * Add labels applicable to this cell position
-     * 
+     *
      * @param configLabels
      *            the labels currently applied to the cell. The labels
      *            contributed by this provider must be <i>added</i> to this

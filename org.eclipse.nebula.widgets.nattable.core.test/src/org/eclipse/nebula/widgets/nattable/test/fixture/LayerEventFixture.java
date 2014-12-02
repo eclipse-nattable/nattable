@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,18 +19,22 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class LayerEventFixture implements IVisualChangeEvent {
 
+    @Override
     public ILayerEvent cloneEvent() {
         return new LayerEventFixture();
     }
 
+    @Override
     public boolean convertToLocal(ILayer localLayer) {
         return true;
     }
 
+    @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
         return null;
     }
 
+    @Override
     public ILayer getLayer() {
         return null;
     }

@@ -42,7 +42,7 @@ public class DefaultTreeLayerConfiguration implements IConfiguration {
     private TreeLayer treeLayer;
 
     /**
-	 * 
+	 *
 	 */
     public DefaultTreeLayerConfiguration(TreeLayer treeLayer) {
         this.treeLayer = treeLayer;
@@ -63,7 +63,7 @@ public class DefaultTreeLayerConfiguration implements IConfiguration {
                 }, DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
         configRegistry.registerConfigAttribute(
                 ExportConfigAttributes.EXPORT_FORMATTER,
-                new TreeExportFormatter(treeLayer.getModel()),
+                new TreeExportFormatter(this.treeLayer.getModel()),
                 DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
     }
 

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,36 +37,40 @@ public class CellVisualChangeEvent implements IVisualChangeEvent {
         this.rowPosition = event.rowPosition;
     }
 
+    @Override
     public ILayer getLayer() {
-        return layer;
+        return this.layer;
     }
 
     public int getColumnPosition() {
-        return columnPosition;
+        return this.columnPosition;
     }
 
     public int getRowPosition() {
-        return rowPosition;
+        return this.rowPosition;
     }
 
+    @Override
     public boolean convertToLocal(ILayer localLayer) {
-        columnPosition = localLayer.underlyingToLocalColumnPosition(getLayer(),
-                columnPosition);
-        rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(),
-                rowPosition);
+        this.columnPosition = localLayer.underlyingToLocalColumnPosition(getLayer(),
+                this.columnPosition);
+        this.rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(),
+                this.rowPosition);
 
-        layer = localLayer;
+        this.layer = localLayer;
 
-        return columnPosition >= 0 && rowPosition >= 0
-                && columnPosition < layer.getColumnCount()
-                && rowPosition < layer.getRowCount();
+        return this.columnPosition >= 0 && this.rowPosition >= 0
+                && this.columnPosition < this.layer.getColumnCount()
+                && this.rowPosition < this.layer.getRowCount();
     }
 
+    @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        return Arrays.asList(new Rectangle[] { new Rectangle(columnPosition,
-                rowPosition, 1, 1) });
+        return Arrays.asList(new Rectangle[] { new Rectangle(this.columnPosition,
+                this.rowPosition, 1, 1) });
     }
 
+    @Override
     public CellVisualChangeEvent cloneEvent() {
         return new CellVisualChangeEvent(this);
     }

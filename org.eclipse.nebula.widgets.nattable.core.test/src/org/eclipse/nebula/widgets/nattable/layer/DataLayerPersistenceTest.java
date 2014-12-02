@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,16 +24,16 @@ public class DataLayerPersistenceTest {
 
     @Before
     public void setup() {
-        dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
+        this.dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
     }
 
     @Test
     public void testSaveState() {
-        dataLayer.setColumnWidthByPosition(5, 10);
-        dataLayer.setColumnPercentageSizing(true);
+        this.dataLayer.setColumnWidthByPosition(5, 10);
+        this.dataLayer.setColumnPercentageSizing(true);
 
         Properties properties = new Properties();
-        dataLayer.saveState("prefix", properties);
+        this.dataLayer.saveState("prefix", properties);
 
         Assert.assertEquals(7, properties.size());
         Assert.assertEquals("100",
@@ -55,7 +55,7 @@ public class DataLayerPersistenceTest {
     @Test
     public void testLoadState() {
         LayerListenerFixture listener = new LayerListenerFixture();
-        dataLayer.addLayerListener(listener);
+        this.dataLayer.addLayerListener(listener);
 
         Properties properties = new Properties();
         properties.setProperty("prefix.columnWidth.defaultSize", "80");
@@ -65,22 +65,22 @@ public class DataLayerPersistenceTest {
         properties.setProperty("prefix.rowHeight.defaultSize", "70");
         properties.setProperty("prefix.rowHeight.resizableByDefault", "true");
 
-        dataLayer.loadState("prefix", properties);
+        this.dataLayer.loadState("prefix", properties);
 
-        Assert.assertEquals(80, dataLayer.getColumnWidthByPosition(0));
-        Assert.assertEquals(80, dataLayer.getColumnWidthByPosition(1));
+        Assert.assertEquals(80, this.dataLayer.getColumnWidthByPosition(0));
+        Assert.assertEquals(80, this.dataLayer.getColumnWidthByPosition(1));
 
-        Assert.assertFalse(dataLayer.isColumnPositionResizable(0));
-        Assert.assertFalse(dataLayer.isColumnPositionResizable(1));
+        Assert.assertFalse(this.dataLayer.isColumnPositionResizable(0));
+        Assert.assertFalse(this.dataLayer.isColumnPositionResizable(1));
 
-        Assert.assertEquals(70, dataLayer.getRowHeightByPosition(0));
-        Assert.assertEquals(70, dataLayer.getRowHeightByPosition(1));
+        Assert.assertEquals(70, this.dataLayer.getRowHeightByPosition(0));
+        Assert.assertEquals(70, this.dataLayer.getRowHeightByPosition(1));
 
-        Assert.assertTrue(dataLayer.isRowPositionResizable(0));
-        Assert.assertTrue(dataLayer.isRowPositionResizable(1));
+        Assert.assertTrue(this.dataLayer.isRowPositionResizable(0));
+        Assert.assertTrue(this.dataLayer.isRowPositionResizable(1));
 
-        Assert.assertTrue(dataLayer.isColumnPercentageSizing());
-        Assert.assertFalse(dataLayer.isRowPercentageSizing());
+        Assert.assertTrue(this.dataLayer.isColumnPercentageSizing());
+        Assert.assertFalse(this.dataLayer.isRowPercentageSizing());
     }
 
 }

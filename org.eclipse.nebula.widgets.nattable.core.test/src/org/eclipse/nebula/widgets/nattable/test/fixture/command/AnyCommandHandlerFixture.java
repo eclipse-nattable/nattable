@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,21 +20,23 @@ public class AnyCommandHandlerFixture implements ILayerCommandHandler {
     private ILayerCommand commadHandled;
     private int numberOfCommandsHandled;
 
+    @Override
     public boolean doCommand(ILayer targetLayer, ILayerCommand command) {
         this.commadHandled = command;
         this.numberOfCommandsHandled++;
         return true;
     }
 
+    @Override
     public Class getCommandClass() {
         return ILayerCommand.class;
     }
 
     public ILayerCommand getCommadHandled() {
-        return commadHandled;
+        return this.commadHandled;
     }
 
     public int getNumberOfCommandsHandled() {
-        return numberOfCommandsHandled;
+        return this.numberOfCommandsHandled;
     }
 }

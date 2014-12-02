@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -39,10 +39,12 @@ public class MultiCellEditDialogRunner {
 
         IDisplayConverter dataTypeConverter = new DisplayConverter() {
 
+            @Override
             public Object canonicalToDisplayValue(Object canonicalValue) {
                 return canonicalValue;
             }
 
+            @Override
             public Object displayToCanonicalValue(Object displayValue) {
                 return displayValue;
             }
@@ -52,6 +54,7 @@ public class MultiCellEditDialogRunner {
         final Character newValue = Character.valueOf('4');
         IDataValidator dataValidator = new DataValidator() {
 
+            @Override
             public boolean validate(int columnIndex, int rowIndex,
                     Object newValue) {
                 Assert.assertEquals(newValue, newValue);

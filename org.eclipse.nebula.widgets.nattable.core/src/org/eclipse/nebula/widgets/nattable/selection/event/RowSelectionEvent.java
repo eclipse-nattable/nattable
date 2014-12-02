@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,23 +37,25 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements
         this.rowPositionToMoveIntoViewport = event.rowPositionToMoveIntoViewport;
     }
 
+    @Override
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 
     public int getRowPositionToMoveIntoViewport() {
-        return rowPositionToMoveIntoViewport;
+        return this.rowPositionToMoveIntoViewport;
     }
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        rowPositionToMoveIntoViewport = localLayer
+        this.rowPositionToMoveIntoViewport = localLayer
                 .underlyingToLocalRowPosition(getLayer(),
-                        rowPositionToMoveIntoViewport);
+                        this.rowPositionToMoveIntoViewport);
 
         return super.convertToLocal(localLayer);
     }
 
+    @Override
     public RowSelectionEvent cloneEvent() {
         return new RowSelectionEvent(this);
     }

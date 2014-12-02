@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.PasswordCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.FileDialogCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
@@ -200,7 +201,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
 
         // configure a custom message for the multi edit dialog
         Map<String, Object> editDialogSettings = new HashMap<String, Object>();
-        editDialogSettings.put(CellEditDialog.DIALOG_MESSAGE,
+        editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE,
                 "Please specify the lastname in here:");
 
         configRegistry.registerConfigAttribute(
@@ -252,25 +253,25 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
         // configure custom dialog settings
         Display display = Display.getCurrent();
         Map<String, Object> editDialogSettings = new HashMap<String, Object>();
-        editDialogSettings.put(CellEditDialog.DIALOG_SHELL_TITLE,
+        editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE,
                 "My custom value");
-        editDialogSettings.put(CellEditDialog.DIALOG_SHELL_ICON,
+        editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON,
                 display.getSystemImage(SWT.ICON_WARNING));
-        editDialogSettings.put(CellEditDialog.DIALOG_SHELL_RESIZABLE,
+        editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE,
                 Boolean.TRUE);
 
         Point size = new Point(400, 300);
-        editDialogSettings.put(CellEditDialog.DIALOG_SHELL_SIZE, size);
+        editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_SIZE, size);
 
         int screenWidth = display.getBounds().width;
         int screenHeight = display.getBounds().height;
         Point location = new Point(
                 (screenWidth / (2 * display.getMonitors().length))
                         - (size.x / 2), (screenHeight / 2) - (size.y / 2));
-        editDialogSettings.put(CellEditDialog.DIALOG_SHELL_LOCATION, location);
+        editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_LOCATION, location);
 
         // add custum message
-        editDialogSettings.put(CellEditDialog.DIALOG_MESSAGE,
+        editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE,
                 "Enter some free text in here:");
 
         configRegistry.registerConfigAttribute(
@@ -345,7 +346,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
      * <li>Register the painter corresponding to that editor</li>
      * <li>Register the needed converter</li>
      * </ol>
-     * 
+     *
      * @param configRegistry
      */
     private void registerColumnSevenCheckbox(IConfigRegistry configRegistry) {
@@ -382,7 +383,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
      * <li>Register the painter corresponding to that editor</li>
      * <li>Register the needed converter</li>
      * </ol>
-     * 
+     *
      * @param configRegistry
      */
     private void registerColumnEightCheckbox(IConfigRegistry configRegistry) {
@@ -418,7 +419,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
      * <p>
      * If you want to indicate in the view that this cell is editable by
      * combobox, you need to register the corresponding painter.
-     * 
+     *
      * @param configRegistry
      */
     private void registerColumnNineComboBox(IConfigRegistry configRegistry) {
@@ -435,7 +436,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
      * carries the city information. The difference to the editor in column six
      * is that the text control of the combobox is editable and the combobox
      * shows all entries instead of a scrollbar.
-     * 
+     *
      * @param configRegistry
      */
     private void registerColumnTenComboBox(IConfigRegistry configRegistry) {
@@ -457,7 +458,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
      * carries the favourite food information. This ComboBoxCellEditor will
      * support multiple selection. It also adds a different icon for the combo
      * in edit mode.
-     * 
+     *
      * @param configRegistry
      */
     private void registerColumnElevenComboBox(IConfigRegistry configRegistry) {
@@ -509,7 +510,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
      * column eight is that the text control of the combobox is editable and the
      * combobox shows all entries instead of a scrollbar. It also uses a
      * different icon for rendering the combo in normal mode.
-     * 
+     *
      * @param configRegistry
      */
     private void registerColumnTwelveComboBox(IConfigRegistry configRegistry) {
@@ -533,7 +534,7 @@ class EditorConfiguration extends AbstractRegistryConfiguration {
      * The following will register a {@link FileDialogCellEditor} for the
      * filename column. This will open the default SWT FileDialog to support
      * file selection.
-     * 
+     *
      * @param configRegistry
      */
     private void registerColumnThirteenFileDialogEditor(

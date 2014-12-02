@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -51,14 +51,17 @@ public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent
         return changedPositionRectangles;
     }
 
+    @Override
     public boolean isHorizontalStructureChanged() {
         return false;
     }
 
+    @Override
     public Collection<StructuralDiff> getColumnDiffs() {
         return null;
     }
 
+    @Override
     public boolean isVerticalStructureChanged() {
         return true;
     }

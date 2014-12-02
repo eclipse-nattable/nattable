@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Edwin Park - initial API and implementation
  ******************************************************************************/
@@ -36,27 +36,27 @@ public class TranslatedLayerCell extends TransformedLayerCell {
 
     @Override
     public ILayer getLayer() {
-        return layer;
+        return this.layer;
     }
 
     @Override
     public int getOriginColumnPosition() {
-        return originColumnPosition;
+        return this.originColumnPosition;
     }
 
     @Override
     public int getOriginRowPosition() {
-        return originRowPosition;
+        return this.originRowPosition;
     }
 
     @Override
     public int getColumnPosition() {
-        return columnPosition;
+        return this.columnPosition;
     }
 
     @Override
     public int getRowPosition() {
-        return rowPosition;
+        return this.rowPosition;
     }
 
 }

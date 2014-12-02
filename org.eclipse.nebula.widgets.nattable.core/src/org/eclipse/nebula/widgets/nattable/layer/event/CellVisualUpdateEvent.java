@@ -22,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * the specified cell itself. This is for example necessary for hover styling,
  * where redrawing everything is not necessary and would cause lags in applying
  * hover styling.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -30,7 +30,7 @@ public class CellVisualUpdateEvent extends CellVisualChangeEvent {
 
     /**
      * Create a new CellVisualUpdateEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The layer to which the given column and row position belong.
      * @param columnPosition
@@ -46,7 +46,7 @@ public class CellVisualUpdateEvent extends CellVisualChangeEvent {
     /**
      * Create a new CellVisualUpdateEvent out of the given event. Used
      * internally for cloning purposes.
-     * 
+     *
      * @param event
      *            The event to create the clone from.
      */
@@ -62,17 +62,17 @@ public class CellVisualUpdateEvent extends CellVisualChangeEvent {
     @Override
     public boolean convertToLocal(ILayer localLayer) {
         if (!(localLayer instanceof DimensionallyDependentLayer)) {
-            columnPosition = localLayer.underlyingToLocalColumnPosition(
-                    getLayer(), columnPosition);
-            rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(),
-                    rowPosition);
+            this.columnPosition = localLayer.underlyingToLocalColumnPosition(
+                    getLayer(), this.columnPosition);
+            this.rowPosition = localLayer.underlyingToLocalRowPosition(getLayer(),
+                    this.rowPosition);
         }
 
-        layer = localLayer;
+        this.layer = localLayer;
 
-        return columnPosition >= 0 && rowPosition >= 0
-                && columnPosition < layer.getColumnCount()
-                && rowPosition < layer.getRowCount();
+        return this.columnPosition >= 0 && this.rowPosition >= 0
+                && this.columnPosition < this.layer.getColumnCount()
+                && this.rowPosition < this.layer.getRowCount();
     }
 
 }

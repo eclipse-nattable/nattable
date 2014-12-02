@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -113,7 +113,7 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
                 filterList, columnPropertyAccessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         ColumnGroupBodyLayerStack bodyLayer = new ColumnGroupBodyLayerStack(
-                bodyDataLayer, columnGroupModel);
+                bodyDataLayer, this.columnGroupModel);
 
         ColumnOverrideLabelAccumulator bodyLabelAccumulator = new ColumnOverrideLabelAccumulator(
                 bodyDataLayer);
@@ -130,11 +130,11 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
                 propertyNames, propertyToLabelMap);
         DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
                 columnHeaderDataProvider);
-        columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+        this.columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
                 bodyLayer, bodyLayer.getSelectionLayer());
         ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
-                columnHeaderLayer, bodyLayer.getSelectionLayer(),
-                columnGroupModel);
+                this.columnHeaderLayer, bodyLayer.getSelectionLayer(),
+                this.columnGroupModel);
 
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Group 1", 1, 2);
 
@@ -189,8 +189,8 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
         // Register column chooser
         DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
                 bodyLayer.getSelectionLayer(),
-                bodyLayer.getColumnHideShowLayer(), columnHeaderLayer,
-                columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel);
+                bodyLayer.getColumnHideShowLayer(), this.columnHeaderLayer,
+                columnHeaderDataLayer, columnGroupHeaderLayer, this.columnGroupModel);
         bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
@@ -249,7 +249,7 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
             // Configure Bid column
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    doubleDisplayConverter, DisplayMode.NORMAL,
+                    this.doubleDisplayConverter, DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.TEXT_MATCHING_MODE,
@@ -259,7 +259,7 @@ public class DynamicColumnHeaderHeightExample extends AbstractNatExample {
             // Configure Ask column
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    doubleDisplayConverter, DisplayMode.NORMAL,
+                    this.doubleDisplayConverter, DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 6);
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.TEXT_MATCHING_MODE,

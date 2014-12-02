@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,22 +36,22 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate
 
     /**
      * Convert Viewport 0 pos -> Scrollable 0 pos
-     * 
+     *
      * @return
      */
     @Override
     int getViewportOrigin() {
-        return viewportLayer.getOrigin().getY();
+        return this.viewportLayer.getOrigin().getY();
     }
 
     @Override
     int getViewportMinimumOrigin() {
-        return viewportLayer.getMinimumOrigin().getY();
+        return this.viewportLayer.getMinimumOrigin().getY();
     }
 
     @Override
     void setViewportOrigin(int y) {
-        viewportLayer.setOriginY(y);
+        this.viewportLayer.setOriginY(y);
     }
 
     @Override
@@ -62,27 +62,27 @@ public class VerticalScrollBarHandler extends ScrollBarHandlerTemplate
 
     @Override
     boolean keepScrolling() {
-        return !viewportLayer.isLastRowCompletelyDisplayed();
+        return !this.viewportLayer.isLastRowCompletelyDisplayed();
     }
 
     @Override
     int getViewportWindowSpan() {
-        return viewportLayer.getClientAreaHeight();
+        return this.viewportLayer.getClientAreaHeight();
     }
 
     @Override
     int getScrollableLayerSpan() {
-        if (viewportLayer.getMaxHeight() >= 0
-                && viewportLayer.getMaxHeight() < scrollableLayer.getHeight()) {
-            return viewportLayer.getMaxHeight();
+        if (this.viewportLayer.getMaxHeight() >= 0
+                && this.viewportLayer.getMaxHeight() < this.scrollableLayer.getHeight()) {
+            return this.viewportLayer.getMaxHeight();
         } else {
-            return scrollableLayer.getHeight();
+            return this.scrollableLayer.getHeight();
         }
     }
 
     @Override
     int getScrollIncrement() {
-        return viewportLayer.getRowCount() > 0 ? viewportLayer
+        return this.viewportLayer.getRowCount() > 0 ? this.viewportLayer
                 .getRowHeightByPosition(0) : 0;
     }
 }

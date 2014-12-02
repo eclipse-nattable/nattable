@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,6 +29,7 @@ public class ReorderColumnsAndGroupsCommandHandler extends
         this.columnGroupReorderLayer = columnGroupReorderLayer;
     }
 
+    @Override
     public Class<ReorderColumnsAndGroupsCommand> getCommandClass() {
         return ReorderColumnsAndGroupsCommand.class;
     }
@@ -39,7 +40,7 @@ public class ReorderColumnsAndGroupsCommandHandler extends
      */
     @Override
     protected boolean doCommand(ReorderColumnsAndGroupsCommand command) {
-        final ILayer underlyingLayer = columnGroupReorderLayer
+        final ILayer underlyingLayer = this.columnGroupReorderLayer
                 .getUnderlyingLayer();
         List<String> groupsProcessed = new ArrayList<String>();
 
@@ -50,14 +51,14 @@ public class ReorderColumnsAndGroupsCommandHandler extends
             int fromColumnIndex = underlyingLayer
                     .getColumnIndexByPosition(fromColumnPosition.intValue());
 
-            ColumnGroupModel model = columnGroupReorderLayer.getModel();
+            ColumnGroupModel model = this.columnGroupReorderLayer.getModel();
             if (model.isPartOfAGroup(fromColumnIndex)) {
                 String groupName = model.getColumnGroupByIndex(fromColumnIndex)
                         .getName();
                 if (!groupsProcessed.contains(groupName)) {
                     groupsProcessed.add(groupName);
                     fromColumnPositionsWithGroupColumns
-                            .addAll(columnGroupReorderLayer
+                            .addAll(this.columnGroupReorderLayer
                                     .getColumnGroupPositions(fromColumnIndex));
                 }
             } else {
@@ -66,7 +67,7 @@ public class ReorderColumnsAndGroupsCommandHandler extends
         }
 
         return underlyingLayer.doCommand(new MultiColumnReorderCommand(
-                columnGroupReorderLayer, fromColumnPositionsWithGroupColumns,
+                this.columnGroupReorderLayer, fromColumnPositionsWithGroupColumns,
                 command.getToColumnPosition(), command.isReorderToLeftEdge()));
     }
 

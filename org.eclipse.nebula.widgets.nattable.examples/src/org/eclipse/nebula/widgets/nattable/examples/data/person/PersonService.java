@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
 /**
  * Class that acts as service for accessing numerous {@link Person}s. The values
  * are randomly put together out of names and places from "The Simpsons"
- * 
+ *
  * @author Dirk Fauth
  */
 public class PersonService {
@@ -48,7 +48,7 @@ public class PersonService {
 
     /**
      * Creates a list of {@link Person}s.
-     * 
+     *
      * @param numberOfPersons
      *            The number of {@link Person}s that should be generated.
      * @return
@@ -65,7 +65,7 @@ public class PersonService {
 
     /**
      * Creates a list of {@link PersonWithAddress}.
-     * 
+     *
      * @param numberOfPersons
      *            The number of {@link PersonWithAddress} that should be
      *            generated.
@@ -84,7 +84,7 @@ public class PersonService {
 
     /**
      * Creates a list of {@link ExtendedPersonWithAddress}.
-     * 
+     *
      * @param numberOfPersons
      *            The number of {@link ExtendedPersonWithAddress} that should be
      *            generated.
@@ -107,7 +107,7 @@ public class PersonService {
     /**
      * Creates a random person out of names which are taken from "The Simpsons"
      * and enrich them with random generated married state and birthday date.
-     * 
+     *
      * @return
      */
     private static Person createPerson(int id) {
@@ -151,7 +151,7 @@ public class PersonService {
      * Creates a random address out of street names, postal codes and city names
      * which are taken from "The Simpsons" (i haven't found postal codes, so
      * here i invented some for the example)
-     * 
+     *
      * @return
      */
     private static Address createAddress() {

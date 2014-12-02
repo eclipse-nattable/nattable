@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -56,7 +56,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
     /**
      * Constructor for internal use to clone this event.
-     * 
+     *
      * @param event
      *            The event out of which the new one should be created
      */
@@ -68,15 +68,15 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
     }
 
     public Collection<Range> getBeforeFromColumnPositionRanges() {
-        return beforeFromColumnPositionRanges;
+        return this.beforeFromColumnPositionRanges;
     }
 
     public int getBeforeToColumnPosition() {
-        return beforeToColumnPosition;
+        return this.beforeToColumnPosition;
     }
 
     public boolean isReorderToLeftEdge() {
-        return reorderToLeftEdge;
+        return this.reorderToLeftEdge;
     }
 
     @Override
@@ -132,13 +132,13 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
     @Override
     public boolean convertToLocal(ILayer targetLayer) {
-        beforeFromColumnPositionRanges = targetLayer
+        this.beforeFromColumnPositionRanges = targetLayer
                 .underlyingToLocalColumnPositions(getLayer(),
-                        beforeFromColumnPositionRanges);
-        beforeToColumnPosition = targetLayer.underlyingToLocalColumnPosition(
-                getLayer(), beforeToColumnPosition);
+                        this.beforeFromColumnPositionRanges);
+        this.beforeToColumnPosition = targetLayer.underlyingToLocalColumnPosition(
+                getLayer(), this.beforeToColumnPosition);
 
-        if (beforeToColumnPosition >= 0) {
+        if (this.beforeToColumnPosition >= 0) {
             return super.convertToLocal(targetLayer);
         } else {
             return false;

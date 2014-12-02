@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -68,6 +68,7 @@ public class BlinkingGridExample extends AbstractNatExample {
 
     private ScheduledExecutorService scheduledThreadPool;
 
+    @Override
     public Control createExampleControl(Composite parent) {
         final String[] propertyNames = RowDataListFixture.getPropertyNames();
         final Map<String, String> propertyToLabelMap = RowDataListFixture
@@ -84,19 +85,19 @@ public class BlinkingGridExample extends AbstractNatExample {
                 GlazedLists.beanConnector(BlinkingRowDataFixture.class));
         IColumnPropertyAccessor<BlinkingRowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<BlinkingRowDataFixture>(
                 propertyNames);
-        bodyDataProvider = new ListDataProvider<BlinkingRowDataFixture>(
+        this.bodyDataProvider = new ListDataProvider<BlinkingRowDataFixture>(
                 observableElementList, columnPropertyAccessor);
 
-        final DataLayer bodyLayer = new DataLayer(bodyDataProvider);
+        final DataLayer bodyLayer = new DataLayer(this.bodyDataProvider);
 
         GlazedListsEventLayer<BlinkingRowDataFixture> glazedListsEventLayer = new GlazedListsEventLayer<BlinkingRowDataFixture>(
                 bodyLayer, observableElementList);
         BlinkLayer<BlinkingRowDataFixture> blinkingLayer = new BlinkLayer<BlinkingRowDataFixture>(
-                glazedListsEventLayer, bodyDataProvider,
+                glazedListsEventLayer, this.bodyDataProvider,
                 BlinkingRowDataFixture.rowIdAccessor, columnPropertyAccessor,
                 configRegistry);
         registerBlinkingConfigCells(configRegistry);
-        insertRowData(glazedListsEventLayer, bodyDataProvider);
+        insertRowData(glazedListsEventLayer, this.bodyDataProvider);
 
         // Column header
         final DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
@@ -104,7 +105,7 @@ public class BlinkingGridExample extends AbstractNatExample {
 
         // Row header
         final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
+                this.bodyDataProvider);
 
         // Corner
         final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
@@ -133,22 +134,23 @@ public class BlinkingGridExample extends AbstractNatExample {
     @Override
     public void onStart() {
         Display.getDefault().asyncExec(new Runnable() {
+            @Override
             public void run() {
-                scheduledThreadPool = Executors.newScheduledThreadPool(1);
+                BlinkingGridExample.this.scheduledThreadPool = Executors.newScheduledThreadPool(1);
 
                 // Fire updates to indexes 1,3,5
-                scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
-                        bodyDataProvider, 1, 3, 5), 500L, 5000L,
+                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
+                        BlinkingGridExample.this.bodyDataProvider, 1, 3, 5), 500L, 5000L,
                         TimeUnit.MILLISECONDS);
 
                 // while they are still blinking update index 1
-                scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
-                        bodyDataProvider, 1), 750L, 5000L,
+                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
+                        BlinkingGridExample.this.bodyDataProvider, 1), 750L, 5000L,
                         TimeUnit.MILLISECONDS);
 
                 // While the above are still blinking update indexes 2,8
-                scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
-                        bodyDataProvider, 2, 8), 1000L, 5000L,
+                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
+                        BlinkingGridExample.this.bodyDataProvider, 2, 8), 1000L, 5000L,
                         TimeUnit.MILLISECONDS);
             }
         });
@@ -156,7 +158,7 @@ public class BlinkingGridExample extends AbstractNatExample {
 
     @Override
     public void onStop() {
-        scheduledThreadPool.shutdown();
+        this.scheduledThreadPool.shutdown();
     }
 
     private void registerBlinkingConfigCells(ConfigRegistry configRegistry) {
@@ -187,12 +189,13 @@ public class BlinkingGridExample extends AbstractNatExample {
         return new BlinkingCellResolver() {
             private String[] configLabels = new String[1];
 
+            @Override
             public String[] resolve(Object oldValue, Object newValue) {
                 double old = ((Double) oldValue).doubleValue();
                 double latest = ((Double) newValue).doubleValue();
-                configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
+                this.configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
                         : BLINK_DOWN_CONFIG_LABEL);
-                return configLabels;
+                return this.configLabels;
             };
         };
     }
@@ -221,13 +224,15 @@ public class BlinkingGridExample extends AbstractNatExample {
             this.rowIndexes = rowIndexes;
         }
 
+        @Override
         public void run() {
             Display.getDefault().asyncExec(new Runnable() {
+                @Override
                 public void run() {
-                    for (int i = 0; i < rowIndexes.length; i++) {
-                        double nextPrice = random.nextInt(1000);
-                        BlinkingRowDataFixture rowObject = dataProvider
-                                .getRowObject(rowIndexes[i]);
+                    for (int i = 0; i < DataPumper.this.rowIndexes.length; i++) {
+                        double nextPrice = BlinkingGridExample.this.random.nextInt(1000);
+                        BlinkingRowDataFixture rowObject = DataPumper.this.dataProvider
+                                .getRowObject(DataPumper.this.rowIndexes[i]);
                         rowObject.setAsk_price(nextPrice);
                     }
                 }

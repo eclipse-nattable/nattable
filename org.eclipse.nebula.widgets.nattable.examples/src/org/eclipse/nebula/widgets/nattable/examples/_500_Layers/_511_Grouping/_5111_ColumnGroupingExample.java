@@ -171,8 +171,8 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
 
         // Column group header menu
         final Menu columnGroupHeaderMenu = new PopupMenuBuilder(natTable)
-        .withMenuItemProvider(MenuItemProviders.renameColumnGroupMenuItemProvider())
-        .withMenuItemProvider(MenuItemProviders.removeColumnGroupMenuItemProvider()).build();
+                .withMenuItemProvider(MenuItemProviders.renameColumnGroupMenuItemProvider())
+                .withMenuItemProvider(MenuItemProviders.removeColumnGroupMenuItemProvider()).build();
 
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
             @Override

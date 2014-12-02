@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnSty
 
 /**
  * Registers the {@link DisplayColumnStyleEditorCommandHandler}
- * 
+ *
  */
 public class ColumnStyleChooserConfiguration extends
         AbstractRegistryConfiguration {
@@ -32,14 +32,15 @@ public class ColumnStyleChooserConfiguration extends
             SelectionLayer selectionLayer) {
         this.bodyLayer = bodyLayer;
         this.selectionLayer = selectionLayer;
-        labelAccumulator = new ColumnOverrideLabelAccumulator(bodyLayer);
-        bodyLayer.setConfigLabelAccumulator(labelAccumulator);
+        this.labelAccumulator = new ColumnOverrideLabelAccumulator(bodyLayer);
+        bodyLayer.setConfigLabelAccumulator(this.labelAccumulator);
     }
 
+    @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         DisplayColumnStyleEditorCommandHandler columnChooserCommandHandler = new DisplayColumnStyleEditorCommandHandler(
-                selectionLayer, labelAccumulator, configRegistry);
+                this.selectionLayer, this.labelAccumulator, configRegistry);
 
-        bodyLayer.registerCommandHandler(columnChooserCommandHandler);
+        this.bodyLayer.registerCommandHandler(columnChooserCommandHandler);
     }
 }

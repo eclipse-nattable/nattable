@@ -29,17 +29,17 @@ public class GroupByModelPersistenceTest {
 
     @Before
     public void setup() {
-        model = new GroupByModel();
+        this.model = new GroupByModel();
     }
 
     @Test
     public void testSaveState() {
-        model.addGroupByColumnIndex(5);
-        model.addGroupByColumnIndex(3);
-        model.addGroupByColumnIndex(7);
+        this.model.addGroupByColumnIndex(5);
+        this.model.addGroupByColumnIndex(3);
+        this.model.addGroupByColumnIndex(7);
 
         Properties properties = new Properties();
-        model.saveState("prefix", properties);
+        this.model.saveState("prefix", properties);
 
         assertEquals(1, properties.size());
         assertEquals(
@@ -55,9 +55,9 @@ public class GroupByModelPersistenceTest {
                 + GroupByModel.PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES,
                 "9,5,7,");
 
-        model.loadState("prefix", properties);
+        this.model.loadState("prefix", properties);
 
-        List<Integer> indexes = model.getGroupByColumnIndexes();
+        List<Integer> indexes = this.model.getGroupByColumnIndexes();
         assertEquals(9, indexes.get(0).intValue());
         assertEquals(5, indexes.get(1).intValue());
         assertEquals(7, indexes.get(2).intValue());

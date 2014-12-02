@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
@@ -35,7 +35,7 @@ public class SelectColumnCommandHandler implements
 
     @Override
     public boolean doCommand(ILayer targetLayer, SelectColumnCommand command) {
-        if (command.convertToTargetLayer(selectionLayer)) {
+        if (command.convertToTargetLayer(this.selectionLayer)) {
             selectColumn(command.getColumnPosition(), command.getRowPosition(),
                     command.isWithShiftMask(), command.isWithControlMask());
             return true;
@@ -46,11 +46,11 @@ public class SelectColumnCommandHandler implements
     protected void selectColumn(int columnPosition, int rowPosition,
             boolean withShiftMask, boolean withControlMask) {
         if (noShiftOrControl(withShiftMask, withControlMask)) {
-            selectionLayer.clear(false);
-            selectionLayer.selectCell(columnPosition, 0, false, false);
-            selectionLayer
+            this.selectionLayer.clear(false);
+            this.selectionLayer.selectCell(columnPosition, 0, false, false);
+            this.selectionLayer
                     .selectRegion(columnPosition, 0, 1, Integer.MAX_VALUE);
-            selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
+            this.selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
         } else if (bothShiftAndControl(withShiftMask, withControlMask)) {
             selectColumnWithShiftKey(columnPosition);
         } else if (isShiftOnly(withShiftMask, withControlMask)) {
@@ -60,9 +60,9 @@ public class SelectColumnCommandHandler implements
         }
 
         // Set last selected column position to the recently clicked column
-        selectionLayer.setLastSelectedCell(columnPosition, rowPosition);
+        this.selectionLayer.setLastSelectedCell(columnPosition, rowPosition);
 
-        selectionLayer.fireLayerEvent(new ColumnSelectionEvent(selectionLayer,
+        this.selectionLayer.fireLayerEvent(new ColumnSelectionEvent(this.selectionLayer,
                 columnPosition));
     }
 
@@ -70,24 +70,24 @@ public class SelectColumnCommandHandler implements
         Rectangle selectedColumnRectangle = new Rectangle(columnPosition, 0, 1,
                 Integer.MAX_VALUE);
 
-        if (selectionLayer.isColumnPositionFullySelected(columnPosition)) {
-            selectionLayer.clearSelection(selectedColumnRectangle);
-            if (selectionLayer.getLastSelectedRegion() != null
-                    && selectionLayer.getLastSelectedRegion().equals(
+        if (this.selectionLayer.isColumnPositionFullySelected(columnPosition)) {
+            this.selectionLayer.clearSelection(selectedColumnRectangle);
+            if (this.selectionLayer.getLastSelectedRegion() != null
+                    && this.selectionLayer.getLastSelectedRegion().equals(
                             selectedColumnRectangle)) {
-                selectionLayer.setLastSelectedRegion(null);
+                this.selectionLayer.setLastSelectedRegion(null);
             }
         } else {
-            if (selectionLayer.getLastSelectedRegion() != null) {
-                selectionLayer.selectionModel.addSelection(new Rectangle(
-                        selectionLayer.getLastSelectedRegion().x,
-                        selectionLayer.getLastSelectedRegion().y,
-                        selectionLayer.getLastSelectedRegion().width,
-                        selectionLayer.getLastSelectedRegion().height));
+            if (this.selectionLayer.getLastSelectedRegion() != null) {
+                this.selectionLayer.selectionModel.addSelection(new Rectangle(
+                        this.selectionLayer.getLastSelectedRegion().x,
+                        this.selectionLayer.getLastSelectedRegion().y,
+                        this.selectionLayer.getLastSelectedRegion().width,
+                        this.selectionLayer.getLastSelectedRegion().height));
             }
-            selectionLayer
+            this.selectionLayer
                     .selectRegion(columnPosition, 0, 1, Integer.MAX_VALUE);
-            selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
+            this.selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
         }
     }
 
@@ -99,25 +99,25 @@ public class SelectColumnCommandHandler implements
         // the current columnPosition
         // modifying the selection anchor here ensures that the anchor also
         // moves
-        if (!selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
-            selectionLayer.getSelectionAnchor().columnPosition = columnPosition;
+        if (!this.selectionLayer.getSelectionModel().isMultipleSelectionAllowed()) {
+            this.selectionLayer.getSelectionAnchor().columnPosition = columnPosition;
         }
 
-        if (selectionLayer.getLastSelectedRegion() != null) {
+        if (this.selectionLayer.getLastSelectedRegion() != null) {
 
             // Negative when we move left, but we are only concerned with the
             // num. of columns
-            numOfColumnsToIncludeInRegion = Math.abs(selectionLayer
+            numOfColumnsToIncludeInRegion = Math.abs(this.selectionLayer
                     .getSelectionAnchor().columnPosition - columnPosition) + 1;
 
             // Select to the Left
-            if (columnPosition < selectionLayer.getSelectionAnchor().columnPosition) {
+            if (columnPosition < this.selectionLayer.getSelectionAnchor().columnPosition) {
                 startColumnPosition = columnPosition;
             } else {
-                startColumnPosition = selectionLayer.getSelectionAnchor().columnPosition;
+                startColumnPosition = this.selectionLayer.getSelectionAnchor().columnPosition;
             }
         }
-        selectionLayer.selectRegion(startColumnPosition, 0,
+        this.selectionLayer.selectRegion(startColumnPosition, 0,
                 numOfColumnsToIncludeInRegion, Integer.MAX_VALUE);
     }
 

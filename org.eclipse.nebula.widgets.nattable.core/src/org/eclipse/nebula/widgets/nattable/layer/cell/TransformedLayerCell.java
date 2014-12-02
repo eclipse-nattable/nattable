@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Edwin Park - initial API and implementation
  ******************************************************************************/
@@ -20,40 +20,49 @@ public abstract class TransformedLayerCell extends AbstractLayerCell {
         this.cell = cell;
     }
 
+    @Override
     public int getOriginColumnPosition() {
-        return cell.getOriginColumnPosition();
+        return this.cell.getOriginColumnPosition();
     }
 
+    @Override
     public int getOriginRowPosition() {
-        return cell.getOriginRowPosition();
+        return this.cell.getOriginRowPosition();
     }
 
+    @Override
     public ILayer getLayer() {
-        return cell.getLayer();
+        return this.cell.getLayer();
     }
 
+    @Override
     public int getColumnPosition() {
-        return cell.getColumnPosition();
+        return this.cell.getColumnPosition();
     }
 
+    @Override
     public int getRowPosition() {
-        return cell.getRowPosition();
+        return this.cell.getRowPosition();
     }
 
+    @Override
     public int getColumnIndex() {
-        return cell.getColumnIndex();
+        return this.cell.getColumnIndex();
     }
 
+    @Override
     public int getRowIndex() {
-        return cell.getRowIndex();
+        return this.cell.getRowIndex();
     }
 
+    @Override
     public int getColumnSpan() {
-        return cell.getColumnSpan();
+        return this.cell.getColumnSpan();
     }
 
+    @Override
     public int getRowSpan() {
-        return cell.getRowSpan();
+        return this.cell.getRowSpan();
     }
 
     @Override
@@ -65,10 +74,10 @@ public abstract class TransformedLayerCell extends AbstractLayerCell {
         if (getClass() != obj.getClass())
             return false;
         TransformedLayerCell other = (TransformedLayerCell) obj;
-        if (cell == null) {
+        if (this.cell == null) {
             if (other.cell != null)
                 return false;
-        } else if (!cell.equals(other.cell))
+        } else if (!this.cell.equals(other.cell))
             return false;
         return true;
     }
@@ -77,7 +86,7 @@ public abstract class TransformedLayerCell extends AbstractLayerCell {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((cell == null) ? 0 : cell.hashCode());
+        result = prime * result + ((this.cell == null) ? 0 : this.cell.hashCode());
         return result;
     }
 

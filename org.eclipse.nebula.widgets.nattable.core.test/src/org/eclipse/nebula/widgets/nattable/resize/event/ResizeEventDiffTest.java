@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -33,30 +33,31 @@ public class ResizeEventDiffTest {
     @Before
     public void before() {
         DataLayerFixture dataLayer = new DataLayerFixture(20, 20, 100, 40);
-        viewportLayer = new ViewportLayer(dataLayer);
-        viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.viewportLayer = new ViewportLayer(dataLayer);
+        this.viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 400, 400);
             }
 
         });
-        viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(2));
-        viewportLayer.setOriginY(viewportLayer.getStartYOfRowPosition(2));
-        event = new ColumnResizeEvent(dataLayer, 2);
+        this.viewportLayer.setOriginX(this.viewportLayer.getStartXOfColumnPosition(2));
+        this.viewportLayer.setOriginY(this.viewportLayer.getStartYOfRowPosition(2));
+        this.event = new ColumnResizeEvent(dataLayer, 2);
     }
 
     @After
     public void after() {
-        Assert.assertTrue(event.isHorizontalStructureChanged());
+        Assert.assertTrue(this.event.isHorizontalStructureChanged());
 
-        Assert.assertFalse(event.isVerticalStructureChanged());
-        Assert.assertNull(event.getRowDiffs());
+        Assert.assertFalse(this.event.isVerticalStructureChanged());
+        Assert.assertNull(this.event.getRowDiffs());
     }
 
     @Test
     public void testColumnDiffs() {
-        Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
+        Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
         Assert.assertNotNull(columnDiffs);
         Assert.assertEquals(1, columnDiffs.size());
         Assert.assertEquals(new StructuralDiff(DiffTypeEnum.CHANGE, new Range(
@@ -65,9 +66,9 @@ public class ResizeEventDiffTest {
 
     @Test
     public void testConvertToLocal() {
-        event.convertToLocal(viewportLayer);
+        this.event.convertToLocal(this.viewportLayer);
 
-        Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
+        Collection<StructuralDiff> columnDiffs = this.event.getColumnDiffs();
         Assert.assertNotNull(columnDiffs);
         Assert.assertEquals(1, columnDiffs.size());
         Assert.assertEquals(new StructuralDiff(DiffTypeEnum.CHANGE, new Range(

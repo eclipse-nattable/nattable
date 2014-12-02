@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,21 +29,21 @@ public class BorderThicknessPicker extends Composite {
         super(parent, NONE);
         setLayout(new RowLayout());
 
-        combo = new Combo(this, SWT.READ_ONLY | SWT.DROP_DOWN);
-        combo.setItems(new String[] {
+        this.combo = new Combo(this, SWT.READ_ONLY | SWT.DROP_DOWN);
+        this.combo.setItems(new String[] {
                 Messages.getString("BorderThicknessPicker.thin"), //$NON-NLS-1$
                 Messages.getString("BorderThicknessPicker.thick"), //$NON-NLS-1$
                 Messages.getString("BorderThicknessPicker.veryThick") }); //$NON-NLS-1$
-        combo.select(0);
+        this.combo.select(0);
     }
 
     @Override
     public void setEnabled(boolean b) {
-        combo.setEnabled(b);
+        this.combo.setEnabled(b);
     }
 
     public int getSelectedThickness() {
-        int idx = combo.getSelectionIndex();
+        int idx = this.combo.getSelectionIndex();
         if (idx == 0)
             return 1;
         else if (idx == 1)
@@ -64,6 +64,6 @@ public class BorderThicknessPicker extends Composite {
             idx = 1;
         else if (thickness > 6)
             idx = 2;
-        combo.select(idx);
+        this.combo.select(idx);
     }
 }

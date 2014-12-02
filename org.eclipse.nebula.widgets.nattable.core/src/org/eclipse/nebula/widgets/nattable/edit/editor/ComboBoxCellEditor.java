@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Text;
  * statically by constructor, or by using an {@link IComboBoxDataProvider}. Last
  * one is a way to dynamically populate the items showed in a combobox in
  * NatTable. It is not possible to mix these two approaches!
- * 
+ *
  */
 public class ComboBoxCellEditor extends AbstractCellEditor {
 
@@ -140,7 +140,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      * Create a new single selection {@link ComboBoxCellEditor} based on the
      * given list of items, showing the default number of items in the dropdown
      * of the combo.
-     * 
+     *
      * @param canonicalValues
      *            Array of items to be shown in the drop down box. These will be
      *            converted using the {@link IDisplayConverter} for display
@@ -153,7 +153,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     /**
      * Create a new single selection {@link ComboBoxCellEditor} based on the
      * given list of items.
-     * 
+     *
      * @param canonicalValues
      *            Array of items to be shown in the drop down box. These will be
      *            converted using the {@link IDisplayConverter} for display
@@ -171,7 +171,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      * Create a new single selection {@link ComboBoxCellEditor} based on the
      * given {@link IComboBoxDataProvider}, showing the default number of items
      * in the dropdown of the combo.
-     * 
+     *
      * @param dataProvider
      *            The {@link IComboBoxDataProvider} that is responsible for
      *            populating the items to the dropdown box. This is the way to
@@ -184,7 +184,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     /**
      * Create a new single selection {@link ComboBoxCellEditor} based on the
      * given {@link IComboBoxDataProvider}.
-     * 
+     *
      * @param dataProvider
      *            The {@link IComboBoxDataProvider} that is responsible for
      *            populating the items to the dropdown box. This is the way to
@@ -214,14 +214,14 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             this.combo.addTextControlListener(new ControlAdapter() {
                 @Override
                 public void controlResized(ControlEvent e) {
-                    combo.showDropdownControl(originalCanonicalValue instanceof Character);
-                    combo.removeTextControlListener(this);
+                    ComboBoxCellEditor.this.combo.showDropdownControl(originalCanonicalValue instanceof Character);
+                    ComboBoxCellEditor.this.combo.removeTextControlListener(this);
                 }
 
                 @Override
                 public void controlMoved(ControlEvent e) {
-                    combo.showDropdownControl(originalCanonicalValue instanceof Character);
-                    combo.removeTextControlListener(this);
+                    ComboBoxCellEditor.this.combo.showDropdownControl(originalCanonicalValue instanceof Character);
+                    ComboBoxCellEditor.this.combo.removeTextControlListener(this);
                 }
             });
         }
@@ -303,7 +303,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      * special handling for comboboxes. It can handle multi selection and needs
      * to transfer the converted values into a String array so the values in the
      * combobox can be selected.
-     * 
+     *
      * @param canonicalValue
      *            The canonical value to be set to the wrapped editor control.
      */
@@ -392,7 +392,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
         combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
 
-        if (multiselect) {
+        if (this.multiselect) {
             combo.setMultiselectValueSeparator(this.multiselectValueSeparator);
             combo.setMultiselectTextBracket(this.multiselectTextPrefix,
                     this.multiselectTextSuffix);
@@ -406,7 +406,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      * Registers special listeners to the {@link NatCombo} regarding the
      * {@link EditModeEnum}, that are needed to commit/close or change the
      * visibility state of the {@link NatCombo} dependent on UI interactions.
-     * 
+     *
      * @param combo
      *            The {@link NatCombo} to add the listeners to.
      */
@@ -418,7 +418,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 if ((event.keyCode == SWT.CR)
                         || (event.keyCode == SWT.KEYPAD_CR)) {
                     commit(MoveDirectionEnum.NONE,
-                            editMode == EditModeEnum.INLINE);
+                            ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE);
                 } else if (event.keyCode == SWT.ESC) {
                     close();
                 }
@@ -430,8 +430,8 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             @Override
             public void mouseUp(MouseEvent e) {
                 commit(MoveDirectionEnum.NONE,
-                        (!multiselect && editMode == EditModeEnum.INLINE));
-                if (!multiselect && editMode == EditModeEnum.DIALOG) {
+                        (!ComboBoxCellEditor.this.multiselect && ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
+                if (!ComboBoxCellEditor.this.multiselect && ComboBoxCellEditor.this.editMode == EditModeEnum.DIALOG) {
                     // hide the dropdown after a value was selected in the combo
                     // in a dialog
                     combo.hideDropdownControl();
@@ -439,7 +439,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             }
         });
 
-        if (editMode == EditModeEnum.INLINE) {
+        if (this.editMode == EditModeEnum.INLINE) {
             combo.addShellListener(new ShellAdapter() {
                 @Override
                 public void shellClosed(ShellEvent e) {
@@ -448,7 +448,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             });
         }
 
-        if (editMode == EditModeEnum.DIALOG) {
+        if (this.editMode == EditModeEnum.DIALOG) {
             combo.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusLost(FocusEvent e) {
@@ -465,7 +465,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      *
      * @param index
      *            the index of the item to select
-     * 
+     *
      * @see org.eclipse.swt.widgets.List#select(int)
      */
     public void select(int index) {
@@ -484,7 +484,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      *
      * @param indices
      *            the array of indices for the items to select
-     * 
+     *
      * @see org.eclipse.swt.widgets.List#select(int[])
      */
     public void select(int[] indices) {
@@ -506,7 +506,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     /**
      * Set the prefix and suffix that will parenthesize the text that is created
      * out of the selected values if this NatCombo supports multiselection.
-     * 
+     *
      * @param multiselectTextPrefix
      *            String that should be used to prefix the generated String
      *            representation showed in the text control if multiselect is
@@ -551,7 +551,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      *         free editing is disabled.
      */
     public boolean isFreeEdit() {
-        return freeEdit;
+        return this.freeEdit;
     }
 
     /**
@@ -569,7 +569,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      *         selection or not. By default multiple selection is disabled.
      */
     public boolean isMultiselect() {
-        return multiselect;
+        return this.multiselect;
     }
 
     /**
@@ -586,7 +586,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      *         items in the dropdown. By default there are not checkboxes shown.
      */
     public boolean isUseCheckbox() {
-        return useCheckbox;
+        return this.useCheckbox;
     }
 
     /**

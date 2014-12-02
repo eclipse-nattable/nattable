@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,22 +24,22 @@ import org.junit.Test;
 public class CommandPropagationTest {
 
     private DataLayer underlyingLayer = new DataLayerFixture(10, 5, 100, 20);
-    private ILayer layer = new GenericLayerFixture(underlyingLayer);
+    private ILayer layer = new GenericLayerFixture(this.underlyingLayer);
 
     @Before
     public void setUp() {
-        underlyingLayer.registerCommandHandler(new CommandHandlerFixture());
+        this.underlyingLayer.registerCommandHandler(new CommandHandlerFixture());
     }
 
     @Test
     public void shouldHandleGenericLayerCommand() {
-        Assert.assertTrue(layer.doCommand(new LayerCommandFixture()));
+        Assert.assertTrue(this.layer.doCommand(new LayerCommandFixture()));
     }
 
     @Test
     public void shouldPropagateToUnderlyingLayer() {
         LayerCommandFixture command = new LayerCommandFixture();
-        layer.doCommand(command);
+        this.layer.doCommand(command);
         Assert.assertTrue(command.getTargetLayer() instanceof DataLayerFixture);
     }
 

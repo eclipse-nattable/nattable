@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -60,10 +60,10 @@ public class ColumnRenameDialog extends AbstractStyleEditorDialog {
         fillGridData.horizontalAlignment = GridData.FILL;
         panel.setLayoutData(fillGridData);
 
-        columnLabelPanel = new ColumnLabelPanel(panel, columnLabel,
-                renamedColumnLabel);
+        this.columnLabelPanel = new ColumnLabelPanel(panel, this.columnLabel,
+                this.renamedColumnLabel);
         try {
-            columnLabelPanel.edit(renamedColumnLabel);
+            this.columnLabelPanel.edit(this.renamedColumnLabel);
         } catch (Exception e) {
             log.warn(e);
         }
@@ -71,17 +71,17 @@ public class ColumnRenameDialog extends AbstractStyleEditorDialog {
 
     @Override
     protected void doFormOK(Shell shell) {
-        renamedColumnLabel = columnLabelPanel.getNewValue();
+        this.renamedColumnLabel = this.columnLabelPanel.getNewValue();
         shell.dispose();
     }
 
     @Override
     protected void doFormClear(Shell shell) {
-        renamedColumnLabel = null;
+        this.renamedColumnLabel = null;
         shell.dispose();
     }
 
     public String getNewColumnLabel() {
-        return renamedColumnLabel;
+        return this.renamedColumnLabel;
     }
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -47,7 +47,7 @@ public class ColorPicker extends CLabel {
             public void mouseDown(MouseEvent e) {
                 ColorDialog dialog = new ColorDialog(new Shell(
                         Display.getDefault(), SWT.SHELL_TRIM));
-                dialog.setRGB(selectedColor.getRGB());
+                dialog.setRGB(ColorPicker.this.selectedColor.getRGB());
                 RGB selected = dialog.open();
                 if (selected != null) {
                     update(selected);
@@ -58,17 +58,17 @@ public class ColorPicker extends CLabel {
 
     private Image getColorImage(Color color) {
         Display display = Display.getCurrent();
-        image = new Image(display, new Rectangle(10, 10, 70, 20));
-        GC gc = new GC(image);
+        this.image = new Image(display, new Rectangle(10, 10, 70, 20));
+        GC gc = new GC(this.image);
         gc.setBackground(color);
-        gc.fillRectangle(image.getBounds());
+        gc.fillRectangle(this.image.getBounds());
         gc.dispose();
-        return image;
+        return this.image;
     }
 
     private void update(RGB selected) {
         this.selectedColor = GUIHelper.getColor(selected);
-        setImage(getColorImage(selectedColor));
+        setImage(getColorImage(this.selectedColor));
     }
 
     /**
@@ -77,7 +77,7 @@ public class ColorPicker extends CLabel {
      *         dispose this resource</em>
      */
     public Color getSelectedColor() {
-        return selectedColor;
+        return this.selectedColor;
     }
 
     /**
@@ -97,6 +97,6 @@ public class ColorPicker extends CLabel {
     @Override
     public void dispose() {
         super.dispose();
-        image.dispose();
+        this.image.dispose();
     }
 }

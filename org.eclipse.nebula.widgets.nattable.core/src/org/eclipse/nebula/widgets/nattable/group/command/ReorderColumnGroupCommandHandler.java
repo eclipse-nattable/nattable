@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,6 +23,7 @@ public class ReorderColumnGroupCommandHandler extends
         this.columnGroupReorderLayer = columnGroupReorderLayer;
     }
 
+    @Override
     public Class<ReorderColumnGroupCommand> getCommandClass() {
         return ReorderColumnGroupCommand.class;
     }
@@ -32,7 +33,7 @@ public class ReorderColumnGroupCommandHandler extends
         int fromColumnPosition = command.getFromColumnPosition();
         int toColumnPosition = command.getToColumnPosition();
 
-        return columnGroupReorderLayer.reorderColumnGroup(fromColumnPosition,
+        return this.columnGroupReorderLayer.reorderColumnGroup(fromColumnPosition,
                 toColumnPosition);
     }
 

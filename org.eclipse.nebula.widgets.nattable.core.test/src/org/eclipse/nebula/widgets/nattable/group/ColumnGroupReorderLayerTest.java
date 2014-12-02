@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,39 +37,39 @@ public class ColumnGroupReorderLayerTest {
 
     @Before
     public void setUp() {
-        modelFixture = new ColumnGroupModelFixture();
-        reorderLayer = new ColumnReorderLayer(new BaseDataLayerFixture(24, 20));
-        layer = new ColumnGroupReorderLayer(reorderLayer, modelFixture);
+        this.modelFixture = new ColumnGroupModelFixture();
+        this.reorderLayer = new ColumnReorderLayer(new BaseDataLayerFixture(24, 20));
+        this.layer = new ColumnGroupReorderLayer(this.reorderLayer, this.modelFixture);
     }
 
     @Test
     public void shouldDragLeftAndMoveColumnIntoGroup() {
         // Drag left into group containing (0,1)
-        ColumnReorderCommand command = new ColumnReorderCommand(layer, 5, 1);
-        layer.doCommand(command);
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer, 5, 1);
+        this.layer.doCommand(command);
 
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(5).getName());
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(1).getName());
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(0).getName());
 
         assertEquals(3, getColumnIndexesInGroup(5).size());
 
-        assertEquals(0, reorderLayer.getColumnIndexByPosition(0));
-        assertEquals(5, reorderLayer.getColumnIndexByPosition(1));
-        assertEquals(1, reorderLayer.getColumnIndexByPosition(2));
+        assertEquals(0, this.reorderLayer.getColumnIndexByPosition(0));
+        assertEquals(5, this.reorderLayer.getColumnIndexByPosition(1));
+        assertEquals(1, this.reorderLayer.getColumnIndexByPosition(2));
     }
 
     @Test
     public void shouldDragLeftAndRemoveColumnFromGroup() {
         // Drag left out of group
-        ColumnReorderCommand command = new ColumnReorderCommand(layer, 3, 2);
-        layer.doCommand(command);
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer, 3, 2);
+        this.layer.doCommand(command);
 
-        assertNull(modelFixture.getColumnGroupByIndex(3));
-        assertNull(modelFixture.getColumnGroupByIndex(2));
+        assertNull(this.modelFixture.getColumnGroupByIndex(3));
+        assertNull(this.modelFixture.getColumnGroupByIndex(2));
 
         assertEquals(1, getColumnIndexesInGroup(4).size());
     }
@@ -80,41 +80,41 @@ public class ColumnGroupReorderLayerTest {
         final int toColumnIndex = 4;
 
         // Drag right into group
-        ColumnReorderCommand command = new ColumnReorderCommand(layer,
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer,
                 fromColumnIndex, toColumnIndex);
-        layer.doCommand(command);
+        this.layer.doCommand(command);
 
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, this.modelFixture
                 .getColumnGroupByIndex(fromColumnIndex).getName());
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, this.modelFixture
                 .getColumnGroupByIndex(toColumnIndex).getName());
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, this.modelFixture
                 .getColumnGroupByIndex(4).getName());
         assertEquals(3, getColumnIndexesInGroup(fromColumnIndex).size());
     }
 
     @Test
     public void shouldDragFirstCellRightAndAddColumnToGroup() {
-        ColumnGroup columnGroup = modelFixture.getColumnGroupByIndex(0);
+        ColumnGroup columnGroup = this.modelFixture.getColumnGroupByIndex(0);
         columnGroup.removeColumn(0);
         assertEquals(1, getColumnIndexesInGroup(1).size());
 
-        modelFixture.insertColumnIndexes(ColumnGroupModelFixture.TEST_GROUP_1,
+        this.modelFixture.insertColumnIndexes(ColumnGroupModelFixture.TEST_GROUP_1,
                 2);
         assertEquals(2, getColumnIndexesInGroup(1).size());
 
         // Drag right into group
-        ColumnReorderCommand command = new ColumnReorderCommand(layer, 0, 2);
-        layer.doCommand(command);
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer, 0, 2);
+        this.layer.doCommand(command);
 
         final int fromColumnIndex = 0;
         final int toColumnIndex = 2;
 
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(fromColumnIndex).getName());
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(toColumnIndex).getName());
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(2).getName());
         assertEquals(3, getColumnIndexesInGroup(fromColumnIndex).size());
     }
@@ -127,12 +127,12 @@ public class ColumnGroupReorderLayerTest {
         assertEquals(2, getColumnIndexesInGroup(0).size());
 
         // Drag right out of group
-        ColumnReorderCommand command = new ColumnReorderCommand(layer, 0, 2);
-        layer.doCommand(command);
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer, 0, 2);
+        this.layer.doCommand(command);
 
         assertEquals(1, getColumnIndexesInGroup(1).size());
-        assertNull(modelFixture.getColumnGroupByIndex(0));
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertNull(this.modelFixture.getColumnGroupByIndex(0));
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(1).getName());
     }
 
@@ -141,7 +141,7 @@ public class ColumnGroupReorderLayerTest {
         assertEquals(2, getColumnIndexesInGroup(0).size());
 
         setGroupUnBreakable(0);
-        layer.doCommand(new ColumnReorderCommand(layer, 0, 1));
+        this.layer.doCommand(new ColumnReorderCommand(this.layer, 0, 1));
 
         assertEquals(2, getColumnIndexesInGroup(0).size());
     }
@@ -151,22 +151,22 @@ public class ColumnGroupReorderLayerTest {
         final int fromColumnIndex = 3;
         final int toColumnIndex = 1;
 
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, this.modelFixture
                 .getColumnGroupByIndex(3).getName());
         assertEquals(2, getColumnIndexesInGroup(3).size());
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(1).getName());
         assertEquals(2, getColumnIndexesInGroup(1).size());
 
         // Swap members of column groups
-        ColumnReorderCommand command = new ColumnReorderCommand(layer,
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer,
                 fromColumnIndex, toColumnIndex);
-        layer.doCommand(command);
+        this.layer.doCommand(command);
 
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_1, this.modelFixture
                 .getColumnGroupByIndex(3).getName());
         assertEquals(3, getColumnIndexesInGroup(3).size());
-        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, modelFixture
+        assertEquals(ColumnGroupModelFixture.TEST_GROUP_2, this.modelFixture
                 .getColumnGroupByIndex(4).getName());
         assertEquals(1, getColumnIndexesInGroup(4).size());
     }
@@ -175,57 +175,57 @@ public class ColumnGroupReorderLayerTest {
     public void shouldNotMoveColumnBetweenGroupsIfEitherGroupIsUnbreakable() {
         setGroupUnBreakable(3);
 
-        ColumnReorderCommand command = new ColumnReorderCommand(layer, 3, 1);
-        layer.doCommand(command);
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer, 3, 1);
+        this.layer.doCommand(command);
 
-        modelFixture.assertUnchanged();
+        this.modelFixture.assertUnchanged();
     }
 
     @Test
     public void shouldLeaveModelUnchangedOnDragLeftWithinSameGroup() {
-        modelFixture.assertTestGroup3IsUnchanged();
+        this.modelFixture.assertTestGroup3IsUnchanged();
 
         // Drag right and swap positions in group
-        ColumnReorderCommand command = new ColumnReorderCommand(layer, 11, 10);
-        layer.doCommand(command);
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer, 11, 10);
+        this.layer.doCommand(command);
 
         // The group remains unchanged - order not tracked
-        modelFixture.assertTestGroup3IsUnchanged();
+        this.modelFixture.assertTestGroup3IsUnchanged();
     }
 
     @Test
     public void shouldLeaveModelUnchangedOnDragRightWithinSameGroup() {
-        modelFixture.assertTestGroup3IsUnchanged();
+        this.modelFixture.assertTestGroup3IsUnchanged();
 
         // Drag right and swap positions in group
-        ColumnReorderCommand command = new ColumnReorderCommand(layer, 10, 11);
-        layer.doCommand(command);
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer, 10, 11);
+        this.layer.doCommand(command);
 
-        modelFixture.assertTestGroup3IsUnchanged();
+        this.modelFixture.assertTestGroup3IsUnchanged();
     }
 
     @Test
     public void shouldReorderEntireColumnGroup() {
-        assertEquals(3, reorderLayer.getColumnIndexByPosition(3));
-        assertEquals(4, reorderLayer.getColumnIndexByPosition(4));
+        assertEquals(3, this.reorderLayer.getColumnIndexByPosition(3));
+        assertEquals(4, this.reorderLayer.getColumnIndexByPosition(4));
 
         ReorderColumnGroupCommand reorderGroupCommand = new ReorderColumnGroupCommand(
-                layer, 3, 13);
-        layer.doCommand(reorderGroupCommand);
+                this.layer, 3, 13);
+        this.layer.doCommand(reorderGroupCommand);
 
-        assertEquals(3, reorderLayer.getColumnIndexByPosition(11));
-        assertEquals(4, reorderLayer.getColumnIndexByPosition(12));
+        assertEquals(3, this.reorderLayer.getColumnIndexByPosition(11));
+        assertEquals(4, this.reorderLayer.getColumnIndexByPosition(12));
     }
 
     @Test
     public void shouldReorderEntireColumnGroupAndAddAColumnToCollapsedGroup() {
         collapse(3);
-        layer.reorderColumnGroup(3, 13);
+        this.layer.reorderColumnGroup(3, 13);
 
-        assertEquals(3, reorderLayer.getColumnIndexByPosition(11));
-        assertEquals(4, reorderLayer.getColumnIndexByPosition(12));
+        assertEquals(3, this.reorderLayer.getColumnIndexByPosition(11));
+        assertEquals(4, this.reorderLayer.getColumnIndexByPosition(12));
 
-        layer.doCommand(new ColumnReorderCommand(layer, 16, 12));
+        this.layer.doCommand(new ColumnReorderCommand(this.layer, 16, 12));
         assertEquals(3, getColumnIndexesInGroup(3).size());
     }
 
@@ -235,11 +235,11 @@ public class ColumnGroupReorderLayerTest {
      */
     @Test
     public void adjacentColumnGroups() throws Exception {
-        modelFixture.addColumnsIndexesToGroup("G4", 5, 6);
+        this.modelFixture.addColumnsIndexesToGroup("G4", 5, 6);
 
         // Drag between the two groups
-        ColumnReorderCommand command = new ColumnReorderCommand(layer, 2, 4);
-        layer.doCommand(command);
+        ColumnReorderCommand command = new ColumnReorderCommand(this.layer, 2, 4);
+        this.layer.doCommand(command);
 
         assertEquals(3, getColumnIndexesInGroup(3).size());
         assertTrue(getColumnIndexesInGroup(3).contains(Integer.valueOf(2)));
@@ -260,10 +260,10 @@ public class ColumnGroupReorderLayerTest {
     @Test
     public void handleReorderColumnsAndGroupsCommand() throws Exception {
         ReorderColumnsAndGroupsCommand command = new ReorderColumnsAndGroupsCommand(
-                layer, Arrays.asList(3, 5, 6), 8);
-        layer.doCommand(command);
+                this.layer, Arrays.asList(3, 5, 6), 8);
+        this.layer.doCommand(command);
 
-        modelFixture.assertUnchanged();
+        this.modelFixture.assertUnchanged();
 
         /*
          * See output for a better idea System.out.println("Index\tPosition");
@@ -273,18 +273,18 @@ public class ColumnGroupReorderLayerTest {
          */
 
         // Check new positions
-        assertEquals(3, reorderLayer.getColumnIndexByPosition(4));
-        assertEquals(4, reorderLayer.getColumnIndexByPosition(5));
-        assertEquals(5, reorderLayer.getColumnIndexByPosition(6));
-        assertEquals(6, reorderLayer.getColumnIndexByPosition(7));
+        assertEquals(3, this.reorderLayer.getColumnIndexByPosition(4));
+        assertEquals(4, this.reorderLayer.getColumnIndexByPosition(5));
+        assertEquals(5, this.reorderLayer.getColumnIndexByPosition(6));
+        assertEquals(6, this.reorderLayer.getColumnIndexByPosition(7));
     }
 
     @Test
     public void shouldAddToAGroupWhileReorderingMultipleColumns()
             throws Exception {
         MultiColumnReorderCommand reorderCommand = new MultiColumnReorderCommand(
-                layer, Arrays.asList(5, 6), 11);
-        layer.doCommand(reorderCommand);
+                this.layer, Arrays.asList(5, 6), 11);
+        this.layer.doCommand(reorderCommand);
 
         assertEquals(5, getColumnIndexesInGroup(11).size());
         assertTrue(getColumnIndexesInGroup(11).contains(Integer.valueOf(10)));
@@ -293,19 +293,19 @@ public class ColumnGroupReorderLayerTest {
         assertTrue(getColumnIndexesInGroup(11).contains(Integer.valueOf(5)));
         assertTrue(getColumnIndexesInGroup(11).contains(Integer.valueOf(6)));
 
-        assertEquals(10, layer.getColumnIndexByPosition(8));
-        assertEquals(5, layer.getColumnIndexByPosition(9));
-        assertEquals(6, layer.getColumnIndexByPosition(10));
-        assertEquals(11, layer.getColumnIndexByPosition(11));
-        assertEquals(12, layer.getColumnIndexByPosition(12));
+        assertEquals(10, this.layer.getColumnIndexByPosition(8));
+        assertEquals(5, this.layer.getColumnIndexByPosition(9));
+        assertEquals(6, this.layer.getColumnIndexByPosition(10));
+        assertEquals(11, this.layer.getColumnIndexByPosition(11));
+        assertEquals(12, this.layer.getColumnIndexByPosition(12));
     }
 
     @Test
     public void shouldRemoveFromAGroupWhileReorderingMultipleColumns()
             throws Exception {
         MultiColumnReorderCommand reorderCommand = new MultiColumnReorderCommand(
-                layer, Arrays.asList(10, 11), 5);
-        layer.doCommand(reorderCommand);
+                this.layer, Arrays.asList(10, 11), 5);
+        this.layer.doCommand(reorderCommand);
 
         assertEquals(1, getColumnIndexesInGroup(12).size());
         assertTrue(getColumnIndexesInGroup(12).contains(Integer.valueOf(12)));
@@ -315,8 +315,8 @@ public class ColumnGroupReorderLayerTest {
     public void reorderMultipleColums() throws Exception {
         // One of the 'from' column is already in the destination group
         MultiColumnReorderCommand reorderCommand = new MultiColumnReorderCommand(
-                layer, Arrays.asList(9, 10), 11);
-        layer.doCommand(reorderCommand);
+                this.layer, Arrays.asList(9, 10), 11);
+        this.layer.doCommand(reorderCommand);
 
         assertEquals(4, getColumnIndexesInGroup(12).size());
     }
@@ -327,10 +327,10 @@ public class ColumnGroupReorderLayerTest {
         setGroupUnBreakable(11);
 
         MultiColumnReorderCommand reorderCommand = new MultiColumnReorderCommand(
-                layer, Arrays.asList(5, 6), 11);
-        layer.doCommand(reorderCommand);
+                this.layer, Arrays.asList(5, 6), 11);
+        this.layer.doCommand(reorderCommand);
 
-        modelFixture.assertUnchanged();
+        this.modelFixture.assertUnchanged();
     }
 
     @Test
@@ -339,22 +339,22 @@ public class ColumnGroupReorderLayerTest {
         setGroupUnBreakable(4);
 
         MultiColumnReorderCommand reorderCommand = new MultiColumnReorderCommand(
-                layer, Arrays.asList(4, 5), 6);
-        layer.doCommand(reorderCommand);
+                this.layer, Arrays.asList(4, 5), 6);
+        this.layer.doCommand(reorderCommand);
 
-        modelFixture.assertUnchanged();
+        this.modelFixture.assertUnchanged();
     }
 
     private List<Integer> getColumnIndexesInGroup(int columnIndex) {
-        return modelFixture.getColumnGroupByIndex(columnIndex).getMembers();
+        return this.modelFixture.getColumnGroupByIndex(columnIndex).getMembers();
     }
 
     private void collapse(int columnIndex) {
-        modelFixture.getColumnGroupByIndex(columnIndex).setCollapsed(true);
+        this.modelFixture.getColumnGroupByIndex(columnIndex).setCollapsed(true);
     }
 
     private void setGroupUnBreakable(int columnIndex) {
-        modelFixture.getColumnGroupByIndex(columnIndex).setUnbreakable(true);
+        this.modelFixture.getColumnGroupByIndex(columnIndex).setUnbreakable(true);
     }
 
 }

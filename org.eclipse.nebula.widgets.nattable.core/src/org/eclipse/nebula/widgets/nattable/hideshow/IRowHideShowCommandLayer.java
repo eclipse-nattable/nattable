@@ -17,7 +17,7 @@ import java.util.Collection;
  * behind it is that a layer that implements this interface is intended to
  * handle the row hide/show commands, so it isn't necessary to create new
  * commands for every layer.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -25,7 +25,7 @@ public interface IRowHideShowCommandLayer {
 
     /**
      * Hide the rows at the given positions.
-     * 
+     *
      * @param rowPositions
      *            The positions of the rows to hide.
      */
@@ -33,7 +33,7 @@ public interface IRowHideShowCommandLayer {
 
     /**
      * Hide the rows with the given indexes.
-     * 
+     *
      * @param rowIndexes
      *            The indexes of the rows to hide.
      */
@@ -41,7 +41,7 @@ public interface IRowHideShowCommandLayer {
 
     /**
      * Show the rows with the given indexes again.
-     * 
+     *
      * @param rowIndexes
      *            The indexes of the rows that should be showed again.
      */

@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
  * Command handler that is responsible for handling the HoverStylingCommand.
  * Will set the current hovered cell position to the connected HoverLayer to
  * apply hover styling accordingly.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see HoverLayer
@@ -32,7 +32,7 @@ public class HoverStylingCommandHandler extends
     private final HoverLayer layer;
 
     /**
-     * 
+     *
      * @param layer
      *            The HoverLayer this command handler is connected to.
      */

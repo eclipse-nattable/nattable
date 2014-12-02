@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -68,45 +68,45 @@ public class SummaryRowIntegrationTest {
 
     @Before
     public void initLayerStackWithSummaryRow() {
-        dataList = RowDataListFixture.getList().subList(0, 4);
+        this.dataList = RowDataListFixture.getList().subList(0, 4);
         // Rows 0, 1, 2, 3; Summary row would be position 4
-        assertEquals(4, dataList.size());
+        assertEquals(4, this.dataList.size());
 
-        dataProvider = new ListDataProvider<RowDataFixture>(dataList,
+        this.dataProvider = new ListDataProvider<RowDataFixture>(this.dataList,
                 new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                         RowDataListFixture.getPropertyNames()));
 
         IConfigRegistry configRegistry = new ConfigRegistry();
 
-        dataLayer = new DataLayer(dataProvider);
-        summaryRowLayer = new SummaryRowLayer(dataLayer, configRegistry);
+        this.dataLayer = new DataLayer(this.dataProvider);
+        this.summaryRowLayer = new SummaryRowLayer(this.dataLayer, configRegistry);
         IUniqueIndexLayer columnReorderLayer = new ColumnReorderLayer(
-                summaryRowLayer);
+                this.summaryRowLayer);
         IUniqueIndexLayer columnHideShowLayer = new ColumnHideShowLayer(
                 columnReorderLayer);
         IUniqueIndexLayer selectionLayer = new SelectionLayer(
                 columnHideShowLayer);
-        layerStackWithSummary = new ViewportLayer(selectionLayer);
+        this.layerStackWithSummary = new ViewportLayer(selectionLayer);
 
         // NatTableFixture initializes the client area
-        natTable = new NatTableFixture(layerStackWithSummary, false);
-        natTable.setConfigRegistry(configRegistry);
-        natTable.addConfiguration(new TestSummaryRowConfiguration());
+        this.natTable = new NatTableFixture(this.layerStackWithSummary, false);
+        this.natTable.setConfigRegistry(configRegistry);
+        this.natTable.addConfiguration(new TestSummaryRowConfiguration());
 
-        natTable.configure();
+        this.natTable.configure();
     }
 
     @Test
     public void shouldAddExtraRowAtTheEnd() throws Exception {
-        assertEquals(5, natTable.getRowCount());
+        assertEquals(5, this.natTable.getRowCount());
     }
 
     @Test
     public void shouldReturnDefaultValueImmediately() throws Exception {
         // First invocation triggers the summary calculation in a separate
         // thread
-        Object askPriceSummary = natTable.getDataValueByPosition(
-                askPriceColumnIndex, 4);
+        Object askPriceSummary = this.natTable.getDataValueByPosition(
+                this.askPriceColumnIndex, 4);
         assertNull(askPriceSummary);
     }
 
@@ -114,13 +114,13 @@ public class SummaryRowIntegrationTest {
     public void shouldSummarizeAskPriceColumn() throws Exception {
         // First invocation triggers the summary calculation in a separate
         // thread
-        Object askPriceSummary = natTable.getDataValueByPosition(
-                askPriceColumnIndex, 4);
+        Object askPriceSummary = this.natTable.getDataValueByPosition(
+                this.askPriceColumnIndex, 4);
         assertNull(askPriceSummary);
 
         Thread.sleep(200);
 
-        askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex,
+        askPriceSummary = this.natTable.getDataValueByPosition(this.askPriceColumnIndex,
                 4);
         assertEquals("110.0", askPriceSummary.toString());
     }
@@ -129,23 +129,23 @@ public class SummaryRowIntegrationTest {
     public void shouldSummarizeAskPriceColumnImmediatelyOnPreCalculation()
             throws Exception {
         // Trigger summary calculation via command
-        natTable.doCommand(new CalculateSummaryRowValuesCommand());
+        this.natTable.doCommand(new CalculateSummaryRowValuesCommand());
 
-        Object askPriceSummary = natTable.getDataValueByPosition(
-                askPriceColumnIndex, 4);
+        Object askPriceSummary = this.natTable.getDataValueByPosition(
+                this.askPriceColumnIndex, 4);
         assertEquals("110.0", askPriceSummary.toString());
     }
 
     @Test
     public void defaultHandlingOfNonNumericColumns() throws Exception {
         // Non numeric field
-        Object isinSummary = natTable.getDataValueByPosition(
-                securityIdColumnIndex, 4);
+        Object isinSummary = this.natTable.getDataValueByPosition(
+                this.securityIdColumnIndex, 4);
         assertNull(isinSummary);
 
         // Summary provider turned off
-        Object bidPriceSummary = natTable.getDataValueByPosition(
-                bidPriceColumnIndex, 4);
+        Object bidPriceSummary = this.natTable.getDataValueByPosition(
+                this.bidPriceColumnIndex, 4);
         assertNull(bidPriceSummary);
     }
 
@@ -154,13 +154,13 @@ public class SummaryRowIntegrationTest {
             throws Exception {
         // need to resize because otherwise the ViewportLayer would not process
         // the CellVisualChangeEvent any further
-        natTable.setSize(800, 400);
+        this.natTable.setSize(800, 400);
 
         LayerListenerFixture listener = new LayerListenerFixture();
-        natTable.addLayerListener(listener);
+        this.natTable.addLayerListener(listener);
 
         // Trigger summary calculation
-        natTable.getDataValueByPosition(askPriceColumnIndex, 4);
+        this.natTable.getDataValueByPosition(this.askPriceColumnIndex, 4);
 
         Thread.sleep(500);
 
@@ -168,7 +168,7 @@ public class SummaryRowIntegrationTest {
         CellVisualChangeEvent event = (CellVisualChangeEvent) listener
                 .getReceivedEvents().get(0);
 
-        assertEquals(askPriceColumnIndex, event.getColumnPosition());
+        assertEquals(this.askPriceColumnIndex, event.getColumnPosition());
         assertEquals(4, event.getRowPosition());
 
         Collection<Rectangle> changedPositionRectangles = event
@@ -186,50 +186,50 @@ public class SummaryRowIntegrationTest {
     @Test
     public void rowAddShouldClearCacheAndCalculateNewSummary() throws Exception {
         // Trigger summary calculation
-        Object askPriceSummary = natTable.getDataValueByPosition(
-                askPriceColumnIndex, 4);
+        Object askPriceSummary = this.natTable.getDataValueByPosition(
+                this.askPriceColumnIndex, 4);
         assertNull(askPriceSummary);
 
         Thread.sleep(100);
 
         // Verify calculated summary value
-        askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex,
+        askPriceSummary = this.natTable.getDataValueByPosition(this.askPriceColumnIndex,
                 4);
         assertEquals("110.0", askPriceSummary.toString());
 
         // Add data and fire event
-        dataList.add(new RowDataFixture("SID", "SDesc", "A", new Date(),
+        this.dataList.add(new RowDataFixture("SID", "SDesc", "A", new Date(),
                 new PricingTypeBean("MN"), 2.0, 2.1, 100, true, 3.0, 1.0, 1.0,
                 1000, 100000, 50000));
-        dataLayer.fireLayerEvent(new RowInsertEvent(dataLayer, 4));
+        this.dataLayer.fireLayerEvent(new RowInsertEvent(this.dataLayer, 4));
 
         // Trigger summary calculation - on the new summary row
-        askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex,
+        askPriceSummary = this.natTable.getDataValueByPosition(this.askPriceColumnIndex,
                 5);
         assertEquals("110.0", askPriceSummary.toString());
 
         Thread.sleep(100);
 
         // Verify summary value is REcalculated
-        askPriceSummary = natTable.getDataValueByPosition(askPriceColumnIndex,
+        askPriceSummary = this.natTable.getDataValueByPosition(this.askPriceColumnIndex,
                 5);
         assertEquals("112.1", askPriceSummary.toString());
     }
 
     @Test
     public void getRowIndexByPositionForSummaryRow() throws Exception {
-        assertEquals(4, natTable.getRowIndexByPosition(4));
+        assertEquals(4, this.natTable.getRowIndexByPosition(4));
     }
 
     @Test
     public void getRowHeightByPositionForSummaryRow() throws Exception {
-        natTable.doCommand(new RowResizeCommand(natTable, 4, 100));
-        assertEquals(100, natTable.getRowHeightByPosition(4));
+        this.natTable.doCommand(new RowResizeCommand(this.natTable, 4, 100));
+        assertEquals(100, this.natTable.getRowHeightByPosition(4));
     }
 
     @Test
     public void defaultConfigLabelsAreApplied() throws Exception {
-        LabelStack configLabels = natTable.getConfigLabelsByPosition(0, 4);
+        LabelStack configLabels = this.natTable.getConfigLabelsByPosition(0, 4);
         List<String> labels = configLabels.getLabels();
 
         assertEquals(2, labels.size());
@@ -243,12 +243,12 @@ public class SummaryRowIntegrationTest {
     @Test
     public void defaultConfigLabelsAreAdded() throws Exception {
         ColumnOverrideLabelAccumulator labelAcc = new ColumnOverrideLabelAccumulator(
-                layerStackWithSummary);
+                this.layerStackWithSummary);
         labelAcc.registerColumnOverrides(0, "myLabel");
-        ((ViewportLayer) layerStackWithSummary)
+        ((ViewportLayer) this.layerStackWithSummary)
                 .setConfigLabelAccumulator(labelAcc);
 
-        LabelStack configLabels = natTable.getConfigLabelsByPosition(0, 4);
+        LabelStack configLabels = this.natTable.getConfigLabelsByPosition(0, 4);
         List<String> labels = configLabels.getLabels();
 
         assertEquals(3, labels.size());
@@ -263,17 +263,17 @@ public class SummaryRowIntegrationTest {
     @Test
     public void defaultConfigLabelsNotAddedForLayersBelow() throws Exception {
         // the AbstractOverrider is set on the DataLayer. So on retrieving the
-        dataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
+        this.dataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
             @Override
             public void accumulateConfigLabels(LabelStack configLabels,
                     int columnPosition, int rowPosition) {
-                RowDataFixture rowObject = dataProvider
+                RowDataFixture rowObject = SummaryRowIntegrationTest.this.dataProvider
                         .getRowObject(rowPosition);
                 configLabels.addLabel("myLabel " + rowObject.security_id);
             }
         });
 
-        LabelStack configLabels = natTable.getConfigLabelsByPosition(0, 4);
+        LabelStack configLabels = this.natTable.getConfigLabelsByPosition(0, 4);
         List<String> labels = configLabels.getLabels();
 
         assertEquals(2, labels.size());
@@ -283,7 +283,7 @@ public class SummaryRowIntegrationTest {
         assertEquals(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL,
                 labels.get(1));
 
-        configLabels = natTable.getConfigLabelsByPosition(0, 3);
+        configLabels = this.natTable.getConfigLabelsByPosition(0, 3);
         labels = configLabels.getLabels();
 
         assertEquals(1, labels.size());
@@ -294,14 +294,14 @@ public class SummaryRowIntegrationTest {
     @Test
     public void shouldSumUpAllRowsWithAAARating() throws Exception {
         // Trigger summary calculation
-        Object lotSizeSummary = natTable.getDataValueByPosition(
-                lotSizeColumnIndex, 4);
+        Object lotSizeSummary = this.natTable.getDataValueByPosition(
+                this.lotSizeColumnIndex, 4);
         assertNull(lotSizeSummary);
 
         Thread.sleep(100);
 
         // Verify calculated summary value
-        lotSizeSummary = natTable.getDataValueByPosition(lotSizeColumnIndex, 4);
+        lotSizeSummary = this.natTable.getDataValueByPosition(this.lotSizeColumnIndex, 4);
         assertEquals("10000", lotSizeSummary.toString());
     }
 
@@ -314,17 +314,17 @@ public class SummaryRowIntegrationTest {
             // Add summaries to ask price column
             configRegistry.registerConfigAttribute(
                     SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                    new SummationSummaryProvider(dataProvider),
+                    new SummationSummaryProvider(SummaryRowIntegrationTest.this.dataProvider),
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX
-                            + askPriceColumnIndex);
+                            + SummaryRowIntegrationTest.this.askPriceColumnIndex);
 
             // Add lot size if the rating is 'AAA'
             configRegistry.registerConfigAttribute(
                     SummaryRowConfigAttributes.SUMMARY_PROVIDER,
                     getTestLotSizeSummaryProvider(), DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX
-                            + lotSizeColumnIndex);
+                            + SummaryRowIntegrationTest.this.lotSizeColumnIndex);
 
             // No Summary by default
             configRegistry.registerConfigAttribute(
@@ -338,13 +338,13 @@ public class SummaryRowIntegrationTest {
                 @Override
                 public Object summarize(int columnIndex) {
                     int lotSizeSummary = 0;
-                    int rowCount = dataProvider.getRowCount();
+                    int rowCount = SummaryRowIntegrationTest.this.dataProvider.getRowCount();
 
                     for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                        String lotSize = dataProvider.getDataValue(columnIndex,
+                        String lotSize = SummaryRowIntegrationTest.this.dataProvider.getDataValue(columnIndex,
                                 rowIndex).toString();
-                        String rating = dataProvider.getDataValue(
-                                ratingColumnIndex, rowIndex).toString();
+                        String rating = SummaryRowIntegrationTest.this.dataProvider.getDataValue(
+                                SummaryRowIntegrationTest.this.ratingColumnIndex, rowIndex).toString();
 
                         if ("AAA".equals(rating)) {
                             lotSizeSummary = lotSizeSummary

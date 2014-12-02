@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -41,23 +41,23 @@ public class StyleInheritanceTest {
 
     @Before
     public void setUp() throws Exception {
-        natTable = new NatTableFixture();
-        superCellStyle = new Style();
-        superCellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
-        defaultBackgroundColor = Display.getDefault().getSystemColor(
+        this.natTable = new NatTableFixture();
+        this.superCellStyle = new Style();
+        this.superCellStyle.setAttributeValue(CellStyleAttributes.FONT, this.font);
+        this.defaultBackgroundColor = Display.getDefault().getSystemColor(
                 SWT.COLOR_WIDGET_BACKGROUND);
-        superCellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                defaultBackgroundColor);
-        superCellStyle.setAttributeValue(
+        this.superCellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                this.defaultBackgroundColor);
+        this.superCellStyle.setAttributeValue(
                 CellStyleAttributes.VERTICAL_ALIGNMENT,
                 VerticalAlignmentEnum.TOP);
 
-        configRegistry = (ConfigRegistry) natTable.getConfigRegistry();
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                superCellStyle);
+        this.configRegistry = (ConfigRegistry) this.natTable.getConfigRegistry();
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                this.superCellStyle);
 
         // Setup even row style
-        evenCellStyle = new Style() {
+        this.evenCellStyle = new Style() {
             {
                 setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display
                         .getDefault().getSystemColor(SWT.COLOR_GRAY));
@@ -65,28 +65,28 @@ public class StyleInheritanceTest {
                         .getDefault().getSystemColor(SWT.COLOR_BLACK));
             }
         };
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                evenCellStyle, DisplayMode.NORMAL,
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                this.evenCellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
         // Setup odd row style
-        oddCellStyle = new Style() {
+        this.oddCellStyle = new Style() {
             {
                 setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, Display
                         .getDefault().getSystemColor(SWT.COLOR_RED));
             }
         };
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                oddCellStyle, DisplayMode.NORMAL,
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                this.oddCellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
     }
 
     @Test
     public void shouldFallBackToSuperTypeAttributesForEvenCell() {
-        ILayerCell cell = natTable.getCellByPosition(2, 2);
+        ILayerCell cell = this.natTable.getCellByPosition(2, 2);
 
         // Test cell even attributes
-        final IStyle cellInstanceStyle = configRegistry.getConfigAttribute(
+        final IStyle cellInstanceStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
                         .getConfigLabels().getLabels());
         Assert.assertEquals(Display.getDefault()
@@ -98,7 +98,7 @@ public class StyleInheritanceTest {
                         .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
 
         // Test super cell attributes
-        StyleProxy cellProxy = new CellStyleProxy(configRegistry,
+        StyleProxy cellProxy = new CellStyleProxy(this.configRegistry,
                 cell.getDisplayMode(), cell.getConfigLabels().getLabels());
         final Font fontAttribute = cellProxy
                 .getAttributeValue(CellStyleAttributes.FONT);
@@ -110,10 +110,10 @@ public class StyleInheritanceTest {
 
     @Test
     public void shouldFallBackToSuperTypeAttributesForOddCell() {
-        ILayerCell cell = natTable.getCellByPosition(2, 3);
+        ILayerCell cell = this.natTable.getCellByPosition(2, 3);
 
         // Test cell odd attributes
-        final IStyle cellInstanceStyle = configRegistry.getConfigAttribute(
+        final IStyle cellInstanceStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
                         .getConfigLabels().getLabels());
         Assert.assertEquals(
@@ -122,10 +122,10 @@ public class StyleInheritanceTest {
                         .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 
         // Test super odd attributes
-        StyleProxy cellProxy = new CellStyleProxy(configRegistry,
+        StyleProxy cellProxy = new CellStyleProxy(this.configRegistry,
                 cell.getDisplayMode(), cell.getConfigLabels().getLabels());
         final Color fontAttributeValue = cellProxy
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
-        Assert.assertEquals(defaultBackgroundColor, fontAttributeValue);
+        Assert.assertEquals(this.defaultBackgroundColor, fontAttributeValue);
     }
 }

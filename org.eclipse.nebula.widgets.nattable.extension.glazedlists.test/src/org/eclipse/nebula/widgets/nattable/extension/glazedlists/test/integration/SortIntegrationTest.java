@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -49,22 +49,22 @@ public class SortIntegrationTest {
                 .eventList(RowDataListFixture.getList().subList(0, 4));
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        gridLayerStack = new GlazedListsGridLayer<RowDataFixture>(
+        this.gridLayerStack = new GlazedListsGridLayer<RowDataFixture>(
                 GlazedLists.threadSafeList(eventList),
                 RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap(), configRegistry);
 
-        nattable = new NatTableFixture(gridLayerStack, false);
-        nattable.setConfigRegistry(configRegistry);
-        nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        nattable.addConfiguration(new DefaultSortConfiguration());
-        nattable.configure();
+        this.nattable = new NatTableFixture(this.gridLayerStack, false);
+        this.nattable.setConfigRegistry(configRegistry);
+        this.nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.nattable.addConfiguration(new DefaultSortConfiguration());
+        this.nattable.configure();
     }
 
     @After
     public void tearDown() {
-        nattable = null;
-        gridLayerStack = null;
+        this.nattable = null;
+        this.gridLayerStack = null;
     }
 
     @Test
@@ -80,7 +80,7 @@ public class SortIntegrationTest {
         altClickColumn2Header();
 
         // Assert presence of sort icon
-        List<String> labels = nattable.getConfigLabelsByPosition(2, 0)
+        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0)
                 .getLabels();
         assertEquals(3, labels.size());
         assertTrue(labels.contains("SORT_DOWN"));
@@ -99,19 +99,19 @@ public class SortIntegrationTest {
         assertColumn2BeforeSort();
 
         // Register custom label on column 2 (index 1)
-        DataLayer colHeaderDataLayer = gridLayerStack
+        DataLayer colHeaderDataLayer = this.gridLayerStack
                 .getColumnHeaderDataLayer();
-        nattable.registerLabelOnColumnHeader(colHeaderDataLayer, 1, TEST_LABEL);
+        this.nattable.registerLabelOnColumnHeader(colHeaderDataLayer, 1, TEST_LABEL);
 
         // Disable sorting on column 2 - null comparator
-        nattable.getConfigRegistry().registerConfigAttribute(
+        this.nattable.getConfigRegistry().registerConfigAttribute(
                 SortConfigAttributes.SORT_COMPARATOR, new NullComparator(),
                 DisplayMode.NORMAL, TEST_LABEL);
 
         altClickColumn2Header();
 
         // Assert no sort icon is displayed
-        List<String> labels = nattable.getConfigLabelsByPosition(2, 0)
+        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0)
                 .getLabels();
         assertEquals(2, labels.size());
         assertTrue(labels.contains("COLUMN_HEADER"));
@@ -125,19 +125,19 @@ public class SortIntegrationTest {
         assertColumn2BeforeSort();
 
         // Register custom label on column 2 (index 1)
-        DataLayer colHeaderDataLayer = gridLayerStack
+        DataLayer colHeaderDataLayer = this.gridLayerStack
                 .getColumnHeaderDataLayer();
-        nattable.registerLabelOnColumnHeader(colHeaderDataLayer, 1, TEST_LABEL);
+        this.nattable.registerLabelOnColumnHeader(colHeaderDataLayer, 1, TEST_LABEL);
 
         // Custom comparator on column 2
-        nattable.getConfigRegistry().registerConfigAttribute(
+        this.nattable.getConfigRegistry().registerConfigAttribute(
                 SortConfigAttributes.SORT_COMPARATOR, getGEAtTopComparator(),
                 DisplayMode.NORMAL, TEST_LABEL);
 
         altClickColumn2Header();
 
         // Assert sort order - GE at top
-        assertEquals("C General Electric Co", nattable.getCellByPosition(2, 1)
+        assertEquals("C General Electric Co", this.nattable.getCellByPosition(2, 1)
                 .getDataValue());
     }
 
@@ -149,14 +149,14 @@ public class SortIntegrationTest {
         altShiftClickColumn3Header();
 
         // Assert correct sort icons
-        List<String> labels = nattable.getConfigLabelsByPosition(2, 0)
+        List<String> labels = this.nattable.getConfigLabelsByPosition(2, 0)
                 .getLabels();
         assertEquals(3, labels.size());
         assertTrue(labels.contains("SORT_UP"));
         assertTrue(labels.contains("SORT_SEQ_0"));
         assertTrue(labels.contains("COLUMN_HEADER"));
 
-        labels = nattable.getConfigLabelsByPosition(3, 0).getLabels();
+        labels = this.nattable.getConfigLabelsByPosition(3, 0).getLabels();
         assertEquals(3, labels.size());
         assertTrue(labels.contains("SORT_UP"));
         assertTrue(labels.contains("SORT_SEQ_1"));
@@ -169,7 +169,7 @@ public class SortIntegrationTest {
         altShiftClickColumn3Header();
 
         Properties properties = new Properties();
-        nattable.saveState("test_prefix", properties);
+        this.nattable.saveState("test_prefix", properties);
 
         Object savedState = properties
                 .get("test_prefix.COLUMN_HEADER.SortHeaderLayer.sortingState");
@@ -183,33 +183,34 @@ public class SortIntegrationTest {
         altClickColumn2Header();
         altShiftClickColumn3Header();
         Properties properties = new Properties();
-        nattable.saveState("test_prefix", properties);
+        this.nattable.saveState("test_prefix", properties);
 
         // clear
         setup();
         assertColumn2BeforeSort();
 
         // load
-        nattable.loadState("test_prefix", properties);
+        this.nattable.loadState("test_prefix", properties);
         assertColumn2AscendingSort();
     }
 
     // Convenience methods
 
     private void altShiftClickColumn3Header() {
-        nattable.forceFocus();
+        this.nattable.forceFocus();
         SWTUtils.leftClick(DataLayer.DEFAULT_COLUMN_WIDTH * 3, 15, SWT.ALT
-                | SWT.SHIFT, nattable);
+                | SWT.SHIFT, this.nattable);
     }
 
     private void altClickColumn2Header() {
-        nattable.forceFocus();
+        this.nattable.forceFocus();
         SWTUtils.leftClick(DataLayer.DEFAULT_COLUMN_WIDTH * 2, 15, SWT.ALT,
-                nattable);
+                this.nattable);
     }
 
     private Comparator<?> getGEAtTopComparator() {
         return new Comparator<Object>() {
+            @Override
             public int compare(Object o1, Object o2) {
                 if (o1.toString().contains("General Electric"))
                     return -1;
@@ -220,35 +221,35 @@ public class SortIntegrationTest {
     }
 
     private void assertColumn2BeforeSort() {
-        assertEquals("B Ford Motor", nattable.getCellByPosition(2, 1)
+        assertEquals("B Ford Motor", this.nattable.getCellByPosition(2, 1)
                 .getDataValue());
-        assertEquals("A Alphabet Co.", nattable.getCellByPosition(2, 2)
+        assertEquals("A Alphabet Co.", this.nattable.getCellByPosition(2, 2)
                 .getDataValue());
-        assertEquals("C General Electric Co", nattable.getCellByPosition(2, 3)
+        assertEquals("C General Electric Co", this.nattable.getCellByPosition(2, 3)
                 .getDataValue());
         assertEquals("E Nissan Motor Co., Ltd.",
-                nattable.getCellByPosition(2, 4).getDataValue());
+                this.nattable.getCellByPosition(2, 4).getDataValue());
     }
 
     private void assertColumn2AscendingSort() {
-        assertEquals("A Alphabet Co.", nattable.getCellByPosition(2, 1)
+        assertEquals("A Alphabet Co.", this.nattable.getCellByPosition(2, 1)
                 .getDataValue());
-        assertEquals("B Ford Motor", nattable.getCellByPosition(2, 2)
+        assertEquals("B Ford Motor", this.nattable.getCellByPosition(2, 2)
                 .getDataValue());
-        assertEquals("C General Electric Co", nattable.getCellByPosition(2, 3)
+        assertEquals("C General Electric Co", this.nattable.getCellByPosition(2, 3)
                 .getDataValue());
         assertEquals("E Nissan Motor Co., Ltd.",
-                nattable.getCellByPosition(2, 4).getDataValue());
+                this.nattable.getCellByPosition(2, 4).getDataValue());
     }
 
     private void assertColumn2DescendingSort() {
         assertEquals("E Nissan Motor Co., Ltd.",
-                nattable.getCellByPosition(2, 1).getDataValue());
-        assertEquals("C General Electric Co", nattable.getCellByPosition(2, 2)
+                this.nattable.getCellByPosition(2, 1).getDataValue());
+        assertEquals("C General Electric Co", this.nattable.getCellByPosition(2, 2)
                 .getDataValue());
-        assertEquals("B Ford Motor", nattable.getCellByPosition(2, 3)
+        assertEquals("B Ford Motor", this.nattable.getCellByPosition(2, 3)
                 .getDataValue());
-        assertEquals("A Alphabet Co.", nattable.getCellByPosition(2, 4)
+        assertEquals("A Alphabet Co.", this.nattable.getCellByPosition(2, 4)
                 .getDataValue());
     }
 }

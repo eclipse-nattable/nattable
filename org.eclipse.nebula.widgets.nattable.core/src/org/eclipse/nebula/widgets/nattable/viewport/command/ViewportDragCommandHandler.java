@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Edwin Park - initial API and implementation
  ******************************************************************************/
@@ -22,13 +22,14 @@ public class ViewportDragCommandHandler extends
         this.viewportLayer = viewportLayer;
     }
 
+    @Override
     public Class<ViewportDragCommand> getCommandClass() {
         return ViewportDragCommand.class;
     }
 
     @Override
     protected boolean doCommand(ViewportDragCommand command) {
-        viewportLayer.drag(command.getX(), command.getY());
+        this.viewportLayer.drag(command.getX(), command.getY());
         return true;
     }
 

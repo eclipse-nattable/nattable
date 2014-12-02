@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,7 +22,7 @@ import org.eclipse.swt.events.KeyEvent;
  * keys. It will now also check for several special characters that are able to
  * be populated to an editor like e.g. the question mark. The following regular
  * expression will be used by this matcher:
- * 
+ *
  * <b>[\\.:,;\\-_#\'+*~!?§$%&amp;/()\\[\\]\\{\\}=\\\\\"]</b>
  */
 public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
@@ -45,7 +45,7 @@ public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
     /**
      * Will create a new key event matcher that accepts only the given keyboard
      * modifiers on typing a key.
-     * 
+     *
      * @param stateMask
      *            The state of the keyboard modifier keys at the time the event
      *            was generated, as defined by the key code constants in class
@@ -57,7 +57,7 @@ public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.ui.matcher.IKeyEventMatcher#matches
      * (org.eclipse.swt.events.KeyEvent)
@@ -76,7 +76,7 @@ public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
      * This method is intended to be used to determine whether a keypress is
      * able to open an editor, populating the representing character of the key
      * to the editor.
-     * 
+     *
      * @param character
      *            The character to check if it is a letter, digit or specified
      *            special character.
@@ -88,8 +88,7 @@ public class LetterOrDigitKeyEventMatcher implements IKeyEventMatcher {
                 || Character
                         .valueOf(character)
                         .toString()
-                        .matches(
-                                "[\\.:,;\\-_#\'+*~!?§$%&/()\\[\\]\\{\\}=\\\\\"]"); //$NON-NLS-1$
+                        .matches("[\\.:,;\\-_#\'+*~!?§$%&/()\\[\\]\\{\\}=\\\\\"]"); //$NON-NLS-1$
     }
 
 }

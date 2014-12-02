@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Text;
  * {@link ICellEditor#openInline(org.eclipse.nebula.widgets.nattable.config.IConfigRegistry, java.util.List)}
  * to always return <code>false</code>.
  * </p>
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -64,7 +64,7 @@ public class MultiLineTextCellEditor extends TextCellEditor {
     /**
      * Create a new multi line text editor that ensures to not commit the editor
      * value in case enter is typed.
-     * 
+     *
      * @param lineWrap
      *            Flag to configure whether the text control should enable
      *            automatic line wrap behaviour or not.
@@ -87,7 +87,7 @@ public class MultiLineTextCellEditor extends TextCellEditor {
             // control is dependent on the dialog size
             style = style | SWT.V_SCROLL;
         }
-        if (lineWrap) {
+        if (this.lineWrap) {
             style = style | SWT.WRAP;
         } else if (!openInline) {
             // if the editor control is opened in a dialog, we add scrolling as
@@ -113,7 +113,7 @@ public class MultiLineTextCellEditor extends TextCellEditor {
         // perform the commit, while pressing Alt/Shift + enter will add a new
         // line
         if (openInline) {
-            commitOnEnter = true;
+            this.commitOnEnter = true;
             textControl.addKeyListener(new KeyListener() {
 
                 @Override

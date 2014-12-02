@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,7 +46,7 @@ public class AutoResizeColumnCommandHandler implements
     protected final ILayer positionLayer;
 
     /**
-     * 
+     *
      * @param commandLayer
      *            The layer on which the command should be fired. Usually this
      *            will be the GridLayer.
@@ -62,7 +62,7 @@ public class AutoResizeColumnCommandHandler implements
     }
 
     /**
-     * 
+     *
      * @param gridLayer
      *            The {@link GridLayer} to which this command handler should be
      *            registered
@@ -92,9 +92,9 @@ public class AutoResizeColumnCommandHandler implements
 
         int[] gridColumnWidths = MaxCellBoundsHelper.getPreferredColumnWidths(
                 command.getConfigRegistry(), command.getGCFactory(),
-                commandLayer, gridColumnPositions);
+                this.commandLayer, gridColumnPositions);
 
-        commandLayer.doCommand(new MultiColumnResizeCommand(commandLayer,
+        this.commandLayer.doCommand(new MultiColumnResizeCommand(this.commandLayer,
                 gridColumnPositions, gridColumnWidths));
         targetLayer.doCommand(new TurnViewportOnCommand());
 
@@ -105,7 +105,7 @@ public class AutoResizeColumnCommandHandler implements
      * Translates the column positions the layer stack upwards as the resulting
      * {@link MultiColumnResizeCommand} will be fired on the command layer which
      * is on top of the position layer.
-     * 
+     *
      * @param columnPositions
      *            The column positions to convert to the positions in the
      *            command layer
@@ -115,8 +115,8 @@ public class AutoResizeColumnCommandHandler implements
         int[] commandLayerColumnPositions = new int[columnPositions.length];
 
         for (int i = 0; i < columnPositions.length; i++) {
-            commandLayerColumnPositions[i] = commandLayer
-                    .underlyingToLocalColumnPosition(positionLayer,
+            commandLayerColumnPositions[i] = this.commandLayer
+                    .underlyingToLocalColumnPosition(this.positionLayer,
                             columnPositions[i]);
         }
         return commandLayerColumnPositions;

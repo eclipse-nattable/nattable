@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,12 +24,12 @@ public class DefaultDisplayModeOrderingTest {
 
     @Before
     public void setup() {
-        ordering = new DefaultDisplayModeOrdering();
+        this.ordering = new DefaultDisplayModeOrdering();
     }
 
     @Test
     public void orderingForSelectMode() throws Exception {
-        List<String> selectModeOrdering = ordering
+        List<String> selectModeOrdering = this.ordering
                 .getDisplayModeOrdering(DisplayMode.SELECT);
 
         Assert.assertEquals(2, selectModeOrdering.size());
@@ -39,7 +39,7 @@ public class DefaultDisplayModeOrderingTest {
 
     @Test
     public void orderingForEditMode() throws Exception {
-        List<String> editModeOrdering = ordering
+        List<String> editModeOrdering = this.ordering
                 .getDisplayModeOrdering(DisplayMode.EDIT);
 
         Assert.assertEquals(2, editModeOrdering.size());
@@ -49,7 +49,7 @@ public class DefaultDisplayModeOrderingTest {
 
     @Test
     public void orderingForNormalMode() throws Exception {
-        List<String> selectModeOrdering = ordering
+        List<String> selectModeOrdering = this.ordering
                 .getDisplayModeOrdering(DisplayMode.NORMAL);
 
         Assert.assertEquals(1, selectModeOrdering.size());

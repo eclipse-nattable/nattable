@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,28 +22,28 @@ public class IndexCoordinateTest {
 
     @Before
     public void setup() {
-        i1 = new IndexCoordinate(1, 2);
-        i2 = new IndexCoordinate(1, 2);
+        this.i1 = new IndexCoordinate(1, 2);
+        this.i2 = new IndexCoordinate(1, 2);
     }
 
     @Test
     public void testIdentity() {
-        Assert.assertEquals(i1, i1);
+        Assert.assertEquals(this.i1, this.i1);
     }
 
     @Test
     public void testEquals() {
-        Assert.assertEquals(i1, i2);
+        Assert.assertEquals(this.i1, this.i2);
     }
 
     @Test
     public void testIdentityHashCode() {
-        Assert.assertEquals(i1.hashCode(), i1.hashCode());
+        Assert.assertEquals(this.i1.hashCode(), this.i1.hashCode());
     }
 
     @Test
     public void testHashCode() {
-        Assert.assertEquals(i1.hashCode(), i2.hashCode());
+        Assert.assertEquals(this.i1.hashCode(), this.i2.hashCode());
     }
 
 }

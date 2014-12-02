@@ -72,7 +72,7 @@ import ca.odell.glazedlists.GlazedLists;
  * Example that demonstrates how to implement a NatTable instance that shows
  * calculated values. Also demonstrates the usage of the SummaryRow on updating
  * the NatTable.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -94,6 +94,7 @@ public class CalculatingGridExample extends AbstractNatExample {
     /**
      * @Override
      */
+    @Override
     public String getDescription() {
         return "Demonstrates how to implement a editable grid with calculated column values.\n"
                 + "Also adds the SummaryRow to demonstrate how the SummaryRow updates on changes "
@@ -102,11 +103,12 @@ public class CalculatingGridExample extends AbstractNatExample {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
      * (org.eclipse.swt.widgets.Composite)
      */
+    @Override
     public Control createExampleControl(Composite parent) {
         Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayout(new GridLayout());
@@ -132,14 +134,14 @@ public class CalculatingGridExample extends AbstractNatExample {
         propertyToLabelMap.put("columnFourNumber", "Sum");
         propertyToLabelMap.put("columnFiveNumber", "Percentage");
 
-        valuesToShow.add(createNumberValues());
-        valuesToShow.add(createNumberValues());
+        this.valuesToShow.add(createNumberValues());
+        this.valuesToShow.add(createNumberValues());
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        CalculatingGridLayer gridLayer = new CalculatingGridLayer(valuesToShow,
+        CalculatingGridLayer gridLayer = new CalculatingGridLayer(this.valuesToShow,
                 configRegistry, propertyNames, propertyToLabelMap);
-        DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
+        DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 
         final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
                 bodyDataLayer);
@@ -158,7 +160,7 @@ public class CalculatingGridExample extends AbstractNatExample {
         addRowButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                valuesToShow.add(createNumberValues());
+                CalculatingGridExample.this.valuesToShow.add(createNumberValues());
             }
         });
 
@@ -167,9 +169,9 @@ public class CalculatingGridExample extends AbstractNatExample {
         resetButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                valuesToShow.clear();
-                valuesToShow.add(createNumberValues());
-                valuesToShow.add(createNumberValues());
+                CalculatingGridExample.this.valuesToShow.clear();
+                CalculatingGridExample.this.valuesToShow.add(createNumberValues());
+                CalculatingGridExample.this.valuesToShow.add(createNumberValues());
             }
         });
 
@@ -206,11 +208,12 @@ class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getDataValue
      * (java.lang.Object, int)
      */
+    @Override
     public Object getDataValue(NumberValues rowObject, int columnIndex) {
         switch (columnIndex) {
             case 0:
@@ -232,11 +235,12 @@ class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#setDataValue
      * (java.lang.Object, int, java.lang.Object)
      */
+    @Override
     public void setDataValue(NumberValues rowObject, int columnIndex,
             Object newValue) {
         // because of the registered conversion, the new value has to be an
@@ -256,10 +260,11 @@ class CalculatingDataProvider implements IColumnAccessor<NumberValues> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getColumnCount()
      */
+    @Override
     public int getColumnCount() {
         // this example will show exactly 5 columns
         return 5;
@@ -293,21 +298,21 @@ class CalculatingBodyLayerStack extends AbstractLayerTransform {
             ConfigRegistry configRegistry) {
         IDataProvider dataProvider = new GlazedListsDataProvider<NumberValues>(
                 valuesToShow, new CalculatingDataProvider());
-        bodyDataLayer = new DataLayer(dataProvider);
-        glazedListsEventLayer = new GlazedListsEventLayer<NumberValues>(
-                bodyDataLayer, valuesToShow);
-        summaryRowLayer = new SummaryRowLayer(glazedListsEventLayer,
+        this.bodyDataLayer = new DataLayer(dataProvider);
+        this.glazedListsEventLayer = new GlazedListsEventLayer<NumberValues>(
+                this.bodyDataLayer, valuesToShow);
+        this.summaryRowLayer = new SummaryRowLayer(this.glazedListsEventLayer,
                 configRegistry, false);
-        summaryRowLayer
+        this.summaryRowLayer
                 .addConfiguration(new CalculatingSummaryRowConfiguration(
-                        bodyDataLayer.getDataProvider()));
-        columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
-        columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-        selectionLayer = new SelectionLayer(columnHideShowLayer);
-        viewportLayer = new ViewportLayer(selectionLayer);
-        setUnderlyingLayer(viewportLayer);
+                        this.bodyDataLayer.getDataProvider()));
+        this.columnReorderLayer = new ColumnReorderLayer(this.summaryRowLayer);
+        this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
+        this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
+        this.viewportLayer = new ViewportLayer(this.selectionLayer);
+        setUnderlyingLayer(this.viewportLayer);
 
-        registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+        registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
     }
 
     public DataLayer getDataLayer() {
@@ -315,7 +320,7 @@ class CalculatingBodyLayerStack extends AbstractLayerTransform {
     }
 
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 }
 
@@ -376,6 +381,7 @@ class CalculatingGridLayer extends GridLayer {
  */
 class CalculatingEditConfiguration extends AbstractRegistryConfiguration {
 
+    @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
@@ -419,8 +425,8 @@ class CalculatingSummaryRowConfiguration extends DefaultSummaryRowConfiguration 
 
     public CalculatingSummaryRowConfiguration(IDataProvider dataProvider) {
         this.dataProvider = dataProvider;
-        summaryRowBgColor = GUIHelper.COLOR_BLUE;
-        summaryRowFgColor = GUIHelper.COLOR_WHITE;
+        this.summaryRowBgColor = GUIHelper.COLOR_BLUE;
+        this.summaryRowFgColor = GUIHelper.COLOR_WHITE;
     }
 
     @Override
@@ -432,7 +438,7 @@ class CalculatingSummaryRowConfiguration extends DefaultSummaryRowConfiguration 
         // Default summary provider
         configRegistry.registerConfigAttribute(
                 SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                new SummationSummaryProvider(dataProvider), DisplayMode.NORMAL,
+                new SummationSummaryProvider(this.dataProvider), DisplayMode.NORMAL,
                 SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
         // Average summary provider for column index 2
@@ -446,12 +452,13 @@ class CalculatingSummaryRowConfiguration extends DefaultSummaryRowConfiguration 
      * Custom summary provider which averages out the contents of the column
      */
     class AverageSummaryProvider implements ISummaryProvider {
+        @Override
         public Object summarize(int columnIndex) {
             double total = 0;
-            int rowCount = dataProvider.getRowCount();
+            int rowCount = CalculatingSummaryRowConfiguration.this.dataProvider.getRowCount();
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = dataProvider.getDataValue(columnIndex,
+                Object dataValue = CalculatingSummaryRowConfiguration.this.dataProvider.getDataValue(columnIndex,
                         rowIndex);
                 total = total + Double.parseDouble(dataValue.toString());
             }

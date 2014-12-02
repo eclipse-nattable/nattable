@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,11 +46,11 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public ILayer getLayer() {
-        return layer;
+        return this.layer;
     }
 
     public Collection<Range> getRowPositionRanges() {
-        return rowPositionRanges;
+        return this.rowPositionRanges;
     }
 
     protected void setRowPositionRanges(Collection<Range> rowPositionRanges) {
@@ -59,19 +59,19 @@ public abstract class RowVisualChangeEvent implements IVisualChangeEvent {
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        rowPositionRanges = localLayer.underlyingToLocalRowPositions(layer,
-                rowPositionRanges);
-        layer = localLayer;
+        this.rowPositionRanges = localLayer.underlyingToLocalRowPositions(this.layer,
+                this.rowPositionRanges);
+        this.layer = localLayer;
 
-        return rowPositionRanges != null && rowPositionRanges.size() > 0;
+        return this.rowPositionRanges != null && this.rowPositionRanges.size() > 0;
     }
 
     @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
         Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
 
-        int columnCount = layer.getColumnCount();
-        for (Range range : rowPositionRanges) {
+        int columnCount = this.layer.getColumnCount();
+        for (Range range : this.rowPositionRanges) {
             changedPositionRectangles.add(new Rectangle(0, range.start,
                     columnCount, range.end - range.start));
         }

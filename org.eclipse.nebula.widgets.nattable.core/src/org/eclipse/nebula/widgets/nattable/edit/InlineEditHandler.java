@@ -54,7 +54,7 @@ public class InlineEditHandler implements ICellEditHandler {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler#commit(java
      * .lang.Object,

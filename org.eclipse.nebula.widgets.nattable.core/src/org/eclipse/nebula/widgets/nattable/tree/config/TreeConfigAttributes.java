@@ -18,7 +18,7 @@ import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter
 /**
  * Configuration attributes for configuring the visualization of a tree
  * representation.
- * 
+ *
  * @author Dirk Fauth
  *
  */

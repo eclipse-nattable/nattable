@@ -176,7 +176,7 @@ public class MoveCellSelectionCommandHandler extends MoveSelectionCommandHandler
                 int stepSize = traversalStrategy.getStepCount();
                 this.newSelectedColumnPosition = (stepSize >= 0)
                         ? (lastSelectedCell.getOriginColumnPosition() + lastSelectedCell.getColumnSpan() - 1 + stepSize)
-                                : (this.selectionLayer.getColumnCount() - 1);
+                        : (this.selectionLayer.getColumnCount() - 1);
 
                 this.newSelectedRowPosition = this.lastSelectedCellPosition.rowPosition;
 

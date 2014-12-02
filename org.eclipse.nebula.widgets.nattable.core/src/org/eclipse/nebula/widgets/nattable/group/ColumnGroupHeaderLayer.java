@@ -116,7 +116,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     public int getRowCount() {
         if (!this.calculateHeight
                 || (this.model.getAllIndexesInGroups() != null && this.model
-                .getAllIndexesInGroups().size() > 0)) {
+                        .getAllIndexesInGroups().size() > 0)) {
             return this.columnHeaderLayer.getRowCount() + 1;
         }
         return this.columnHeaderLayer.getRowCount();
@@ -150,7 +150,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     public int getHeight() {
         if (!this.calculateHeight
                 || (this.model.getAllIndexesInGroups() != null && this.model
-                .getAllIndexesInGroups().size() > 0)) {
+                        .getAllIndexesInGroups().size() > 0)) {
             return this.rowHeightConfig.getAggregateSize(1)
                     + this.columnHeaderLayer.getHeight();
         }

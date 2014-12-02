@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -48,17 +48,21 @@ public class Creating_a_summary_row extends AbstractNatExample {
                 + "	Plug-in your own summary formulas via ISummaryProvider interface (Default is summation)";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
-        myDataProvider = new IDataProvider() {
+        this.myDataProvider = new IDataProvider() {
 
+            @Override
             public int getColumnCount() {
                 return 4;
             }
 
+            @Override
             public int getRowCount() {
                 return 10;
             }
 
+            @Override
             public Object getDataValue(int columnIndex, int rowIndex) {
                 if (columnIndex >= getColumnCount()
                         || rowIndex >= getRowCount()) {
@@ -68,12 +72,13 @@ public class Creating_a_summary_row extends AbstractNatExample {
                 return (columnIndex % 2 == 0) ? 10 : "Apple";
             }
 
+            @Override
             public void setDataValue(int columnIndex, int rowIndex,
                     Object newValue) {}
         };
 
         IConfigRegistry configRegistry = new ConfigRegistry();
-        IUniqueIndexLayer dataLayer = new DataLayer(myDataProvider);
+        IUniqueIndexLayer dataLayer = new DataLayer(this.myDataProvider);
 
         // Plug in the SummaryRowLayer
         IUniqueIndexLayer summaryRowLayer = new SummaryRowLayer(dataLayer,
@@ -83,7 +88,7 @@ public class Creating_a_summary_row extends AbstractNatExample {
         NatTable natTable = new NatTable(parent, viewportLayer, false);
 
         // Configure custom summary formula for a column
-        natTable.addConfiguration(new MySummaryRowConfig(myDataProvider));
+        natTable.addConfiguration(new MySummaryRowConfig(this.myDataProvider));
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.setConfigRegistry(configRegistry);
         natTable.configure();
@@ -95,12 +100,13 @@ public class Creating_a_summary_row extends AbstractNatExample {
      * Custom summary provider which averages out the contents of the column
      */
     class AverageSummaryProvider implements ISummaryProvider {
+        @Override
         public Object summarize(int columnIndex) {
             int total = 0;
-            int rowCount = myDataProvider.getRowCount();
+            int rowCount = Creating_a_summary_row.this.myDataProvider.getRowCount();
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = myDataProvider.getDataValue(columnIndex,
+                Object dataValue = Creating_a_summary_row.this.myDataProvider.getDataValue(columnIndex,
                         rowIndex);
                 total = total + Integer.parseInt(dataValue.toString());
             }
@@ -118,8 +124,8 @@ public class Creating_a_summary_row extends AbstractNatExample {
 
         public MySummaryRowConfig(IDataProvider myDataProvider) {
             this.myDataProvider = myDataProvider;
-            summaryRowBgColor = GUIHelper.COLOR_BLUE;
-            summaryRowFgColor = GUIHelper.COLOR_WHITE;
+            this.summaryRowBgColor = GUIHelper.COLOR_BLUE;
+            this.summaryRowFgColor = GUIHelper.COLOR_WHITE;
         }
 
         @Override
@@ -131,7 +137,7 @@ public class Creating_a_summary_row extends AbstractNatExample {
             // Default summary provider
             configRegistry.registerConfigAttribute(
                     SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                    new SummationSummaryProvider(myDataProvider),
+                    new SummationSummaryProvider(this.myDataProvider),
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 

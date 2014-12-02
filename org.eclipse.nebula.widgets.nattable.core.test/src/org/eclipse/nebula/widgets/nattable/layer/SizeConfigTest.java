@@ -21,54 +21,54 @@ public class SizeConfigTest {
 
     @Before
     public void setup() {
-        sizeConfig = new SizeConfig(DEFAULT_SIZE);
+        this.sizeConfig = new SizeConfig(DEFAULT_SIZE);
     }
 
     @Test
     public void getAggregateSize() throws Exception {
-        Assert.assertEquals(1000, sizeConfig.getAggregateSize(10));
+        Assert.assertEquals(1000, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
     public void sizeOverride() throws Exception {
-        sizeConfig.setSize(5, 120);
+        this.sizeConfig.setSize(5, 120);
 
-        Assert.assertEquals(120, sizeConfig.getSize(5));
+        Assert.assertEquals(120, this.sizeConfig.getSize(5));
     }
 
     @Test
     public void getAggregateSizeWithSizeOverrides() throws Exception {
-        sizeConfig.setSize(5, 120);
-        sizeConfig.setSize(0, 10);
+        this.sizeConfig.setSize(5, 120);
+        this.sizeConfig.setSize(0, 10);
 
-        Assert.assertEquals(10, sizeConfig.getAggregateSize(1));
-        Assert.assertEquals(410, sizeConfig.getAggregateSize(5));
-        Assert.assertEquals(930, sizeConfig.getAggregateSize(10));
+        Assert.assertEquals(10, this.sizeConfig.getAggregateSize(1));
+        Assert.assertEquals(410, this.sizeConfig.getAggregateSize(5));
+        Assert.assertEquals(930, this.sizeConfig.getAggregateSize(10));
     }
 
     @Test
     public void setIndexResizable() throws Exception {
-        sizeConfig.setResizableByDefault(false);
-        sizeConfig.setPositionResizable(2, true);
-        sizeConfig.setSize(2, 120);
+        this.sizeConfig.setResizableByDefault(false);
+        this.sizeConfig.setPositionResizable(2, true);
+        this.sizeConfig.setSize(2, 120);
 
-        Assert.assertEquals(320, sizeConfig.getAggregateSize(3));
+        Assert.assertEquals(320, this.sizeConfig.getAggregateSize(3));
     }
 
     @Test
     public void ingnoreResizeForNonResizableColumns() throws Exception {
-        sizeConfig.setResizableByDefault(false);
-        sizeConfig.setSize(2, 120);
+        this.sizeConfig.setResizableByDefault(false);
+        this.sizeConfig.setSize(2, 120);
 
-        Assert.assertEquals(300, sizeConfig.getAggregateSize(3));
+        Assert.assertEquals(300, this.sizeConfig.getAggregateSize(3));
     }
 
     @Test
     public void allIndexesSameSize() throws Exception {
-        Assert.assertTrue(sizeConfig.isAllPositionsSameSize());
+        Assert.assertTrue(this.sizeConfig.isAllPositionsSameSize());
 
-        sizeConfig.setSize(2, 120);
-        Assert.assertFalse(sizeConfig.isAllPositionsSameSize());
+        this.sizeConfig.setSize(2, 120);
+        Assert.assertFalse(this.sizeConfig.isAllPositionsSameSize());
     }
 
     @Test

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -129,7 +129,7 @@ public class _807_SortableFilterableColumnGroupExample extends
 
         BodyLayerStack<ExtendedPersonWithAddress> bodyLayer = new BodyLayerStack<ExtendedPersonWithAddress>(
                 PersonService.getExtendedPersonsWithAddress(10),
-                columnPropertyAccessor, sndColumnGroupModel, columnGroupModel);
+                columnPropertyAccessor, this.sndColumnGroupModel, this.columnGroupModel);
 
         IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
                 propertyNames, propertyToLabelMap);
@@ -146,7 +146,7 @@ public class _807_SortableFilterableColumnGroupExample extends
 
         ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
                 sortHeaderLayer, bodyLayer.getSelectionLayer(),
-                columnGroupModel);
+                this.columnGroupModel);
 
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Person", 0, 1, 2, 3);
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Address", 4, 5, 6, 7);
@@ -159,7 +159,7 @@ public class _807_SortableFilterableColumnGroupExample extends
 
         ColumnGroupGroupHeaderLayer sndGroup = new ColumnGroupGroupHeaderLayer(
                 columnGroupHeaderLayer, bodyLayer.getSelectionLayer(),
-                sndColumnGroupModel);
+                this.sndColumnGroupModel);
 
         sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4,
                 5, 6, 7);
@@ -229,7 +229,7 @@ public class _807_SortableFilterableColumnGroupExample extends
         DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
                 bodyLayer.getSelectionLayer(),
                 bodyLayer.getColumnHideShowLayer(), columnHeaderLayer,
-                columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel);
+                columnHeaderDataLayer, columnGroupHeaderLayer, this.columnGroupModel);
         bodyLayer.registerCommandHandler(columnChooserCommandHandler);
 
         natTable.configure();
@@ -267,66 +267,66 @@ public class _807_SortableFilterableColumnGroupExample extends
             // wrap the SortedList with the FilterList
             this.filterList = new FilterList<T>(getSortedList());
 
-            this.bodyDataProvider = new ListDataProvider<T>(filterList,
+            this.bodyDataProvider = new ListDataProvider<T>(this.filterList,
                     columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, filterList);
+                    bodyDataLayer, this.filterList);
 
-            columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
-            columnGroupReorderLayer = new ColumnGroupReorderLayer(
-                    columnReorderLayer,
+            this.columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
+            this.columnGroupReorderLayer = new ColumnGroupReorderLayer(
+                    this.columnReorderLayer,
                     columnGroupModel[columnGroupModel.length - 1]);
-            columnHideShowLayer = new ColumnHideShowLayer(
-                    columnGroupReorderLayer);
-            columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
-                    columnHideShowLayer, columnGroupModel);
-            selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-            viewportLayer = new ViewportLayer(selectionLayer);
+            this.columnHideShowLayer = new ColumnHideShowLayer(
+                    this.columnGroupReorderLayer);
+            this.columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
+                    this.columnHideShowLayer, columnGroupModel);
+            this.selectionLayer = new SelectionLayer(this.columnGroupExpandCollapseLayer);
+            this.viewportLayer = new ViewportLayer(this.selectionLayer);
 
-            final FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+            final FreezeLayer freezeLayer = new FreezeLayer(this.selectionLayer);
             final CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(
-                    freezeLayer, viewportLayer, selectionLayer);
+                    freezeLayer, this.viewportLayer, this.selectionLayer);
 
             setUnderlyingLayer(compositeFreezeLayer);
         }
 
         public SortedList<T> getSortedList() {
-            return sortedList;
+            return this.sortedList;
         }
 
         public FilterList<T> getFilterList() {
-            return filterList;
+            return this.filterList;
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
 
         public ColumnReorderLayer getColumnReorderLayer() {
-            return columnReorderLayer;
+            return this.columnReorderLayer;
         }
 
         public ColumnGroupReorderLayer getColumnGroupReorderLayer() {
-            return columnGroupReorderLayer;
+            return this.columnGroupReorderLayer;
         }
 
         public ColumnHideShowLayer getColumnHideShowLayer() {
-            return columnHideShowLayer;
+            return this.columnHideShowLayer;
         }
 
         public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
-            return columnGroupExpandCollapseLayer;
+            return this.columnGroupExpandCollapseLayer;
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public ViewportLayer getViewportLayer() {
-            return viewportLayer;
+            return this.viewportLayer;
         }
 
     }
@@ -334,7 +334,7 @@ public class _807_SortableFilterableColumnGroupExample extends
     /**
      * The configuration to enable the edit mode for the grid and additional
      * edit configurations like converters and validators.
-     * 
+     *
      * @author Dirk Fauth
      */
     class FilterRowConfiguration extends AbstractRegistryConfiguration {

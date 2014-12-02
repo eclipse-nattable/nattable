@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -33,7 +33,7 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
     private boolean uplift = true;
 
     /**
-     * 
+     *
      * @param interiorPainter
      *            The painter which should be wrapped by this decorator.
      */
@@ -42,7 +42,7 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
     }
 
     /**
-     * 
+     *
      * @param interiorPainter
      *            The painter which should be wrapped by this decorator.
      * @param uplift
@@ -56,11 +56,13 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
         this.uplift = uplift;
     }
 
+    @Override
     public int getPreferredWidth(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         return super.getPreferredWidth(cell, gc, configRegistry) + 4;
     }
 
+    @Override
     public int getPreferredHeight(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         return super.getPreferredHeight(cell, gc, configRegistry) + 4;
@@ -73,6 +75,7 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
                 bounds.height - 4);
     }
 
+    @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds,
             IConfigRegistry configRegistry) {
         Rectangle interiorBounds = getWrappedPainterBounds(cell, gc,
@@ -85,7 +88,7 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
         // TODO: Need to look at the border style
 
         // Up
-        gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_LIGHT_SHADOW
+        gc.setForeground(this.uplift ? GUIHelper.COLOR_WIDGET_LIGHT_SHADOW
                 : GUIHelper.COLOR_WIDGET_DARK_SHADOW);
         gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y,
                 adjustedCellBounds.x + adjustedCellBounds.width - 1,
@@ -94,7 +97,7 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
                 adjustedCellBounds.x, adjustedCellBounds.y
                         + adjustedCellBounds.height - 1);
 
-        gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_HIGHLIGHT_SHADOW
+        gc.setForeground(this.uplift ? GUIHelper.COLOR_WIDGET_HIGHLIGHT_SHADOW
                 : GUIHelper.COLOR_WIDGET_NORMAL_SHADOW);
         gc.drawLine(adjustedCellBounds.x + 1, adjustedCellBounds.y + 1,
                 adjustedCellBounds.x + adjustedCellBounds.width - 1,
@@ -104,7 +107,7 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
                         + adjustedCellBounds.height - 1);
 
         // Down
-        gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_DARK_SHADOW
+        gc.setForeground(this.uplift ? GUIHelper.COLOR_WIDGET_DARK_SHADOW
                 : GUIHelper.COLOR_WIDGET_LIGHT_SHADOW);
         gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y
                 + adjustedCellBounds.height - 1, adjustedCellBounds.x
@@ -115,7 +118,7 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
                         + adjustedCellBounds.width - 1, adjustedCellBounds.y
                         + adjustedCellBounds.height - 1);
 
-        gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_NORMAL_SHADOW
+        gc.setForeground(this.uplift ? GUIHelper.COLOR_WIDGET_NORMAL_SHADOW
                 : GUIHelper.COLOR_WIDGET_HIGHLIGHT_SHADOW);
         gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y
                 + adjustedCellBounds.height - 2, adjustedCellBounds.x

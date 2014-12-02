@@ -396,8 +396,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         }
     }
 
-    class MySummaryRow<T> extends DefaultSummaryRowConfiguration implements
-    IConfiguration {
+    class MySummaryRow<T> extends DefaultSummaryRowConfiguration implements IConfiguration {
 
         private IRowDataProvider<T> dataProvider;
 
@@ -413,7 +412,7 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
                     new SummationSummaryProvider(this.dataProvider),
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX
-                    + getColumnIndexOfProperty(ASK_PRICE_PROP_NAME));
+                            + getColumnIndexOfProperty(ASK_PRICE_PROP_NAME));
 
             // No Summary by default
             configRegistry.registerConfigAttribute(

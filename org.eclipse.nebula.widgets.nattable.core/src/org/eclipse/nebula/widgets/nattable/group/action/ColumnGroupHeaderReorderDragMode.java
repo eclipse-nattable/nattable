@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -66,10 +66,10 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
             int maxX = this.currentEvent.x
                     + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
             betweenGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX,
-                    maxX, model);
+                    maxX, this.model);
         }
 
-        return toColumnIndex == 0 || (!model.isPartOfAGroup(toColumnIndex))
+        return toColumnIndex == 0 || (!this.model.isPartOfAGroup(toColumnIndex))
                 || betweenGroups;
     }
 

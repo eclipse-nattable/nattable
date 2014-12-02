@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,17 +23,17 @@ public class ColumnReorderCommand implements ILayerCommand {
 
     public ColumnReorderCommand(ILayer layer, int fromColumnPosition,
             int toColumnPosition) {
-        fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+        this.fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
                 fromColumnPosition);
 
         if (toColumnPosition < layer.getColumnCount()) {
-            reorderToLeftEdge = true;
+            this.reorderToLeftEdge = true;
         } else {
-            reorderToLeftEdge = false;
+            this.reorderToLeftEdge = false;
             toColumnPosition--;
         }
 
-        toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+        this.toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
                 toColumnPosition);
     }
 
@@ -44,34 +44,36 @@ public class ColumnReorderCommand implements ILayerCommand {
     }
 
     public int getFromColumnPosition() {
-        return fromColumnPositionCoordinate.getColumnPosition();
+        return this.fromColumnPositionCoordinate.getColumnPosition();
     }
 
     public int getToColumnPosition() {
-        return toColumnPositionCoordinate.getColumnPosition();
+        return this.toColumnPositionCoordinate.getColumnPosition();
     }
 
     public boolean isReorderToLeftEdge() {
-        return reorderToLeftEdge;
+        return this.reorderToLeftEdge;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil
                 .convertColumnPositionToTargetContext(
-                        fromColumnPositionCoordinate, targetLayer);
+                        this.fromColumnPositionCoordinate, targetLayer);
         ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil
                 .convertColumnPositionToTargetContext(
-                        toColumnPositionCoordinate, targetLayer);
+                        this.toColumnPositionCoordinate, targetLayer);
         if (targetFromColumnPositionCoordinate != null
                 && targetToColumnPositionCoordinate != null) {
-            fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
-            toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+            this.fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
+            this.toColumnPositionCoordinate = targetToColumnPositionCoordinate;
             return true;
         } else {
             return false;
         }
     }
 
+    @Override
     public ColumnReorderCommand cloneCommand() {
         return new ColumnReorderCommand(this);
     }

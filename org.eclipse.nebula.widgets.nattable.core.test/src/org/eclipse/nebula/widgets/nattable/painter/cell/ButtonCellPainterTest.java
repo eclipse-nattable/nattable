@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,52 +35,52 @@ public class ButtonCellPainterTest {
 
     @Before
     public void setup() {
-        buttonRaisedPainter = new CellPainterFixture();
-        buttonPressedPainter = new CellPainterFixture();
-        buttonCellPainter = new ButtonCellPainter(buttonRaisedPainter,
-                buttonPressedPainter);
-        buttonCellPainter.setButtonFlashTime(500);
+        this.buttonRaisedPainter = new CellPainterFixture();
+        this.buttonPressedPainter = new CellPainterFixture();
+        this.buttonCellPainter = new ButtonCellPainter(this.buttonRaisedPainter,
+                this.buttonPressedPainter);
+        this.buttonCellPainter.setButtonFlashTime(500);
 
-        natTable = new NatTableFixture();
-        cellFixture = new LayerCell(natTable, 1, 5);
-        gcFixture = new GC(natTable);
+        this.natTable = new NatTableFixture();
+        this.cellFixture = new LayerCell(this.natTable, 1, 5);
+        this.gcFixture = new GC(this.natTable);
 
-        mouseClickEvent = new MouseEvent(SWTUtils.getLeftClickEvent(100, 100,
-                0, natTable));
-        mouseClickEvent.data = NatEventData
-                .createInstanceFromEvent(mouseClickEvent);
+        this.mouseClickEvent = new MouseEvent(SWTUtils.getLeftClickEvent(100, 100,
+                0, this.natTable));
+        this.mouseClickEvent.data = NatEventData
+                .createInstanceFromEvent(this.mouseClickEvent);
     }
 
     @Test
     public void shouldPaintButtonPressedOnMouseClick() throws Exception {
         // Initial paint call
-        buttonCellPainter.paintCell(cellFixture, gcFixture,
-                cellFixture.getBounds(), natTable.getConfigRegistry());
+        this.buttonCellPainter.paintCell(this.cellFixture, this.gcFixture,
+                this.cellFixture.getBounds(), this.natTable.getConfigRegistry());
 
-        Assert.assertTrue(buttonRaisedPainter.isPainted());
-        Assert.assertFalse(buttonPressedPainter.isPainted());
+        Assert.assertTrue(this.buttonRaisedPainter.isPainted());
+        Assert.assertFalse(this.buttonPressedPainter.isPainted());
 
         // Mouse clicked
-        buttonCellPainter.run(natTable, mouseClickEvent);
-        buttonCellPainter.paintCell(cellFixture, gcFixture,
-                cellFixture.getBounds(), natTable.getConfigRegistry());
+        this.buttonCellPainter.run(this.natTable, this.mouseClickEvent);
+        this.buttonCellPainter.paintCell(this.cellFixture, this.gcFixture,
+                this.cellFixture.getBounds(), this.natTable.getConfigRegistry());
 
         // Should be painted in pressed state
-        Assert.assertTrue(buttonPressedPainter.isPainted());
+        Assert.assertTrue(this.buttonPressedPainter.isPainted());
     }
 
     @Test
     public void shouldNotifyListeners() throws Exception {
         MouseActionFixture mouseAction = new MouseActionFixture();
-        buttonCellPainter.addClickListener(mouseAction);
+        this.buttonCellPainter.addClickListener(mouseAction);
 
-        buttonCellPainter.run(natTable, mouseClickEvent);
+        this.buttonCellPainter.run(this.natTable, this.mouseClickEvent);
         Assert.assertTrue(mouseAction.isActionInvoked());
 
-        buttonCellPainter.removeClickListener(mouseAction);
+        this.buttonCellPainter.removeClickListener(mouseAction);
         mouseAction.reset();
 
-        buttonCellPainter.run(natTable, mouseClickEvent);
+        this.buttonCellPainter.run(this.natTable, this.mouseClickEvent);
         Assert.assertFalse(mouseAction.isActionInvoked());
     }
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * handling of a {@link ILayerCommand}). Every layer in the grid is given a
  * chance to respond to an event via
  * {@link ILayer#handleLayerEvent(ILayerEvent)}.
- * 
+ *
  * @see ILayerEventHandler
  */
 public interface ILayerEvent {
@@ -27,7 +27,7 @@ public interface ILayerEvent {
     /**
      * Convert the column/row positions carried by the event to the layer about
      * to handle the event.
-     * 
+     *
      * @param localLayer
      *            layer about to receive the event
      * @return TRUE if successfully converted, FALSE otherwise

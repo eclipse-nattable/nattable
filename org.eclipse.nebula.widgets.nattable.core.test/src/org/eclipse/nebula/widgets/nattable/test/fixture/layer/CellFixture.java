@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,14 +35,14 @@ public class CellFixture extends LayerCell {
 
         this.dataValue = dataValue;
 
-        displayMode = DisplayMode.NORMAL;
-        configLabels = new LabelStack(TEST_CONFIG_TYPE);
-        bounds = TEST_BOUNDS;
+        this.displayMode = DisplayMode.NORMAL;
+        this.configLabels = new LabelStack(TEST_CONFIG_TYPE);
+        this.bounds = TEST_BOUNDS;
     }
 
     @Override
     public String getDisplayMode() {
-        return displayMode;
+        return this.displayMode;
     }
 
     public void setDisplayMode(String displayMode) {
@@ -51,7 +51,7 @@ public class CellFixture extends LayerCell {
 
     @Override
     public LabelStack getConfigLabels() {
-        return configLabels;
+        return this.configLabels;
     }
 
     public void setConfigLabels(LabelStack configLabels) {
@@ -60,13 +60,13 @@ public class CellFixture extends LayerCell {
 
     public void addConfigLabels(String... additionalConfigLabels) {
         for (String configLabel : additionalConfigLabels) {
-            configLabels.addLabel(configLabel);
+            this.configLabels.addLabel(configLabel);
         }
     }
 
     @Override
     public Object getDataValue() {
-        return dataValue;
+        return this.dataValue;
     }
 
     public void setDataValue(Object dataValue) {
@@ -75,7 +75,7 @@ public class CellFixture extends LayerCell {
 
     @Override
     public Rectangle getBounds() {
-        return bounds;
+        return this.bounds;
     }
 
     public void setBounds(Rectangle bounds) {

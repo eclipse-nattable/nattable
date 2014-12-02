@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,22 +30,23 @@ public class SortableTreeComparator<T> implements Comparator<T> {
         this.sortModel = sortModel;
     }
 
+    @Override
     public int compare(T o1, T o2) {
-        int treeComparatorResult = treeComparator.compare(o1, o2);
+        int treeComparatorResult = this.treeComparator.compare(o1, o2);
         if (treeComparatorResult == 0) {
             return 0;
         } else {
-            List<Integer> sortedColumnIndexes = sortModel
+            List<Integer> sortedColumnIndexes = this.sortModel
                     .getSortedColumnIndexes();
             if (sortedColumnIndexes != null && sortedColumnIndexes.size() > 0) {
                 List<Comparator<T>> comparators = new ArrayList<Comparator<T>>();
                 for (int sortedColumnIndex : sortedColumnIndexes) {
                     // get comparator for column index... somehow
-                    List<Comparator> columnComparators = sortModel
+                    List<Comparator> columnComparators = this.sortModel
                             .getComparatorsForColumnIndex(sortedColumnIndex);
 
                     if (columnComparators != null) {
-                        SortDirectionEnum sortDirection = sortModel
+                        SortDirectionEnum sortDirection = this.sortModel
                                 .getSortDirection(sortedColumnIndex);
                         for (Comparator columnComparator : columnComparators) {
                             switch (sortDirection) {

@@ -26,9 +26,9 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
 
     public TreeCheckBoxPainter() {
         this(
-        		GUIHelper.getImage("checked"), //$NON-NLS-1$
-        		GUIHelper.getImage("semichecked"), //$NON-NLS-1$
-        		GUIHelper.getImage("unchecked") //$NON-NLS-1$
+                GUIHelper.getImage("checked"), //$NON-NLS-1$
+                GUIHelper.getImage("semichecked"), //$NON-NLS-1$
+                GUIHelper.getImage("unchecked") //$NON-NLS-1$
         );
     }
 

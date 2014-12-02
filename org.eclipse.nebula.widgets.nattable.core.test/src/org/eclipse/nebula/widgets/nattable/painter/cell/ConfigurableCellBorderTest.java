@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -34,8 +34,8 @@ public class ConfigurableCellBorderTest {
 
     @Before
     public void setUp() throws Exception {
-        natTable = new NatTableFixture();
-        configRegistry = (ConfigRegistry) natTable.getConfigRegistry();
+        this.natTable = new NatTableFixture();
+        this.configRegistry = (ConfigRegistry) this.natTable.getConfigRegistry();
     }
 
     @Test
@@ -47,19 +47,19 @@ public class ConfigurableCellBorderTest {
                 defaultBorderStyle);
 
         // Register line styling for body cells in selection mode
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.SELECT,
                 SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
 
         // Select and access cell
-        natTable.doCommand(new SelectCellCommand(natTable, 2, 2, false, false));
-        ILayerCell cell = natTable.getCellByPosition(2, 2);
+        this.natTable.doCommand(new SelectCellCommand(this.natTable, 2, 2, false, false));
+        ILayerCell cell = this.natTable.getCellByPosition(2, 2);
         Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
 
         // Check for line styling
         Assert.assertEquals(
                 defaultBorderStyle,
-                configRegistry.getConfigAttribute(
+                this.configRegistry.getConfigAttribute(
                         CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(),
                         cell.getConfigLabels().getLabels()).getAttributeValue(
                         CellStyleAttributes.BORDER_STYLE));

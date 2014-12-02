@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.Control;
  * Simple example showing how to add the {@link HoverLayer} to a grid layer
  * composition. This example only show how to add hover styling to the body of a
  * grid.
- * 
+ *
  * @author Dirk Fauth
  *
  */

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,12 +25,12 @@ public class ColumnCategoriesModelTest {
 
     @Before
     public void setup() {
-        model = new ColumnCategoriesModelFixture();
+        this.model = new ColumnCategoriesModelFixture();
     }
 
     @Test
     public void shouldCreateModelCorrectly() throws Exception {
-        assertEquals(6, model.getRootCategory().getNumberOfChildren());
+        assertEquals(6, this.model.getRootCategory().getNumberOfChildren());
         assertEquals(
                 "[{ROOT,Root,[17,18,19,a,b,c]}, "
                         + "{COLUMN,17,[]}, {COLUMN,18,[]}, {COLUMN,19,[]}, "
@@ -38,14 +38,14 @@ public class ColumnCategoriesModelTest {
                         + "{CATEGORY,b,[b1,b2]}, {CATEGORY,b1,[7,8]}, {COLUMN,7,[]}, {COLUMN,8,[]}, "
                         + "{CATEGORY,b2,[9,10,11]}, {COLUMN,9,[]}, {COLUMN,10,[]}, {COLUMN,11,[]}, "
                         + "{CATEGORY,c,[12,13,14,15,16]}, {COLUMN,12,[]}, {COLUMN,13,[]}, {COLUMN,14,[]}, {COLUMN,15,[]}, {COLUMN,16,[]}]",
-                model.toString());
+                this.model.toString());
     }
 
     @Test
     public void removeColumnIndexesFromModel() throws Exception {
-        assertEquals(6, model.getRootCategory().getNumberOfChildren());
-        model.removeColumnIndex(17);
-        assertEquals(5, model.getRootCategory().getNumberOfChildren());
+        assertEquals(6, this.model.getRootCategory().getNumberOfChildren());
+        this.model.removeColumnIndex(17);
+        assertEquals(5, this.model.getRootCategory().getNumberOfChildren());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ColumnCategoriesModelTest {
         }
         assertTrue(caughtEx);
 
-        model.clear();
-        model.addRootCategory("Root");
+        this.model.clear();
+        this.model.addRootCategory("Root");
     }
 }

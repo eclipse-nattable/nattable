@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.test.data.Person.Gender;
 /**
  * Class that acts as service for accessing numerous {@link Person}s. The values
  * are randomly put together out of names and places from "The Simpsons"
- * 
+ *
  * @author Dirk Fauth
  */
 public class PersonService {
@@ -36,7 +36,7 @@ public class PersonService {
 
     /**
      * Creates a list of random {@link Person}s.
-     * 
+     *
      * @param numberOfPersons
      *            The number of {@link Person}s that should be generated.
      * @return A list containing the given amount of random generated persons.
@@ -138,7 +138,7 @@ public class PersonService {
     /**
      * Creates a random person out of names which are taken from "The Simpsons"
      * and enrich them with random generated married state and birthday date.
-     * 
+     *
      * @return
      */
     private static Person createPerson(int id) {

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -15,7 +15,7 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
  * the underlying {@link IEditErrorHandler} to handle the error. This allows
  * chaining of {@link IEditErrorHandler}s to support multiple error handling
  * behaviour, e.g. displaying the error in a dialog and log the error.
- * 
+ *
  * @author Dirk Fauth
  */
 public abstract class AbstractEditErrorHandler implements IEditErrorHandler {
@@ -26,7 +26,7 @@ public abstract class AbstractEditErrorHandler implements IEditErrorHandler {
     protected IEditErrorHandler underlyingErrorHandler;
 
     /**
-     * 
+     *
      * @param underlyingErrorHandler
      *            The underlying {@link IEditErrorHandler}
      */
@@ -41,8 +41,8 @@ public abstract class AbstractEditErrorHandler implements IEditErrorHandler {
      */
     @Override
     public void removeError(ICellEditor cellEditor) {
-        if (underlyingErrorHandler != null) {
-            underlyingErrorHandler.removeError(cellEditor);
+        if (this.underlyingErrorHandler != null) {
+            this.underlyingErrorHandler.removeError(cellEditor);
         }
     }
 
@@ -53,8 +53,8 @@ public abstract class AbstractEditErrorHandler implements IEditErrorHandler {
      */
     @Override
     public void displayError(ICellEditor cellEditor, Exception e) {
-        if (underlyingErrorHandler != null) {
-            underlyingErrorHandler.displayError(cellEditor, e);
+        if (this.underlyingErrorHandler != null) {
+            this.underlyingErrorHandler.displayError(cellEditor, e);
         }
     }
 }

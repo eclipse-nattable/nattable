@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,7 +26,7 @@ public class UpdateDataCommand extends AbstractPositionCommand {
     /**
      * Create a new {@link UpdateDataCommand} based on the specified
      * information.
-     * 
+     *
      * @param layer
      *            The {@link ILayer} to which the columnPosition and rowPosition
      *            are resolved to. This is needed to support conversion of
@@ -49,7 +49,7 @@ public class UpdateDataCommand extends AbstractPositionCommand {
     /**
      * Create a new {@link UpdateDataCommand} based on the specified instance.
      * Mainly needed for cloning purposes.
-     * 
+     *
      * @param command
      *            The command to create a new instance from.
      */
@@ -62,9 +62,10 @@ public class UpdateDataCommand extends AbstractPositionCommand {
      * @return The value to update the data model to.
      */
     public Object getNewValue() {
-        return newValue;
+        return this.newValue;
     }
 
+    @Override
     public UpdateDataCommand cloneCommand() {
         return new UpdateDataCommand(this);
     }

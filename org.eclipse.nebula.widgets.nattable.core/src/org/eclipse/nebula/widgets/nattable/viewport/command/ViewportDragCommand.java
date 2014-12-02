@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Edwin Park - initial API and implementation
  ******************************************************************************/
@@ -24,19 +24,21 @@ public class ViewportDragCommand implements ILayerCommand {
     }
 
     public int getX() {
-        return x;
+        return this.x;
     }
 
     public int getY() {
-        return y;
+        return this.y;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         return true;
     }
 
+    @Override
     public ILayerCommand cloneCommand() {
-        return new ViewportDragCommand(x, y);
+        return new ViewportDragCommand(this.x, this.y);
     }
 
 }

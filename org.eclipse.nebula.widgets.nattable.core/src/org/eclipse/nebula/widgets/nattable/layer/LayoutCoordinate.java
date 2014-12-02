@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,16 +22,16 @@ public final class LayoutCoordinate {
     }
 
     public int getColumnPosition() {
-        return x;
+        return this.x;
     }
 
     public int getRowPosition() {
-        return y;
+        return this.y;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[" + x + "," + y + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        return getClass().getSimpleName() + "[" + this.x + "," + this.y + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     @Override

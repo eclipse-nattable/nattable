@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,12 +24,12 @@ import org.eclipse.swt.widgets.Text;
  * echo character by setting the attribute
  * {@link CellStyleAttributes#PASSWORD_ECHO_CHAR} to the cell style to use. If
  * there is no echo character configured, the bullet character will be used.
- * 
+ *
  * <p>
  * As the anonymization of the inserted value only relates to the {@link Text}
  * control, ensure to also register the {@link PasswordTextPainter} so the value
  * is not shown in clear text after commit.
- * 
+ *
  * @author Dirk Fauth
  * @see PasswordTextPainter
  */
@@ -45,7 +45,7 @@ public class PasswordCellEditor extends TextCellEditor {
 
     /**
      * Creates a PasswordCellEditor.
-     * 
+     *
      * @param commitOnUpDown
      *            Flag to configure whether the editor should commit and move
      *            the selection in the corresponding way if the up or down key

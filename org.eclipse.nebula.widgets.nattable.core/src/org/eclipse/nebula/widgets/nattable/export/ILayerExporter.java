@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,14 +25,14 @@ import org.eclipse.swt.widgets.Shell;
  * The ILayerExporter is registered to the IConfigRegistry via
  * {@link ExportConfigAttributes#EXPORTER} configuration attribute and used by
  * the {@link NatExporter} to perform the export.
- * 
+ *
  * @see NatExporter
  * @see ExportConfigAttributes
  */
 public interface ILayerExporter {
 
     /**
-     * 
+     *
      * @param shell
      *            The Shell where the current ILayer to export is connected to.
      *            Necessary to support user interactions via dialogs on
@@ -56,7 +56,7 @@ public interface ILayerExporter {
      * Note: Also on exporting multiple NatTable instances as part of a single
      * export operation, this method should only be called once before any
      * layers are exported.
-     * 
+     *
      * @param outputStream
      *            The OutputStream to write the export to.
      * @throws IOException
@@ -73,7 +73,7 @@ public interface ILayerExporter {
      * Note: Also on exporting multiple NatTable instances as part of a single
      * export operation, this method should only be called once after all layers
      * are exported.
-     * 
+     *
      * @param outputStream
      *            The OutputStream to write the export to.
      * @throws IOException
@@ -87,7 +87,7 @@ public interface ILayerExporter {
      * <p>
      * On exporting multiple NatTable instances, this method needs to be called
      * once for every instance.
-     * 
+     *
      * @param outputStream
      *            The OutputStream to write the export to.
      * @param layerName
@@ -104,7 +104,7 @@ public interface ILayerExporter {
      * <p>
      * On exporting multiple NatTable instances, this method needs to be called
      * once for every instance.
-     * 
+     *
      * @param outputStream
      *            The OutputStream to write the export to.
      * @param layerName
@@ -121,7 +121,7 @@ public interface ILayerExporter {
     /**
      * Starts the export operation of one row. Is used for example to initialize
      * a row in a sheet or open some tags in a XML format.
-     * 
+     *
      * @param outputStream
      *            The OutputStream to write the export to.
      * @param rowPosition
@@ -134,7 +134,7 @@ public interface ILayerExporter {
 
     /**
      * Ends the export operation of one row.
-     * 
+     *
      * @param outputStream
      *            The OutputStream to write the export to.
      * @param rowPosition
@@ -150,7 +150,7 @@ public interface ILayerExporter {
 
     /**
      * Exports one cell.
-     * 
+     *
      * @param outputStream
      *            The OutputStream to write the export to.
      * @param exportDisplayValue

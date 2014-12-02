@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,28 +24,28 @@ public class AbstractMouseSelectionAction implements IMouseAction {
 
     @Override
     public void run(NatTable natTable, MouseEvent event) {
-        withShiftMask = (event.stateMask & SWT.SHIFT) != 0;
-        withControlMask = (event.stateMask & SWT.CTRL) != 0;
+        this.withShiftMask = (event.stateMask & SWT.SHIFT) != 0;
+        this.withControlMask = (event.stateMask & SWT.CTRL) != 0;
 
-        gridColumnPosition = natTable.getColumnPositionByX(event.x);
-        gridRowPosition = natTable.getRowPositionByY(event.y);
+        this.gridColumnPosition = natTable.getColumnPositionByX(event.x);
+        this.gridRowPosition = natTable.getRowPositionByY(event.y);
 
         natTable.forceFocus();
     }
 
     public boolean isWithShiftMask() {
-        return withShiftMask;
+        return this.withShiftMask;
     }
 
     public boolean isWithControlMask() {
-        return withControlMask;
+        return this.withControlMask;
     }
 
     public int getGridColumnPosition() {
-        return gridColumnPosition;
+        return this.gridColumnPosition;
     }
 
     public int getGridRowPosition() {
-        return gridRowPosition;
+        return this.gridRowPosition;
     }
 }

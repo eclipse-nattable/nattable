@@ -48,20 +48,20 @@ public class RowReorderDragMode implements IDragMode {
     @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
         this.natTable = natTable;
-        initialEvent = event;
-        currentEvent = initialEvent;
-        dragFromGridRowPosition = getDragFromGridRowPosition();
+        this.initialEvent = event;
+        this.currentEvent = this.initialEvent;
+        this.dragFromGridRowPosition = getDragFromGridRowPosition();
 
-        natTable.addOverlayPainter(targetOverlayPainter);
+        natTable.addOverlayPainter(this.targetOverlayPainter);
 
         natTable.doCommand(new ClearAllSelectionsCommand());
 
-        fireMoveStartCommand(natTable, dragFromGridRowPosition);
+        fireMoveStartCommand(natTable, this.dragFromGridRowPosition);
     }
 
     @Override
     public void mouseMove(NatTable natTable, MouseEvent event) {
-        currentEvent = event;
+        this.currentEvent = event;
 
         natTable.doCommand(new ViewportDragCommand(-1, event.y));
 
@@ -70,12 +70,12 @@ public class RowReorderDragMode implements IDragMode {
 
     @Override
     public void mouseUp(NatTable natTable, MouseEvent event) {
-        natTable.removeOverlayPainter(targetOverlayPainter);
+        natTable.removeOverlayPainter(this.targetOverlayPainter);
 
         int dragToGridRowPosition = getDragToGridRowPosition(
                 getMoveDirection(event.y), natTable.getRowPositionByY(event.y));
 
-        if (!isValidTargetRowPosition(natTable, dragFromGridRowPosition,
+        if (!isValidTargetRowPosition(natTable, this.dragFromGridRowPosition,
                 dragToGridRowPosition)) {
             dragToGridRowPosition = -1;
         }
@@ -93,7 +93,7 @@ public class RowReorderDragMode implements IDragMode {
      * @return The row position of the row that is dragged
      */
     protected int getDragFromGridRowPosition() {
-        return natTable.getRowPositionByY(initialEvent.y);
+        return this.natTable.getRowPositionByY(this.initialEvent.y);
     }
 
     /**
@@ -133,7 +133,7 @@ public class RowReorderDragMode implements IDragMode {
         if (cell != null) {
             Rectangle selectedRowHeaderRect = cell.getBounds();
             return CellEdgeDetectUtil.getVerticalCellEdge(
-                    selectedRowHeaderRect, new Point(initialEvent.x, y));
+                    selectedRowHeaderRect, new Point(this.initialEvent.x, y));
         }
 
         return null;
@@ -145,13 +145,13 @@ public class RowReorderDragMode implements IDragMode {
      * @return The {@link ILayerCell} at the drop location
      */
     private ILayerCell getRowCell(int y) {
-        int gridColumnPosition = natTable.getColumnPositionByX(initialEvent.x);
-        int gridRowPosition = natTable.getRowPositionByY(y);
-        return natTable.getCellByPosition(gridColumnPosition, gridRowPosition);
+        int gridColumnPosition = this.natTable.getColumnPositionByX(this.initialEvent.x);
+        int gridRowPosition = this.natTable.getRowPositionByY(y);
+        return this.natTable.getCellByPosition(gridColumnPosition, gridRowPosition);
     }
 
     /**
-     * 
+     *
      * @param natLayer
      *            The layer the positions are related to
      * @param dragFromGridRowPosition
@@ -168,7 +168,7 @@ public class RowReorderDragMode implements IDragMode {
 
     /**
      * Executes the command to indicate row reorder starting.
-     * 
+     *
      * @param natTable
      *            The NatTable instance on which the command should be executed
      * @param dragFromGridRowPosition
@@ -182,7 +182,7 @@ public class RowReorderDragMode implements IDragMode {
 
     /**
      * Executes the command to indicate row reorder ending.
-     * 
+     *
      * @param natTable
      *            The NatTable instance on which the command should be executed
      * @param dragToGridRowPosition
@@ -204,20 +204,20 @@ public class RowReorderDragMode implements IDragMode {
         public void paintOverlay(GC gc, ILayer layer) {
             int dragFromGridRowPosition = getDragFromGridRowPosition();
 
-            if (currentEvent.y > natTable.getHeight()) {
+            if (RowReorderDragMode.this.currentEvent.y > RowReorderDragMode.this.natTable.getHeight()) {
                 return;
             }
 
-            CellEdgeEnum moveDirection = getMoveDirection(currentEvent.y);
+            CellEdgeEnum moveDirection = getMoveDirection(RowReorderDragMode.this.currentEvent.y);
             int dragToGridRowPosition = getDragToGridRowPosition(moveDirection,
-                    natTable.getRowPositionByY(currentEvent.y));
+                    RowReorderDragMode.this.natTable.getRowPositionByY(RowReorderDragMode.this.currentEvent.y));
 
-            if (isValidTargetRowPosition(natTable, dragFromGridRowPosition,
+            if (isValidTargetRowPosition(RowReorderDragMode.this.natTable, dragFromGridRowPosition,
                     dragToGridRowPosition)) {
                 int dragToRowHandleY = -1;
 
                 if (moveDirection != null) {
-                    Rectangle selectedRowHeaderRect = getRowCell(currentEvent.y)
+                    Rectangle selectedRowHeaderRect = getRowCell(RowReorderDragMode.this.currentEvent.y)
                             .getBounds();
 
                     switch (moveDirection) {

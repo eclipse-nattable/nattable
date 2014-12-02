@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -17,11 +17,11 @@ public abstract class CancelableRunnable implements Runnable {
     private final AtomicBoolean cancel = new AtomicBoolean(false);
 
     public void cancel() {
-        cancel.set(true);
+        this.cancel.set(true);
     }
 
     protected final boolean isCancelled() {
-        return cancel.get();
+        return this.cancel.get();
     }
 
 }

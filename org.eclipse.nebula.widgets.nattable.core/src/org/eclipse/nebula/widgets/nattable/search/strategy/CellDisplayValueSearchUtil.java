@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -98,7 +98,7 @@ public class CellDisplayValueSearchUtil {
 
     /**
      * Finds the first matching cell in a list of cells.
-     * 
+     *
      * @param layer
      * @param configRegistry
      * @param cellsToSearch
@@ -138,7 +138,7 @@ public class CellDisplayValueSearchUtil {
 
     /**
      * Finds the first matching cell in a list of grid cell rectangles.
-     * 
+     *
      * @param layer
      * @param configRegistry
      * @param cellRectangles
@@ -182,7 +182,7 @@ public class CellDisplayValueSearchUtil {
 
     /**
      * Finds the first matching cell in a table slice.
-     * 
+     *
      * @param layer
      * @param configRegistry
      * @param firstDimIndex

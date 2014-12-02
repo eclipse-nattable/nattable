@@ -32,8 +32,8 @@ public class RowReorderEndCommandHandler extends
         int toRowPosition = command.getToRowPosition();
         boolean reorderToTopEdge = command.isReorderToTopEdge();
 
-        rowReorderLayer.reorderRowPosition(
-                rowReorderLayer.getReorderFromRowPosition(), toRowPosition,
+        this.rowReorderLayer.reorderRowPosition(
+                this.rowReorderLayer.getReorderFromRowPosition(), toRowPosition,
                 reorderToTopEdge);
 
         return true;

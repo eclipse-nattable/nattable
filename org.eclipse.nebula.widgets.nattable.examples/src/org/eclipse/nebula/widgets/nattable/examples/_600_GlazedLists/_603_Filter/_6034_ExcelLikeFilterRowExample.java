@@ -71,7 +71,7 @@ import ca.odell.glazedlists.TransformedList;
 /**
  * Example showing how to add the filter row to the layer composition of a grid
  * that looks like the Excel filter.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -211,7 +211,7 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -238,32 +238,32 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
             // will be set by configuration
             this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(sortedList);
+            this.filterList = new FilterList<T>(this.sortedList);
 
-            this.bodyDataProvider = new ListDataProvider<T>(filterList,
+            this.bodyDataProvider = new ListDataProvider<T>(this.filterList,
                     columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
             this.glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, filterList);
+                    this.bodyDataLayer, this.filterList);
 
             this.selectionLayer = new SelectionLayer(getGlazedListsEventLayer());
             ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
 
-            FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+            FreezeLayer freezeLayer = new FreezeLayer(this.selectionLayer);
             CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(
-                    freezeLayer, viewportLayer, selectionLayer);
+                    freezeLayer, viewportLayer, this.selectionLayer);
 
             setUnderlyingLayer(compositeFreezeLayer);
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public SortedList<T> getSortedList() {
-            return sortedList;
+            return this.sortedList;
         }
 
         public FilterList<T> getFilterList() {
@@ -271,15 +271,15 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
 
         public DataLayer getBodyDataLayer() {
-            return bodyDataLayer;
+            return this.bodyDataLayer;
         }
 
         public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
-            return glazedListsEventLayer;
+            return this.glazedListsEventLayer;
         }
     }
 

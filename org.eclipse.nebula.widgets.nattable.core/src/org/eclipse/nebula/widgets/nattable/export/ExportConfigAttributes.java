@@ -14,7 +14,7 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 
 /**
  * Configuration attributes that are used to configure the export functionality.
- * 
+ *
  * @author Dirk Fauth
  *
  */

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,18 +37,18 @@ public class AbstractLayerTest {
 
     @Before
     public void setup() {
-        dataLayer = new DataLayerFixture();
+        this.dataLayer = new DataLayerFixture();
 
-        firstListener = new LayerListenerFixture();
-        dataLayer.addLayerListener(firstListener);
+        this.firstListener = new LayerListenerFixture();
+        this.dataLayer.addLayerListener(this.firstListener);
     }
 
     @Test
     public void testFireOriginalEventIfOnlyOneListener() {
-        ILayerEvent event = new ColumnResizeEvent(dataLayer, 2);
-        dataLayer.fireLayerEvent(event);
+        ILayerEvent event = new ColumnResizeEvent(this.dataLayer, 2);
+        this.dataLayer.fireLayerEvent(event);
 
-        List<ILayerEvent> receivedEvents = firstListener.getReceivedEvents();
+        List<ILayerEvent> receivedEvents = this.firstListener.getReceivedEvents();
         assertNotNull(receivedEvents);
         assertEquals(1, receivedEvents.size());
         assertSame(event, receivedEvents.get(0));
@@ -57,12 +57,12 @@ public class AbstractLayerTest {
     @Test
     public void testFireClonedEventIfMultipleListeners() {
         LayerListenerFixture secondListener = new LayerListenerFixture();
-        dataLayer.addLayerListener(secondListener);
+        this.dataLayer.addLayerListener(secondListener);
 
-        ILayerEvent event = new ColumnResizeEvent(dataLayer, 2);
-        dataLayer.fireLayerEvent(event);
+        ILayerEvent event = new ColumnResizeEvent(this.dataLayer, 2);
+        this.dataLayer.fireLayerEvent(event);
 
-        List<ILayerEvent> receivedEvents = firstListener.getReceivedEvents();
+        List<ILayerEvent> receivedEvents = this.firstListener.getReceivedEvents();
         assertNotNull(receivedEvents);
         assertEquals(1, receivedEvents.size());
         assertNotSame(event, receivedEvents.get(0));
@@ -78,8 +78,8 @@ public class AbstractLayerTest {
         PersistableFixture persistable = new PersistableFixture();
         PropertiesFixture properties = new PropertiesFixture();
 
-        dataLayer.registerPersistable(persistable);
-        dataLayer.saveState("test_prefix", properties);
+        this.dataLayer.registerPersistable(persistable);
+        this.dataLayer.saveState("test_prefix", properties);
 
         Assert.assertTrue(persistable.stateSaved);
     }
@@ -89,14 +89,14 @@ public class AbstractLayerTest {
         LayerCommandFixture command = new LayerCommandFixture();
         CommandHandlerFixture commandHandler = new CommandHandlerFixture();
 
-        dataLayer.registerCommandHandler(commandHandler);
-        dataLayer.doCommand(command);
+        this.dataLayer.registerCommandHandler(commandHandler);
+        this.dataLayer.doCommand(command);
 
         assertNotNull(commandHandler.getLastCommandHandled());
         commandHandler.clearLastCommandHandled();
 
-        dataLayer.unregisterCommandHandler(command.getClass());
-        dataLayer.doCommand(command);
+        this.dataLayer.unregisterCommandHandler(command.getClass());
+        this.dataLayer.doCommand(command);
         assertNull(commandHandler.getLastCommandHandled());
     }
 }

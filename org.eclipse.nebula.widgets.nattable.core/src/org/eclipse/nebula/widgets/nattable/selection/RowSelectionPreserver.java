@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,6 +36,7 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
  * @deprecated Use SelectionLayer.setSelectionModel(new RowSelectionModel(...))
  *             instead
  */
+@Deprecated
 public class RowSelectionPreserver<T> implements
         ILayerEventHandler<IVisualChangeEvent> {
 
@@ -51,14 +52,15 @@ public class RowSelectionPreserver<T> implements
         this.selectionLayer = selectionLayer;
         this.rowDataProvider = rowDataProvider;
 
-        selectionProvider = new RowSelectionProvider<T>(selectionLayer,
+        this.selectionProvider = new RowSelectionProvider<T>(selectionLayer,
                 rowDataProvider, true);
 
-        selectionProvider
+        this.selectionProvider
                 .addSelectionChangedListener(new ISelectionChangedListener() {
+                    @Override
                     @SuppressWarnings("unchecked")
                     public void selectionChanged(SelectionChangedEvent event) {
-                        selectedRowObjects = ((StructuredSelection) event
+                        RowSelectionPreserver.this.selectedRowObjects = ((StructuredSelection) event
                                 .getSelection()).toList();
                     }
                 });
@@ -72,8 +74,8 @@ public class RowSelectionPreserver<T> implements
     private List<T> getValidSelections() {
         List<T> newSelection = new ArrayList<T>();
 
-        for (T rowObj : selectedRowObjects) {
-            int index = rowDataProvider.indexOfRowObject(rowObj);
+        for (T rowObj : this.selectedRowObjects) {
+            int index = this.rowDataProvider.indexOfRowObject(rowObj);
             if (index != -1) {
                 newSelection.add(rowObj);
             }
@@ -88,20 +90,22 @@ public class RowSelectionPreserver<T> implements
      * <li>Re-select the row objects selected earlier.
      * </ol>
      */
+    @Override
     public void handleLayerEvent(IVisualChangeEvent event) {
-        if (ObjectUtils.isEmpty(selectedRowObjects)) {
+        if (ObjectUtils.isEmpty(this.selectedRowObjects)) {
             return;
         }
 
         if (event instanceof RowStructuralRefreshEvent
                 || event instanceof RowStructuralChangeEvent
                 || event instanceof SortColumnEvent) {
-            selectionLayer.clear();
-            selectionProvider.setSelection(new StructuredSelection(
+            this.selectionLayer.clear();
+            this.selectionProvider.setSelection(new StructuredSelection(
                     getValidSelections()));
         }
     }
 
+    @Override
     public Class<IVisualChangeEvent> getLayerEventClass() {
         return IVisualChangeEvent.class;
     }

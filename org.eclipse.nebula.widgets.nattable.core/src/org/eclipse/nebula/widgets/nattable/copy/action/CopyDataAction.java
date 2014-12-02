@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -17,8 +17,8 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class CopyDataAction implements IKeyAction {
 
+    @Override
     public void run(NatTable natTable, KeyEvent event) {
-        natTable.doCommand(new CopyDataToClipboardCommand(
-                "\t", System.getProperty("line.separator"), natTable.getConfigRegistry())); //$NON-NLS-1$ //$NON-NLS-2$
+        natTable.doCommand(new CopyDataToClipboardCommand("\t", System.getProperty("line.separator"), natTable.getConfigRegistry())); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

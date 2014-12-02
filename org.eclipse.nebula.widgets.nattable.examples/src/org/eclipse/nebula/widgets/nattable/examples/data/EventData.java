@@ -28,7 +28,7 @@ public class EventData {
      * @return the title
      */
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     /**
@@ -43,7 +43,7 @@ public class EventData {
      * @return the description
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -58,7 +58,7 @@ public class EventData {
      * @return the where
      */
     public String getWhere() {
-        return where;
+        return this.where;
     }
 
     /**
@@ -73,7 +73,7 @@ public class EventData {
      * @return the fromDate
      */
     public Date getFromDate() {
-        return fromDate;
+        return this.fromDate;
     }
 
     /**
@@ -88,7 +88,7 @@ public class EventData {
      * @return the toDate
      */
     public Date getToDate() {
-        return toDate;
+        return this.toDate;
     }
 
     /**

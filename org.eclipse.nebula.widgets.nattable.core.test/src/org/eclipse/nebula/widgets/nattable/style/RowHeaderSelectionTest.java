@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,19 +27,19 @@ public class RowHeaderSelectionTest {
 
     @Before
     public void setUp() {
-        gridLayer = new GridLayerFixture();
-        gridLayer.doCommand(new InitializeClientAreaCommandFixture());
+        this.gridLayer = new GridLayerFixture();
+        this.gridLayer.doCommand(new InitializeClientAreaCommandFixture());
     }
 
     @Test
     public void willSelectBodyCellAndShouldHaveColumnHeaderSelected() {
         // Select body cell
         // The row position is a grid layer position
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 2, 2, false, false));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 2, 2, false, false));
 
         // Get row header cell corresponding to the selected body cell
-        RowHeaderLayer rowHeaderLayer = (RowHeaderLayer) gridLayer
+        RowHeaderLayer rowHeaderLayer = (RowHeaderLayer) this.gridLayer
                 .getChildLayerByLayoutCoordinate(0, 1);
         // The column position is 0 because it takes into account the offset of
         // the row header
@@ -52,21 +52,21 @@ public class RowHeaderSelectionTest {
     @Test
     public void shouldReturnFullySelectedStyle() {
         // Select full column
-        gridLayer.doCommand(new ViewportSelectRowCommand(gridLayer, 1, false,
+        this.gridLayer.doCommand(new ViewportSelectRowCommand(this.gridLayer, 1, false,
                 false));
 
-        RowHeaderLayer rowHeaderLayer = (RowHeaderLayer) gridLayer
+        RowHeaderLayer rowHeaderLayer = (RowHeaderLayer) this.gridLayer
                 .getChildLayerByLayoutCoordinate(0, 1);
 
         // Since I selected using grid coordinates, the column position should
         // be 1 rather than 2
-        int rowPosition = gridLayer.localToUnderlyingRowPosition(1);
+        int rowPosition = this.gridLayer.localToUnderlyingRowPosition(1);
         final LabelStack labelStack = rowHeaderLayer.getConfigLabelsByPosition(
                 rowPosition, 0);
         Assert.assertTrue(labelStack
                 .hasLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE));
 
-        rowPosition = gridLayer.localToUnderlyingRowPosition(4);
+        rowPosition = this.gridLayer.localToUnderlyingRowPosition(4);
 
         Assert.assertFalse("Should not have returned fully selected style.",
                 SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE

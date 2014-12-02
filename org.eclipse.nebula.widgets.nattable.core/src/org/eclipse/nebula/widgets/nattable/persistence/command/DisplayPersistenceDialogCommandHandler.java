@@ -24,7 +24,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.gui.PersistenceDialog;
  * corresponding dialog for save/load operations regarding the NatTable state.
  * Will also serve as some kind of storage for the Properties instance holding
  * the states.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -39,7 +39,7 @@ public class DisplayPersistenceDialogCommandHandler extends
     /**
      * List of {@link IStateChangedListener}s that will be notified if states
      * are changed using this dialog.
-     * 
+     *
      * <p>
      * Listeners that are registered with this command handler will be
      * propagated to the newly created dialog that is created. This way the
@@ -64,7 +64,7 @@ public class DisplayPersistenceDialogCommandHandler extends
      * will be created. It can be accessed via getProperties() for further
      * usage. The current state of the given NatTable instance will be used to
      * store a default configuration.
-     * 
+     *
      * @param natTable
      *            The NatTable instance for which this handler is registered. If
      *            it is not <code>null</code>, the current state of that
@@ -78,7 +78,7 @@ public class DisplayPersistenceDialogCommandHandler extends
     /**
      * Create a new DisplayPersistenceDialogCommandHandler using the specified
      * Properties instance.
-     * 
+     *
      * @param properties
      *            The Properties instance that should be used for saving and
      *            loading.
@@ -91,7 +91,7 @@ public class DisplayPersistenceDialogCommandHandler extends
      * Create a new DisplayPersistenceDialogCommandHandler using the specified
      * Properties instance. The current state of the given NatTable instance
      * will be used to store a default configuration.
-     * 
+     *
      * @param properties
      *            The Properties instance that should be used for saving and
      *            loading.
@@ -117,7 +117,7 @@ public class DisplayPersistenceDialogCommandHandler extends
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler
      * #doCommand(org.eclipse.nebula.widgets.nattable.command.ILayerCommand)
@@ -137,7 +137,7 @@ public class DisplayPersistenceDialogCommandHandler extends
      * @return The Properties instance that is used for saving and loading.
      */
     public Properties getProperties() {
-        return properties;
+        return this.properties;
     }
 
     /**
@@ -156,7 +156,7 @@ public class DisplayPersistenceDialogCommandHandler extends
      * Add the given {@link IStateChangedListener} to the local list of
      * listeners. The {@link IStateChangedListener} will be registered on every
      * {@link PersistenceDialog} that is opened via this command handler.
-     * 
+     *
      * @param listener
      *            The listener to add.
      */
@@ -167,7 +167,7 @@ public class DisplayPersistenceDialogCommandHandler extends
     /**
      * Removes the given {@link IStateChangedListener} from the local list of
      * listeners.
-     * 
+     *
      * @param listener
      *            The listener to remove.
      */
@@ -177,10 +177,11 @@ public class DisplayPersistenceDialogCommandHandler extends
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler#
      * getCommandClass()
      */
+    @Override
     public Class<DisplayPersistenceDialogCommand> getCommandClass() {
         return DisplayPersistenceDialogCommand.class;
     }

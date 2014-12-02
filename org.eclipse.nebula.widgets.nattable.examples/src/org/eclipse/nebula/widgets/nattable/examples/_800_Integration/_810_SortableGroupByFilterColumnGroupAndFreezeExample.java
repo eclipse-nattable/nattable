@@ -123,7 +123,7 @@ import ca.odell.glazedlists.TransformedList;
  * Simple example showing how to add the group by feature to the layer
  * composition of a grid in conjunction with showing summary values of
  * groupings.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -207,7 +207,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
 
         ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
                 sortHeaderLayer, bodyLayerStack.getSelectionLayer(),
-                columnGroupModel);
+                this.columnGroupModel);
         columnGroupHeaderLayer.setCalculateHeight(true);
 
         // add the filter row functionality
@@ -294,9 +294,9 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
         // add sorting configuration
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
-        sumMoneySummaryProvider = new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(
+        this.sumMoneySummaryProvider = new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(
                 columnPropertyAccessor);
-        avgMoneySummaryProvider = new AverageMoneyGroupBySummaryProvider();
+        this.avgMoneySummaryProvider = new AverageMoneyGroupBySummaryProvider();
 
         // add group by summary configuration
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
@@ -305,7 +305,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             public void configureRegistry(IConfigRegistry configRegistry) {
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                        sumMoneySummaryProvider, DisplayMode.NORMAL,
+                        _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.sumMoneySummaryProvider, DisplayMode.NORMAL,
                         GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
                 configRegistry.registerConfigAttribute(
@@ -468,16 +468,16 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
                 // calculation gets triggered
                 bodyLayerStack.getBodyDataLayer().clearCache();
 
-                useMoneySum = !useMoneySum;
-                if (useMoneySum) {
+                _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.useMoneySum = !_810_SortableGroupByFilterColumnGroupAndFreezeExample.this.useMoneySum;
+                if (_810_SortableGroupByFilterColumnGroupAndFreezeExample.this.useMoneySum) {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            sumMoneySummaryProvider, DisplayMode.NORMAL,
+                            _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.sumMoneySummaryProvider, DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 } else {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            avgMoneySummaryProvider, DisplayMode.NORMAL,
+                            _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.avgMoneySummaryProvider, DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 }
                 natTable.doCommand(new VisualRefreshCommand());
@@ -540,7 +540,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -565,24 +565,24 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             // see http://publicobject.com/glazedlists/ for further information
             this.eventList = GlazedLists.eventList(values);
             TransformedList<T, T> rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(eventList);
+                    .threadSafeList(this.eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
             this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
-            this.filterList = new FilterList<T>(sortedList);
+            this.filterList = new FilterList<T>(this.sortedList);
 
             // Use the GroupByDataLayer instead of the default DataLayer
             this.bodyDataLayer = new GroupByDataLayer<T>(getGroupByModel(),
-                    filterList, columnPropertyAccessor, configRegistry);
+                    this.filterList, columnPropertyAccessor, configRegistry);
             // get the IDataProvider that was created by the GroupByDataLayer
-            this.bodyDataProvider = bodyDataLayer.getDataProvider();
+            this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    this.bodyDataLayer, filterList);
+                    this.bodyDataLayer, this.filterList);
 
             SummaryRowLayer summaryRowLayer = new SummaryRowLayer(
                     glazedListsEventLayer, configRegistry, false);
@@ -590,24 +590,24 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
                     summaryRowLayer);
             ColumnGroupReorderLayer columnGroupReorderLayer = new ColumnGroupReorderLayer(
-                    columnReorderLayer, columnGroupModel);
+                    columnReorderLayer, _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.columnGroupModel);
             this.columnHideShowLayer = new ColumnHideShowLayer(
                     columnGroupReorderLayer);
             ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
-                    columnHideShowLayer, columnGroupModel);
+                    this.columnHideShowLayer, _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.columnGroupModel);
 
             this.selectionLayer = new SelectionLayer(
                     columnGroupExpandCollapseLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(selectionLayer,
-                    bodyDataLayer.getTreeRowModel());
+            TreeLayer treeLayer = new TreeLayer(this.selectionLayer,
+                    this.bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
             FreezeLayer freezeLayer = new FreezeLayer(treeLayer);
             CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(
-                    freezeLayer, viewportLayer, selectionLayer);
+                    freezeLayer, viewportLayer, this.selectionLayer);
 
             setUnderlyingLayer(compositeFreezeLayer);
         }
@@ -700,11 +700,11 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
         @Override
         public Object summarize(int columnIndex) {
             double total = 0;
-            int rowCount = dataProvider.getRowCount();
+            int rowCount = this.dataProvider.getRowCount();
             int valueRows = 0;
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = dataProvider.getDataValue(columnIndex,
+                Object dataValue = this.dataProvider.getDataValue(columnIndex,
                         rowIndex);
                 // this check is necessary because of the GroupByObject
                 if (dataValue instanceof Number) {
@@ -732,11 +732,11 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
         @Override
         public Object summarize(int columnIndex) {
             double total = 0;
-            int rowCount = dataProvider.getRowCount();
+            int rowCount = this.dataProvider.getRowCount();
             int valueRows = 0;
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = dataProvider.getDataValue(columnIndex,
+                Object dataValue = this.dataProvider.getDataValue(columnIndex,
                         rowIndex);
                 // this check is necessary because of the GroupByObject
                 if (dataValue instanceof Number) {
@@ -760,7 +760,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             System.out
                     .println("Loading NatTable state from " + PROPERTIES_FILE);
             properties.load(new FileInputStream(new File(PROPERTIES_FILE)));
-            natTable.loadState("", properties);
+            this.natTable.loadState("", properties);
         } catch (FileNotFoundException e) {
             // No file found, oh well, move along
             System.out.println(PROPERTIES_FILE + " not found, skipping load");
@@ -773,7 +773,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
     public void onStop() {
         Properties properties = new Properties();
 
-        natTable.saveState("", properties);
+        this.natTable.saveState("", properties);
 
         try {
             System.out.println("Saving NatTable state to " + PROPERTIES_FILE);

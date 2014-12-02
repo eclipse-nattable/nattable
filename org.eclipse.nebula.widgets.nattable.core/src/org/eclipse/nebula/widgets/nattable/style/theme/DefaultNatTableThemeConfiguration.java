@@ -76,7 +76,7 @@ import org.eclipse.swt.graphics.Image;
  * from core to the extensions. Have a look at the DefaultGroupByThemeExtension
  * or the ModernGroupByThemeExtension for example.
  * </p>
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -111,8 +111,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color cHeaderGradientFgColor = GUIHelper.getColor(136, 212, 215);
     public HorizontalAlignmentEnum cHeaderHAlign = HorizontalAlignmentEnum.CENTER;
     public VerticalAlignmentEnum cHeaderVAlign = VerticalAlignmentEnum.MIDDLE;
-    public Font cHeaderFont = GUIHelper.getFont(new FontData(
-            "Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
+    public Font cHeaderFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
     public Image cHeaderImage = null;
     public BorderStyle cHeaderBorderStyle = null;
     public Character cHeaderPWEchoChar = null;
@@ -129,8 +128,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color rHeaderGradientFgColor = GUIHelper.getColor(136, 212, 215);
     public HorizontalAlignmentEnum rHeaderHAlign = HorizontalAlignmentEnum.CENTER;
     public VerticalAlignmentEnum rHeaderVAlign = VerticalAlignmentEnum.MIDDLE;
-    public Font rHeaderFont = GUIHelper.getFont(new FontData(
-            "Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
+    public Font rHeaderFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
     public Image rHeaderImage = null;
     public BorderStyle rHeaderBorderStyle = null;
     public Character rHeaderPWEchoChar = null;
@@ -146,8 +144,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color cornerGradientFgColor = GUIHelper.getColor(136, 212, 215);
     public HorizontalAlignmentEnum cornerHAlign = HorizontalAlignmentEnum.CENTER;
     public VerticalAlignmentEnum cornerVAlign = VerticalAlignmentEnum.MIDDLE;
-    public Font cornerFont = GUIHelper.getFont(new FontData(
-            "Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
+    public Font cornerFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
     public Image cornerImage = null;
     public BorderStyle cornerBorderStyle = null;
     public Character cornerPWEchoChar = null;
@@ -280,8 +277,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color defaultSelectionGradientFgColor = null;
     public HorizontalAlignmentEnum defaultSelectionHAlign = null;
     public VerticalAlignmentEnum defaultSelectionVAlign = null;
-    public Font defaultSelectionFont = GUIHelper.getFont(new FontData(
-            "Verdana", 8, SWT.BOLD | SWT.ITALIC)); //$NON-NLS-1$
+    public Font defaultSelectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.BOLD | SWT.ITALIC)); //$NON-NLS-1$
     public Image defaultSelectionImage = null;
     public BorderStyle defaultSelectionBorderStyle = null;
     public Character defaultSelectionPWEchoChar = null;
@@ -297,8 +293,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color cHeaderSelectionGradientFgColor = null;
     public HorizontalAlignmentEnum cHeaderSelectionHAlign = null;
     public VerticalAlignmentEnum cHeaderSelectionVAlign = null;
-    public Font cHeaderSelectionFont = GUIHelper.getFont(new FontData(
-            "Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
+    public Font cHeaderSelectionFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
     public Image cHeaderSelectionImage = null;
     public BorderStyle cHeaderSelectionBorderStyle = null;
     public Character cHeaderSelectionPWEchoChar = null;
@@ -330,8 +325,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color rHeaderSelectionGradientFgColor = null;
     public HorizontalAlignmentEnum rHeaderSelectionHAlign = null;
     public VerticalAlignmentEnum rHeaderSelectionVAlign = null;
-    public Font rHeaderSelectionFont = GUIHelper.getFont(new FontData(
-            "Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
+    public Font rHeaderSelectionFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
     public Image rHeaderSelectionImage = null;
     public BorderStyle rHeaderSelectionBorderStyle = null;
     public Character rHeaderSelectionPWEchoChar = null;
@@ -363,8 +357,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color cornerSelectionGradientFgColor = null;
     public HorizontalAlignmentEnum cornerSelectionHAlign = null;
     public VerticalAlignmentEnum cornerSelectionVAlign = null;
-    public Font cornerSelectionFont = GUIHelper.getFont(new FontData(
-            "Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
+    public Font cornerSelectionFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
     public Image cornerSelectionImage = null;
     public BorderStyle cornerSelectionBorderStyle = null;
     public Character cornerSelectionPWEchoChar = null;
@@ -558,8 +551,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Color summaryRowGradientFgColor = null;
     public HorizontalAlignmentEnum summaryRowHAlign = null;
     public VerticalAlignmentEnum summaryRowVAlign = null;
-    public Font summaryRowFont = GUIHelper.getFont(new FontData(
-            "Verdana", 8, SWT.BOLD)); //$NON-NLS-1$
+    public Font summaryRowFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.BOLD)); //$NON-NLS-1$
     public Image summaryRowImage = null;
     public BorderStyle summaryRowBorderStyle = new BorderStyle(0,
             GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
@@ -608,27 +600,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getDefaultCellStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                defaultBgColor);
+                this.defaultBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                defaultFgColor);
+                this.defaultFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                defaultGradientBgColor);
+                this.defaultGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                defaultGradientFgColor);
+                this.defaultGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                defaultHAlign);
+                this.defaultHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                defaultVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, defaultFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, defaultImage);
+                this.defaultVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.defaultFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.defaultImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                defaultBorderStyle);
+                this.defaultBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                defaultPWEchoChar);
+                this.defaultPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                defaultTextDecoration);
+                this.defaultTextDecoration);
         return cellStyle;
     }
 
@@ -641,27 +633,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getColumnHeaderStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                cHeaderBgColor);
+                this.cHeaderBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                cHeaderFgColor);
+                this.cHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                cHeaderGradientBgColor);
+                this.cHeaderGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                cHeaderGradientFgColor);
+                this.cHeaderGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                cHeaderHAlign);
+                this.cHeaderHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                cHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, cHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, cHeaderImage);
+                this.cHeaderVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.cHeaderFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.cHeaderImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                cHeaderBorderStyle);
+                this.cHeaderBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                cHeaderPWEchoChar);
+                this.cHeaderPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                cHeaderTextDecoration);
+                this.cHeaderTextDecoration);
         return cellStyle;
     }
 
@@ -674,27 +666,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getRowHeaderStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                rHeaderBgColor);
+                this.rHeaderBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                rHeaderFgColor);
+                this.rHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                rHeaderGradientBgColor);
+                this.rHeaderGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                rHeaderGradientFgColor);
+                this.rHeaderGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                rHeaderHAlign);
+                this.rHeaderHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                rHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, rHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, rHeaderImage);
+                this.rHeaderVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.rHeaderFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.rHeaderImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                rHeaderBorderStyle);
+                this.rHeaderBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                rHeaderPWEchoChar);
+                this.rHeaderPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                rHeaderTextDecoration);
+                this.rHeaderTextDecoration);
         return cellStyle;
     }
 
@@ -707,27 +699,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getCornerStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                cornerBgColor);
+                this.cornerBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                cornerFgColor);
+                this.cornerFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                cornerGradientBgColor);
+                this.cornerGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                cornerGradientFgColor);
+                this.cornerGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                cornerHAlign);
+                this.cornerHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                cornerVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, cornerFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, cornerImage);
+                this.cornerVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.cornerFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.cornerImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                cornerBorderStyle);
+                this.cornerBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                cornerPWEchoChar);
+                this.cornerPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                cornerTextDecoration);
+                this.cornerTextDecoration);
         return cellStyle;
     }
 
@@ -740,28 +732,28 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getDefaultHoverStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                defaultHoverBgColor);
+                this.defaultHoverBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                defaultHoverFgColor);
+                this.defaultHoverFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                defaultHoverGradientBgColor);
+                this.defaultHoverGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                defaultHoverGradientFgColor);
+                this.defaultHoverGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                defaultHoverHAlign);
+                this.defaultHoverHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                defaultHoverVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, defaultHoverFont);
+                this.defaultHoverVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.defaultHoverFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                defaultHoverImage);
+                this.defaultHoverImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                defaultHoverBorderStyle);
+                this.defaultHoverBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                defaultHoverPWEchoChar);
+                this.defaultHoverPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                defaultHoverTextDecoration);
+                this.defaultHoverTextDecoration);
         return cellStyle;
     }
 
@@ -774,27 +766,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getBodyHoverStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                bodyHoverBgColor);
+                this.bodyHoverBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                bodyHoverFgColor);
+                this.bodyHoverFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                bodyHoverGradientBgColor);
+                this.bodyHoverGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                bodyHoverGradientFgColor);
+                this.bodyHoverGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                bodyHoverHAlign);
+                this.bodyHoverHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                bodyHoverVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, bodyHoverFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, bodyHoverImage);
+                this.bodyHoverVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.bodyHoverFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.bodyHoverImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                bodyHoverBorderStyle);
+                this.bodyHoverBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                bodyHoverPWEchoChar);
+                this.bodyHoverPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                bodyHoverTextDecoration);
+                this.bodyHoverTextDecoration);
         return cellStyle;
     }
 
@@ -807,28 +799,28 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getColumnHeaderHoverStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                cHeaderHoverBgColor);
+                this.cHeaderHoverBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                cHeaderHoverFgColor);
+                this.cHeaderHoverFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                cHeaderHoverGradientBgColor);
+                this.cHeaderHoverGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                cHeaderHoverGradientFgColor);
+                this.cHeaderHoverGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                cHeaderHoverHAlign);
+                this.cHeaderHoverHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                cHeaderHoverVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, cHeaderHoverFont);
+                this.cHeaderHoverVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.cHeaderHoverFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                cHeaderHoverImage);
+                this.cHeaderHoverImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                cHeaderHoverBorderStyle);
+                this.cHeaderHoverBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                cHeaderHoverPWEchoChar);
+                this.cHeaderHoverPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                cHeaderHoverTextDecoration);
+                this.cHeaderHoverTextDecoration);
         return cellStyle;
     }
 
@@ -841,28 +833,28 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getRowHeaderHoverStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                rHeaderHoverBgColor);
+                this.rHeaderHoverBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                rHeaderHoverFgColor);
+                this.rHeaderHoverFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                rHeaderHoverGradientBgColor);
+                this.rHeaderHoverGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                rHeaderHoverGradientFgColor);
+                this.rHeaderHoverGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                rHeaderHoverHAlign);
+                this.rHeaderHoverHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                rHeaderHoverVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, rHeaderHoverFont);
+                this.rHeaderHoverVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.rHeaderHoverFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                rHeaderHoverImage);
+                this.rHeaderHoverImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                rHeaderHoverBorderStyle);
+                this.rHeaderHoverBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                rHeaderHoverPWEchoChar);
+                this.rHeaderHoverPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                rHeaderHoverTextDecoration);
+                this.rHeaderHoverTextDecoration);
         return cellStyle;
     }
 
@@ -875,29 +867,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getDefaultHoverSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                defaultHoverSelectionBgColor);
+                this.defaultHoverSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                defaultHoverSelectionFgColor);
+                this.defaultHoverSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                defaultHoverSelectionGradientBgColor);
+                this.defaultHoverSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                defaultHoverSelectionGradientFgColor);
+                this.defaultHoverSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                defaultHoverSelectionHAlign);
+                this.defaultHoverSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                defaultHoverSelectionVAlign);
+                this.defaultHoverSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                defaultHoverSelectionFont);
+                this.defaultHoverSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                defaultHoverSelectionImage);
+                this.defaultHoverSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                defaultHoverSelectionBorderStyle);
+                this.defaultHoverSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                defaultHoverSelectionPWEchoChar);
+                this.defaultHoverSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                defaultHoverSelectionTextDecoration);
+                this.defaultHoverSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -910,29 +902,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getBodyHoverSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                bodyHoverSelectionBgColor);
+                this.bodyHoverSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                bodyHoverSelectionFgColor);
+                this.bodyHoverSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                bodyHoverSelectionGradientBgColor);
+                this.bodyHoverSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                bodyHoverSelectionGradientFgColor);
+                this.bodyHoverSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                bodyHoverSelectionHAlign);
+                this.bodyHoverSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                bodyHoverSelectionVAlign);
+                this.bodyHoverSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                bodyHoverSelectionFont);
+                this.bodyHoverSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                bodyHoverSelectionImage);
+                this.bodyHoverSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                bodyHoverSelectionBorderStyle);
+                this.bodyHoverSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                bodyHoverSelectionPWEchoChar);
+                this.bodyHoverSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                bodyHoverSelectionTextDecoration);
+                this.bodyHoverSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -945,29 +937,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getColumnHeaderHoverSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                cHeaderHoverSelectionBgColor);
+                this.cHeaderHoverSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                cHeaderHoverSelectionFgColor);
+                this.cHeaderHoverSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                cHeaderHoverSelectionGradientBgColor);
+                this.cHeaderHoverSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                cHeaderHoverSelectionGradientFgColor);
+                this.cHeaderHoverSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                cHeaderHoverSelectionHAlign);
+                this.cHeaderHoverSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                cHeaderHoverSelectionVAlign);
+                this.cHeaderHoverSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                cHeaderHoverSelectionFont);
+                this.cHeaderHoverSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                cHeaderHoverSelectionImage);
+                this.cHeaderHoverSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                cHeaderHoverSelectionBorderStyle);
+                this.cHeaderHoverSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                cHeaderHoverSelectionPWEchoChar);
+                this.cHeaderHoverSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                cHeaderHoverSelectionTextDecoration);
+                this.cHeaderHoverSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -980,29 +972,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getRowHeaderHoverSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                rHeaderHoverSelectionBgColor);
+                this.rHeaderHoverSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                rHeaderHoverSelectionFgColor);
+                this.rHeaderHoverSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                rHeaderHoverSelectionGradientBgColor);
+                this.rHeaderHoverSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                rHeaderHoverSelectionGradientFgColor);
+                this.rHeaderHoverSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                rHeaderHoverSelectionHAlign);
+                this.rHeaderHoverSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                rHeaderHoverSelectionVAlign);
+                this.rHeaderHoverSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                rHeaderHoverSelectionFont);
+                this.rHeaderHoverSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                rHeaderHoverSelectionImage);
+                this.rHeaderHoverSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                rHeaderHoverSelectionBorderStyle);
+                this.rHeaderHoverSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                rHeaderHoverSelectionPWEchoChar);
+                this.rHeaderHoverSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                rHeaderHoverSelectionTextDecoration);
+                this.rHeaderHoverSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1015,29 +1007,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getDefaultSelectionCellStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                defaultSelectionBgColor);
+                this.defaultSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                defaultSelectionFgColor);
+                this.defaultSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                defaultSelectionGradientBgColor);
+                this.defaultSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                defaultSelectionGradientFgColor);
+                this.defaultSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                defaultSelectionHAlign);
+                this.defaultSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                defaultSelectionVAlign);
+                this.defaultSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                defaultSelectionFont);
+                this.defaultSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                defaultSelectionImage);
+                this.defaultSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                defaultSelectionBorderStyle);
+                this.defaultSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                defaultSelectionPWEchoChar);
+                this.defaultSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                defaultSelectionTextDecoration);
+                this.defaultSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1050,29 +1042,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getColumnHeaderSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                cHeaderSelectionBgColor);
+                this.cHeaderSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                cHeaderSelectionFgColor);
+                this.cHeaderSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                cHeaderSelectionGradientBgColor);
+                this.cHeaderSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                cHeaderSelectionGradientFgColor);
+                this.cHeaderSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                cHeaderSelectionHAlign);
+                this.cHeaderSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                cHeaderSelectionVAlign);
+                this.cHeaderSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                cHeaderSelectionFont);
+                this.cHeaderSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                cHeaderSelectionImage);
+                this.cHeaderSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                cHeaderSelectionBorderStyle);
+                this.cHeaderSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                cHeaderSelectionPWEchoChar);
+                this.cHeaderSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                cHeaderSelectionTextDecoration);
+                this.cHeaderSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1085,29 +1077,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getColumnHeaderFullSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                cHeaderFullSelectionBgColor);
+                this.cHeaderFullSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                cHeaderFullSelectionFgColor);
+                this.cHeaderFullSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                cHeaderFullSelectionGradientBgColor);
+                this.cHeaderFullSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                cHeaderFullSelectionGradientFgColor);
+                this.cHeaderFullSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                cHeaderFullSelectionHAlign);
+                this.cHeaderFullSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                cHeaderFullSelectionVAlign);
+                this.cHeaderFullSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                cHeaderFullSelectionFont);
+                this.cHeaderFullSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                cHeaderFullSelectionImage);
+                this.cHeaderFullSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                cHeaderFullSelectionBorderStyle);
+                this.cHeaderFullSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                cHeaderFullSelectionPWEchoChar);
+                this.cHeaderFullSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                cHeaderFullSelectionTextDecoration);
+                this.cHeaderFullSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1120,29 +1112,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getRowHeaderSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                rHeaderSelectionBgColor);
+                this.rHeaderSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                rHeaderSelectionFgColor);
+                this.rHeaderSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                rHeaderSelectionGradientBgColor);
+                this.rHeaderSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                rHeaderSelectionGradientFgColor);
+                this.rHeaderSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                rHeaderSelectionHAlign);
+                this.rHeaderSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                rHeaderSelectionVAlign);
+                this.rHeaderSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                rHeaderSelectionFont);
+                this.rHeaderSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                rHeaderSelectionImage);
+                this.rHeaderSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                rHeaderSelectionBorderStyle);
+                this.rHeaderSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                rHeaderSelectionPWEchoChar);
+                this.rHeaderSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                rHeaderSelectionTextDecoration);
+                this.rHeaderSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1155,29 +1147,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getRowHeaderFullSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                rHeaderFullSelectionBgColor);
+                this.rHeaderFullSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                rHeaderFullSelectionFgColor);
+                this.rHeaderFullSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                rHeaderFullSelectionGradientBgColor);
+                this.rHeaderFullSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                rHeaderFullSelectionGradientFgColor);
+                this.rHeaderFullSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                rHeaderFullSelectionHAlign);
+                this.rHeaderFullSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                rHeaderFullSelectionVAlign);
+                this.rHeaderFullSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                rHeaderFullSelectionFont);
+                this.rHeaderFullSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                rHeaderFullSelectionImage);
+                this.rHeaderFullSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                rHeaderFullSelectionBorderStyle);
+                this.rHeaderFullSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                rHeaderFullSelectionPWEchoChar);
+                this.rHeaderFullSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                rHeaderFullSelectionTextDecoration);
+                this.rHeaderFullSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1190,29 +1182,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getCornerSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                cornerSelectionBgColor);
+                this.cornerSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                cornerSelectionFgColor);
+                this.cornerSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                cornerSelectionGradientBgColor);
+                this.cornerSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                cornerSelectionGradientFgColor);
+                this.cornerSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                cornerSelectionHAlign);
+                this.cornerSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                cornerSelectionVAlign);
+                this.cornerSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                cornerSelectionFont);
+                this.cornerSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                cornerSelectionImage);
+                this.cornerSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                cornerSelectionBorderStyle);
+                this.cornerSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                cornerSelectionPWEchoChar);
+                this.cornerSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                cornerSelectionTextDecoration);
+                this.cornerSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1225,29 +1217,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getSelectionAnchorStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                selectionAnchorBgColor);
+                this.selectionAnchorBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                selectionAnchorFgColor);
+                this.selectionAnchorFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                selectionAnchorGradientBgColor);
+                this.selectionAnchorGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                selectionAnchorGradientFgColor);
+                this.selectionAnchorGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                selectionAnchorHAlign);
+                this.selectionAnchorHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                selectionAnchorVAlign);
+                this.selectionAnchorVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                selectionAnchorFont);
+                this.selectionAnchorFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                selectionAnchorImage);
+                this.selectionAnchorImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                selectionAnchorBorderStyle);
+                this.selectionAnchorBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                selectionAnchorPWEchoChar);
+                this.selectionAnchorPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                selectionAnchorTextDecoration);
+                this.selectionAnchorTextDecoration);
         return cellStyle;
     }
 
@@ -1260,34 +1252,34 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getSelectionAnchorSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                selectionAnchorSelectionBgColor);
+                this.selectionAnchorSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                selectionAnchorSelectionFgColor);
+                this.selectionAnchorSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                selectionAnchorSelectionGradientBgColor);
+                this.selectionAnchorSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                selectionAnchorSelectionGradientFgColor);
+                this.selectionAnchorSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                selectionAnchorSelectionHAlign);
+                this.selectionAnchorSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                selectionAnchorSelectionVAlign);
+                this.selectionAnchorSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                selectionAnchorSelectionFont);
+                this.selectionAnchorSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                selectionAnchorSelectionImage);
+                this.selectionAnchorSelectionImage);
 
         // if there is not explicitly another border style configured use the
         // same as in getSelectionAnchorStyle()
-        BorderStyle border = selectionAnchorSelectionBorderStyle != null ? selectionAnchorSelectionBorderStyle
-                : selectionAnchorBorderStyle;
+        BorderStyle border = this.selectionAnchorSelectionBorderStyle != null ? this.selectionAnchorSelectionBorderStyle
+                : this.selectionAnchorBorderStyle;
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, border);
 
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                selectionAnchorSelectionPWEchoChar);
+                this.selectionAnchorSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                selectionAnchorSelectionTextDecoration);
+                this.selectionAnchorSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1300,7 +1292,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getSelectionAnchorGridLineStyle() {
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                selectionAnchorGridBorderStyle);
+                this.selectionAnchorGridBorderStyle);
         return cellStyle;
     }
 
@@ -1308,27 +1300,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getEvenRowStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                evenRowBgColor);
+                this.evenRowBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                evenRowFgColor);
+                this.evenRowFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                evenRowGradientBgColor);
+                this.evenRowGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                evenRowGradientFgColor);
+                this.evenRowGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                evenRowHAlign);
+                this.evenRowHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                evenRowVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, evenRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, evenRowImage);
+                this.evenRowVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.evenRowFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.evenRowImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                evenRowBorderStyle);
+                this.evenRowBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                evenRowPWEchoChar);
+                this.evenRowPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                evenRowTextDecoration);
+                this.evenRowTextDecoration);
         return cellStyle;
     }
 
@@ -1341,27 +1333,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getOddRowStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                oddRowBgColor);
+                this.oddRowBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                oddRowFgColor);
+                this.oddRowFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                oddRowGradientBgColor);
+                this.oddRowGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                oddRowGradientFgColor);
+                this.oddRowGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                oddRowHAlign);
+                this.oddRowHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                oddRowVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, oddRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, oddRowImage);
+                this.oddRowVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.oddRowFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.oddRowImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                oddRowBorderStyle);
+                this.oddRowBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                oddRowPWEchoChar);
+                this.oddRowPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                oddRowTextDecoration);
+                this.oddRowTextDecoration);
         return cellStyle;
     }
 
@@ -1374,28 +1366,28 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getColumnGroupHeaderStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                cGroupHeaderBgColor);
+                this.cGroupHeaderBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                cGroupHeaderFgColor);
+                this.cGroupHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                cGroupHeaderGradientBgColor);
+                this.cGroupHeaderGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                cGroupHeaderGradientFgColor);
+                this.cGroupHeaderGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                cGroupHeaderHAlign);
+                this.cGroupHeaderHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                cGroupHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, cGroupHeaderFont);
+                this.cGroupHeaderVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.cGroupHeaderFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                cGroupHeaderImage);
+                this.cGroupHeaderImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                cGroupHeaderBorderStyle);
+                this.cGroupHeaderBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                cGroupHeaderPWEchoChar);
+                this.cGroupHeaderPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                cGroupHeaderTextDecoration);
+                this.cGroupHeaderTextDecoration);
         return cellStyle;
     }
 
@@ -1408,28 +1400,28 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getRowGroupHeaderStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                rGroupHeaderBgColor);
+                this.rGroupHeaderBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                rGroupHeaderFgColor);
+                this.rGroupHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                rGroupHeaderGradientBgColor);
+                this.rGroupHeaderGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                rGroupHeaderGradientFgColor);
+                this.rGroupHeaderGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                rGroupHeaderHAlign);
+                this.rGroupHeaderHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                rGroupHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, rGroupHeaderFont);
+                this.rGroupHeaderVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.rGroupHeaderFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                rGroupHeaderImage);
+                this.rGroupHeaderImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                rGroupHeaderBorderStyle);
+                this.rGroupHeaderBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                rGroupHeaderPWEchoChar);
+                this.rGroupHeaderPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                rGroupHeaderTextDecoration);
+                this.rGroupHeaderTextDecoration);
         return cellStyle;
     }
 
@@ -1442,27 +1434,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getSortHeaderStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                sortHeaderBgColor);
+                this.sortHeaderBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                sortHeaderFgColor);
+                this.sortHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                sortHeaderGradientBgColor);
+                this.sortHeaderGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                sortHeaderGradientFgColor);
+                this.sortHeaderGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                sortHeaderHAlign);
+                this.sortHeaderHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                sortHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, sortHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, sortHeaderImage);
+                this.sortHeaderVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.sortHeaderFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.sortHeaderImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                sortHeaderBorderStyle);
+                this.sortHeaderBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                sortHeaderPWEchoChar);
+                this.sortHeaderPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                sortHeaderTextDecoration);
+                this.sortHeaderTextDecoration);
         return cellStyle;
     }
 
@@ -1475,29 +1467,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getSelectedSortHeaderStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                selectedSortHeaderBgColor);
+                this.selectedSortHeaderBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                selectedSortHeaderFgColor);
+                this.selectedSortHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                selectedSortHeaderGradientBgColor);
+                this.selectedSortHeaderGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                selectedSortHeaderGradientFgColor);
+                this.selectedSortHeaderGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                selectedSortHeaderHAlign);
+                this.selectedSortHeaderHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                selectedSortHeaderVAlign);
+                this.selectedSortHeaderVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                selectedSortHeaderFont);
+                this.selectedSortHeaderFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                selectedSortHeaderImage);
+                this.selectedSortHeaderImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                selectedSortHeaderBorderStyle);
+                this.selectedSortHeaderBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                selectedSortHeaderPWEchoChar);
+                this.selectedSortHeaderPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                selectedSortHeaderTextDecoration);
+                this.selectedSortHeaderTextDecoration);
         return cellStyle;
     }
 
@@ -1510,27 +1502,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getFilterRowStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                filterRowBgColor);
+                this.filterRowBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                filterRowFgColor);
+                this.filterRowFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                filterRowGradientBgColor);
+                this.filterRowGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                filterRowGradientFgColor);
+                this.filterRowGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                filterRowHAlign);
+                this.filterRowHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                filterRowVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, filterRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, filterRowImage);
+                this.filterRowVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.filterRowFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.filterRowImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                filterRowBorderStyle);
+                this.filterRowBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                filterRowPWEchoChar);
+                this.filterRowPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                filterRowTextDecoration);
+                this.filterRowTextDecoration);
         return cellStyle;
     }
 
@@ -1543,27 +1535,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getTreeStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                treeBgColor);
+                this.treeBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                treeFgColor);
+                this.treeFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                treeGradientBgColor);
+                this.treeGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                treeGradientFgColor);
+                this.treeGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                treeHAlign);
+                this.treeHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                treeVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, treeFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, treeImage);
+                this.treeVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.treeFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.treeImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                treeBorderStyle);
+                this.treeBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                treePWEchoChar);
+                this.treePWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                treeTextDecoration);
+                this.treeTextDecoration);
         return cellStyle;
     }
 
@@ -1576,29 +1568,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getTreeSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                treeSelectionBgColor);
+                this.treeSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                treeSelectionFgColor);
+                this.treeSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                treeSelectionGradientBgColor);
+                this.treeSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                treeSelectionGradientFgColor);
+                this.treeSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                treeSelectionHAlign);
+                this.treeSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                treeSelectionVAlign);
+                this.treeSelectionVAlign);
         cellStyle
-                .setAttributeValue(CellStyleAttributes.FONT, treeSelectionFont);
+                .setAttributeValue(CellStyleAttributes.FONT, this.treeSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                treeSelectionImage);
+                this.treeSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                treeSelectionBorderStyle);
+                this.treeSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                treeSelectionPWEchoChar);
+                this.treeSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                treeSelectionTextDecoration);
+                this.treeSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1621,27 +1613,27 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getSummaryRowStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                summaryRowBgColor);
+                this.summaryRowBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                summaryRowFgColor);
+                this.summaryRowFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                summaryRowGradientBgColor);
+                this.summaryRowGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                summaryRowGradientFgColor);
+                this.summaryRowGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                summaryRowHAlign);
+                this.summaryRowHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                summaryRowVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, summaryRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, summaryRowImage);
+                this.summaryRowVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.summaryRowFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.summaryRowImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                summaryRowBorderStyle);
+                this.summaryRowBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                summaryRowPWEchoChar);
+                this.summaryRowPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                summaryRowTextDecoration);
+                this.summaryRowTextDecoration);
         return cellStyle;
     }
 
@@ -1654,29 +1646,29 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getSummaryRowSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                summaryRowSelectionBgColor);
+                this.summaryRowSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                summaryRowSelectionFgColor);
+                this.summaryRowSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                summaryRowSelectionGradientBgColor);
+                this.summaryRowSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                summaryRowSelectionGradientFgColor);
+                this.summaryRowSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                summaryRowSelectionHAlign);
+                this.summaryRowSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                summaryRowSelectionVAlign);
+                this.summaryRowSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                summaryRowSelectionFont);
+                this.summaryRowSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                summaryRowSelectionImage);
+                this.summaryRowSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                summaryRowSelectionBorderStyle);
+                this.summaryRowSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                summaryRowSelectionPWEchoChar);
+                this.summaryRowSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                summaryRowSelectionTextDecoration);
+                this.summaryRowSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -1724,11 +1716,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getConversionErrorStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                conversionErrorBgColor);
+                this.conversionErrorBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                conversionErrorFgColor);
+                this.conversionErrorFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                conversionErrorFont);
+                this.conversionErrorFont);
         return cellStyle;
     }
 
@@ -1736,11 +1728,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     protected IStyle getValidationErrorStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                validationErrorBgColor);
+                this.validationErrorBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                validationErrorFgColor);
+                this.validationErrorFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                validationErrorFont);
+                this.validationErrorFont);
         return cellStyle;
     }
 

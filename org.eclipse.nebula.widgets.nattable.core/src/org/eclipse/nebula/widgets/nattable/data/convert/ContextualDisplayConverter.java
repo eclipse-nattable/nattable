@@ -19,14 +19,14 @@ public abstract class ContextualDisplayConverter implements IDisplayConverter {
     public Object canonicalToDisplayValue(Object canonicalValue) {
         throw new UnsupportedOperationException(
                 this.getClass().getName()
-                + " is a ContextualDisplayConverter and has therefore to be called with context informations."); //$NON-NLS-1$
+                        + " is a ContextualDisplayConverter and has therefore to be called with context informations."); //$NON-NLS-1$
     }
 
     @Override
     public Object displayToCanonicalValue(Object displayValue) {
         throw new UnsupportedOperationException(
                 this.getClass().getName()
-                + " is a ContextualDisplayConverter and has therefore to be called with context informations."); //$NON-NLS-1$
+                        + " is a ContextualDisplayConverter and has therefore to be called with context informations."); //$NON-NLS-1$
     }
 
     @Override

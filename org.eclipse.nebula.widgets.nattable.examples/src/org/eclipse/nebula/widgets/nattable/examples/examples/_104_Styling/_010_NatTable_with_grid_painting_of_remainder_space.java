@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,6 +25,7 @@ public class _010_NatTable_with_grid_painting_of_remainder_space extends
                 new _010_NatTable_with_grid_painting_of_remainder_space());
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         NatTable natTable = new NatTable(parent);
         NatGridLayerPainter layerPainter = new NatGridLayerPainter(natTable);

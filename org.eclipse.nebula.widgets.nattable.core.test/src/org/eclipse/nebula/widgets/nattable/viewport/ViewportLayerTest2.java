@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,11 +31,12 @@ public class ViewportLayerTest2 {
         String cellInfo = "A0 | B0 | C0 | D0 \n" + "A1 | B1 | C1 | D1 \n"
                 + "A2 | B2 | C2 | D2 \n" + "A3 | B3 | C3 | D3 \n";
 
-        dataLayer = new TestLayer(4, 4, columnInfo, rowInfo, cellInfo);
+        this.dataLayer = new TestLayer(4, 4, columnInfo, rowInfo, cellInfo);
 
-        viewportLayer = new ViewportLayer(dataLayer);
-        viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.viewportLayer = new ViewportLayer(this.dataLayer);
+        this.viewportLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 200, 400);
             }
@@ -45,7 +46,7 @@ public class ViewportLayerTest2 {
 
     @Test
     public void testScrollRight() {
-        viewportLayer.setOriginX(viewportLayer.getStartXOfColumnPosition(2));
+        this.viewportLayer.setOriginX(this.viewportLayer.getStartXOfColumnPosition(2));
 
         String columnInfo = "2:2;100 | 3:3;100";
         String rowInfo = "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40";
@@ -56,7 +57,7 @@ public class ViewportLayerTest2 {
         TestLayer expectedLayer = new TestLayer(2, 4, 400, 4, 4, 160,
                 columnInfo, rowInfo, cellInfo);
 
-        LayerAssert.assertLayerEquals(expectedLayer, viewportLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.viewportLayer);
     }
 
 }

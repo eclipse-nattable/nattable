@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -40,9 +40,9 @@ public class ColumnGroupExpandCollapseCommandHandler extends
     @Override
     protected boolean doCommand(ColumnGroupExpandCollapseCommand command) {
 
-        int columnIndex = columnGroupExpandCollapseLayer
+        int columnIndex = this.columnGroupExpandCollapseLayer
                 .getColumnIndexByPosition(command.getColumnPosition());
-        ColumnGroupModel model = columnGroupExpandCollapseLayer
+        ColumnGroupModel model = this.columnGroupExpandCollapseLayer
                 .getModel(command.getRowPosition());
         ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
@@ -76,13 +76,13 @@ public class ColumnGroupExpandCollapseCommandHandler extends
         ILayerEvent event;
         if (wasCollapsed) {
             event = new ShowColumnPositionsEvent(
-                    columnGroupExpandCollapseLayer, columnIndexes);
+                    this.columnGroupExpandCollapseLayer, columnIndexes);
         } else {
             event = new HideColumnPositionsEvent(
-                    columnGroupExpandCollapseLayer, columnIndexes);
+                    this.columnGroupExpandCollapseLayer, columnIndexes);
         }
 
-        columnGroupExpandCollapseLayer.fireLayerEvent(event);
+        this.columnGroupExpandCollapseLayer.fireLayerEvent(event);
 
         return true;
     }
@@ -91,7 +91,7 @@ public class ColumnGroupExpandCollapseCommandHandler extends
      * Will clean up the given list of column indexes for a column group, so
      * only those column indexes will stay in the list that are relevant for the
      * hide/show column events.
-     * 
+     *
      * @param columnIndexes
      *            The column indexes to cleanup.
      */
@@ -99,7 +99,7 @@ public class ColumnGroupExpandCollapseCommandHandler extends
         for (Iterator<Integer> it = columnIndexes.iterator(); it.hasNext();) {
             Integer columnIndex = it.next();
 
-            if (!columnGroupExpandCollapseLayer
+            if (!this.columnGroupExpandCollapseLayer
                     .isColumnIndexHidden(columnIndex)) {
                 it.remove();
             }

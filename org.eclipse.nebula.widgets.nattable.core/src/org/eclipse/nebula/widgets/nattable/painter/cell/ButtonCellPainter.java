@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -67,21 +67,24 @@ public class ButtonCellPainter extends AbstractCellPainter implements
         this.buttonPressedPainter = buttonPressedPainter;
     }
 
+    @Override
     public void paintCell(final ILayerCell cell, final GC gc,
             final Rectangle bounds, final IConfigRegistry configRegistry) {
-        if (recentlyClicked && columnPosClicked == cell.getColumnPosition()
-                && rowPosClicked == cell.getRowPosition()) {
-            buttonPressedPainter.paintCell(cell, gc, bounds, configRegistry);
+        if (this.recentlyClicked && this.columnPosClicked == cell.getColumnPosition()
+                && this.rowPosClicked == cell.getRowPosition()) {
+            this.buttonPressedPainter.paintCell(cell, gc, bounds, configRegistry);
         } else {
-            buttonRaisedPainter.paintCell(cell, gc, bounds, configRegistry);
+            this.buttonRaisedPainter.paintCell(cell, gc, bounds, configRegistry);
         }
     }
 
+    @Override
     public int getPreferredHeight(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         return cell.getBounds().height;
     }
 
+    @Override
     public int getPreferredWidth(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
         return cell.getBounds().width;
@@ -91,11 +94,12 @@ public class ButtonCellPainter extends AbstractCellPainter implements
         return new TimerTask() {
             @Override
             public void run() {
-                recentlyClicked = false;
+                ButtonCellPainter.this.recentlyClicked = false;
                 Display.getDefault().asyncExec(new Runnable() {
+                    @Override
                     public void run() {
                         layer.fireLayerEvent(new CellVisualChangeEvent(layer,
-                                columnPosClicked, rowPosClicked));
+                                ButtonCellPainter.this.columnPosClicked, ButtonCellPainter.this.rowPosClicked));
                     }
                 });
             }
@@ -105,31 +109,32 @@ public class ButtonCellPainter extends AbstractCellPainter implements
     /**
      * Respond to mouse click. Simulate button press.
      */
+    @Override
     public void run(final NatTable natTable, MouseEvent event) {
         NatEventData eventData = (NatEventData) event.data;
-        columnPosClicked = eventData.getColumnPosition();
-        rowPosClicked = eventData.getRowPosition();
-        recentlyClicked = true;
+        this.columnPosClicked = eventData.getColumnPosition();
+        this.rowPosClicked = eventData.getRowPosition();
+        this.recentlyClicked = true;
 
         new Timer()
-                .schedule(getButtonFlashTimerTask(natTable), buttonFlashTime);
+                .schedule(getButtonFlashTimerTask(natTable), this.buttonFlashTime);
         natTable.fireLayerEvent(new CellVisualChangeEvent(natTable,
-                columnPosClicked, rowPosClicked));
+                this.columnPosClicked, this.rowPosClicked));
 
-        for (IMouseAction listener : clickLiseners) {
+        for (IMouseAction listener : this.clickLiseners) {
             listener.run(natTable, event);
         }
     }
 
     public void addClickListener(IMouseAction mouseAction) {
-        clickLiseners.add(mouseAction);
+        this.clickLiseners.add(mouseAction);
     }
 
     public void removeClickListener(IMouseAction mouseAction) {
-        clickLiseners.remove(mouseAction);
+        this.clickLiseners.remove(mouseAction);
     }
 
     public void setButtonFlashTime(int flashTimeInMS) {
-        buttonFlashTime = flashTimeInMS;
+        this.buttonFlashTime = flashTimeInMS;
     }
 }

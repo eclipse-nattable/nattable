@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -53,59 +53,61 @@ public class BorderStyleEditorPanel extends AbstractEditorPanel<BorderStyle> {
         new Label(this, NONE).setText(Messages
                 .getString("BorderStyleEditorPanel.noBorder")); //$NON-NLS-1$
 
-        noBordersCheckBox = new Button(this, CHECK);
-        noBordersCheckBox.addSelectionListener(new SelectionAdapter() {
+        this.noBordersCheckBox = new Button(this, CHECK);
+        this.noBordersCheckBox.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean noBorder = noBordersCheckBox.getSelection();
-                colorPicker.setEnabled(!noBorder);
-                thicknessPicker.setEnabled(!noBorder);
-                lineStylePicker.setEnabled(!noBorder);
+                boolean noBorder = BorderStyleEditorPanel.this.noBordersCheckBox.getSelection();
+                BorderStyleEditorPanel.this.colorPicker.setEnabled(!noBorder);
+                BorderStyleEditorPanel.this.thicknessPicker.setEnabled(!noBorder);
+                BorderStyleEditorPanel.this.lineStylePicker.setEnabled(!noBorder);
             }
         });
 
         new Label(this, NONE).setText(Messages
                 .getString("BorderStyleEditorPanel.color")); //$NON-NLS-1$
-        colorPicker = new ColorPicker(this, GUIHelper.COLOR_WIDGET_BORDER);
+        this.colorPicker = new ColorPicker(this, GUIHelper.COLOR_WIDGET_BORDER);
 
         new Label(this, NONE).setText(Messages
                 .getString("BorderStyleEditorPanel.lineStyle")); //$NON-NLS-1$
-        lineStylePicker = new LineStylePicker(this);
+        this.lineStylePicker = new LineStylePicker(this);
 
         new Label(this, NONE).setText(Messages
                 .getString("BorderStyleEditorPanel.thickness")); //$NON-NLS-1$
-        thicknessPicker = new BorderThicknessPicker(this);
+        this.thicknessPicker = new BorderThicknessPicker(this);
 
         // By default, no border is selected and all controls are disabled
-        noBordersCheckBox.setSelection(true);
-        colorPicker.setEnabled(false);
-        thicknessPicker.setEnabled(false);
-        lineStylePicker.setEnabled(false);
+        this.noBordersCheckBox.setSelection(true);
+        this.colorPicker.setEnabled(false);
+        this.thicknessPicker.setEnabled(false);
+        this.lineStylePicker.setEnabled(false);
     }
 
     private void disableEditing() {
-        colorPicker.setEnabled(false);
-        thicknessPicker.setEnabled(false);
-        lineStylePicker.setEnabled(false);
+        this.colorPicker.setEnabled(false);
+        this.thicknessPicker.setEnabled(false);
+        this.lineStylePicker.setEnabled(false);
     }
 
+    @Override
     public void edit(BorderStyle bstyle) throws Exception {
         if (bstyle != null) {
-            noBordersCheckBox.setSelection(false);
-            colorPicker.setSelectedColor(bstyle.getColor());
-            lineStylePicker.setSelectedLineStyle(bstyle.getLineStyle());
-            thicknessPicker.setSelectedThickness(bstyle.getThickness());
+            this.noBordersCheckBox.setSelection(false);
+            this.colorPicker.setSelectedColor(bstyle.getColor());
+            this.lineStylePicker.setSelectedLineStyle(bstyle.getLineStyle());
+            this.thicknessPicker.setSelectedThickness(bstyle.getThickness());
         } else {
-            noBordersCheckBox.setSelection(true);
+            this.noBordersCheckBox.setSelection(true);
             disableEditing();
         }
     }
 
+    @Override
     public BorderStyle getNewValue() {
-        if (!noBordersCheckBox.getSelection()) {
-            Color borderColor = colorPicker.getSelectedColor();
-            LineStyleEnum lineStyle = lineStylePicker.getSelectedLineStyle();
-            int borderThickness = thicknessPicker.getSelectedThickness();
+        if (!this.noBordersCheckBox.getSelection()) {
+            Color borderColor = this.colorPicker.getSelectedColor();
+            LineStyleEnum lineStyle = this.lineStylePicker.getSelectedLineStyle();
+            int borderThickness = this.thicknessPicker.getSelectedThickness();
             return new BorderStyle(borderThickness, borderColor, lineStyle);
         }
         return null;

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,13 +29,13 @@ public class AbstractLayerTransformTest {
         String cellInfo = "A0 | <  | C0 | D0 \n" + "^  | <  | C1 | D1 \n"
                 + "A2 | B2 | C2 | D2 \n" + "A3 | B3 | C3 | D3 \n";
 
-        testLayer = new TestLayer(4, 4, columnInfo, rowInfo, cellInfo);
+        this.testLayer = new TestLayer(4, 4, columnInfo, rowInfo, cellInfo);
     }
 
     @Test
     public void testIdentityLayerTransform() {
-        LayerAssert.assertLayerEquals(testLayer, new AbstractLayerTransform(
-                testLayer) {});
+        LayerAssert.assertLayerEquals(this.testLayer, new AbstractLayerTransform(
+                this.testLayer) {});
     }
 
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -47,28 +47,28 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends
             SelectionLayer selectionLayer, ColumnGroupModel columnGroupModel,
             IConfigRegistry configRegistry) {
 
-        columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+        this.columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
                 propertyNames, propertyToLabelMap);
 
-        columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
+        this.columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+                this.columnHeaderDataProvider);
 
-        columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
+        this.columnHeaderLayer = new ColumnHeaderLayer(this.columnHeaderDataLayer,
                 bodyLayer, selectionLayer);
 
         final ReflectiveColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
                 propertyNames);
-        sortableColumnHeaderLayer = new SortHeaderLayer<T>(columnHeaderLayer,
+        this.sortableColumnHeaderLayer = new SortHeaderLayer<T>(this.columnHeaderLayer,
                 new GlazedListsSortModel<T>(sortedList, columnPropertyAccessor,
-                        configRegistry, columnHeaderDataLayer));
+                        configRegistry, this.columnHeaderDataLayer));
 
-        columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
-                sortableColumnHeaderLayer, selectionLayer, columnGroupModel);
+        this.columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
+                this.sortableColumnHeaderLayer, selectionLayer, columnGroupModel);
 
         FilterRowHeaderComposite<T> composite = new FilterRowHeaderComposite<T>(
                 new DefaultGlazedListsFilterStrategy<T>(filterList,
                         columnPropertyAccessor, configRegistry),
-                columnGroupHeaderLayer, columnHeaderDataProvider,
+                this.columnGroupHeaderLayer, this.columnHeaderDataProvider,
                 configRegistry);
 
         setUnderlyingLayer(composite);
@@ -80,18 +80,18 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends
     }
 
     public ColumnGroupHeaderLayer getColumnGroupHeaderLayer() {
-        return columnGroupHeaderLayer;
+        return this.columnGroupHeaderLayer;
     }
 
     public ColumnHeaderLayer getColumnHeaderLayer() {
-        return columnHeaderLayer;
+        return this.columnHeaderLayer;
     }
 
     public IDataProvider getColumnHeaderDataProvider() {
-        return columnHeaderDataProvider;
+        return this.columnHeaderDataProvider;
     }
 
     public DefaultColumnHeaderDataLayer getColumnHeaderDataLayer() {
-        return columnHeaderDataLayer;
+        return this.columnHeaderDataLayer;
     }
 }

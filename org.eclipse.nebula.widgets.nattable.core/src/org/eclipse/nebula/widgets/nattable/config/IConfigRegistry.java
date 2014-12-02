@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.style.IDisplayModeOrdering;
  * Holds all the settings, bindings and other configuration for NatTable.
  * <p>
  * See ConfigRegistryTest for a better understanding.
- * 
+ *
  * @see ConfigRegistry
  */
 public interface IConfigRegistry {
@@ -50,7 +50,7 @@ public interface IConfigRegistry {
      * <li>It will look for an attribute registered by display mode NORMAL and
      * "testLabel_1"</li>
      * </ol>
-     * 
+     *
      * @param <T>
      *            Type of the attribute
      * @param configAttribute
@@ -80,7 +80,7 @@ public interface IConfigRegistry {
 
     /**
      * Register a configuration attribute.
-     * 
+     *
      * @param configAttribute
      *            The {@link ConfigAttribute} for which a value should be
      *            registered.
@@ -93,7 +93,7 @@ public interface IConfigRegistry {
 
     /**
      * Register a configuration attribute against a {@link DisplayMode}.
-     * 
+     *
      * @param configAttribute
      *            The {@link ConfigAttribute} for which a value should be
      *            registered.
@@ -110,7 +110,7 @@ public interface IConfigRegistry {
     /**
      * Register an attribute against a {@link DisplayMode} and configuration
      * label (applied to cells)
-     * 
+     *
      * @param configAttribute
      *            The {@link ConfigAttribute} for which a value should be
      *            registered.
@@ -129,7 +129,7 @@ public interface IConfigRegistry {
 
     /**
      * Unregister the given configuration attribute.
-     * 
+     *
      * @param configAttributeType
      *            The {@link ConfigAttribute} to unregister.
      */
@@ -139,7 +139,7 @@ public interface IConfigRegistry {
     /**
      * Unregister the given configuration attribute for the given
      * {@link DisplayMode}.
-     * 
+     *
      * @param configAttributeType
      *            The {@link ConfigAttribute} to unregister.
      * @param displayMode
@@ -153,7 +153,7 @@ public interface IConfigRegistry {
      * Unregister the given configuration attribute for the given
      * {@link DisplayMode} that was registered against the given configuration
      * label.
-     * 
+     *
      * @param configAttributeType
      *            The {@link ConfigAttribute} to unregister.
      * @param displayMode
@@ -168,7 +168,7 @@ public interface IConfigRegistry {
             String configLabel);
 
     /**
-     * 
+     *
      * @return The {@link IDisplayModeOrdering} which is used to specify in
      *         which order to search through the {@link IConfigRegistry} for
      *         {@link DisplayMode}.

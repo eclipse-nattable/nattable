@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -32,47 +32,50 @@ public class CellDragMode implements IDragMode {
     private Image cellImage;
     protected CellImageOverlayPainter cellImageOverlayPainter = new CellImageOverlayPainter();
 
+    @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
-        initialEvent = event;
-        currentEvent = initialEvent;
+        this.initialEvent = event;
+        this.currentEvent = this.initialEvent;
 
         setCellImage(natTable);
 
         natTable.forceFocus();
 
-        natTable.addOverlayPainter(cellImageOverlayPainter);
+        natTable.addOverlayPainter(this.cellImageOverlayPainter);
     }
 
+    @Override
     public void mouseMove(NatTable natTable, MouseEvent event) {
-        currentEvent = event;
+        this.currentEvent = event;
 
         natTable.redraw(0, 0, natTable.getWidth(), natTable.getHeight(), false);
     }
 
+    @Override
     public void mouseUp(NatTable natTable, MouseEvent event) {
-        natTable.removeOverlayPainter(cellImageOverlayPainter);
-        cellImage.dispose();
+        natTable.removeOverlayPainter(this.cellImageOverlayPainter);
+        this.cellImage.dispose();
 
         natTable.redraw(0, 0, natTable.getWidth(), natTable.getHeight(), false);
     }
 
     protected MouseEvent getInitialEvent() {
-        return initialEvent;
+        return this.initialEvent;
     }
 
     protected MouseEvent getCurrentEvent() {
-        return currentEvent;
+        return this.currentEvent;
     }
 
     private void setCellImage(NatTable natTable) {
-        int columnPosition = natTable.getColumnPositionByX(currentEvent.x);
-        int rowPosition = natTable.getRowPositionByY(currentEvent.y);
+        int columnPosition = natTable.getColumnPositionByX(this.currentEvent.x);
+        int rowPosition = natTable.getRowPositionByY(this.currentEvent.y);
         ILayerCell cell = natTable.getCellByPosition(columnPosition,
                 rowPosition);
 
         Rectangle cellBounds = cell.getBounds();
-        xOffset = currentEvent.x - cellBounds.x;
-        yOffset = currentEvent.y - cellBounds.y;
+        this.xOffset = this.currentEvent.x - cellBounds.x;
+        this.yOffset = this.currentEvent.y - cellBounds.y;
         Image image = new Image(natTable.getDisplay(), cellBounds.width,
                 cellBounds.height);
 
@@ -90,15 +93,16 @@ public class CellDragMode implements IDragMode {
         image.dispose();
         imageData.alpha = 150;
 
-        cellImage = new Image(natTable.getDisplay(), imageData);
+        this.cellImage = new Image(natTable.getDisplay(), imageData);
     }
 
     private class CellImageOverlayPainter implements IOverlayPainter {
 
+        @Override
         public void paintOverlay(GC gc, ILayer layer) {
-            if (cellImage != null & !cellImage.isDisposed()) {
-                gc.drawImage(cellImage, currentEvent.x - xOffset,
-                        currentEvent.y - yOffset);
+            if (CellDragMode.this.cellImage != null & !CellDragMode.this.cellImage.isDisposed()) {
+                gc.drawImage(CellDragMode.this.cellImage, CellDragMode.this.currentEvent.x - CellDragMode.this.xOffset,
+                        CellDragMode.this.currentEvent.y - CellDragMode.this.yOffset);
             }
         }
 

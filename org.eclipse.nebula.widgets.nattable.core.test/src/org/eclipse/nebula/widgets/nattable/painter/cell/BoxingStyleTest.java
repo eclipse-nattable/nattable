@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,17 +46,17 @@ public class BoxingStyleTest {
 
     @Before
     public void setUp() throws Exception {
-        natTable = new NatTableFixture();
-        configRegistry = (ConfigRegistry) natTable.getConfigRegistry();
-        cellStyle = new Style();
-        cellPainter = new TextPainter();
+        this.natTable = new NatTableFixture();
+        this.configRegistry = (ConfigRegistry) this.natTable.getConfigRegistry();
+        this.cellStyle = new Style();
+        this.cellPainter = new TextPainter();
 
-        gc = new GC(Display.getDefault());
+        this.gc = new GC(Display.getDefault());
     }
 
     @After
     public void tearDown() {
-        gc.dispose();
+        this.gc.dispose();
     }
 
     // Background color
@@ -65,23 +65,23 @@ public class BoxingStyleTest {
         // Register background color for body cells in normal mode
         final Color backgroundColor = Display.getDefault().getSystemColor(
                 SWT.COLOR_GRAY);
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        this.cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
                 backgroundColor);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL,
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                this.cellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
         // Check for background color styling
-        ILayerCell cell = natTable.getCellByPosition(2, 2);
-        IStyle cellStyle = configRegistry.getConfigAttribute(
+        ILayerCell cell = this.natTable.getCellByPosition(2, 2);
+        IStyle cellStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
                         .getConfigLabels().getLabels());
         Assert.assertEquals(backgroundColor, cellStyle
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
 
         // set up painter
-        cellPainter.setupGCFromConfig(gc, cellStyle);
-        Assert.assertEquals(backgroundColor, gc.getBackground());
+        this.cellPainter.setupGCFromConfig(this.gc, cellStyle);
+        Assert.assertEquals(backgroundColor, this.gc.getBackground());
     }
 
     // Foreground color
@@ -90,23 +90,23 @@ public class BoxingStyleTest {
         // Register foreground color for body cells in normal mode
         final Color foregroundColor = Display.getDefault().getSystemColor(
                 SWT.COLOR_BLACK);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        this.cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
                 foregroundColor);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL,
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                this.cellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
         // Check cell foreground color
-        ILayerCell cell = natTable.getCellByPosition(2, 2);
-        IStyle cellStyle = configRegistry.getConfigAttribute(
+        ILayerCell cell = this.natTable.getCellByPosition(2, 2);
+        IStyle cellStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
                         .getConfigLabels().getLabels());
         Assert.assertEquals(foregroundColor, cellStyle
                 .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 
         // set up painter
-        cellPainter.setupGCFromConfig(gc, cellStyle);
-        Assert.assertEquals(foregroundColor, gc.getForeground());
+        this.cellPainter.setupGCFromConfig(this.gc, cellStyle);
+        Assert.assertEquals(foregroundColor, this.gc.getForeground());
     }
 
     // Horizontal alignment
@@ -114,17 +114,17 @@ public class BoxingStyleTest {
     public void retreivedCellShouldHaveRightAlignment() {
         // Register horizontal alignment
         final HorizontalAlignmentEnum hAlignment = HorizontalAlignmentEnum.RIGHT;
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        this.cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 hAlignment);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL,
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                this.cellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
 
         // Check cell horizontal alignment
-        ILayerCell cell = natTable.getCellByPosition(2, 2);
+        ILayerCell cell = this.natTable.getCellByPosition(2, 2);
         Assert.assertEquals(
                 hAlignment.name(),
-                configRegistry
+                this.configRegistry
                         .getConfigAttribute(CellConfigAttributes.CELL_STYLE,
                                 cell.getDisplayMode(),
                                 cell.getConfigLabels().getLabels())
@@ -138,17 +138,17 @@ public class BoxingStyleTest {
     public void retreivedCellShouldHaveTopAlignment() {
         // Register vertical alignment
         final VerticalAlignmentEnum vAlignment = VerticalAlignmentEnum.TOP;
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        this.cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
                 vAlignment);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL,
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                this.cellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
 
         // Check cell vertical alignment
-        ILayerCell cell = natTable.getCellByPosition(2, 3);
+        ILayerCell cell = this.natTable.getCellByPosition(2, 3);
         Assert.assertEquals(
                 vAlignment.name(),
-                configRegistry
+                this.configRegistry
                         .getConfigAttribute(CellConfigAttributes.CELL_STYLE,
                                 cell.getDisplayMode(),
                                 cell.getConfigLabels().getLabels())

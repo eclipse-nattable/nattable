@@ -25,7 +25,7 @@ public class DisplayPersistenceDialogCommand extends AbstractContextFreeCommand 
     private final NatTable natTable;
 
     /**
-     * 
+     *
      * @param natTable
      *            The NatTable instance to call the PersistenceDialog for.
      */
@@ -37,7 +37,7 @@ public class DisplayPersistenceDialogCommand extends AbstractContextFreeCommand 
      * @return The NatTable instance to call the PersistenceDialog for.
      */
     public NatTable getNatTable() {
-        return natTable;
+        return this.natTable;
     }
 
 }

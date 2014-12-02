@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
  * (which is necessary to update everything if a data value has change, for
  * example important for conditional styling), this event only forces to redraw
  * the specified column itself.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -31,7 +31,7 @@ public class ColumnVisualUpdateEvent extends ColumnVisualChangeEvent {
 
     /**
      * Create a new ColumnVisualUpdateEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The layer to which the given column position belongs.
      * @param columnPosition
@@ -43,7 +43,7 @@ public class ColumnVisualUpdateEvent extends ColumnVisualChangeEvent {
 
     /**
      * Create a new ColumnVisualUpdateEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The layer to which the given column positions belong.
      * @param columnPositions
@@ -56,7 +56,7 @@ public class ColumnVisualUpdateEvent extends ColumnVisualChangeEvent {
 
     /**
      * Create a new ColumnVisualUpdateEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The layer to which the given column positions belong.
      * @param columnPosition
@@ -70,7 +70,7 @@ public class ColumnVisualUpdateEvent extends ColumnVisualChangeEvent {
     /**
      * Create a new ColumnVisualUpdateEvent out of the given event. Used
      * internally for cloning purposes.
-     * 
+     *
      * @param event
      *            The event to create the clone from.
      */

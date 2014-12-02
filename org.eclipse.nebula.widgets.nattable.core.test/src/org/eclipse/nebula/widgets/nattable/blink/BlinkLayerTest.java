@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -50,20 +50,20 @@ public class BlinkLayerTest {
 
     @Before
     public void setUp() {
-        display = Display.getDefault();
-        dataList = new LinkedList<BlinkingRowDataFixture>();
+        this.display = Display.getDefault();
+        this.dataList = new LinkedList<BlinkingRowDataFixture>();
         IColumnPropertyAccessor<BlinkingRowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<BlinkingRowDataFixture>(
                 RowDataListFixture.getPropertyNames());
-        listDataProvider = new ListDataProvider<BlinkingRowDataFixture>(
-                dataList, columnPropertyAccessor);
-        propertyChangeListener = getPropertyChangeListener();
+        this.listDataProvider = new ListDataProvider<BlinkingRowDataFixture>(
+                this.dataList, columnPropertyAccessor);
+        this.propertyChangeListener = getPropertyChangeListener();
 
-        dataLayer = new DataLayer(listDataProvider);
-        layerUnderTest = new BlinkLayer<BlinkingRowDataFixture>(dataLayer,
-                listDataProvider, BlinkingRowDataFixture.rowIdAccessor,
-                columnPropertyAccessor, configRegistry);
+        this.dataLayer = new DataLayer(this.listDataProvider);
+        this.layerUnderTest = new BlinkLayer<BlinkingRowDataFixture>(this.dataLayer,
+                this.listDataProvider, BlinkingRowDataFixture.rowIdAccessor,
+                columnPropertyAccessor, this.configRegistry);
 
-        layerUnderTest.blinkingEnabled = true;
+        this.layerUnderTest.blinkingEnabled = true;
 
         registerBlinkConfigTypes();
         load10Rows();
@@ -72,10 +72,10 @@ public class BlinkLayerTest {
     @Test
     public void shouldReturnTheBlinkConfigTypeWhenARowIsUpdated()
             throws Exception {
-        layerUnderTest.setBlinkDurationInMilis(100);
+        this.layerUnderTest.setBlinkDurationInMilis(100);
 
-        dataList.get(0).setAsk_price(100);
-        LabelStack blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        this.dataList.get(0).setAsk_price(100);
+        LabelStack blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
 
         // Blink started
         assertEquals(1, blinkLabels.getLabels().size());
@@ -83,24 +83,24 @@ public class BlinkLayerTest {
 
         // After 50 ms
         Thread.sleep(50);
-        blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
         assertEquals(1, blinkLabels.getLabels().size());
 
         // Wait for blink to elapse
         Thread.sleep(110);
         // Force running the event queue to ensure any Display.asyncExecs are
         // run.
-        while (display.readAndDispatch())
+        while (this.display.readAndDispatch())
             ;
 
-        blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
         assertEquals(0, blinkLabels.getLabels().size());
     }
 
     @Test
     public void layerStackShouldUpdate() throws Exception {
         // add label accumulator to DataLayer
-        dataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+        this.dataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
 
             @Override
             public void accumulateConfigLabels(LabelStack configLabels,
@@ -109,10 +109,10 @@ public class BlinkLayerTest {
             }
         });
 
-        layerUnderTest.setBlinkDurationInMilis(100);
+        this.layerUnderTest.setBlinkDurationInMilis(100);
 
-        dataList.get(0).setAsk_price(100);
-        LabelStack blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        this.dataList.get(0).setAsk_price(100);
+        LabelStack blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
 
         // Blink started
         assertEquals(2, blinkLabels.getLabels().size());
@@ -121,17 +121,17 @@ public class BlinkLayerTest {
 
         // After 50 ms
         Thread.sleep(50);
-        blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
         assertEquals(2, blinkLabels.getLabels().size());
 
         // Wait for blink to elapse
         Thread.sleep(110);
         // Force running the event queue to ensure any Display.asyncExecs are
         // run.
-        while (display.readAndDispatch())
+        while (this.display.readAndDispatch())
             ;
 
-        blinkLabels = layerUnderTest.getConfigLabelsByPosition(6, 0);
+        blinkLabels = this.layerUnderTest.getConfigLabelsByPosition(6, 0);
         assertEquals(1, blinkLabels.getLabels().size());
         assertEquals(TEST_LABEL, blinkLabels.getLabels().get(0));
     }
@@ -149,7 +149,7 @@ public class BlinkLayerTest {
             }
         };
 
-        configRegistry.registerConfigAttribute(
+        this.configRegistry.registerConfigAttribute(
                 BlinkConfigAttributes.BLINK_RESOLVER, blinkingCellResolver,
                 DisplayMode.NORMAL);
     }
@@ -167,16 +167,16 @@ public class BlinkLayerTest {
                         (BlinkingRowDataFixture) event.getSource(),
                         event.getPropertyName(), event.getOldValue(),
                         event.getNewValue());
-                layerUnderTest.handleLayerEvent(updateEvent);
+                BlinkLayerTest.this.layerUnderTest.handleLayerEvent(updateEvent);
             }
         };
     }
 
     private void load10Rows() {
         List<BlinkingRowDataFixture> list = BlinkingRowDataFixture
-                .getList(propertyChangeListener);
+                .getList(this.propertyChangeListener);
         for (BlinkingRowDataFixture blinkingRowDataFixture : list) {
-            dataList.add(blinkingRowDataFixture);
+            this.dataList.add(blinkingRowDataFixture);
         }
     }
 }

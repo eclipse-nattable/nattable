@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,27 +26,27 @@ public class NavContentProvider implements ITreeContentProvider {
     private Map<String, Collection<String>> pathToChildrenMap;
 
     private Collection<String> getChildren(final String parentPath) {
-        Collection<String> children = pathToChildrenMap.get(parentPath);
+        Collection<String> children = this.pathToChildrenMap.get(parentPath);
         if (children == null) {
             children = new LinkedHashSet<String>();
-            pathToChildrenMap.put(parentPath, children);
+            this.pathToChildrenMap.put(parentPath, children);
         }
         return children;
     }
 
     @Override
     public void dispose() {
-        pathToChildrenMap = null;
+        this.pathToChildrenMap = null;
     }
 
     @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-        pathToChildrenMap = new HashMap<String, Collection<String>>();
+        this.pathToChildrenMap = new HashMap<String, Collection<String>>();
     }
 
     @Override
     public Object[] getChildren(Object parent) {
-        return pathToChildrenMap.get(parent).toArray();
+        return this.pathToChildrenMap.get(parent).toArray();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class NavContentProvider implements ITreeContentProvider {
 
     @Override
     public boolean hasChildren(Object element) {
-        return pathToChildrenMap.get(element) != null;
+        return this.pathToChildrenMap.get(element) != null;
     }
 
     @Override

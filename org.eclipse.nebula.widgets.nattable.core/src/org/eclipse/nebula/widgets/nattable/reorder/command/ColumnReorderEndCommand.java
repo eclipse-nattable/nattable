@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,13 +22,13 @@ public class ColumnReorderEndCommand implements ILayerCommand {
 
     public ColumnReorderEndCommand(ILayer layer, int toColumnPosition) {
         if (toColumnPosition < layer.getColumnCount()) {
-            reorderToLeftEdge = true;
+            this.reorderToLeftEdge = true;
         } else {
-            reorderToLeftEdge = false;
+            this.reorderToLeftEdge = false;
             toColumnPosition--;
         }
 
-        toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+        this.toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
                 toColumnPosition);
     }
 
@@ -38,25 +38,27 @@ public class ColumnReorderEndCommand implements ILayerCommand {
     }
 
     public int getToColumnPosition() {
-        return toColumnPositionCoordinate.getColumnPosition();
+        return this.toColumnPositionCoordinate.getColumnPosition();
     }
 
     public boolean isReorderToLeftEdge() {
-        return reorderToLeftEdge;
+        return this.reorderToLeftEdge;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil
                 .convertColumnPositionToTargetContext(
-                        toColumnPositionCoordinate, targetLayer);
+                        this.toColumnPositionCoordinate, targetLayer);
         if (targetToColumnPositionCoordinate != null) {
-            toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+            this.toColumnPositionCoordinate = targetToColumnPositionCoordinate;
             return true;
         } else {
             return false;
         }
     }
 
+    @Override
     public ColumnReorderEndCommand cloneCommand() {
         return new ColumnReorderEndCommand(this);
     }

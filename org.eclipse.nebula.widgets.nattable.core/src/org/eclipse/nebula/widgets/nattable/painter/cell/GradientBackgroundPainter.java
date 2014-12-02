@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Dirk Fauth
  ******************************************************************************/
@@ -33,7 +33,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * painting is skipped.
  * <p>
  * Can be used as a cell painter or a decorator.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -57,7 +57,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
     /**
      * Creates a {@link GradientBackgroundPainter} where the sweeping direction
      * can be set.
-     * 
+     *
      * @param vertical
      *            if <code>true</code> sweeps from top to bottom, else sweeps
      *            from left to right. <code>false</code> is default
@@ -69,7 +69,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
     /**
      * Creates a {@link GradientBackgroundPainter} as wrapper for the given
      * painter with a gradient sweeping from left to right.
-     * 
+     *
      * @param painter
      *            The {@link ICellPainter} that is wrapped by this
      *            {@link GradientBackgroundPainter}
@@ -81,7 +81,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
     /**
      * Creates a {@link GradientBackgroundPainter} as wrapper for the given
      * painter where the sweeping direction can be set.
-     * 
+     *
      * @param painter
      *            The {@link ICellPainter} that is wrapped by this
      *            {@link GradientBackgroundPainter}
@@ -106,7 +106,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
             gc.setForeground(foregroundColor);
             gc.setBackground(backgroundColor);
             gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width,
-                    bounds.height, vertical);
+                    bounds.height, this.vertical);
 
             gc.setForeground(originalForeground);
             gc.setBackground(originalBackground);
@@ -126,7 +126,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
      * and returned. If there is no value registered for any of these
      * attributes, <code>null</code> will be returned which will skip the
      * painting.
-     * 
+     *
      * @param cell
      *            The
      *            {@link org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell}
@@ -160,7 +160,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
      * and returned. If there is no value registered for any of these
      * attributes, <code>null</code> will be returned which will skip the
      * painting.
-     * 
+     *
      * @param cell
      *            The
      *            {@link org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell}

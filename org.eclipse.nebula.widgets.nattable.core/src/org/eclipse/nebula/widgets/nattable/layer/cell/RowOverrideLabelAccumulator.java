@@ -47,7 +47,7 @@ public class RowOverrideLabelAccumulator<T> extends AbstractOverrider {
     /**
      * Gets the unique id for the row with the given index and registers the
      * labels for that id.
-     * 
+     *
      * @param rowIndex
      *            The index of the row for which element the override should be
      *            registered.

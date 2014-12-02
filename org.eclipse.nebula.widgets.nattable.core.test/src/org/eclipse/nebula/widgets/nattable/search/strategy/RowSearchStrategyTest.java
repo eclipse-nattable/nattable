@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,20 +30,20 @@ public class RowSearchStrategyTest {
     @Before
     public void setUp() {
         DefaultGridLayer gridLayer = new GridLayerFixture();
-        layer = gridLayer.getBodyLayer().getSelectionLayer();
+        this.layer = gridLayer.getBodyLayer().getSelectionLayer();
 
-        configRegistry = new ConfigRegistry();
+        this.configRegistry = new ConfigRegistry();
         new DefaultNatTableStyleConfiguration()
-                .configureRegistry(configRegistry);
+                .configureRegistry(this.configRegistry);
     }
 
     @Test
     public void shouldAccessCellInSelectedRow() {
         // Select three rows for searching
         RowSearchStrategy rowStrategy = new RowSearchStrategy(new int[] { 0, 2,
-                4 }, configRegistry);
+                4 }, this.configRegistry);
         PositionCoordinate[] cellsToSearch = rowStrategy
-                .getRowCellsToSearch(layer);
+                .getRowCellsToSearch(this.layer);
         PositionCoordinate cell = cellsToSearch[0];
         Assert.assertEquals(0, cell.getRowPosition());
         cell = cellsToSearch[10];
@@ -56,10 +56,10 @@ public class RowSearchStrategyTest {
     @Test
     public void shouldSearchAllBodyCellsForRowInSelection() {
         RowSearchStrategy rowStrategy = new RowSearchStrategy(new int[] { 2, 0,
-                4 }, configRegistry);
+                4 }, this.configRegistry);
         rowStrategy
                 .setComparator(new CellValueAsStringComparator<Comparable<String>>());
-        rowStrategy.setContextLayer(layer);
+        rowStrategy.setContextLayer(this.layer);
         PositionCoordinate cell = rowStrategy.executeSearch("[2,2]");
         Assert.assertEquals(2, cell.getColumnPosition());
         Assert.assertEquals(2, cell.getRowPosition());

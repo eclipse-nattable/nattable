@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,19 +36,19 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
 
     @Override
     public void mouseMove(MouseEvent event) {
-        dragMode.mouseMove(natTable, event);
+        this.dragMode.mouseMove(this.natTable, event);
     }
 
     @Override
     public void mouseUp(MouseEvent event) {
-        dragMode.mouseUp(natTable, event);
+        this.dragMode.mouseUp(this.natTable, event);
         switchMode(Mode.NORMAL_MODE);
 
         // Bug 379884
         // check if the drag operation started and ended within the same cell
         // in that case the registered click operation is executed also
-        if (eventOnSameCell(mouseDownEvent, event)) {
-            parentModeEventHandler.mouseUp(event);
+        if (eventOnSameCell(this.mouseDownEvent, event)) {
+            this.parentModeEventHandler.mouseUp(event);
         }
     }
 

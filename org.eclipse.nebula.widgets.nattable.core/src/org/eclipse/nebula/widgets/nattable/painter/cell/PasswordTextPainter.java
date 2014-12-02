@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Dirk Fauth - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ import org.eclipse.swt.graphics.Rectangle;
  * {@link CellStyleAttributes#PASSWORD_ECHO_CHAR} to the cell style to use. If
  * no echo character is configured, the bullet character will be used as echo
  * character.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see PasswordCellEditor

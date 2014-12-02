@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,25 +21,25 @@ public class DefaultDisplayConverterTest {
     @Test
     public void testNonNullDataToDisplay() {
         Assert.assertEquals("abc",
-                defaultDisplayTypeConverter.canonicalToDisplayValue("abc"));
+                this.defaultDisplayTypeConverter.canonicalToDisplayValue("abc"));
     }
 
     @Test
     public void testNullDataToDisplay() {
         Assert.assertEquals("",
-                defaultDisplayTypeConverter.canonicalToDisplayValue(null));
+                this.defaultDisplayTypeConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
         Assert.assertEquals("abc",
-                defaultDisplayTypeConverter.displayToCanonicalValue("abc"));
+                this.defaultDisplayTypeConverter.displayToCanonicalValue("abc"));
     }
 
     @Test
     public void testNullDisplayToData() {
         Assert.assertEquals(null,
-                defaultDisplayTypeConverter.displayToCanonicalValue(""));
+                this.defaultDisplayTypeConverter.displayToCanonicalValue(""));
     }
 
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,7 +30,7 @@ public interface IRowGroupModel<T> extends IPersistable {
      * A notification should be sent to any {@link IRowGroupModelListener}s to
      * indicate a change in the model has occurred.
      * </p>
-     * 
+     *
      * @param rowGroup
      *            The {@link IRowGroup} to be added.
      * @return false if the group wasn't added.
@@ -42,7 +42,7 @@ public interface IRowGroupModel<T> extends IPersistable {
      * Adds multiple row groups into the model and only fires off a single
      * change notification.
      * </p>
-     * 
+     *
      * @param rowGroups
      *            A list of {@link IRowGroup}s to add.
      */
@@ -56,7 +56,7 @@ public interface IRowGroupModel<T> extends IPersistable {
      * A notification should be sent to any {@link IRowGroupModelListener}s to
      * indicate a change in the model has occurred.
      * </p>
-     * 
+     *
      * @param rowGroup
      *            The {@link IRowGroup} to remove.
      * @return true if the group was present and removed, false if the group was
@@ -71,7 +71,7 @@ public interface IRowGroupModel<T> extends IPersistable {
 
     /**
      * Returns an the {@link IRowGroup} with the specified group name.
-     * 
+     *
      * @param groupName
      *            The unique name assigned to an {@link IRowGroup}.
      * @return An {@link IRowGroup} or null if there is no group with the
@@ -81,7 +81,7 @@ public interface IRowGroupModel<T> extends IPersistable {
 
     /**
      * Returns the first {@link IRowGroup} found containing the specified row.
-     * 
+     *
      * @param row
      *            The row object.
      * @return An {@link IRowGroup} or null if there is no group with the
@@ -117,7 +117,7 @@ public interface IRowGroupModel<T> extends IPersistable {
 
     /**
      * Registers a listener to the model to receive notification of any changes.
-     * 
+     *
      * @param listener
      *            an {@link IRowGroupModelListener}.
      */
@@ -125,7 +125,7 @@ public interface IRowGroupModel<T> extends IPersistable {
 
     /**
      * Unregisters the listener from the model.
-     * 
+     *
      * @param listener
      *            an {@link IRowGroupModelListener}.
      */

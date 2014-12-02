@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,13 +35,13 @@ public class ViewportEventHandler implements
 
     @Override
     public void handleLayerEvent(IStructuralChangeEvent event) {
-        IUniqueIndexLayer scrollableLayer = viewportLayer.getScrollableLayer();
+        IUniqueIndexLayer scrollableLayer = this.viewportLayer.getScrollableLayer();
 
         if (event.isHorizontalStructureChanged()) {
-            viewportLayer.invalidateHorizontalStructure();
+            this.viewportLayer.invalidateHorizontalStructure();
 
             int columnOffset = 0;
-            int minimumOriginColumnPosition = viewportLayer
+            int minimumOriginColumnPosition = this.viewportLayer
                     .getMinimumOriginColumnPosition();
 
             Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
@@ -53,7 +53,7 @@ public class ViewportEventHandler implements
                     // was hidden, so we try to determine the correct value now
                     // if it is shown again
                     minimumOriginColumnPosition = scrollableLayer
-                            .getColumnPositionByX(viewportLayer
+                            .getColumnPositionByX(this.viewportLayer
                                     .getMinimumOrigin().getX());
                 }
                 for (StructuralDiff columnDiff : columnDiffs) {
@@ -89,8 +89,8 @@ public class ViewportEventHandler implements
 
             // in case of split viewports we use the min column position instead
             // of the calculated value
-            if (viewportLayer.getMinColumnPosition() >= 0) {
-                minimumOriginColumn = viewportLayer.getMinColumnPosition();
+            if (this.viewportLayer.getMinColumnPosition() >= 0) {
+                minimumOriginColumn = this.viewportLayer.getMinColumnPosition();
             }
 
             // if the new origin is out of range (e.g. the last column in the
@@ -112,14 +112,14 @@ public class ViewportEventHandler implements
                 }
             }
 
-            viewportLayer.setMinimumOriginX(startX);
+            this.viewportLayer.setMinimumOriginX(startX);
         }
 
         if (event.isVerticalStructureChanged()) {
-            viewportLayer.invalidateVerticalStructure();
+            this.viewportLayer.invalidateVerticalStructure();
 
             int rowOffset = 0;
-            int minimumOriginRowPosition = viewportLayer
+            int minimumOriginRowPosition = this.viewportLayer
                     .getMinimumOriginRowPosition();
 
             Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
@@ -131,7 +131,7 @@ public class ViewportEventHandler implements
                     // was hidden, so we try to determine the correct value now
                     // if it is shown again
                     minimumOriginRowPosition = scrollableLayer
-                            .getRowPositionByY(viewportLayer.getMinimumOrigin()
+                            .getRowPositionByY(this.viewportLayer.getMinimumOrigin()
                                     .getY());
                 }
                 for (StructuralDiff rowDiff : rowDiffs) {
@@ -166,8 +166,8 @@ public class ViewportEventHandler implements
 
             // in case of split viewports we use the min row position instead of
             // the calculated value
-            if (viewportLayer.getMinRowPosition() >= 0) {
-                minimumOriginRow = viewportLayer.getMinRowPosition();
+            if (this.viewportLayer.getMinRowPosition() >= 0) {
+                minimumOriginRow = this.viewportLayer.getMinRowPosition();
             }
 
             // if the new origin is out of range (e.g. the last row in the
@@ -188,7 +188,7 @@ public class ViewportEventHandler implements
                                     .getRowHeightByPosition(rowCount - 1);
                 }
             }
-            viewportLayer.setMinimumOriginY(startY);
+            this.viewportLayer.setMinimumOriginY(startY);
         }
     }
 

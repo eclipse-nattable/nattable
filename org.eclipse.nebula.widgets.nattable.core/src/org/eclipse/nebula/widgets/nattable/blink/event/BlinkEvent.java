@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,19 +26,23 @@ public class BlinkEvent implements IVisualChangeEvent {
         this.layer = layer;
     }
 
+    @Override
     public ILayerEvent cloneEvent() {
         return new BlinkEvent(this.layer);
     }
 
+    @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        return Arrays.asList(new Rectangle(0, 0, layer.getHeight(), layer
+        return Arrays.asList(new Rectangle(0, 0, this.layer.getHeight(), this.layer
                 .getWidth()));
     }
 
+    @Override
     public ILayer getLayer() {
-        return layer;
+        return this.layer;
     }
 
+    @Override
     public boolean convertToLocal(ILayer localLayer) {
         return true;
     }

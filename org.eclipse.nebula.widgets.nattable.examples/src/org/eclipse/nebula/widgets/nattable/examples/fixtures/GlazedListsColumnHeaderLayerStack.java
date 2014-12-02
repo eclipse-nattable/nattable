@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -53,13 +53,13 @@ public class GlazedListsColumnHeaderLayerStack<T> extends
             IConfigRegistry configRegistry, DefaultBodyLayerStack bodyLayerStack) {
 
         this.dataProvider = dataProvider;
-        dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
-        columnHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayerStack,
+        this.dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
+        this.columnHeaderLayer = new ColumnHeaderLayer(this.dataLayer, bodyLayerStack,
                 bodyLayerStack.getSelectionLayer());
 
         SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
-                columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
-                        columnPropertyAccessor, configRegistry, dataLayer),
+                this.columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
+                        columnPropertyAccessor, configRegistry, this.dataLayer),
                 false);
 
         setUnderlyingLayer(sortHeaderLayer);
@@ -71,14 +71,14 @@ public class GlazedListsColumnHeaderLayerStack<T> extends
     }
 
     public DataLayer getDataLayer() {
-        return dataLayer;
+        return this.dataLayer;
     }
 
     public IDataProvider getDataProvider() {
-        return dataProvider;
+        return this.dataProvider;
     }
 
     public ColumnHeaderLayer getColumnHeaderLayer() {
-        return columnHeaderLayer;
+        return this.columnHeaderLayer;
     }
 }

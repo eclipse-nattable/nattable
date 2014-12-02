@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -182,9 +182,9 @@ public class TextPainter_Examples extends AbstractNatExample {
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
             {
-                vAlign = VerticalAlignmentEnum.TOP;
-                hAlign = HorizontalAlignmentEnum.LEFT;
-                cellPainter = new LineBorderDecorator(painter);
+                this.vAlign = VerticalAlignmentEnum.TOP;
+                this.hAlign = HorizontalAlignmentEnum.LEFT;
+                this.cellPainter = new LineBorderDecorator(painter);
             }
         });
 
@@ -208,7 +208,7 @@ public class TextPainter_Examples extends AbstractNatExample {
                     protected void addColumnHeaderStyleConfig() {
                         addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
                             {
-                                cellPainter = new BeveledBorderDecorator(
+                                this.cellPainter = new BeveledBorderDecorator(
                                         painter);
                             }
                         });
@@ -224,9 +224,9 @@ public class TextPainter_Examples extends AbstractNatExample {
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
             {
-                vAlign = VerticalAlignmentEnum.TOP;
-                hAlign = HorizontalAlignmentEnum.LEFT;
-                cellPainter = new LineBorderDecorator(painter);
+                this.vAlign = VerticalAlignmentEnum.TOP;
+                this.hAlign = HorizontalAlignmentEnum.LEFT;
+                this.cellPainter = new LineBorderDecorator(painter);
             }
         });
 
@@ -250,7 +250,7 @@ public class TextPainter_Examples extends AbstractNatExample {
                     protected void addColumnHeaderStyleConfig() {
                         addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
                             {
-                                cellPainter = new BeveledBorderDecorator(
+                                this.cellPainter = new BeveledBorderDecorator(
                                         painter);
                             }
                         });
@@ -288,10 +288,10 @@ public class TextPainter_Examples extends AbstractNatExample {
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
             {
-                vAlign = VerticalAlignmentEnum.TOP;
-                hAlign = HorizontalAlignmentEnum.LEFT;
-                cellPainter = new LineBorderDecorator(painter);
-                font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
+                this.vAlign = VerticalAlignmentEnum.TOP;
+                this.hAlign = HorizontalAlignmentEnum.LEFT;
+                this.cellPainter = new LineBorderDecorator(painter);
+                this.font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
             }
         });
 
@@ -317,7 +317,7 @@ public class TextPainter_Examples extends AbstractNatExample {
                     protected void addColumnHeaderStyleConfig() {
                         addConfiguration(new DefaultColumnHeaderStyleConfiguration() {
                             {
-                                cellPainter = new BeveledBorderDecorator(
+                                this.cellPainter = new BeveledBorderDecorator(
                                         new VerticalTextPainter());
                             }
                         });
@@ -333,10 +333,10 @@ public class TextPainter_Examples extends AbstractNatExample {
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration() {
             {
-                vAlign = VerticalAlignmentEnum.MIDDLE;
-                hAlign = HorizontalAlignmentEnum.LEFT;
-                cellPainter = new LineBorderDecorator(painter);
-                font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
+                this.vAlign = VerticalAlignmentEnum.MIDDLE;
+                this.hAlign = HorizontalAlignmentEnum.LEFT;
+                this.cellPainter = new LineBorderDecorator(painter);
+                this.font = GUIHelper.getFont(new FontData("Arial", 20, SWT.NORMAL));
             }
         });
 

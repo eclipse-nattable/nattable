@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Slider;
 /**
  * Example showing how to implement NatTable that contains two vertical split
  * viewports.
- * 
+ *
  * @author Dirk Fauth
  *
  */

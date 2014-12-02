@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -63,12 +63,13 @@ public class Rendereing_a_cell_as_a_button extends AbstractNatExample {
                 + "Note: The button is 'drawn' using a custom painter. This is more efficient than using a Button widget.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
-        gridLayer = new SelectionExampleGridLayer();
-        NatTable natTable = new NatTable(parent, gridLayer, false);
+        this.gridLayer = new SelectionExampleGridLayer();
+        NatTable natTable = new NatTable(parent, this.gridLayer, false);
         IConfigRegistry configRegistry = new ConfigRegistry();
 
-        DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
+        DataLayer bodyDataLayer = this.gridLayer.getBodyDataLayer();
 
         // Step 1: Create a label accumulator - adds custom labels to all cells
         // which we
@@ -84,7 +85,7 @@ public class Rendereing_a_cell_as_a_button extends AbstractNatExample {
         // label applied to the cell.
         addButtonToColumn(configRegistry, natTable);
         natTable.addConfiguration(new ButtonClickConfiguration<RowDataFixture>(
-                buttonPainter));
+                this.buttonPainter));
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new DebugMenuConfiguration(natTable));
@@ -103,16 +104,16 @@ public class Rendereing_a_cell_as_a_button extends AbstractNatExample {
 
     private void addButtonToColumn(IConfigRegistry configRegistry,
             Composite parent) {
-        buttonPainter = new ButtonCellPainter(new CellPainterDecorator(
+        this.buttonPainter = new ButtonCellPainter(new CellPainterDecorator(
                 new TextPainter(), CellEdgeEnum.RIGHT, new ImagePainter(
                         GUIHelper.getImage("preferences"))));
 
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, buttonPainter,
+                CellConfigAttributes.CELL_PAINTER, this.buttonPainter,
                 DisplayMode.NORMAL, CUSTOM_CELL_LABEL);
 
         // Add your listener to the button
-        buttonPainter.addClickListener(new MyMouseAction());
+        this.buttonPainter.addClickListener(new MyMouseAction());
 
         // Set the color of the cell. This is picked up by the button painter to
         // style the button
@@ -131,6 +132,7 @@ public class Rendereing_a_cell_as_a_button extends AbstractNatExample {
      */
     class MyMouseAction implements IMouseAction {
 
+        @Override
         public void run(NatTable natTable, MouseEvent event) {
             NatEventData eventData = NatEventData
                     .createInstanceFromEvent(event);
@@ -139,7 +141,7 @@ public class Rendereing_a_cell_as_a_button extends AbstractNatExample {
             int columnIndex = natTable.getColumnIndexByPosition(eventData
                     .getColumnPosition());
 
-            ListDataProvider<RowDataFixture> dataProvider = gridLayer
+            ListDataProvider<RowDataFixture> dataProvider = Rendereing_a_cell_as_a_button.this.gridLayer
                     .getBodyDataProvider();
 
             Object rowObject = dataProvider.getRowObject(rowIndex);
@@ -161,6 +163,7 @@ public class Rendereing_a_cell_as_a_button extends AbstractNatExample {
         /**
          * Configure the UI bindings for the mouse click
          */
+        @Override
         public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
             // Match a mouse event on the body, when the left button is clicked
             // and the custom cell label is present
@@ -170,7 +173,7 @@ public class Rendereing_a_cell_as_a_button extends AbstractNatExample {
 
             // Inform the button painter of the click.
             uiBindingRegistry.registerMouseDownBinding(mouseEventMatcher,
-                    buttonCellPainter);
+                    this.buttonCellPainter);
         }
 
     }

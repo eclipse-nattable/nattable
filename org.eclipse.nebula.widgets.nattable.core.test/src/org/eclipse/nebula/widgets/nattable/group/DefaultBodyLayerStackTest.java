@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -32,14 +32,15 @@ public class DefaultBodyLayerStackTest {
 
     @Before
     public void setup() {
-        layerStack = new DefaultBodyLayerStack(new DataLayerFixture(10, 5, 100,
+        this.layerStack = new DefaultBodyLayerStack(new DataLayerFixture(10, 5, 100,
                 20));
-        layerStack.setClientAreaProvider(new IClientAreaProvider() {
+        this.layerStack.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 2000, 250);
             }
         });
-        layerStack.doCommand(new ClientAreaResizeCommand(new Shell(Display
+        this.layerStack.doCommand(new ClientAreaResizeCommand(new Shell(Display
                 .getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
     }
 
@@ -50,95 +51,95 @@ public class DefaultBodyLayerStackTest {
     @Test
     public void hideColumnsAndReorder() throws Exception {
         // Hide 3, 4
-        layerStack.doCommand(new ColumnHideCommand(layerStack, 3));
-        layerStack.doCommand(new ColumnHideCommand(layerStack, 3));
+        this.layerStack.doCommand(new ColumnHideCommand(this.layerStack, 3));
+        this.layerStack.doCommand(new ColumnHideCommand(this.layerStack, 3));
 
-        assertEquals(0, layerStack.getColumnIndexByPosition(0));
-        assertEquals(1, layerStack.getColumnIndexByPosition(1));
-        assertEquals(2, layerStack.getColumnIndexByPosition(2));
-        assertEquals(5, layerStack.getColumnIndexByPosition(3));
-        assertEquals(6, layerStack.getColumnIndexByPosition(4));
-        assertEquals(7, layerStack.getColumnIndexByPosition(5));
-        assertEquals(8, layerStack.getColumnIndexByPosition(6));
-        assertEquals(9, layerStack.getColumnIndexByPosition(7));
-        assertEquals(-1, layerStack.getColumnIndexByPosition(8));
+        assertEquals(0, this.layerStack.getColumnIndexByPosition(0));
+        assertEquals(1, this.layerStack.getColumnIndexByPosition(1));
+        assertEquals(2, this.layerStack.getColumnIndexByPosition(2));
+        assertEquals(5, this.layerStack.getColumnIndexByPosition(3));
+        assertEquals(6, this.layerStack.getColumnIndexByPosition(4));
+        assertEquals(7, this.layerStack.getColumnIndexByPosition(5));
+        assertEquals(8, this.layerStack.getColumnIndexByPosition(6));
+        assertEquals(9, this.layerStack.getColumnIndexByPosition(7));
+        assertEquals(-1, this.layerStack.getColumnIndexByPosition(8));
 
         // Reorder 0 -> 4
-        layerStack.doCommand(new ColumnReorderCommand(layerStack, 0, 4));
+        this.layerStack.doCommand(new ColumnReorderCommand(this.layerStack, 0, 4));
 
-        assertEquals(1, layerStack.getColumnIndexByPosition(0));
-        assertEquals(2, layerStack.getColumnIndexByPosition(1));
-        assertEquals(5, layerStack.getColumnIndexByPosition(2));
-        assertEquals(0, layerStack.getColumnIndexByPosition(3));
-        assertEquals(6, layerStack.getColumnIndexByPosition(4));
-        assertEquals(7, layerStack.getColumnIndexByPosition(5));
-        assertEquals(8, layerStack.getColumnIndexByPosition(6));
-        assertEquals(9, layerStack.getColumnIndexByPosition(7));
-        assertEquals(-1, layerStack.getColumnIndexByPosition(8));
+        assertEquals(1, this.layerStack.getColumnIndexByPosition(0));
+        assertEquals(2, this.layerStack.getColumnIndexByPosition(1));
+        assertEquals(5, this.layerStack.getColumnIndexByPosition(2));
+        assertEquals(0, this.layerStack.getColumnIndexByPosition(3));
+        assertEquals(6, this.layerStack.getColumnIndexByPosition(4));
+        assertEquals(7, this.layerStack.getColumnIndexByPosition(5));
+        assertEquals(8, this.layerStack.getColumnIndexByPosition(6));
+        assertEquals(9, this.layerStack.getColumnIndexByPosition(7));
+        assertEquals(-1, this.layerStack.getColumnIndexByPosition(8));
     }
 
     @Test
     public void resizeAColumnAndHideIt() throws Exception {
-        assertEquals(10, layerStack.getColumnCount());
-        assertEquals(1000, layerStack.getWidth());
+        assertEquals(10, this.layerStack.getColumnCount());
+        assertEquals(1000, this.layerStack.getWidth());
 
         // Resize 2
-        layerStack.doCommand(new ColumnResizeCommand(layerStack, 2, 500));
-        assertEquals(1400, layerStack.getWidth());
+        this.layerStack.doCommand(new ColumnResizeCommand(this.layerStack, 2, 500));
+        assertEquals(1400, this.layerStack.getWidth());
 
-        assertEquals(1, layerStack.getColumnIndexByPosition(1));
-        assertEquals(100, layerStack.getColumnWidthByPosition(1));
-        assertEquals(100, layerStack.getStartXOfColumnPosition(1));
+        assertEquals(1, this.layerStack.getColumnIndexByPosition(1));
+        assertEquals(100, this.layerStack.getColumnWidthByPosition(1));
+        assertEquals(100, this.layerStack.getStartXOfColumnPosition(1));
 
-        assertEquals(2, layerStack.getColumnIndexByPosition(2));
-        assertEquals(500, layerStack.getColumnWidthByPosition(2));
-        assertEquals(200, layerStack.getStartXOfColumnPosition(2));
+        assertEquals(2, this.layerStack.getColumnIndexByPosition(2));
+        assertEquals(500, this.layerStack.getColumnWidthByPosition(2));
+        assertEquals(200, this.layerStack.getStartXOfColumnPosition(2));
 
-        assertEquals(3, layerStack.getColumnIndexByPosition(3));
-        assertEquals(100, layerStack.getColumnWidthByPosition(3));
-        assertEquals(700, layerStack.getStartXOfColumnPosition(3));
+        assertEquals(3, this.layerStack.getColumnIndexByPosition(3));
+        assertEquals(100, this.layerStack.getColumnWidthByPosition(3));
+        assertEquals(700, this.layerStack.getStartXOfColumnPosition(3));
 
         // Hide 2
-        layerStack.doCommand(new ColumnHideCommand(layerStack, 2));
-        assertEquals(9, layerStack.getColumnCount());
+        this.layerStack.doCommand(new ColumnHideCommand(this.layerStack, 2));
+        assertEquals(9, this.layerStack.getColumnCount());
 
-        assertEquals(1, layerStack.getColumnIndexByPosition(1));
-        assertEquals(100, layerStack.getColumnWidthByPosition(1));
-        assertEquals(100, layerStack.getStartXOfColumnPosition(1));
+        assertEquals(1, this.layerStack.getColumnIndexByPosition(1));
+        assertEquals(100, this.layerStack.getColumnWidthByPosition(1));
+        assertEquals(100, this.layerStack.getStartXOfColumnPosition(1));
 
-        assertEquals(3, layerStack.getColumnIndexByPosition(2));
-        assertEquals(100, layerStack.getColumnWidthByPosition(2));
-        assertEquals(200, layerStack.getStartXOfColumnPosition(2));
+        assertEquals(3, this.layerStack.getColumnIndexByPosition(2));
+        assertEquals(100, this.layerStack.getColumnWidthByPosition(2));
+        assertEquals(200, this.layerStack.getStartXOfColumnPosition(2));
 
-        assertEquals(4, layerStack.getColumnIndexByPosition(3));
-        assertEquals(100, layerStack.getColumnWidthByPosition(3));
-        assertEquals(300, layerStack.getStartXOfColumnPosition(3));
+        assertEquals(4, this.layerStack.getColumnIndexByPosition(3));
+        assertEquals(100, this.layerStack.getColumnWidthByPosition(3));
+        assertEquals(300, this.layerStack.getStartXOfColumnPosition(3));
 
-        assertEquals(9, layerStack.getColumnIndexByPosition(8));
-        assertEquals(100, layerStack.getColumnWidthByPosition(8));
-        assertEquals(800, layerStack.getStartXOfColumnPosition(8));
+        assertEquals(9, this.layerStack.getColumnIndexByPosition(8));
+        assertEquals(100, this.layerStack.getColumnWidthByPosition(8));
+        assertEquals(800, this.layerStack.getStartXOfColumnPosition(8));
     }
 
     @Test
     public void resizeAColumnAndReorderIt() throws Exception {
-        assertEquals(10, layerStack.getColumnCount());
-        assertEquals(1000, layerStack.getWidth());
+        assertEquals(10, this.layerStack.getColumnCount());
+        assertEquals(1000, this.layerStack.getWidth());
 
         // Resize 2
-        layerStack.doCommand(new ColumnResizeCommand(layerStack, 2, 500));
-        assertEquals(1400, layerStack.getWidth());
+        this.layerStack.doCommand(new ColumnResizeCommand(this.layerStack, 2, 500));
+        assertEquals(1400, this.layerStack.getWidth());
 
         // Reorder 2 -> 4
-        layerStack.doCommand(new ColumnReorderCommand(layerStack, 2, 4));
+        this.layerStack.doCommand(new ColumnReorderCommand(this.layerStack, 2, 4));
 
-        assertEquals(0, layerStack.getColumnIndexByPosition(0));
-        assertEquals(1, layerStack.getColumnIndexByPosition(1));
-        assertEquals(3, layerStack.getColumnIndexByPosition(2));
-        assertEquals(2, layerStack.getColumnIndexByPosition(3));
-        assertEquals(4, layerStack.getColumnIndexByPosition(4));
-        assertEquals(5, layerStack.getColumnIndexByPosition(5));
-        assertEquals(6, layerStack.getColumnIndexByPosition(6));
-        assertEquals(7, layerStack.getColumnIndexByPosition(7));
-        assertEquals(8, layerStack.getColumnIndexByPosition(8));
+        assertEquals(0, this.layerStack.getColumnIndexByPosition(0));
+        assertEquals(1, this.layerStack.getColumnIndexByPosition(1));
+        assertEquals(3, this.layerStack.getColumnIndexByPosition(2));
+        assertEquals(2, this.layerStack.getColumnIndexByPosition(3));
+        assertEquals(4, this.layerStack.getColumnIndexByPosition(4));
+        assertEquals(5, this.layerStack.getColumnIndexByPosition(5));
+        assertEquals(6, this.layerStack.getColumnIndexByPosition(6));
+        assertEquals(7, this.layerStack.getColumnIndexByPosition(7));
+        assertEquals(8, this.layerStack.getColumnIndexByPosition(8));
     }
 }

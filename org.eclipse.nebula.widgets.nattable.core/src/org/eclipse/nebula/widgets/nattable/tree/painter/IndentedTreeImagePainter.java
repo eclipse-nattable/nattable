@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -39,11 +39,11 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * Creates an IndentedTreeImagePainter based on the given ITreeRowModel.
      * Will use 10 pixels for indentation per depth and a default
      * TreeImagePainter for rendering the icons in the tree.
-     * 
+     *
      * @param treeRowModel
      *            The ITreeRowModel that is needed to get information about tree
      *            states like depth, children and expand/collapse.
-     * 
+     *
      * @deprecated Use constructor without ITreeRowModel parameter
      */
     @Deprecated
@@ -55,13 +55,13 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * Creates an IndentedTreeImagePainter based on the given ITreeRowModel.
      * Will use the given number of pixels for indentation per depth and a
      * default TreeImagePainter for rendering the icons in the tree.
-     * 
+     *
      * @param treeRowModel
      *            The ITreeRowModel that is needed to get information about tree
      *            states like depth, children and expand/collapse.
      * @param treeIndent
      *            The number of pixels to indent per depth.
-     * 
+     *
      * @deprecated Use constructor without ITreeRowModel parameter
      */
     @Deprecated
@@ -74,7 +74,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * Creates an IndentedTreeImagePainter based on the given ITreeRowModel,
      * indentation per depth and ICellPainter for painting the icons in the
      * tree.
-     * 
+     *
      * @param treeRowModel
      *            The ITreeRowModel that is needed to get information about tree
      *            states like depth, children and expand/collapse.
@@ -86,7 +86,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      *            paints expand/collapse/leaf icons regarding the node state,
      *            because the ui bindings for expand/collapse are registered
      *            against that type.
-     * 
+     *
      * @deprecated Use constructor without ITreeRowModel parameter
      */
     @Deprecated
@@ -108,7 +108,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * Creates an IndentedTreeImagePainter. Will use the given number of pixels
      * for indentation per depth and a default TreeImagePainter for rendering
      * the icons in the tree.
-     * 
+     *
      * @param treeIndent
      *            The number of pixels to indent per depth.
      */
@@ -119,7 +119,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
     /**
      * Creates an IndentedTreeImagePainter using the given indentation per depth
      * and ICellPainter for painting the icons in the tree.
-     * 
+     *
      * @param treeIndent
      *            The number of pixels to indent per depth.
      * @param treeImagePainter
@@ -155,7 +155,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * background or not via method parameter. With the additional parameters,
      * the behaviour of the created {@link CellPainterDecorator} can be
      * configured in terms of rendering.
-     * 
+     *
      * @param treeIndent
      *            The number of pixels to indent per depth.
      * @param interiorPainter
@@ -196,7 +196,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * or not via method parameter. With the additional parameters, the
      * behaviour of the created {@link CellPainterDecorator} can be configured
      * in terms of rendering.
-     * 
+     *
      * @param treeIndent
      *            The number of pixels to indent per depth.
      * @param interiorPainter
@@ -240,7 +240,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * constructor gives the opportunity to configure the behaviour of the
      * {@link TreeImagePainter} and the {@link CellPainterDecorator} for some
      * attributes. Remains because of downwards compatibility.
-     * 
+     *
      * @param treeIndent
      *            The number of pixels to indent per depth.
      * @param interiorPainter

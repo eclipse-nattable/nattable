@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -44,12 +44,11 @@ public class LayerPrinter {
     private final IClientAreaProvider originalClientAreaProvider;
     public static final int FOOTER_HEIGHT_IN_PRINTER_DPI = 300;
 
-    final SimpleDateFormat dateFormat = new SimpleDateFormat(
-            "EEE, d MMM yyyy HH:mm a"); //$NON-NLS-1$
+    final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm a"); //$NON-NLS-1$
     private final String footerDate;
 
     /**
-     * 
+     *
      * @param layer
      *            The layer to print. Usually the top most layer in the layer
      *            stack. For grids this should be the GridLayer, for custom
@@ -62,12 +61,12 @@ public class LayerPrinter {
         this.layer = layer;
         this.configRegistry = configRegistry;
         this.originalClientAreaProvider = layer.getClientAreaProvider();
-        this.footerDate = dateFormat.format(new Date());
+        this.footerDate = this.dateFormat.format(new Date());
     }
 
     /**
      * Computes the scale factor to match the printer resolution.
-     * 
+     *
      * @param printer
      *            The printer that will be used.
      * @return The amount to scale the screen resolution by, to match the
@@ -86,13 +85,13 @@ public class LayerPrinter {
      * @return The size of the layer to fit all the contents.
      */
     private Rectangle getTotalArea() {
-        return new Rectangle(0, 0, layer.getWidth(), layer.getHeight());
+        return new Rectangle(0, 0, this.layer.getWidth(), this.layer.getHeight());
     }
 
     /**
      * Calculates number of horizontal and vertical pages needed to print the
      * entire layer.
-     * 
+     *
      * @param printer
      *            The printer that will be used.
      * @return The number of horizontal and vertical pages that are needed to
@@ -115,14 +114,14 @@ public class LayerPrinter {
     /**
      * Will first open the PrintDialog to let a user configure the print job and
      * then starts the print job.
-     * 
+     *
      * @param shell
      *            The shell which should be the parent of the PrintDialog.
      */
     public void print(final Shell shell) {
         // turn viewport off to ensure calculation of the print pages for the
         // whole table
-        layer.doCommand(new TurnViewportOffCommand());
+        this.layer.doCommand(new TurnViewportOffCommand());
 
         Printer printer = null;
         try {
@@ -132,7 +131,7 @@ public class LayerPrinter {
             }
         } finally {
             // turn viewport on
-            layer.doCommand(new TurnViewportOnCommand());
+            this.layer.doCommand(new TurnViewportOnCommand());
         }
 
         // Note: As we are operating on the same layer instance that is shown in
@@ -152,7 +151,7 @@ public class LayerPrinter {
     /**
      * Checks if a given page number should be printed. Page is allowed to print
      * if: User asked to print all pages or Page in a specified range
-     * 
+     *
      * @param printerData
      *            The printer settings made by the user. Needed to determine if
      *            a page should be printed dependent to the scope
@@ -172,7 +171,7 @@ public class LayerPrinter {
     /**
      * Opens the PrintDialog to let the user specify the printer and print
      * configurations to use.
-     * 
+     *
      * @param shell
      *            The Shell which should be the parent for the PrintDialog
      * @return The selected printer with the print configuration made by the
@@ -197,7 +196,7 @@ public class LayerPrinter {
 
     /**
      * Computes the print area, including margins
-     * 
+     *
      * @param printer
      *            The printer that will be used.
      * @return The print area that will be used to render the table.
@@ -253,22 +252,22 @@ public class LayerPrinter {
 
         @Override
         public void run() {
-            if (printer.startJob("NatTable")) { //$NON-NLS-1$
+            if (this.printer.startJob("NatTable")) { //$NON-NLS-1$
                 // if a SummaryRowLayer is in the layer stack, we need to ensure
                 // that the values are calculated
-                layer.doCommand(new CalculateSummaryRowValuesCommand());
+                LayerPrinter.this.layer.doCommand(new CalculateSummaryRowValuesCommand());
 
                 // ensure that the viewport is turned off
-                layer.doCommand(new TurnViewportOffCommand());
+                LayerPrinter.this.layer.doCommand(new TurnViewportOffCommand());
 
                 // set the size of the layer according to the print setttings
                 // made by the user
-                setLayerSize(printer.getPrinterData());
+                setLayerSize(this.printer.getPrinterData());
 
-                final Rectangle printerClientArea = computePrintArea(printer);
-                final Point scaleFactor = computeScaleFactor(printer);
-                final Point pageCount = getPageCount(printer);
-                GC gc = new GC(printer);
+                final Rectangle printerClientArea = computePrintArea(this.printer);
+                final Point scaleFactor = computeScaleFactor(this.printer);
+                final Point pageCount = getPageCount(this.printer);
+                GC gc = new GC(this.printer);
 
                 // Print pages Left to Right and then Top to Down
                 int currentPage = 1;
@@ -286,10 +285,10 @@ public class LayerPrinter {
                                 (printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI)
                                         / scaleFactor.y);
 
-                        if (shouldPrint(printer.getPrinterData(), currentPage)) {
-                            printer.startPage();
+                        if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
+                            this.printer.startPage();
 
-                            Transform printerTransform = new Transform(printer);
+                            Transform printerTransform = new Transform(this.printer);
 
                             // Adjust for DPI difference between display and
                             // printer
@@ -315,17 +314,17 @@ public class LayerPrinter {
 
                             printFooter(gc, currentPage, printBounds);
 
-                            printer.endPage();
+                            this.printer.endPage();
                             printerTransform.dispose();
                         }
                         currentPage++;
                     }
                 }
 
-                printer.endJob();
+                this.printer.endJob();
 
                 gc.dispose();
-                printer.dispose();
+                this.printer.dispose();
             }
             restoreLayerState();
         }
@@ -335,18 +334,18 @@ public class LayerPrinter {
          * made by the user. In case a user selected to print everything, the
          * size needs to be extended so that all the contents fit in the
          * viewport to ensure that we print the <i>entire</i> table.
-         * 
+         *
          * @param printerData
          *            The PrinterData that was configured by the user on the
          *            PrintDialog.
          */
         private void setLayerSize(PrinterData printerData) {
             if (printerData.scope == PrinterData.SELECTION) {
-                layer.setClientAreaProvider(originalClientAreaProvider);
+                LayerPrinter.this.layer.setClientAreaProvider(LayerPrinter.this.originalClientAreaProvider);
             } else {
                 final Rectangle fullLayerSize = getTotalArea();
 
-                layer.setClientAreaProvider(new IClientAreaProvider() {
+                LayerPrinter.this.layer.setClientAreaProvider(new IClientAreaProvider() {
                     @Override
                     public Rectangle getClientArea() {
                         return fullLayerSize;
@@ -356,26 +355,26 @@ public class LayerPrinter {
                 // in case the whole layer should be printed or only the
                 // selected pages,
                 // we need to ensure to set the starting point to 0/0
-                layer.doCommand(new PrintEntireGridCommand());
+                LayerPrinter.this.layer.doCommand(new PrintEntireGridCommand());
             }
         }
 
         /**
          * Print the part of the layer that matches the given print bounds.
-         * 
+         *
          * @param gc
          *            The print GC to render the layer to.
          * @param printBounds
          *            The bounds of the print page.
          */
         private void printLayer(GC gc, Rectangle printBounds) {
-            layer.getLayerPainter().paintLayer(layer, gc, 0, 0, printBounds,
-                    configRegistry);
+            LayerPrinter.this.layer.getLayerPainter().paintLayer(LayerPrinter.this.layer, gc, 0, 0, printBounds,
+                    LayerPrinter.this.configRegistry);
         }
 
         /**
          * Print the footer to the page.
-         * 
+         *
          * @param gc
          *            The print GC to render the footer to.
          * @param totalPageCount
@@ -399,7 +398,7 @@ public class LayerPrinter {
                     printBounds.x, printBounds.y + printBounds.height + 15);
 
             // Approximate width of the date string: 140
-            gc.drawText(footerDate, printBounds.x + printBounds.width - 140,
+            gc.drawText(LayerPrinter.this.footerDate, printBounds.x + printBounds.width - 140,
                     printBounds.y + printBounds.height + 15);
         }
 
@@ -409,8 +408,8 @@ public class LayerPrinter {
          * viewport on again.
          */
         private void restoreLayerState() {
-            layer.setClientAreaProvider(originalClientAreaProvider);
-            layer.doCommand(new TurnViewportOnCommand());
+            LayerPrinter.this.layer.setClientAreaProvider(LayerPrinter.this.originalClientAreaProvider);
+            LayerPrinter.this.layer.doCommand(new TurnViewportOnCommand());
         }
 
     }

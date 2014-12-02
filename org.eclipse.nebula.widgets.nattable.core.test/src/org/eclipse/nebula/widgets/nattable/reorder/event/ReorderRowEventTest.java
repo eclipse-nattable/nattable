@@ -29,14 +29,14 @@ public class ReorderRowEventTest {
 
     @Before
     public void setUp() {
-        rowReorderLayer = new BaseRowReorderLayerFixture(new DataLayerFixture());
+        this.rowReorderLayer = new BaseRowReorderLayerFixture(new DataLayerFixture());
     }
 
     @Test
     public void shouldThrowAReorderRowEvent() {
         LayerListenerFixture listenerFixture = new LayerListenerFixture();
-        rowReorderLayer.addLayerListener(listenerFixture);
-        rowReorderLayer.reorderRowPosition(3, 1);
+        this.rowReorderLayer.addLayerListener(listenerFixture);
+        this.rowReorderLayer.reorderRowPosition(3, 1);
 
         Assert.assertEquals(1, listenerFixture.getEventsCount());
         Assert.assertNotNull(listenerFixture

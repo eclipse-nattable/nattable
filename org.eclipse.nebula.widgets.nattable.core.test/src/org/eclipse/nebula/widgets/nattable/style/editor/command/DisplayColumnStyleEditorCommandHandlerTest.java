@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -48,28 +48,28 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
 
     @Before
     public void setup() {
-        labelAccumulatorFixture = new ColumnOverrideLabelAccumulator(
+        this.labelAccumulatorFixture = new ColumnOverrideLabelAccumulator(
                 new DataLayerFixture());
-        natTableFixture = new NatTableFixture();
-        configRegistryFixture = natTableFixture.getConfigRegistry();
-        commandFixture = new DisplayColumnStyleEditorCommand(natTableFixture,
-                natTableFixture.getConfigRegistry(), 1, 1);
+        this.natTableFixture = new NatTableFixture();
+        this.configRegistryFixture = this.natTableFixture.getConfigRegistry();
+        this.commandFixture = new DisplayColumnStyleEditorCommand(this.natTableFixture,
+                this.natTableFixture.getConfigRegistry(), 1, 1);
 
-        final SelectionLayer selectionLayer = ((DummyGridLayerStack) natTableFixture
+        final SelectionLayer selectionLayer = ((DummyGridLayerStack) this.natTableFixture
                 .getLayer()).getBodyLayer().getSelectionLayer();
-        handlerUnderTest = new DisplayColumnStyleEditorCommandHandler(
-                selectionLayer, labelAccumulatorFixture, configRegistryFixture);
+        this.handlerUnderTest = new DisplayColumnStyleEditorCommandHandler(
+                selectionLayer, this.labelAccumulatorFixture, this.configRegistryFixture);
     }
 
     @Test
     public void doCommand() throws Exception {
-        handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(),
+        this.handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(),
                 new CellStyleFixture());
-        handlerUnderTest.applySelectedStyleToColumns(commandFixture,
+        this.handlerUnderTest.applySelectedStyleToColumns(this.commandFixture,
                 new int[] { 0 });
 
-        Style selectedStyle = (Style) configRegistryFixture.getConfigAttribute(
-                CELL_STYLE, NORMAL, handlerUnderTest.getConfigLabel(0));
+        Style selectedStyle = (Style) this.configRegistryFixture.getConfigAttribute(
+                CELL_STYLE, NORMAL, this.handlerUnderTest.getConfigLabel(0));
 
         assertEquals(
                 CellStyleFixture.TEST_BG_COLOR,
@@ -80,7 +80,7 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
                 selectedStyle
                         .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 
-        List<String> columnLableOverrides = handlerUnderTest.columnLabelAccumulator
+        List<String> columnLableOverrides = this.handlerUnderTest.columnLabelAccumulator
                 .getOverrides(Integer.valueOf(0));
         assertEquals(1, columnLableOverrides.size());
         assertEquals(USER_EDITED_COLUMN_STYLE_LABEL_PREFIX + "0",
@@ -89,11 +89,11 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
 
     @Test
     public void parseColumnIndexFromKey() throws Exception {
-        int i = handlerUnderTest
+        int i = this.handlerUnderTest
                 .parseColumnIndexFromKey(".BODY.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_3.horizontalAlignment");
         assertEquals(3, i);
 
-        i = handlerUnderTest
+        i = this.handlerUnderTest
                 .parseColumnIndexFromKey(".BODY.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_12.horizontalAlignment");
         assertEquals(12, i);
     }
@@ -105,11 +105,11 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
         CellStyleFixture style2 = new CellStyleFixture(
                 HorizontalAlignmentEnum.RIGHT);
 
-        handlerUnderTest.stylesToPersist.put("label1", style1);
-        handlerUnderTest.stylesToPersist.put("label2", style2);
+        this.handlerUnderTest.stylesToPersist.put("label1", style1);
+        this.handlerUnderTest.stylesToPersist.put("label2", style2);
 
         PropertiesFixture propertiesFixture = new PropertiesFixture();
-        handlerUnderTest.saveState("prefix", propertiesFixture);
+        this.handlerUnderTest.saveState("prefix", propertiesFixture);
 
         assertEquals(
                 HorizontalAlignmentEnum.LEFT.name(),
@@ -124,12 +124,12 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
     @Test
     public void shouldRemoveLabelFromPersistenceIfStyleIsCleared()
             throws Exception {
-        handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(), null);
-        handlerUnderTest.applySelectedStyleToColumns(commandFixture,
+        this.handlerUnderTest.dialog = new ColumnStyleEditorDialog(new Shell(), null);
+        this.handlerUnderTest.applySelectedStyleToColumns(this.commandFixture,
                 new int[] { 0 });
 
-        Style selectedStyle = (Style) configRegistryFixture.getConfigAttribute(
-                CELL_STYLE, NORMAL, handlerUnderTest.getConfigLabel(0));
+        Style selectedStyle = (Style) this.configRegistryFixture.getConfigAttribute(
+                CELL_STYLE, NORMAL, this.handlerUnderTest.getConfigLabel(0));
 
         DefaultNatTableStyleConfiguration defaultStyle = new DefaultNatTableStyleConfiguration();
         assertEquals(
@@ -142,7 +142,7 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
                         .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
 
         Properties properties = new Properties();
-        handlerUnderTest.saveState("prefix", properties);
+        this.handlerUnderTest.saveState("prefix", properties);
 
         assertEquals(0, properties.size());
     }
@@ -155,16 +155,16 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
                 .addStyleProperties(
                         "prefix.userDefinedColumnStyle.USER_EDITED_STYLE_FOR_INDEX_1");
 
-        handlerUnderTest.loadState("prefix", propertiesFixture);
+        this.handlerUnderTest.loadState("prefix", propertiesFixture);
 
-        Style style = (Style) configRegistryFixture.getConfigAttribute(
+        Style style = (Style) this.configRegistryFixture.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
                 "USER_EDITED_STYLE_FOR_INDEX_0");
         assertEquals(
                 HorizontalAlignmentEnum.LEFT,
                 style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT));
 
-        style = (Style) configRegistryFixture.getConfigAttribute(
+        style = (Style) this.configRegistryFixture.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
                 "USER_EDITED_STYLE_FOR_INDEX_1");
         assertEquals(VerticalAlignmentEnum.TOP,
@@ -182,22 +182,22 @@ public class DisplayColumnStyleEditorCommandHandlerTest {
                 .addStyleProperties(
                         "prefix.userDefinedColumnStyle.USER_EDITED_STYLE");
 
-        handlerUnderTest.loadState("prefix", propertiesFixture);
+        this.handlerUnderTest.loadState("prefix", propertiesFixture);
 
-        Style style = (Style) configRegistryFixture.getConfigAttribute(
+        Style style = (Style) this.configRegistryFixture.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
                 "USER_EDITED_STYLE_FOR_INDEX_0");
         assertEquals(
                 HorizontalAlignmentEnum.LEFT,
                 style.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT));
 
-        style = (Style) configRegistryFixture.getConfigAttribute(
+        style = (Style) this.configRegistryFixture.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
                 "USER_EDITED_STYLE_FOR_INDEX_1");
         assertEquals(VerticalAlignmentEnum.TOP,
                 style.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT));
 
-        style = (Style) configRegistryFixture.getConfigAttribute(
+        style = (Style) this.configRegistryFixture.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
                 "USER_EDITED_STYLE");
         assertEquals(VerticalAlignmentEnum.TOP,

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -48,20 +48,21 @@ public class ColumnGroupsCommandHandler extends
         this.contextLayer = contextLayer;
     }
 
+    @Override
     public boolean doCommand(IColumnGroupCommand command) {
         if (command instanceof CreateColumnGroupCommand) {
-            if (columnIndexesToPositionsMap.size() > 0) {
+            if (this.columnIndexesToPositionsMap.size() > 0) {
                 handleGroupColumnsCommand(((CreateColumnGroupCommand) command)
                         .getColumnGroupName());
-                columnIndexesToPositionsMap.clear();
+                this.columnIndexesToPositionsMap.clear();
                 return true;
             }
         } else if (command instanceof OpenCreateColumnGroupDialog) {
             OpenCreateColumnGroupDialog openDialogCommand = (OpenCreateColumnGroupDialog) command;
             loadSelectedColumnsIndexesWithPositions();
-            if (selectionLayer.getFullySelectedColumnPositions().length > 0
-                    && columnIndexesToPositionsMap.size() > 0) {
-                openDialogCommand.openDialog(contextLayer);
+            if (this.selectionLayer.getFullySelectedColumnPositions().length > 0
+                    && this.columnIndexesToPositionsMap.size() > 0) {
+                openDialogCommand.openDialog(this.contextLayer);
             } else {
                 openDialogCommand.openErrorBox(Messages
                         .getString("ColumnGroups.selectNonGroupedColumns")); //$NON-NLS-1$
@@ -87,7 +88,7 @@ public class ColumnGroupsCommandHandler extends
 
         ColumnRenameDialog dialog = new ColumnRenameDialog(Display.getDefault()
                 .getActiveShell(), null, null);
-        Rectangle colHeaderBounds = contextLayer.getBoundsByPosition(
+        Rectangle colHeaderBounds = this.contextLayer.getBoundsByPosition(
                 columnPosition, 0);
         Point point = new Point(colHeaderBounds.x, colHeaderBounds.y
                 + colHeaderBounds.height);
@@ -95,34 +96,35 @@ public class ColumnGroupsCommandHandler extends
         dialog.open();
 
         if (!dialog.isCancelPressed()) {
-            int columnIndex = contextLayer
+            int columnIndex = this.contextLayer
                     .getColumnIndexByPosition(columnPosition);
-            ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+            ColumnGroup columnGroup = this.model.getColumnGroupByIndex(columnIndex);
             columnGroup.setName(dialog.getNewColumnLabel());
         }
 
         return true;
     }
 
+    @Override
     public Class<IColumnGroupCommand> getCommandClass() {
         return IColumnGroupCommand.class;
     }
 
     protected void loadSelectedColumnsIndexesWithPositions() {
-        columnIndexesToPositionsMap = new LinkedHashMap<Integer, Integer>();
-        int[] fullySelectedColumns = selectionLayer
+        this.columnIndexesToPositionsMap = new LinkedHashMap<Integer, Integer>();
+        int[] fullySelectedColumns = this.selectionLayer
                 .getFullySelectedColumnPositions();
 
         if (fullySelectedColumns.length > 0) {
             for (int index = 0; index < fullySelectedColumns.length; index++) {
                 final int columnPosition = fullySelectedColumns[index];
-                int columnIndex = selectionLayer
+                int columnIndex = this.selectionLayer
                         .getColumnIndexByPosition(columnPosition);
-                if (model.isPartOfAGroup(columnIndex)) {
-                    columnIndexesToPositionsMap.clear();
+                if (this.model.isPartOfAGroup(columnIndex)) {
+                    this.columnIndexesToPositionsMap.clear();
                     break;
                 }
-                columnIndexesToPositionsMap.put(Integer.valueOf(columnIndex),
+                this.columnIndexesToPositionsMap.put(Integer.valueOf(columnIndex),
                         Integer.valueOf(columnPosition));
             }
 
@@ -133,27 +135,27 @@ public class ColumnGroupsCommandHandler extends
 
         try {
             List<Integer> selectedPositions = new ArrayList<Integer>();
-            int[] fullySelectedColumns = new int[columnIndexesToPositionsMap
+            int[] fullySelectedColumns = new int[this.columnIndexesToPositionsMap
                     .size()];
             int count = 0;
-            for (Integer columnIndex : columnIndexesToPositionsMap.keySet()) {
+            for (Integer columnIndex : this.columnIndexesToPositionsMap.keySet()) {
                 fullySelectedColumns[count++] = columnIndex.intValue();
-                selectedPositions.add(columnIndexesToPositionsMap
+                selectedPositions.add(this.columnIndexesToPositionsMap
                         .get(columnIndex));
             }
-            model.addColumnsIndexesToGroup(columnGroupName,
+            this.model.addColumnsIndexesToGroup(columnGroupName,
                     fullySelectedColumns);
-            selectionLayer.doCommand(new MultiColumnReorderCommand(
-                    selectionLayer, selectedPositions, selectedPositions.get(0)
+            this.selectionLayer.doCommand(new MultiColumnReorderCommand(
+                    this.selectionLayer, selectedPositions, selectedPositions.get(0)
                             .intValue()));
-            selectionLayer.clear();
+            this.selectionLayer.clear();
         } catch (Throwable t) {}
-        contextLayer.fireLayerEvent(new GroupColumnsEvent(contextLayer));
+        this.contextLayer.fireLayerEvent(new GroupColumnsEvent(this.contextLayer));
     }
 
     public void handleUngroupCommand() {
         // Grab fully selected column positions
-        int[] fullySelectedColumns = selectionLayer
+        int[] fullySelectedColumns = this.selectionLayer
                 .getFullySelectedColumnPositions();
         Map<String, Integer> toColumnPositions = new HashMap<String, Integer>();
         if (fullySelectedColumns.length > 0) {
@@ -162,10 +164,10 @@ public class ColumnGroupsCommandHandler extends
             // group
             for (int index = 0; index < fullySelectedColumns.length; index++) {
                 final int columnPosition = fullySelectedColumns[index];
-                int columnIndex = selectionLayer
+                int columnIndex = this.selectionLayer
                         .getColumnIndexByPosition(columnPosition);
-                if (model.isPartOfAGroup(columnIndex)
-                        && !model.isPartOfAnUnbreakableGroup(columnIndex)) {
+                if (this.model.isPartOfAGroup(columnIndex)
+                        && !this.model.isPartOfAnUnbreakableGroup(columnIndex)) {
                     handleRemovalFromGroup(toColumnPositions, columnIndex);
                 }
             }
@@ -176,19 +178,19 @@ public class ColumnGroupsCommandHandler extends
                     .iterator();
             while (toColumnPositionsIterator.hasNext()) {
                 Integer toColumnPosition = toColumnPositionsIterator.next();
-                selectionLayer.doCommand(new ReorderColumnGroupCommand(
-                        selectionLayer, toColumnPosition.intValue(),
+                this.selectionLayer.doCommand(new ReorderColumnGroupCommand(
+                        this.selectionLayer, toColumnPosition.intValue(),
                         toColumnPosition.intValue()));
             }
-            selectionLayer.clear();
+            this.selectionLayer.clear();
         }
 
-        contextLayer.fireLayerEvent(new UngroupColumnsEvent(contextLayer));
+        this.contextLayer.fireLayerEvent(new UngroupColumnsEvent(this.contextLayer));
     }
 
     private void handleRemovalFromGroup(Map<String, Integer> toColumnPositions,
             int columnIndex) {
-        ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
+        ColumnGroup columnGroup = this.model.getColumnGroupByIndex(columnIndex);
 
         final String columnGroupName = columnGroup.getName();
         final List<Integer> columnIndexesInGroup = columnGroup.getMembers();
@@ -196,8 +198,8 @@ public class ColumnGroupsCommandHandler extends
         if (!toColumnPositions.containsKey(columnGroupName)) {
             for (int colGroupIndex : columnIndexesInGroup) {
                 if (ColumnGroupUtils.isFirstVisibleColumnIndexInGroup(
-                        colGroupIndex, contextLayer, selectionLayer, model)) {
-                    int toPosition = selectionLayer
+                        colGroupIndex, this.contextLayer, this.selectionLayer, this.model)) {
+                    int toPosition = this.selectionLayer
                             .getColumnPositionByIndex(colGroupIndex);
                     if (colGroupIndex == columnIndex) {
                         if (columnGroupSize == 1) {
@@ -220,8 +222,8 @@ public class ColumnGroupsCommandHandler extends
     }
 
     private void handleRemoveColumnGroupCommand(int columnIndex) {
-        ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
-        model.removeColumnGroup(columnGroup);
+        ColumnGroup columnGroup = this.model.getColumnGroupByIndex(columnIndex);
+        this.model.removeColumnGroup(columnGroup);
     }
 
 }

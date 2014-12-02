@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Text;
  * entering a value. To optimize execution, the commit is triggered with a small
  * delay, so if a user enters multiple characters, the filter execution is not
  * executed for each key stroke, but only for the combination.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -68,7 +68,7 @@ public class FilterRowTextCellEditor extends TextCellEditor {
      * create the runnable is not the same as currently set to the editor
      * control, nothing will happen. This is to reduce the number of commit
      * executions if a user types several characters.
-     * 
+     *
      * @author Dirk Fauth
      *
      */
@@ -87,7 +87,7 @@ public class FilterRowTextCellEditor extends TextCellEditor {
             Display.getDefault().syncExec(new Runnable() {
                 @Override
                 public void run() {
-                    if (toCommit != null && toCommit.equals(getEditorValue())) {
+                    if (KeyPressCommitRunnable.this.toCommit != null && KeyPressCommitRunnable.this.toCommit.equals(getEditorValue())) {
                         commit(MoveDirectionEnum.NONE, false);
                     }
                 }

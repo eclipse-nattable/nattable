@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,13 +22,14 @@ public class ShowColumnInViewportCommandHandler extends
         this.viewportLayer = viewportLayer;
     }
 
+    @Override
     public Class<ShowColumnInViewportCommand> getCommandClass() {
         return ShowColumnInViewportCommand.class;
     }
 
     @Override
     protected boolean doCommand(ShowColumnInViewportCommand command) {
-        viewportLayer.moveColumnPositionIntoViewport(command
+        this.viewportLayer.moveColumnPositionIntoViewport(command
                 .getColumnPosition());
         return true;
     }

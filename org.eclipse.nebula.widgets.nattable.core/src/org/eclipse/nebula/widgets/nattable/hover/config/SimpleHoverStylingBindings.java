@@ -29,7 +29,7 @@ import org.eclipse.swt.events.MouseEvent;
  * case, so if the area is bigger than the rendered table, the hovering wouldn't
  * be removed if the mouse cursor is moved out of the cells but still in the
  * area.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see HoverLayer
@@ -58,21 +58,21 @@ public class SimpleHoverStylingBindings extends AbstractUiBindingConfiguration {
                     public boolean matches(NatTable natTable, MouseEvent event,
                             LabelStack regionLabels) {
 
-                        int width = layer.getPreferredWidth();
-                        int height = layer.getPreferredHeight();
+                        int width = SimpleHoverStylingBindings.this.layer.getPreferredWidth();
+                        int height = SimpleHoverStylingBindings.this.layer.getPreferredHeight();
 
                         return ((event.x > 0 && event.x < width) && (event.y > 0 && event.y < height));
                     }
 
-                }, new HoverStylingAction(layer));
+                }, new HoverStylingAction(this.layer));
 
         // clear any hover styling if the mouse is moved out of the region area
         uiBindingRegistry.registerMouseMoveBinding(new IMouseEventMatcher() {
             @Override
             public boolean matches(NatTable natTable, MouseEvent event,
                     LabelStack regionLabels) {
-                int width = layer.getPreferredWidth();
-                int height = layer.getPreferredHeight();
+                int width = SimpleHoverStylingBindings.this.layer.getPreferredWidth();
+                int height = SimpleHoverStylingBindings.this.layer.getPreferredHeight();
 
                 return ((event.x < 0 || event.x > width) || (event.y < 0 || event.y > height));
             }

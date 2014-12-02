@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,6 +43,7 @@ public class ColumnReorderLayerVisibleChangeTest {
         expectedPositions.add(new Rectangle(0, 0, 20, 20));
 
         reorderLayer.addLayerListener(new ILayerListener() {
+            @Override
             public void handleLayerEvent(ILayerEvent event) {
                 ColumnReorderEvent multiReorder = (ColumnReorderEvent) event;
                 assertTrue(multiReorder.getChangedPositionRectangles()
@@ -84,6 +85,7 @@ public class ColumnReorderLayerVisibleChangeTest {
         expectedPositions.add(new Rectangle(0, 0, 20, 20));
 
         reorderLayer.addLayerListener(new ILayerListener() {
+            @Override
             public void handleLayerEvent(ILayerEvent event) {
                 ColumnReorderEvent multiReorder = (ColumnReorderEvent) event;
                 assertTrue(multiReorder.getChangedPositionRectangles()

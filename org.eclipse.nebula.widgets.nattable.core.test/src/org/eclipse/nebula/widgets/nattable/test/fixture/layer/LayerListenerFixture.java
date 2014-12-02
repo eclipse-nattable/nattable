@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,24 +25,25 @@ public class LayerListenerFixture implements ILayerListener {
     // Received events are kept in order
     private final List<ILayerEvent> receivedEvents = new LinkedList<ILayerEvent>();
 
+    @Override
     public void handleLayerEvent(ILayerEvent event) {
-        receivedEvents.add(event);
+        this.receivedEvents.add(event);
     }
 
     public List<ILayerEvent> getReceivedEvents() {
-        return receivedEvents;
+        return this.receivedEvents;
     }
 
     public void clearReceivedEvents() {
-        receivedEvents.clear();
+        this.receivedEvents.clear();
     }
 
     public int getEventsCount() {
-        return receivedEvents.size();
+        return this.receivedEvents.size();
     }
 
     public boolean containsInstanceOf(Class<? extends ILayerEvent> class1) {
-        for (ILayerEvent inEvent : receivedEvents) {
+        for (ILayerEvent inEvent : this.receivedEvents) {
             if (inEvent.getClass().getName().equals(class1.getName())) {
                 return true;
             }
@@ -51,7 +52,7 @@ public class LayerListenerFixture implements ILayerListener {
     }
 
     public ILayerEvent getReceivedEvent(Class<? extends ILayerEvent> class1) {
-        for (ILayerEvent inEvent : receivedEvents) {
+        for (ILayerEvent inEvent : this.receivedEvents) {
             if (inEvent.getClass().getName().equals(class1.getName())) {
                 return inEvent;
             }

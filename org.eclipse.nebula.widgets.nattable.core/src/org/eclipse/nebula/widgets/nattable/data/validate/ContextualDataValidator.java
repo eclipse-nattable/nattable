@@ -19,7 +19,7 @@ public abstract class ContextualDataValidator implements IDataValidator {
     public boolean validate(int columnIndex, int rowIndex, Object newValue) {
         throw new UnsupportedOperationException(
                 this.getClass().getName()
-                + " is a ContextualDataValidator and has therefore to be called with context informations."); //$NON-NLS-1$
+                        + " is a ContextualDataValidator and has therefore to be called with context informations."); //$NON-NLS-1$
     }
 
     @Override

@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Controller to handle the activation of the edit mode of NatTable cells.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -43,7 +43,7 @@ public class EditController {
     /**
      * Activates the edit mode for the given cell. Will determine whether the
      * editor should be opened inline or in a subdialog.
-     * 
+     *
      * @param cell
      *            The cell that should be put into the edit mode.
      * @param parent
@@ -134,7 +134,7 @@ public class EditController {
      * method will open a dialog for editing, regardless if the list of cells to
      * edit contain several or only one value. Only if the given list of cells
      * to edit is <code>null</code> or empty, there is no action performed.
-     * 
+     *
      * @param cells
      *            The list of cells to edit.
      * @param parent
@@ -233,7 +233,7 @@ public class EditController {
      * checking the editor once. But as this can be configured via configuration
      * attribute, and this can differ from cell to cell, all cells are checked
      * to be sure.
-     * 
+     *
      * @param cells
      *            The selected cells that should be multi edited.
      * @param cellEditor

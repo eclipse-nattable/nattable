@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,44 +38,48 @@ public class PropertyUpdateEvent<T> implements IVisualChangeEvent {
 
     // Interface methods
 
+    @Override
     public ILayerEvent cloneEvent() {
         return new PropertyUpdateEvent<T>(this.layer, this.sourceBean,
                 this.propertyName, this.oldValue, this.newValue);
     }
 
+    @Override
     public boolean convertToLocal(ILayer localLayer) {
         this.layer = localLayer;
         return true;
     }
 
+    @Override
     public Collection<Rectangle> getChangedPositionRectangles() {
-        return Arrays.asList(new Rectangle(0, 0, layer.getWidth(), layer
+        return Arrays.asList(new Rectangle(0, 0, this.layer.getWidth(), this.layer
                 .getHeight()));
     }
 
+    @Override
     public ILayer getLayer() {
-        return layer;
+        return this.layer;
     }
 
     // Accessors
 
     public PropertyChangeEvent getPropertyChangeEvent() {
-        return propertyChangeEvent;
+        return this.propertyChangeEvent;
     }
 
     public T getSourceBean() {
-        return sourceBean;
+        return this.sourceBean;
     }
 
     public String getPropertyName() {
-        return propertyName;
+        return this.propertyName;
     }
 
     public Object getNewValue() {
-        return newValue;
+        return this.newValue;
     }
 
     public Object getOldValue() {
-        return oldValue;
+        return this.oldValue;
     }
 }

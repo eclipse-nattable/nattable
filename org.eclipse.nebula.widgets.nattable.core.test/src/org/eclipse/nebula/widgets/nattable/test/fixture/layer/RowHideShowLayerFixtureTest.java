@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,60 +21,60 @@ public class RowHideShowLayerFixtureTest {
 
     @Before
     public void setup() {
-        rowHideShowLayerFixture = new RowHideShowLayerFixture();
+        this.rowHideShowLayerFixture = new RowHideShowLayerFixture();
     }
 
     @Test
     public void testColumnIndexes() {
         Assert.assertEquals(0,
-                rowHideShowLayerFixture.getColumnIndexByPosition(0));
+                this.rowHideShowLayerFixture.getColumnIndexByPosition(0));
         Assert.assertEquals(1,
-                rowHideShowLayerFixture.getColumnIndexByPosition(1));
+                this.rowHideShowLayerFixture.getColumnIndexByPosition(1));
         Assert.assertEquals(2,
-                rowHideShowLayerFixture.getColumnIndexByPosition(2));
+                this.rowHideShowLayerFixture.getColumnIndexByPosition(2));
         Assert.assertEquals(3,
-                rowHideShowLayerFixture.getColumnIndexByPosition(3));
+                this.rowHideShowLayerFixture.getColumnIndexByPosition(3));
         Assert.assertEquals(4,
-                rowHideShowLayerFixture.getColumnIndexByPosition(4));
+                this.rowHideShowLayerFixture.getColumnIndexByPosition(4));
     }
 
     @Test
     public void testColumnWidths() {
         Assert.assertEquals(150,
-                rowHideShowLayerFixture.getColumnWidthByPosition(0));
+                this.rowHideShowLayerFixture.getColumnWidthByPosition(0));
         Assert.assertEquals(100,
-                rowHideShowLayerFixture.getColumnWidthByPosition(1));
+                this.rowHideShowLayerFixture.getColumnWidthByPosition(1));
         Assert.assertEquals(35,
-                rowHideShowLayerFixture.getColumnWidthByPosition(2));
+                this.rowHideShowLayerFixture.getColumnWidthByPosition(2));
         Assert.assertEquals(100,
-                rowHideShowLayerFixture.getColumnWidthByPosition(3));
+                this.rowHideShowLayerFixture.getColumnWidthByPosition(3));
         Assert.assertEquals(80,
-                rowHideShowLayerFixture.getColumnWidthByPosition(4));
+                this.rowHideShowLayerFixture.getColumnWidthByPosition(4));
     }
 
     @Test
     public void testRowIndexes() {
-        Assert.assertEquals(4, rowHideShowLayerFixture.getRowIndexByPosition(0));
-        Assert.assertEquals(1, rowHideShowLayerFixture.getRowIndexByPosition(1));
-        Assert.assertEquals(2, rowHideShowLayerFixture.getRowIndexByPosition(2));
-        Assert.assertEquals(5, rowHideShowLayerFixture.getRowIndexByPosition(3));
-        Assert.assertEquals(6, rowHideShowLayerFixture.getRowIndexByPosition(4));
+        Assert.assertEquals(4, this.rowHideShowLayerFixture.getRowIndexByPosition(0));
+        Assert.assertEquals(1, this.rowHideShowLayerFixture.getRowIndexByPosition(1));
+        Assert.assertEquals(2, this.rowHideShowLayerFixture.getRowIndexByPosition(2));
+        Assert.assertEquals(5, this.rowHideShowLayerFixture.getRowIndexByPosition(3));
+        Assert.assertEquals(6, this.rowHideShowLayerFixture.getRowIndexByPosition(4));
         Assert.assertEquals(-1,
-                rowHideShowLayerFixture.getRowIndexByPosition(5));
+                this.rowHideShowLayerFixture.getRowIndexByPosition(5));
     }
 
     @Test
     public void testRowHeights() {
         Assert.assertEquals(50,
-                rowHideShowLayerFixture.getRowHeightByPosition(0));
+                this.rowHideShowLayerFixture.getRowHeightByPosition(0));
         Assert.assertEquals(70,
-                rowHideShowLayerFixture.getRowHeightByPosition(1));
+                this.rowHideShowLayerFixture.getRowHeightByPosition(1));
         Assert.assertEquals(25,
-                rowHideShowLayerFixture.getRowHeightByPosition(2));
+                this.rowHideShowLayerFixture.getRowHeightByPosition(2));
         Assert.assertEquals(40,
-                rowHideShowLayerFixture.getRowHeightByPosition(3));
+                this.rowHideShowLayerFixture.getRowHeightByPosition(3));
         Assert.assertEquals(100,
-                rowHideShowLayerFixture.getRowHeightByPosition(4));
+                this.rowHideShowLayerFixture.getRowHeightByPosition(4));
     }
 
 }

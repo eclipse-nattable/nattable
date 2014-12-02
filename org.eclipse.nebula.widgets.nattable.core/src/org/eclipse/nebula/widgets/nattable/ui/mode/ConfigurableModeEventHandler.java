@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,35 +30,35 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 
     @Override
     public void keyPressed(KeyEvent event) {
-        IKeyAction keyAction = natTable.getUiBindingRegistry()
+        IKeyAction keyAction = this.natTable.getUiBindingRegistry()
                 .getKeyEventAction(event);
         if (keyAction != null) {
-            natTable.forceFocus();
-            keyAction.run(natTable, event);
+            this.natTable.forceFocus();
+            keyAction.run(this.natTable, event);
         }
     }
 
     @Override
     public void mouseDown(MouseEvent event) {
-        if (natTable.commitAndCloseActiveCellEditor()) {
-            IMouseAction mouseDownAction = natTable.getUiBindingRegistry()
+        if (this.natTable.commitAndCloseActiveCellEditor()) {
+            IMouseAction mouseDownAction = this.natTable.getUiBindingRegistry()
                     .getMouseDownAction(event);
             if (mouseDownAction != null) {
                 event.data = NatEventData.createInstanceFromEvent(event);
-                mouseDownAction.run(natTable, event);
+                mouseDownAction.run(this.natTable, event);
             }
 
             IMouseAction singleClickAction = getUiBindingRegistry()
                     .getSingleClickAction(event);
             IMouseAction doubleClickAction = getUiBindingRegistry()
                     .getDoubleClickAction(event);
-            IDragMode dragMode = natTable.getUiBindingRegistry().getDragMode(
+            IDragMode dragMode = this.natTable.getUiBindingRegistry().getDragMode(
                     event);
 
             if (singleClickAction != null || doubleClickAction != null
                     || dragMode != null) {
                 switchMode(new MouseModeEventHandler(getModeSupport(),
-                        natTable, event, singleClickAction, doubleClickAction,
+                        this.natTable, event, singleClickAction, doubleClickAction,
                         dragMode));
             }
         }
@@ -71,9 +71,9 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
                     .getMouseMoveAction(event);
             if (mouseMoveAction != null) {
                 event.data = NatEventData.createInstanceFromEvent(event);
-                mouseMoveAction.run(natTable, event);
+                mouseMoveAction.run(this.natTable, event);
             } else {
-                natTable.setCursor(null);
+                this.natTable.setCursor(null);
             }
         }
     }
@@ -85,7 +85,7 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
                     .getMouseHoverAction(event);
             if (mouseHoverAction != null) {
                 event.data = NatEventData.createInstanceFromEvent(event);
-                mouseHoverAction.run(natTable, event);
+                mouseHoverAction.run(this.natTable, event);
             }
         }
     }
@@ -97,9 +97,9 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
                     .getMouseEnterAction(event);
             if (mouseEnterAction != null) {
                 event.data = NatEventData.createInstanceFromEvent(event);
-                mouseEnterAction.run(natTable, event);
+                mouseEnterAction.run(this.natTable, event);
             } else {
-                natTable.setCursor(null);
+                this.natTable.setCursor(null);
             }
         }
     }
@@ -111,15 +111,15 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
                     .getMouseExitAction(event);
             if (mouseExitAction != null) {
                 event.data = NatEventData.createInstanceFromEvent(event);
-                mouseExitAction.run(natTable, event);
+                mouseExitAction.run(this.natTable, event);
             } else {
-                natTable.setCursor(null);
+                this.natTable.setCursor(null);
             }
         }
     }
 
     private UiBindingRegistry getUiBindingRegistry() {
-        return natTable.getUiBindingRegistry();
+        return this.natTable.getUiBindingRegistry();
     }
 
 }

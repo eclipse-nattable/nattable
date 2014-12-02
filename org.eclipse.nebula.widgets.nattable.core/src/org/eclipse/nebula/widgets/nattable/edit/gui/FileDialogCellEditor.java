@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.FileDialog;
  * This implementation is a proof of concept for special cell editors that wrap
  * dialogs. The {@link FileDialog} is wrapped by this implementation. It will
  * open the default file selection dialog on trying to activate the cell editor.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -37,40 +37,40 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
      * #open()
      */
     @Override
     public int open() {
-        selectedFile = getDialogInstance().open();
-        if (selectedFile == null) {
-            closed = true;
+        this.selectedFile = getDialogInstance().open();
+        if (this.selectedFile == null) {
+            this.closed = true;
             return Window.CANCEL;
         } else {
             commit(MoveDirectionEnum.NONE);
-            closed = true;
+            this.closed = true;
             return Window.OK;
         }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
      * #createDialogInstance()
      */
     @Override
     public FileDialog createDialogInstance() {
-        closed = false;
+        this.closed = false;
         return new FileDialog(this.parent.getShell(), SWT.OPEN);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
      * #getDialogInstance()
@@ -82,7 +82,7 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
      * #getEditorValue()
@@ -94,7 +94,7 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
      * #setEditorValue(java.lang.Object)
@@ -107,7 +107,7 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
      * #close()
@@ -120,7 +120,7 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.edit.editor.AbstractDialogCellEditor
      * #isClosed()

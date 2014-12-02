@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,7 +25,7 @@ public class NumberValues {
     public NumberValues() {}
 
     public int getColumnOneNumber() {
-        return columnOneNumber;
+        return this.columnOneNumber;
     }
 
     public void setColumnOneNumber(int columnOneNumber) {
@@ -33,7 +33,7 @@ public class NumberValues {
     }
 
     public int getColumnTwoNumber() {
-        return columnTwoNumber;
+        return this.columnTwoNumber;
     }
 
     public void setColumnTwoNumber(int columnTwoNumber) {
@@ -41,7 +41,7 @@ public class NumberValues {
     }
 
     public int getColumnThreeNumber() {
-        return columnThreeNumber;
+        return this.columnThreeNumber;
     }
 
     public void setColumnThreeNumber(int columnThreeNumber) {
@@ -49,7 +49,7 @@ public class NumberValues {
     }
 
     public int getColumnFourNumber() {
-        return columnFourNumber;
+        return this.columnFourNumber;
     }
 
     public void setColumnFourNumber(int columnFourNumber) {
@@ -57,7 +57,7 @@ public class NumberValues {
     }
 
     public int getColumnFiveNumber() {
-        return columnFiveNumber;
+        return this.columnFiveNumber;
     }
 
     public void setColumnFiveNumber(int columnFiveNumber) {
@@ -65,7 +65,7 @@ public class NumberValues {
     }
 
     public int getColumnSixNumber() {
-        return columnSixNumber;
+        return this.columnSixNumber;
     }
 
     public void setColumnSixNumber(int columnSixNumber) {
@@ -73,7 +73,7 @@ public class NumberValues {
     }
 
     public int getColumnSevenNumber() {
-        return columnSevenNumber;
+        return this.columnSevenNumber;
     }
 
     public void setColumnSevenNumber(int columnSevenNumber) {
@@ -81,7 +81,7 @@ public class NumberValues {
     }
 
     public int getColumnEightNumber() {
-        return columnEightNumber;
+        return this.columnEightNumber;
     }
 
     public void setColumnEightNumber(int columnEightNumber) {
@@ -89,7 +89,7 @@ public class NumberValues {
     }
 
     public int getColumnNineNumber() {
-        return columnNineNumber;
+        return this.columnNineNumber;
     }
 
     public void setColumnNineNumber(int columnNineNumber) {
@@ -97,7 +97,7 @@ public class NumberValues {
     }
 
     public int getColumnTenNumber() {
-        return columnTenNumber;
+        return this.columnTenNumber;
     }
 
     public void setColumnTenNumber(int columnTenNumber) {

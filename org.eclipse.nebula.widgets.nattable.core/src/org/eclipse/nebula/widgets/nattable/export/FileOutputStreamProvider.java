@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -56,40 +56,40 @@ public class FileOutputStreamProvider implements IOutputStreamProvider {
         String filterPath;
         String relativeFileName;
 
-        int lastIndexOfFileSeparator = defaultFileName
+        int lastIndexOfFileSeparator = this.defaultFileName
                 .lastIndexOf(File.separator);
         if (lastIndexOfFileSeparator >= 0) {
-            filterPath = defaultFileName.substring(0, lastIndexOfFileSeparator);
-            relativeFileName = defaultFileName
+            filterPath = this.defaultFileName.substring(0, lastIndexOfFileSeparator);
+            relativeFileName = this.defaultFileName
                     .substring(lastIndexOfFileSeparator + 1);
         } else {
             filterPath = "/"; //$NON-NLS-1$
-            relativeFileName = defaultFileName;
+            relativeFileName = this.defaultFileName;
         }
 
         dialog.setFilterPath(filterPath);
         dialog.setOverwrite(true);
 
         dialog.setFileName(relativeFileName);
-        dialog.setFilterNames(defaultFilterNames);
-        dialog.setFilterExtensions(defaultFilterExtensions);
-        currentFileName = dialog.open();
-        if (currentFileName == null) {
+        dialog.setFilterNames(this.defaultFilterNames);
+        dialog.setFilterExtensions(this.defaultFilterExtensions);
+        this.currentFileName = dialog.open();
+        if (this.currentFileName == null) {
             return null;
         }
 
         try {
-            return new PrintStream(currentFileName);
+            return new PrintStream(this.currentFileName);
         } catch (FileNotFoundException e) {
             log.error(
-                    "Failed to open or create the file: " + currentFileName, e); //$NON-NLS-1$
-            currentFileName = null;
+                    "Failed to open or create the file: " + this.currentFileName, e); //$NON-NLS-1$
+            this.currentFileName = null;
             return null;
         }
     }
 
     @Override
     public File getResult() {
-        return (currentFileName != null) ? new File(currentFileName) : null;
+        return (this.currentFileName != null) ? new File(this.currentFileName) : null;
     }
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,143 +36,143 @@ public class SelectionModelTest {
     public void before() {
         SelectionLayer selectionLayer = new SelectionLayer(
                 new DataLayerFixture(100, 100, 100, 40));
-        model = new SelectionModel(selectionLayer);
+        this.model = new SelectionModel(selectionLayer);
     }
 
     @Test
     public void isCellSelected() {
         assertFalse("Empty model should have no selection.",
-                model.isCellPositionSelected(0, 0));
+                this.model.isCellPositionSelected(0, 0));
     }
 
     @Test
     public void addCellSelection() {
-        model.addSelection(0, 0);
+        this.model.addSelection(0, 0);
 
         assertTrue("Failed to add selection.",
-                model.isCellPositionSelected(0, 0));
+                this.model.isCellPositionSelected(0, 0));
     }
 
     @Test
     public void isColumnFullySelected() throws Exception {
-        model.addSelection(new Rectangle(3, 0, 10, 10));
+        this.model.addSelection(new Rectangle(3, 0, 10, 10));
 
-        assertFalse(model.isColumnPositionFullySelected(3, 11));
-        assertTrue(model.isColumnPositionFullySelected(3, 10));
+        assertFalse(this.model.isColumnPositionFullySelected(3, 11));
+        assertTrue(this.model.isColumnPositionFullySelected(3, 10));
 
-        model.clearSelection(3, 1);
-        assertFalse(model.isColumnPositionFullySelected(3, 10));
+        this.model.clearSelection(3, 1);
+        assertFalse(this.model.isColumnPositionFullySelected(3, 10));
     }
 
     @Test
     public void isColumnFullySelectedForContiguousRectangles() throws Exception {
-        model.addSelection(new Rectangle(0, 0, 10, 10));
-        model.addSelection(new Rectangle(5, 10, 10, 10));
+        this.model.addSelection(new Rectangle(0, 0, 10, 10));
+        this.model.addSelection(new Rectangle(5, 10, 10, 10));
 
-        assertTrue(model.isColumnPositionFullySelected(5, 20));
+        assertTrue(this.model.isColumnPositionFullySelected(5, 20));
     }
 
     @Test
     public void isColumnFullySelectedForNonContiguousRectangles()
             throws Exception {
-        model.addSelection(new Rectangle(0, 0, 10, 10));
-        model.addSelection(new Rectangle(5, 5, 10, 8));
-        model.addSelection(new Rectangle(5, 15, 10, 5));
+        this.model.addSelection(new Rectangle(0, 0, 10, 10));
+        this.model.addSelection(new Rectangle(5, 5, 10, 8));
+        this.model.addSelection(new Rectangle(5, 15, 10, 5));
 
-        assertFalse(model.isColumnPositionFullySelected(5, 20));
+        assertFalse(this.model.isColumnPositionFullySelected(5, 20));
     }
 
     @Test
     public void isColumnFullySelectedForOverlapingRectangles() throws Exception {
-        model.addSelection(new Rectangle(0, 0, 10, 10));
-        model.addSelection(new Rectangle(5, 5, 10, 8));
+        this.model.addSelection(new Rectangle(0, 0, 10, 10));
+        this.model.addSelection(new Rectangle(5, 5, 10, 8));
 
-        assertTrue(model.isColumnPositionFullySelected(5, 13));
+        assertTrue(this.model.isColumnPositionFullySelected(5, 13));
     }
 
     @Test
     public void isColumnFullySelectedWhenIndividualCellsSelected()
             throws Exception {
-        model.addSelection(new Rectangle(1, 5, 1, 1));
-        model.addSelection(new Rectangle(1, 10, 1, 1));
+        this.model.addSelection(new Rectangle(1, 5, 1, 1));
+        this.model.addSelection(new Rectangle(1, 10, 1, 1));
 
-        assertFalse(model.isColumnPositionFullySelected(1, 10));
+        assertFalse(this.model.isColumnPositionFullySelected(1, 10));
     }
 
     @Test
     public void isColumnFullySelectedWhenLastCellSelected() throws Exception {
-        model.addSelection(new Rectangle(1, 5, 1, 1));
+        this.model.addSelection(new Rectangle(1, 5, 1, 1));
 
-        assertFalse(model.isColumnPositionFullySelected(1, 6));
-        assertFalse(model.isColumnPositionFullySelected(1, 1000000));
+        assertFalse(this.model.isColumnPositionFullySelected(1, 6));
+        assertFalse(this.model.isColumnPositionFullySelected(1, 1000000));
     }
 
     @Test
     public void isRowFullySelected() throws Exception {
-        model.addSelection(new Rectangle(0, 3, 10, 10));
-        assertTrue(model.isRowPositionFullySelected(3, 10));
+        this.model.addSelection(new Rectangle(0, 3, 10, 10));
+        assertTrue(this.model.isRowPositionFullySelected(3, 10));
     }
 
     @Test
     public void isRowFullySelectedWhenMultipleRowsAndColumnsAreSelected()
             throws Exception {
         // Rows 3, 6 fully selected
-        model.addSelection(new Rectangle(0, 3, 10, 1));
-        model.addSelection(new Rectangle(0, 6, 10, 1));
+        this.model.addSelection(new Rectangle(0, 3, 10, 1));
+        this.model.addSelection(new Rectangle(0, 6, 10, 1));
 
         // Column 2, 5 fully selected
-        model.addSelection(new Rectangle(2, 0, 1, 10));
-        model.addSelection(new Rectangle(5, 0, 1, 10));
+        this.model.addSelection(new Rectangle(2, 0, 1, 10));
+        this.model.addSelection(new Rectangle(5, 0, 1, 10));
 
-        assertTrue(model.isRowPositionFullySelected(6, 10));
-        assertTrue(model.isRowPositionFullySelected(3, 10));
+        assertTrue(this.model.isRowPositionFullySelected(6, 10));
+        assertTrue(this.model.isRowPositionFullySelected(3, 10));
 
         // Remove Column 2
-        model.clearSelection(new Rectangle(2, 0, 1, 10));
-        assertFalse(model.isRowPositionFullySelected(6, 10));
-        assertFalse(model.isRowPositionFullySelected(3, 10));
+        this.model.clearSelection(new Rectangle(2, 0, 1, 10));
+        assertFalse(this.model.isRowPositionFullySelected(6, 10));
+        assertFalse(this.model.isRowPositionFullySelected(3, 10));
 
         // Add column 2 again
-        model.addSelection(new Rectangle(2, 0, 1, 10));
-        assertTrue(model.isRowPositionFullySelected(6, 10));
-        assertTrue(model.isRowPositionFullySelected(3, 10));
+        this.model.addSelection(new Rectangle(2, 0, 1, 10));
+        assertTrue(this.model.isRowPositionFullySelected(6, 10));
+        assertTrue(this.model.isRowPositionFullySelected(3, 10));
     }
 
     @Test
     public void isRowNotFullySelected() throws Exception {
-        model.addSelection(new Rectangle(0, 3, 10, 10));
+        this.model.addSelection(new Rectangle(0, 3, 10, 10));
 
-        assertFalse(model.isRowPositionFullySelected(3, 11));
+        assertFalse(this.model.isRowPositionFullySelected(3, 11));
     }
 
     @Test
     public void contains() throws Exception {
-        assertTrue(model.contains(new Rectangle(0, 0, 10, 10), new Rectangle(1,
+        assertTrue(this.model.contains(new Rectangle(0, 0, 10, 10), new Rectangle(1,
                 1, 5, 5)));
-        assertTrue(model.contains(new Rectangle(0, 0, 10, 1), new Rectangle(5,
+        assertTrue(this.model.contains(new Rectangle(0, 0, 10, 1), new Rectangle(5,
                 0, 1, 1)));
 
-        assertFalse(model.contains(new Rectangle(0, 6, 0, 0), new Rectangle(2,
+        assertFalse(this.model.contains(new Rectangle(0, 6, 0, 0), new Rectangle(2,
                 6, 1, 1)));
     }
 
     @Test
     public void isMltipleCol() throws Exception {
-        model.addSelection(new Rectangle(1, 0, 1, 20));
-        model.addSelection(new Rectangle(2, 0, 1, 20));
-        model.addSelection(new Rectangle(3, 0, 1, 20));
+        this.model.addSelection(new Rectangle(1, 0, 1, 20));
+        this.model.addSelection(new Rectangle(2, 0, 1, 20));
+        this.model.addSelection(new Rectangle(3, 0, 1, 20));
 
-        assertFalse(model.isColumnPositionFullySelected(1, 21));
-        assertTrue(model.isColumnPositionFullySelected(2, 20));
+        assertFalse(this.model.isColumnPositionFullySelected(1, 21));
+        assertTrue(this.model.isColumnPositionFullySelected(2, 20));
     }
 
     @Test
     public void shouldReturnListOfFullySelectedColumns() throws Exception {
-        model.addSelection(new Rectangle(1, 0, 1, 20));
-        model.addSelection(new Rectangle(2, 10, 1, 4));
-        model.addSelection(new Rectangle(3, 0, 1, 20));
+        this.model.addSelection(new Rectangle(1, 0, 1, 20));
+        this.model.addSelection(new Rectangle(2, 10, 1, 4));
+        this.model.addSelection(new Rectangle(3, 0, 1, 20));
 
-        int[] fullySelectedColumns = model.getFullySelectedColumnPositions(20);
+        int[] fullySelectedColumns = this.model.getFullySelectedColumnPositions(20);
         Assert.assertEquals(2, fullySelectedColumns.length);
         Assert.assertEquals(1, fullySelectedColumns[0]);
         Assert.assertEquals(3, fullySelectedColumns[1]);
@@ -180,14 +180,14 @@ public class SelectionModelTest {
 
     @Test
     public void shouldReturnListOfFullySelectedRows() throws Exception {
-        int[] fullySelectedRows = model.getFullySelectedRowPositions(20);
+        int[] fullySelectedRows = this.model.getFullySelectedRowPositions(20);
         Assert.assertEquals(0, fullySelectedRows.length);
 
-        model.addSelection(new Rectangle(0, 1, 20, 1));
-        model.addSelection(new Rectangle(3, 2, 4, 1));
-        model.addSelection(new Rectangle(0, 3, 20, 1));
+        this.model.addSelection(new Rectangle(0, 1, 20, 1));
+        this.model.addSelection(new Rectangle(3, 2, 4, 1));
+        this.model.addSelection(new Rectangle(0, 3, 20, 1));
 
-        fullySelectedRows = model.getFullySelectedRowPositions(20);
+        fullySelectedRows = this.model.getFullySelectedRowPositions(20);
         Assert.assertEquals(2, fullySelectedRows.length);
         Assert.assertEquals(1, fullySelectedRows[0]);
         Assert.assertEquals(3, fullySelectedRows[1]);
@@ -198,7 +198,7 @@ public class SelectionModelTest {
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                model.addSelection(col, row);
+                this.model.addSelection(col, row);
             }
         }
 
@@ -206,7 +206,7 @@ public class SelectionModelTest {
             for (int col = 0; col < 3; col++) {
                 assertTrue(
                         "Failed to add selection [" + row + ", " + col + "]",
-                        model.isCellPositionSelected(col, row));
+                        this.model.isCellPositionSelected(col, row));
             }
         }
 
@@ -214,41 +214,41 @@ public class SelectionModelTest {
 
     @Test
     public void addMultipleDisjointCellSelection() {
-        model.addSelection(0, 0);
-        model.addSelection(2, 0);
-        model.addSelection(0, 2);
+        this.model.addSelection(0, 0);
+        this.model.addSelection(2, 0);
+        this.model.addSelection(0, 2);
 
         assertTrue("Failed to add selection [0, 0]",
-                model.isCellPositionSelected(0, 0));
+                this.model.isCellPositionSelected(0, 0));
         assertTrue("Failed to add selection [0, 2]",
-                model.isCellPositionSelected(2, 0));
+                this.model.isCellPositionSelected(2, 0));
         assertTrue("Failed to add selection [2, 0]",
-                model.isCellPositionSelected(0, 2));
+                this.model.isCellPositionSelected(0, 2));
 
         assertFalse("Added too many cells to the range",
-                model.isCellPositionSelected(1, 0));
+                this.model.isCellPositionSelected(1, 0));
         assertFalse("Added too many cells to the range",
-                model.isCellPositionSelected(0, 1));
+                this.model.isCellPositionSelected(0, 1));
         assertFalse("Added too many cells to the range",
-                model.isCellPositionSelected(1, 1));
+                this.model.isCellPositionSelected(1, 1));
         assertFalse("Added too many cells to the range",
-                model.isCellPositionSelected(2, 1));
+                this.model.isCellPositionSelected(2, 1));
         assertFalse("Added too many cells to the range",
-                model.isCellPositionSelected(1, 2));
+                this.model.isCellPositionSelected(1, 2));
         assertFalse("Added too many cells to the range",
-                model.isCellPositionSelected(2, 2));
+                this.model.isCellPositionSelected(2, 2));
         assertFalse("Added too many cells to the range",
-                model.isCellPositionSelected(3, 3));
+                this.model.isCellPositionSelected(3, 3));
     }
 
     @Test
     public void clearSelection() {
-        model.addSelection(0, 0);
+        this.model.addSelection(0, 0);
 
-        model.clearSelection();
+        this.model.clearSelection();
 
         assertFalse("Failed to clear selection",
-                model.isCellPositionSelected(0, 0));
+                this.model.isCellPositionSelected(0, 0));
     }
 
     @Test
@@ -257,56 +257,56 @@ public class SelectionModelTest {
         int row = 3;
         int numCols = 4;
         int numRows = 5;
-        model.addSelection(new Rectangle(col, row, numCols, numRows));
+        this.model.addSelection(new Rectangle(col, row, numCols, numRows));
 
         for (int rowIndex = row; rowIndex < row + numRows; rowIndex++) {
             for (int colIndex = col; colIndex < col + numCols; colIndex++) {
                 assertTrue("Failed to add range [" + rowIndex + ", " + colIndex
-                        + "]", model.isCellPositionSelected(colIndex, rowIndex));
+                        + "]", this.model.isCellPositionSelected(colIndex, rowIndex));
             }
         }
 
         assertFalse("Added too many cells from range",
-                model.isCellPositionSelected(col, row + numRows));
+                this.model.isCellPositionSelected(col, row + numRows));
     }
 
     @Test
     public void addNullRangeSelection() {
-        model.addSelection(null);
+        this.model.addSelection(null);
 
-        assertTrue(model.isEmpty());
+        assertTrue(this.model.isEmpty());
     }
 
     @Test
     public void removeSingleCell() {
-        model.addSelection(0, 0);
-        model.clearSelection(0, 0);
+        this.model.addSelection(0, 0);
+        this.model.clearSelection(0, 0);
 
         assertFalse("Failed to remove selection [0, 0].",
-                model.isCellPositionSelected(0, 0));
+                this.model.isCellPositionSelected(0, 0));
     }
 
     @Test
     public void removeSingleCellAfterMultipleAdds() {
-        model.addSelection(0, 0);
-        model.addSelection(1, 1);
-        model.addSelection(2, 1);
-        model.addSelection(2, 3);
-        model.clearSelection(1, 1);
+        this.model.addSelection(0, 0);
+        this.model.addSelection(1, 1);
+        this.model.addSelection(2, 1);
+        this.model.addSelection(2, 3);
+        this.model.clearSelection(1, 1);
 
         assertFalse("Failed to remove selection [1, 1].",
-                model.isCellPositionSelected(1, 1));
+                this.model.isCellPositionSelected(1, 1));
     }
 
     private void removeSingleCellFromRange(int col, int row, int numCols,
             int numRows, int removedRow, int removedColumn) {
-        model.addSelection(new Rectangle(col, row, numCols, numRows));
+        this.model.addSelection(new Rectangle(col, row, numCols, numRows));
 
-        model.clearSelection(removedColumn, removedRow);
+        this.model.clearSelection(removedColumn, removedRow);
 
         assertFalse("Failed to remove selection [" + removedRow + ", "
                 + removedColumn + "]",
-                model.isCellPositionSelected(removedColumn, removedRow));
+                this.model.isCellPositionSelected(removedColumn, removedRow));
 
         for (int rowIndex = row; rowIndex < row + numRows; rowIndex++) {
             for (int colIndex = col; colIndex < col + numCols; colIndex++) {
@@ -314,7 +314,7 @@ public class SelectionModelTest {
                 if (!(rowIndex == removedRow && colIndex == removedColumn))
                     assertTrue("Failed to add range [" + rowIndex + ", "
                             + colIndex + "]",
-                            model.isCellPositionSelected(colIndex, rowIndex));
+                            this.model.isCellPositionSelected(colIndex, rowIndex));
             }
         }
     }
@@ -322,18 +322,18 @@ public class SelectionModelTest {
     private void removeRangeFromRange(int col, int row, int numCols,
             int numRows, int removedRow, int removedColumn, int removedNumCols,
             int removedNumRows) {
-        model.addSelection(new Rectangle(col, row, numCols, numRows));
+        this.model.addSelection(new Rectangle(col, row, numCols, numRows));
 
         Rectangle removedSelection = new Rectangle(removedColumn, removedRow,
                 removedNumCols, removedNumRows);
-        model.clearSelection(removedSelection);
+        this.model.clearSelection(removedSelection);
 
         for (int rowIndex = removedRow; rowIndex < removedRow + removedNumRows; rowIndex++) {
             for (int colIndex = removedColumn; colIndex < removedColumn
                     + removedNumCols; colIndex++) {
                 assertFalse("Failed to remove selection [" + rowIndex + ", "
                         + colIndex + "]",
-                        model.isCellPositionSelected(colIndex, rowIndex));
+                        this.model.isCellPositionSelected(colIndex, rowIndex));
             }
         }
 
@@ -343,7 +343,7 @@ public class SelectionModelTest {
                 if (!removedSelection.contains(colIndex, rowIndex))
                     assertTrue("Failed to add range [" + rowIndex + ", "
                             + colIndex + "]",
-                            model.isCellPositionSelected(colIndex, rowIndex));
+                            this.model.isCellPositionSelected(colIndex, rowIndex));
             }
         }
     }
@@ -574,12 +574,12 @@ public class SelectionModelTest {
 
     @Test
     public void getSelectedRows() {
-        model.addSelection(10, 1);
-        model.addSelection(10, 2);
-        model.addSelection(10, 7);
-        model.addSelection(new Rectangle(10, 50, 5, 10));
+        this.model.addSelection(10, 1);
+        this.model.addSelection(10, 2);
+        this.model.addSelection(10, 7);
+        this.model.addSelection(new Rectangle(10, 50, 5, 10));
 
-        List<Range> selectedRows = ObjectUtils.asList(model
+        List<Range> selectedRows = ObjectUtils.asList(this.model
                 .getSelectedRowPositions());
 
         assertTrue(selectedRows.contains(new Range(1, 3)));
@@ -589,11 +589,11 @@ public class SelectionModelTest {
 
     @Test
     public void getSelectedRowsForOverlapingSelections() {
-        model.addSelection(new Rectangle(10, 3, 5, 2));
-        model.addSelection(new Rectangle(10, 4, 5, 10));
-        model.addSelection(new Rectangle(10, 20, 5, 10));
+        this.model.addSelection(new Rectangle(10, 3, 5, 2));
+        this.model.addSelection(new Rectangle(10, 4, 5, 10));
+        this.model.addSelection(new Rectangle(10, 20, 5, 10));
 
-        List<Range> selectedRows = ObjectUtils.asList(model
+        List<Range> selectedRows = ObjectUtils.asList(this.model
                 .getSelectedRowPositions());
         assertEquals(2, selectedRows.size());
 
@@ -603,10 +603,10 @@ public class SelectionModelTest {
 
     @Test
     public void getSelectedRowsForLargeNumberOfSelections() {
-        model.addSelection(1, 10);
-        model.addSelection(new Rectangle(5, 1, 1, 100));
+        this.model.addSelection(1, 10);
+        this.model.addSelection(new Rectangle(5, 1, 1, 100));
 
-        List<Range> selectedRows = ObjectUtils.asList(model
+        List<Range> selectedRows = ObjectUtils.asList(this.model
                 .getSelectedRowPositions());
         assertEquals(1, selectedRows.size());
 
@@ -615,20 +615,20 @@ public class SelectionModelTest {
 
     @Test
     public void getSelectedRowCount() throws Exception {
-        model.addSelection(new Rectangle(10, 3, 1, 1));
-        model.addSelection(new Rectangle(10, 10, 1, 1));
-        model.addSelection(new Rectangle(10, 5, 1, 20));
+        this.model.addSelection(new Rectangle(10, 3, 1, 1));
+        this.model.addSelection(new Rectangle(10, 10, 1, 1));
+        this.model.addSelection(new Rectangle(10, 5, 1, 20));
 
-        assertEquals(21, model.getSelectedRowCount());
+        assertEquals(21, this.model.getSelectedRowCount());
     }
 
     @Test
     public void isRowPositionSelected() throws Exception {
-        model.addSelection(1, 10);
-        model.addSelection(new Rectangle(5, 1, 100, 10000000));
+        this.model.addSelection(1, 10);
+        this.model.addSelection(new Rectangle(5, 1, 100, 10000000));
 
-        assertTrue(model.isRowPositionSelected(10));
-        assertTrue(model.isRowPositionSelected(99));
+        assertTrue(this.model.isRowPositionSelected(10));
+        assertTrue(this.model.isRowPositionSelected(99));
     }
 
     @Test
@@ -636,10 +636,10 @@ public class SelectionModelTest {
         int[] columns = new int[] { 1, 4, 3 };
 
         for (int column : columns) {
-            model.addSelection(column, column % 3);
+            this.model.addSelection(column, column % 3);
         }
 
-        int[] selectedColumns = model.getSelectedColumnPositions();
+        int[] selectedColumns = this.model.getSelectedColumnPositions();
 
         Arrays.sort(columns);
 
@@ -649,14 +649,14 @@ public class SelectionModelTest {
     @Test
     public void removeFromEmptySelection() {
         Rectangle removedSelection = new Rectangle(0, 0, 10, 10);
-        model.clearSelection(removedSelection);
+        this.model.clearSelection(removedSelection);
 
-        assertTrue("Removal from empty selection failed.", model.isEmpty());
+        assertTrue("Removal from empty selection failed.", this.model.isEmpty());
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 assertFalse("Selection was not removed [" + i + ", " + j + "]",
-                        model.isCellPositionSelected(j, i));
+                        this.model.isCellPositionSelected(j, i));
             }
         }
     }
@@ -783,7 +783,7 @@ public class SelectionModelTest {
         rectangles.add(new Rectangle(0, 1, 1, 1));
         rectangles.add(new Rectangle(0, 13, 1, 1));
 
-        model.sortByY(rectangles);
+        this.model.sortByY(rectangles);
 
         Assert.assertEquals(1, rectangles.get(0).y);
         Assert.assertEquals(3, rectangles.get(1).y);

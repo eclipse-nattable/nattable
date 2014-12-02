@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -51,27 +51,27 @@ public class SelectionExampleGridLayer extends GridLayer {
 
         IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                 propertyNames);
-        bodyDataProvider = new ListDataProvider<RowDataFixture>(eventList,
+        this.bodyDataProvider = new ListDataProvider<RowDataFixture>(eventList,
                 columnPropertyAccessor);
 
-        bodyDataLayer = new DataLayer(bodyDataProvider);
-        bodyLayer = new SelectionExampleBodyLayerStack(bodyDataLayer);
+        this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
+        this.bodyLayer = new SelectionExampleBodyLayerStack(this.bodyDataLayer);
 
         // Column header
         IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
                 propertyNames, propertyToLabelMap);
-        columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+        this.columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
                 columnHeaderDataProvider);
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+                this.columnHeaderDataLayer, this.bodyLayer, this.bodyLayer.getSelectionLayer());
 
         // Row header
         DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
+                this.bodyDataProvider);
         DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
                 rowHeaderDataProvider);
         RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayer, bodyLayer.getSelectionLayer());
+                this.bodyLayer, this.bodyLayer.getSelectionLayer());
 
         // Corner
         DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
@@ -81,7 +81,7 @@ public class SelectionExampleGridLayer extends GridLayer {
                 rowHeaderLayer, columnHeaderLayer);
 
         // Grid
-        setBodyLayer(bodyLayer);
+        setBodyLayer(this.bodyLayer);
         setColumnHeaderLayer(columnHeaderLayer);
         setRowHeaderLayer(rowHeaderLayer);
         setCornerLayer(cornerLayer);
@@ -93,19 +93,19 @@ public class SelectionExampleGridLayer extends GridLayer {
     }
 
     public SelectionLayer getSelectionLayer() {
-        return bodyLayer.getSelectionLayer();
+        return this.bodyLayer.getSelectionLayer();
     }
 
     public DataLayer getBodyDataLayer() {
-        return bodyDataLayer;
+        return this.bodyDataLayer;
     }
 
     public ListDataProvider<RowDataFixture> getBodyDataProvider() {
-        return bodyDataProvider;
+        return this.bodyDataProvider;
     }
 
     public DataLayer getColumnHeaderDataLayer() {
-        return columnHeaderDataLayer;
+        return this.columnHeaderDataLayer;
     }
 
 }

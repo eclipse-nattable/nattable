@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,7 +24,7 @@ public class ReorderColumnCommandTest {
 
     @Before
     public void setup() {
-        columnReorderLayer = new ColumnReorderLayer(new DataLayerFixture());
+        this.columnReorderLayer = new ColumnReorderLayer(new DataLayerFixture());
     }
 
     @Test
@@ -32,15 +32,15 @@ public class ReorderColumnCommandTest {
         int fromColumnPosition = 4;
         int toColumnPosition = 1;
         ILayerCommand reorderColumnCommand = new ColumnReorderCommand(
-                columnReorderLayer, fromColumnPosition, toColumnPosition);
+                this.columnReorderLayer, fromColumnPosition, toColumnPosition);
 
-        columnReorderLayer.doCommand(reorderColumnCommand);
+        this.columnReorderLayer.doCommand(reorderColumnCommand);
 
-        Assert.assertEquals(0, columnReorderLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(4, columnReorderLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(1, columnReorderLayer.getColumnIndexByPosition(2));
-        Assert.assertEquals(2, columnReorderLayer.getColumnIndexByPosition(3));
-        Assert.assertEquals(3, columnReorderLayer.getColumnIndexByPosition(4));
+        Assert.assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(4, this.columnReorderLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(1, this.columnReorderLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(2, this.columnReorderLayer.getColumnIndexByPosition(3));
+        Assert.assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(4));
     }
 
 }

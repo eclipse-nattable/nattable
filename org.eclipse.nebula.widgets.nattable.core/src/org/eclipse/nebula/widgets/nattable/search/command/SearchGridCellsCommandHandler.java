@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,10 +31,12 @@ public class SearchGridCellsCommandHandler implements
         this.selectionLayer = selectionLayer;
     }
 
+    @Override
     public Class<SearchCommand> getCommandClass() {
         return SearchCommand.class;
     };
 
+    @Override
     public boolean doCommand(ILayer targetLayer, SearchCommand searchCommand)
             throws PatternSyntaxException {
         searchCommand.convertToTargetLayer(targetLayer);
@@ -44,17 +46,17 @@ public class SearchGridCellsCommandHandler implements
         final ILayerListener searchEventListener = searchCommand
                 .getSearchEventListener();
         if (searchEventListener != null) {
-            selectionLayer.addLayerListener(searchEventListener);
+            this.selectionLayer.addLayerListener(searchEventListener);
         }
         try {
-            PositionCoordinate anchor = selectionLayer.getSelectionAnchor();
+            PositionCoordinate anchor = this.selectionLayer.getSelectionAnchor();
             if (anchor.columnPosition < 0 || anchor.rowPosition < 0) {
-                anchor = new PositionCoordinate(selectionLayer, 0, 0);
+                anchor = new PositionCoordinate(this.selectionLayer, 0, 0);
             }
             searchStrategy.setContextLayer(targetLayer);
             Object dataValueToFind = null;
             if ((dataValueToFind = searchCommand.getSearchText()) == null) {
-                dataValueToFind = selectionLayer.getDataValueByPosition(
+                dataValueToFind = this.selectionLayer.getDataValueByPosition(
                         anchor.columnPosition, anchor.rowPosition);
             }
 
@@ -68,22 +70,22 @@ public class SearchGridCellsCommandHandler implements
             searchStrategy.setSearchDirection(searchCommand
                     .getSearchDirection());
             searchStrategy.setComparator(searchCommand.getComparator());
-            searchResultCellCoordinate = searchStrategy
+            this.searchResultCellCoordinate = searchStrategy
                     .executeSearch(dataValueToFind);
 
-            selectionLayer.fireLayerEvent(new SearchEvent(
-                    searchResultCellCoordinate));
-            if (searchResultCellCoordinate != null) {
+            this.selectionLayer.fireLayerEvent(new SearchEvent(
+                    this.searchResultCellCoordinate));
+            if (this.searchResultCellCoordinate != null) {
                 final SelectCellCommand command = new SelectCellCommand(
-                        selectionLayer,
-                        searchResultCellCoordinate.columnPosition,
-                        searchResultCellCoordinate.rowPosition, false, false);
+                        this.selectionLayer,
+                        this.searchResultCellCoordinate.columnPosition,
+                        this.searchResultCellCoordinate.rowPosition, false, false);
                 command.setForcingEntireCellIntoViewport(true);
-                selectionLayer.doCommand(command);
+                this.selectionLayer.doCommand(command);
             }
         } finally {
             if (searchEventListener != null) {
-                selectionLayer.removeLayerListener(searchEventListener);
+                this.selectionLayer.removeLayerListener(searchEventListener);
             }
         }
 
@@ -91,6 +93,6 @@ public class SearchGridCellsCommandHandler implements
     }
 
     public PositionCoordinate getSearchResultCellCoordinate() {
-        return searchResultCellCoordinate;
+        return this.searchResultCellCoordinate;
     }
 }

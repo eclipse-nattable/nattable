@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,30 +27,30 @@ public class DataLayerCommandHandlingTest {
 
     @Before
     public void setup() {
-        dataLayer = new DataLayerFixture();
-        command = new UpdateDataCommand(dataLayer, 2, 2, TEST_VALUE);
+        this.dataLayer = new DataLayerFixture();
+        this.command = new UpdateDataCommand(this.dataLayer, 2, 2, TEST_VALUE);
     }
 
     @Test
     public void handleUpdateDataCommand() throws Exception {
-        dataLayer.doCommand(command);
-        Assert.assertEquals(TEST_VALUE, dataLayer.getDataProvider()
+        this.dataLayer.doCommand(this.command);
+        Assert.assertEquals(TEST_VALUE, this.dataLayer.getDataProvider()
                 .getDataValue(2, 2));
     }
 
     @Test
     public void handleUpdateDataCommandRaisesEvents() throws Exception {
         LayerListenerFixture listener = new LayerListenerFixture();
-        dataLayer.addLayerListener(listener);
-        dataLayer.doCommand(command);
+        this.dataLayer.addLayerListener(listener);
+        this.dataLayer.doCommand(this.command);
         Assert.assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
     }
 
     @Test
     public void handleSameUpdateDataCommandRaisesNoEvents() throws Exception {
         LayerListenerFixture listener = new LayerListenerFixture();
-        dataLayer.addLayerListener(listener);
-        dataLayer.doCommand(command);
+        this.dataLayer.addLayerListener(listener);
+        this.dataLayer.doCommand(this.command);
         Assert.assertTrue(listener.getReceivedEvents().size() == 1);
         Assert.assertTrue(listener.getReceivedEvents().get(0) instanceof CellVisualChangeEvent);
 
@@ -58,7 +58,7 @@ public class DataLayerCommandHandlingTest {
         // any event
         // the size of the received events will stay 1 (the one event from
         // before which is cached)
-        dataLayer.doCommand(command);
+        this.dataLayer.doCommand(this.command);
         Assert.assertTrue(listener.getReceivedEvents().size() == 1);
     }
 }

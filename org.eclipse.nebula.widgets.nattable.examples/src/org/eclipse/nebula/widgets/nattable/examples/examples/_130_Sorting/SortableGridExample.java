@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -82,30 +82,31 @@ public class SortableGridExample extends AbstractNatExample {
      *      {@link SortHeaderLayer} needs to be a part of the Column header
      *      layer stack.
      */
+    @Override
     public Control createExampleControl(Composite parent) {
         EventList<RowDataFixture> eventList = GlazedLists
                 .eventList(RowDataListFixture.getList());
-        rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+        this.rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
         GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<RowDataFixture>(
-                rowObjectsGlazedList, RowDataListFixture.getPropertyNames(),
+                this.rowObjectsGlazedList, RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap(), configRegistry);
 
-        nattable = new NatTable(parent, glazedListsGridLayer, false);
+        this.nattable = new NatTable(parent, glazedListsGridLayer, false);
 
-        nattable.setConfigRegistry(configRegistry);
-        nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.nattable.setConfigRegistry(configRegistry);
+        this.nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
         // Change the default sort key bindings. Note that 'auto configure' was
         // turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
-        nattable.addConfiguration(new SingleClickSortConfiguration());
-        nattable.addConfiguration(getCustomComparatorConfiguration(glazedListsGridLayer
+        this.nattable.addConfiguration(new SingleClickSortConfiguration());
+        this.nattable.addConfiguration(getCustomComparatorConfiguration(glazedListsGridLayer
                 .getColumnHeaderLayerStack().getDataLayer()));
-        nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
+        this.nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
 
-        nattable.addConfiguration(new HeaderMenuConfiguration(nattable) {
+        this.nattable.addConfiguration(new HeaderMenuConfiguration(this.nattable) {
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
@@ -113,7 +114,7 @@ public class SortableGridExample extends AbstractNatExample {
             }
         });
 
-        nattable.configure();
+        this.nattable.configure();
 
         // add the DisplayPersistenceDialogCommandHandler with the created
         // NatTable instance after configure()
@@ -121,8 +122,8 @@ public class SortableGridExample extends AbstractNatExample {
         // the default state
         glazedListsGridLayer
                 .registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                        nattable));
-        return nattable;
+                        this.nattable));
+        return this.nattable;
     }
 
     /**
@@ -135,6 +136,7 @@ public class SortableGridExample extends AbstractNatExample {
 
         return new AbstractRegistryConfiguration() {
 
+            @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
                 // Add label accumulator
                 ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
@@ -173,6 +175,7 @@ public class SortableGridExample extends AbstractNatExample {
 
     private Comparator<?> getCustomComparator() {
         return new Comparator<String>() {
+            @Override
             public int compare(String o1, String o2) {
                 return o1.compareToIgnoreCase(o2);
             }

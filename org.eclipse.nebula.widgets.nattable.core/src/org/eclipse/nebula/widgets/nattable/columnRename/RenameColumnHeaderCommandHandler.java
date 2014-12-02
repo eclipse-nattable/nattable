@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,10 +27,11 @@ public class RenameColumnHeaderCommandHandler extends
 
     @Override
     protected boolean doCommand(RenameColumnHeaderCommand command) {
-        return columnHeaderLayer.renameColumnPosition(
+        return this.columnHeaderLayer.renameColumnPosition(
                 command.getColumnPosition(), command.getCustomColumnName());
     }
 
+    @Override
     public Class<RenameColumnHeaderCommand> getCommandClass() {
         return RenameColumnHeaderCommand.class;
     }

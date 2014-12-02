@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,7 +30,7 @@ public abstract class CellPainterWrapper extends AbstractCellPainter {
     }
 
     public ICellPainter getWrappedPainter() {
-        return wrappedPainter;
+        return this.wrappedPainter;
     }
 
     public Rectangle getWrappedPainterBounds(ILayerCell cell, GC gc,
@@ -43,7 +43,7 @@ public abstract class CellPainterWrapper extends AbstractCellPainter {
             Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
         Rectangle wrappedPainterBounds = getWrappedPainterBounds(cell, gc,
                 adjustedCellBounds, configRegistry);
-        if (wrappedPainter != null && wrappedPainterBounds.contains(x, y)) {
+        if (this.wrappedPainter != null && wrappedPainterBounds.contains(x, y)) {
             return getWrappedPainter().getCellPainterAt(x, y, cell, gc,
                     wrappedPainterBounds, configRegistry);
         } else {
@@ -52,22 +52,25 @@ public abstract class CellPainterWrapper extends AbstractCellPainter {
         }
     }
 
+    @Override
     public int getPreferredWidth(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
-        return wrappedPainter != null ? wrappedPainter.getPreferredWidth(cell,
+        return this.wrappedPainter != null ? this.wrappedPainter.getPreferredWidth(cell,
                 gc, configRegistry) : 0;
     }
 
+    @Override
     public int getPreferredHeight(ILayerCell cell, GC gc,
             IConfigRegistry configRegistry) {
-        return wrappedPainter != null ? wrappedPainter.getPreferredHeight(cell,
+        return this.wrappedPainter != null ? this.wrappedPainter.getPreferredHeight(cell,
                 gc, configRegistry) : 0;
     }
 
+    @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds,
             IConfigRegistry configRegistry) {
-        if (wrappedPainter != null) {
-            wrappedPainter.paintCell(cell, gc, adjustedCellBounds,
+        if (this.wrappedPainter != null) {
+            this.wrappedPainter.paintCell(cell, gc, adjustedCellBounds,
                     configRegistry);
         }
     }

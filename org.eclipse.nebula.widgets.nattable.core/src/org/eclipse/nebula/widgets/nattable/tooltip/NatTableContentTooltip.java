@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Event;
  * It is possible to configure for which regions the tooltips should be
  * activated. If none are configured, the tooltips are active for every region
  * of the {@link NatTable}.
- * 
+ *
  * @author Dirk Fauth
  * @version 1.0.0
  */
@@ -50,7 +50,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
     /**
      * Creates a new {@link ToolTip} object, attaches it to the given
      * {@link NatTable} instance and configures and activates it.
-     * 
+     *
      * @param natTable
      *            The {@link NatTable} instance for which this {@link ToolTip}
      *            is used.
@@ -70,22 +70,23 @@ public class NatTableContentTooltip extends DefaultToolTip {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>
      * Implementation here means the tooltip is not redrawn unless mouse hover
      * moves outside of the current cell (the combination of ToolTip.NO_RECREATE
      * style and override of this method).
      */
+    @Override
     protected Object getToolTipArea(Event event) {
-        int col = natTable.getColumnPositionByX(event.x);
-        int row = natTable.getRowPositionByY(event.y);
+        int col = this.natTable.getColumnPositionByX(event.x);
+        int row = this.natTable.getRowPositionByY(event.y);
 
         return new Point(col, row);
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>
      * Evaluates the cell for which the tooltip should be rendered and checks
      * the display value. If the display value is empty <code>null</code> will
@@ -93,20 +94,20 @@ public class NatTableContentTooltip extends DefaultToolTip {
      */
     @Override
     protected String getText(Event event) {
-        int col = natTable.getColumnPositionByX(event.x);
-        int row = natTable.getRowPositionByY(event.y);
+        int col = this.natTable.getColumnPositionByX(event.x);
+        int row = this.natTable.getRowPositionByY(event.y);
 
-        ILayerCell cell = natTable.getCellByPosition(col, row);
+        ILayerCell cell = this.natTable.getCellByPosition(col, row);
         if (cell != null) {
             // if the registered cell painter is the PasswordCellPainter, there
             // will be no tooltip
-            ICellPainter painter = natTable.getConfigRegistry()
+            ICellPainter painter = this.natTable.getConfigRegistry()
                     .getConfigAttribute(CellConfigAttributes.CELL_PAINTER,
                             DisplayMode.NORMAL,
                             cell.getConfigLabels().getLabels());
             if (isVisibleContentPainter(painter)) {
                 String tooltipValue = CellDisplayConversionUtils
-                        .convertDataType(cell, natTable.getConfigRegistry());
+                        .convertDataType(cell, this.natTable.getConfigRegistry());
 
                 if (tooltipValue.length() > 0) {
                     return tooltipValue;
@@ -119,7 +120,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
     /**
      * Checks if the given {@link ICellPainter} is showing the content directly
      * or if it is anonymized by using the {@link PasswordTextPainter}
-     * 
+     *
      * @param painter
      *            The {@link ICellPainter} to check.
      * @return <code>true</code> if the painter is not a
@@ -137,7 +138,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>
      * Will only display a tooltip if the value of the cell for which the
      * tooltip should be rendered is not empty.
@@ -151,7 +152,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
         // check the region?
         boolean regionCheckPassed = false;
         if (this.tooltipRegions.length > 0) {
-            LabelStack regionLabels = natTable.getRegionLabelsByXY(event.x,
+            LabelStack regionLabels = this.natTable.getRegionLabelsByXY(event.x,
                     event.y);
             if (regionLabels != null) {
                 for (String label : this.tooltipRegions) {

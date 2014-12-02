@@ -39,13 +39,13 @@ public class MultiColumnResizeCommandHandler extends
 
         for (int columnPosition : command.getColumnPositions()) {
             columnPositions.add(columnPosition);
-            dataLayer.setColumnWidthByPosition(columnPosition,
+            this.dataLayer.setColumnWidthByPosition(columnPosition,
                     command.getColumnWidth(columnPosition), false);
         }
 
         List<Range> ranges = PositionUtil.getRanges(columnPositions);
         for (Range range : ranges) {
-            dataLayer.fireLayerEvent(new ColumnResizeEvent(dataLayer, range));
+            this.dataLayer.fireLayerEvent(new ColumnResizeEvent(this.dataLayer, range));
         }
 
         return true;

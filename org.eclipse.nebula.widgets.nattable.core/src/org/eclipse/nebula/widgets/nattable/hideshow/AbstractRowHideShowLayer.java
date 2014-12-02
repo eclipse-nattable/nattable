@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -114,7 +114,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
         if (rowPosition >= 0) {
             return rowPosition;
         } else {
-            Integer hiddenRowPosition = cachedHiddenRowIndexToPositionMap
+            Integer hiddenRowPosition = this.cachedHiddenRowIndexToPositionMap
                     .get(Integer.valueOf(rowIndex));
             if (hiddenRowPosition != null) {
                 return hiddenRowPosition.intValue();
@@ -200,7 +200,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int getStartYOfRowPosition(int localRowPosition) {
-        Integer cachedStartY = startYCache.get(Integer
+        Integer cachedStartY = this.startYCache.get(Integer
                 .valueOf(localRowPosition));
         if (cachedStartY != null) {
             return cachedStartY.intValue();
@@ -229,7 +229,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
             }
         }
 
-        startYCache.put(Integer.valueOf(localRowPosition),
+        this.startYCache.put(Integer.valueOf(localRowPosition),
                 Integer.valueOf(underlyingStartY));
         return underlyingStartY;
     }
@@ -239,7 +239,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
     /**
      * Will check if the row at the specified index is hidden or not. Checks
      * this layer and also the sublayers for the visibility.
-     * 
+     *
      * @param rowIndex
      *            The row index of the row whose visibility state should be
      *            checked.
@@ -253,7 +253,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
      * layer. Note: It is not intended that it also collects the row indexes of
      * underlying layers. This would cause issues on calculating positions as
      * every layer is responsible for those calculations itself.
-     * 
+     *
      * @return Collection of all row indexes that are hidden in this layer.
      */
     public abstract Collection<Integer> getHiddenRowIndexes();
@@ -264,31 +264,31 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
      * Invalidate the cache to ensure that information is rebuild.
      */
     protected void invalidateCache() {
-        cachedVisibleRowIndexOrder = null;
-        cachedVisibleRowPositionOrder = null;
-        cachedHiddenRowIndexToPositionMap = null;
-        startYCache.clear();
+        this.cachedVisibleRowIndexOrder = null;
+        this.cachedVisibleRowPositionOrder = null;
+        this.cachedHiddenRowIndexToPositionMap = null;
+        this.startYCache.clear();
     }
 
     private Map<Integer, Integer> getCachedVisibleRowIndexes() {
-        if (cachedVisibleRowIndexOrder == null) {
+        if (this.cachedVisibleRowIndexOrder == null) {
             cacheVisibleRowIndexes();
         }
-        return cachedVisibleRowIndexOrder;
+        return this.cachedVisibleRowIndexOrder;
     }
 
     private Map<Integer, Integer> getCachedVisibleRowPositons() {
-        if (cachedVisibleRowPositionOrder == null) {
+        if (this.cachedVisibleRowPositionOrder == null) {
             cacheVisibleRowIndexes();
         }
-        return cachedVisibleRowPositionOrder;
+        return this.cachedVisibleRowPositionOrder;
     }
 
     protected void cacheVisibleRowIndexes() {
-        cachedVisibleRowIndexOrder = new HashMap<Integer, Integer>();
-        cachedVisibleRowPositionOrder = new HashMap<Integer, Integer>();
-        cachedHiddenRowIndexToPositionMap = new HashMap<Integer, Integer>();
-        startYCache.clear();
+        this.cachedVisibleRowIndexOrder = new HashMap<Integer, Integer>();
+        this.cachedVisibleRowPositionOrder = new HashMap<Integer, Integer>();
+        this.cachedHiddenRowIndexToPositionMap = new HashMap<Integer, Integer>();
+        this.startYCache.clear();
 
         ILayer underlyingLayer = getUnderlyingLayer();
         int rowPosition = 0;
@@ -298,13 +298,13 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
                     .getRowIndexByPosition(parentRowPosition);
 
             if (!isRowIndexHidden(rowIndex)) {
-                cachedVisibleRowIndexOrder.put(Integer.valueOf(rowIndex),
+                this.cachedVisibleRowIndexOrder.put(Integer.valueOf(rowIndex),
                         rowPosition);
-                cachedVisibleRowPositionOrder.put(rowPosition,
+                this.cachedVisibleRowPositionOrder.put(rowPosition,
                         Integer.valueOf(rowIndex));
                 rowPosition++;
             } else {
-                cachedHiddenRowIndexToPositionMap
+                this.cachedHiddenRowIndexToPositionMap
                         .put(Integer.valueOf(rowIndex),
                                 Integer.valueOf(rowPosition));
             }

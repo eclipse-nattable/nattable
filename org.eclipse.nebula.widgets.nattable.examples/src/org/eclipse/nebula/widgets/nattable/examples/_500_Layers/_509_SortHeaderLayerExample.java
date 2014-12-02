@@ -57,7 +57,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Simple example showing how to add the {@link SortHeaderLayer} to the layer
  * composition of a grid.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -162,7 +162,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
      * and doesn't support multiple column sorting and it won't be possible to
      * remove the sorting. Of course this can be implemented to work like the
      * default behaviour of the NatTable.
-     * 
+     *
      * @author Dirk Fauth
      */
     class PersonWithAddressSortModel implements ISortModel {
@@ -201,18 +201,18 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
         /**
          * Creates a new {@link PersonWithAddressSortModel} for the list of
          * objects.
-         * 
+         *
          * @param persons
          *            the list of objects that should be sorted
          */
         public PersonWithAddressSortModel(List<PersonWithAddress> persons) {
             this.persons = persons;
 
-            sortDirections = new SortDirectionEnum[DataModelConstants.PERSONWITHADDRESS_NUMBER_OF_COLUMNS];
-            Arrays.fill(sortDirections, SortDirectionEnum.NONE);
+            this.sortDirections = new SortDirectionEnum[DataModelConstants.PERSONWITHADDRESS_NUMBER_OF_COLUMNS];
+            Arrays.fill(this.sortDirections, SortDirectionEnum.NONE);
 
-            sorted = new boolean[DataModelConstants.PERSONWITHADDRESS_NUMBER_OF_COLUMNS];
-            Arrays.fill(sorted, false);
+            this.sorted = new boolean[DataModelConstants.PERSONWITHADDRESS_NUMBER_OF_COLUMNS];
+            Arrays.fill(this.sorted, false);
 
             // call initial sorting
             sort(0, SortDirectionEnum.ASC, false);
@@ -226,8 +226,8 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
         @Override
         public List<Integer> getSortedColumnIndexes() {
             List<Integer> indexes = new ArrayList<Integer>();
-            if (currentSortColumn > -1) {
-                indexes.add(Integer.valueOf(currentSortColumn));
+            if (this.currentSortColumn > -1) {
+                indexes.add(Integer.valueOf(this.currentSortColumn));
             }
             return indexes;
         }
@@ -238,7 +238,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
          */
         @Override
         public boolean isColumnIndexSorted(int columnIndex) {
-            return sorted[columnIndex];
+            return this.sorted[columnIndex];
         }
 
         /**
@@ -247,7 +247,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
          */
         @Override
         public SortDirectionEnum getSortDirection(int columnIndex) {
-            return sortDirections[columnIndex];
+            return this.sortDirections[columnIndex];
         }
 
         /**
@@ -263,8 +263,8 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
          */
         @Override
         public void clear() {
-            Arrays.fill(sortDirections, SortDirectionEnum.NONE);
-            Arrays.fill(sorted, false);
+            Arrays.fill(this.sortDirections, SortDirectionEnum.NONE);
+            Arrays.fill(this.sorted, false);
             this.currentSortColumn = -1;
         }
 
@@ -285,14 +285,14 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
                 sortDirection = SortDirectionEnum.ASC;
             }
 
-            Collections.sort(persons, new PersonWithAddressComparator(
+            Collections.sort(this.persons, new PersonWithAddressComparator(
                     columnIndex, sortDirection));
-            sortDirections[columnIndex] = sortDirection;
-            sorted[columnIndex] = sortDirection.equals(SortDirectionEnum.NONE) ? false
+            this.sortDirections[columnIndex] = sortDirection;
+            this.sorted[columnIndex] = sortDirection.equals(SortDirectionEnum.NONE) ? false
                     : true;
 
-            currentSortColumn = columnIndex;
-            currentSortDirection = sortDirection;
+            this.currentSortColumn = columnIndex;
+            this.currentSortDirection = sortDirection;
         }
 
         /**
@@ -318,7 +318,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
                 Address address1 = pwa1.getAddress();
                 Address address2 = pwa2.getAddress();
 
-                switch (colIdx) {
+                switch (this.colIdx) {
                     case DataModelConstants.FIRSTNAME_COLUMN_POSITION:
                         compareObject1 = pwa1.getFirstName();
                         compareObject2 = pwa2.getFirstName();
@@ -375,7 +375,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
                 }
 
                 // negate compare result if sort direction is descending
-                if (sortDirection.equals(SortDirectionEnum.DESC)) {
+                if (this.sortDirection.equals(SortDirectionEnum.DESC)) {
                     result = result * -1;
                 }
 
@@ -386,7 +386,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.nebula.widgets.nattable.sort.ISortModel#
          * getComparatorsForColumnIndex(int)
          */

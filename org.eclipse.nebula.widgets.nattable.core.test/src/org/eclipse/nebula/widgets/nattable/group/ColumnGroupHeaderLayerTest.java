@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,16 +37,16 @@ public class ColumnGroupHeaderLayerTest {
 
     @Before
     public void setup() {
-        gridLayer = new GridLayerFixture();
-        model = new ColumnGroupModel();
+        this.gridLayer = new GridLayerFixture();
+        this.model = new ColumnGroupModel();
         // 10 columns in header
-        columnGroupLayer = new ColumnGroupHeaderLayer(
-                gridLayer.getColumnHeaderLayer(), gridLayer.getBodyLayer()
-                        .getSelectionLayer(), model);
-        columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_1, 0, 1);
-        columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_2, 5, 6);
-        columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_3, 8, 9);
-        gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.columnGroupLayer = new ColumnGroupHeaderLayer(
+                this.gridLayer.getColumnHeaderLayer(), this.gridLayer.getBodyLayer()
+                        .getSelectionLayer(), this.model);
+        this.columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_1, 0, 1);
+        this.columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_2, 5, 6);
+        this.columnGroupLayer.addColumnsIndexesToGroup(TEST_GROUP_NAME_3, 8, 9);
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
 
             @Override
             public Rectangle getClientArea() {
@@ -54,13 +54,13 @@ public class ColumnGroupHeaderLayerTest {
             }
 
         });
-        gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
                 .getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
     }
 
     @Test
     public void getCellForACellInAColumnGroup() throws Exception {
-        ILayerCell cell = columnGroupLayer.getCellByPosition(0, 0);
+        ILayerCell cell = this.columnGroupLayer.getCellByPosition(0, 0);
 
         assertEquals(TEST_GROUP_NAME_1, cell.getDataValue());
         assertEquals(0, cell.getBounds().x);
@@ -68,7 +68,7 @@ public class ColumnGroupHeaderLayerTest {
         assertEquals(200, cell.getBounds().width);
         assertEquals(20, cell.getBounds().height);
 
-        cell = columnGroupLayer.getCellByPosition(1, 0);
+        cell = this.columnGroupLayer.getCellByPosition(1, 0);
         assertEquals(TEST_GROUP_NAME_1, cell.getDataValue());
         assertEquals(0, cell.getBounds().x);
         assertEquals(0, cell.getBounds().y);
@@ -78,19 +78,19 @@ public class ColumnGroupHeaderLayerTest {
 
     @Test
     public void aCollapsedColumnGroupShouldNotBeSpanned() throws Exception {
-        assertEquals(2, columnGroupLayer.getCellByPosition(0, 0)
+        assertEquals(2, this.columnGroupLayer.getCellByPosition(0, 0)
                 .getColumnSpan());
 
-        columnGroupLayer.setGroupAsCollapsed(0);
+        this.columnGroupLayer.setGroupAsCollapsed(0);
 
-        assertEquals(1, columnGroupLayer.getCellByPosition(0, 0)
+        assertEquals(1, this.columnGroupLayer.getCellByPosition(0, 0)
                 .getColumnSpan());
 
     }
 
     @Test
     public void getCellForACellNotInAColumnGroup() throws Exception {
-        ILayerCell cell = columnGroupLayer.getCellByPosition(5, 0);
+        ILayerCell cell = this.columnGroupLayer.getCellByPosition(5, 0);
 
         assertEquals(500, cell.getBounds().x);
         assertEquals(0, cell.getBounds().y);
@@ -100,9 +100,9 @@ public class ColumnGroupHeaderLayerTest {
 
     @Test
     public void getDataValueByPosition() throws Exception {
-        String dataValueGroup1 = (String) columnGroupLayer
+        String dataValueGroup1 = (String) this.columnGroupLayer
                 .getDataValueByPosition(1, 0);
-        String dataValue = (String) columnGroupLayer.getDataValueByPosition(2,
+        String dataValue = (String) this.columnGroupLayer.getDataValueByPosition(2,
                 0);
 
         assertEquals(TEST_GROUP_NAME_1, dataValueGroup1);
@@ -112,54 +112,54 @@ public class ColumnGroupHeaderLayerTest {
     @Test
     public void getColumnWidthByPosition() throws Exception {
         // Col 0,1 are in group 150 + 100
-        assertEquals(100, columnGroupLayer.getColumnWidthByPosition(0));
-        assertEquals(100, columnGroupLayer.getColumnWidthByPosition(1));
+        assertEquals(100, this.columnGroupLayer.getColumnWidthByPosition(0));
+        assertEquals(100, this.columnGroupLayer.getColumnWidthByPosition(1));
     }
 
     @Test
     public void getColumnWidthWhenNoColumnGroupsPresent() throws Exception {
-        columnGroupLayer.clearAllGroups();
+        this.columnGroupLayer.clearAllGroups();
         // Width of the vsible columns - see fixture
 
-        assertEquals(1000, columnGroupLayer.getWidth());
+        assertEquals(1000, this.columnGroupLayer.getWidth());
     }
 
     @Test
     public void getColumnWidthByPositionForAColumnOutsideTheViewport()
             throws Exception {
         // Returns default column width from DataLayer
-        assertEquals(100, columnGroupLayer.getColumnWidthByPosition(100));
+        assertEquals(100, this.columnGroupLayer.getColumnWidthByPosition(100));
     }
 
     @Test
     public void getCellSpan() throws Exception {
         // Index in group: 5, 6, 7
-        model.addColumnsIndexesToGroup(TEST_GROUP_NAME_2, 7);
-        assertEquals(3, columnGroupLayer.getColumnSpan(5));
+        this.model.addColumnsIndexesToGroup(TEST_GROUP_NAME_2, 7);
+        assertEquals(3, this.columnGroupLayer.getColumnSpan(5));
 
-        model.getColumnGroupByIndex(5).setCollapsed(true);
-        assertEquals(1, columnGroupLayer.getColumnSpan(5));
+        this.model.getColumnGroupByIndex(5).setCollapsed(true);
+        assertEquals(1, this.columnGroupLayer.getColumnSpan(5));
     }
 
     @Test
     public void getCellSpanWhenColumnsInGroupAreHidden() throws Exception {
         // Index in group: 5, 6, 7
-        model.addColumnsIndexesToGroup(TEST_GROUP_NAME_2, 7);
-        assertEquals(3, columnGroupLayer.getColumnSpan(5));
+        this.model.addColumnsIndexesToGroup(TEST_GROUP_NAME_2, 7);
+        assertEquals(3, this.columnGroupLayer.getColumnSpan(5));
 
         // Hide position 6
         ColumnHideCommand hideColumnCommand = new ColumnHideCommand(
-                gridLayer.getBodyLayer(), 6);
-        gridLayer.getBodyLayer().getColumnHideShowLayer()
+                this.gridLayer.getBodyLayer(), 6);
+        this.gridLayer.getBodyLayer().getColumnHideShowLayer()
                 .doCommand(hideColumnCommand);
 
-        assertEquals(2, columnGroupLayer.getColumnSpan(5));
+        assertEquals(2, this.columnGroupLayer.getColumnSpan(5));
 
         // Hide position 5
-        hideColumnCommand = new ColumnHideCommand(gridLayer.getBodyLayer(), 6);
-        gridLayer.getBodyLayer().getColumnHideShowLayer()
+        hideColumnCommand = new ColumnHideCommand(this.gridLayer.getBodyLayer(), 6);
+        this.gridLayer.getBodyLayer().getColumnHideShowLayer()
                 .doCommand(hideColumnCommand);
 
-        assertEquals(1, columnGroupLayer.getColumnSpan(5));
+        assertEquals(1, this.columnGroupLayer.getColumnSpan(5));
     }
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,12 +19,13 @@ public class CreateColumnGroupAction implements IKeyAction {
 
     private OpenCreateColumnGroupDialog dialogCommand;
 
+    @Override
     public void run(NatTable natTable, KeyEvent event) {
-        if (dialogCommand == null) {
+        if (this.dialogCommand == null) {
             // Create dialog
-            dialogCommand = new OpenCreateColumnGroupDialog(natTable.getShell());
+            this.dialogCommand = new OpenCreateColumnGroupDialog(natTable.getShell());
         }
-        natTable.doCommand(dialogCommand);
+        natTable.doCommand(this.dialogCommand);
     }
 
 }

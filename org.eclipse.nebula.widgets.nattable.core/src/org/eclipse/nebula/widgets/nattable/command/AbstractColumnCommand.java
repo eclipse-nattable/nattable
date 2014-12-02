@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -18,7 +18,7 @@ public abstract class AbstractColumnCommand implements ILayerCommand {
     private ColumnPositionCoordinate columnPositionCoordinate;
 
     protected AbstractColumnCommand(ILayer layer, int columnPosition) {
-        columnPositionCoordinate = new ColumnPositionCoordinate(layer,
+        this.columnPositionCoordinate = new ColumnPositionCoordinate(layer,
                 columnPosition);
     }
 
@@ -26,12 +26,13 @@ public abstract class AbstractColumnCommand implements ILayerCommand {
         this.columnPositionCoordinate = command.columnPositionCoordinate;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil
-                .convertColumnPositionToTargetContext(columnPositionCoordinate,
+                .convertColumnPositionToTargetContext(this.columnPositionCoordinate,
                         targetLayer);
         if (targetColumnPositionCoordinate != null) {
-            columnPositionCoordinate = targetColumnPositionCoordinate;
+            this.columnPositionCoordinate = targetColumnPositionCoordinate;
             return true;
         } else {
             return false;
@@ -39,17 +40,17 @@ public abstract class AbstractColumnCommand implements ILayerCommand {
     }
 
     public ILayer getLayer() {
-        return columnPositionCoordinate.getLayer();
+        return this.columnPositionCoordinate.getLayer();
     }
 
     public int getColumnPosition() {
-        return columnPositionCoordinate.getColumnPosition();
+        return this.columnPositionCoordinate.getColumnPosition();
     }
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName()
-                + " columnPosition=" + columnPositionCoordinate.getColumnPosition(); //$NON-NLS-1$
+                + " columnPosition=" + this.columnPositionCoordinate.getColumnPosition(); //$NON-NLS-1$
     }
 
 }

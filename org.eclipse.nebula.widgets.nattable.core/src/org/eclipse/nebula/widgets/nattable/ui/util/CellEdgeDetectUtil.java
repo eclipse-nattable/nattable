@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -73,7 +73,7 @@ public class CellEdgeDetectUtil {
     /**
      * Gets the edge (left/right) of the cell which is closer to the click
      * point.
-     * 
+     *
      * @param cellBounds
      *            bounds of the cell containing the click
      * @param clickPt
@@ -103,7 +103,7 @@ public class CellEdgeDetectUtil {
     /**
      * Figure out if the click point is closer to the left/right edge of the
      * cell.
-     * 
+     *
      * @param cellBounds
      *            of the table cell containing the click
      * @param clickPt
@@ -135,7 +135,7 @@ public class CellEdgeDetectUtil {
     /**
      * Gets the edge (top/bottom) of the cell which is closer to the click
      * point.
-     * 
+     *
      * @param cellBounds
      *            bounds of the cell containing the click
      * @param clickPt

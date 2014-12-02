@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation (DimensionallyDependentLayer)
  *     Stephan Wahlbrink - initial API and implementation
@@ -39,7 +39,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
  * vertical instead of the horizontal dimension. The constructors for the column
  * header and row header layers would therefore look something like this:
  * </p>
- * 
+ *
  * <pre>
  * ILayer columnHeaderLayer = new DimensionallyDependentIndexLayer(
  *         columnHeaderRowDataLayer, bodyLayer, columnHeaderRowDataLayer);
@@ -67,7 +67,7 @@ public class DimensionallyDependentIndexLayer extends
 
     /**
      * Creates a new DimensionallyDependentIndexLayer.
-     * 
+     *
      * @param baseLayer
      *            the underlying base layer
      * @param horizontalLayerDependency
@@ -86,7 +86,7 @@ public class DimensionallyDependentIndexLayer extends
 
     /**
      * Creates a new DimensionallyDependentIndexLayer.
-     * 
+     *
      * @param baseLayer
      *            the underlying base layer
      */
@@ -127,11 +127,11 @@ public class DimensionallyDependentIndexLayer extends
     }
 
     public ILayer getHorizontalLayerDependency() {
-        return horizontalLayerDependency;
+        return this.horizontalLayerDependency;
     }
 
     public ILayer getVerticalLayerDependency() {
-        return verticalLayerDependency;
+        return this.verticalLayerDependency;
     }
 
     public IUniqueIndexLayer getBaseLayer() {
@@ -149,12 +149,12 @@ public class DimensionallyDependentIndexLayer extends
         }
 
         clonedCommand = command.cloneCommand();
-        if (horizontalLayerDependency.doCommand(clonedCommand)) {
+        if (this.horizontalLayerDependency.doCommand(clonedCommand)) {
             return true;
         }
 
         clonedCommand = command.cloneCommand();
-        if (verticalLayerDependency.doCommand(clonedCommand)) {
+        if (this.verticalLayerDependency.doCommand(clonedCommand)) {
             return true;
         }
 
@@ -165,28 +165,34 @@ public class DimensionallyDependentIndexLayer extends
 
     // Columns
 
+    @Override
     public int getColumnCount() {
-        return horizontalLayerDependency.getColumnCount();
+        return this.horizontalLayerDependency.getColumnCount();
     }
 
+    @Override
     public int getPreferredColumnCount() {
-        return horizontalLayerDependency.getPreferredColumnCount();
+        return this.horizontalLayerDependency.getPreferredColumnCount();
     }
 
+    @Override
     public int getColumnIndexByPosition(int columnPosition) {
-        return horizontalLayerDependency
+        return this.horizontalLayerDependency
                 .getColumnIndexByPosition(columnPosition);
     }
 
+    @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return horizontalLayerDependency.getColumnPositionByIndex(columnIndex);
+        return this.horizontalLayerDependency.getColumnPositionByIndex(columnIndex);
     }
 
+    @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
         return LayerUtil.convertColumnPosition(this, localColumnPosition,
                 getUnderlyingLayer());
     }
 
+    @Override
     public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
             int underlyingColumnPosition) {
         return LayerUtil.convertColumnPosition(sourceUnderlyingLayer,
@@ -195,34 +201,40 @@ public class DimensionallyDependentIndexLayer extends
 
     // Width
 
+    @Override
     public int getWidth() {
-        return horizontalLayerDependency.getWidth();
+        return this.horizontalLayerDependency.getWidth();
     }
 
+    @Override
     public int getPreferredWidth() {
-        return horizontalLayerDependency.getPreferredWidth();
+        return this.horizontalLayerDependency.getPreferredWidth();
     }
 
+    @Override
     public int getColumnWidthByPosition(int columnPosition) {
-        return horizontalLayerDependency
+        return this.horizontalLayerDependency
                 .getColumnWidthByPosition(columnPosition);
     }
 
     // Column resize
 
+    @Override
     public boolean isColumnPositionResizable(int columnPosition) {
-        return horizontalLayerDependency
+        return this.horizontalLayerDependency
                 .isColumnPositionResizable(columnPosition);
     }
 
     // X
 
+    @Override
     public int getColumnPositionByX(int x) {
-        return horizontalLayerDependency.getColumnPositionByX(x);
+        return this.horizontalLayerDependency.getColumnPositionByX(x);
     }
 
+    @Override
     public int getStartXOfColumnPosition(int columnPosition) {
-        return horizontalLayerDependency
+        return this.horizontalLayerDependency
                 .getStartXOfColumnPosition(columnPosition);
     }
 
@@ -230,27 +242,33 @@ public class DimensionallyDependentIndexLayer extends
 
     // Rows
 
+    @Override
     public int getRowCount() {
-        return verticalLayerDependency.getRowCount();
+        return this.verticalLayerDependency.getRowCount();
     }
 
+    @Override
     public int getPreferredRowCount() {
-        return verticalLayerDependency.getPreferredRowCount();
+        return this.verticalLayerDependency.getPreferredRowCount();
     }
 
+    @Override
     public int getRowIndexByPosition(int rowPosition) {
-        return verticalLayerDependency.getRowIndexByPosition(rowPosition);
+        return this.verticalLayerDependency.getRowIndexByPosition(rowPosition);
     }
 
+    @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return verticalLayerDependency.getRowPositionByIndex(rowIndex);
+        return this.verticalLayerDependency.getRowPositionByIndex(rowIndex);
     }
 
+    @Override
     public int localToUnderlyingRowPosition(int localRowPosition) {
         return LayerUtil.convertRowPosition(this, localRowPosition,
                 getUnderlyingLayer());
     }
 
+    @Override
     public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
             int underlyingRowPosition) {
         return LayerUtil.convertRowPosition(sourceUnderlyingLayer,
@@ -259,32 +277,38 @@ public class DimensionallyDependentIndexLayer extends
 
     // Height
 
+    @Override
     public int getHeight() {
-        return verticalLayerDependency.getHeight();
+        return this.verticalLayerDependency.getHeight();
     }
 
+    @Override
     public int getPreferredHeight() {
-        return verticalLayerDependency.getPreferredHeight();
+        return this.verticalLayerDependency.getPreferredHeight();
     }
 
+    @Override
     public int getRowHeightByPosition(int rowPosition) {
-        return verticalLayerDependency.getRowHeightByPosition(rowPosition);
+        return this.verticalLayerDependency.getRowHeightByPosition(rowPosition);
     }
 
     // Row resize
 
+    @Override
     public boolean isRowPositionResizable(int rowPosition) {
-        return verticalLayerDependency.isRowPositionResizable(rowPosition);
+        return this.verticalLayerDependency.isRowPositionResizable(rowPosition);
     }
 
     // Y
 
+    @Override
     public int getRowPositionByY(int y) {
-        return verticalLayerDependency.getRowPositionByY(y);
+        return this.verticalLayerDependency.getRowPositionByY(y);
     }
 
+    @Override
     public int getStartYOfRowPosition(int rowPosition) {
-        return verticalLayerDependency.getStartYOfRowPosition(rowPosition);
+        return this.verticalLayerDependency.getStartYOfRowPosition(rowPosition);
     }
 
 }

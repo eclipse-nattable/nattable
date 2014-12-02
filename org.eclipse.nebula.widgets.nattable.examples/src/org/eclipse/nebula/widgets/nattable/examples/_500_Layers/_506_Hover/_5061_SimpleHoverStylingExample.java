@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Simple example showing how to add the {@link HoverLayer} to a simple layer
  * composition.
- * 
+ *
  * @author Dirk Fauth
  *
  */

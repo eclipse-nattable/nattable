@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,26 +35,26 @@ public class ChooseColumnsFromCategoriesCommandHandlerTest {
 
     @Before
     public void setup() {
-        hideShowLayerFixture = new ColumnHideShowLayerFixture();
-        commandHandler = new ChooseColumnsFromCategoriesCommandHandler(
-                hideShowLayerFixture, new ColumnHeaderLayerFixture(),
+        this.hideShowLayerFixture = new ColumnHideShowLayerFixture();
+        this.commandHandler = new ChooseColumnsFromCategoriesCommandHandler(
+                this.hideShowLayerFixture, new ColumnHeaderLayerFixture(),
                 new DataLayerFixture(), new ColumnCategoriesModelFixture());
     }
 
     @Test
     public void shouldFireCorrectMoveCommandsOnTable() throws Exception {
-        commandHandler.itemsMoved(MoveDirectionEnum.DOWN, Arrays.asList(1));
-        assertTrue(hideShowLayerFixture.getLastCommand() instanceof ColumnReorderCommand);
+        this.commandHandler.itemsMoved(MoveDirectionEnum.DOWN, Arrays.asList(1));
+        assertTrue(this.hideShowLayerFixture.getLastCommand() instanceof ColumnReorderCommand);
 
-        commandHandler.itemsMoved(MoveDirectionEnum.DOWN,
+        this.commandHandler.itemsMoved(MoveDirectionEnum.DOWN,
                 Arrays.asList(1, 2, 3));
-        assertTrue(hideShowLayerFixture.getLastCommand() instanceof MultiColumnReorderCommand);
+        assertTrue(this.hideShowLayerFixture.getLastCommand() instanceof MultiColumnReorderCommand);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void calculateDestinationPositionsForMovingUp() throws Exception {
-        List<Integer> destinationPositions = commandHandler
+        List<Integer> destinationPositions = this.commandHandler
                 .getDestinationPositions(MoveDirectionEnum.UP, Arrays.asList(
                         asIntegerList(1, 2, 3), asIntegerList(7),
                         asIntegerList(12)));
@@ -68,7 +68,7 @@ public class ChooseColumnsFromCategoriesCommandHandlerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void calculateDestinationPositionsForMovingDown() throws Exception {
-        List<Integer> destinationPositions = commandHandler
+        List<Integer> destinationPositions = this.commandHandler
                 .getDestinationPositions(MoveDirectionEnum.DOWN, Arrays.asList(
                         asIntegerList(1, 2, 3), asIntegerList(7),
                         asIntegerList(12)));

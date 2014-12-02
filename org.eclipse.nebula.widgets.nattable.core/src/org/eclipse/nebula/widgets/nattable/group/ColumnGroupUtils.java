@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -48,12 +48,12 @@ public class ColumnGroupUtils {
      * method provides downward compatibility for all group definitions without
      * static columns. When no static columns are defined the first visible
      * column will be used.
-     * 
+     *
      * @param columnIndex
      * @param layer
      * @param underlyingLayer
      * @param model
-     * 
+     *
      * @return <code>TRUE</code> if the given <code>columnIndex</code> is either
      *         a defined static column or (if not) the first visible column the
      *         it's group
@@ -162,7 +162,7 @@ public class ColumnGroupUtils {
 
     /**
      * See ColumnGroupUtilsTest
-     * 
+     *
      * @return TRUE if the given column is the <i>right</i> most column in a
      *         group
      */
@@ -189,7 +189,7 @@ public class ColumnGroupUtils {
 
     /**
      * See ColumnGroupUtilsTest
-     * 
+     *
      * @return TRUE if the given column is the <i>left</i> most column in a
      *         group
      */

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -69,14 +69,14 @@ public abstract class AbstractLayer implements ILayer {
     @Override
     public LabelStack getRegionLabelsByXY(int x, int y) {
         LabelStack regionLabels = new LabelStack();
-        if (regionName != null) {
-            regionLabels.addLabel(regionName);
+        if (this.regionName != null) {
+            regionLabels.addLabel(this.regionName);
         }
         return regionLabels;
     }
 
     public String getRegionName() {
-        return regionName;
+        return this.regionName;
     }
 
     public void setRegionName(String regionName) {
@@ -89,18 +89,18 @@ public abstract class AbstractLayer implements ILayer {
     public LabelStack getConfigLabelsByPosition(int columnPosition,
             int rowPosition) {
         LabelStack configLabels = new LabelStack();
-        if (configLabelAccumulator != null) {
-            configLabelAccumulator.accumulateConfigLabels(configLabels,
+        if (this.configLabelAccumulator != null) {
+            this.configLabelAccumulator.accumulateConfigLabels(configLabels,
                     columnPosition, rowPosition);
         }
-        if (regionName != null) {
-            configLabels.addLabel(regionName);
+        if (this.regionName != null) {
+            configLabels.addLabel(this.regionName);
         }
         return configLabels;
     }
 
     public IConfigLabelAccumulator getConfigLabelAccumulator() {
-        return configLabelAccumulator;
+        return this.configLabelAccumulator;
     }
 
     public void setConfigLabelAccumulator(
@@ -112,42 +112,42 @@ public abstract class AbstractLayer implements ILayer {
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        for (IPersistable persistable : persistables) {
+        for (IPersistable persistable : this.persistables) {
             persistable.saveState(prefix, properties);
         }
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
-        for (IPersistable persistable : persistables) {
+        for (IPersistable persistable : this.persistables) {
             persistable.loadState(prefix, properties);
         }
     }
 
     @Override
     public void registerPersistable(IPersistable persistable) {
-        persistables.add(persistable);
+        this.persistables.add(persistable);
     }
 
     @Override
     public void unregisterPersistable(IPersistable persistable) {
-        persistables.remove(persistable);
+        this.persistables.remove(persistable);
     }
 
     // Configuration
 
     public void addConfiguration(IConfiguration configuration) {
-        configurations.add(configuration);
+        this.configurations.add(configuration);
     }
 
     public void clearConfiguration() {
-        configurations.clear();
+        this.configurations.clear();
     }
 
     @Override
     public void configure(ConfigRegistry configRegistry,
             UiBindingRegistry uiBindingRegistry) {
-        for (IConfiguration configuration : configurations) {
+        for (IConfiguration configuration : this.configurations) {
             configuration.configureLayer(this);
             configuration.configureRegistry(configRegistry);
             configuration.configureUiBindings(uiBindingRegistry);
@@ -159,10 +159,10 @@ public abstract class AbstractLayer implements ILayer {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean doCommand(ILayerCommand command) {
-        for (Class<? extends ILayerCommand> commandClass : commandHandlers
+        for (Class<? extends ILayerCommand> commandClass : this.commandHandlers
                 .keySet()) {
             if (commandClass.isInstance(command)) {
-                ILayerCommandHandler commandHandler = commandHandlers
+                ILayerCommandHandler commandHandler = this.commandHandlers
                         .get(commandClass);
                 if (commandHandler.doCommand(this, command)) {
                     return true;
@@ -186,31 +186,31 @@ public abstract class AbstractLayer implements ILayer {
 
     @Override
     public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
-        commandHandlers.put(commandHandler.getCommandClass(), commandHandler);
+        this.commandHandlers.put(commandHandler.getCommandClass(), commandHandler);
     }
 
     @Override
     public void unregisterCommandHandler(
             Class<? extends ILayerCommand> commandClass) {
-        commandHandlers.remove(commandClass);
+        this.commandHandlers.remove(commandClass);
     }
 
     // Events
 
     @Override
     public void addLayerListener(ILayerListener listener) {
-        listeners.add(listener);
+        this.listeners.add(listener);
     }
 
     @Override
     public void removeLayerListener(ILayerListener listener) {
-        listeners.remove(listener);
+        this.listeners.remove(listener);
     }
 
     @Override
     public boolean hasLayerListener(
             Class<? extends ILayerListener> layerListenerClass) {
-        for (ILayerListener listener : listeners) {
+        for (ILayerListener listener : this.listeners) {
             if (listener.getClass().equals(layerListenerClass)) {
                 return true;
             }
@@ -221,7 +221,7 @@ public abstract class AbstractLayer implements ILayer {
     /**
      * Handle layer event notification. Convert it to your context and propagate
      * <i>UP</i>.
-     * 
+     *
      * If you override this method you <strong>MUST NOT FORGET</strong> to raise
      * the event up the layer stack by calling
      * <code>super.fireLayerEvent(event)</code> - unless you plan to eat the
@@ -230,9 +230,9 @@ public abstract class AbstractLayer implements ILayer {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void handleLayerEvent(ILayerEvent event) {
-        for (Class<? extends ILayerEvent> eventClass : eventHandlers.keySet()) {
+        for (Class<? extends ILayerEvent> eventClass : this.eventHandlers.keySet()) {
             if (eventClass.isInstance(event)) {
-                ILayerEventHandler eventHandler = eventHandlers.get(eventClass);
+                ILayerEventHandler eventHandler = this.eventHandlers.get(eventClass);
                 eventHandler.handleLayerEvent(event);
             }
         }
@@ -244,11 +244,11 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     public void registerEventHandler(ILayerEventHandler<?> eventHandler) {
-        eventHandlers.put(eventHandler.getLayerEventClass(), eventHandler);
+        this.eventHandlers.put(eventHandler.getLayerEventClass(), eventHandler);
     }
 
     public void unregisterEventHandler(ILayerEventHandler<?> eventHandler) {
-        eventHandlers.remove(eventHandler.getLayerEventClass());
+        this.eventHandlers.remove(eventHandler.getLayerEventClass());
     }
 
     /**
@@ -257,8 +257,8 @@ public abstract class AbstractLayer implements ILayer {
      */
     @Override
     public void fireLayerEvent(ILayerEvent event) {
-        if (listeners.size() > 0) {
-            Iterator<ILayerListener> it = listeners.iterator();
+        if (this.listeners.size() > 0) {
+            Iterator<ILayerListener> it = this.listeners.iterator();
             boolean isLastListener = false;
             do {
                 ILayerListener l = it.next();
@@ -279,10 +279,10 @@ public abstract class AbstractLayer implements ILayer {
      */
     @Override
     public ILayerPainter getLayerPainter() {
-        if (layerPainter == null) {
-            layerPainter = new GridLineCellLayerPainter();
+        if (this.layerPainter == null) {
+            this.layerPainter = new GridLineCellLayerPainter();
         }
-        return layerPainter;
+        return this.layerPainter;
     }
 
     public void setLayerPainter(ILayerPainter layerPainter) {
@@ -293,7 +293,7 @@ public abstract class AbstractLayer implements ILayer {
 
     @Override
     public IClientAreaProvider getClientAreaProvider() {
-        return clientAreaProvider;
+        return this.clientAreaProvider;
     }
 
     @Override

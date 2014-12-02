@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,58 +26,58 @@ public class HideSelectedRowsTest {
 
     @Before
     public void setUp() {
-        rowHideShowLayer = new RowHideShowLayer(new DataLayerFixture());
-        selectionLayer = new SelectionLayer(rowHideShowLayer);
+        this.rowHideShowLayer = new RowHideShowLayer(new DataLayerFixture());
+        this.selectionLayer = new SelectionLayer(this.rowHideShowLayer);
     }
 
     @Test
     public void shouldAlsoHideRowWhichIsNotSelectedButHasAMouseOverIt() {
-        selectionLayer.doCommand(new MultiRowHideCommand(selectionLayer, 2));
-        Assert.assertTrue(rowHideShowLayer.isRowIndexHidden(2));
+        this.selectionLayer.doCommand(new MultiRowHideCommand(this.selectionLayer, 2));
+        Assert.assertTrue(this.rowHideShowLayer.isRowIndexHidden(2));
     }
 
     @Test
     public void shouldHideRowForSelectedCell() {
         // Select cell in row we want to hide
-        selectionLayer.setSelectedCell(3, 0);
+        this.selectionLayer.setSelectedCell(3, 0);
 
         // Hide selection
-        selectionLayer.doCommand(new RowHideCommand(selectionLayer, 3));
+        this.selectionLayer.doCommand(new RowHideCommand(this.selectionLayer, 3));
 
         // The previously selected row should be hidden
-        Assert.assertTrue(rowHideShowLayer.isRowIndexHidden(3));
-        Assert.assertEquals(6, selectionLayer.getRowCount());
+        Assert.assertTrue(this.rowHideShowLayer.isRowIndexHidden(3));
+        Assert.assertEquals(6, this.selectionLayer.getRowCount());
     }
 
     @Test
     public void shouldHideSelectedRow() {
         // Select row to hide
-        new SelectRowCommandHandler(selectionLayer).selectRows(0,
+        new SelectRowCommandHandler(this.selectionLayer).selectRows(0,
                 Arrays.asList(Integer.valueOf(2)), false, false, 2);
 
         // Hide row
-        selectionLayer.doCommand(new MultiRowHideCommand(selectionLayer, 2));
+        this.selectionLayer.doCommand(new MultiRowHideCommand(this.selectionLayer, 2));
 
         // The previously selected row should be hidden
-        Assert.assertTrue(rowHideShowLayer.isRowIndexHidden(2));
-        Assert.assertEquals(6, selectionLayer.getRowCount());
+        Assert.assertTrue(this.rowHideShowLayer.isRowIndexHidden(2));
+        Assert.assertEquals(6, this.selectionLayer.getRowCount());
     }
 
     @Test
     public void shouldHideAllSelectedRows() {
         // Select cells and rows
-        new SelectRowCommandHandler(selectionLayer).selectRows(0,
+        new SelectRowCommandHandler(this.selectionLayer).selectRows(0,
                 Arrays.asList(Integer.valueOf(2)), false, false, 2);
-        selectionLayer.selectCell(0, 1, false, true);
-        selectionLayer.selectCell(4, 4, false, true);
+        this.selectionLayer.selectCell(0, 1, false, true);
+        this.selectionLayer.selectCell(4, 4, false, true);
 
         // Hide selection
-        selectionLayer.doCommand(new MultiRowHideCommand(selectionLayer,
+        this.selectionLayer.doCommand(new MultiRowHideCommand(this.selectionLayer,
                 new int[] { 2, 0, 4 }));
 
         // Previously selected rows should be hidden
-        Assert.assertTrue(rowHideShowLayer.isRowIndexHidden(2));
-        Assert.assertTrue(rowHideShowLayer.isRowIndexHidden(0));
-        Assert.assertTrue(rowHideShowLayer.isRowIndexHidden(4));
+        Assert.assertTrue(this.rowHideShowLayer.isRowIndexHidden(2));
+        Assert.assertTrue(this.rowHideShowLayer.isRowIndexHidden(0));
+        Assert.assertTrue(this.rowHideShowLayer.isRowIndexHidden(4));
     }
 }

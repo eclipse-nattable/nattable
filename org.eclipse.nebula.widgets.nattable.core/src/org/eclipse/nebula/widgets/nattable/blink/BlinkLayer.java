@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -115,41 +115,41 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
     public void dispose() {
         super.dispose();
 
-        scheduler.shutdown();
+        this.scheduler.shutdown();
     }
 
     @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition,
             int rowPosition) {
-        if (!blinkingEnabled) {
+        if (!this.blinkingEnabled) {
             return getUnderlyingLayer().getConfigLabelsByPosition(
                     columnPosition, rowPosition);
         }
 
-        ILayerCell cell = underlyingLayer.getCellByPosition(columnPosition,
+        ILayerCell cell = this.underlyingLayer.getCellByPosition(columnPosition,
                 rowPosition);
 
         int columnIndex = getUnderlyingLayer().getColumnIndexByPosition(
                 columnPosition);
-        String columnProperty = columnPropertyResolver
+        String columnProperty = this.columnPropertyResolver
                 .getColumnProperty(columnIndex);
 
         int rowIndex = getUnderlyingLayer().getRowIndexByPosition(rowPosition);
-        String rowId = rowIdAccessor.getRowId(
-                rowDataProvider.getRowObject(rowIndex)).toString();
+        String rowId = this.rowIdAccessor.getRowId(
+                this.rowDataProvider.getRowObject(rowIndex)).toString();
 
-        String key = updateEventsCache.getKey(columnProperty, rowId);
+        String key = this.updateEventsCache.getKey(columnProperty, rowId);
 
         LabelStack underlyingLabelStack = getUnderlyingLayer()
                 .getConfigLabelsByPosition(columnPosition, rowPosition);
 
         // Cell has been updated
-        if (updateEventsCache.isUpdated(key)) {
-            PropertyUpdateEvent<T> event = updateEventsCache.getEvent(key);
+        if (this.updateEventsCache.isUpdated(key)) {
+            PropertyUpdateEvent<T> event = this.updateEventsCache.getEvent(key);
 
             // Old update in middle of a blink - cancel it
-            ScheduledFuture<?> scheduledFuture = blinkingTasks.remove(key);
-            blinkingUpdates.remove(key);
+            ScheduledFuture<?> scheduledFuture = this.blinkingTasks.remove(key);
+            this.blinkingUpdates.remove(key);
             if (scheduledFuture != null) {
                 scheduledFuture.cancel(true);
             }
@@ -160,10 +160,10 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
             // start blinking cell
             if (blinkingConfigTypes != null) {
                 Runnable stopBlinkTask = getStopBlinkTask(key, this);
-                blinkingUpdates.put(key, event);
-                updateEventsCache.remove(key);
-                blinkingTasks.put(key, scheduler.schedule(stopBlinkTask,
-                        blinkDurationInMilis, TimeUnit.MILLISECONDS));
+                this.blinkingUpdates.put(key, event);
+                this.updateEventsCache.remove(key);
+                this.blinkingTasks.put(key, this.scheduler.schedule(stopBlinkTask,
+                        this.blinkDurationInMilis, TimeUnit.MILLISECONDS));
                 return blinkingConfigTypes;
             } else {
                 return underlyingLabelStack;
@@ -171,8 +171,8 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
         }
 
         // Previous blink timer is still running
-        if (blinkingUpdates.containsKey(key)) {
-            PropertyUpdateEvent<T> event = blinkingUpdates.get(key);
+        if (this.blinkingUpdates.containsKey(key)) {
+            PropertyUpdateEvent<T> event = this.blinkingUpdates.get(key);
             return resolveConfigTypes(cell, event.getOldValue(),
                     event.getNewValue());
         }
@@ -184,7 +184,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
      * Checks if there is a {@link IBlinkingCellResolver} registered in the
      * {@link ConfigRegistry} and use it to add config type labels associated
      * with a blinking cell to the label stack.
-     * 
+     *
      * @param cell
      *            the cell
      * @param oldValue
@@ -198,17 +198,17 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
             Object newValue) {
         // Acquire default config types for the coordinate. Use these to search
         // for the associated resolver.
-        LabelStack underlyingLabelStack = underlyingLayer
+        LabelStack underlyingLabelStack = this.underlyingLayer
                 .getConfigLabelsByPosition(cell.getColumnIndex(),
                         cell.getRowIndex());
 
-        IBlinkingCellResolver resolver = configRegistry.getConfigAttribute(
+        IBlinkingCellResolver resolver = this.configRegistry.getConfigAttribute(
                 BlinkConfigAttributes.BLINK_RESOLVER, DisplayMode.NORMAL,
                 underlyingLabelStack.getLabels());
 
         String[] blinkConfigTypes = null;
         if (resolver != null) {
-            blinkConfigTypes = resolver.resolve(cell, configRegistry, oldValue,
+            blinkConfigTypes = resolver.resolve(cell, this.configRegistry, oldValue,
                     newValue);
         }
 
@@ -234,8 +234,8 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
                     @Override
                     public void run() {
 
-                        blinkingUpdates.remove(key);
-                        blinkingTasks.remove(key);
+                        BlinkLayer.this.blinkingUpdates.remove(key);
+                        BlinkLayer.this.blinkingTasks.remove(key);
                         fireLayerEvent(new BlinkEvent(layer));
                     }
                 });
@@ -247,9 +247,9 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
     @SuppressWarnings("unchecked")
     @Override
     public void handleLayerEvent(ILayerEvent event) {
-        if (blinkingEnabled) {
+        if (this.blinkingEnabled) {
             if (event instanceof PropertyUpdateEvent) {
-                updateEventsCache.put((PropertyUpdateEvent<T>) event);
+                this.updateEventsCache.put((PropertyUpdateEvent<T>) event);
             }
         }
         super.handleLayerEvent(event);
@@ -261,12 +261,12 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return dataLayer.getColumnPositionByIndex(columnIndex);
+        return this.dataLayer.getColumnPositionByIndex(columnIndex);
     }
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return dataLayer.getRowPositionByIndex(rowIndex);
+        return this.dataLayer.getRowPositionByIndex(rowIndex);
     }
 
     public void setBlinkDurationInMilis(int blinkDurationInMilis) {

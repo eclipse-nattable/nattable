@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,13 +28,15 @@ public class FreezeEventHandler implements
         this.freezeLayer = freezeLayer;
     }
 
+    @Override
     public Class<IStructuralChangeEvent> getLayerEventClass() {
         return IStructuralChangeEvent.class;
     }
 
+    @Override
     public void handleLayerEvent(IStructuralChangeEvent event) {
-        PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
-        PositionCoordinate bottomRightPosition = freezeLayer
+        PositionCoordinate topLeftPosition = this.freezeLayer.getTopLeftPosition();
+        PositionCoordinate bottomRightPosition = this.freezeLayer
                 .getBottomRightPosition();
 
         Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();

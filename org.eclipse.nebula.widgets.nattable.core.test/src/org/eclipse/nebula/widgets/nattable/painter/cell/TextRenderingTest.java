@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -44,19 +44,19 @@ public class TextRenderingTest {
 
     @Before
     public void setUp() throws Exception {
-        natTable = new NatTableFixture();
-        configRegistry = (ConfigRegistry) natTable.getConfigRegistry();
-        cellPainter = new TextPainter();
+        this.natTable = new NatTableFixture();
+        this.configRegistry = (ConfigRegistry) this.natTable.getConfigRegistry();
+        this.cellPainter = new TextPainter();
 
-        gc = new GC(Display.getDefault());
+        this.gc = new GC(Display.getDefault());
     }
 
     @After
     public void tearDown() {
-        if (defaultFont != null) {
-            defaultFont.dispose();
+        if (this.defaultFont != null) {
+            this.defaultFont.dispose();
         }
-        gc.dispose();
+        this.gc.dispose();
     }
 
     @Test
@@ -98,18 +98,18 @@ public class TextRenderingTest {
     private void registerFont(FontData fontData) {
         // Register default body font
         Style cellStyle = new Style();
-        defaultFont = GUIHelper.getFont(fontData);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, defaultFont);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+        this.defaultFont = GUIHelper.getFont(fontData);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.defaultFont);
+        this.configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
     }
 
     private void verifyFontAttributes() {
         // Check cell font attributes
-        ILayerCell cell = natTable.getCellByPosition(2, 2);
-        final FontData expectedFontData = defaultFont.getFontData()[0];
-        IStyle cellStyle = configRegistry.getConfigAttribute(
+        ILayerCell cell = this.natTable.getCellByPosition(2, 2);
+        final FontData expectedFontData = this.defaultFont.getFontData()[0];
+        IStyle cellStyle = this.configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, cell.getDisplayMode(), cell
                         .getConfigLabels().getLabels());
         final FontData actualFontData = cellStyle.getAttributeValue(
@@ -122,8 +122,8 @@ public class TextRenderingTest {
                 expectedFontData.getStyle());
 
         // Draw font
-        cellPainter.setupGCFromConfig(gc, cellStyle);
-        final FontData exepectedDrawnFontData = gc.getFont().getFontData()[0];
+        this.cellPainter.setupGCFromConfig(this.gc, cellStyle);
+        final FontData exepectedDrawnFontData = this.gc.getFont().getFontData()[0];
         Assert.assertEquals(actualFontData.getName(),
                 exepectedDrawnFontData.getName());
         Assert.assertEquals(actualFontData.getHeight(),
@@ -139,9 +139,9 @@ public class TextRenderingTest {
         String testString3 = "Hello Mister,\n\rhow are you?\n\rI'm fine!";
         String testString4 = "Hello Mister,\r\nhow are you?\r\nI'm fine!";
 
-        Assert.assertEquals(3, cellPainter.getNumberOfNewLines(testString1));
-        Assert.assertEquals(3, cellPainter.getNumberOfNewLines(testString2));
-        Assert.assertEquals(3, cellPainter.getNumberOfNewLines(testString3));
-        Assert.assertEquals(3, cellPainter.getNumberOfNewLines(testString4));
+        Assert.assertEquals(3, this.cellPainter.getNumberOfNewLines(testString1));
+        Assert.assertEquals(3, this.cellPainter.getNumberOfNewLines(testString2));
+        Assert.assertEquals(3, this.cellPainter.getNumberOfNewLines(testString3));
+        Assert.assertEquals(3, this.cellPainter.getNumberOfNewLines(testString4));
     }
 }

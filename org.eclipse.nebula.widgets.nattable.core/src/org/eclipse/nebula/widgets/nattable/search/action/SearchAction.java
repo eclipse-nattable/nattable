@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -52,7 +52,7 @@ public class SearchAction implements IKeyAction {
 
     /**
      * Constructs an action with a non-modal (i.e., sharable) Find dialog.
-     * 
+     *
      * @param natTable
      * @param settings
      */
@@ -65,13 +65,15 @@ public class SearchAction implements IKeyAction {
 
     private SearchAction(NatTable natTable, IDialogSettings dialogSettings,
             boolean modal) {
-        context = new Context(natTable, dialogSettings, modal);
+        this.context = new Context(natTable, dialogSettings, modal);
         if (natTable != null) {
             natTable.addFocusListener(new FocusListener() {
+                @Override
                 public void focusGained(FocusEvent e) {
                     setActiveContext();
                 }
 
+                @Override
                 public void focusLost(FocusEvent e) {}
             });
         }
@@ -82,9 +84,9 @@ public class SearchAction implements IKeyAction {
             dialog.close();
             dialog = null;
         }
-        activeContext = context;
+        activeContext = this.context;
         if (dialog != null) {
-            dialog.setInput(context.natTable, context.dialogSettings);
+            dialog.setInput(this.context.natTable, this.context.dialogSettings);
         }
     }
 
@@ -92,30 +94,31 @@ public class SearchAction implements IKeyAction {
      * Checks if this context is considered equivalent to the active context.
      * For modal equivalence, the contexts must be exactly the same. For
      * non-modal equivalence, the Shell and IDialogSettings must be equivalent.
-     * 
+     *
      * @return whether this context is equivalent to the active context
      */
     private boolean isEquivalentToActiveContext() {
-        if (context.modal) {
-            return context.equals(activeContext);
+        if (this.context.modal) {
+            return this.context.equals(activeContext);
         }
         if (activeContext.modal) {
             return false;
         }
         return !activeContext.natTable.isDisposed()
-                && context.natTable.getShell().equals(
+                && this.context.natTable.getShell().equals(
                         activeContext.natTable.getShell())
-                && context.dialogSettings.equals(activeContext.dialogSettings);
+                && this.context.dialogSettings.equals(activeContext.dialogSettings);
     }
 
+    @Override
     public void run(final NatTable natTable, KeyEvent event) {
-        context.natTable = natTable;
+        this.context.natTable = natTable;
         setActiveContext();
         if (dialog == null) {
-            dialog = new SearchDialog(context.natTable.getShell(),
+            dialog = new SearchDialog(this.context.natTable.getShell(),
                     new CellValueAsStringComparator<String>(),
-                    context.modal ? SWT.NONE : SWT.APPLICATION_MODAL);
-            dialog.setInput(context.natTable, context.dialogSettings);
+                    this.context.modal ? SWT.NONE : SWT.APPLICATION_MODAL);
+            dialog.setInput(this.context.natTable, this.context.dialogSettings);
         }
         dialog.open();
     }

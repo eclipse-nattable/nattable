@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Simple example showing the DataLayer.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -85,8 +85,8 @@ public class _5011_DataLayerExample extends AbstractNatExample {
         b1.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                showDefaultColumnWidth = !showDefaultColumnWidth;
-                if (showDefaultColumnWidth) {
+                _5011_DataLayerExample.this.showDefaultColumnWidth = !_5011_DataLayerExample.this.showDefaultColumnWidth;
+                if (_5011_DataLayerExample.this.showDefaultColumnWidth) {
                     // reset to default
                     bodyDataLayer.setColumnWidthByPosition(0,
                             DataLayer.DEFAULT_COLUMN_WIDTH, false);
@@ -115,8 +115,8 @@ public class _5011_DataLayerExample extends AbstractNatExample {
         b2.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                showDefaultRowHeight = !showDefaultRowHeight;
-                if (showDefaultRowHeight) {
+                _5011_DataLayerExample.this.showDefaultRowHeight = !_5011_DataLayerExample.this.showDefaultRowHeight;
+                if (_5011_DataLayerExample.this.showDefaultRowHeight) {
                     // reset to default
                     bodyDataLayer
                             .setDefaultRowHeight(DataLayer.DEFAULT_ROW_HEIGHT);

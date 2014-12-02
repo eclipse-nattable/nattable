@@ -37,10 +37,10 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
  * (e.g. Dependency Injection) and therefore will be addressed in a future
  * architecture design.
  * </p>
- * 
+ *
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=392535">bug
  *      392535</a>
- * 
+ *
  * @deprecated Storing the editor in a global registry has certain drawbacks as
  *             outlined in the documentation and the bug report. In order to
  *             resolve that the active editor is now an instance field of the
@@ -88,7 +88,7 @@ public class ActiveCellEditorRegistry {
 
     /**
      * @deprecated replaced by {@linkplain NatTable#getActiveCellEditor()}.
-     * 
+     *
      * @return The current active {@link ICellEditor} or <code>null</code> if
      *         there is none.
      */

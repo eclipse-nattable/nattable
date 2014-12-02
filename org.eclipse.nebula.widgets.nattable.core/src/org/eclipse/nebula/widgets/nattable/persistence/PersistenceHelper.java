@@ -21,7 +21,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.gui.PersistenceDialog;
 
 /**
  * Helper class for dealing with persistence of NatTable states.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -30,7 +30,7 @@ public class PersistenceHelper {
     /**
      * Deletes the keys for a state that is identified by given prefix out of
      * the given properties.
-     * 
+     *
      * @param prefix
      *            The prefix for the keys the state consists of. Can be
      *            interpreted as state configuration name.
@@ -67,7 +67,7 @@ public class PersistenceHelper {
      * NatTable instance, this method can be used to retrieve the names of the
      * containing states. In terms of NatTable states, you may also call the
      * names prefixes.
-     * 
+     *
      * @param properties
      *            The Properties to retrieve the containing states of
      * @return Collection of all state prefixes that are contained in the given

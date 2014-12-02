@@ -46,128 +46,128 @@ public class SelectionsTest {
 
     @Test
     public void Never_Selected_Cell_Is_Not_Selected() {
-        assertFalse(testee.isSelected(rowA, columnPosition2));
+        assertFalse(this.testee.isSelected(this.rowA, this.columnPosition2));
     }
 
     @Test
     public void Selecting_A_Cell_For_Unselected_Row() {
-        testee.select(rowA, rowObjectA, columnPosition2);
-        assertTrue(testee.isSelected(rowA, columnPosition2));
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
+        assertTrue(this.testee.isSelected(this.rowA, this.columnPosition2));
     }
 
     @Test
     public void Selecting_A_Cell_For_Already_Selected_Row() {
-        testee.select(rowA, rowObjectA, columnPosition1);
-        testee.select(rowA, rowObjectA, columnPosition2);
-        assertTrue(testee.isSelected(rowA, columnPosition1));
-        assertTrue(testee.isSelected(rowA, columnPosition2));
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition1);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
+        assertTrue(this.testee.isSelected(this.rowA, this.columnPosition1));
+        assertTrue(this.testee.isSelected(this.rowA, this.columnPosition2));
     }
 
     @Test
     public void Clear_Removes_All_Selections() {
-        testee.select(rowA, rowObjectA, columnPosition1);
-        testee.select(rowA, rowObjectA, columnPosition2);
-        testee.select(rowB, rowObjectB, columnPosition2);
-        testee.clear();
-        assertFalse(testee.isSelected(rowA, columnPosition1));
-        assertFalse(testee.isSelected(rowA, columnPosition2));
-        assertFalse(testee.isSelected(rowB, columnPosition2));
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition1);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
+        this.testee.select(this.rowB, this.rowObjectB, this.columnPosition2);
+        this.testee.clear();
+        assertFalse(this.testee.isSelected(this.rowA, this.columnPosition1));
+        assertFalse(this.testee.isSelected(this.rowA, this.columnPosition2));
+        assertFalse(this.testee.isSelected(this.rowB, this.columnPosition2));
 
-        assertTrue(testee.getRows().isEmpty());
-        assertTrue(testee.getColumnPositions().isEmpty());
+        assertTrue(this.testee.getRows().isEmpty());
+        assertTrue(this.testee.getColumnPositions().isEmpty());
     }
 
     @Test
     public void Deselecting_Cells_Does_Only_Affect_Those_Cells() {
         // cell not to be touched
-        testee.select(rowA, rowObjectA, columnPosition1);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition1);
 
         // Cells to be touched
-        testee.select(rowA, rowObjectA, columnPosition2);
-        testee.select(rowB, rowObjectB, columnPosition2);
-        testee.deselect(rowA, columnPosition2);
-        testee.deselect(rowB, columnPosition2);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
+        this.testee.select(this.rowB, this.rowObjectB, this.columnPosition2);
+        this.testee.deselect(this.rowA, this.columnPosition2);
+        this.testee.deselect(this.rowB, this.columnPosition2);
 
-        assertTrue(testee.isSelected(rowA, columnPosition1));
-        assertFalse(testee.isSelected(rowA, columnPosition2));
-        assertFalse(testee.isSelected(rowB, columnPosition2));
+        assertTrue(this.testee.isSelected(this.rowA, this.columnPosition1));
+        assertFalse(this.testee.isSelected(this.rowA, this.columnPosition2));
+        assertFalse(this.testee.isSelected(this.rowB, this.columnPosition2));
     }
 
     @Test
     public void Fully_Deselected_Row_Doesent_Linger() {
-        testee.select(rowA, rowObjectA, columnPosition1);
-        testee.select(rowA, rowObjectA, columnPosition2);
-        testee.deselect(rowA, columnPosition1);
-        testee.deselect(rowA, columnPosition2);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition1);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
+        this.testee.deselect(this.rowA, this.columnPosition1);
+        this.testee.deselect(this.rowA, this.columnPosition2);
 
-        assertFalse(testee.isRowSelected(rowA));
+        assertFalse(this.testee.isRowSelected(this.rowA));
     }
 
     @Test
     public void None_Selected_Cells_Is_Empty() {
-        assertTrue(testee.isEmpty());
+        assertTrue(this.testee.isEmpty());
     }
 
     @Test
     public void Selected_Cell_Is_Not_Empty() {
-        testee.select(rowA, rowObjectA, columnPosition1);
-        assertFalse(testee.isEmpty());
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition1);
+        assertFalse(this.testee.isEmpty());
     }
 
     @Test
     public void Fully_Deselecting_All_Rows_Causes_Is_Empty() {
-        testee.select(rowA, rowObjectA, columnPosition1);
-        testee.deselect(rowA, columnPosition1);
-        assertTrue(testee.isEmpty());
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition1);
+        this.testee.deselect(this.rowA, this.columnPosition1);
+        assertTrue(this.testee.isEmpty());
     }
 
     @Test
     public void getSelections_Retrieves_All_Cells() {
-        testee.select(rowA, rowObjectA, columnPosition2);
-        testee.select(rowB, rowObjectB, columnPosition2);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
+        this.testee.select(this.rowB, this.rowObjectB, this.columnPosition2);
 
         HashSet<CellPosition<String[]>> actualCells = new HashSet<CellPosition<String[]>>(
-                testee.getSelections());
+                this.testee.getSelections());
 
         HashSet<CellPosition<String[]>> expectedCells = new HashSet<CellPosition<String[]>>();
-        expectedCells.add(new CellPosition<String[]>(rowObjectA,
-                columnPosition2));
-        expectedCells.add(new CellPosition<String[]>(rowObjectB,
-                columnPosition2));
+        expectedCells.add(new CellPosition<String[]>(this.rowObjectA,
+                this.columnPosition2));
+        expectedCells.add(new CellPosition<String[]>(this.rowObjectB,
+                this.columnPosition2));
 
         assertEquals(expectedCells, actualCells);
     }
 
     @Test
     public void getRows() {
-        testee.select(rowA, rowObjectA, columnPosition2);
-        testee.select(rowB, rowObjectB, columnPosition2);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
+        this.testee.select(this.rowB, this.rowObjectB, this.columnPosition2);
 
         HashSet<Serializable> actualRowIds = new HashSet<Serializable>();
-        for (Selections<String[]>.Row row : testee.getRows()) {
+        for (Selections<String[]>.Row row : this.testee.getRows()) {
             actualRowIds.add(row.getId());
         }
 
         HashSet<Serializable> expectedRowIds = new HashSet<Serializable>();
-        expectedRowIds.add(rowA);
-        expectedRowIds.add(rowB);
+        expectedRowIds.add(this.rowA);
+        expectedRowIds.add(this.rowB);
 
         assertEquals(expectedRowIds, actualRowIds);
     }
 
     @Test
     public void getColumns() {
-        testee.select(rowA, rowObjectA, columnPosition2);
-        testee.select(rowA, rowObjectA, columnPosition3);
-        testee.select(rowB, rowObjectB, columnPosition1);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition2);
+        this.testee.select(this.rowA, this.rowObjectA, this.columnPosition3);
+        this.testee.select(this.rowB, this.rowObjectB, this.columnPosition1);
 
         HashSet<Integer> actualColumns = new HashSet<Integer>(
-                testee.getColumnPositions());
+                this.testee.getColumnPositions());
 
         HashSet<Integer> expectedColumns = new HashSet<Integer>();
-        expectedColumns.add(columnPosition2);
-        expectedColumns.add(columnPosition1);
-        expectedColumns.add(columnPosition3);
+        expectedColumns.add(this.columnPosition2);
+        expectedColumns.add(this.columnPosition1);
+        expectedColumns.add(this.columnPosition3);
 
         assertEquals(expectedColumns, actualColumns);
     }

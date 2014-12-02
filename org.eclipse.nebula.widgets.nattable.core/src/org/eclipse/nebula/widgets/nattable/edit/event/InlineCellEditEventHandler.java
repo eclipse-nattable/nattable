@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 /**
  * Event handler for handling {@link InlineCellEditEvent}s. Used to activate
  * editors for inline editing.
- * 
+ *
  * @see InlineCellEditEvent
  * @see EditSelectionCommandHandler
  */
@@ -49,8 +49,8 @@ public class InlineCellEditEventHandler implements
 
     @Override
     public void handleLayerEvent(InlineCellEditEvent event) {
-        if (event.convertToLocal(layer)) {
-            ILayerCell cell = layer.getCellByPosition(
+        if (event.convertToLocal(this.layer)) {
+            ILayerCell cell = this.layer.getCellByPosition(
                     event.getColumnPosition(), event.getRowPosition());
             EditController.editCell(cell, event.getParent(),
                     event.getInitialValue(), event.getConfigRegistry());

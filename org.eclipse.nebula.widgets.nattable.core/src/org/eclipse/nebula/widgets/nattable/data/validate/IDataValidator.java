@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -37,7 +37,7 @@ public interface IDataValidator {
     public boolean validate(int columnIndex, int rowIndex, Object newValue);
 
     /**
-     * 
+     *
      * @param cell
      *            LayerCell which should be validated
      * @param configRegistry
@@ -56,11 +56,13 @@ public interface IDataValidator {
 
     public static final IDataValidator ALWAYS_VALID = new IDataValidator() {
 
+        @Override
         public boolean validate(ILayerCell cell,
                 IConfigRegistry configRegistry, Object newValue) {
             return true;
         }
 
+        @Override
         public boolean validate(int columnIndex, int rowIndex, Object newValue) {
             return true;
         }
@@ -69,11 +71,13 @@ public interface IDataValidator {
 
     public static final IDataValidator NEVER_VALID = new IDataValidator() {
 
+        @Override
         public boolean validate(ILayerCell cell,
                 IConfigRegistry configRegistry, Object newValue) {
             return false;
         }
 
+        @Override
         public boolean validate(int columnIndex, int rowIndex, Object newValue) {
             return false;
         }

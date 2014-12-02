@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,18 +22,18 @@ public class ColumnGroupModelPersistenceTest {
 
     @Before
     public void setup() {
-        model = new ColumnGroupModel();
+        this.model = new ColumnGroupModel();
     }
 
     @Test
     public void testSaveState() {
-        model.addColumnsIndexesToGroup("groupA", 1, 2, 3);
-        model.addColumnsIndexesToGroup("groupB", 5, 7, 9);
-        model.getColumnGroupByIndex(7).setCollapsed(true);
-        model.getColumnGroupByIndex(7).setUnbreakable(true);
+        this.model.addColumnsIndexesToGroup("groupA", 1, 2, 3);
+        this.model.addColumnsIndexesToGroup("groupB", 5, 7, 9);
+        this.model.getColumnGroupByIndex(7).setCollapsed(true);
+        this.model.getColumnGroupByIndex(7).setUnbreakable(true);
 
         Properties properties = new Properties();
-        model.saveState("prefix", properties);
+        this.model.saveState("prefix", properties);
 
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals(
@@ -43,14 +43,14 @@ public class ColumnGroupModelPersistenceTest {
 
     @Test
     public void testSaveStateWithStatics() {
-        model.addColumnsIndexesToGroup("groupA", 1, 2, 3);
-        model.insertStaticColumnIndexes("groupA", 1, 2);
-        model.addColumnsIndexesToGroup("groupB", 5, 7, 9);
-        model.getColumnGroupByIndex(7).setCollapsed(true);
-        model.getColumnGroupByIndex(7).setUnbreakable(true);
+        this.model.addColumnsIndexesToGroup("groupA", 1, 2, 3);
+        this.model.insertStaticColumnIndexes("groupA", 1, 2);
+        this.model.addColumnsIndexesToGroup("groupB", 5, 7, 9);
+        this.model.getColumnGroupByIndex(7).setCollapsed(true);
+        this.model.getColumnGroupByIndex(7).setUnbreakable(true);
 
         Properties properties = new Properties();
-        model.saveState("prefix", properties);
+        this.model.saveState("prefix", properties);
 
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals(
@@ -66,38 +66,38 @@ public class ColumnGroupModelPersistenceTest {
                         "prefix.columnGroups",
                         "groupA=expanded:collapseable:breakable:1,2,3,|groupB=collapsed:collapseable:unbreakable:5,7,9,|");
 
-        model.loadState("prefix", properties);
+        this.model.loadState("prefix", properties);
 
-        Assert.assertTrue(model.isAGroup("groupA"));
-        Assert.assertTrue(model.isAGroup("groupB"));
+        Assert.assertTrue(this.model.isAGroup("groupA"));
+        Assert.assertTrue(this.model.isAGroup("groupB"));
 
-        Assert.assertNull(model.getColumnGroupByIndex(0));
-        Assert.assertEquals("groupA", model.getColumnGroupByIndex(1).getName());
-        Assert.assertEquals("groupA", model.getColumnGroupByIndex(2).getName());
-        Assert.assertEquals("groupA", model.getColumnGroupByIndex(3).getName());
-        Assert.assertNull(model.getColumnGroupByIndex(4));
-        Assert.assertEquals("groupB", model.getColumnGroupByIndex(5).getName());
-        Assert.assertNull(model.getColumnGroupByIndex(6));
-        Assert.assertEquals("groupB", model.getColumnGroupByIndex(7).getName());
-        Assert.assertNull(model.getColumnGroupByIndex(8));
-        Assert.assertEquals("groupB", model.getColumnGroupByIndex(9).getName());
-        Assert.assertNull(model.getColumnGroupByIndex(10));
+        Assert.assertNull(this.model.getColumnGroupByIndex(0));
+        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(1).getName());
+        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(2).getName());
+        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(3).getName());
+        Assert.assertNull(this.model.getColumnGroupByIndex(4));
+        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(5).getName());
+        Assert.assertNull(this.model.getColumnGroupByIndex(6));
+        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(7).getName());
+        Assert.assertNull(this.model.getColumnGroupByIndex(8));
+        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(9).getName());
+        Assert.assertNull(this.model.getColumnGroupByIndex(10));
 
-        Assert.assertFalse(model.getColumnGroupByName("groupA").isCollapsed());
-        Assert.assertTrue(model.getColumnGroupByName("groupB").isCollapsed());
+        Assert.assertFalse(this.model.getColumnGroupByName("groupA").isCollapsed());
+        Assert.assertTrue(this.model.getColumnGroupByName("groupB").isCollapsed());
 
-        Assert.assertTrue(model.getColumnGroupByName("groupA").isCollapseable());
-        Assert.assertTrue(model.getColumnGroupByName("groupB").isCollapseable());
+        Assert.assertTrue(this.model.getColumnGroupByName("groupA").isCollapseable());
+        Assert.assertTrue(this.model.getColumnGroupByName("groupB").isCollapseable());
 
-        Assert.assertFalse(model.isPartOfAnUnbreakableGroup(1));
-        Assert.assertFalse(model.isPartOfAnUnbreakableGroup(2));
-        Assert.assertFalse(model.isPartOfAnUnbreakableGroup(3));
+        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(1));
+        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(2));
+        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(3));
 
-        Assert.assertFalse(model.isPartOfAnUnbreakableGroup(4));
+        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(4));
 
-        Assert.assertTrue(model.isPartOfAnUnbreakableGroup(5));
-        Assert.assertTrue(model.isPartOfAnUnbreakableGroup(7));
-        Assert.assertTrue(model.isPartOfAnUnbreakableGroup(9));
+        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(5));
+        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(7));
+        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(9));
     }
 
     @Test
@@ -108,57 +108,57 @@ public class ColumnGroupModelPersistenceTest {
                         "prefix.columnGroups",
                         "groupA=expanded:collapseable:breakable:1,2,3,:1,2,|groupB=collapsed:collapseable:unbreakable:5,7,9,|");
 
-        model.loadState("prefix", properties);
+        this.model.loadState("prefix", properties);
 
-        Assert.assertTrue(model.isAGroup("groupA"));
-        Assert.assertTrue(model.isAGroup("groupB"));
+        Assert.assertTrue(this.model.isAGroup("groupA"));
+        Assert.assertTrue(this.model.isAGroup("groupB"));
 
-        Assert.assertNull(model.getColumnGroupByIndex(0));
-        Assert.assertEquals("groupA", model.getColumnGroupByIndex(1).getName());
-        Assert.assertEquals("groupA", model.getColumnGroupByIndex(2).getName());
-        Assert.assertEquals("groupA", model.getColumnGroupByIndex(3).getName());
-        Assert.assertNull(model.getColumnGroupByIndex(4));
-        Assert.assertEquals("groupB", model.getColumnGroupByIndex(5).getName());
-        Assert.assertNull(model.getColumnGroupByIndex(6));
-        Assert.assertEquals("groupB", model.getColumnGroupByIndex(7).getName());
-        Assert.assertNull(model.getColumnGroupByIndex(8));
-        Assert.assertEquals("groupB", model.getColumnGroupByIndex(9).getName());
-        Assert.assertNull(model.getColumnGroupByIndex(10));
+        Assert.assertNull(this.model.getColumnGroupByIndex(0));
+        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(1).getName());
+        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(2).getName());
+        Assert.assertEquals("groupA", this.model.getColumnGroupByIndex(3).getName());
+        Assert.assertNull(this.model.getColumnGroupByIndex(4));
+        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(5).getName());
+        Assert.assertNull(this.model.getColumnGroupByIndex(6));
+        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(7).getName());
+        Assert.assertNull(this.model.getColumnGroupByIndex(8));
+        Assert.assertEquals("groupB", this.model.getColumnGroupByIndex(9).getName());
+        Assert.assertNull(this.model.getColumnGroupByIndex(10));
 
-        Assert.assertFalse(model.getColumnGroupByName("groupA").isCollapsed());
-        Assert.assertTrue(model.getColumnGroupByName("groupB").isCollapsed());
+        Assert.assertFalse(this.model.getColumnGroupByName("groupA").isCollapsed());
+        Assert.assertTrue(this.model.getColumnGroupByName("groupB").isCollapsed());
 
-        Assert.assertTrue(model.getColumnGroupByName("groupA").isCollapseable());
-        Assert.assertTrue(model.getColumnGroupByName("groupB").isCollapseable());
+        Assert.assertTrue(this.model.getColumnGroupByName("groupA").isCollapseable());
+        Assert.assertTrue(this.model.getColumnGroupByName("groupB").isCollapseable());
 
-        Assert.assertFalse(model.isPartOfAnUnbreakableGroup(1));
-        Assert.assertFalse(model.isPartOfAnUnbreakableGroup(2));
-        Assert.assertFalse(model.isPartOfAnUnbreakableGroup(3));
+        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(1));
+        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(2));
+        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(3));
 
-        Assert.assertFalse(model.isPartOfAnUnbreakableGroup(4));
+        Assert.assertFalse(this.model.isPartOfAnUnbreakableGroup(4));
 
-        Assert.assertTrue(model.isPartOfAnUnbreakableGroup(5));
-        Assert.assertTrue(model.isPartOfAnUnbreakableGroup(7));
-        Assert.assertTrue(model.isPartOfAnUnbreakableGroup(9));
+        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(5));
+        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(7));
+        Assert.assertTrue(this.model.isPartOfAnUnbreakableGroup(9));
 
-        Assert.assertEquals(2, model.getColumnGroupByName("groupA")
+        Assert.assertEquals(2, this.model.getColumnGroupByName("groupA")
                 .getStaticColumnIndexes().size());
-        Assert.assertEquals(1, model.getColumnGroupByName("groupA")
+        Assert.assertEquals(1, this.model.getColumnGroupByName("groupA")
                 .getStaticColumnIndexes().get(0).intValue());
-        Assert.assertEquals(2, model.getColumnGroupByName("groupA")
+        Assert.assertEquals(2, this.model.getColumnGroupByName("groupA")
                 .getStaticColumnIndexes().get(1).intValue());
     }
 
     @Test
     public void testSaveAndLoadStateWithStatics() {
-        model.addColumnsIndexesToGroup("groupA", 1, 2, 3);
-        model.addColumnsIndexesToGroup("groupB", 5, 7, 9);
-        model.insertStaticColumnIndexes("groupB", 7);
-        model.getColumnGroupByIndex(7).setCollapsed(true);
-        model.getColumnGroupByIndex(7).setUnbreakable(true);
+        this.model.addColumnsIndexesToGroup("groupA", 1, 2, 3);
+        this.model.addColumnsIndexesToGroup("groupB", 5, 7, 9);
+        this.model.insertStaticColumnIndexes("groupB", 7);
+        this.model.getColumnGroupByIndex(7).setCollapsed(true);
+        this.model.getColumnGroupByIndex(7).setUnbreakable(true);
 
         Properties properties = new Properties();
-        model.saveState("prefix", properties);
+        this.model.saveState("prefix", properties);
 
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals(

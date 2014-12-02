@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -58,9 +58,9 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
                 if (columnDiffs != null && !columnDiffs.isEmpty()
                         && !StructuralChangeEventHelper.isReorder(columnDiffs)) {
                     StructuralChangeEventHelper.handleColumnDelete(columnDiffs,
-                            underlyingLayer, hiddenColumnIndexes, false);
+                            this.underlyingLayer, this.hiddenColumnIndexes, false);
                     StructuralChangeEventHelper.handleColumnInsert(columnDiffs,
-                            underlyingLayer, hiddenColumnIndexes, false);
+                            this.underlyingLayer, this.hiddenColumnIndexes, false);
                 }
             }
         }
@@ -71,9 +71,9 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        if (hiddenColumnIndexes.size() > 0) {
+        if (this.hiddenColumnIndexes.size() > 0) {
             StringBuilder strBuilder = new StringBuilder();
-            for (Integer index : hiddenColumnIndexes) {
+            for (Integer index : this.hiddenColumnIndexes) {
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
@@ -89,7 +89,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
     public void loadState(String prefix, Properties properties) {
         // Bug 396925: always clear the state of the hidden columns, whether
         // there is a state saved or not
-        hiddenColumnIndexes.clear();
+        this.hiddenColumnIndexes.clear();
         String property = properties.getProperty(prefix
                 + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES);
         if (property != null) {
@@ -97,7 +97,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
                     IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
-                hiddenColumnIndexes.add(Integer.valueOf(index));
+                this.hiddenColumnIndexes.add(Integer.valueOf(index));
             }
         }
 
@@ -108,12 +108,12 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 
     @Override
     public boolean isColumnIndexHidden(int columnIndex) {
-        return hiddenColumnIndexes.contains(Integer.valueOf(columnIndex));
+        return this.hiddenColumnIndexes.contains(Integer.valueOf(columnIndex));
     }
 
     @Override
     public Collection<Integer> getHiddenColumnIndexes() {
-        return hiddenColumnIndexes;
+        return this.hiddenColumnIndexes;
     }
 
     public void hideColumnPositions(Collection<Integer> columnPositions) {
@@ -124,13 +124,13 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
                             .valueOf(getColumnIndexByPosition(columnPosition
                                     .intValue())));
         }
-        hiddenColumnIndexes.addAll(columnIndexes);
+        this.hiddenColumnIndexes.addAll(columnIndexes);
         invalidateCache();
         fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
     }
 
     public void showColumnIndexes(Collection<Integer> columnIndexes) {
-        hiddenColumnIndexes.removeAll(columnIndexes);
+        this.hiddenColumnIndexes.removeAll(columnIndexes);
         invalidateCache();
         fireLayerEvent(new ShowColumnPositionsEvent(this,
                 getColumnPositionsByIndexes(columnIndexes)));
@@ -138,8 +138,8 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 
     public void showAllColumns() {
         Collection<Integer> hiddenColumns = new ArrayList<Integer>(
-                hiddenColumnIndexes);
-        hiddenColumnIndexes.clear();
+                this.hiddenColumnIndexes);
+        this.hiddenColumnIndexes.clear();
         invalidateCache();
         fireLayerEvent(new ShowColumnPositionsEvent(this, hiddenColumns));
     }

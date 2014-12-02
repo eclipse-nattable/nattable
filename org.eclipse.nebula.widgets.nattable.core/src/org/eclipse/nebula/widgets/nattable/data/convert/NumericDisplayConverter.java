@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -44,8 +44,7 @@ public abstract class NumericDisplayConverter extends DisplayConverter {
             }
             return null;
         } catch (Exception e) {
-            throw new ConversionFailedException(Messages.getString(
-                    "NumericDisplayConverter.failure", //$NON-NLS-1$
+            throw new ConversionFailedException(Messages.getString("NumericDisplayConverter.failure", //$NON-NLS-1$
                     new Object[] { displayValue }), e);
         }
     }
@@ -53,15 +52,15 @@ public abstract class NumericDisplayConverter extends DisplayConverter {
     protected abstract Object convertToNumericValue(String value);
 
     /**
-     * 
+     *
      * @return The {@link NumberFormat} that is used to format numeric values.
      */
     public NumberFormat getNumberFormat() {
-        return nf;
+        return this.nf;
     }
 
     /**
-     * 
+     *
      * @param nf
      *            The {@link NumberFormat} that should be used to format numeric
      *            values.

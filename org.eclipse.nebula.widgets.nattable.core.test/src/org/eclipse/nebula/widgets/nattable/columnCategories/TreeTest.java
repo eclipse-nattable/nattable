@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,10 +26,10 @@ public class TreeTest {
 
     @Before
     public void setup() {
-        tree = new Tree();
+        this.tree = new Tree();
 
         Node root = newNode("R");
-        tree.setRootElement(root);
+        this.tree.setRootElement(root);
 
         root.addChild(newNode("a"));
 
@@ -48,37 +48,37 @@ public class TreeTest {
 
     @Test
     public void basics() throws Exception {
-        Assert.assertEquals("R", tree.getRootElement().getData());
-        Assert.assertEquals(3, tree.getRootElement().getNumberOfChildren());
-        Assert.assertEquals(9, tree.toList().size());
+        Assert.assertEquals("R", this.tree.getRootElement().getData());
+        Assert.assertEquals(3, this.tree.getRootElement().getNumberOfChildren());
+        Assert.assertEquals(9, this.tree.toList().size());
         Assert.assertEquals(
                 "[{UNKNOWN,R,[a,b,c]}, {UNKNOWN,a,[]}, {UNKNOWN,b,[b1,b2,b3]}, {UNKNOWN,b1,[]}, {UNKNOWN,b2,[]}, {UNKNOWN,b3,[b3a,b3b]}, {UNKNOWN,b3a,[]}, {UNKNOWN,b3b,[]}, {UNKNOWN,c,[]}]",
-                tree.toString());
+                this.tree.toString());
     }
 
     @Test
     public void findParent() throws Exception {
-        Node found = tree.find("c");
+        Node found = this.tree.find("c");
         Assert.assertNotNull(found);
         Assert.assertEquals("R", found.getParent().getData());
 
-        found = tree.find("b3b");
+        found = this.tree.find("b3b");
         Assert.assertEquals("b3", found.getParent().getData());
     }
 
     @Test
     public void findElements() throws Exception {
-        Node found = tree.find(tree.getRootElement(), "b2");
+        Node found = this.tree.find(this.tree.getRootElement(), "b2");
         Assert.assertNotNull(found);
         Assert.assertEquals("b2", found.getData());
 
-        found = tree.find(tree.getRootElement(), "b3b");
+        found = this.tree.find(this.tree.getRootElement(), "b3b");
         Assert.assertNotNull(found);
     }
 
     @Test
     public void insertChild() throws Exception {
-        Node a = tree.find("a");
+        Node a = this.tree.find("a");
         a.addChild(newNode("a1"));
         a.addChild(newNode("a2"));
         Assert.assertEquals(2, a.getNumberOfChildren());
@@ -91,13 +91,13 @@ public class TreeTest {
 
     @Test
     public void remove() throws Exception {
-        Node root = tree.getRootElement();
+        Node root = this.tree.getRootElement();
         assertEquals(3, root.getNumberOfChildren());
 
-        assertTrue(tree.remove(root.getChildren().get(1).getData()));
+        assertTrue(this.tree.remove(root.getChildren().get(1).getData()));
         assertEquals(2, root.getNumberOfChildren());
 
-        assertFalse(tree.remove("Non Existent Node"));
+        assertFalse(this.tree.remove("Non Existent Node"));
     }
 
     private Node newNode(String data) {

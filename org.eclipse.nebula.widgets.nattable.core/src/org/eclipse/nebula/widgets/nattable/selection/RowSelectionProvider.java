@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -34,7 +34,7 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 /**
  * Implementation of ISelectionProvider to add support for JFace selection
  * handling.
- * 
+ *
  * @param <T>
  *            The type of objects provided by the IRowDataProvider
  */
@@ -104,7 +104,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
      * value to <code>false</code> will avoid processing in case of column
      * selections.
      * </p>
-     * 
+     *
      * @see RowSelectionModel
      */
     private boolean processColumnSelection = true;
@@ -112,7 +112,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
     /**
      * Create a RowSelectionProvider that only handles fully selected rows and
      * only fires SelectionChangedEvents if the row selection changes.
-     * 
+     *
      * @param selectionLayer
      *            The SelectionLayer this ISelectionProvider should be connected
      *            to.
@@ -128,7 +128,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
     /**
      * Create a RowSelectionProvider that only fires SelectionChangedEvents if
      * the row selection changes.
-     * 
+     *
      * @param selectionLayer
      *            The SelectionLayer this ISelectionProvider should be connected
      *            to.
@@ -148,7 +148,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
 
     /**
      * Create a RowSelectionProvider configured with the given parameters.
-     * 
+     *
      * @param selectionLayer
      *            The SelectionLayer this ISelectionProvider should be connected
      *            to.
@@ -186,7 +186,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
      * adds the possibility to exchange the control that serves as selection
      * provider by exchanging the references in the selection provider itself.
      * </p>
-     * 
+     *
      * @param selectionLayer
      *            The SelectionLayer this ISelectionProvider should be connected
      *            to.
@@ -210,35 +210,35 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
 
     @Override
     public void addSelectionChangedListener(ISelectionChangedListener listener) {
-        listeners.add(listener);
+        this.listeners.add(listener);
     }
 
     @Override
     public ISelection getSelection() {
-        return populateRowSelection(selectionLayer, rowDataProvider,
-                fullySelectedRowsOnly);
+        return populateRowSelection(this.selectionLayer, this.rowDataProvider,
+                this.fullySelectedRowsOnly);
     }
 
     @Override
     public void removeSelectionChangedListener(
             ISelectionChangedListener listener) {
-        listeners.remove(listener);
+        this.listeners.remove(listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void setSelection(ISelection selection) {
-        if (selectionLayer != null && selection instanceof IStructuredSelection) {
-            if (!addSelectionOnSet) {
-                selectionLayer.clear(false);
+        if (this.selectionLayer != null && selection instanceof IStructuredSelection) {
+            if (!this.addSelectionOnSet) {
+                this.selectionLayer.clear(false);
             }
             if (!selection.isEmpty()) {
                 List<T> rowObjects = ((IStructuredSelection) selection)
                         .toList();
                 Set<Integer> rowPositions = new HashSet<Integer>();
                 for (T rowObject : rowObjects) {
-                    int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
-                    int rowPosition = selectionLayer
+                    int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
+                    int rowPosition = this.selectionLayer
                             .getRowPositionByIndex(rowIndex);
                     rowPositions.add(Integer.valueOf(rowPosition));
                 }
@@ -248,8 +248,8 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
                     intValue = max.intValue();
                 }
                 if (intValue >= 0) {
-                    selectionLayer.doCommand(new SelectRowsCommand(
-                            selectionLayer, 0, ObjectUtils
+                    this.selectionLayer.doCommand(new SelectRowsCommand(
+                            this.selectionLayer, 0, ObjectUtils
                                     .asIntArray(rowPositions), false, true,
                             intValue));
                 }
@@ -261,15 +261,15 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
     public void handleLayerEvent(ILayerEvent event) {
         if (event instanceof ISelectionEvent) {
             ISelection selection = getSelection();
-            if ((handleSameRowSelection || !selection.equals(previousSelection))
+            if ((this.handleSameRowSelection || !selection.equals(this.previousSelection))
                     && !(!this.processColumnSelection && event instanceof ColumnSelectionEvent)) {
                 try {
-                    for (ISelectionChangedListener listener : listeners) {
+                    for (ISelectionChangedListener listener : this.listeners) {
                         listener.selectionChanged(new SelectionChangedEvent(
                                 this, selection));
                     }
                 } finally {
-                    previousSelection = selection;
+                    this.previousSelection = selection;
                 }
             }
         }
@@ -330,7 +330,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
      * convenience to older code that relied on the add behaviour it is now
      * possible to change it back to adding.
      * </p>
-     * 
+     *
      * @param addSelectionOnSet
      *            <code>true</code> to add the selection on calling
      *            <code>setSelection()</code> The default is <code>false</code>
@@ -351,7 +351,7 @@ public class RowSelectionProvider<T> implements ISelectionProvider,
      * {@link RowSelectionProvider#processColumnSelection} flag to
      * <code>false</code> will skip processing to avoid such issues.
      * </p>
-     * 
+     *
      * @param processColumnSelection
      *            <code>true</code> to process row selection in case of column
      *            selections (default) <code>false</code> to skip processing in

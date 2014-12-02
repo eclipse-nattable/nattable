@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,7 +36,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer
     }
 
     public IRowGroupModel<T> getModel() {
-        return model;
+        return this.model;
     }
 
     // Expand/collapse
@@ -45,7 +45,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer
     public boolean isRowIndexHidden(int rowIndex) {
 
         // This can happen if a row has just been removed.
-        if (rowIndex >= model.getDataProvider().getRowCount()) {
+        if (rowIndex >= this.model.getDataProvider().getRowCount()) {
             return true;
         }
 
@@ -56,14 +56,14 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer
                         underlyingLayer);
 
         // Get the row and the group from our cache and model.
-        final T row = model.getRowFromIndexCache(rowIndex);
-        IRowGroup<T> rowGroup = model.getRowGroupForRow(row);
+        final T row = this.model.getRowFromIndexCache(rowIndex);
+        IRowGroup<T> rowGroup = this.model.getRowGroupForRow(row);
 
         if (rowGroup == null) {
             return false;
         }
 
-        boolean isCollapsedAndNotStaticRow = RowGroupUtils.isCollapsed(model,
+        boolean isCollapsedAndNotStaticRow = RowGroupUtils.isCollapsed(this.model,
                 rowGroup) && !rowGroup.getOwnStaticMemberRows().contains(row);
 
         return isHiddeninUnderlyingLayer || isCollapsedAndNotStaticRow;
@@ -93,7 +93,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer
     @Override
     protected void invalidateCache() {
         super.invalidateCache();
-        model.invalidateIndexCache();
+        this.model.invalidateIndexCache();
     }
 
 }

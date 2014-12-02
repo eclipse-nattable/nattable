@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -15,9 +15,9 @@ import java.util.List;
 /**
  * Represents a collapseable group of rows (of type T) in the
  * {@link IRowGroupModel}.
- * 
+ *
  * @author Stefan Bolton
- * 
+ *
  * @param <T>
  */
 public interface IRowGroup<T> {
@@ -31,14 +31,14 @@ public interface IRowGroup<T> {
     /**
      * If this group is a nested child of another this will return the parent
      * group.
-     * 
+     *
      * @return The parent group if this group is a nested child.
      */
     IRowGroup<T> getParentGroup();
 
     /**
      * Set the specified group as the parent of this group.
-     * 
+     *
      * @param parentGroup
      */
     void setParentGroup(final IRowGroup<T> parentGroup);
@@ -82,7 +82,7 @@ public interface IRowGroup<T> {
      * <p>
      * Adds the row into the group.
      * </p>
-     * 
+     *
      * @param row
      *            the row to be added
      */
@@ -92,7 +92,7 @@ public interface IRowGroup<T> {
      * <p>
      * Adds multiple rows into the group.
      * </p>
-     * 
+     *
      * @param rows
      *            A {@link List} of rows T to be added.
      */
@@ -103,7 +103,7 @@ public interface IRowGroup<T> {
      * Adds a static row into the group. A static row is one that is always
      * shown when the group is collapsed (summary data rows for example).
      * </p>
-     * 
+     *
      * @param row
      *            the static row T to be added.
      */
@@ -121,7 +121,7 @@ public interface IRowGroup<T> {
      * A notification should be sent to any {@link IRowGroupModelListener}s to
      * indicate a change in the model has occurred.
      * </p>
-     * 
+     *
      * @param row
      *            The row T to be removed.
      * @return true if the row existed and was removed.
@@ -141,7 +141,7 @@ public interface IRowGroup<T> {
      * A notification should be sent to any {@link IRowGroupModelListener}s to
      * indicate a change in the model has occurred.
      * </p>
-     * 
+     *
      * @param rows
      *            A {@link List} of rows T to be added.
      */
@@ -216,14 +216,14 @@ public interface IRowGroup<T> {
 
     /**
      * Allows some arbitrary data to be tagged to an IRowGroup.
-     * 
+     *
      * @param data
      */
     void setData(final Object data);
 
     /**
      * Allows some arbitrary data to be tagged to an IRowGroup.
-     * 
+     *
      * @param data
      */
     void setData(final String key, final Object data);

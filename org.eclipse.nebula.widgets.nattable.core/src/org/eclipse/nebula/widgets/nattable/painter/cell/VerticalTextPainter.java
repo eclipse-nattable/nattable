@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -151,7 +151,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
             IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
         return gc.textExtent(convertDataType(cell, configRegistry)).y
-                + (spacing * 2);
+                + (this.spacing * 2);
     }
 
     @Override
@@ -159,17 +159,17 @@ public class VerticalTextPainter extends AbstractTextPainter {
             IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
         return getLengthFromCache(gc, convertDataType(cell, configRegistry))
-                + (spacing * 2) + 1;
+                + (this.spacing * 2) + 1;
     }
 
     @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
             IConfigRegistry configRegistry) {
-        if (paintBg) {
+        if (this.paintBg) {
             super.paintCell(cell, gc, rectangle, configRegistry);
         }
 
-        if (paintFg) {
+        if (this.paintFg) {
             Rectangle originalClipping = gc.getClipping();
             gc.setClipping(rectangle.intersection(originalClipping));
 
@@ -190,10 +190,10 @@ public class VerticalTextPainter extends AbstractTextPainter {
             // if the content height is bigger than the available column width
             // we're extending the column width (only if word wrapping is
             // enabled)
-            int contentHeight = (fontHeight * numberOfNewLines) + (spacing * 2);
+            int contentHeight = (fontHeight * numberOfNewLines) + (this.spacing * 2);
             int contentToCellDiff = (cell.getBounds().width - rectangle.width);
 
-            if ((contentHeight > rectangle.width) && calculateByTextHeight) {
+            if ((contentHeight > rectangle.width) && this.calculateByTextHeight) {
                 ILayer layer = cell.getLayer();
                 layer.doCommand(new ColumnResizeCommand(layer, cell
                         .getColumnPosition(), contentHeight + contentToCellDiff));
@@ -217,7 +217,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
                                 + -rectangle.y
                                 + CellStyleUtil.getHorizontalAlignmentPadding(
                                         cellStyle, rectangle, contentHeight)
-                                + spacing;
+                                + this.spacing;
 
                         transform.translate(xOffset, yOffset);
                     } else {
@@ -236,7 +236,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
                                 + CellStyleUtil.getVerticalAlignmentPadding(
                                         cellStyle, rectangle, contentWidth);
                         int yOffset = -contentHeight - rectangle.y
-                                - rectangle.x - horizontalPadding + spacing;
+                                - rectangle.x - horizontalPadding + this.spacing;
 
                         transform.translate(xOffset, yOffset);
                     }
@@ -297,7 +297,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
                                     + CellStyleUtil
                                             .getHorizontalAlignmentPadding(
                                                     cellStyle, rectangle,
-                                                    contentHeight) + spacing;
+                                                    contentHeight) + this.spacing;
 
                             transform.translate(xOffset, yOffset);
                         } else {
@@ -319,7 +319,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
                                                     lineContentWidth);
                             int yOffset = -contentHeight - rectangle.y
                                     - rectangle.x + lineAdjustment
-                                    - horizontalPadding + spacing;
+                                    - horizontalPadding + this.spacing;
 
                             transform.translate(xOffset, yOffset);
                         }
@@ -392,7 +392,7 @@ public class VerticalTextPainter extends AbstractTextPainter {
      *         <code>false</code>.
      */
     public boolean isRotateClockwise() {
-        return rotateClockwise;
+        return this.rotateClockwise;
     }
 
     /**

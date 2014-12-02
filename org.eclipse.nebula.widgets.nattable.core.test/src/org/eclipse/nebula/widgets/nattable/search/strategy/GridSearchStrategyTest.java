@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,31 +38,34 @@ public class GridSearchStrategyTest {
 
     @Before
     public void setUp() {
-        gridLayer = new DefaultGridLayer(getBodyDataProvider(),
+        this.gridLayer = new DefaultGridLayer(getBodyDataProvider(),
                 GridLayerFixture.colHeaderDataProvider);
-        gridLayer.setClientAreaProvider(new IClientAreaProvider() {
+        this.gridLayer.setClientAreaProvider(new IClientAreaProvider() {
 
+            @Override
             public Rectangle getClientArea() {
                 return new Rectangle(0, 0, 1050, 250);
             }
 
         });
-        gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
+        this.gridLayer.doCommand(new ClientAreaResizeCommand(new Shell(Display
                 .getDefault(), SWT.V_SCROLL | SWT.H_SCROLL)));
 
-        configRegistry = new ConfigRegistry();
+        this.configRegistry = new ConfigRegistry();
         new DefaultNatTableStyleConfiguration()
-                .configureRegistry(configRegistry);
+                .configureRegistry(this.configRegistry);
     }
 
     public IDataProvider getBodyDataProvider() {
         return new IDataProvider() {
             final IDataProvider bodyDataProvider = GridLayerFixture.bodyDataProvider;
 
+            @Override
             public int getColumnCount() {
-                return bodyDataProvider.getColumnCount();
+                return this.bodyDataProvider.getColumnCount();
             }
 
+            @Override
             public Object getDataValue(int columnIndex, int rowIndex) {
                 Object dataValue = null;
                 if (columnIndex == 2 && rowIndex == 2) {
@@ -74,19 +77,21 @@ public class GridSearchStrategyTest {
                 } else if (columnIndex == 0 && rowIndex == 0) {
                     dataValue = "Body";
                 } else {
-                    dataValue = bodyDataProvider.getDataValue(columnIndex,
+                    dataValue = this.bodyDataProvider.getDataValue(columnIndex,
                             rowIndex);
                 }
                 return dataValue;
             }
 
+            @Override
             public int getRowCount() {
-                return bodyDataProvider.getRowCount();
+                return this.bodyDataProvider.getRowCount();
             }
 
+            @Override
             public void setDataValue(int columnIndex, int rowIndex,
                     Object newValue) {
-                bodyDataProvider.setDataValue(columnIndex, rowIndex, newValue);
+                this.bodyDataProvider.setDataValue(columnIndex, rowIndex, newValue);
             }
 
         };
@@ -95,14 +100,14 @@ public class GridSearchStrategyTest {
     @Test
     public void searchShouldWrapAroundColumn() {
         // Select search starting point in composite coordinates
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 3, 4, false, false));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
 
         GridSearchStrategy gridStrategy = new GridSearchStrategy(
-                configRegistry, false, true);
+                this.configRegistry, false, true);
 
         // If we don't specify to wrap the search, it will not find it.
-        final SelectionLayer selectionLayer = gridLayer.getBodyLayer()
+        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
                 .getSelectionLayer();
         gridStrategy.setContextLayer(selectionLayer);
         gridStrategy.setCaseSensitive(true);
@@ -118,15 +123,15 @@ public class GridSearchStrategyTest {
     @Test
     public void searchShouldWrapAroundRow() {
         // Select search starting point in composite coordinates
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 3, 4, false, false));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
 
         GridSearchStrategy gridStrategy = new GridSearchStrategy(
-                configRegistry, false, true);
+                this.configRegistry, false, true);
         gridStrategy
                 .setComparator(new CellValueAsStringComparator<Comparable<String>>());
         // If we don't specify to wrap the search, it will not find it.
-        final SelectionLayer selectionLayer = gridLayer.getBodyLayer()
+        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
                 .getSelectionLayer();
         gridStrategy.setContextLayer(selectionLayer);
         Assert.assertNull(gridStrategy.executeSearch("[1,3]"));
@@ -140,14 +145,14 @@ public class GridSearchStrategyTest {
     @Test
     public void searchShouldMoveBackwardsToFindCell() {
         // Select search starting point in composite coordinates
-        gridLayer
-                .doCommand(new SelectCellCommand(gridLayer, 3, 4, false, false));
+        this.gridLayer
+                .doCommand(new SelectCellCommand(this.gridLayer, 3, 4, false, false));
 
         GridSearchStrategy gridStrategy = new GridSearchStrategy(
-                configRegistry, false, ISearchDirection.SEARCH_BACKWARDS, true);
+                this.configRegistry, false, ISearchDirection.SEARCH_BACKWARDS, true);
         gridStrategy
                 .setComparator(new CellValueAsStringComparator<Comparable<String>>());
-        final SelectionLayer selectionLayer = gridLayer.getBodyLayer()
+        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
                 .getSelectionLayer();
         gridStrategy.setContextLayer(selectionLayer);
 
@@ -157,10 +162,10 @@ public class GridSearchStrategyTest {
     @Test
     public void shouldFindAllCellsWithValue() {
         GridSearchStrategy gridStrategy = new GridSearchStrategy(
-                configRegistry, true, ISearchDirection.SEARCH_BACKWARDS, true);
+                this.configRegistry, true, ISearchDirection.SEARCH_BACKWARDS, true);
         gridStrategy
                 .setComparator(new CellValueAsStringComparator<Comparable<String>>());
-        final SelectionLayer selectionLayer = gridLayer.getBodyLayer()
+        final SelectionLayer selectionLayer = this.gridLayer.getBodyLayer()
                 .getSelectionLayer();
         gridStrategy.setContextLayer(selectionLayer);
         gridStrategy.setCaseSensitive(true);

@@ -31,24 +31,24 @@ public class RowReorderLayerTest2 {
                         + "A1 | B1 | C1 | D1 \n" + "A2 | B2 | C2 | D2 \n"
                         + "A3 | B3 | C3 | D3 \n");
 
-        reorderLayer = new RowReorderLayer(dataLayer);
+        this.reorderLayer = new RowReorderLayer(dataLayer);
     }
 
     @Test
     public void shouldLoadstateFromProperties() throws Exception {
         LayerListenerFixture listener = new LayerListenerFixture();
-        reorderLayer.addLayerListener(listener);
+        this.reorderLayer.addLayerListener(listener);
 
         Properties testProperties = new Properties();
         testProperties.put(RowReorderLayer.PERSISTENCE_KEY_ROW_INDEX_ORDER,
                 "0,1,3,2,");
 
-        reorderLayer.loadState("", testProperties);
+        this.reorderLayer.loadState("", testProperties);
 
-        Assert.assertEquals(0, reorderLayer.getRowIndexByPosition(0));
-        Assert.assertEquals(1, reorderLayer.getRowIndexByPosition(1));
-        Assert.assertEquals(3, reorderLayer.getRowIndexByPosition(2));
-        Assert.assertEquals(2, reorderLayer.getRowIndexByPosition(3));
+        Assert.assertEquals(0, this.reorderLayer.getRowIndexByPosition(0));
+        Assert.assertEquals(1, this.reorderLayer.getRowIndexByPosition(1));
+        Assert.assertEquals(3, this.reorderLayer.getRowIndexByPosition(2));
+        Assert.assertEquals(2, this.reorderLayer.getRowIndexByPosition(3));
 
         Assert.assertTrue(listener
                 .containsInstanceOf(RowStructuralRefreshEvent.class));
@@ -62,23 +62,23 @@ public class RowReorderLayerTest2 {
         // Index 5 is valid
         testProperties.put(RowReorderLayer.PERSISTENCE_KEY_ROW_INDEX_ORDER,
                 "0,1,5,2,");
-        reorderLayer.loadState("", testProperties);
+        this.reorderLayer.loadState("", testProperties);
 
         // Ordering unchanged
-        Assert.assertEquals(0, reorderLayer.getRowIndexByPosition(0));
-        Assert.assertEquals(1, reorderLayer.getRowIndexByPosition(1));
-        Assert.assertEquals(2, reorderLayer.getRowIndexByPosition(2));
-        Assert.assertEquals(3, reorderLayer.getRowIndexByPosition(3));
+        Assert.assertEquals(0, this.reorderLayer.getRowIndexByPosition(0));
+        Assert.assertEquals(1, this.reorderLayer.getRowIndexByPosition(1));
+        Assert.assertEquals(2, this.reorderLayer.getRowIndexByPosition(2));
+        Assert.assertEquals(3, this.reorderLayer.getRowIndexByPosition(3));
 
         // Number of columns is different
         testProperties.put(RowReorderLayer.PERSISTENCE_KEY_ROW_INDEX_ORDER,
                 "2,1,0,");
-        reorderLayer.loadState("", testProperties);
+        this.reorderLayer.loadState("", testProperties);
 
         // Ordering unchanged
-        Assert.assertEquals(0, reorderLayer.getRowIndexByPosition(0));
-        Assert.assertEquals(1, reorderLayer.getRowIndexByPosition(1));
-        Assert.assertEquals(2, reorderLayer.getRowIndexByPosition(2));
-        Assert.assertEquals(3, reorderLayer.getRowIndexByPosition(3));
+        Assert.assertEquals(0, this.reorderLayer.getRowIndexByPosition(0));
+        Assert.assertEquals(1, this.reorderLayer.getRowIndexByPosition(1));
+        Assert.assertEquals(2, this.reorderLayer.getRowIndexByPosition(2));
+        Assert.assertEquals(3, this.reorderLayer.getRowIndexByPosition(3));
     }
 }

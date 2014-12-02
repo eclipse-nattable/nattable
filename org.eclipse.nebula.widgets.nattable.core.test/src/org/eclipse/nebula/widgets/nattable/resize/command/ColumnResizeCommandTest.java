@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,21 +24,21 @@ public class ColumnResizeCommandTest {
 
     @Before
     public void setup() {
-        dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
+        this.dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
     }
 
     @Test
     public void testHandleColumnResizeCommand() {
-        Assert.assertEquals(100, dataLayer.getColumnWidthByPosition(3));
+        Assert.assertEquals(100, this.dataLayer.getColumnWidthByPosition(3));
 
         int columnPosition = 3;
         int newWidth = 150;
         ColumnResizeCommand columnResizeCommand = new ColumnResizeCommand(
-                dataLayer, columnPosition, newWidth);
+                this.dataLayer, columnPosition, newWidth);
 
-        dataLayer.doCommand(columnResizeCommand);
+        this.dataLayer.doCommand(columnResizeCommand);
 
-        Assert.assertEquals(150, dataLayer.getColumnWidthByPosition(3));
+        Assert.assertEquals(150, this.dataLayer.getColumnWidthByPosition(3));
     }
 
     @Test
@@ -46,13 +46,13 @@ public class ColumnResizeCommandTest {
         int columnPositions[] = new int[] { 3, 2, 4 };
         int newWidth = 250;
         MultiColumnResizeCommand columnResizeCommand = new MultiColumnResizeCommand(
-                dataLayer, columnPositions, newWidth);
+                this.dataLayer, columnPositions, newWidth);
 
-        dataLayer.doCommand(columnResizeCommand);
+        this.dataLayer.doCommand(columnResizeCommand);
 
         for (int columnPosition : columnPositions) {
             Assert.assertEquals(newWidth,
-                    dataLayer.getColumnWidthByPosition(columnPosition));
+                    this.dataLayer.getColumnWidthByPosition(columnPosition));
         }
     }
 }

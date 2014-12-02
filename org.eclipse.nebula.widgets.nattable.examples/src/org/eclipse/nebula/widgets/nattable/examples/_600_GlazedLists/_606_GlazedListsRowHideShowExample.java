@@ -54,7 +54,7 @@ import ca.odell.glazedlists.GlazedLists;
  * Simple example showing how to add the row hide/show functionality to a grid
  * that is build using GlazedLists and how to add the corresponding actions to
  * the row header menu.
- * 
+ *
  * @author Dirk Fauth
  *
  */

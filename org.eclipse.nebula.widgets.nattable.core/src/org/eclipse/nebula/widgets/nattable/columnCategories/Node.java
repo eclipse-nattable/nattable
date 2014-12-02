@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -40,7 +40,7 @@ public class Node implements Serializable {
     }
 
     public Node getParent() {
-        return parent;
+        return this.parent;
     }
 
     public void setParent(Node parent) {
@@ -52,7 +52,7 @@ public class Node implements Serializable {
     }
 
     public Type getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -60,7 +60,7 @@ public class Node implements Serializable {
      * Node whose children are represented by a List&lt;Node&gt;. Each of these
      * Node elements in the List can have children. The getChildren() method
      * will return the children of a Node.
-     * 
+     *
      * @return the children of Node
      */
     public List<Node> getChildren() {
@@ -72,29 +72,29 @@ public class Node implements Serializable {
 
     /**
      * Returns the number of immediate children of this Node.
-     * 
+     *
      * @return the number of immediate children.
      */
     public int getNumberOfChildren() {
-        if (children == null) {
+        if (this.children == null) {
             return 0;
         }
-        return children.size();
+        return this.children.size();
     }
 
     /**
      * Adds a child to the list of children for this Node. The addition of the
      * first child will create a new List&lt;Node&gt;.
-     * 
+     *
      * @param child
      *            a Node object to set.
      * @return Child node just added
      */
     public Node addChild(Node child) {
-        if (children == null) {
-            children = new ArrayList<Node>();
+        if (this.children == null) {
+            this.children = new ArrayList<Node>();
         }
-        children.add(child);
+        this.children.add(child);
         child.setParent(this);
         return child;
     }
@@ -112,7 +112,7 @@ public class Node implements Serializable {
     /**
      * Inserts a Node at the specified position in the child list. Will throw an
      * ArrayIndexOutOfBoundsException if the index does not exist.
-     * 
+     *
      * @param index
      *            the position to insert at.
      * @param child
@@ -127,21 +127,22 @@ public class Node implements Serializable {
             addChild(child);
             return;
         } else {
-            children.get(index); // just to throw the exception, and stop here
-            children.add(index, child);
+            this.children.get(index); // just to throw the exception, and stop
+                                      // here
+            this.children.add(index, child);
         }
     }
 
     /**
      * Remove the Node element at index index of the List&lt;Node&gt;.
-     * 
+     *
      * @param index
      *            the index of the element to delete.
      * @throws IndexOutOfBoundsException
      *             if thrown.
      */
     public void removeChildAt(int index) throws IndexOutOfBoundsException {
-        children.remove(index);
+        this.children.remove(index);
     }
 
     public String getData() {
@@ -155,7 +156,7 @@ public class Node implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{").append(type).append(",").append(getData().toString()).append(",["); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        sb.append("{").append(this.type).append(",").append(getData().toString()).append(",["); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         int i = 0;
         for (Node e : getChildren()) {
             if (i > 0) {

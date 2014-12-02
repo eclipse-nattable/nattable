@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -77,36 +77,36 @@ public class GlazedListsGridLayer<T> extends GridLayer {
         SortedList<T> sortedList = new SortedList<T>(eventList, null);
         IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
                 propertyNames);
-        bodyDataProvider = new ListDataProvider<T>(sortedList,
+        this.bodyDataProvider = new ListDataProvider<T>(sortedList,
                 columnPropertyAccessor);
 
-        bodyDataLayer = new DataLayer(bodyDataProvider);
-        glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer,
+        this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
+        this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer,
                 eventList);
-        bodyLayerStack = new DefaultBodyLayerStack(glazedListsEventLayer);
+        this.bodyLayerStack = new DefaultBodyLayerStack(this.glazedListsEventLayer);
 
         // Sort Column header
         IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
                 propertyNames, propertyToLabelMap);
-        columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
+        this.columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
                 columnHeaderDataProvider);
         ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, bodyLayerStack,
-                bodyLayerStack.getSelectionLayer());
+                this.columnHeaderDataLayer, this.bodyLayerStack,
+                this.bodyLayerStack.getSelectionLayer());
 
         // Auto configure off. Configurations have to applied manually.
         SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<T>(
                 columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
                         columnPropertyAccessor, configRegistry,
-                        columnHeaderDataLayer), false);
+                        this.columnHeaderDataLayer), false);
 
         // Row header
         DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
+                this.bodyDataProvider);
         DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
                 rowHeaderDataProvider);
         RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+                this.bodyLayerStack, this.bodyLayerStack.getSelectionLayer());
 
         // Corner
         DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
@@ -116,14 +116,14 @@ public class GlazedListsGridLayer<T> extends GridLayer {
                 rowHeaderLayer, columnHeaderLayer);
 
         // Grid
-        setBodyLayer(bodyLayerStack);
+        setBodyLayer(this.bodyLayerStack);
         setColumnHeaderLayer(columnHeaderSortableLayer);
         setRowHeaderLayer(rowHeaderLayer);
         setCornerLayer(cornerLayer);
     }
 
     public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
-        return columnLabelAccumulator;
+        return this.columnLabelAccumulator;
     }
 
     @Override
@@ -132,22 +132,22 @@ public class GlazedListsGridLayer<T> extends GridLayer {
     }
 
     public DataLayer getBodyDataLayer() {
-        return bodyDataLayer;
+        return this.bodyDataLayer;
     }
 
     public ListDataProvider<T> getBodyDataProvider() {
-        return bodyDataProvider;
+        return this.bodyDataProvider;
     }
 
     public DataLayer getColumnHeaderDataLayer() {
-        return columnHeaderDataLayer;
+        return this.columnHeaderDataLayer;
     }
 
     public DefaultBodyLayerStack getBodyLayerStack() {
-        return bodyLayerStack;
+        return this.bodyLayerStack;
     }
 
     public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
-        return glazedListsEventLayer;
+        return this.glazedListsEventLayer;
     }
 }

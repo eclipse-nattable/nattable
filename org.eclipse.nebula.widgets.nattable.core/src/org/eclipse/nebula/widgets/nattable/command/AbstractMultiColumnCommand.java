@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,7 +31,7 @@ public abstract class AbstractMultiColumnCommand implements ILayerCommand {
 
     public Collection<Integer> getColumnPositions() {
         Collection<Integer> columnPositions = new HashSet<Integer>();
-        for (ColumnPositionCoordinate columnPositionCoordinate : columnPositionCoordinates) {
+        for (ColumnPositionCoordinate columnPositionCoordinate : this.columnPositionCoordinates) {
             columnPositions.add(Integer
                     .valueOf(columnPositionCoordinate.columnPosition));
         }
@@ -40,17 +40,18 @@ public abstract class AbstractMultiColumnCommand implements ILayerCommand {
 
     protected final void setColumnPositions(ILayer layer,
             int... columnPositions) {
-        columnPositionCoordinates = new HashSet<ColumnPositionCoordinate>();
+        this.columnPositionCoordinates = new HashSet<ColumnPositionCoordinate>();
         for (int columnPosition : columnPositions) {
-            columnPositionCoordinates.add(new ColumnPositionCoordinate(layer,
+            this.columnPositionCoordinates.add(new ColumnPositionCoordinate(layer,
                     columnPosition));
         }
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         Collection<ColumnPositionCoordinate> convertedColumnPositionCoordinates = new HashSet<ColumnPositionCoordinate>();
 
-        for (ColumnPositionCoordinate columnPositionCoordinate : columnPositionCoordinates) {
+        for (ColumnPositionCoordinate columnPositionCoordinate : this.columnPositionCoordinates) {
             ColumnPositionCoordinate convertedColumnPositionCoordinate = LayerCommandUtil
                     .convertColumnPositionToTargetContext(
                             columnPositionCoordinate, targetLayer);
@@ -61,7 +62,7 @@ public abstract class AbstractMultiColumnCommand implements ILayerCommand {
         }
 
         if (convertedColumnPositionCoordinates.size() > 0) {
-            columnPositionCoordinates = convertedColumnPositionCoordinates;
+            this.columnPositionCoordinates = convertedColumnPositionCoordinates;
             return true;
         } else {
             return false;

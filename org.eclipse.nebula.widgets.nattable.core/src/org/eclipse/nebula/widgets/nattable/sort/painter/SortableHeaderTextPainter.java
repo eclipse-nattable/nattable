@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,7 +31,7 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
      * Creates a {@link SortableHeaderTextPainter} that uses the given
      * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
      * the {@link SortIconPainter} on the right edge of the cell.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      */
@@ -43,7 +43,7 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
      * Creates a {@link SortableHeaderTextPainter} that uses the given
      * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
      * the {@link SortIconPainter} on the specified edge of the cell.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param cellEdge
@@ -60,7 +60,7 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
      * {@link ICellPainter} as base {@link ICellPainter} and decorate it with
      * the given {@link ICellPainter} to use for sort related decoration on the
      * specified edge of the cell.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param cellEdge
@@ -89,7 +89,7 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
      * not via method parameter. With the additional parameters, the behaviour
      * of the created {@link CellPainterDecorator} can be configured in terms of
      * rendering.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param cellEdge
@@ -128,7 +128,7 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
      * method parameter. With the additional parameters, the behaviour of the
      * created {@link CellPainterDecorator} can be configured in terms of
      * rendering.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param cellEdge
@@ -168,7 +168,7 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
      * constructor gives the opportunity to configure the behaviour of the
      * {@link SortIconPainter} and the {@link CellPainterDecorator} for some
      * attributes. Remains because of downwards compatibility.
-     * 
+     *
      * @param interiorPainter
      *            the base {@link ICellPainter} to use
      * @param paintBg

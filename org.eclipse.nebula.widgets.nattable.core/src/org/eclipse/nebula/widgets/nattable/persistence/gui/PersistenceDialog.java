@@ -64,15 +64,15 @@ import org.eclipse.swt.widgets.Text;
  * the specified NatTable and Properties instances. If the Properties need to be
  * persisted e.g. in the file system, the developer has to take care of that
  * himself.
- * 
+ *
  * <p>
  * It is possible to listen for state change events on the view configurations.
  * Rather than adding listeners to this dialog yourself, you should register the
  * listeners to the {@link DisplayColumnChooserCommandHandler}, as it will
  * handle propagating the listeners to newly created instances of this dialog.
- * 
+ *
  * @author Dirk Fauth
- * 
+ *
  * @see DisplayPersistenceDialogCommand
  * @see DisplayPersistenceDialogCommandHandler
  */
@@ -137,7 +137,7 @@ public class PersistenceDialog extends Dialog {
 
     /**
      * Create a new dialog for handling NatTable state.
-     * 
+     *
      * @param parentShell
      *            the parent shell, or <code>null</code> to create a top-level
      *            shell
@@ -165,7 +165,7 @@ public class PersistenceDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets
      * .Composite)
@@ -213,9 +213,10 @@ public class PersistenceDialog extends Dialog {
 
         this.configNameText.addModifyListener(new ModifyListener() {
 
+            @Override
             public void modifyText(ModifyEvent e) {
-                if (configNameText.getText().length() != 0) {
-                    configNameDeco.hide();
+                if (PersistenceDialog.this.configNameText.getText().length() != 0) {
+                    PersistenceDialog.this.configNameDeco.hide();
                 }
             }
         });
@@ -234,13 +235,14 @@ public class PersistenceDialog extends Dialog {
         this.viewer
                 .addSelectionChangedListener(new ISelectionChangedListener() {
 
+                    @Override
                     public void selectionChanged(SelectionChangedEvent event) {
                         ISelection selection = event.getSelection();
                         if (selection != null
                                 && selection instanceof IStructuredSelection) {
                             String configName = ((IStructuredSelection) selection)
                                     .getFirstElement().toString();
-                            configNameText.setText(configName);
+                            PersistenceDialog.this.configNameText.setText(configName);
                         }
                     }
                 });
@@ -248,6 +250,7 @@ public class PersistenceDialog extends Dialog {
         // add double click listener
         this.viewer.addDoubleClickListener(new IDoubleClickListener() {
 
+            @Override
             public void doubleClick(DoubleClickEvent event) {
                 buttonPressed(LOAD_ID);
             }
@@ -261,7 +264,7 @@ public class PersistenceDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse
      * .swt.widgets.Composite)
@@ -280,7 +283,7 @@ public class PersistenceDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#buttonPressed(int)
      */
     @Override
@@ -349,7 +352,7 @@ public class PersistenceDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets
      * .Shell)
@@ -363,7 +366,7 @@ public class PersistenceDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#getInitialSize()
      */
     @Override
@@ -375,7 +378,7 @@ public class PersistenceDialog extends Dialog {
      * @return The Properties instance that is used for saving and loading.
      */
     public Properties getProperties() {
-        return properties;
+        return this.properties;
     }
 
     /**
@@ -399,7 +402,7 @@ public class PersistenceDialog extends Dialog {
      * method does not set the active view configuration programmatically. It is
      * just used to support highlighting the current active view configuration
      * in the viewer of this dialog.
-     * 
+     *
      * @param name
      *            The name of the current active view configuration
      */
@@ -410,7 +413,7 @@ public class PersistenceDialog extends Dialog {
     /**
      * Add the given {@link IStateChangedListener} to the local list of
      * listeners.
-     * 
+     *
      * @param listener
      *            The listener to add.
      */
@@ -421,7 +424,7 @@ public class PersistenceDialog extends Dialog {
     /**
      * Adds the given {@link IStateChangedListener}s to the local list of
      * listeners.
-     * 
+     *
      * @param listeners
      *            The listeners to add.
      */
@@ -432,7 +435,7 @@ public class PersistenceDialog extends Dialog {
     /**
      * Removes the given {@link IStateChangedListener} from the local list of
      * listeners.
-     * 
+     *
      * @param listener
      *            The listener to remove.
      */
@@ -443,7 +446,7 @@ public class PersistenceDialog extends Dialog {
     /**
      * Removes the given {@link IStateChangedListener}s from the local list of
      * listeners.
-     * 
+     *
      * @param listeners
      *            The listeners to remove.
      */
@@ -454,7 +457,7 @@ public class PersistenceDialog extends Dialog {
 
     /**
      * Inform all registered listeners about the state change.
-     * 
+     *
      * @param event
      *            The {@link StateChangeEvent} object.
      */
@@ -475,12 +478,11 @@ public class PersistenceDialog extends Dialog {
         private Styler italicStyler;
 
         ViewConfigurationNameLabelProvider() {
-            italicFont = GUIHelper.getFont(new FontData[] { new FontData(
-                    "Arial", 8, SWT.ITALIC) }); //$NON-NLS-1$
-            italicStyler = new Styler() {
+            this.italicFont = GUIHelper.getFont(new FontData[] { new FontData("Arial", 8, SWT.ITALIC) }); //$NON-NLS-1$
+            this.italicStyler = new Styler() {
                 @Override
                 public void applyStyles(TextStyle textStyle) {
-                    textStyle.font = italicFont;
+                    textStyle.font = ViewConfigurationNameLabelProvider.this.italicFont;
                 }
             };
         }
@@ -497,7 +499,7 @@ public class PersistenceDialog extends Dialog {
             if (result.length() == 0) {
                 result = Messages
                         .getString("PersistenceDialog.defaultStateConfigName"); //$NON-NLS-1$
-                styler = italicStyler;
+                styler = this.italicStyler;
             }
 
             StyledString styledString = new StyledString(prefix + result,

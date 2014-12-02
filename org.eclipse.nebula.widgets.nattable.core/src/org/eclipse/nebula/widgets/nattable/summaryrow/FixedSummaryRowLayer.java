@@ -57,11 +57,11 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
  *      GridLayer gridLayer = new GridLayer(...);
  *      FixedSummaryRowLayer summaryRowLayer =
  *          new FixedSummaryRowLayer(bodyDataLayer, gridLayer, configRegistry);
- *
+ * 
  *      CompositeLayer composite = new CompositeLayer(1, 2);
  *      composite.setChildLayer("GRID", gridLayer, 0, 0);
  *      composite.setChildLayer(SUMMARY_REGION, summaryRowLayer, 0, 1);
- *
+ * 
  *      NatTable natTable = new NatTable(panel, composite);
  * </pre>
  * <p>

@@ -91,7 +91,7 @@ public class _4222_CellPainterExample extends AbstractNatExample {
         String[] propertyNames = { "firstName", "lastName", "password",
                 "description", "age", "money", "married", "gender",
                 "address.street", "address.city", "favouriteFood",
-        "favouriteDrinks" };
+                "favouriteDrinks" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -304,8 +304,8 @@ public class _4222_CellPainterExample extends AbstractNatExample {
                             new PaddingDecorator(
                                     new TextPainter(), 0, 5, 0, 0), new BorderStyle(2,
                                     GUIHelper.COLOR_GREEN, LineStyleEnum.SOLID)),
-                                            DisplayMode.NORMAL,
-                                            _4222_CellPainterExample.COLUMN_SIX_LABEL);
+                    DisplayMode.NORMAL,
+                    _4222_CellPainterExample.COLUMN_SIX_LABEL);
 
             // don't forget to register the Double converter!
             configRegistry.registerConfigAttribute(

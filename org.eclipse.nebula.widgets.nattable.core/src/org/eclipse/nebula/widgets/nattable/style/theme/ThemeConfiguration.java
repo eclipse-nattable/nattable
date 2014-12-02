@@ -45,13 +45,13 @@ import org.eclipse.swt.graphics.Color;
  * <ol>
  * <li>As it is a {@link IConfiguration} it can be simply added to a NatTable
  * instance like any other configuration.
- * 
+ *
  * <pre>
  * NatTable natTable = new NatTable(parent, layer, false);
  * natTable.addConfiguration(new MyThemeConfiguration());
  * natTable.configure();
  * </pre>
- * 
+ *
  * Using it like this will apply the style configurations, but might cause
  * issues when trying to switch to another theme configuration, because the
  * configurations can not be cleaned up correctly.</li>
@@ -59,7 +59,7 @@ import org.eclipse.swt.graphics.Color;
  * {@link NatTable#setTheme(ThemeConfiguration)}. This will internally use a
  * {@link ThemeManager} which supports switching themes at runtime.</li>
  * </ol>
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -125,7 +125,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Register default style configurations. Typically these configurations are
      * used be the body region and will be overridden by more specific
      * configurations of the header regions or custom styling based on labels.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -160,7 +160,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * is overridden for other regions or other custom styling configurations
      * based on labels.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used by default to render
      *         NatTable.
      */
@@ -174,7 +174,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and config/region label
      * {@link GridRegion#COLUMN_HEADER}.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -213,7 +213,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the column
      *         header in a NatTable.
      */
@@ -233,7 +233,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the column
      *         header in a NatTable.
      */
@@ -247,7 +247,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and config/region label
      * {@link GridRegion#ROW_HEADER}.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -286,7 +286,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the row header
      *         in a NatTable.
      */
@@ -306,7 +306,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the row
      *         header in a NatTable.
      */
@@ -319,7 +319,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and config/region label
      * {@link GridRegion#CORNER}.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -360,7 +360,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the corner of a
      *         NatTable.
      */
@@ -380,7 +380,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the corner
      *         in a NatTable.
      */
@@ -398,7 +398,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * part of the layer stack. Otherwise the configuration will not have any
      * effect.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -477,7 +477,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render hovered cells in
      *         a NatTable.
      */
@@ -501,7 +501,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render hovered
      *         cells in a NatTable.
      */
@@ -526,7 +526,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render hovered cells in
      *         a NatTable body region.
      */
@@ -551,7 +551,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render hovered
      *         cells in a NatTable body region.
      */
@@ -576,7 +576,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render hovered cells in
      *         a NatTable column header region.
      */
@@ -601,7 +601,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render hovered
      *         cells in a NatTable column header region.
      */
@@ -626,7 +626,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render hovered cells in
      *         a NatTable row header region.
      */
@@ -651,7 +651,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render hovered
      *         cells in a NatTable row header region.
      */
@@ -669,7 +669,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * part of the layer stack. Otherwise the configuration will not have any
      * effect.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -748,7 +748,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render hovered selected
      *         cells in a NatTable.
      */
@@ -772,7 +772,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render hovered
      *         selected cells in a NatTable.
      */
@@ -797,7 +797,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render hovered selected
      *         cells in a NatTable body region.
      */
@@ -822,7 +822,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render hovered
      *         selected cells in a NatTable body region.
      */
@@ -847,7 +847,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render hovered selected
      *         cells in a NatTable column header region.
      */
@@ -872,7 +872,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render hovered
      *         selected cells in a NatTable column header region.
      */
@@ -897,7 +897,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render hovered selected
      *         cells in a NatTable row header region.
      */
@@ -922,7 +922,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render hovered
      *         selected cells in a NatTable row header region.
      */
@@ -933,7 +933,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * configurations are used be the body region and will be overridden by more
      * specific configurations of the header regions or custom styling based on
      * labels.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -970,7 +970,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * is overridden for other regions or other custom styling configurations
      * based on labels.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used by default to render
      *         selected cells in NatTable.
      */
@@ -986,7 +986,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * selection is configured against the label
      * {@link SelectionStyleLabels#COLUMN_FULLY_SELECTED_STYLE}.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1044,7 +1044,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the column
      *         header in a NatTable.
      */
@@ -1064,7 +1064,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the column
      *         header in a NatTable.
      */
@@ -1085,7 +1085,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the column
      *         header in a NatTable when all cells in the column are selected.
      */
@@ -1106,7 +1106,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the column
      *         header in a NatTable when all cells in the column are selected.
      */
@@ -1122,7 +1122,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * selection is configured against the label
      * {@link SelectionStyleLabels#ROW_FULLY_SELECTED_STYLE}.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1180,7 +1180,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the row header
      *         in a NatTable.
      */
@@ -1200,7 +1200,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the row
      *         header in a NatTable.
      */
@@ -1221,7 +1221,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the row header
      *         in a NatTable when all cells in the row are selected.
      */
@@ -1242,7 +1242,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the row
      *         header in a NatTable when all cells in the row are selected.
      */
@@ -1256,7 +1256,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#SELECT} and config/region label
      * {@link GridRegion#CORNER}.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1295,7 +1295,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the corner in a
      *         NatTable.
      */
@@ -1315,7 +1315,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the corner
      *         in a NatTable.
      */
@@ -1323,7 +1323,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 
     /**
      * Register the style configurations to render the selection anchor.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1382,7 +1382,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * <p>
      * Typically only the border style is set here for a concise rendering.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that is used to render the selection anchor in
      *         normal display mode.
      */
@@ -1400,7 +1400,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Typically there is no other painter registered for rendering selections,
      * which simply causes different styling.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that is used to render the selection
      *         anchor in normal display mode.
      */
@@ -1418,7 +1418,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Typically the border style should be the same as used by
      * {@link ThemeConfiguration#getSelectionAnchorStyle()}.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that is used to render the selection anchor in
      *         selection display mode.
      */
@@ -1436,7 +1436,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Typically there is no other painter registered for rendering selections,
      * which simply causes different styling.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that is used to render the selection
      *         anchor in selection display mode.
      */
@@ -1450,10 +1450,10 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * interpreted by the {@link SelectionLayerPainter} which only checks the
      * {@link CellStyleAttributes#BORDER_STYLE} attribute. All other style
      * configurations won't be interpreted.
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the grid lines
      *         around the selection anchor.
-     * 
+     *
      * @see SelectionLayerPainter
      */
     protected abstract IStyle getSelectionAnchorGridLineStyle();
@@ -1470,7 +1470,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * </ul>
      * If the {@link AlternatingRowConfigLabelAccumulator} is not configured,
      * this style configuration will have no effect.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1522,7 +1522,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that is used to render rows that contain the
      *         label
      *         {@link AlternatingRowConfigLabelAccumulator#EVEN_ROW_CONFIG_TYPE}
@@ -1543,7 +1543,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that is used to render rows that contain
      *         the label
      *         {@link AlternatingRowConfigLabelAccumulator#EVEN_ROW_CONFIG_TYPE}
@@ -1564,7 +1564,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that is used to render rows that contain the
      *         label
      *         {@link AlternatingRowConfigLabelAccumulator#ODD_ROW_CONFIG_TYPE}
@@ -1585,7 +1585,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that is used to render rows that contain
      *         the label
      *         {@link AlternatingRowConfigLabelAccumulator#ODD_ROW_CONFIG_TYPE}
@@ -1603,7 +1603,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * internally configured {@link ICellPainter} to render dependent on the
      * state of the ColumnGroupModel.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1640,7 +1640,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the column group
      *         header in a NatTable.
      */
@@ -1660,7 +1660,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * ColumnGroupHeaderTextPainter is registered to render icons corresponding
      * to the expand/collapse state of the column group.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the column
      *         group header in a NatTable.
      */
@@ -1676,7 +1676,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * configured {@link ICellPainter} to render dependent on the state of the
      * RowGroupModel.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1712,7 +1712,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the row group
      *         header in a NatTable.
      */
@@ -1732,7 +1732,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * registered to render icons corresponding to the expand/collapse state of
      * the row group.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the row
      *         group header in a NatTable.
      */
@@ -1750,7 +1750,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Typically the {@link ICellPainter} itself takes care about the sort
      * state. If this needs to be handled differently, this method needs to be
      * overridden.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1800,7 +1800,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the sort header
      *         in a NatTable.
      */
@@ -1824,7 +1824,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the sort
      *         header in a NatTable.
      */
@@ -1842,7 +1842,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Typically the {@link ICellPainter} itself takes care about the sort
      * state. If this needs to be handled differently, this method needs to be
      * overridden.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1893,7 +1893,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the selected
      *         sort header in a NatTable.
      */
@@ -1917,7 +1917,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the
      *         selected sort header in a NatTable.
      */
@@ -1928,7 +1928,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * It will only be applied in case the FilterRowHeaderLayer is involved,
      * which introduces a new region that is recognised by
      * {@link GridRegion#FILTER_ROW}.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -1963,7 +1963,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the filter row
      *         in a NatTable.
      */
@@ -1983,7 +1983,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the filter
      *         row in a NatTable.
      */
@@ -1994,7 +1994,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * representation. It will only be applied in case a TreeLayer is involved,
      * which adds the configuration label {@link TreeLayer#TREE_COLUMN_CELL} to
      * the tree column.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -2057,7 +2057,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the tree column
      *         in a NatTable.
      */
@@ -2071,7 +2071,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and the configuration label
      * {@link TreeLayer#TREE_COLUMN_CELL}.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the tree
      *         column in a NatTable.
      */
@@ -2091,7 +2091,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the selected
      *         tree column in a NatTable.
      */
@@ -2105,7 +2105,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#SELECT} and the configuration label
      * {@link TreeLayer#TREE_COLUMN_CELL}.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the
      *         selected tree column in a NatTable.
      */
@@ -2119,7 +2119,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * several {@link CellPainterWrapper}. If there is no
      * {@link IndentedTreeImagePainter} in the painter hierarchy, this
      * configuration attribute will be ignored by the TreeLayer.
-     * 
+     *
      * @return The {@link IndentedTreeImagePainter} that should be used to
      *         render the tree structure in a NatTable.
      */
@@ -2133,7 +2133,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * several {@link CellPainterWrapper}. If there is no
      * {@link IndentedTreeImagePainter} in the painter hierarchy, this
      * configuration attribute will be ignored by the TreeLayer.
-     * 
+     *
      * @return The {@link IndentedTreeImagePainter} that should be used to
      *         render the selected tree structure in a NatTable.
      */
@@ -2145,7 +2145,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * the configuration label
      * {@link SummaryRowLayer#DEFAULT_SUMMARY_ROW_CONFIG_LABEL} to the summary
      * row.<br/>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -2196,7 +2196,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the summary row
      *         in a NatTable.
      */
@@ -2216,7 +2216,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the
      *         summary row in a NatTable.
      */
@@ -2236,7 +2236,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the selected
      *         summary row cells in a NatTable.
      */
@@ -2256,7 +2256,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the
      *         selected summary row cells in a NatTable.
      */
@@ -2266,7 +2266,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * This method is used to register the style attributes for freeze
      * rendering. This mainly means to specify the color that is used to render
      * the freeze separator.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -2283,7 +2283,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Returns the {@link Color} that should be used to render the freeze
      * separator. If <code>null</code> is returned, the default separator color
      * will be used.
-     * 
+     *
      * @return The {@link Color} that should be used to render the freeze
      *         separator.
      */
@@ -2294,7 +2294,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * grid line color and the configuration if grid lines should be rendered or
      * not. These configurations will be interpreted by the
      * GridLineCellLayerPainter.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -2341,7 +2341,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * Returns the {@link Color} that should be used to render the grid lines.
      * If <code>null</code> is returned, the default grid line color will be
      * used.
-     * 
+     *
      * @return The {@link Color} that should be used to render the grid lines.
      */
     protected abstract Color getGridLineColor();
@@ -2354,7 +2354,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and the configuration label
      * {@link GridRegion#COLUMN_HEADER}.
      * </p>
-     * 
+     *
      * @return <code>true</code> if grid lines in the column header region
      *         should be rendered, <code>false</code> if not.
      */
@@ -2368,7 +2368,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and the configuration label
      * {@link GridRegion#CORNER}.
      * </p>
-     * 
+     *
      * @return <code>true</code> if grid lines in the corner region should be
      *         rendered, <code>false</code> if not.
      */
@@ -2381,7 +2381,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and the configuration label
      * {@link GridRegion#ROW_HEADER}.
      * </p>
-     * 
+     *
      * @return <code>true</code> if grid lines in the row header region should
      *         be rendered, <code>false</code> if not.
      */
@@ -2394,7 +2394,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and the configuration label
      * {@link GridRegion#BODY}.
      * </p>
-     * 
+     *
      * @return <code>true</code> if grid lines in the body region should be
      *         rendered, <code>false</code> if not.
      */
@@ -2407,7 +2407,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * {@link DisplayMode#NORMAL} and the configuration label
      * {@link GridRegion#FILTER_ROW}.
      * </p>
-     * 
+     *
      * @return <code>true</code> if grid lines in the filter row should be
      *         rendered, <code>false</code> if not.
      */
@@ -2416,7 +2416,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
     /**
      * This method is used to register the styles that should be applied to an
      * editor control in case of conversion/validation errors.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -2455,7 +2455,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * If this method returns <code>null</code>, the default behaviour of using
      * a red foreground colour will be used on conversion errors.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be applied to an editor control in
      *         case of conversion errors.
      */
@@ -2481,7 +2481,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * If this method returns <code>null</code>, the default behaviour of using
      * a red foreground colour will be used on validation errors.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be applied to an editor control in
      *         case of validation errors.
      */
@@ -2489,7 +2489,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 
     /**
      * Null-safe check if a {@link IStyle} is empty or not.
-     * 
+     *
      * @param style
      *            The {@link IStyle} to check.
      * @return <code>true</code> if the given {@link IStyle} is
@@ -2533,7 +2533,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * internally by the layer itself, if the theme doesn't change it, it also
      * shouldn't unregister it in case of theme changes.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configurations were applied to.
@@ -2909,7 +2909,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
     /**
      * Adds an IThemeExtension to this ThemeConfiguration which adds additional
      * styling configuration on top.
-     * 
+     *
      * @param extension
      *            The IThemeExtension that should be added to this
      *            ThemeConfiguration.
@@ -2921,7 +2921,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
     /**
      * Removes an IThemeExtension that was added to this ThemeConfiguration
      * before.
-     * 
+     *
      * @param extension
      *            The IThemeExtension that should be removed from this
      *            ThemeConfiguration.

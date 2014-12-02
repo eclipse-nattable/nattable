@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,7 +31,7 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
 
     public Collection<Integer> getRowPositions() {
         Collection<Integer> rowPositions = new HashSet<Integer>();
-        for (RowPositionCoordinate rowPositionCoordinate : rowPositionCoordinates) {
+        for (RowPositionCoordinate rowPositionCoordinate : this.rowPositionCoordinates) {
             rowPositions
                     .add(Integer.valueOf(rowPositionCoordinate.rowPosition));
         }
@@ -39,16 +39,17 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
     }
 
     protected final void setRowPositions(ILayer layer, int... rowPositions) {
-        rowPositionCoordinates = new HashSet<RowPositionCoordinate>();
+        this.rowPositionCoordinates = new HashSet<RowPositionCoordinate>();
         for (int rowPosition : rowPositions) {
-            rowPositionCoordinates.add(new RowPositionCoordinate(layer,
+            this.rowPositionCoordinates.add(new RowPositionCoordinate(layer,
                     rowPosition));
         }
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         Collection<RowPositionCoordinate> convertedRowPositionCoordinates = new HashSet<RowPositionCoordinate>();
-        for (RowPositionCoordinate rowPositionCoordinate : rowPositionCoordinates) {
+        for (RowPositionCoordinate rowPositionCoordinate : this.rowPositionCoordinates) {
             RowPositionCoordinate convertedRowPositionCoordinate = LayerCommandUtil
                     .convertRowPositionToTargetContext(rowPositionCoordinate,
                             targetLayer);
@@ -59,7 +60,7 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
         }
 
         if (convertedRowPositionCoordinates.size() > 0) {
-            rowPositionCoordinates = convertedRowPositionCoordinates;
+            this.rowPositionCoordinates = convertedRowPositionCoordinates;
             return true;
         } else {
             return false;

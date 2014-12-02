@@ -58,7 +58,7 @@ import ca.odell.glazedlists.GlazedLists;
 
 /**
  * Example that demonstrates how to implement cross validation in a NatTable.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -85,7 +85,7 @@ public class CrossValidationGridExample extends AbstractNatExample {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
      * (org.eclipse.swt.widgets.Composite)
@@ -117,10 +117,10 @@ public class CrossValidationGridExample extends AbstractNatExample {
         propertyToLabelMap.put("fromDate", "From");
         propertyToLabelMap.put("toDate", "To");
 
-        valuesToShow.addAll(createEventData());
+        this.valuesToShow.addAll(createEventData());
 
         ConfigRegistry configRegistry = new ConfigRegistry();
-        DefaultGridLayer gridLayer = new DefaultGridLayer(valuesToShow,
+        DefaultGridLayer gridLayer = new DefaultGridLayer(this.valuesToShow,
                 propertyNames, propertyToLabelMap);
         DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 
@@ -240,7 +240,7 @@ class CrossValidationEditConfiguration extends AbstractRegistryConfiguration {
 
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.DATA_VALIDATOR, new EventDataValidator(
-                        bodyDataProvider), DisplayMode.EDIT,
+                        this.bodyDataProvider), DisplayMode.EDIT,
                 CrossValidationGridExample.DATE_LABEL);
 
         configRegistry.registerConfigAttribute(

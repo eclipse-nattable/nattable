@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,26 +43,26 @@ public class BodyLayerStackFixture<T> extends AbstractLayerTransform {
             IColumnPropertyAccessor<T> columnPropertyAccessor,
             IConfigRegistry configRegistry) {
 
-        bodyDataProvider = new ListDataProvider<T>(eventList,
+        this.bodyDataProvider = new ListDataProvider<T>(eventList,
                 columnPropertyAccessor);
 
-        bodyDataLayer = new DataLayer(bodyDataProvider);
+        this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
-        glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer,
+        this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer,
                 eventList);
-        glazedListsEventLayer.setTestMode(true);
+        this.glazedListsEventLayer.setTestMode(true);
 
         ColumnGroupModel columnGroupModel = new ColumnGroupModel();
-        columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
-        columnGroupReorderLayer = new ColumnGroupReorderLayer(
-                columnReorderLayer, columnGroupModel);
-        columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
-        columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
-                columnHideShowLayer, columnGroupModel);
-        selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-        viewportLayer = new ViewportLayer(selectionLayer);
+        this.columnReorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
+        this.columnGroupReorderLayer = new ColumnGroupReorderLayer(
+                this.columnReorderLayer, columnGroupModel);
+        this.columnHideShowLayer = new ColumnHideShowLayer(this.columnGroupReorderLayer);
+        this.columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
+                this.columnHideShowLayer, columnGroupModel);
+        this.selectionLayer = new SelectionLayer(this.columnGroupExpandCollapseLayer);
+        this.viewportLayer = new ViewportLayer(this.selectionLayer);
 
-        setUnderlyingLayer(viewportLayer);
+        setUnderlyingLayer(this.viewportLayer);
     }
 
     @Override
@@ -71,34 +71,34 @@ public class BodyLayerStackFixture<T> extends AbstractLayerTransform {
     }
 
     public ColumnReorderLayer getColumnReorderLayer() {
-        return columnReorderLayer;
+        return this.columnReorderLayer;
     }
 
     public ColumnHideShowLayer getColumnHideShowLayer() {
-        return columnHideShowLayer;
+        return this.columnHideShowLayer;
     }
 
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 
     public ViewportLayer getViewportLayer() {
-        return viewportLayer;
+        return this.viewportLayer;
     }
 
     public DataLayer getBodyDataLayer() {
-        return bodyDataLayer;
+        return this.bodyDataLayer;
     }
 
     public ListDataProvider<T> getBodyDataProvider() {
-        return bodyDataProvider;
+        return this.bodyDataProvider;
     }
 
     public ColumnGroupExpandCollapseLayer getColumnGroupExpandCollapseLayer() {
-        return columnGroupExpandCollapseLayer;
+        return this.columnGroupExpandCollapseLayer;
     }
 
     public GlazedListsEventLayer<T> getGlazedListEventsLayer() {
-        return glazedListsEventLayer;
+        return this.glazedListsEventLayer;
     }
 }

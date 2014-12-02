@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -33,14 +33,14 @@ public abstract class StyleProxy implements IStyle {
     @Override
     public <T> T getAttributeValue(ConfigAttribute<T> styleAttribute) {
         T styleAttributeValue = null;
-        IDisplayModeOrdering displayModeOrdering = configRegistry
+        IDisplayModeOrdering displayModeOrdering = this.configRegistry
                 .getDisplayModeOrdering();
 
         for (String displayMode : displayModeOrdering
-                .getDisplayModeOrdering(targetDisplayMode)) {
-            for (String configLabel : configLabels) {
-                IStyle cellStyle = configRegistry.getSpecificConfigAttribute(
-                        styleConfigAttribute, displayMode, configLabel);
+                .getDisplayModeOrdering(this.targetDisplayMode)) {
+            for (String configLabel : this.configLabels) {
+                IStyle cellStyle = this.configRegistry.getSpecificConfigAttribute(
+                        this.styleConfigAttribute, displayMode, configLabel);
                 if (cellStyle != null) {
                     styleAttributeValue = cellStyle
                             .getAttributeValue(styleAttribute);
@@ -51,8 +51,8 @@ public abstract class StyleProxy implements IStyle {
             }
 
             // default
-            IStyle cellStyle = configRegistry.getSpecificConfigAttribute(
-                    styleConfigAttribute, displayMode, null);
+            IStyle cellStyle = this.configRegistry.getSpecificConfigAttribute(
+                    this.styleConfigAttribute, displayMode, null);
             if (cellStyle != null) {
                 styleAttributeValue = cellStyle
                         .getAttributeValue(styleAttribute);

@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.GC;
  * For completeness this painter is also able to render the right and the bottom
  * border to ensure that the border has the same color around the NatTable
  * without changing the grid line color.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -67,7 +67,7 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
     /**
      * Creates a NatTableBorderOverlayPainter that paints by default gray border
      * lines to the top and to the left.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry to dynamically load the grid line color.
      *            If a configuration value is found, it will be used instead of
@@ -79,7 +79,7 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
 
     /**
      * Creates a NatTableBorderOverlayPainter that paints gray border lines.
-     * 
+     *
      * @param renderAllBorderLines
      *            <code>true</code> if all border lines should be rendered,
      *            <code>false</code> if only the left and the top border line
@@ -92,7 +92,7 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
     /**
      * Creates a NatTableBorderOverlayPainter that paints gray border lines by
      * default.
-     * 
+     *
      * @param renderAllBorderLines
      *            <code>true</code> if all border lines should be rendered,
      *            <code>false</code> if only the left and the top border line
@@ -110,7 +110,7 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
     /**
      * Creates a NatTableBorderOverlayPainter that paints border lines to the
      * top and to the left.
-     * 
+     *
      * @param borderColor
      *            The color that should be used to render the border lines.
      */
@@ -121,7 +121,7 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
     /**
      * Creates a NatTableBorderOverlayPainter that paints border lines to the
      * top and to the left.
-     * 
+     *
      * @param borderColor
      *            The default color that should be used to render the border
      *            lines.
@@ -137,7 +137,7 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
 
     /**
      * Creates a NatTableBorderOverlayPainter that paints border lines.
-     * 
+     *
      * @param borderColor
      *            The color that should be used to render the border lines.
      * @param renderAllBorderLines
@@ -152,7 +152,7 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
 
     /**
      * Creates a NatTableBorderOverlayPainter that paints border lines.
-     * 
+     *
      * @param borderColor
      *            The color that should be used to render the border lines.
      * @param renderAllBorderLines
@@ -192,12 +192,12 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
      * {@link CellConfigAttributes#GRID_LINE_COLOR}. If there is no
      * IConfigRegistry set or there is no value for the attribute in the set
      * IConfigRegistry, the Color set as member will be used.
-     * 
+     *
      * @return The Color that will be used to render the grid lines.
      */
     protected Color getBorderColor() {
         if (this.configRegistry != null) {
-            Color bColor = configRegistry.getConfigAttribute(
+            Color bColor = this.configRegistry.getConfigAttribute(
                     CellConfigAttributes.GRID_LINE_COLOR, DisplayMode.NORMAL);
             if (bColor != null)
                 return bColor;

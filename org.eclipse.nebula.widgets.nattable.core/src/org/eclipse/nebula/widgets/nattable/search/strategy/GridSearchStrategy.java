@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -45,13 +45,13 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
         Range secondDim;
     }
 
+    @Override
     public PositionCoordinate executeSearch(Object valueToMatch)
             throws PatternSyntaxException {
 
         ILayer contextLayer = getContextLayer();
         if (!(contextLayer instanceof SelectionLayer)) {
-            throw new RuntimeException(
-                    "For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
+            throw new RuntimeException("For the GridSearchStrategy to work it needs the selectionLayer to be passed as the contextLayer."); //$NON-NLS-1$
         }
         SelectionLayer selectionLayer = (SelectionLayer) contextLayer;
         PositionCoordinate selectionAnchor = selectionLayer
@@ -69,7 +69,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
         int firstDimCount;
         int secondDimPosition;
         int secondDimCount;
-        if (columnFirst) {
+        if (this.columnFirst) {
             firstDimPosition = selectionAnchor.columnPosition;
             firstDimCount = selectionLayer.getColumnCount();
             secondDimPosition = selectionAnchor.rowPosition;
@@ -82,7 +82,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
         }
 
         // Pick start and end values depending on the direction of the search.
-        int direction = searchDirection.equals(ISearchDirection.SEARCH_FORWARD) ? 1
+        int direction = this.searchDirection.equals(ISearchDirection.SEARCH_FORWARD) ? 1
                 : -1;
         int firstDimStart;
         int firstDimEnd;
@@ -114,7 +114,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
                 if (firstDimPosition + direction != firstDimEnd) {
                     // Increment the first dimension
                     firstDimPosition += direction;
-                } else if (wrapSearch) {
+                } else if (this.wrapSearch) {
                     // Wrap the first dimension
                     firstDimPosition = firstDimStart;
                 } else {
@@ -133,7 +133,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
         @SuppressWarnings("unchecked")
         Comparator<String> comparator2 = (Comparator<String>) getComparator();
         return CellDisplayValueSearchUtil.findCell(getContextLayer(),
-                configRegistry, gridRanges, valueToMatch, comparator2,
+                this.configRegistry, gridRanges, valueToMatch, comparator2,
                 isCaseSensitive(), isWholeWord(), isRegex(), isColumnFirst(),
                 isIncludeCollapsed());
     }
@@ -141,7 +141,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
     /**
      * Divides the grid search into multiple, sequential ranges, with single
      * slices at the starting point and multiple slices elsewhere.
-     * 
+     *
      * @param firstDimPosition
      * @param secondDimPosition
      * @param direction
@@ -175,7 +175,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 
         // We're done if wrapping is not enabled or if we've already covered the
         // whole table.
-        if (!wrapSearch || firstDimPosition == firstDimStart
+        if (!this.wrapSearch || firstDimPosition == firstDimStart
                 && secondDimPosition == secondDimStart) {
             return gridRanges;
         }

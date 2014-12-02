@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -33,32 +33,30 @@ public class DefaultSelectionStyleConfiguration extends
         AbstractRegistryConfiguration {
 
     // Selection style
-    public Font selectionFont = GUIHelper.getFont(new FontData(
-            "Verdana", 8, SWT.BOLD | SWT.ITALIC)); //$NON-NLS-1$
+    public Font selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.BOLD | SWT.ITALIC)); //$NON-NLS-1$
     public Color selectionBgColor = GUIHelper.COLOR_TITLE_INACTIVE_BACKGROUND;
     public Color selectionFgColor = GUIHelper.COLOR_BLACK;
 
     // Anchor style
     public Color anchorBorderColor = GUIHelper.COLOR_DARK_GRAY;
     public BorderStyle anchorBorderStyle = new BorderStyle(1,
-            anchorBorderColor, LineStyleEnum.SOLID);
+            this.anchorBorderColor, LineStyleEnum.SOLID);
     public Color anchorBgColor = GUIHelper.COLOR_GRAY;
     public Color anchorFgColor = GUIHelper.COLOR_WHITE;
 
     // Selected headers style
     public Color selectedHeaderBgColor = GUIHelper.COLOR_GRAY;
     public Color selectedHeaderFgColor = GUIHelper.COLOR_WHITE;
-    public Font selectedHeaderFont = GUIHelper.getFont(new FontData(
-            "Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
+    public Font selectedHeaderFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.BOLD)); //$NON-NLS-1$
     public BorderStyle selectedHeaderBorderStyle = new BorderStyle(-1,
-            selectedHeaderFgColor, LineStyleEnum.SOLID);
+            this.selectedHeaderFgColor, LineStyleEnum.SOLID);
 
     public Color fullySelectedHeaderBgColor = GUIHelper.COLOR_WIDGET_NORMAL_SHADOW;
 
     // Anchor grid line style
     public Color anchorGridBorderColor = GUIHelper.COLOR_BLACK;
     public BorderStyle anchorGridBorderStyle = new BorderStyle(1,
-            anchorGridBorderColor, LineStyleEnum.DOTTED);
+            this.anchorGridBorderColor, LineStyleEnum.DOTTED);
 
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
@@ -71,11 +69,11 @@ public class DefaultSelectionStyleConfiguration extends
 
     protected void configureSelectionStyle(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, selectionFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.selectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                selectionBgColor);
+                this.selectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                selectionFgColor);
+                this.selectionFgColor);
 
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.SELECT);
@@ -85,7 +83,7 @@ public class DefaultSelectionStyleConfiguration extends
         // Selection anchor style for normal display mode
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                anchorBorderStyle);
+                this.anchorBorderStyle);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.NORMAL,
                 SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
@@ -93,11 +91,11 @@ public class DefaultSelectionStyleConfiguration extends
         // Selection anchor style for select display mode
         cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                anchorBgColor);
+                this.anchorBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                anchorFgColor);
+                this.anchorFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                anchorBorderStyle);
+                this.anchorBorderStyle);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.SELECT,
                 SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
@@ -107,7 +105,7 @@ public class DefaultSelectionStyleConfiguration extends
             IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                anchorGridBorderStyle);
+                this.anchorGridBorderStyle);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.SELECT,
                 SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE);
@@ -118,13 +116,13 @@ public class DefaultSelectionStyleConfiguration extends
         Style cellStyle = new Style();
 
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                selectedHeaderFgColor);
+                this.selectedHeaderFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                selectedHeaderBgColor);
+                this.selectedHeaderBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                selectedHeaderFont);
+                this.selectedHeaderFont);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                selectedHeaderBorderStyle);
+                this.selectedHeaderBorderStyle);
 
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.SELECT, GridRegion.COLUMN_HEADER);
@@ -139,7 +137,7 @@ public class DefaultSelectionStyleConfiguration extends
         // Header fully selected
         Style cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                fullySelectedHeaderBgColor);
+                this.fullySelectedHeaderBgColor);
 
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.SELECT,

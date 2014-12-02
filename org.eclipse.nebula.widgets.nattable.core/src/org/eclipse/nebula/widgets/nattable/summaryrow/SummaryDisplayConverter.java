@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
  * <p>
  * By default "..." will be used as default value.
  * </p>
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -58,7 +58,7 @@ public class SummaryDisplayConverter extends DisplayConverter {
     @Override
     public Object canonicalToDisplayValue(Object canonicalValue) {
         if (canonicalValue == null) {
-            return defaultSummaryValue;
+            return this.defaultSummaryValue;
         }
         return this.wrappedConverter.canonicalToDisplayValue(canonicalValue);
     }

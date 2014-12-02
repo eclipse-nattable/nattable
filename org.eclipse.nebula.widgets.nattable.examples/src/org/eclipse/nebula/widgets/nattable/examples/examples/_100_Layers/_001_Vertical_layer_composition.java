@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,6 +36,7 @@ public class _001_Vertical_layer_composition extends AbstractNatExample {
                 + "scrolling over a 1,000,000 column by 1,000,000 row data layer.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         ViewportLayer layer = new ViewportLayer(new SelectionLayer(
                 new DataLayer(new DummyBodyDataProvider(1000000, 1000000))));

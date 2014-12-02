@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Edwin Park - initial API and implementation
  ******************************************************************************/
@@ -23,60 +23,74 @@ public class InvertedLayerCell implements ILayerCell {
         this.layerCell = layerCell;
     }
 
+    @Override
     public int getOriginColumnPosition() {
-        return layerCell.getOriginRowPosition();
+        return this.layerCell.getOriginRowPosition();
     }
 
+    @Override
     public int getOriginRowPosition() {
-        return layerCell.getOriginColumnPosition();
+        return this.layerCell.getOriginColumnPosition();
     }
 
+    @Override
     public ILayer getLayer() {
-        return layerCell.getLayer();
+        return this.layerCell.getLayer();
     }
 
+    @Override
     public int getColumnPosition() {
-        return layerCell.getRowPosition();
+        return this.layerCell.getRowPosition();
     }
 
+    @Override
     public int getRowPosition() {
-        return layerCell.getColumnPosition();
+        return this.layerCell.getColumnPosition();
     }
 
+    @Override
     public int getColumnIndex() {
-        return layerCell.getRowIndex();
+        return this.layerCell.getRowIndex();
     }
 
+    @Override
     public int getRowIndex() {
-        return layerCell.getColumnIndex();
+        return this.layerCell.getColumnIndex();
     }
 
+    @Override
     public int getColumnSpan() {
-        return layerCell.getRowSpan();
+        return this.layerCell.getRowSpan();
     }
 
+    @Override
     public int getRowSpan() {
-        return layerCell.getColumnSpan();
+        return this.layerCell.getColumnSpan();
     }
 
+    @Override
     public boolean isSpannedCell() {
-        return layerCell.isSpannedCell();
+        return this.layerCell.isSpannedCell();
     }
 
+    @Override
     public String getDisplayMode() {
-        return layerCell.getDisplayMode();
+        return this.layerCell.getDisplayMode();
     }
 
+    @Override
     public LabelStack getConfigLabels() {
-        return layerCell.getConfigLabels();
+        return this.layerCell.getConfigLabels();
     }
 
+    @Override
     public Object getDataValue() {
-        return layerCell.getDataValue();
+        return this.layerCell.getDataValue();
     }
 
+    @Override
     public Rectangle getBounds() {
-        return InvertUtil.invertRectangle(layerCell.getBounds());
+        return InvertUtil.invertRectangle(this.layerCell.getBounds());
     }
 
 }

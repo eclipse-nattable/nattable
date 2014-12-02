@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,7 +26,7 @@ public interface IMouseAction {
     /**
      * Translates the SWT MouseEvent to a NatTable command and executes that
      * command accordingly.
-     * 
+     *
      * @param natTable
      *            The NatTable instance on which the MouseEvent was fired and on
      *            which the command should be executed.

@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
  * <p>
  * Will search over the whole tree structure in the associated TreeLayer to
  * identify collapsible nodes and collapse them one after the other.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see TreeLayer
@@ -34,7 +34,7 @@ public class TreeCollapseAllCommandHandler implements
     private final TreeLayer treeLayer;
 
     /**
-     * 
+     *
      * @param treeLayer
      *            The TreeLayer to which this command handler should be
      *            connected.

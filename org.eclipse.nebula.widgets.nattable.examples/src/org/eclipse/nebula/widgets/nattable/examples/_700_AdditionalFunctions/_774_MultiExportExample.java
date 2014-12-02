@@ -64,7 +64,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * 
+ *
  * @author Dirk Fauth
  *
  */

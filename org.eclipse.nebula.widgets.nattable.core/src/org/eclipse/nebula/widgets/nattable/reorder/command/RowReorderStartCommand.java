@@ -18,7 +18,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 /**
  * Command to start row reordering. Will transport the position of the row that
  * will be reordered via dragging.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -30,20 +30,20 @@ public class RowReorderStartCommand implements ILayerCommand {
     private RowPositionCoordinate fromRowPositionCoordinate;
 
     /**
-     * 
+     *
      * @param layer
      *            The layer the position is related to
      * @param fromRowPosition
      *            The position of the row that should be reordered
      */
     public RowReorderStartCommand(ILayer layer, int fromRowPosition) {
-        fromRowPositionCoordinate = new RowPositionCoordinate(layer,
+        this.fromRowPositionCoordinate = new RowPositionCoordinate(layer,
                 fromRowPosition);
     }
 
     /**
      * Constructor used for cloning purposes
-     * 
+     *
      * @param command
      *            The command which is base for the new one
      */
@@ -55,16 +55,16 @@ public class RowReorderStartCommand implements ILayerCommand {
      * @return The position of the row that should be reordered
      */
     public int getFromRowPosition() {
-        return fromRowPositionCoordinate.getRowPosition();
+        return this.fromRowPositionCoordinate.getRowPosition();
     }
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         RowPositionCoordinate targetFromRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(fromRowPositionCoordinate,
+                .convertRowPositionToTargetContext(this.fromRowPositionCoordinate,
                         targetLayer);
         if (targetFromRowPositionCoordinate != null) {
-            fromRowPositionCoordinate = targetFromRowPositionCoordinate;
+            this.fromRowPositionCoordinate = targetFromRowPositionCoordinate;
             return true;
         } else {
             return false;

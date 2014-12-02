@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -31,6 +31,7 @@ public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
         super(event);
     }
 
+    @Override
     public Collection<StructuralDiff> getRowDiffs() {
         Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 
@@ -44,6 +45,7 @@ public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
         return rowDiffs;
     }
 
+    @Override
     public ShowRowPositionsEvent cloneEvent() {
         return new ShowRowPositionsEvent(this);
     }

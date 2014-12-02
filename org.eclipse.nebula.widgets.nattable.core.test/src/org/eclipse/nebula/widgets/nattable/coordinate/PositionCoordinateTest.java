@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,28 +25,28 @@ public class PositionCoordinateTest {
     @Before
     public void setup() {
         ILayer layer = new DataLayerFixture();
-        p1 = new PositionCoordinate(layer, 1, 2);
-        p2 = new PositionCoordinate(layer, 1, 2);
+        this.p1 = new PositionCoordinate(layer, 1, 2);
+        this.p2 = new PositionCoordinate(layer, 1, 2);
     }
 
     @Test
     public void testIdentity() {
-        Assert.assertEquals(p1, p1);
+        Assert.assertEquals(this.p1, this.p1);
     }
 
     @Test
     public void testEquals() {
-        Assert.assertEquals(p1, p2);
+        Assert.assertEquals(this.p1, this.p2);
     }
 
     @Test
     public void testIdentityHashCode() {
-        Assert.assertEquals(p1.hashCode(), p1.hashCode());
+        Assert.assertEquals(this.p1.hashCode(), this.p1.hashCode());
     }
 
     @Test
     public void testHashCode() {
-        Assert.assertEquals(p1.hashCode(), p2.hashCode());
+        Assert.assertEquals(this.p1.hashCode(), this.p2.hashCode());
     }
 
 }

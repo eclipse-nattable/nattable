@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -76,20 +76,20 @@ public class NatTableFixture extends NatTable {
     @Override
     public void handleLayerEvent(ILayerEvent event) {
         super.handleLayerEvent(event);
-        eventCount++;
+        this.eventCount++;
     }
 
     @Override
     public void updateResize() {
-        updated = true;
+        this.updated = true;
     }
 
     public int getEventCount() {
-        return eventCount;
+        return this.eventCount;
     }
 
     public boolean isUpdated() {
-        return updated;
+        return this.updated;
     }
 
     // Convenience methods for tests
@@ -108,12 +108,12 @@ public class NatTableFixture extends NatTable {
 
     private ColumnOverrideLabelAccumulator getColumnLabelAccumulator(
             DataLayer dataLayer) {
-        if (columnLabelAccumulator == null) {
-            columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
+        if (this.columnLabelAccumulator == null) {
+            this.columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
                     dataLayer);
-            dataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
+            dataLayer.setConfigLabelAccumulator(this.columnLabelAccumulator);
         }
-        return columnLabelAccumulator;
+        return this.columnLabelAccumulator;
     }
 
     public void scrollToColumn(int gridColumnPosition) {

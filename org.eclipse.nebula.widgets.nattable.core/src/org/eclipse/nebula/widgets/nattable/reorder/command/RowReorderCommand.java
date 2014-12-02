@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
  * Command for reordering a row.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -39,7 +39,7 @@ public class RowReorderCommand implements ILayerCommand {
     private boolean reorderToTopEdge;
 
     /**
-     * 
+     *
      * @param layer
      *            The layer the positions are related to
      * @param fromRowPosition
@@ -50,23 +50,23 @@ public class RowReorderCommand implements ILayerCommand {
      */
     public RowReorderCommand(ILayer layer, int fromRowPosition,
             int toRowPosition) {
-        fromRowPositionCoordinate = new RowPositionCoordinate(layer,
+        this.fromRowPositionCoordinate = new RowPositionCoordinate(layer,
                 fromRowPosition);
 
         if (toRowPosition < layer.getRowCount()) {
-            reorderToTopEdge = true;
+            this.reorderToTopEdge = true;
         } else {
-            reorderToTopEdge = false;
+            this.reorderToTopEdge = false;
             toRowPosition--;
         }
 
-        toRowPositionCoordinate = new RowPositionCoordinate(layer,
+        this.toRowPositionCoordinate = new RowPositionCoordinate(layer,
                 toRowPosition);
     }
 
     /**
      * Constructor used for cloning purposes
-     * 
+     *
      * @param command
      *            The command which is base for the new one
      */
@@ -80,7 +80,7 @@ public class RowReorderCommand implements ILayerCommand {
      * @return The position of the row that should be reordered
      */
     public int getFromRowPosition() {
-        return fromRowPositionCoordinate.getRowPosition();
+        return this.fromRowPositionCoordinate.getRowPosition();
     }
 
     /**
@@ -88,7 +88,7 @@ public class RowReorderCommand implements ILayerCommand {
      *         dropped
      */
     public int getToRowPosition() {
-        return toRowPositionCoordinate.getRowPosition();
+        return this.toRowPositionCoordinate.getRowPosition();
     }
 
     /**
@@ -96,21 +96,21 @@ public class RowReorderCommand implements ILayerCommand {
      *         layer.
      */
     public boolean isReorderToTopEdge() {
-        return reorderToTopEdge;
+        return this.reorderToTopEdge;
     }
 
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         RowPositionCoordinate targetFromRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(fromRowPositionCoordinate,
+                .convertRowPositionToTargetContext(this.fromRowPositionCoordinate,
                         targetLayer);
         RowPositionCoordinate targetToRowPositionCoordinate = LayerCommandUtil
-                .convertRowPositionToTargetContext(toRowPositionCoordinate,
+                .convertRowPositionToTargetContext(this.toRowPositionCoordinate,
                         targetLayer);
         if (targetFromRowPositionCoordinate != null
                 && targetToRowPositionCoordinate != null) {
-            fromRowPositionCoordinate = targetFromRowPositionCoordinate;
-            toRowPositionCoordinate = targetToRowPositionCoordinate;
+            this.fromRowPositionCoordinate = targetFromRowPositionCoordinate;
+            this.toRowPositionCoordinate = targetToRowPositionCoordinate;
             return true;
         } else {
             return false;

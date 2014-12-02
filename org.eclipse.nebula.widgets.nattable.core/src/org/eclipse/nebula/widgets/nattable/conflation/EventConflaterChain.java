@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,8 +26,7 @@ public class EventConflaterChain implements IEventConflater {
 
     public static final int DEFAULT_INITIAL_DELAY = 100;
     public static final int DEFAULT_REFRESH_INTERVAL = 100;
-    private static final Scheduler scheduler = new Scheduler(
-            "EventConflaterChain"); //$NON-NLS-1$
+    private static final Scheduler scheduler = new Scheduler("EventConflaterChain"); //$NON-NLS-1$
 
     private final List<IEventConflater> chain = new LinkedList<IEventConflater>();
     private ScheduledFuture<?> future;
@@ -45,48 +44,53 @@ public class EventConflaterChain implements IEventConflater {
     }
 
     public void add(IEventConflater conflater) {
-        chain.add(conflater);
+        this.chain.add(conflater);
     }
 
     public void start() {
-        if (!started) {
-            future = scheduler.scheduleWithFixedDelay(getConflaterTask(),
-                    initialDelay, refreshInterval);
-            started = true;
+        if (!this.started) {
+            this.future = scheduler.scheduleWithFixedDelay(getConflaterTask(),
+                    this.initialDelay, this.refreshInterval);
+            this.started = true;
         }
     }
 
     public void stop() {
-        if (started) {
-            scheduler.unschedule(future);
-            started = false;
+        if (this.started) {
+            scheduler.unschedule(this.future);
+            this.started = false;
         }
     }
 
+    @Override
     public void addEvent(ILayerEvent event) {
-        for (IEventConflater eventConflater : chain) {
+        for (IEventConflater eventConflater : this.chain) {
             eventConflater.addEvent(event);
         }
     }
 
+    @Override
     public void clearQueue() {
-        for (IEventConflater eventConflater : chain) {
+        for (IEventConflater eventConflater : this.chain) {
             eventConflater.clearQueue();
         }
     }
 
+    @Override
     public int getCount() {
         int count = 0;
-        for (IEventConflater eventConflater : chain) {
+        for (IEventConflater eventConflater : this.chain) {
             count = count + eventConflater.getCount();
         }
         return count;
     }
 
+    @Override
     public Runnable getConflaterTask() {
         return new Runnable() {
+            @Override
             public void run() {
-                for (IEventConflater conflater : chain) {
+                for (IEventConflater conflater : EventConflaterChain.this.chain) {
                     conflater.getConflaterTask().run();
                 }
             }

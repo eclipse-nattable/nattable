@@ -204,7 +204,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         TextDecorationEnum decoration = cellStyle.getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
         if (decoration != null) {
             return (decoration.equals(TextDecorationEnum.UNDERLINE)
-                    || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
+            || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
         }
         return this.underline;
     }
@@ -223,7 +223,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         TextDecorationEnum decoration = cellStyle.getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
         if (decoration != null) {
             return (decoration.equals(TextDecorationEnum.STRIKETHROUGH)
-                    || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
+            || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
         }
         return this.strikethrough;
     }

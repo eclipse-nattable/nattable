@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -32,6 +32,7 @@ public class RowGroupExpandCollapseCommandHandler<T> extends
         this.rowGroupExpandCollapseLayer = rowGroupExpandCollapseLayer;
     }
 
+    @Override
     public Class<RowGroupExpandCollapseCommand> getCommandClass() {
         return RowGroupExpandCollapseCommand.class;
     }
@@ -39,9 +40,9 @@ public class RowGroupExpandCollapseCommandHandler<T> extends
     @Override
     protected boolean doCommand(RowGroupExpandCollapseCommand command) {
 
-        int rowIndex = rowGroupExpandCollapseLayer
+        int rowIndex = this.rowGroupExpandCollapseLayer
                 .getRowIndexByPosition(command.getRowPosition());
-        IRowGroupModel<T> model = rowGroupExpandCollapseLayer.getModel();
+        IRowGroupModel<T> model = this.rowGroupExpandCollapseLayer.getModel();
         IRowGroup<T> group = RowGroupUtils.getTopMostParentGroup(RowGroupUtils
                 .getRowGroupForRowIndex(model, rowIndex));
 
@@ -62,18 +63,18 @@ public class RowGroupExpandCollapseCommandHandler<T> extends
         List<Integer> rowIndexes = new ArrayList<Integer>(
                 RowGroupUtils.getRowIndexesInGroup(model, rowIndex));
         List<Integer> rowPositions = RowGroupUtils.getRowPositionsInGroup(
-                rowGroupExpandCollapseLayer, rowIndexes);
+                this.rowGroupExpandCollapseLayer, rowIndexes);
 
         ILayerEvent event;
         if (wasCollapsed) {
-            event = new ShowRowPositionsEvent(rowGroupExpandCollapseLayer,
+            event = new ShowRowPositionsEvent(this.rowGroupExpandCollapseLayer,
                     rowPositions);
         } else {
-            event = new HideRowPositionsEvent(rowGroupExpandCollapseLayer,
+            event = new HideRowPositionsEvent(this.rowGroupExpandCollapseLayer,
                     rowPositions);
         }
 
-        rowGroupExpandCollapseLayer.fireLayerEvent(event);
+        this.rowGroupExpandCollapseLayer.fireLayerEvent(event);
 
         return true;
     }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Edwin Park - initial API and implementation
  ******************************************************************************/
@@ -27,52 +27,57 @@ public abstract class AbstractLayerCell implements ILayerCell {
     private boolean isBoundsCached = false;
     private Rectangle bounds = null;
 
+    @Override
     public boolean isSpannedCell() {
         return getColumnSpan() > 1 || getRowSpan() > 1;
     }
 
+    @Override
     public String getDisplayMode() {
-        if (!isDisplayModeCached) {
-            isDisplayModeCached = true;
+        if (!this.isDisplayModeCached) {
+            this.isDisplayModeCached = true;
 
-            displayMode = getLayer().getDisplayModeByPosition(
+            this.displayMode = getLayer().getDisplayModeByPosition(
                     getColumnPosition(), getRowPosition());
         }
 
-        return displayMode;
+        return this.displayMode;
     }
 
+    @Override
     public LabelStack getConfigLabels() {
-        if (!isConfigLabelsCached) {
-            isConfigLabelsCached = true;
+        if (!this.isConfigLabelsCached) {
+            this.isConfigLabelsCached = true;
 
-            configLabels = getLayer().getConfigLabelsByPosition(
+            this.configLabels = getLayer().getConfigLabelsByPosition(
                     getColumnPosition(), getRowPosition());
         }
 
-        return configLabels;
+        return this.configLabels;
     }
 
+    @Override
     public Object getDataValue() {
-        if (!isDataValueCached) {
-            isDataValueCached = true;
+        if (!this.isDataValueCached) {
+            this.isDataValueCached = true;
 
-            dataValue = getLayer().getDataValueByPosition(getColumnPosition(),
+            this.dataValue = getLayer().getDataValueByPosition(getColumnPosition(),
                     getRowPosition());
         }
 
-        return dataValue;
+        return this.dataValue;
     }
 
+    @Override
     public Rectangle getBounds() {
-        if (!isBoundsCached) {
-            isBoundsCached = true;
+        if (!this.isBoundsCached) {
+            this.isBoundsCached = true;
 
-            bounds = getLayer().getBoundsByPosition(getColumnPosition(),
+            this.bounds = getLayer().getBoundsByPosition(getColumnPosition(),
                     getRowPosition());
         }
 
-        return bounds;
+        return this.bounds;
     }
 
 }

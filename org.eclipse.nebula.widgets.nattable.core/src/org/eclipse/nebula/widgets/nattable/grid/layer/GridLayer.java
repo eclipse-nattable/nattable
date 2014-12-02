@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -77,7 +77,7 @@ public class GridLayer extends CompositeLayer {
      * change this unless you know what you are doing and understand the full
      * ramifications of your change. Otherwise your grid will not behave
      * correctly!</strong>
-     * 
+     *
      * The Body is always given the first chance to process a command. There are
      * two reasons for this: (1) most commands (80%) are destined for the body
      * anyways so it's faster to check there first (2) the other layers all
@@ -85,7 +85,7 @@ public class GridLayer extends CompositeLayer {
      * until after the body has done it. This is especially true of grid
      * initialization where the body must be initialized before any of its
      * dependent layers.
-     * 
+     *
      * Because of this, if you want to intercept well-known commands to
      * implement custom behavior (for example, you want to intercept the
      * {@link SelectCellCommand}) then <strong>you must inject your special

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -54,7 +54,7 @@ public class ViewportLayerFixture extends ViewportLayer {
 
     /**
      * Xtor Fixture with all columns equal width and all rows equal height.
-     * 
+     *
      * @param colCount
      *            total number of columns
      * @param rowCount
@@ -78,6 +78,7 @@ public class ViewportLayerFixture extends ViewportLayer {
     private static IClientAreaProvider getClientAreaProvider(
             final Rectangle clientArea) {
         return new IClientAreaProvider() {
+            @Override
             public Rectangle getClientArea() {
                 return clientArea;
             }

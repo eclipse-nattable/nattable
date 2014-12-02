@@ -78,9 +78,9 @@ import org.eclipse.swt.widgets.Slider;
 /**
  * Example showing how to implement NatTable that contains two horizontal split
  * viewports in a grid.
- * 
+ *
  * @author Dirk Fauth
- * 
+ *
  */
 public class _5044_HorizontalSplitViewportGridExample extends
         AbstractNatExample {
@@ -375,7 +375,7 @@ public class _5044_HorizontalSplitViewportGridExample extends
 
             this.columnHideShowLayer = new ColumnHideShowLayer(
                     columnReorderLayer);
-            this.selectionLayer = new SelectionLayer(columnHideShowLayer);
+            this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
 
             // use a cell layer painter that is configured for left clipping
             // this ensures that the rendering works correctly for split
@@ -386,7 +386,7 @@ public class _5044_HorizontalSplitViewportGridExample extends
             // create a ViewportLayer for the left part of the table and
             // configure it to only contain
             // the first 5 columns
-            viewportLayerLeft = new ViewportLayer(this.selectionLayer) {
+            this.viewportLayerLeft = new ViewportLayer(this.selectionLayer) {
                 @Override
                 public int getMaxColumnPosition() {
                     return getNumberOfLeftColumns();
@@ -396,7 +396,7 @@ public class _5044_HorizontalSplitViewportGridExample extends
             // create a ViewportLayer for the right part of the table and
             // configure it to only contain
             // the last 4 columns
-            viewportLayerRight = new ViewportLayer(this.selectionLayer) {
+            this.viewportLayerRight = new ViewportLayer(this.selectionLayer) {
                 @Override
                 public int getMinColumnPosition() {
                     return getNumberOfLeftColumns();
@@ -406,7 +406,7 @@ public class _5044_HorizontalSplitViewportGridExample extends
             // set the minimum origin manually
             int newMinOriginX = this.selectionLayer
                     .getStartXOfColumnPosition(getNumberOfLeftColumns());
-            viewportLayerRight.setMinimumOriginX(newMinOriginX);
+            this.viewportLayerRight.setMinimumOriginX(newMinOriginX);
 
             // create a CompositeLayer that contains both ViewportLayers
             CompositeLayer compositeLayer = new CompositeLayer(2, 1);
@@ -440,7 +440,7 @@ public class _5044_HorizontalSplitViewportGridExample extends
         /**
          * To support hide/show correctly the min/max column positions in the
          * split viewports need to be calculated regarding the hide state.
-         * 
+         *
          * @return The number of visible columns in the left viewport.
          */
         private int getNumberOfLeftColumns() {
@@ -454,19 +454,19 @@ public class _5044_HorizontalSplitViewportGridExample extends
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public ViewportLayer getViewportLayerLeft() {
-            return viewportLayerLeft;
+            return this.viewportLayerLeft;
         }
 
         public ViewportLayer getViewportLayerRight() {
-            return viewportLayerRight;
+            return this.viewportLayerRight;
         }
     }
 

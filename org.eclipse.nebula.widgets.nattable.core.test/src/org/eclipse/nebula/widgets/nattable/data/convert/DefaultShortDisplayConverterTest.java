@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,33 +20,33 @@ public class DefaultShortDisplayConverterTest {
     @Test
     public void testNonNullDataToDisplay() {
         Assert.assertEquals("123",
-                shortConverter.canonicalToDisplayValue(Short.valueOf("123")));
+                this.shortConverter.canonicalToDisplayValue(Short.valueOf("123")));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertEquals(null, shortConverter.canonicalToDisplayValue(null));
+        Assert.assertEquals(null, this.shortConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
         Assert.assertEquals(Short.valueOf("123"),
-                shortConverter.displayToCanonicalValue("123"));
+                this.shortConverter.displayToCanonicalValue("123"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertEquals(null, shortConverter.displayToCanonicalValue(""));
+        Assert.assertEquals(null, this.shortConverter.displayToCanonicalValue(""));
     }
 
     @Test(expected = ConversionFailedException.class)
     public void testConversionException() {
-        shortConverter.displayToCanonicalValue("abc");
+        this.shortConverter.displayToCanonicalValue("abc");
     }
 
     @Test(expected = ConversionFailedException.class)
     public void testConversionExceptionTooBig() {
-        short test = (Short) shortConverter.displayToCanonicalValue("32768");
+        short test = (Short) this.shortConverter.displayToCanonicalValue("32768");
         System.out.println(test);
     }
 }

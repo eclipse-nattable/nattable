@@ -29,7 +29,7 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
  * Note: This is only intended for internal usage and could cause a performance
  * leak. If you want to use it for your use cases you should be careful about
  * performance issues.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see SummaryRowLayer

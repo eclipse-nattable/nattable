@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -65,34 +65,34 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     @Override
     public OutputStream getOutputStream(Shell shell) {
-        return outputStreamProvider.getOutputStream(shell);
+        return this.outputStreamProvider.getOutputStream(shell);
     }
 
     @Override
     public void exportBegin(OutputStream outputStream) throws IOException {
-        xlCellStyles = new HashMap<ExcelCellStyleAttributes, CellStyle>();
-        xlWorkbook = createWorkbook();
+        this.xlCellStyles = new HashMap<ExcelCellStyleAttributes, CellStyle>();
+        this.xlWorkbook = createWorkbook();
     }
 
     @Override
     public void exportEnd(OutputStream outputStream) throws IOException {
-        xlWorkbook.write(outputStream);
+        this.xlWorkbook.write(outputStream);
 
-        xlCellStyles = null;
-        xlWorkbook = null;
-        sheetNumber = 0;
-        xlSheet = null;
-        xlRow = null;
+        this.xlCellStyles = null;
+        this.xlWorkbook = null;
+        this.sheetNumber = 0;
+        this.xlSheet = null;
+        this.xlRow = null;
     }
 
     @Override
     public void exportLayerBegin(OutputStream outputStream, String layerName)
             throws IOException {
-        sheetNumber++;
+        this.sheetNumber++;
         if (layerName == null || layerName.length() == 0) {
-            layerName = "Sheet" + sheetNumber; //$NON-NLS-1$
+            layerName = "Sheet" + this.sheetNumber; //$NON-NLS-1$
         }
-        xlSheet = xlWorkbook.createSheet(layerName);
+        this.xlSheet = this.xlWorkbook.createSheet(layerName);
     }
 
     @Override
@@ -102,7 +102,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     @Override
     public void exportRowBegin(OutputStream outputStream, int rowPosition)
             throws IOException {
-        xlRow = xlSheet.createRow(rowPosition);
+        this.xlRow = this.xlSheet.createRow(rowPosition);
     }
 
     @Override
@@ -121,14 +121,14 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             return;
         }
 
-        Cell xlCell = xlRow.createCell(columnPosition);
+        Cell xlCell = this.xlRow.createCell(columnPosition);
 
         int columnSpan = cell.getColumnSpan();
         int rowSpan = cell.getRowSpan();
         if (columnSpan > 1 || rowSpan > 1) {
             int lastRow = rowPosition + rowSpan - 1;
             int lastColumn = columnPosition + columnSpan - 1;
-            xlSheet.addMergedRegion(new CellRangeAddress(rowPosition, lastRow,
+            this.xlSheet.addMergedRegion(new CellRangeAddress(rowPosition, lastRow,
                     columnPosition, lastColumn));
         }
 
@@ -190,19 +190,19 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     private CellStyle getExcelCellStyle(Color fg, Color bg, FontData fontData,
             String dataFormat, int hAlign, int vAlign, boolean vertical) {
 
-        CellStyle xlCellStyle = xlCellStyles.get(new ExcelCellStyleAttributes(
+        CellStyle xlCellStyle = this.xlCellStyles.get(new ExcelCellStyleAttributes(
                 fg, bg, fontData, dataFormat, hAlign, vAlign, vertical));
 
         if (xlCellStyle == null) {
-            xlCellStyle = xlWorkbook.createCellStyle();
+            xlCellStyle = this.xlWorkbook.createCellStyle();
 
-            if (applyBackgroundColor) {
+            if (this.applyBackgroundColor) {
                 // Note: xl fill foreground = background
                 setFillForegroundColor(xlCellStyle, bg);
                 xlCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
             }
 
-            Font xlFont = xlWorkbook.createFont();
+            Font xlFont = this.xlWorkbook.createFont();
             setFontColor(xlFont, fg);
             xlFont.setFontName(fontData.getName());
             xlFont.setFontHeightInPoints((short) fontData.getHeight());
@@ -235,19 +235,19 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             }
 
             if (dataFormat != null) {
-                CreationHelper createHelper = xlWorkbook.getCreationHelper();
+                CreationHelper createHelper = this.xlWorkbook.getCreationHelper();
                 xlCellStyle.setDataFormat(createHelper.createDataFormat()
                         .getFormat(dataFormat));
             }
 
-            xlCellStyles.put(new ExcelCellStyleAttributes(fg, bg, fontData,
+            this.xlCellStyles.put(new ExcelCellStyleAttributes(fg, bg, fontData,
                     dataFormat, hAlign, vAlign, vertical), xlCellStyle);
         }
         return xlCellStyle;
     }
 
     /**
-     * 
+     *
      * @param cell
      *            The cell for which the date format needs to be determined.
      * @param configRegistry
@@ -267,7 +267,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     }
 
     /**
-     * 
+     *
      * @param applyBackgroundColor
      *            <code>true</code> to apply the background color set in the
      *            NatTable to the exported Excel. This also includes white
@@ -291,7 +291,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
      * negative, the default value for this configuration is <code>false</code>.
      * If vertical text (e.g. column headers) should also be exported
      * vertically, you need to set this value to <code>true</code>.
-     * 
+     *
      * @param inspectVertical
      *            <code>true</code> to configure this exporter to check for
      *            vertical text configuration and apply the rotation style for
@@ -311,7 +311,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     @Override
     public Object getResult() {
-        return outputStreamProvider.getResult();
+        return this.outputStreamProvider.getResult();
     }
 
 }

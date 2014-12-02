@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,13 +19,15 @@ public class Style implements IStyle {
 
     private final Map<ConfigAttribute<?>, Object> styleAttributeValueMap = new HashMap<ConfigAttribute<?>, Object>();
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getAttributeValue(ConfigAttribute<T> styleAttribute) {
-        return (T) styleAttributeValueMap.get(styleAttribute);
+        return (T) this.styleAttributeValueMap.get(styleAttribute);
     }
 
+    @Override
     public <T> void setAttributeValue(ConfigAttribute<T> styleAttribute, T value) {
-        styleAttributeValueMap.put(styleAttribute, value);
+        this.styleAttributeValueMap.put(styleAttribute, value);
     }
 
     @Override
@@ -33,7 +35,7 @@ public class Style implements IStyle {
         StringBuilder resultBuilder = new StringBuilder();
         resultBuilder.append(this.getClass().getSimpleName() + ": "); //$NON-NLS-1$
 
-        Set<Entry<ConfigAttribute<?>, Object>> entrySet = styleAttributeValueMap
+        Set<Entry<ConfigAttribute<?>, Object>> entrySet = this.styleAttributeValueMap
                 .entrySet();
 
         for (Entry<ConfigAttribute<?>, Object> entry : entrySet) {

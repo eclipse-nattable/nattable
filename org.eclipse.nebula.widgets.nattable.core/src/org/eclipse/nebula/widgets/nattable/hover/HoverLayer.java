@@ -37,7 +37,7 @@ import org.eclipse.swt.graphics.Point;
  * configuration. This is because the row and column headers by default have
  * mouse move listeners registered that collide with the mouse move listener for
  * managing hover behaviour.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -51,7 +51,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
 
     /**
      * Create a new HoverLayer that uses the default configuration.
-     * 
+     *
      * @param underlyingLayer
      *            The layer on which the HoverLayer should be positioned.
      */
@@ -90,7 +90,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
     /**
      * Check if this HoverLayer knows the current hovered cell and if that cell
      * is located at the given position coordinates.
-     * 
+     *
      * @param cellPosition
      *            The position of the cell that should be checked.
      * @return <code>true</code> if the mouse cursor is currently located over
@@ -103,7 +103,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
     /**
      * Check if this HoverLayer knows the current hovered cell and if that cell
      * is located at the given position coordinates.
-     * 
+     *
      * @param columnPosition
      *            The column position of the cell that should be checked.
      * @param rowPosition
@@ -112,8 +112,8 @@ public class HoverLayer extends AbstractIndexLayerTransform {
      *         the cell at the given position, <code>false</code> if not.
      */
     public boolean isCellPositionHovered(int columnPosition, int rowPosition) {
-        return (currentHoveredCellPosition != null
-                && currentHoveredCellPosition.x == columnPosition && currentHoveredCellPosition.y == rowPosition);
+        return (this.currentHoveredCellPosition != null
+                && this.currentHoveredCellPosition.x == columnPosition && this.currentHoveredCellPosition.y == rowPosition);
     }
 
     /**
@@ -128,7 +128,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
      * fire an event to update a possible previous hovered cell to remove the
      * hover styling and an event to update the newly hovered cell to apply the
      * hover styling.
-     * 
+     *
      * @param columnPosition
      *            The column position of the cell that is currently hovered.
      * @param rowPosition
@@ -144,7 +144,7 @@ public class HoverLayer extends AbstractIndexLayerTransform {
      * fire an event to update a possible previous hovered cell to remove the
      * hover styling and an event to update the newly hovered cell to apply the
      * hover styling.
-     * 
+     *
      * @param cellPosition
      *            The position of the cell that is currently hovered.
      */

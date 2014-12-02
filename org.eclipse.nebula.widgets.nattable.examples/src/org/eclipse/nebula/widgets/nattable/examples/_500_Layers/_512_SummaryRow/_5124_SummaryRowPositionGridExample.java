@@ -87,13 +87,6 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
                 + "	Plug-in your own summary formulas via ISummaryProvider interface (Default is summation)";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
-     * (org.eclipse.swt.widgets.Composite)
-     */
     @Override
     public Control createExampleControl(Composite parent) {
         Composite panel = new Composite(parent, SWT.NONE);

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,34 +20,34 @@ public class DefaultCharacterDisplayConverterTest {
     @Test
     public void testNonNullDataToDisplay() {
         Assert.assertEquals("a",
-                characterConverter.canonicalToDisplayValue('a'));
+                this.characterConverter.canonicalToDisplayValue('a'));
         Assert.assertEquals("1",
-                characterConverter.canonicalToDisplayValue('1'));
+                this.characterConverter.canonicalToDisplayValue('1'));
     }
 
     @Test
     public void testNullDataToDisplay() {
         Assert.assertEquals("",
-                characterConverter.canonicalToDisplayValue(null));
+                this.characterConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
         Assert.assertEquals('a',
-                characterConverter.displayToCanonicalValue("a"));
+                this.characterConverter.displayToCanonicalValue("a"));
         Assert.assertEquals('1',
-                characterConverter.displayToCanonicalValue("1"));
+                this.characterConverter.displayToCanonicalValue("1"));
     }
 
     @Test
     public void testNullDisplayToData() {
         Assert.assertEquals(null,
-                characterConverter.displayToCanonicalValue(""));
+                this.characterConverter.displayToCanonicalValue(""));
     }
 
     @Test(expected = ConversionFailedException.class)
     public void testConversionException() {
-        characterConverter.displayToCanonicalValue("abc");
+        this.characterConverter.displayToCanonicalValue("abc");
     }
 
 }

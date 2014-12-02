@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,7 +26,6 @@ import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
@@ -53,7 +52,6 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.tree.ITreeData;
 import org.eclipse.nebula.widgets.nattable.tree.SortableTreeComparator;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
-import org.eclipse.nebula.widgets.nattable.tree.TreeRowModel;
 import org.eclipse.nebula.widgets.nattable.tree.config.DefaultTreeLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -74,6 +72,7 @@ public class TreeGridExample extends AbstractNatExample {
         StandaloneNatExampleRunner.run(800, 400, new TreeGridExample());
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         ConfigRegistry configRegistry = new ConfigRegistry();
         configRegistry.registerConfigAttribute(
@@ -81,7 +80,7 @@ public class TreeGridExample extends AbstractNatExample {
 
         // Underlying data source
         createDatums();
-        EventList<Datum> eventList = GlazedLists.eventList(datums.values());
+        EventList<Datum> eventList = GlazedLists.eventList(this.datums.values());
         SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
 
         String[] propertyNames = new String[] { "foo", "bar" };
@@ -203,6 +202,7 @@ public class TreeGridExample extends AbstractNatExample {
             this.sortModel = sortModel;
         }
 
+        @Override
         public void getPath(List<Datum> path, Datum element) {
             path.add(element);
             Datum parent = element.getParent();
@@ -213,23 +213,27 @@ public class TreeGridExample extends AbstractNatExample {
             Collections.reverse(path);
         }
 
+        @Override
         public boolean allowsChildren(Datum element) {
             return true;
         }
 
+        @Override
         public Comparator<Datum> getComparator(int depth) {
             return new SortableTreeComparator<Datum>(
                     GlazedLists.beanPropertyComparator(Datum.class, "foo"),
-                    sortModel);
+                    this.sortModel);
         }
     }
 
     private static class DatumExpansionModel implements
             TreeList.ExpansionModel<Datum> {
+        @Override
         public boolean isExpanded(Datum element, List<Datum> path) {
             return true;
         }
 
+        @Override
         public void setExpanded(Datum element, List<Datum> path,
                 boolean expanded) {}
     }
@@ -256,7 +260,7 @@ public class TreeGridExample extends AbstractNatExample {
 
     public class Datum {
         /**
-		 * 
+		 *
 		 */
         private final Datum parent;
         private String foo;
@@ -269,20 +273,20 @@ public class TreeGridExample extends AbstractNatExample {
         }
 
         public Datum getParent() {
-            return parent;
+            return this.parent;
         }
 
         public String getFoo() {
-            return foo;
+            return this.foo;
         }
 
         public int getBar() {
-            return bar;
+            return this.bar;
         }
 
         @Override
         public String toString() {
-            return "[" + "parent=" + parent + ", foo=" + foo + ", bar=" + bar
+            return "[" + "parent=" + this.parent + ", foo=" + this.foo + ", bar=" + this.bar
                     + "]";
         }
 
@@ -291,8 +295,8 @@ public class TreeGridExample extends AbstractNatExample {
     private Map<String, Datum> datums = new HashMap<String, Datum>();
 
     private void createDatum(String parent, String foo, int bar) {
-        Datum datum = new Datum(datums.get(parent), foo, bar);
-        datums.put(foo, datum);
+        Datum datum = new Datum(this.datums.get(parent), foo, bar);
+        this.datums.put(foo, datum);
     }
 
     private void createDatums() {

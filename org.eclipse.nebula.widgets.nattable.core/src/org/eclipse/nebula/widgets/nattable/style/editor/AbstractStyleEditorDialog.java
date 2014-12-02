@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,7 +38,7 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
     }
 
     private void setLocation(Shell shell) {
-        if (location != null) {
+        if (this.location != null) {
             if (this.location.x < getParent().getDisplay().getBounds().x) {
                 this.location.x = getParent().getDisplay().getBounds().x;
             } else if (this.location.x + shell.getBounds().width > getParent()
@@ -55,7 +55,7 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
                         + getParent().getDisplay().getBounds().height
                         - shell.getBounds().height;
             }
-            shell.setLocation(location);
+            shell.setLocation(this.location);
         }
     }
 
@@ -146,7 +146,7 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
     protected abstract void doFormOK(Shell shell);
 
     protected void doFormCancel(Shell shell) {
-        cancelPressed = true;
+        this.cancelPressed = true;
         shell.dispose();
     }
 
@@ -155,6 +155,6 @@ public abstract class AbstractStyleEditorDialog extends Dialog {
     }
 
     public boolean isCancelPressed() {
-        return cancelPressed;
+        return this.cancelPressed;
     }
 }

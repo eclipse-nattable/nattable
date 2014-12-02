@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -16,14 +16,14 @@ public interface IRowSelectionModel<R> extends ISelectionModel {
 
     /**
      * Expose the underlying row objects
-     * 
+     *
      * @return The selected row objects.
      */
     public List<R> getSelectedRowObjects();
 
     /**
      * Removes the selected row object from the selection
-     * 
+     *
      * @param rowObject
      */
     public void clearSelection(R rowObject);

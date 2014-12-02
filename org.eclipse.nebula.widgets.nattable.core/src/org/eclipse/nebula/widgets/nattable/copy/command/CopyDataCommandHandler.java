@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -64,7 +64,7 @@ public class CopyDataCommandHandler extends
     /**
      * Creates an instance that only checks the {@link SelectionLayer} for data
      * to add to the clipboard.
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} within the NatTable. Can not be
      *            <code>null</code>.
@@ -76,7 +76,7 @@ public class CopyDataCommandHandler extends
     /**
      * Creates an instance that checks the {@link SelectionLayer} and the header
      * layers if they are given.
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} within the NatTable. Can not be
      *            <code>null</code>.
@@ -97,7 +97,7 @@ public class CopyDataCommandHandler extends
 
     /**
      * Specify which serializer to use for copying.
-     * 
+     *
      * @param copyFormattedText
      *            <code>false</code> will use the CopyDataToClipboardSerializer
      *            which simply calls <code>toString()</code> to serialize the
@@ -112,7 +112,7 @@ public class CopyDataCommandHandler extends
 
     @Override
     public boolean doCommand(CopyDataToClipboardCommand command) {
-        ISerializer serializer = copyFormattedText ? new CopyFormattedTextToClipboardSerializer(
+        ISerializer serializer = this.copyFormattedText ? new CopyFormattedTextToClipboardSerializer(
                 assembleCopiedDataStructure(), command)
                 : new CopyDataToClipboardSerializer(
                         assembleCopiedDataStructure(), command);
@@ -128,14 +128,14 @@ public class CopyDataCommandHandler extends
     /**
      * Collects and assembles the selected data that should be copied to the
      * clipboard.
-     * 
+     *
      * @return A two dimensional array containing the selected cells to copy to
      *         the clipboard. The first level of this array represent the row
      *         positions of the cells, while the second level contains the cells
      *         itself based on the column position.
      */
     protected ILayerCell[][] assembleCopiedDataStructure() {
-        final Set<Range> selectedRows = selectionLayer
+        final Set<Range> selectedRows = this.selectionLayer
                 .getSelectedRowPositions();
         final ILayerCell[][] copiedCells = assembleColumnHeaders();
 
@@ -155,7 +155,7 @@ public class CopyDataCommandHandler extends
         // in the same order we copied them.
         Collections.sort(selectedRowPositions);
 
-        final int rowOffset = columnHeaderDataLayer != null ? columnHeaderDataLayer
+        final int rowOffset = this.columnHeaderDataLayer != null ? this.columnHeaderDataLayer
                 .getRowCount() : 0;
         for (int i = 0; i < selectedRowPositions.size(); i++) {
             Integer rowPos = selectedRowPositions.get(i);
@@ -172,7 +172,7 @@ public class CopyDataCommandHandler extends
      * handler, the column header information will be added to the resulting
      * array in here. If there is no column header configured an empty array
      * with the matching dimensions will be returned.
-     * 
+     *
      * @return A two dimensional array with the dimensions to store the selected
      *         data to copy to the clipboard. Will also contain the column
      *         header information for the copy operation if there is one
@@ -181,23 +181,23 @@ public class CopyDataCommandHandler extends
     protected ILayerCell[][] assembleColumnHeaders() {
         // Add offset to rows, remember they need to include the column header
         // rows
-        final int rowOffset = columnHeaderDataLayer != null ? columnHeaderDataLayer
+        final int rowOffset = this.columnHeaderDataLayer != null ? this.columnHeaderDataLayer
                 .getRowCount() : 0;
-        final int columnOffset = rowHeaderDataLayer != null ? rowHeaderDataLayer
+        final int columnOffset = this.rowHeaderDataLayer != null ? this.rowHeaderDataLayer
                 .getColumnCount() : 0;
 
-        final ILayerCell[][] copiedCells = new ILayerCell[selectionLayer
+        final ILayerCell[][] copiedCells = new ILayerCell[this.selectionLayer
                 .getSelectedRowCount() + rowOffset][1];
 
-        if (columnHeaderDataLayer != null) {
-            int[] selectedColumnPositions = selectionLayer
+        if (this.columnHeaderDataLayer != null) {
+            int[] selectedColumnPositions = this.selectionLayer
                     .getSelectedColumnPositions();
             for (int i = 0; i < rowOffset; i++) {
                 final ILayerCell[] cells = new ILayerCell[selectedColumnPositions.length
                         + columnOffset];
                 for (int columnPosition = 0; columnPosition < selectedColumnPositions.length; columnPosition++) {
                     // Pad the width of the vertical layer
-                    cells[columnPosition + columnOffset] = columnHeaderDataLayer
+                    cells[columnPosition + columnOffset] = this.columnHeaderDataLayer
                             .getCellByPosition(
                                     selectedColumnPositions[columnPosition], i);
                 }
@@ -214,7 +214,7 @@ public class CopyDataCommandHandler extends
      * copied to the clipboard. If there is a row header layer configured for
      * this handler, the row header cells of the selected row position are also
      * added to the resulting array.
-     * 
+     *
      * @param currentRowPosition
      *            The row position of which the selected cells should be
      *            collected.
@@ -222,25 +222,25 @@ public class CopyDataCommandHandler extends
      *         the clipboard.
      */
     protected ILayerCell[] assembleBody(int currentRowPosition) {
-        final int[] selectedColumns = selectionLayer
+        final int[] selectedColumns = this.selectionLayer
                 .getSelectedColumnPositions();
-        final int columnOffset = rowHeaderDataLayer != null ? rowHeaderDataLayer
+        final int columnOffset = this.rowHeaderDataLayer != null ? this.rowHeaderDataLayer
                 .getColumnCount() : 0;
         final ILayerCell[] bodyCells = new ILayerCell[selectedColumns.length
                 + columnOffset];
 
-        if (rowHeaderDataLayer != null) {
-            for (int i = 0; i < rowHeaderDataLayer.getColumnCount(); i++) {
-                bodyCells[i] = rowHeaderDataLayer.getCellByPosition(i,
+        if (this.rowHeaderDataLayer != null) {
+            for (int i = 0; i < this.rowHeaderDataLayer.getColumnCount(); i++) {
+                bodyCells[i] = this.rowHeaderDataLayer.getCellByPosition(i,
                         currentRowPosition);
             }
         }
 
         for (int columnPosition = 0; columnPosition < selectedColumns.length; columnPosition++) {
             final int selectedColumnPosition = selectedColumns[columnPosition];
-            if (selectionLayer.isCellPositionSelected(selectedColumnPosition,
+            if (this.selectionLayer.isCellPositionSelected(selectedColumnPosition,
                     currentRowPosition)) {
-                bodyCells[columnPosition + columnOffset] = selectionLayer
+                bodyCells[columnPosition + columnOffset] = this.selectionLayer
                         .getCellByPosition(selectedColumnPosition,
                                 currentRowPosition);
             }

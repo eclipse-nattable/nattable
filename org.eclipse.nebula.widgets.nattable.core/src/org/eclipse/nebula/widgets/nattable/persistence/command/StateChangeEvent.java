@@ -13,12 +13,12 @@ package org.eclipse.nebula.widgets.nattable.persistence.command;
 /**
  * Event that will be fired if the NatTable states/view configurations are
  * changed using the PersistenceDialog.
- * 
+ *
  * <p>
  * Will only contain the name of the view configuration (might also be known as
  * state prefix) and the type of change made to it. It will not carry the
  * Properties itself.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see IStateChangedListener
@@ -59,7 +59,7 @@ public class StateChangeEvent {
     /**
      * Create a new {@link StateChangeEvent} for the given view configuration
      * name and type of change.
-     * 
+     *
      * @param viewConfigName
      *            The name of the view configuration (or prefix) that has been
      *            changed.
@@ -75,7 +75,7 @@ public class StateChangeEvent {
      * @return The type of change that was done to a view configuration.
      */
     public StateChangeType getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -83,7 +83,7 @@ public class StateChangeEvent {
      *         changed.
      */
     public String getViewConfigName() {
-        return viewConfigName;
+        return this.viewConfigName;
     }
 
 }

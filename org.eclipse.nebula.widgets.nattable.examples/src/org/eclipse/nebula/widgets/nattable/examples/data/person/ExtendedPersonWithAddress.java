@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -60,7 +60,7 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
      * @return the password
      */
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     /**
@@ -75,7 +75,7 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
      * @return the favouriteFood
      */
     public List<String> getFavouriteFood() {
-        return favouriteFood;
+        return this.favouriteFood;
     }
 
     /**
@@ -90,7 +90,7 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
      * @return the favouriteDrinks
      */
     public List<String> getFavouriteDrinks() {
-        return favouriteDrinks;
+        return this.favouriteDrinks;
     }
 
     /**
@@ -105,7 +105,7 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
      * @return the description
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -120,7 +120,7 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
      * @return the age
      */
     public int getAge() {
-        return age;
+        return this.age;
     }
 
     /**
@@ -135,7 +135,7 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
      * @return the money
      */
     public double getMoney() {
-        return money;
+        return this.money;
     }
 
     /**
@@ -150,7 +150,7 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
      * @return the filename
      */
     public String getFilename() {
-        return filename;
+        return this.filename;
     }
 
     /**

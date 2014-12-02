@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,7 +43,7 @@ public class AlternatingRowConfigLabelAccumulator implements
      * Creates an AlternatingRowConfigLabelAccumulator that operates on row
      * indices. To achieve that it uses the given layer to calculate the row
      * index by given row position.
-     * 
+     *
      * @param layer
      *            The layer that should be used for row index transformation,
      *            typically the ViewportLayer or body layer stack.

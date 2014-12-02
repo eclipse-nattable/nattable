@@ -74,7 +74,7 @@ import ca.odell.glazedlists.TransformedList;
 /**
  * Simple example showing how to add the group by feature to the layer
  * composition of a grid.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -208,7 +208,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -233,23 +233,23 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
             // will be set by configuration
-            sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+            this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 
             // Use the GroupByDataLayer instead of the default DataLayer
             this.bodyDataLayer = new GroupByDataLayer<T>(getGroupByModel(),
-                    sortedList, columnPropertyAccessor);
+                    this.sortedList, columnPropertyAccessor);
             // get the IDataProvider that was created by the GroupByDataLayer
-            this.bodyDataProvider = bodyDataLayer.getDataProvider();
+            this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, sortedList);
+                    this.bodyDataLayer, this.sortedList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(selectionLayer,
-                    bodyDataLayer.getTreeRowModel());
+            TreeLayer treeLayer = new TreeLayer(this.selectionLayer,
+                    this.bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
@@ -257,7 +257,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public SortedList<T> getSortedList() {
@@ -265,15 +265,15 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
 
         public DataLayer getBodyDataLayer() {
-            return bodyDataLayer;
+            return this.bodyDataLayer;
         }
 
         public GroupByModel getGroupByModel() {
-            return groupByModel;
+            return this.groupByModel;
         }
     }
 
@@ -320,7 +320,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             // an example
             // for a more complex way to convert custom data types
             String plz = displayValue.toString().substring(0, 4);
-            for (City city : possibleCities) {
+            for (City city : _6052_GroupByCustomTypesExample.this.possibleCities) {
                 if (city.getPlz() == Integer.valueOf(plz)) {
                     return city;
                 }
@@ -390,8 +390,8 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             obj.setMoney(randomGenerator.nextDouble()
                     * randomGenerator.nextInt(100));
 
-            obj.setCity(possibleCities.get(randomGenerator
-                    .nextInt(possibleCities.size())));
+            obj.setCity(this.possibleCities.get(randomGenerator
+                    .nextInt(this.possibleCities.size())));
 
             result.add(obj);
         }
@@ -412,7 +412,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         City city;
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public void setName(String name) {
@@ -420,7 +420,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         }
 
         public int getAge() {
-            return age;
+            return this.age;
         }
 
         public void setAge(int age) {
@@ -428,7 +428,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         }
 
         public double getMoney() {
-            return money;
+            return this.money;
         }
 
         public void setMoney(double money) {
@@ -436,7 +436,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         }
 
         public Gender getGender() {
-            return gender;
+            return this.gender;
         }
 
         public void setGender(Gender gender) {
@@ -444,7 +444,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         }
 
         public City getCity() {
-            return city;
+            return this.city;
         }
 
         public void setCity(City city) {
@@ -455,12 +455,12 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
 
     private List<City> possibleCities = new ArrayList<City>();
     {
-        possibleCities.add(new City(1111, "Springfield"));
-        possibleCities.add(new City(2222, "Shelbyville"));
-        possibleCities.add(new City(3333, "Ogdenville"));
-        possibleCities.add(new City(4444, "Waverly Hills"));
-        possibleCities.add(new City(5555, "North Haverbrook"));
-        possibleCities.add(new City(6666, "Capital City"));
+        this.possibleCities.add(new City(1111, "Springfield"));
+        this.possibleCities.add(new City(2222, "Shelbyville"));
+        this.possibleCities.add(new City(3333, "Ogdenville"));
+        this.possibleCities.add(new City(4444, "Waverly Hills"));
+        this.possibleCities.add(new City(5555, "North Haverbrook"));
+        this.possibleCities.add(new City(6666, "Capital City"));
     }
 
     public static class City {
@@ -473,18 +473,18 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         }
 
         public int getPlz() {
-            return plz;
+            return this.plz;
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         // we implement toString() here because the GroupByObject does not know
         // about the IDisplayConverter
         @Override
         public String toString() {
-            return plz + " " + name;
+            return this.plz + " " + this.name;
         }
     }
 }

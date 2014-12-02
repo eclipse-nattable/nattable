@@ -62,7 +62,7 @@ import ca.odell.glazedlists.SortedList;
 /**
  * Example showing how to add the {@link SortHeaderLayer} to the layer
  * composition of a grid that is using GlazedList for sorting operations.
- * 
+ *
  * @author Dirk Fauth
  *
  */

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Dirk Fauth - initial API and implementation
  ******************************************************************************/
@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Example that shows how to create a custom IColumnPropertyAccessor that
  * supports dynamic column creation at runtime.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -72,15 +72,15 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         // start with 3 columns
-        columns.add("Column_0");
-        columns.add("Column_1");
-        columns.add("Column_2");
+        this.columns.add("Column_0");
+        this.columns.add("Column_1");
+        this.columns.add("Column_2");
 
-        values.add(createValueRow("Homer"));
-        values.add(createValueRow("Marge"));
-        values.add(createValueRow("Bart"));
-        values.add(createValueRow("Lisa"));
-        values.add(createValueRow("Maggie"));
+        this.values.add(createValueRow("Homer"));
+        this.values.add(createValueRow("Marge"));
+        this.values.add(createValueRow("Bart"));
+        this.values.add(createValueRow("Lisa"));
+        this.values.add(createValueRow("Maggie"));
 
         Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayout(new GridLayout());
@@ -98,7 +98,7 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
 
         // create the body layer stack
         IDataProvider bodyDataProvider = new ListDataProvider<Map<String, String>>(
-                values, new MyColumnPropertyAccessor());
+                this.values, new MyColumnPropertyAccessor());
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         DefaultBodyLayerStack bodyLayerStack = new DefaultBodyLayerStack(
                 bodyDataLayer);
@@ -140,17 +140,17 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
         addColumnButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String newColumn = "Column_" + columns.size();
-                columns.add(newColumn);
+                String newColumn = "Column_" + _304_DynamicColumnExample.this.columns.size();
+                _304_DynamicColumnExample.this.columns.add(newColumn);
 
-                for (Map<String, String> value : values) {
+                for (Map<String, String> value : _304_DynamicColumnExample.this.values) {
                     String prefix = value.get("Column_0");
                     prefix = prefix.substring(0, prefix.indexOf("_"));
-                    value.put(newColumn, prefix + "_" + (columns.size() - 1));
+                    value.put(newColumn, prefix + "_" + (_304_DynamicColumnExample.this.columns.size() - 1));
                 }
 
                 bodyDataLayer.fireLayerEvent(new ColumnInsertEvent(
-                        bodyDataLayer, columns.size() - 1));
+                        bodyDataLayer, _304_DynamicColumnExample.this.columns.size() - 1));
             }
         });
 
@@ -160,8 +160,8 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
     private Map<String, String> createValueRow(String value) {
         Map<String, String> valueRow = new HashMap<String, String>();
 
-        for (int i = 0; i < columns.size(); i++) {
-            String column = columns.get(i);
+        for (int i = 0; i < this.columns.size(); i++) {
+            String column = this.columns.get(i);
             valueRow.put(column, value + "_" + i);
         }
 
@@ -185,17 +185,17 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
 
         @Override
         public int getColumnCount() {
-            return columns.size();
+            return _304_DynamicColumnExample.this.columns.size();
         }
 
         @Override
         public String getColumnProperty(int columnIndex) {
-            return columns.get(columnIndex);
+            return _304_DynamicColumnExample.this.columns.get(columnIndex);
         }
 
         @Override
         public int getColumnIndex(String propertyName) {
-            return columns.indexOf(propertyName);
+            return _304_DynamicColumnExample.this.columns.indexOf(propertyName);
         }
     }
 
@@ -213,7 +213,7 @@ public class _304_DynamicColumnExample extends AbstractNatExample {
 
         @Override
         public int getColumnCount() {
-            return columns.size();
+            return _304_DynamicColumnExample.this.columns.size();
         }
 
         @Override

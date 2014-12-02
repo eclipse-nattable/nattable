@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -30,10 +30,12 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements
         this.selectionLayer = event.selectionLayer;
     }
 
+    @Override
     public SelectionLayer getSelectionLayer() {
-        return selectionLayer;
+        return this.selectionLayer;
     }
 
+    @Override
     public ColumnSelectionEvent cloneEvent() {
         return new ColumnSelectionEvent(this);
     }

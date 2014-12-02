@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -97,7 +97,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
     private Map<Integer, Object> filterIndexToObjectMap = new HashMap<Integer, Object>();
 
     /**
-     * 
+     *
      * @param filterStrategy
      *            The {@link IFilterStrategy} to which the set filter value
      *            should be applied.
@@ -134,7 +134,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * in other framework code. It is made visible because there might be code
      * that needs to modify the Map without index transformations or firing
      * events.
-     * 
+     *
      * @return Map that contains the filter objects mapped to the column index.
      */
     public Map<Integer, Object> getFilterIndexToObjectMap() {
@@ -152,7 +152,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * useful to override the local Map with the one form another
      * FilterRowDataProvider. This is not a typical use case, therefore you
      * should use this method carefully!
-     * 
+     *
      * @param filterIndexToObjectMap
      *            Map that contains the filter objects mapped to the column
      *            index.
@@ -164,12 +164,12 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
     @Override
     public int getColumnCount() {
-        return columnHeaderDataProvider.getColumnCount();
+        return this.columnHeaderDataProvider.getColumnCount();
     }
 
     @Override
     public Object getDataValue(int columnIndex, int rowIndex) {
-        return filterIndexToObjectMap.get(columnIndex);
+        return this.filterIndexToObjectMap.get(columnIndex);
     }
 
     @Override
@@ -180,15 +180,15 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
     @Override
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
         if (ObjectUtils.isNotNull(newValue)) {
-            filterIndexToObjectMap.put(columnIndex, newValue);
+            this.filterIndexToObjectMap.put(columnIndex, newValue);
         } else {
-            filterIndexToObjectMap.remove(columnIndex);
+            this.filterIndexToObjectMap.remove(columnIndex);
         }
 
-        filterStrategy.applyFilter(filterIndexToObjectMap);
+        this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
 
-        columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(
-                columnHeaderLayer));
+        this.columnHeaderLayer.fireLayerEvent(new FilterAppliedEvent(
+                this.columnHeaderLayer));
     }
 
     // Load/save state
@@ -196,15 +196,15 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
     @Override
     public void saveState(String prefix, Properties properties) {
         Map<Integer, String> filterTextByIndex = new HashMap<Integer, String>();
-        for (Integer columnIndex : filterIndexToObjectMap.keySet()) {
-            final IDisplayConverter converter = configRegistry
+        for (Integer columnIndex : this.filterIndexToObjectMap.keySet()) {
+            final IDisplayConverter converter = this.configRegistry
                     .getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER,
                             DisplayMode.NORMAL,
                             FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                                     + columnIndex);
 
             String filterText = getFilterStringRepresentation(
-                    filterIndexToObjectMap.get(columnIndex), converter);
+                    this.filterIndexToObjectMap.get(columnIndex), converter);
             filterText = filterText.replace("|", PIPE_REPLACEMENT); //$NON-NLS-1$
             filterTextByIndex.put(columnIndex, filterText);
         }
@@ -220,7 +220,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
     @Override
     public void loadState(String prefix, Properties properties) {
-        filterIndexToObjectMap.clear();
+        this.filterIndexToObjectMap.clear();
 
         try {
             Object property = properties.get(prefix
@@ -228,7 +228,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
             Map<Integer, String> filterTextByIndex = PersistenceUtils
                     .parseString(property);
             for (Integer columnIndex : filterTextByIndex.keySet()) {
-                final IDisplayConverter converter = configRegistry
+                final IDisplayConverter converter = this.configRegistry
                         .getConfigAttribute(
                                 CellConfigAttributes.DISPLAY_CONVERTER,
                                 DisplayMode.NORMAL,
@@ -237,14 +237,14 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
 
                 String filterText = filterTextByIndex.get(columnIndex);
                 filterText = filterText.replace(PIPE_REPLACEMENT, "|"); //$NON-NLS-1$
-                filterIndexToObjectMap.put(columnIndex,
+                this.filterIndexToObjectMap.put(columnIndex,
                         getFilterFromString(filterText, converter));
             }
         } catch (Exception e) {
             log.error("Error while restoring filter row text!", e); //$NON-NLS-1$
         }
 
-        filterStrategy.applyFilter(filterIndexToObjectMap);
+        this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
     }
 
     /**
@@ -254,7 +254,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * converted to a String representation. As the state persistence is
      * encapsulated to be handled here, we need to take care of such states here
      * also.
-     * 
+     *
      * @param filterValue
      *            The filter value object that is used for filtering.
      * @param converter
@@ -294,7 +294,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * that need to be converted to the corresponding values. As the state
      * persistence is encapsulated to be handled here, we need to take care of
      * such states here also.
-     * 
+     *
      * @param filterText
      *            The String representation of the applied saved filter.
      * @param converter
@@ -302,7 +302,7 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      *            is necessary to support filtering of custom types.
      * @return The filter value that will be used to apply a filter to the
      *         IFilterStrategy
-     * 
+     *
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws ClassNotFoundException
@@ -338,8 +338,8 @@ public class FilterRowDataProvider<T> implements IDataProvider, IPersistable {
      * Clear all filters that are currently applied.
      */
     public void clearAllFilters() {
-        filterIndexToObjectMap.clear();
-        filterStrategy.applyFilter(filterIndexToObjectMap);
+        this.filterIndexToObjectMap.clear();
+        this.filterStrategy.applyFilter(this.filterIndexToObjectMap);
     }
 
 }

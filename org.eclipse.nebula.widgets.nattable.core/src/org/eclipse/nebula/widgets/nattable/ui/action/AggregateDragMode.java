@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -32,44 +32,47 @@ public class AggregateDragMode implements IDragMode {
     }
 
     public void addDragMode(IDragMode dragMode) {
-        dragModes.add(dragMode);
+        this.dragModes.add(dragMode);
     }
 
     public void removeDragMode(IDragMode dragMode) {
-        dragModes.remove(dragMode);
+        this.dragModes.remove(dragMode);
     }
 
+    @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
-        initialEvent = event;
-        currentEvent = initialEvent;
+        this.initialEvent = event;
+        this.currentEvent = this.initialEvent;
 
-        for (IDragMode dragMode : dragModes) {
+        for (IDragMode dragMode : this.dragModes) {
             dragMode.mouseDown(natTable, event);
         }
 
         natTable.forceFocus();
     }
 
+    @Override
     public void mouseMove(NatTable natTable, MouseEvent event) {
-        currentEvent = event;
+        this.currentEvent = event;
 
-        for (IDragMode dragMode : dragModes) {
+        for (IDragMode dragMode : this.dragModes) {
             dragMode.mouseMove(natTable, event);
         }
     }
 
+    @Override
     public void mouseUp(NatTable natTable, MouseEvent event) {
-        for (IDragMode dragMode : dragModes) {
+        for (IDragMode dragMode : this.dragModes) {
             dragMode.mouseUp(natTable, event);
         }
     }
 
     protected MouseEvent getInitialEvent() {
-        return initialEvent;
+        return this.initialEvent;
     }
 
     protected MouseEvent getCurrentEvent() {
-        return currentEvent;
+        return this.currentEvent;
     }
 
 }

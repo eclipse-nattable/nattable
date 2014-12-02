@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -63,6 +63,7 @@ public class CellPainterDecorator_Example extends AbstractNatExample {
     public static final String COLUMN_SEVEN_LABEL = "ColumnSevenLabel";
     public static final String COLUMN_EIGHT_LABEL = "ColumnEightLabel";
 
+    @Override
     public Control createExampleControl(Composite parent) {
         parent.setLayout(new GridLayout(1, false));
         GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
@@ -157,6 +158,7 @@ class TableDecorationConfiguration extends AbstractRegistryConfiguration {
         this.paintDecorationdepentend = paintDecorationDependent;
     }
 
+    @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
 
         configRegistry.registerConfigAttribute(

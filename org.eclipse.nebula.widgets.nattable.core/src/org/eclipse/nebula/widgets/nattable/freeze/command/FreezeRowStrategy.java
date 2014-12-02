@@ -30,12 +30,12 @@ public class FreezeRowStrategy implements IFreezeCoordinatesProvider {
 
     @Override
     public PositionCoordinate getTopLeftPosition() {
-        return new PositionCoordinate(freezeLayer, -1, 0);
+        return new PositionCoordinate(this.freezeLayer, -1, 0);
     }
 
     @Override
     public PositionCoordinate getBottomRightPosition() {
-        return new PositionCoordinate(freezeLayer, -1, rowPosition);
+        return new PositionCoordinate(this.freezeLayer, -1, this.rowPosition);
     }
 
 }

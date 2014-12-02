@@ -32,8 +32,7 @@ import org.eclipse.swt.graphics.Image;
  *
  * @see _000_Styled_grid
  */
-public class StyledColumnHeaderConfiguration extends
-DefaultColumnHeaderStyleConfiguration {
+public class StyledColumnHeaderConfiguration extends DefaultColumnHeaderStyleConfiguration {
 
     public StyledColumnHeaderConfiguration() {
         this.font = GUIHelper.getFont(new FontData("Verdana", 10, SWT.BOLD));

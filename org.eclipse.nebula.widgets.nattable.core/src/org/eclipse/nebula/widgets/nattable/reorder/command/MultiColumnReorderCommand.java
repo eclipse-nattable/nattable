@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -34,13 +34,13 @@ public class MultiColumnReorderCommand implements ILayerCommand {
     public MultiColumnReorderCommand(ILayer layer,
             List<Integer> fromColumnPositions, int toColumnPosition,
             boolean reorderToLeftEdge) {
-        fromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>();
+        this.fromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>();
         for (Integer fromColumnPosition : fromColumnPositions) {
-            fromColumnPositionCoordinates.add(new ColumnPositionCoordinate(
+            this.fromColumnPositionCoordinates.add(new ColumnPositionCoordinate(
                     layer, fromColumnPosition.intValue()));
         }
 
-        toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
+        this.toColumnPositionCoordinate = new ColumnPositionCoordinate(layer,
                 toColumnPosition);
 
         this.reorderToLeftEdge = reorderToLeftEdge;
@@ -55,7 +55,7 @@ public class MultiColumnReorderCommand implements ILayerCommand {
 
     public List<Integer> getFromColumnPositions() {
         List<Integer> fromColumnPositions = new ArrayList<Integer>();
-        for (ColumnPositionCoordinate fromColumnPositionCoordinate : fromColumnPositionCoordinates) {
+        for (ColumnPositionCoordinate fromColumnPositionCoordinate : this.fromColumnPositionCoordinates) {
             fromColumnPositions.add(Integer
                     .valueOf(fromColumnPositionCoordinate.getColumnPosition()));
         }
@@ -63,17 +63,18 @@ public class MultiColumnReorderCommand implements ILayerCommand {
     }
 
     public int getToColumnPosition() {
-        return toColumnPositionCoordinate.getColumnPosition();
+        return this.toColumnPositionCoordinate.getColumnPosition();
     }
 
     public boolean isReorderToLeftEdge() {
-        return reorderToLeftEdge;
+        return this.reorderToLeftEdge;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         List<ColumnPositionCoordinate> convertedFromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>();
 
-        for (ColumnPositionCoordinate fromColumnPositionCoordinate : fromColumnPositionCoordinates) {
+        for (ColumnPositionCoordinate fromColumnPositionCoordinate : this.fromColumnPositionCoordinates) {
             ColumnPositionCoordinate convertedFromColumnPositionCoordinate = LayerCommandUtil
                     .convertColumnPositionToTargetContext(
                             fromColumnPositionCoordinate, targetLayer);
@@ -85,18 +86,19 @@ public class MultiColumnReorderCommand implements ILayerCommand {
 
         ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil
                 .convertColumnPositionToTargetContext(
-                        toColumnPositionCoordinate, targetLayer);
+                        this.toColumnPositionCoordinate, targetLayer);
 
         if (convertedFromColumnPositionCoordinates.size() > 0
                 && targetToColumnPositionCoordinate != null) {
-            fromColumnPositionCoordinates = convertedFromColumnPositionCoordinates;
-            toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+            this.fromColumnPositionCoordinates = convertedFromColumnPositionCoordinates;
+            this.toColumnPositionCoordinate = targetToColumnPositionCoordinate;
             return true;
         } else {
             return false;
         }
     }
 
+    @Override
     public MultiColumnReorderCommand cloneCommand() {
         return new MultiColumnReorderCommand(this);
     }

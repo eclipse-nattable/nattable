@@ -73,7 +73,7 @@ import ca.odell.glazedlists.TransformedList;
 /**
  * Simple example showing how to add the filter row to the layer composition of
  * a grid. It also shows how to add support for filtering custom data types.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -184,7 +184,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -212,13 +212,13 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
             // wrap the SortedList with the FilterList
             this.filterList = new FilterList<T>(sortedList);
 
-            this.bodyDataProvider = new ListDataProvider<T>(filterList,
+            this.bodyDataProvider = new ListDataProvider<T>(this.filterList,
                     columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    getBodyDataLayer(), filterList);
+                    getBodyDataLayer(), this.filterList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
             ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
@@ -227,7 +227,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public FilterList<T> getFilterList() {
@@ -235,11 +235,11 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
 
         public DataLayer getBodyDataLayer() {
-            return bodyDataLayer;
+            return this.bodyDataLayer;
         }
     }
 
@@ -286,7 +286,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
             // an example
             // for a more complex way to convert custom data types
             String plz = displayValue.toString().substring(0, 4);
-            for (City city : possibleCities) {
+            for (City city : _6032_GlazedListsFilterCustomTypesExample.this.possibleCities) {
                 if (city.getPlz() == Integer.valueOf(plz)) {
                     return city;
                 }
@@ -325,7 +325,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
     /**
      * The configuration to enable the edit mode for the grid and additional
      * edit configurations like converters and validators.
-     * 
+     *
      * @author Dirk Fauth
      */
     class FilterRowConfiguration extends AbstractRegistryConfiguration {
@@ -350,7 +350,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
             // the label is set automatically to the value of
             // FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + column
             // position
-            comboBoxCellEditor = new ComboBoxCellEditor(possibleCities);
+            comboBoxCellEditor = new ComboBoxCellEditor(_6032_GlazedListsFilterCustomTypesExample.this.possibleCities);
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR, comboBoxCellEditor,
                     DisplayMode.NORMAL,
@@ -449,8 +449,8 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
             obj.setMoney(randomGenerator.nextDouble()
                     * randomGenerator.nextInt(100));
 
-            obj.setCity(possibleCities.get(randomGenerator
-                    .nextInt(possibleCities.size())));
+            obj.setCity(this.possibleCities.get(randomGenerator
+                    .nextInt(this.possibleCities.size())));
 
             result.add(obj);
         }
@@ -471,7 +471,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         City city;
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public void setName(String name) {
@@ -479,7 +479,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         }
 
         public int getAge() {
-            return age;
+            return this.age;
         }
 
         public void setAge(int age) {
@@ -487,7 +487,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         }
 
         public double getMoney() {
-            return money;
+            return this.money;
         }
 
         public void setMoney(double money) {
@@ -495,7 +495,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         }
 
         public Gender getGender() {
-            return gender;
+            return this.gender;
         }
 
         public void setGender(Gender gender) {
@@ -503,7 +503,7 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         }
 
         public City getCity() {
-            return city;
+            return this.city;
         }
 
         public void setCity(City city) {
@@ -514,12 +514,12 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
 
     private List<City> possibleCities = new ArrayList<City>();
     {
-        possibleCities.add(new City(1111, "Springfield"));
-        possibleCities.add(new City(2222, "Shelbyville"));
-        possibleCities.add(new City(3333, "Ogdenville"));
-        possibleCities.add(new City(4444, "Waverly Hills"));
-        possibleCities.add(new City(5555, "North Haverbrook"));
-        possibleCities.add(new City(6666, "Capital City"));
+        this.possibleCities.add(new City(1111, "Springfield"));
+        this.possibleCities.add(new City(2222, "Shelbyville"));
+        this.possibleCities.add(new City(3333, "Ogdenville"));
+        this.possibleCities.add(new City(4444, "Waverly Hills"));
+        this.possibleCities.add(new City(5555, "North Haverbrook"));
+        this.possibleCities.add(new City(6666, "Capital City"));
     }
 
     public static class City {
@@ -532,11 +532,11 @@ public class _6032_GlazedListsFilterCustomTypesExample extends
         }
 
         public int getPlz() {
-            return plz;
+            return this.plz;
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
     }
 }

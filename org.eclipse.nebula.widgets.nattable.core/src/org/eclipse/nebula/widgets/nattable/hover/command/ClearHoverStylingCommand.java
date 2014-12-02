@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
  * NatTable (e.g. in a grid composition there might be several HoverLayer
  * involved) or it can be used to clear the hover styling in every HoverLayer in
  * the layer composition, except the one that is set to the command.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see HoverLayer
@@ -43,7 +43,7 @@ public class ClearHoverStylingCommand extends AbstractContextFreeCommand {
      * Create a ClearHoverStylingCommand that clears the hover styling in every
      * HoverLayer that exists in the layer composition, except the given
      * HoverLayer.
-     * 
+     *
      * @param hoverLayer
      *            The HoverLayer whose hover styling should not be cleared. Can
      *            be <code>null</code> which indicates that the hover styling in
@@ -58,6 +58,6 @@ public class ClearHoverStylingCommand extends AbstractContextFreeCommand {
      * @return The HoverLayer whose hover styling should not be cleared.
      */
     public HoverLayer getHoverLayer() {
-        return hoverLayer;
+        return this.hoverLayer;
     }
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,6 +22,7 @@ public class RowResizeCommandHandler extends
         this.dataLayer = dataLayer;
     }
 
+    @Override
     public Class<RowResizeCommand> getCommandClass() {
         return RowResizeCommand.class;
     }
@@ -30,7 +31,7 @@ public class RowResizeCommandHandler extends
     protected boolean doCommand(RowResizeCommand command) {
         final int rowPosition = command.getRowPosition();
         final int newRowHeight = command.getNewHeight();
-        dataLayer.setRowHeightByPosition(rowPosition, newRowHeight);
+        this.dataLayer.setRowHeightByPosition(rowPosition, newRowHeight);
         return true;
     }
 

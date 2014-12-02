@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 
 /**
  * Command to collapse all nodes in a tree.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see TreeLayer

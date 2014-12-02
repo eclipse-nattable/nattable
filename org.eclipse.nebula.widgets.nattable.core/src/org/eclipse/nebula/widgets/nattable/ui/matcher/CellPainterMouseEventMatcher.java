@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -68,8 +68,8 @@ public class CellPainterMouseEventMatcher extends MouseEventMatcher {
                             .getCellPainterAt(event.x, event.y, cell, gc,
                                     adjustedCellBounds, configRegistry);
                     if (clickedCellPainter != null) {
-                        if ((targetCellPainter != null && targetCellPainter == clickedCellPainter)
-                                || (targetCellPainterClass != null && targetCellPainterClass
+                        if ((this.targetCellPainter != null && this.targetCellPainter == clickedCellPainter)
+                                || (this.targetCellPainterClass != null && this.targetCellPainterClass
                                         .isInstance(clickedCellPainter))) {
                             return true;
                         }

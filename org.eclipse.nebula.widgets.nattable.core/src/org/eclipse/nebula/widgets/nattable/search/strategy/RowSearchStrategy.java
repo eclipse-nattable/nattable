@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -39,12 +39,13 @@ public class RowSearchStrategy extends AbstractSearchStrategy {
         this.searchDirection = searchDirection;
     }
 
+    @Override
     public PositionCoordinate executeSearch(Object valueToMatch)
             throws PatternSyntaxException {
         @SuppressWarnings("unchecked")
         Comparator<String> comparator2 = (Comparator<String>) getComparator();
         return CellDisplayValueSearchUtil.findCell(getContextLayer(),
-                configRegistry, getRowCellsToSearch(getContextLayer()),
+                this.configRegistry, getRowCellsToSearch(getContextLayer()),
                 valueToMatch, comparator2, isCaseSensitive(), isWholeWord(),
                 isRegex(), isIncludeCollapsed());
     }
@@ -59,19 +60,19 @@ public class RowSearchStrategy extends AbstractSearchStrategy {
 
     protected PositionCoordinate[] getRowCellsToSearch(ILayer contextLayer) {
         List<PositionCoordinate> cellsToSearch = new ArrayList<PositionCoordinate>();
-        int columnPosition = startingColumnPosition;
+        int columnPosition = this.startingColumnPosition;
         // See how many columns we can add, depends on where the search is
         // starting from
         final int columnCount = contextLayer.getColumnCount();
         int width;
-        if (searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {
-            width = columnCount - startingColumnPosition;
+        if (this.searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {
+            width = columnCount - this.startingColumnPosition;
         } else {
-            width = startingColumnPosition;
+            width = this.startingColumnPosition;
         }
-        for (int rowIndex = 0; rowIndex < rowPositions.length; rowIndex++) {
-            final int startingRowPosition = rowPositions[rowIndex];
-            if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
+        for (int rowIndex = 0; rowIndex < this.rowPositions.length; rowIndex++) {
+            final int startingRowPosition = this.rowPositions[rowIndex];
+            if (this.searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
                 cellsToSearch.addAll(CellDisplayValueSearchUtil
                         .getDescendingCellCoordinatesRowFirst(
                                 getContextLayer(), columnPosition,

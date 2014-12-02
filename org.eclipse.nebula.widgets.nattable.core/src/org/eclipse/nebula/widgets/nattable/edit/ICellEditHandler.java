@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,7 +25,7 @@ public interface ICellEditHandler {
      * e.g. after committing a value entered in a text editor by pressing tab,
      * the selection should move to the right. To avoid unnecessary dependencies
      * in the editors itself, this is handled in here.
-     * 
+     *
      * @param canonicalValue
      *            The value to commit.
      * @param direction

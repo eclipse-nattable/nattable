@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,23 +23,23 @@ public class SelectAllTest {
 
     @Before
     public void setUp() {
-        selectionLayer = new SelectionLayer(new DataLayerFixture());
+        this.selectionLayer = new SelectionLayer(new DataLayerFixture());
         // Selection all cells in grid
-        selectionLayer.selectAll();
+        this.selectionLayer.selectAll();
     }
 
     @After
     public void cleanUp() {
-        selectionLayer.clear();
+        this.selectionLayer.clear();
     }
 
     @Test
     public void shouldHaveAllCellsSelected() {
-        for (int columnPosition = 0; columnPosition < selectionLayer
+        for (int columnPosition = 0; columnPosition < this.selectionLayer
                 .getColumnCount(); columnPosition++) {
-            for (int rowPosition = 0; rowPosition < selectionLayer
+            for (int rowPosition = 0; rowPosition < this.selectionLayer
                     .getRowCount(); rowPosition++) {
-                ILayerCell cell = selectionLayer.getCellByPosition(
+                ILayerCell cell = this.selectionLayer.getCellByPosition(
                         columnPosition, rowPosition);
                 Assert.assertEquals(DisplayMode.SELECT, cell.getDisplayMode());
             }

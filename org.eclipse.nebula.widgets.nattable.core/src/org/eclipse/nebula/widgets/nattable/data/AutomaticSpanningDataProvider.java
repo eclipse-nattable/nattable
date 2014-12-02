@@ -41,7 +41,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
  * implemented that checks every columns and row by building the spanning cell
  * for the matching rectangle. As this would be quite time consuming
  * calculations, this is not supported out of the box by NatTable.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -83,7 +83,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
     private List<Integer> autoSpanRows = new ArrayList<Integer>();
 
     /**
-     * 
+     *
      * @param underlyingDataProvider
      *            The IDataProvider that should be wrapped by this
      *            AutomaticSpanningDataProvider
@@ -142,7 +142,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     /**
      * Check if the given column should be used for auto spanning.
-     * 
+     *
      * @param columnPosition
      *            The column position to check for auto spanning
      * @param rowPosition
@@ -158,7 +158,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     /**
      * Check if the given row should be used for auto spanning.
-     * 
+     *
      * @param columnPosition
      *            The column position for which the row spanning should be
      *            checked.
@@ -174,7 +174,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     /**
      * Checks if the given column position is configured as a auto span column.
-     * 
+     *
      * @param columnPosition
      *            The column position to check
      * @return <code>true</code> if the given column position is configured as a
@@ -187,7 +187,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     /**
      * Checks if the given row position is configured as a auto span row.
-     * 
+     *
      * @param rowPosition
      *            The row position to check
      * @return <code>true</code> if the given row position is configured as a
@@ -203,7 +203,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * the rows in the given columns will be automatically spanned if the
      * content is equal. Setting column positions for auto spanning will cause
      * that the rows in all other columns won't be auto spanned anymore.
-     * 
+     *
      * @param columnPositions
      *            The column positions to add for auto spanning.
      */
@@ -216,7 +216,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * columns in the given rows will be automatically spanned if the content is
      * equal. Setting row positions for auto spanning will cause that the
      * columns in all other rows won't be auto spanned anymore.
-     * 
+     *
      * @param rowPositions
      *            The row positions to add for auto spanning.
      */
@@ -226,7 +226,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     /**
      * Removes the given column positions for auto spanning.
-     * 
+     *
      * @param columnPositions
      *            The column positions to remove for auto spanning.
      */
@@ -236,7 +236,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     /**
      * Removes the given row positions for auto spanning.
-     * 
+     *
      * @param rowPositions
      *            The row positions to remove for auto spanning.
      */
@@ -268,7 +268,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * Checks if the column to the left of the given column position contains
      * the same value. In this case the given column is spanned with the one to
      * the left and therefore that column position will be returned here.
-     * 
+     *
      * @param columnPosition
      *            The column position whose spanning starting column is searched
      * @param rowPosition
@@ -303,7 +303,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * Checks if the row above the given row position contains the same value.
      * In this case the given row is spanned with the above and therefore the
      * above row position will be returned here.
-     * 
+     *
      * @param columnPosition
      *            The column position for which the row spanning should be
      *            checked
@@ -335,7 +335,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     /**
      * Calculates the number of columns to span regarding the data of the cells.
-     * 
+     *
      * @param columnPosition
      *            The column position to start the check for spanning
      * @param rowPosition
@@ -359,7 +359,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     /**
      * Calculates the number of rows to span regarding the data of the cells.
-     * 
+     *
      * @param columnPosition
      *            The column position for which the row spanning should be
      *            checked
@@ -384,7 +384,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
     /**
      * Check if the given values are equal. This method is <code>null</code>
      * sage.
-     * 
+     *
      * @param value1
      *            The first value to check for equality with the second value
      * @param value2
@@ -400,7 +400,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * @return <code>true</code> if automatic column spanning is enabled
      */
     public boolean isAutoColumnSpan() {
-        return autoColumnSpan;
+        return this.autoColumnSpan;
     }
 
     /**
@@ -416,7 +416,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * @return <code>true</code> if automatic row spanning is enabled
      */
     public boolean isAutoRowSpan() {
-        return autoRowSpan;
+        return this.autoRowSpan;
     }
 
     /**
@@ -431,13 +431,13 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
     @Override
     public void saveState(String prefix, Properties properties) {
         properties.setProperty(prefix + PERSISTENCE_KEY_AUTO_COLUMN_SPAN,
-                Boolean.valueOf(autoColumnSpan).toString());
+                Boolean.valueOf(this.autoColumnSpan).toString());
         properties.setProperty(prefix + PERSISTENCE_KEY_AUTO_ROW_SPAN, Boolean
-                .valueOf(autoRowSpan).toString());
+                .valueOf(this.autoRowSpan).toString());
 
-        if (autoSpanColumns.size() > 0) {
+        if (this.autoSpanColumns.size() > 0) {
             StringBuilder strBuilder = new StringBuilder();
-            for (Integer index : autoSpanColumns) {
+            for (Integer index : this.autoSpanColumns) {
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
@@ -445,9 +445,9 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
                     strBuilder.toString());
         }
 
-        if (autoSpanRows.size() > 0) {
+        if (this.autoSpanRows.size() > 0) {
             StringBuilder strBuilder = new StringBuilder();
-            for (Integer index : autoSpanRows) {
+            for (Integer index : this.autoSpanRows) {
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }

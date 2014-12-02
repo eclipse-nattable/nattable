@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -53,7 +53,7 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
     @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil
-                .convertColumnPositionToTargetContext(columnPositionCoordinate,
+                .convertColumnPositionToTargetContext(this.columnPositionCoordinate,
                         targetLayer);
 
         if (targetColumnPositionCoordinate != null
@@ -62,7 +62,7 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
             this.columnPositionCoordinate = targetColumnPositionCoordinate;
             this.rowPositionCoordinateToMoveIntoViewport = LayerCommandUtil
                     .convertRowPositionToTargetContext(
-                            rowPositionCoordinateToMoveIntoViewport,
+                            this.rowPositionCoordinateToMoveIntoViewport,
                             targetLayer);
             return true;
         }
@@ -70,25 +70,26 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
     }
 
     public int getColumnPosition() {
-        return columnPositionCoordinate.getColumnPosition();
+        return this.columnPositionCoordinate.getColumnPosition();
     }
 
     public boolean isWithShiftMask() {
-        return withShiftMask;
+        return this.withShiftMask;
     }
 
     public boolean isWithControlMask() {
-        return withControlMask;
+        return this.withControlMask;
     }
 
     public int getRowPositionToMoveIntoViewport() {
-        if (rowPositionCoordinateToMoveIntoViewport != null) {
-            return rowPositionCoordinateToMoveIntoViewport.getRowPosition();
+        if (this.rowPositionCoordinateToMoveIntoViewport != null) {
+            return this.rowPositionCoordinateToMoveIntoViewport.getRowPosition();
         } else {
             return -1;
         }
     }
 
+    @Override
     public SelectRowsCommand cloneCommand() {
         return new SelectRowsCommand(this);
     }

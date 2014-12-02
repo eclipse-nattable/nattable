@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,7 +19,7 @@ public abstract class AbstractPositionCommand implements ILayerCommand {
 
     protected AbstractPositionCommand(ILayer layer, int columnPosition,
             int rowPosition) {
-        positionCoordinate = new PositionCoordinate(layer, columnPosition,
+        this.positionCoordinate = new PositionCoordinate(layer, columnPosition,
                 rowPosition);
     }
 
@@ -27,11 +27,12 @@ public abstract class AbstractPositionCommand implements ILayerCommand {
         this.positionCoordinate = command.positionCoordinate;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         PositionCoordinate targetPositionCoordinate = LayerCommandUtil
-                .convertPositionToTargetContext(positionCoordinate, targetLayer);
+                .convertPositionToTargetContext(this.positionCoordinate, targetLayer);
         if (targetPositionCoordinate != null) {
-            positionCoordinate = targetPositionCoordinate;
+            this.positionCoordinate = targetPositionCoordinate;
             return true;
         } else {
             return false;
@@ -39,17 +40,17 @@ public abstract class AbstractPositionCommand implements ILayerCommand {
     }
 
     public int getColumnPosition() {
-        return positionCoordinate.getColumnPosition();
+        return this.positionCoordinate.getColumnPosition();
     }
 
     public int getRowPosition() {
-        return positionCoordinate.getRowPosition();
+        return this.positionCoordinate.getRowPosition();
     }
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName()
-                + " columnPosition=" + positionCoordinate.getColumnPosition() + ", rowPosition=" + positionCoordinate.getRowPosition(); //$NON-NLS-1$ //$NON-NLS-2$
+                + " columnPosition=" + this.positionCoordinate.getColumnPosition() + ", rowPosition=" + this.positionCoordinate.getRowPosition(); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

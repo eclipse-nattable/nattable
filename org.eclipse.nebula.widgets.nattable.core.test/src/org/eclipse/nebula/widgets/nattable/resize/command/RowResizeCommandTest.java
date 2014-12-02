@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,21 +23,21 @@ public class RowResizeCommandTest {
 
     @Before
     public void setup() {
-        dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
+        this.dataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
     }
 
     @Test
     public void testHandleRowResizeCommand() {
-        Assert.assertEquals(20, dataLayer.getRowHeightByPosition(3));
+        Assert.assertEquals(20, this.dataLayer.getRowHeightByPosition(3));
 
         int rowPosition = 3;
         int newHeight = 50;
-        RowResizeCommand rowResizeCommand = new RowResizeCommand(dataLayer,
+        RowResizeCommand rowResizeCommand = new RowResizeCommand(this.dataLayer,
                 rowPosition, newHeight);
 
-        dataLayer.doCommand(rowResizeCommand);
+        this.dataLayer.doCommand(rowResizeCommand);
 
-        Assert.assertEquals(50, dataLayer.getRowHeightByPosition(3));
+        Assert.assertEquals(50, this.dataLayer.getRowHeightByPosition(3));
     }
 
 }

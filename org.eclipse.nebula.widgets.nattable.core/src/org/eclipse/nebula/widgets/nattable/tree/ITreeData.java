@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -58,7 +58,7 @@ public interface ITreeData<T> {
      * Return the child objects below the given object if the object is a tree
      * node. It will only return the direct children and will not search for sub
      * children.
-     * 
+     *
      * @param object
      *            The object whose children are requested.
      * @return The children of the given object.
@@ -68,7 +68,7 @@ public interface ITreeData<T> {
     /**
      * Return the child objects below the given object if the object is a tree
      * node.
-     * 
+     *
      * @param object
      *            The object whose children are requested.
      * @param fullDepth
@@ -81,7 +81,7 @@ public interface ITreeData<T> {
      * Return the child objects below the object at the given index if the
      * object is a tree node. It will only return the direct children and will
      * not search for sub children.
-     * 
+     *
      * @param index
      *            The index of the object whose children are requested.
      * @return The children of the object at the given index.
@@ -98,7 +98,7 @@ public interface ITreeData<T> {
      * ITreeData is connected to. This check is necessary for example to support
      * mixing in a summary row together with a tree, where the summary row index
      * is not in scope of the underlying list.
-     * 
+     *
      * @param index
      *            The index to check.
      * @return <code>true</code> if the index points to an element of the

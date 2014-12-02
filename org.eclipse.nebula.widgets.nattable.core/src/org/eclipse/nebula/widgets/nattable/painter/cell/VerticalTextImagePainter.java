@@ -146,7 +146,7 @@ public class VerticalTextImagePainter extends AbstractTextPainter {
             IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
         return gc.textExtent(convertDataType(cell, configRegistry)).y
-                + (spacing * 2);
+                + (this.spacing * 2);
     }
 
     @Override
@@ -154,13 +154,13 @@ public class VerticalTextImagePainter extends AbstractTextPainter {
             IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
         return getLengthFromCache(gc, convertDataType(cell, configRegistry))
-                + (spacing * 2) + 1;
+                + (this.spacing * 2) + 1;
     }
 
     @Override
     public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
             IConfigRegistry configRegistry) {
-        if (paintBg) {
+        if (this.paintBg) {
             super.paintCell(cell, gc, rectangle, configRegistry);
         }
 
@@ -186,10 +186,10 @@ public class VerticalTextImagePainter extends AbstractTextPainter {
         // if the content width is bigger than the available column width
         // we're extending the column width (only if word wrapping is enabled)
         int fontHeight = gc.getFontMetrics().getHeight();
-        int contentWidth = (fontHeight * numberOfNewLines) + (spacing * 2);
+        int contentWidth = (fontHeight * numberOfNewLines) + (this.spacing * 2);
         int contentToCellDiff = (cell.getBounds().width - rectangle.width);
 
-        if ((contentWidth > rectangle.width) && calculateByTextHeight) {
+        if ((contentWidth > rectangle.width) && this.calculateByTextHeight) {
             ILayer layer = cell.getLayer();
             layer.doCommand(new ColumnResizeCommand(layer, cell
                     .getColumnPosition(), contentWidth + contentToCellDiff));
@@ -205,12 +205,12 @@ public class VerticalTextImagePainter extends AbstractTextPainter {
                         rectangle.x
                                 + CellStyleUtil.getHorizontalAlignmentPadding(
                                         cellStyle, rectangle, contentWidth)
-                                + spacing,
+                                + this.spacing,
                         rectangle.y
                                 + CellStyleUtil.getVerticalAlignmentPadding(
                                         cellStyle, rectangle, contentHeight
-                                                + spacing), underline,
-                        strikethrough, paintBg, gc, SWT.UP);
+                                                + this.spacing), underline,
+                        strikethrough, this.paintBg, gc, SWT.UP);
             } else {
                 // draw every line by itself because of the alignment, otherwise
                 // the whole text
@@ -226,15 +226,15 @@ public class VerticalTextImagePainter extends AbstractTextPainter {
                     GraphicsUtils
                             .drawVerticalText(
                                     line,
-                                    xStartPos + spacing,
+                                    xStartPos + this.spacing,
                                     rectangle.y
                                             + CellStyleUtil
                                                     .getVerticalAlignmentPadding(
                                                             cellStyle,
                                                             rectangle,
                                                             lineContentWidth
-                                                                    + spacing),
-                                    underline, strikethrough, paintBg, gc,
+                                                                    + this.spacing),
+                                    underline, strikethrough, this.paintBg, gc,
                                     SWT.UP);
 
                     // after every line calculate the x start pos new

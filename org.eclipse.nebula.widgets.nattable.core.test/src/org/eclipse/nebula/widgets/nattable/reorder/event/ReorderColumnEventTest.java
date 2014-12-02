@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -33,15 +33,15 @@ public class ReorderColumnEventTest {
 
     @Before
     public void setUp() {
-        columnReorderLayer = new BaseColumnReorderLayerFixture(
+        this.columnReorderLayer = new BaseColumnReorderLayerFixture(
                 new DataLayerFixture());
     }
 
     @Test
     public void shouldThrowAReorderColumnEvent() {
         LayerListenerFixture listenerFixture = new LayerListenerFixture();
-        columnReorderLayer.addLayerListener(listenerFixture);
-        columnReorderLayer.reorderColumnPosition(3, 1);
+        this.columnReorderLayer.addLayerListener(listenerFixture);
+        this.columnReorderLayer.reorderColumnPosition(3, 1);
 
         assertEquals(1, listenerFixture.getEventsCount());
         assertNotNull(listenerFixture

@@ -79,7 +79,7 @@ import ca.odell.glazedlists.TransformedList;
 /**
  * Example showing a NatTable that contains a column header and a body layer. It
  * adds sorting, filtering, editing, copy, print and export features.
- * 
+ *
  * @author Dirk Fauth
  *
  */

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -20,27 +20,27 @@ public class DefaultLongDisplayConverterTest {
     @Test
     public void testNonNullDataToDisplay() {
         Assert.assertEquals("123",
-                longConverter.canonicalToDisplayValue(Long.valueOf("123")));
+                this.longConverter.canonicalToDisplayValue(Long.valueOf("123")));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertEquals(null, longConverter.canonicalToDisplayValue(null));
+        Assert.assertEquals(null, this.longConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
         Assert.assertEquals(Long.valueOf("123"),
-                longConverter.displayToCanonicalValue("123"));
+                this.longConverter.displayToCanonicalValue("123"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertEquals(null, longConverter.displayToCanonicalValue(""));
+        Assert.assertEquals(null, this.longConverter.displayToCanonicalValue(""));
     }
 
     @Test(expected = ConversionFailedException.class)
     public void testConversionException() {
-        longConverter.displayToCanonicalValue("abc");
+        this.longConverter.displayToCanonicalValue("abc");
     }
 }

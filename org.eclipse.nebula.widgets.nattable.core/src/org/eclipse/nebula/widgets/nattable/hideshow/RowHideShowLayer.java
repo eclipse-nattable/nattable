@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -58,9 +58,9 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
                 if (rowDiffs != null && !rowDiffs.isEmpty()
                         && !StructuralChangeEventHelper.isReorder(rowDiffs)) {
                     StructuralChangeEventHelper.handleRowDelete(rowDiffs,
-                            underlyingLayer, hiddenRowIndexes, false);
+                            this.underlyingLayer, this.hiddenRowIndexes, false);
                     StructuralChangeEventHelper.handleRowInsert(rowDiffs,
-                            underlyingLayer, hiddenRowIndexes, false);
+                            this.underlyingLayer, this.hiddenRowIndexes, false);
                 }
             }
         }
@@ -71,9 +71,9 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        if (hiddenRowIndexes.size() > 0) {
+        if (this.hiddenRowIndexes.size() > 0) {
             StringBuilder strBuilder = new StringBuilder();
-            for (Integer index : hiddenRowIndexes) {
+            for (Integer index : this.hiddenRowIndexes) {
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
@@ -86,7 +86,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
 
     @Override
     public void loadState(String prefix, Properties properties) {
-        hiddenRowIndexes.clear();
+        this.hiddenRowIndexes.clear();
         String property = properties.getProperty(prefix
                 + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES);
         if (property != null) {
@@ -94,7 +94,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
                     IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
-                hiddenRowIndexes.add(Integer.valueOf(index));
+                this.hiddenRowIndexes.add(Integer.valueOf(index));
             }
         }
 
@@ -105,12 +105,12 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
 
     @Override
     public boolean isRowIndexHidden(int rowIndex) {
-        return hiddenRowIndexes.contains(Integer.valueOf(rowIndex));
+        return this.hiddenRowIndexes.contains(Integer.valueOf(rowIndex));
     }
 
     @Override
     public Collection<Integer> getHiddenRowIndexes() {
-        return hiddenRowIndexes;
+        return this.hiddenRowIndexes;
     }
 
     @Override
@@ -119,7 +119,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
         for (Integer rowPosition : rowPositions) {
             rowIndexes.add(getRowIndexByPosition(rowPosition));
         }
-        hiddenRowIndexes.addAll(rowIndexes);
+        this.hiddenRowIndexes.addAll(rowIndexes);
         invalidateCache();
         fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
     }
@@ -130,14 +130,14 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
         for (Integer rowIndex : rowIndexes) {
             rowPositions.add(getRowPositionByIndex(rowIndex));
         }
-        hiddenRowIndexes.addAll(rowIndexes);
+        this.hiddenRowIndexes.addAll(rowIndexes);
         invalidateCache();
         fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
     }
 
     @Override
     public void showRowIndexes(Collection<Integer> rowIndexes) {
-        hiddenRowIndexes.removeAll(rowIndexes);
+        this.hiddenRowIndexes.removeAll(rowIndexes);
         invalidateCache();
         fireLayerEvent(new ShowRowPositionsEvent(this,
                 getRowPositionsByIndexes(rowIndexes)));
@@ -146,8 +146,8 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements
     @Override
     public void showAllRows() {
         Collection<Integer> hiddenRows = new ArrayList<Integer>(
-                hiddenRowIndexes);
-        hiddenRowIndexes.clear();
+                this.hiddenRowIndexes);
+        this.hiddenRowIndexes.clear();
         invalidateCache();
         fireLayerEvent(new ShowRowPositionsEvent(this, hiddenRows));
     }

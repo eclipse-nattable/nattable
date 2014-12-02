@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,6 +38,7 @@ public class RowHeaderViewportSelectionDataLayerExample extends
         return "This example shows a very large (1 million columns x 1 million rows) data layer with a row header attached.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         DummyBodyDataProvider bodyDataProvider = new DummyBodyDataProvider(
                 1000000, 1000000);

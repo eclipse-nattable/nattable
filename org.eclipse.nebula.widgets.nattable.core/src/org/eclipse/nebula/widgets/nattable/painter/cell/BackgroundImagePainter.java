@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -75,7 +75,7 @@ public class BackgroundImagePainter extends CellPainterWrapper {
         Color originalBackground = gc.getBackground();
         Color originalForeground = gc.getForeground();
 
-        Pattern pattern = new Pattern(Display.getCurrent(), bgImage);
+        Pattern pattern = new Pattern(Display.getCurrent(), this.bgImage);
         gc.setBackgroundPattern(pattern);
 
         gc.fillRectangle(rectangle);
@@ -83,8 +83,8 @@ public class BackgroundImagePainter extends CellPainterWrapper {
         gc.setBackgroundPattern(null);
         pattern.dispose();
 
-        if (isNotNull(separatorColor)) {
-            gc.setForeground(separatorColor);
+        if (isNotNull(this.separatorColor)) {
+            gc.setForeground(this.separatorColor);
             gc.drawLine(rectangle.x - 1, rectangle.y, rectangle.x - 1,
                     rectangle.y + rectangle.height);
             gc.drawLine(rectangle.x - 1 + rectangle.width, rectangle.y,

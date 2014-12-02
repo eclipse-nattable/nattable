@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,86 +29,86 @@ public class FreezeLayerTest {
 
     @Before
     public void setup() {
-        reorderLayer = new ColumnReorderLayer(new BaseDataLayerFixture(10, 10));
-        hideShowLayer = new ColumnHideShowLayer(reorderLayer);
-        freezeLayer = new FreezeLayer(hideShowLayer);
-        freezeLayer.setTopLeftPosition(1, 0);
-        freezeLayer.setBottomRightPosition(3, 3);
+        this.reorderLayer = new ColumnReorderLayer(new BaseDataLayerFixture(10, 10));
+        this.hideShowLayer = new ColumnHideShowLayer(this.reorderLayer);
+        this.freezeLayer = new FreezeLayer(this.hideShowLayer);
+        this.freezeLayer.setTopLeftPosition(1, 0);
+        this.freezeLayer.setBottomRightPosition(3, 3);
     }
 
     @Test
     public void testSetupColumns() {
-        Assert.assertEquals(3, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(3, freezeLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(3, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(3, this.freezeLayer.getColumnIndexByPosition(2));
     }
 
     @Test
     public void testSetupRows() {
-        Assert.assertEquals(4, freezeLayer.getRowCount());
-        Assert.assertEquals(0, freezeLayer.getRowIndexByPosition(0));
-        Assert.assertEquals(1, freezeLayer.getRowIndexByPosition(1));
-        Assert.assertEquals(2, freezeLayer.getRowIndexByPosition(2));
-        Assert.assertEquals(3, freezeLayer.getRowIndexByPosition(3));
+        Assert.assertEquals(4, this.freezeLayer.getRowCount());
+        Assert.assertEquals(0, this.freezeLayer.getRowIndexByPosition(0));
+        Assert.assertEquals(1, this.freezeLayer.getRowIndexByPosition(1));
+        Assert.assertEquals(2, this.freezeLayer.getRowIndexByPosition(2));
+        Assert.assertEquals(3, this.freezeLayer.getRowIndexByPosition(3));
     }
 
     @Test
     public void testReorderInInteriorColumn() {
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 5, 2));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 5, 2));
 
-        Assert.assertEquals(4, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(5, freezeLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(2));
-        Assert.assertEquals(3, freezeLayer.getColumnIndexByPosition(3));
+        Assert.assertEquals(4, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(5, this.freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(3, this.freezeLayer.getColumnIndexByPosition(3));
     }
 
     @Test
     public void testReorderingIntoTopLeftCoordinate() {
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 5, 1));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 5, 1));
 
-        Assert.assertEquals(4, freezeLayer.getColumnCount());
-        Assert.assertEquals(5, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(2));
-        Assert.assertEquals(3, freezeLayer.getColumnIndexByPosition(3));
+        Assert.assertEquals(4, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(5, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(3, this.freezeLayer.getColumnIndexByPosition(3));
     }
 
     @Test
     public void testReorderOutInteriorColumn() {
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 2, 5));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 2, 5));
 
-        Assert.assertEquals(2, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(3, freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(2, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(3, this.freezeLayer.getColumnIndexByPosition(1));
     }
 
     @Test
     public void testReorderingRightBottomCornerOutOfFrozenArea() {
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 3, 5));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 3, 5));
 
-        Assert.assertEquals(2, freezeLayer.getColumnCount());
+        Assert.assertEquals(2, this.freezeLayer.getColumnCount());
         Assert.assertEquals(2,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(1));
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(1));
     }
 
     @Test
     public void testHideShowInteriorColumn() {
-        hideShowLayer.doCommand(new ColumnHideCommand(hideShowLayer, 2));
+        this.hideShowLayer.doCommand(new ColumnHideCommand(this.hideShowLayer, 2));
 
-        Assert.assertEquals(2, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(3, freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(2, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(3, this.freezeLayer.getColumnIndexByPosition(1));
 
-        hideShowLayer.doCommand(new ShowAllColumnsCommand());
+        this.hideShowLayer.doCommand(new ShowAllColumnsCommand());
 
-        Assert.assertEquals(3, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(3, freezeLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(3, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(3, this.freezeLayer.getColumnIndexByPosition(2));
     }
 
     @Test
@@ -116,136 +116,136 @@ public class FreezeLayerTest {
         // ---------------------- Move into middle of frozen area
         // Frozen Columns: 1 5 2 3
         // Frozen Rows: 0 3 3 3
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 5, 2));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 5, 2));
 
         // Test positions
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(4,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // Test indexes
-        Assert.assertEquals(4, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(4, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(4,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
 
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(5, freezeLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(2));
-        Assert.assertEquals(3, freezeLayer.getColumnIndexByPosition(3));
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(5, this.freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(2));
+        Assert.assertEquals(3, this.freezeLayer.getColumnIndexByPosition(3));
 
         // ---------------------- Move right edge out of frozen area
         // Frozen Columns: 1 5 2
         // Frozen Rows: 0 3 3
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 4, 6));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 4, 6));
 
         // Test indexes
-        Assert.assertEquals(3, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(3, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(3,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // Test positions
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(3,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // ---------------------- Swap right edge with preceeding column
         // Frozen Columns: 1 2 5
         // Frozen Rows: 0 3 3
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 3, 2));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 3, 2));
 
         // Test indexes
-        Assert.assertEquals(3, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(3, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(3,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(5, freezeLayer.getColumnIndexByPosition(2));
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(5, this.freezeLayer.getColumnIndexByPosition(2));
 
         // Test positions
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(3,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // ---------------------- Move new right edge out
         // Frozen Columns: 1 2
         // Frozen Rows: 0 3
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 3, 5));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 3, 5));
 
         // Test indexes
-        Assert.assertEquals(2, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(2, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(2,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(1));
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(1));
 
         // Test positions
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(2,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // ---------------------- Move column into frozen area replacing top
         // left index
         // Frozen Columns: 8 1 2
         // Frozen Rows: 1 3 3
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 8, 1));
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 8, 1));
 
         // Test indexes
-        Assert.assertEquals(3, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(3, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(3,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
-        Assert.assertEquals(8, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(1));
-        Assert.assertEquals(2, freezeLayer.getColumnIndexByPosition(2));
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
+        Assert.assertEquals(8, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(1));
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(2));
 
         // Test positions
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(3,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // ---------------------- Move right edge out
         // Frozen Columns: 8 1
         // Frozen Rows: 1 3
-        hideShowLayer.doCommand(new ColumnReorderCommand(hideShowLayer, 3, 5));
-        Assert.assertEquals(2, freezeLayer.getColumnCount());
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        this.hideShowLayer.doCommand(new ColumnReorderCommand(this.hideShowLayer, 3, 5));
+        Assert.assertEquals(2, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(2,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
-        Assert.assertEquals(8, freezeLayer.getColumnIndexByPosition(0));
-        Assert.assertEquals(1, freezeLayer.getColumnIndexByPosition(1));
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
+        Assert.assertEquals(8, this.freezeLayer.getColumnIndexByPosition(0));
+        Assert.assertEquals(1, this.freezeLayer.getColumnIndexByPosition(1));
 
         // Test positions
-        Assert.assertEquals(1, freezeLayer.getTopLeftPosition().columnPosition);
-        Assert.assertEquals(0, freezeLayer.getTopLeftPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
+        Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertEquals(2,
-                freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(3, freezeLayer.getBottomRightPosition().rowPosition);
+                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(3, this.freezeLayer.getBottomRightPosition().rowPosition);
     }
 
 }

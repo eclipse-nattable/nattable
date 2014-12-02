@@ -73,7 +73,7 @@ import ca.odell.glazedlists.GlazedLists;
  * Example that demonstrates how to implement a NatTable instance that shows
  * calculated values. Also demonstrates the usage of the SummaryRow on updating
  * the NatTable.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -106,7 +106,7 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
      * (org.eclipse.swt.widgets.Composite)
@@ -137,12 +137,12 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
         propertyToLabelMap.put("columnFourNumber", "Sum");
         propertyToLabelMap.put("columnFiveNumber", "Percentage");
 
-        valuesToShow.add(createNumberValues());
-        valuesToShow.add(createNumberValues());
+        this.valuesToShow.add(createNumberValues());
+        this.valuesToShow.add(createNumberValues());
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        CalculatingGridLayer gridLayer = new CalculatingGridLayer(valuesToShow,
+        CalculatingGridLayer gridLayer = new CalculatingGridLayer(this.valuesToShow,
                 configRegistry, propertyNames, propertyToLabelMap);
         DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 
@@ -163,7 +163,7 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
         addRowButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                valuesToShow.add(createNumberValues());
+                _802_CalculatingGridExample.this.valuesToShow.add(createNumberValues());
             }
         });
 
@@ -172,9 +172,9 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
         resetButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                valuesToShow.clear();
-                valuesToShow.add(createNumberValues());
-                valuesToShow.add(createNumberValues());
+                _802_CalculatingGridExample.this.valuesToShow.clear();
+                _802_CalculatingGridExample.this.valuesToShow.add(createNumberValues());
+                _802_CalculatingGridExample.this.valuesToShow.add(createNumberValues());
             }
         });
 
@@ -209,7 +209,7 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getDataValue
          * (java.lang.Object, int)
@@ -236,7 +236,7 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#setDataValue
          * (java.lang.Object, int, java.lang.Object)
@@ -261,7 +261,7 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getColumnCount
          * ()
@@ -301,21 +301,21 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
                 ConfigRegistry configRegistry) {
             IDataProvider dataProvider = new GlazedListsDataProvider<NumberValues>(
                     valuesToShow, new CalculatingDataProvider());
-            bodyDataLayer = new DataLayer(dataProvider);
-            glazedListsEventLayer = new GlazedListsEventLayer<NumberValues>(
-                    bodyDataLayer, valuesToShow);
-            summaryRowLayer = new SummaryRowLayer(glazedListsEventLayer,
+            this.bodyDataLayer = new DataLayer(dataProvider);
+            this.glazedListsEventLayer = new GlazedListsEventLayer<NumberValues>(
+                    this.bodyDataLayer, valuesToShow);
+            this.summaryRowLayer = new SummaryRowLayer(this.glazedListsEventLayer,
                     configRegistry, false);
-            summaryRowLayer
+            this.summaryRowLayer
                     .addConfiguration(new CalculatingSummaryRowConfiguration(
-                            bodyDataLayer.getDataProvider()));
-            columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
-            columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-            selectionLayer = new SelectionLayer(columnHideShowLayer);
-            viewportLayer = new ViewportLayer(selectionLayer);
-            setUnderlyingLayer(viewportLayer);
+                            this.bodyDataLayer.getDataProvider()));
+            this.columnReorderLayer = new ColumnReorderLayer(this.summaryRowLayer);
+            this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
+            this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
+            this.viewportLayer = new ViewportLayer(this.selectionLayer);
+            setUnderlyingLayer(this.viewportLayer);
 
-            registerCommandHandler(new CopyDataCommandHandler(selectionLayer));
+            registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
         }
 
         public DataLayer getDataLayer() {
@@ -323,7 +323,7 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
     }
 
@@ -440,8 +440,8 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
 
         public CalculatingSummaryRowConfiguration(IDataProvider dataProvider) {
             this.dataProvider = dataProvider;
-            summaryRowBgColor = GUIHelper.COLOR_BLUE;
-            summaryRowFgColor = GUIHelper.COLOR_WHITE;
+            this.summaryRowBgColor = GUIHelper.COLOR_BLUE;
+            this.summaryRowFgColor = GUIHelper.COLOR_WHITE;
         }
 
         @Override
@@ -453,7 +453,7 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
             // Default summary provider
             configRegistry.registerConfigAttribute(
                     SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                    new SummationSummaryProvider(dataProvider),
+                    new SummationSummaryProvider(this.dataProvider),
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
@@ -473,10 +473,10 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
             @Override
             public Object summarize(int columnIndex) {
                 double total = 0;
-                int rowCount = dataProvider.getRowCount();
+                int rowCount = CalculatingSummaryRowConfiguration.this.dataProvider.getRowCount();
 
                 for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                    Object dataValue = dataProvider.getDataValue(columnIndex,
+                    Object dataValue = CalculatingSummaryRowConfiguration.this.dataProvider.getDataValue(columnIndex,
                             rowIndex);
                     total = total + Double.parseDouble(dataValue.toString());
                 }

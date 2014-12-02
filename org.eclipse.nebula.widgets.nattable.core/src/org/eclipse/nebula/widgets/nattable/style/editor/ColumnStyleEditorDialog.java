@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,7 +43,7 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
         this.newColumnCellStyle = columnCellStyle;
         if (columnCellStyle != null) {
-            this.newBorderStyle = columnStyle
+            this.newBorderStyle = this.columnStyle
                     .getAttributeValue(CellStyleAttributes.BORDER_STYLE);
         }
     }
@@ -81,8 +81,8 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
         columnTab.setControl(createColumnPanel(tabFolder));
 
         try {
-            cellStyleEditorPanel.edit(columnStyle);
-            borderStyleEditorPanel.edit(columnStyle
+            this.cellStyleEditorPanel.edit(this.columnStyle);
+            this.borderStyleEditorPanel.edit(this.columnStyle
                     .getAttributeValue(CellStyleAttributes.BORDER_STYLE));
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -93,7 +93,7 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
      * Grid level styling private Composite createBlotterPanel(Composite parent)
      * { Composite blotterPanel = new Composite(parent, SWT.NONE); GridLayout
      * panelLayout = new GridLayout(); blotterPanel.setLayout(panelLayout);
-     * 
+     *
      * GridData panelLayoutData = new GridData();
      * panelLayoutData.grabExcessHorizontalSpace = true;
      * panelLayoutData.grabExcessVerticalSpace = true;
@@ -101,10 +101,10 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
      * panelLayoutData.horizontalAlignment =
      * GridData.HORIZONTAL_ALIGN_BEGINNING; panelLayoutData.horizontalIndent =
      * 20; blotterPanel.setLayoutData(panelLayoutData);
-     * 
+     *
      * new SeparatorPanel(blotterPanel, "Styling"); gridColorsEditorPanel = new
      * GridColorsEditorPanel(blotterPanel, gridStyle);
-     * 
+     *
      * return blotterPanel; }
      */
     private Composite createColumnPanel(Composite parent) {
@@ -113,19 +113,19 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
         new SeparatorPanel(columnPanel,
                 Messages.getString("ColumnStyleEditorDialog.styling")); //$NON-NLS-1$
-        cellStyleEditorPanel = new CellStyleEditorPanel(columnPanel, SWT.NONE);
+        this.cellStyleEditorPanel = new CellStyleEditorPanel(columnPanel, SWT.NONE);
 
         new SeparatorPanel(columnPanel,
                 Messages.getString("ColumnStyleEditorDialog.border")); //$NON-NLS-1$
-        borderStyleEditorPanel = new BorderStyleEditorPanel(columnPanel,
+        this.borderStyleEditorPanel = new BorderStyleEditorPanel(columnPanel,
                 SWT.NONE);
         return columnPanel;
     }
 
     @Override
     protected void doFormOK(Shell shell) {
-        newColumnCellStyle = cellStyleEditorPanel.getNewValue();
-        newBorderStyle = borderStyleEditorPanel.getNewValue();
+        this.newColumnCellStyle = this.cellStyleEditorPanel.getNewValue();
+        this.newBorderStyle = this.borderStyleEditorPanel.getNewValue();
         shell.dispose();
     }
 
@@ -138,10 +138,10 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
     // Getters for the modified style
 
     public Style getNewColumnCellStyle() {
-        return newColumnCellStyle;
+        return this.newColumnCellStyle;
     }
 
     public BorderStyle getNewColumnBorderStyle() {
-        return newBorderStyle;
+        return this.newBorderStyle;
     }
 }

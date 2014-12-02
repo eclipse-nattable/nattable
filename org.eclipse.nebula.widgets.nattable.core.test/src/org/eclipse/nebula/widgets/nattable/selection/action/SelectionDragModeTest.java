@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -35,26 +35,26 @@ public class SelectionDragModeTest {
 
     @Before
     public void setup() {
-        gridLayer = new DummyGridLayerStack();
-        natTable = new NatTable(new Shell(Display.getDefault()), gridLayer);
-        natTable.setSize(400, 400);
-        natTable.doCommand(new InitializeClientAreaCommandFixture());
-        dragMode = new CellSelectionDragMode();
+        this.gridLayer = new DummyGridLayerStack();
+        this.natTable = new NatTable(new Shell(Display.getDefault()), this.gridLayer);
+        this.natTable.setSize(400, 400);
+        this.natTable.doCommand(new InitializeClientAreaCommandFixture());
+        this.dragMode = new CellSelectionDragMode();
         Event event = new Event();
         event.widget = new Shell();
         event.x = 100;
         event.y = 100;
-        mouseEvent = new MouseEvent(event);
+        this.mouseEvent = new MouseEvent(event);
 
-        listener = new LayerListenerFixture();
-        gridLayer.addLayerListener(listener);
+        this.listener = new LayerListenerFixture();
+        this.gridLayer.addLayerListener(this.listener);
     }
 
     @Test
     public void mouseDownShouldNotFireCommand() throws Exception {
-        dragMode.mouseDown(natTable, mouseEvent);
+        this.dragMode.mouseDown(this.natTable, this.mouseEvent);
 
-        List<ILayerEvent> receivedEvents = listener.getReceivedEvents();
+        List<ILayerEvent> receivedEvents = this.listener.getReceivedEvents();
         Assert.assertNotNull(receivedEvents);
 
         Assert.assertEquals(0, receivedEvents.size());

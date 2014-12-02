@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,14 +29,14 @@ public class DisplayColumnRenameDialogCommandHandler extends
     @Override
     protected boolean doCommand(DisplayColumnRenameDialogCommand command) {
         int columnPosition = command.getColumnPosition();
-        String originalLabel = columnHeaderLayer
+        String originalLabel = this.columnHeaderLayer
                 .getOriginalColumnLabel(columnPosition);
-        String renamedLabel = columnHeaderLayer
+        String renamedLabel = this.columnHeaderLayer
                 .getRenamedColumnLabel(columnPosition);
 
         ColumnRenameDialog dialog = new ColumnRenameDialog(Display.getDefault()
                 .getActiveShell(), originalLabel, renamedLabel);
-        Rectangle colHeaderBounds = columnHeaderLayer.getBoundsByPosition(
+        Rectangle colHeaderBounds = this.columnHeaderLayer.getBoundsByPosition(
                 columnPosition, 0);
         Point point = new Point(colHeaderBounds.x, colHeaderBounds.y
                 + colHeaderBounds.height);
@@ -47,10 +47,11 @@ public class DisplayColumnRenameDialogCommandHandler extends
             return true;
         }
 
-        return columnHeaderLayer.renameColumnPosition(columnPosition,
+        return this.columnHeaderLayer.renameColumnPosition(columnPosition,
                 dialog.getNewColumnLabel());
     }
 
+    @Override
     public Class<DisplayColumnRenameDialogCommand> getCommandClass() {
         return DisplayColumnRenameDialogCommand.class;
     }

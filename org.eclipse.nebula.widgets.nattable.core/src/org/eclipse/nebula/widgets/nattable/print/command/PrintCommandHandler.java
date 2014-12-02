@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -33,7 +33,7 @@ public class PrintCommandHandler extends
 
     @Override
     public boolean doCommand(PrintCommand command) {
-        new LayerPrinter(layer, command.getConfigRegistry()).print(command
+        new LayerPrinter(this.layer, command.getConfigRegistry()).print(command
                 .getShell());
         return true;
     }

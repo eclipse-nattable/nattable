@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 /**
  * The ThemeManager is used to register/unregister style configurations set by a
  * {@link ThemeConfiguration} at runtime.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -33,7 +33,7 @@ public class ThemeManager {
 
     /**
      * Creates a ThemeManager that is connected to the given IConfigRegistry.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry the ThemeManager should be connected to.
      * @throws IllegalArgumentException
@@ -41,8 +41,7 @@ public class ThemeManager {
      */
     public ThemeManager(IConfigRegistry configRegistry) {
         if (configRegistry == null) {
-            throw new IllegalArgumentException(
-                    "IConfigRegistry can not be null!"); //$NON-NLS-1$
+            throw new IllegalArgumentException("IConfigRegistry can not be null!"); //$NON-NLS-1$
         }
         this.configRegistry = configRegistry;
     }
@@ -50,7 +49,7 @@ public class ThemeManager {
     /**
      * Apply the given ThemeConfiguration to the IConfigRegistry this
      * ThemeManager is registered.
-     * 
+     *
      * @param configuration
      *            The ThemeConfiguration that should be applied to the
      *            IConfigRegistry this ThemeManager is registered to.

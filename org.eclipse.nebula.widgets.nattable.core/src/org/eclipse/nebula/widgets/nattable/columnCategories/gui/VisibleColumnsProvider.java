@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,8 +29,9 @@ public class VisibleColumnsProvider extends LabelProvider implements
         this.visibleColumnsEntries = visibleColumnsEntries;
     }
 
+    @Override
     public Object[] getElements(Object inputElement) {
-        return visibleColumnsEntries.toArray();
+        return this.visibleColumnsEntries.toArray();
     }
 
     @Override
@@ -38,10 +39,12 @@ public class VisibleColumnsProvider extends LabelProvider implements
         return ((ColumnEntry) element).getLabel();
     }
 
+    @Override
     public void dispose() {
         // No op.
     }
 
+    @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
         // No op.
     }

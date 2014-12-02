@@ -53,12 +53,12 @@ public class RowHideShowLayerFixture extends RowHideShowLayer {
 
     @Override
     public boolean doCommand(ILayerCommand command) {
-        lastCommand = command;
+        this.lastCommand = command;
         return super.doCommand(command);
     }
 
     public ILayerCommand getLastCommand() {
-        return lastCommand;
+        return this.lastCommand;
     }
 
 }

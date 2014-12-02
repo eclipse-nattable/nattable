@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,7 +28,7 @@ public class SelectionLayerStructuralChangeEventHandler implements
     private final SelectionLayer selectionLayer;
 
     /**
-     * 
+     *
      * @param selectionLayer
      *            The {@link SelectionLayer} this handler is operating on.
      *            Needed to clear selections and retrieve selection states while
@@ -40,7 +40,7 @@ public class SelectionLayerStructuralChangeEventHandler implements
     }
 
     /**
-     * 
+     *
      * @param selectionLayer
      * @param selectionModel
      * @deprecated This handler doesn't make use of the ISelectionModel anymore,
@@ -72,7 +72,7 @@ public class SelectionLayerStructuralChangeEventHandler implements
                     Range changedRange = new Range(rectangle.y, rectangle.y
                             + rectangle.height);
                     if (selectedRowModified(changedRange)) {
-                        selectionLayer.updateSelection();
+                        this.selectionLayer.updateSelection();
                         break;
                     }
                 }
@@ -84,7 +84,7 @@ public class SelectionLayerStructuralChangeEventHandler implements
                     // result in clearing the selection
                     if (diff.getDiffType() != DiffTypeEnum.CHANGE) {
                         if (selectedRowModified(diff.getBeforePositionRange())) {
-                            selectionLayer.updateSelection();
+                            this.selectionLayer.updateSelection();
                             break;
                         }
                     }
@@ -104,7 +104,7 @@ public class SelectionLayerStructuralChangeEventHandler implements
     }
 
     /**
-     * 
+     *
      * @param selectionModel
      * @deprecated This handler doesn't make use of the ISelectionModel anymore,
      *             therefore setting another ISelectionModel will have no effect

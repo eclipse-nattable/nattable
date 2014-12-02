@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,7 +24,7 @@ public class VisualChangeEventConflater extends AbstractEventConflater {
     private final NatTable natTable;
 
     public VisualChangeEventConflater(NatTable ownerLayer) {
-        natTable = ownerLayer;
+        this.natTable = ownerLayer;
     }
 
     @Override
@@ -38,11 +38,13 @@ public class VisualChangeEventConflater extends AbstractEventConflater {
     public Runnable getConflaterTask() {
         return new Runnable() {
 
+            @Override
             public void run() {
-                if (queue.size() > 0) {
-                    natTable.getDisplay().asyncExec(new Runnable() {
+                if (VisualChangeEventConflater.this.queue.size() > 0) {
+                    VisualChangeEventConflater.this.natTable.getDisplay().asyncExec(new Runnable() {
+                        @Override
                         public void run() {
-                            natTable.updateResize();
+                            VisualChangeEventConflater.this.natTable.updateResize();
                         }
                     });
 

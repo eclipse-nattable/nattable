@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,9 +24,10 @@ public class ClassNameConfigLabelAccumulator implements IConfigLabelAccumulator 
         this.dataProvider = dataProvider;
     }
 
+    @Override
     public void accumulateConfigLabels(LabelStack configLabel,
             int columnPosition, int rowPosition) {
-        Object value = dataProvider.getDataValue(columnPosition, rowPosition);
+        Object value = this.dataProvider.getDataValue(columnPosition, rowPosition);
         if (value != null) {
             configLabel.addLabel(value.getClass().getName());
         }

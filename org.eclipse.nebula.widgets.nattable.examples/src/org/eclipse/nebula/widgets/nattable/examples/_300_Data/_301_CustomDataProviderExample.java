@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Example showing how to implement and use a custom IDataProvider.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -69,7 +69,7 @@ public class _301_CustomDataProviderExample extends AbstractNatExample {
      * Sample IDataProvider that operates on a two-dimensional array of Strings,
      * where the first dimension are the columns and the second dimension the
      * rows.
-     * 
+     *
      * @author Dirk Fauth
      *
      */

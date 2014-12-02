@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -28,8 +28,7 @@ public class HSSFExcelExporter extends PoiExcelExporter {
 
     public HSSFExcelExporter() {
         super(
-                new FileOutputStreamProvider(
-                        "table_export.xls", new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                new FileOutputStreamProvider("table_export.xls", new String[] { "Excel Workbook (*.xls)" }, new String[] { "*.xls" })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public HSSFExcelExporter(IOutputStreamProvider outputStreamProvider) {
@@ -38,14 +37,16 @@ public class HSSFExcelExporter extends PoiExcelExporter {
 
     @Override
     protected Workbook createWorkbook() {
-        colorIndex = new ArrayList<Color>();
+        this.colorIndex = new ArrayList<Color>();
         return new HSSFWorkbook();
     }
 
+    @Override
     protected void setFillForegroundColor(CellStyle xlCellStyle, Color swtColor) {
         xlCellStyle.setFillForegroundColor(getColorIndex(swtColor));
     }
 
+    @Override
     protected void setFontColor(Font xlFont, Color swtColor) {
         xlFont.setColor(getColorIndex(swtColor));
     }
@@ -56,19 +57,19 @@ public class HSSFExcelExporter extends PoiExcelExporter {
      * you try to export.
      */
     private short getColorIndex(Color swtColor) {
-        if (!colorIndex.contains(swtColor)) {
-            colorIndex.add(swtColor);
+        if (!this.colorIndex.contains(swtColor)) {
+            this.colorIndex.add(swtColor);
 
-            HSSFPalette palette = ((HSSFWorkbook) xlWorkbook)
+            HSSFPalette palette = ((HSSFWorkbook) this.xlWorkbook)
                     .getCustomPalette();
 
             palette.setColorAtIndex(
-                    (short) (55 - colorIndex.indexOf(swtColor)),
+                    (short) (55 - this.colorIndex.indexOf(swtColor)),
                     (byte) swtColor.getRed(), (byte) swtColor.getGreen(),
                     (byte) swtColor.getBlue());
         }
 
-        return (short) (55 - colorIndex.indexOf(swtColor));
+        return (short) (55 - this.colorIndex.indexOf(swtColor));
     }
 
 }

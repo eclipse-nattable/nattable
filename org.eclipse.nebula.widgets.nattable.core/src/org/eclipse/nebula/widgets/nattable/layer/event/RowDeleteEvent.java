@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
 
     /**
      * Creates a new RowDeleteEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given row position matches.
      * @param rowPosition
@@ -39,7 +39,7 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
 
     /**
      * Creates a new RowDeleteEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given row positions match.
      * @param rowPositionRanges
@@ -51,7 +51,7 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
 
     /**
      * Creates a new RowDeleteEvent based on the given information.
-     * 
+     *
      * @param layer
      *            The ILayer to which the given row positions match.
      * @param rowPositionRanges
@@ -64,7 +64,7 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
     /**
      * Creates a new RowDeleteEvent based on the given instance. Mainly needed
      * for cloning.
-     * 
+     *
      * @param event
      *            The RowDeleteEvent out of which the new instance should be
      *            created.

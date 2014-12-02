@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -47,80 +47,80 @@ public class FilterRowDataLayerTest {
 
     @Before
     public void setup() {
-        columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
+        this.columnHeaderLayer = new DataLayerFixture(10, 2, 100, 50);
 
-        configRegistry = new ConfigRegistry();
+        this.configRegistry = new ConfigRegistry();
         new DefaultNatTableStyleConfiguration()
-                .configureRegistry(configRegistry);
-        new DefaultFilterRowConfiguration().configureRegistry(configRegistry);
+                .configureRegistry(this.configRegistry);
+        new DefaultFilterRowConfiguration().configureRegistry(this.configRegistry);
 
-        filterList = new FilterList<RowDataFixture>(
+        this.filterList = new FilterList<RowDataFixture>(
                 GlazedLists.eventList(RowDataListFixture.getList()));
 
-        layerUnderTest = new FilterRowDataLayer<RowDataFixture>(
+        this.layerUnderTest = new FilterRowDataLayer<RowDataFixture>(
                 new DefaultGlazedListsFilterStrategy<RowDataFixture>(
-                        filterList,
+                        this.filterList,
                         new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                                 RowDataListFixture.getPropertyNames()),
-                        configRegistry), columnHeaderLayer,
-                columnHeaderLayer.getDataProvider(), configRegistry);
-        listener = new LayerListenerFixture();
-        layerUnderTest.addLayerListener(listener);
+                        this.configRegistry), this.columnHeaderLayer,
+                this.columnHeaderLayer.getDataProvider(), this.configRegistry);
+        this.listener = new LayerListenerFixture();
+        this.layerUnderTest.addLayerListener(this.listener);
     }
 
     @Test
     public void shouldHandleClearFilterCommand() throws Exception {
-        assertEquals(13, filterList.size());
+        assertEquals(13, this.filterList.size());
 
-        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 0,
+        this.layerUnderTest.doCommand(new UpdateDataCommand(this.layerUnderTest, 1, 0,
                 "ford"));
-        assertEquals(1, filterList.size());
+        assertEquals(1, this.filterList.size());
 
-        layerUnderTest.doCommand(new ClearFilterCommand(layerUnderTest, 1));
-        assertEquals(13, filterList.size());
+        this.layerUnderTest.doCommand(new ClearFilterCommand(this.layerUnderTest, 1));
+        assertEquals(13, this.filterList.size());
 
-        listener.containsInstanceOf(RowStructuralRefreshEvent.class);
+        this.listener.containsInstanceOf(RowStructuralRefreshEvent.class);
     }
 
     @Test
     public void shouldHandleTheClearAllFiltersCommand() throws Exception {
-        assertEquals(13, filterList.size());
+        assertEquals(13, this.filterList.size());
 
-        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 1, 0,
+        this.layerUnderTest.doCommand(new UpdateDataCommand(this.layerUnderTest, 1, 0,
                 "ford"));
-        assertEquals(1, filterList.size());
+        assertEquals(1, this.filterList.size());
 
-        layerUnderTest.doCommand(new UpdateDataCommand(layerUnderTest, 0, 0,
+        this.layerUnderTest.doCommand(new UpdateDataCommand(this.layerUnderTest, 0, 0,
                 "XXX"));
-        assertEquals(0, filterList.size());
+        assertEquals(0, this.filterList.size());
 
-        layerUnderTest.doCommand(new ClearAllFiltersCommand());
-        assertEquals(13, filterList.size());
+        this.layerUnderTest.doCommand(new ClearAllFiltersCommand());
+        assertEquals(13, this.filterList.size());
 
-        listener.containsInstanceOf(RowStructuralRefreshEvent.class);
+        this.listener.containsInstanceOf(RowStructuralRefreshEvent.class);
     }
 
     @Test
     public void shouldHandleTheToggeleFilterRowCommand() throws Exception {
-        assertEquals(1, layerUnderTest.getRowCount());
-        layerUnderTest.doCommand(new ToggleFilterRowCommand());
+        assertEquals(1, this.layerUnderTest.getRowCount());
+        this.layerUnderTest.doCommand(new ToggleFilterRowCommand());
         // as the command is handled by the FilterRowHeaderComposite now, it
         // should
         // have no effect to do the command on the FilterRowDataLayer
-        assertEquals(1, layerUnderTest.getRowCount());
+        assertEquals(1, this.layerUnderTest.getRowCount());
     }
 
     @Test
     public void saveState() throws Exception {
-        layerUnderTest.setDataValue(1, 1, "testValue");
-        layerUnderTest.setDataValue(2, 1, "testValue");
-        layerUnderTest.setDataValue(3, 1, "testValue");
-        layerUnderTest.setDataValue(2, 1, null); // clear filter
+        this.layerUnderTest.setDataValue(1, 1, "testValue");
+        this.layerUnderTest.setDataValue(2, 1, "testValue");
+        this.layerUnderTest.setDataValue(3, 1, "testValue");
+        this.layerUnderTest.setDataValue(2, 1, null); // clear filter
 
         Properties properties = new Properties();
 
         // save state
-        layerUnderTest.saveState("prefix", properties);
+        this.layerUnderTest.saveState("prefix", properties);
         String persistedProperty = properties.getProperty("prefix"
                 + FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS);
 
@@ -135,27 +135,27 @@ public class FilterRowDataLayerTest {
                 "1:testValue|3:testValue|");
 
         // load state
-        layerUnderTest.loadState("prefix", properties);
+        this.layerUnderTest.loadState("prefix", properties);
 
-        assertEquals("testValue", layerUnderTest.getDataValue(1, 1));
-        assertNull(layerUnderTest.getDataValue(2, 1));
-        assertEquals("testValue", layerUnderTest.getDataValue(3, 1));
+        assertEquals("testValue", this.layerUnderTest.getDataValue(1, 1));
+        assertNull(this.layerUnderTest.getDataValue(2, 1));
+        assertEquals("testValue", this.layerUnderTest.getDataValue(3, 1));
     }
 
     @Test
     public void testUnregisterPersistable() {
-        layerUnderTest.unregisterPersistable(layerUnderTest
+        this.layerUnderTest.unregisterPersistable(this.layerUnderTest
                 .getFilterRowDataProvider());
 
-        layerUnderTest.setDataValue(1, 1, "testValue");
-        layerUnderTest.setDataValue(2, 1, "testValue");
-        layerUnderTest.setDataValue(3, 1, "testValue");
-        layerUnderTest.setDataValue(2, 1, null); // clear filter
+        this.layerUnderTest.setDataValue(1, 1, "testValue");
+        this.layerUnderTest.setDataValue(2, 1, "testValue");
+        this.layerUnderTest.setDataValue(3, 1, "testValue");
+        this.layerUnderTest.setDataValue(2, 1, null); // clear filter
 
         Properties properties = new Properties();
 
         // save state
-        layerUnderTest.saveState("prefix", properties);
+        this.layerUnderTest.saveState("prefix", properties);
         for (Object key : properties.keySet()) {
             if (key.toString().contains(
                     FilterRowDataLayer.PERSISTENCE_KEY_FILTER_ROW_TOKENS)) {

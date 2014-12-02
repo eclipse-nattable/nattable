@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,13 +29,14 @@ public class RenameColumnHeaderCommand extends AbstractColumnCommand {
         this.customColumnName = customColumnName;
     }
 
+    @Override
     public ILayerCommand cloneCommand() {
         return new RenameColumnHeaderCommand(getLayer(), getColumnPosition(),
-                customColumnName);
+                this.customColumnName);
     }
 
     public String getCustomColumnName() {
-        return customColumnName;
+        return this.customColumnName;
     }
 
 }

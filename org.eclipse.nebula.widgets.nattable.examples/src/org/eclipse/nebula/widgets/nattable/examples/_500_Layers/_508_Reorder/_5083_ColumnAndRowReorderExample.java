@@ -48,10 +48,10 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Simple example showing how to add the {@link ColumnReorderLayer} and the
  * {@link RowReorderLayer} to the layer composition of a grid.
- * 
+ *
  * Also adds the functionality to manage NatTable states to proof that the
  * visibility states are stored and loaded correctly.
- * 
+ *
  * @author Dirk Fauth
  *
  */

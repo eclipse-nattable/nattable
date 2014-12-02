@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -44,20 +44,23 @@ public class DefaultSortConfiguration implements IConfiguration {
         this.cellPainter = cellPainter;
     }
 
+    @Override
     public void configureLayer(ILayer layer) {}
 
+    @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
                 SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
 
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, cellPainter,
+                CellConfigAttributes.CELL_PAINTER, this.cellPainter,
                 DisplayMode.NORMAL, SORT_DOWN_CONFIG_TYPE);
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, cellPainter,
+                CellConfigAttributes.CELL_PAINTER, this.cellPainter,
                 DisplayMode.NORMAL, SORT_UP_CONFIG_TYPE);
     }
 
+    @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         uiBindingRegistry.registerSingleClickBinding(new MouseEventMatcher(
                 SWT.ALT, GridRegion.COLUMN_HEADER.toString(), 1),

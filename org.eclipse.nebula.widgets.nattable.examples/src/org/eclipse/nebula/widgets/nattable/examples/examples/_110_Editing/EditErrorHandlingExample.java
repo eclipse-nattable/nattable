@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -82,6 +82,7 @@ public class EditErrorHandlingExample extends AbstractNatExample {
     public static String COLUMN_EIGHT_LABEL = "ColumnEightLabel";
     public static String COLUMN_NINE_LABEL = "ColumnNineLabel";
 
+    @Override
     public Control createExampleControl(Composite parent) {
         // property names of the NumberValues class
         String[] propertyNames = { "columnOneNumber", "columnTwoNumber",
@@ -145,6 +146,7 @@ public class EditErrorHandlingExample extends AbstractNatExample {
 
 class TableEditConfiguration extends AbstractRegistryConfiguration {
 
+    @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.CELL_EDITABLE_RULE,
@@ -221,6 +223,7 @@ class TableEditConfiguration extends AbstractRegistryConfiguration {
     private IDataValidator getExampleValidator() {
         return new DataValidator() {
 
+            @Override
             public boolean validate(int columnIndex, int rowIndex,
                     Object newValue) {
                 if (newValue instanceof Integer
@@ -237,6 +240,7 @@ class TableEditConfiguration extends AbstractRegistryConfiguration {
     private IDataValidator getExceptionValidator() {
         return new DataValidator() {
 
+            @Override
             public boolean validate(int columnIndex, int rowIndex,
                     Object newValue) {
                 throw new IllegalArgumentException(

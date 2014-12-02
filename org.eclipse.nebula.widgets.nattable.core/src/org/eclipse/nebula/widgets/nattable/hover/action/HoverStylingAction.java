@@ -22,7 +22,7 @@ import org.eclipse.swt.events.MouseEvent;
  * in a NatTable.
  * <p>
  * Will also clear any set cursor by default.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see HoverLayer
@@ -54,7 +54,7 @@ public class HoverStylingAction extends ClearCursorAction {
 
         // ensure to clear the hover styling in other possible HoverLayer in the
         // composition
-        natTable.doCommand(new ClearHoverStylingCommand(hoverLayer));
+        natTable.doCommand(new ClearHoverStylingCommand(this.hoverLayer));
 
         int natColumnPos = natTable.getColumnPositionByX(event.x);
         int natRowPos = natTable.getRowPositionByY(event.y);

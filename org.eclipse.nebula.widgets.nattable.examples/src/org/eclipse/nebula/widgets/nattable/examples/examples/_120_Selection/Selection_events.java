@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -52,20 +52,22 @@ public class Selection_events extends AbstractNatExample {
                 + "to trigger business actions as required.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
-        gridLayer = new SelectionExampleGridLayer();
-        nattable = new NatTable(parent, gridLayer, false);
+        this.gridLayer = new SelectionExampleGridLayer();
+        this.nattable = new NatTable(parent, this.gridLayer, false);
 
-        nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        nattable.addConfiguration(new HeaderMenuConfiguration(nattable));
-        nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
+        this.nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        this.nattable.addConfiguration(new HeaderMenuConfiguration(this.nattable));
+        this.nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
 
         // Custom selection configuration
-        SelectionLayer selectionLayer = gridLayer.getSelectionLayer();
+        SelectionLayer selectionLayer = this.gridLayer.getSelectionLayer();
         selectionLayer.setSelectionModel(new RowSelectionModel<RowDataFixture>(
-                selectionLayer, gridLayer.getBodyDataProvider(),
+                selectionLayer, this.gridLayer.getBodyDataProvider(),
                 new IRowIdAccessor<RowDataFixture>() {
 
+                    @Override
                     public Serializable getRowId(RowDataFixture rowObject) {
                         return rowObject.getSecurity_id();
                     }
@@ -74,25 +76,26 @@ public class Selection_events extends AbstractNatExample {
 
         selectionLayer
                 .addConfiguration(new RowOnlySelectionConfiguration<RowDataFixture>());
-        nattable.addConfiguration(new RowOnlySelectionBindings());
+        this.nattable.addConfiguration(new RowOnlySelectionBindings());
 
-        nattable.configure();
+        this.nattable.configure();
 
         addCustomSelectionBehaviour();
 
         // Layout widgets
         parent.setLayout(new GridLayout(1, true));
-        nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
+        this.nattable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
                 true));
         setupTextArea(parent);
 
-        return nattable;
+        return this.nattable;
     }
 
     private void addCustomSelectionBehaviour() {
-        nattable.addLayerListener(new ILayerListener() {
+        this.nattable.addLayerListener(new ILayerListener() {
 
             // Default selection behavior selects cells by default.
+            @Override
             public void handleLayerEvent(ILayerEvent event) {
                 if (event instanceof CellSelectionEvent) {
                     CellSelectionEvent cellEvent = (CellSelectionEvent) event;
@@ -101,7 +104,7 @@ public class Selection_events extends AbstractNatExample {
                             + ", "
                             + cellEvent.getColumnPosition()
                             + "], "
-                            + nattable.getDataValueByPosition(
+                            + Selection_events.this.nattable.getDataValueByPosition(
                                     cellEvent.getColumnPosition(),
                                     cellEvent.getRowPosition()));
                 }
@@ -113,7 +116,8 @@ public class Selection_events extends AbstractNatExample {
         // external actions as required. Also you can use this data to pull out
         // the backing data from the IRowDataProvider. Example:
         // rowDataProvider.getRowObject(natTable.getRowIndexByPosition(selectedRowPosition));
-        nattable.addLayerListener(new ILayerListener() {
+        this.nattable.addLayerListener(new ILayerListener() {
+            @Override
             public void handleLayerEvent(ILayerEvent event) {
                 if (event instanceof RowSelectionEvent) {
                     RowSelectionEvent rowEvent = (RowSelectionEvent) event;
@@ -124,7 +128,8 @@ public class Selection_events extends AbstractNatExample {
             }
         });
 
-        nattable.addLayerListener(new ILayerListener() {
+        this.nattable.addLayerListener(new ILayerListener() {
+            @Override
             public void handleLayerEvent(ILayerEvent event) {
                 if (event instanceof ColumnSelectionEvent) {
                     ColumnSelectionEvent columnEvent = (ColumnSelectionEvent) event;

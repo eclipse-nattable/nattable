@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,8 +36,8 @@ public class CellEditDragMode extends CellSelectionDragMode {
     public void mouseDown(NatTable natTable, MouseEvent event) {
         super.mouseDown(natTable, event);
 
-        originalColumnPosition = natTable.getColumnPositionByX(event.x);
-        originalRowPosition = natTable.getRowPositionByY(event.y);
+        this.originalColumnPosition = natTable.getColumnPositionByX(event.x);
+        this.originalRowPosition = natTable.getRowPositionByY(event.y);
     }
 
     @Override
@@ -47,11 +47,11 @@ public class CellEditDragMode extends CellSelectionDragMode {
         int columnPosition = natTable.getColumnPositionByX(event.x);
         int rowPosition = natTable.getRowPositionByY(event.y);
 
-        if (columnPosition != originalColumnPosition
-                || rowPosition != originalRowPosition) {
+        if (columnPosition != this.originalColumnPosition
+                || rowPosition != this.originalRowPosition) {
             // Left original cell, cancel edit
-            originalColumnPosition = -1;
-            originalRowPosition = -1;
+            this.originalColumnPosition = -1;
+            this.originalRowPosition = -1;
         }
     }
 
@@ -62,8 +62,8 @@ public class CellEditDragMode extends CellSelectionDragMode {
         int columnPosition = natTable.getColumnPositionByX(event.x);
         int rowPosition = natTable.getRowPositionByY(event.y);
 
-        if (columnPosition == originalColumnPosition
-                && rowPosition == originalRowPosition) {
+        if (columnPosition == this.originalColumnPosition
+                && rowPosition == this.originalRowPosition) {
             natTable.doCommand(new EditCellCommand(natTable, natTable
                     .getConfigRegistry(), natTable.getCellByPosition(
                     columnPosition, rowPosition)));

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -41,7 +41,7 @@ public class FilterRowPainter extends CellPainterWrapper {
     /**
      * Creates a {@link FilterRowPainter} that uses the given {@link Image} as
      * filter icon painter.
-     * 
+     *
      * @param filterIconPainter
      *            The {@link ImagePainter} that should be used to paint the icon
      *            in the filter row cells.
@@ -53,7 +53,7 @@ public class FilterRowPainter extends CellPainterWrapper {
     }
 
     /**
-     * 
+     *
      * @return The {@link ImagePainter} that is used to paint the icon in the
      *         filter row cells.
      */

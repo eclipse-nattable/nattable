@@ -22,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 /**
  * Helper class providing support for modifying cached index lists for
  * IStructuralChangeEvents.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -35,7 +35,7 @@ public class StructuralChangeEventHelper {
      * is hidden in the given layer, deleting row at index 1 will cause the row
      * at index 3 to be moved at index 2. Without transforming the index
      * regarding the delete event, the wrong row would be hidden.
-     * 
+     *
      * @param rowDiffs
      *            The collection of {@link StructuralDiff}s to handle
      * @param underlyingLayer
@@ -102,7 +102,7 @@ public class StructuralChangeEventHelper {
      * adding a row at index 1 will cause the row at index 3 to be moved to
      * index 4. Without transforming the index regarding the add event, the
      * wrong row would be hidden.
-     * 
+     *
      * @param rowDiffs
      *            The collection of {@link StructuralDiff}s to handle
      * @param underlyingLayer
@@ -156,7 +156,7 @@ public class StructuralChangeEventHelper {
      * index 3 is hidden in the given layer, deleting column at index 1 will
      * cause the column at index 3 to be moved at index 2. Without transforming
      * the index regarding the delete event, the wrong column would be hidden.
-     * 
+     *
      * @param columnDiffs
      *            The collection of {@link StructuralDiff}s to handle
      * @param underlyingLayer
@@ -223,7 +223,7 @@ public class StructuralChangeEventHelper {
      * given layer, adding a column at index 1 will cause the column at index 3
      * to be moved to index 4. Without transforming the index regarding the add
      * event, the wrong column would be hidden.
-     * 
+     *
      * @param columnDiffs
      *            The collection of {@link StructuralDiff}s to handle
      * @param underlyingLayer
@@ -289,7 +289,7 @@ public class StructuralChangeEventHelper {
      * modification, because the insertion is handled separately and does not
      * know about the former deletion</li>
      * </ul>
-     * 
+     *
      * @param structuralDiffs
      *            The collection of StructuralDiffs to check for reordering
      * @return <code>true</code> if the diff indicates a reordering happened,

@@ -315,14 +315,14 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
 
             GlazedListTreeData<Object> treeData =
                     new GlazedListTreeData<Object>(this.treeList) {
-                @Override
-                public String formatDataForDepth(int depth, Object object) {
-                    if (object instanceof PersonWithAddress) {
-                        return ((PersonWithAddress) object).getLastName();
-                    }
-                    return object.toString();
-                }
-            };
+                        @Override
+                        public String formatDataForDepth(int depth, Object object) {
+                            if (object instanceof PersonWithAddress) {
+                                return ((PersonWithAddress) object).getLastName();
+                            }
+                            return object.toString();
+                        }
+                    };
             ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
 
             // ITreeRowModel<Object> treeRowModel = new
@@ -461,7 +461,7 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
                 public int compare(Object o1, Object o2) {
                     String e1 = (o1 instanceof PersonWithAddress)
                             ? (depth == 0 ? ((PersonWithAddress) o1).getLastName() : ((PersonWithAddress) o1).getFirstName()) : o1.toString();
-                            String e2 = (o2 instanceof PersonWithAddress)
+                    String e2 = (o2 instanceof PersonWithAddress)
                             ? (depth == 0 ? ((PersonWithAddress) o2).getLastName() : ((PersonWithAddress) o2).getFirstName()) : o2.toString();
                     return e1.compareTo(e2);
                 }

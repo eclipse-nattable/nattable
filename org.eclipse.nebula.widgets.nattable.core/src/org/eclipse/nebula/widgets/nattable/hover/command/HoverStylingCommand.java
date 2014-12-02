@@ -22,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * because there might be several HoverLayer involved in a grid composition and
  * therefore the command might be consumed by the wrong HoverLayer if we
  * wouldn't know about the layer to handle it.
- * 
+ *
  * @author Dirk Fauth
  *
  * @see HoverLayer
@@ -56,7 +56,7 @@ public class HoverStylingCommand extends AbstractPositionCommand {
 
     /**
      * Constructor used for cloning purposes.
-     * 
+     *
      * @param command
      *            The command that should be used to create a new instance.
      */
@@ -74,7 +74,7 @@ public class HoverStylingCommand extends AbstractPositionCommand {
      * @return The HoverLayer that should handle the command.
      */
     public HoverLayer getHoverLayer() {
-        return hoverLayer;
+        return this.hoverLayer;
     }
 
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,43 +27,43 @@ public class HideShowColumnEventTest {
 
     @Before
     public void setUp() {
-        hideShowLayer = new BaseColumnHideShowLayerFixture(
+        this.hideShowLayer = new BaseColumnHideShowLayerFixture(
                 new DataLayerFixture(100, 40));
-        layerListener = new LayerListenerFixture();
+        this.layerListener = new LayerListenerFixture();
     }
 
     @Test
     public void willHideColumnShouldThrowsHideShowEvent() {
-        hideShowLayer.addLayerListener(layerListener);
-        hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.addLayerListener(this.layerListener);
+        this.hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
 
-        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
-        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
+        Assert.assertTrue(this.hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertTrue(this.hideShowLayer.isColumnIndexHidden(4));
     }
 
     @Test
     public void willShowColumnShouldThrowsHideShowEvent() {
-        hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
-        hideShowLayer.addLayerListener(layerListener);
+        this.hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.addLayerListener(this.layerListener);
 
-        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
-        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
+        Assert.assertTrue(this.hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertTrue(this.hideShowLayer.isColumnIndexHidden(4));
 
-        hideShowLayer.showColumnIndexes(Arrays.asList(1, 4));
-        Assert.assertFalse(hideShowLayer.isColumnIndexHidden(1));
-        Assert.assertFalse(hideShowLayer.isColumnIndexHidden(4));
+        this.hideShowLayer.showColumnIndexes(Arrays.asList(1, 4));
+        Assert.assertFalse(this.hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertFalse(this.hideShowLayer.isColumnIndexHidden(4));
     }
 
     @Test
     public void willShowAllColumnsThrowsHideShowEvent() {
-        hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
-        hideShowLayer.addLayerListener(layerListener);
+        this.hideShowLayer.hideColumnPositions(Arrays.asList(1, 4));
+        this.hideShowLayer.addLayerListener(this.layerListener);
 
-        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(1));
-        Assert.assertTrue(hideShowLayer.isColumnIndexHidden(4));
+        Assert.assertTrue(this.hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertTrue(this.hideShowLayer.isColumnIndexHidden(4));
 
-        hideShowLayer.showAllColumns();
-        Assert.assertFalse(hideShowLayer.isColumnIndexHidden(1));
-        Assert.assertFalse(hideShowLayer.isColumnIndexHidden(4));
+        this.hideShowLayer.showAllColumns();
+        Assert.assertFalse(this.hideShowLayer.isColumnIndexHidden(1));
+        Assert.assertFalse(this.hideShowLayer.isColumnIndexHidden(4));
     }
 }

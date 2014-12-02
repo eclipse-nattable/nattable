@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -32,8 +32,7 @@ public class DefaultSummaryRowConfiguration extends
             GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
     public Color summaryRowFgColor = GUIHelper.COLOR_BLACK;
     public Color summaryRowBgColor = GUIHelper.COLOR_WHITE;
-    public Font summaryRowFont = GUIHelper.getFont(new FontData(
-            "Verdana", 8, SWT.BOLD)); //$NON-NLS-1$
+    public Font summaryRowFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.BOLD)); //$NON-NLS-1$
 
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
@@ -44,13 +43,13 @@ public class DefaultSummaryRowConfiguration extends
 
     protected void addSummaryRowStyleConfig(IConfigRegistry configRegistry) {
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, summaryRowFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.summaryRowFont);
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                summaryRowBgColor);
+                this.summaryRowBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                summaryRowFgColor);
+                this.summaryRowFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                summaryRowBorderStyle);
+                this.summaryRowBorderStyle);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                 cellStyle, DisplayMode.NORMAL,
                 SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);

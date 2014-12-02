@@ -21,7 +21,7 @@ import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
  * {@link IDpiConverter}.
  */
 public class ConfigureScalingCommandHandler
-implements ILayerCommandHandler<ConfigureScalingCommand> {
+        implements ILayerCommandHandler<ConfigureScalingCommand> {
 
     private final SizeConfig columnWidthConfig;
     private final SizeConfig rowHeightConfig;
@@ -34,7 +34,7 @@ implements ILayerCommandHandler<ConfigureScalingCommand> {
      * Note: In case no {@link SizeConfig} instance is registered, this command
      * handler will do nothing.
      * </p>
-     * 
+     *
      * @param columnWidthConfig
      *            The {@link SizeConfig} for column width configuration. Can be
      *            <code>null</code>.

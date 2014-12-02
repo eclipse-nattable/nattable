@@ -29,7 +29,7 @@ import org.eclipse.swt.events.MouseEvent;
  * is evaluated.
  * <p>
  * If not specified, this matcher will react on the left mouse button.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -59,7 +59,7 @@ public class CellEditorMouseEventMatcher implements IMouseEventMatcher {
     /**
      * Will create a new {@link CellEditorMouseEventMatcher} that will only
      * evaluate the presence of a cell editor and the specified mouse click.
-     * 
+     *
      * @param button
      *            The mouse button that need to be pressed or released for this
      *            matcher to react.
@@ -71,7 +71,7 @@ public class CellEditorMouseEventMatcher implements IMouseEventMatcher {
     /**
      * Will create a new {@link CellEditorMouseEventMatcher} for the specified
      * grid region and the mouse left click.
-     * 
+     *
      * @param regionLabel
      *            the label that specifies the region this matcher should be
      *            attached.
@@ -83,7 +83,7 @@ public class CellEditorMouseEventMatcher implements IMouseEventMatcher {
     /**
      * Will create a new {@link CellEditorMouseEventMatcher} for the specified
      * grid region and mouse button.
-     * 
+     *
      * @param regionLabel
      *            the label that specifies the region this matcher should be
      *            attached.
@@ -98,7 +98,7 @@ public class CellEditorMouseEventMatcher implements IMouseEventMatcher {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.nebula.widgets.nattable.ui.matcher.IMouseEventMatcher#matches
      * (org.eclipse.nebula.widgets.nattable.NatTable,

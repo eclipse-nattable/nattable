@@ -14,7 +14,7 @@ package org.eclipse.nebula.widgets.nattable.util;
  * Marker interface for specifying a key for the {@link CalculatedValueCache}.
  * Remember to implement <code>equals()</code> and <code>hashCode()</code> so it
  * works correctly!
- * 
+ *
  * @author Dirk Fauth
  *
  */

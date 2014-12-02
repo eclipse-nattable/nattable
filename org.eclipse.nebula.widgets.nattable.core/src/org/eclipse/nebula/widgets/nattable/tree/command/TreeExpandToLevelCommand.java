@@ -24,9 +24,9 @@ public class TreeExpandToLevelCommand extends AbstractContextFreeCommand {
     private final int level;
 
     /**
-     * Create a {@link TreeExpandToLevelCommand} that expands the nodes in a tree
-     * to the given level. Nodes below the given level will not be expanded and
-     * stay collapsed.
+     * Create a {@link TreeExpandToLevelCommand} that expands the nodes in a
+     * tree to the given level. Nodes below the given level will not be expanded
+     * and stay collapsed.
      *
      * @param level
      *            The level to which the tree should be expanded.

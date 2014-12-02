@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -52,22 +52,23 @@ public class PersistentNatExampleWrapper extends AbstractNatExample {
 
     @Override
     public String getName() {
-        return example.getName() + " (Persisted)";
+        return this.example.getName() + " (Persisted)";
     }
 
     @Override
     public String getDescription() {
-        return example.getDescription();
+        return this.example.getDescription();
     }
 
     @Override
     public String getShortDescription() {
-        return example.getShortDescription();
+        return this.example.getShortDescription();
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
-        natTable = (NatTable) example.createExampleControl(parent);
-        return natTable;
+        this.natTable = (NatTable) this.example.createExampleControl(parent);
+        return this.natTable;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class PersistentNatExampleWrapper extends AbstractNatExample {
             System.out
                     .println("Loading NatTable state from " + PROPERTIES_FILE);
             properties.load(new FileInputStream(new File(PROPERTIES_FILE)));
-            natTable.loadState("", properties);
+            this.natTable.loadState("", properties);
         } catch (FileNotFoundException e) {
             // No file found, oh well, move along
             System.out.println(PROPERTIES_FILE + " not found, skipping load");
@@ -86,16 +87,16 @@ public class PersistentNatExampleWrapper extends AbstractNatExample {
             throw new RuntimeException(e);
         }
 
-        example.onStart();
+        this.example.onStart();
     }
 
     @Override
     public void onStop() {
-        example.onStop();
+        this.example.onStop();
 
         Properties properties = new Properties();
 
-        natTable.saveState("", properties);
+        this.natTable.saveState("", properties);
 
         try {
             System.out.println("Saving NatTable state to " + PROPERTIES_FILE);

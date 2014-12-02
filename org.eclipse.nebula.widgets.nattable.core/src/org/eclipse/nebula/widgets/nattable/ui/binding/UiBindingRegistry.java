@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -42,7 +42,7 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     @Override
     public IKeyAction getKeyEventAction(KeyEvent event) {
-        for (KeyBinding keyBinding : keyBindings) {
+        for (KeyBinding keyBinding : this.keyBindings) {
             if (keyBinding.getKeyEventMatcher().matches(event)) {
                 return keyBinding.getAction();
             }
@@ -52,11 +52,11 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     @Override
     public IDragMode getDragMode(MouseEvent event) {
-        LabelStack regionLabels = natTable
+        LabelStack regionLabels = this.natTable
                 .getRegionLabelsByXY(event.x, event.y);
 
-        for (DragBinding dragBinding : dragBindings) {
-            if (dragBinding.getMouseEventMatcher().matches(natTable, event,
+        for (DragBinding dragBinding : this.dragBindings) {
+            if (dragBinding.getMouseEventMatcher().matches(this.natTable, event,
                     regionLabels)) {
                 return dragBinding.getDragMode();
             }
@@ -112,15 +112,15 @@ public class UiBindingRegistry implements IUiBindingRegistry {
         // list of mouse bindings that need to be searched. -- Azubuko.Obele
 
         try {
-            LinkedList<MouseBinding> mouseEventBindings = mouseBindingsMap
+            LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap
                     .get(mouseEventType);
             if (mouseEventBindings != null) {
-                LabelStack regionLabels = natTable.getRegionLabelsByXY(event.x,
+                LabelStack regionLabels = this.natTable.getRegionLabelsByXY(event.x,
                         event.y);
 
                 for (MouseBinding mouseBinding : mouseEventBindings) {
 
-                    if (mouseBinding.getMouseEventMatcher().matches(natTable,
+                    if (mouseBinding.getMouseEventMatcher().matches(this.natTable,
                             event, regionLabels)) {
                         return mouseBinding.getAction();
                     }
@@ -138,18 +138,18 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     public void registerFirstKeyBinding(IKeyEventMatcher keyMatcher,
             IKeyAction action) {
-        keyBindings.addFirst(new KeyBinding(keyMatcher, action));
+        this.keyBindings.addFirst(new KeyBinding(keyMatcher, action));
     }
 
     public void registerKeyBinding(IKeyEventMatcher keyMatcher,
             IKeyAction action) {
-        keyBindings.addLast(new KeyBinding(keyMatcher, action));
+        this.keyBindings.addLast(new KeyBinding(keyMatcher, action));
     }
 
     public void unregisterKeyBinding(IKeyEventMatcher keyMatcher) {
-        for (KeyBinding keyBinding : keyBindings) {
+        for (KeyBinding keyBinding : this.keyBindings) {
             if (keyBinding.getKeyEventMatcher().equals(keyMatcher)) {
-                keyBindings.remove(keyBinding);
+                this.keyBindings.remove(keyBinding);
                 return;
             }
         }
@@ -159,18 +159,18 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     public void registerFirstMouseDragMode(
             IMouseEventMatcher mouseEventMatcher, IDragMode dragMode) {
-        dragBindings.addFirst(new DragBinding(mouseEventMatcher, dragMode));
+        this.dragBindings.addFirst(new DragBinding(mouseEventMatcher, dragMode));
     }
 
     public void registerMouseDragMode(IMouseEventMatcher mouseEventMatcher,
             IDragMode dragMode) {
-        dragBindings.addLast(new DragBinding(mouseEventMatcher, dragMode));
+        this.dragBindings.addLast(new DragBinding(mouseEventMatcher, dragMode));
     }
 
     public void unregisterMouseDragMode(IMouseEventMatcher mouseEventMatcher) {
-        for (DragBinding dragBinding : dragBindings) {
+        for (DragBinding dragBinding : this.dragBindings) {
             if (dragBinding.getMouseEventMatcher().equals(mouseEventMatcher)) {
-                dragBindings.remove(dragBinding);
+                this.dragBindings.remove(dragBinding);
                 return;
             }
         }
@@ -313,11 +313,11 @@ public class UiBindingRegistry implements IUiBindingRegistry {
     private void registerMouseBinding(boolean first,
             MouseEventTypeEnum mouseEventType,
             IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        LinkedList<MouseBinding> mouseEventBindings = mouseBindingsMap
+        LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap
                 .get(mouseEventType);
         if (mouseEventBindings == null) {
             mouseEventBindings = new LinkedList<MouseBinding>();
-            mouseBindingsMap.put(mouseEventType, mouseEventBindings);
+            this.mouseBindingsMap.put(mouseEventType, mouseEventBindings);
         }
         if (first) {
             mouseEventBindings.addFirst(new MouseBinding(mouseEventMatcher,
@@ -330,7 +330,7 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     private void unregisterMouseBinding(MouseEventTypeEnum mouseEventType,
             IMouseEventMatcher mouseEventMatcher) {
-        LinkedList<MouseBinding> mouseBindings = mouseBindingsMap
+        LinkedList<MouseBinding> mouseBindings = this.mouseBindingsMap
                 .get(mouseEventType);
         for (MouseBinding mouseBinding : mouseBindings) {
             if (mouseBinding.getMouseEventMatcher().equals(mouseEventMatcher)) {

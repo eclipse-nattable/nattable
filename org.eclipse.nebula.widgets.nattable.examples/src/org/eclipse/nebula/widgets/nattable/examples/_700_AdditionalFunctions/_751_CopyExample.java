@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -147,9 +147,10 @@ public class _751_CopyExample extends AbstractNatExample {
         addColumnButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                natTable.doCommand(new CopyDataToClipboardCommand(
-                        "\t", System.getProperty("line.separator"), //$NON-NLS-1$ //$NON-NLS-2$
-                        natTable.getConfigRegistry()));
+                natTable.doCommand(
+                        new CopyDataToClipboardCommand("\t", //$NON-NLS-1$
+                                System.getProperty("line.separator"), //$NON-NLS-1$
+                                natTable.getConfigRegistry()));
             }
         });
 

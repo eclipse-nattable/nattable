@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,18 +29,19 @@ public class AggregrateConfigLabelAccumulator implements
     public void add(IConfigLabelAccumulator r) {
         if (r == null)
             throw new IllegalArgumentException("null"); //$NON-NLS-1$
-        accumulators.add(r);
+        this.accumulators.add(r);
     }
 
     public void add(IConfigLabelAccumulator... r) {
         if (r == null)
             throw new IllegalArgumentException("null"); //$NON-NLS-1$
-        accumulators.addAll(Arrays.asList(r));
+        this.accumulators.addAll(Arrays.asList(r));
     }
 
+    @Override
     public void accumulateConfigLabels(LabelStack configLabels,
             int columnPosition, int rowPosition) {
-        for (IConfigLabelAccumulator accumulator : accumulators) {
+        for (IConfigLabelAccumulator accumulator : this.accumulators) {
             accumulator.accumulateConfigLabels(configLabels, columnPosition,
                     rowPosition);
         }

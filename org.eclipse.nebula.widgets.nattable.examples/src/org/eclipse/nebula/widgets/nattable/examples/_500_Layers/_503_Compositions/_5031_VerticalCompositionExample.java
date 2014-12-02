@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Example showing a NatTable that contains a column header and a body layer.
- * 
+ *
  * @author Dirk Fauth
  *
  */

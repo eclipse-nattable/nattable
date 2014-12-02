@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,7 +26,7 @@ public class MultiRowShowCommand extends AbstractContextFreeCommand {
     private final Collection<Integer> rowIndexes;
 
     /**
-     * 
+     *
      * @param rowIndexes
      *            The indexes of the rows that should be showed again.
      */
@@ -35,11 +35,11 @@ public class MultiRowShowCommand extends AbstractContextFreeCommand {
     }
 
     /**
-     * 
+     *
      * @return The indexes of the rows that should be showed again.
      */
     public Collection<Integer> getRowIndexes() {
-        return rowIndexes;
+        return this.rowIndexes;
     }
 
     @Override

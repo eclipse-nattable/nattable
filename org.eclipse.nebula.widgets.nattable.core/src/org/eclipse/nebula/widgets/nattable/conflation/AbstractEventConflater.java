@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -19,17 +19,21 @@ public abstract class AbstractEventConflater implements IEventConflater {
 
     protected List<ILayerEvent> queue = new LinkedList<ILayerEvent>();
 
+    @Override
     public void addEvent(ILayerEvent event) {
-        queue.add(event);
+        this.queue.add(event);
     }
 
+    @Override
     public void clearQueue() {
-        queue.clear();
+        this.queue.clear();
     }
 
+    @Override
     public int getCount() {
-        return queue.size();
+        return this.queue.size();
     }
 
+    @Override
     public abstract Runnable getConflaterTask();
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,6 +43,7 @@ public class InitializeAutoResizeRowsCommand extends AbstractRowCommand {
         this.sourceLayer = command.sourceLayer;
     }
 
+    @Override
     public ILayerCommand cloneCommand() {
         return new InitializeAutoResizeRowsCommand(this);
     }
@@ -50,15 +51,15 @@ public class InitializeAutoResizeRowsCommand extends AbstractRowCommand {
     // Accessors
 
     public GCFactory getGCFactory() {
-        return gcFactory;
+        return this.gcFactory;
     }
 
     public IConfigRegistry getConfigRegistry() {
-        return configRegistry;
+        return this.configRegistry;
     }
 
     public ILayer getSourceLayer() {
-        return sourceLayer;
+        return this.sourceLayer;
     }
 
     public void setSelectedRowPositions(int[] selectedRowPositions) {
@@ -66,6 +67,6 @@ public class InitializeAutoResizeRowsCommand extends AbstractRowCommand {
     }
 
     public int[] getRowPositions() {
-        return selectedRowPositions;
+        return this.selectedRowPositions;
     }
 }

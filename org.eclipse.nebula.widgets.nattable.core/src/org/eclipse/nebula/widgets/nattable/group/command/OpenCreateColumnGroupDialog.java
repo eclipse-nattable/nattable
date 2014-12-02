@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,23 +27,23 @@ public class OpenCreateColumnGroupDialog extends AbstractContextFreeCommand
     public OpenCreateColumnGroupDialog(Shell parentShell) {
         this.dialog = CreateColumnGroupDialog
                 .createColumnGroupDialog(parentShell);
-        messageBox = new MessageBox(parentShell, SWT.INHERIT_DEFAULT
+        this.messageBox = new MessageBox(parentShell, SWT.INHERIT_DEFAULT
                 | SWT.ICON_ERROR | SWT.OK);
     }
 
     public CreateColumnGroupDialog getDialog() {
-        return dialog;
+        return this.dialog;
     }
 
     public void openDialog(ILayer contextLayer) {
-        dialog.setContextLayer(contextLayer);
-        dialog.open();
+        this.dialog.setContextLayer(contextLayer);
+        this.dialog.open();
     }
 
     public void openErrorBox(String errMessage) {
-        messageBox.setText(Messages.getString("ErrorDialog.title")); //$NON-NLS-1$
-        messageBox.setMessage(errMessage);
-        messageBox.open();
+        this.messageBox.setText(Messages.getString("ErrorDialog.title")); //$NON-NLS-1$
+        this.messageBox.setMessage(errMessage);
+        this.messageBox.open();
     }
 
 }

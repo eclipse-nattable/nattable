@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -83,10 +83,10 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
                 .create();
 
         // Left tree - column categories
-        treeViewer = new TreeViewer(parent);
+        this.treeViewer = new TreeViewer(parent);
 
         populateAvailableTree();
-        treeViewer.getControl().setLayoutData(gridData);
+        this.treeViewer.getControl().setLayoutData(gridData);
 
         // Add/remove buttons
         Composite buttonComposite = new Composite(parent, SWT.NONE);
@@ -96,7 +96,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
         addListenersToTreeViewer();
 
         // Right list - selected columns
-        listViewer = new ListViewer(parent, SWT.MULTI | SWT.BORDER
+        this.listViewer = new ListViewer(parent, SWT.MULTI | SWT.BORDER
                 | SWT.H_SCROLL | SWT.V_SCROLL);
         populateSelectedList();
         addListenersToListViewer();
@@ -110,18 +110,18 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 
     private void populateSelectedList() {
         VisibleColumnsProvider listProvider = new VisibleColumnsProvider(
-                visibleColumnsEntries);
-        listViewer.setContentProvider(listProvider);
-        listViewer.setLabelProvider(listProvider);
-        listViewer.setInput(listProvider);
+                this.visibleColumnsEntries);
+        this.listViewer.setContentProvider(listProvider);
+        this.listViewer.setLabelProvider(listProvider);
+        this.listViewer.setInput(listProvider);
 
-        listViewer.setContentProvider(listProvider);
-        listViewer.getControl().setLayoutData(
+        this.listViewer.setContentProvider(listProvider);
+        this.listViewer.getControl().setLayoutData(
                 GridDataFactory.fillDefaults().grab(true, true).create());
     }
 
     private void addListenersToTreeViewer() {
-        treeViewer.getControl().addMouseListener(new MouseAdapter() {
+        this.treeViewer.getControl().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDoubleClick(MouseEvent e) {
                 addSelected();
@@ -130,14 +130,14 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     }
 
     private void addListenersToListViewer() {
-        listViewer.getControl().addMouseListener(new MouseAdapter() {
+        this.listViewer.getControl().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDoubleClick(MouseEvent e) {
                 removeSelected();
             }
         });
 
-        listViewer.getControl().addKeyListener(new KeyAdapter() {
+        this.listViewer.getControl().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 boolean controlMask = (e.stateMask & SWT.MOD1) == SWT.MOD1;
@@ -160,13 +160,13 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 
     private void populateAvailableTree() {
         AvailableColumnCategoriesProvider provider = new AvailableColumnCategoriesProvider(
-                model);
-        provider.hideEntries(visibleColumnsEntries);
+                this.model);
+        provider.hideEntries(this.visibleColumnsEntries);
 
-        treeViewer.setContentProvider(provider);
-        treeViewer.setLabelProvider(new ColumnCategoriesLabelProvider(
-                hiddenColumnEntries));
-        treeViewer.setInput(provider);
+        this.treeViewer.setContentProvider(provider);
+        this.treeViewer.setLabelProvider(new ColumnCategoriesLabelProvider(
+                this.hiddenColumnEntries));
+        this.treeViewer.setInput(provider);
     }
 
     private Button createDownButton(Composite upDownbuttonComposite) {
@@ -176,10 +176,12 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
                 .grab(false, true).align(SWT.CENTER, SWT.CENTER).create());
         downButton.addSelectionListener(new SelectionListener() {
 
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
             }
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 moveSelectedDown();
             }
@@ -194,10 +196,12 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
                 .align(SWT.CENTER, SWT.CENTER).create());
         upButton.addSelectionListener(new SelectionListener() {
 
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
             }
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 moveSelectedUp();
             }
@@ -213,10 +217,12 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
                 .grab(false, true).align(SWT.CENTER, SWT.CENTER).create());
         removeButton.addSelectionListener(new SelectionListener() {
 
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
             }
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 removeSelected();
             }
@@ -231,10 +237,12 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
                 .grab(false, true).align(SWT.CENTER, SWT.CENTER).create());
         addButton.addSelectionListener(new SelectionListener() {
 
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
             }
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 addSelected();
             }
@@ -255,7 +263,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 
     protected final void fireItemsSelected(List<Integer> addedColumnIndexes) {
         if (isNotEmpty(addedColumnIndexes)) {
-            for (Object listener : listeners.getListeners()) {
+            for (Object listener : this.listeners.getListeners()) {
                 ((IColumnCategoriesDialogListener) listener)
                         .itemsSelected(addedColumnIndexes);
             }
@@ -264,7 +272,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 
     protected final void fireItemsRemoved(List<Integer> removedColumnPositions) {
         if (isNotEmpty(removedColumnPositions)) {
-            for (Object listener : listeners.getListeners()) {
+            for (Object listener : this.listeners.getListeners()) {
                 ((IColumnCategoriesDialogListener) listener)
                         .itemsRemoved(removedColumnPositions);
             }
@@ -273,7 +281,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 
     protected final void fireItemsMoved(MoveDirectionEnum direction,
             List<Integer> toPositions) {
-        for (Object listener : listeners.getListeners()) {
+        for (Object listener : this.listeners.getListeners()) {
             ((IColumnCategoriesDialogListener) listener).itemsMoved(direction,
                     toPositions);
         }
@@ -292,7 +300,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
         List<Integer> selectedPositions = getColumnEntryPositions(getSelectedColumnEntriesFromListViewer());
 
         // Last position selected
-        if (!selectedPositions.contains(visibleColumnsEntries.size())) {
+        if (!selectedPositions.contains(this.visibleColumnsEntries.size())) {
             fireItemsMoved(MoveDirectionEnum.DOWN, selectedPositions);
         }
     }
@@ -305,8 +313,8 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
     }
 
     private List<ColumnEntry> getSelectedColumnEntriesFromListViewer() {
-        lastListSelection = listViewer.getSelection();
-        Object[] objects = ((StructuredSelection) lastListSelection).toArray();
+        this.lastListSelection = this.listViewer.getSelection();
+        Object[] objects = ((StructuredSelection) this.lastListSelection).toArray();
         List<ColumnEntry> entries = new ArrayList<ColumnEntry>();
 
         for (Object object : objects) {
@@ -319,7 +327,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
      * @return selected columns index(s) from the tree viewer
      */
     private List<Integer> getColumnIndexesFromTreeNodes() {
-        Object[] nodes = ((TreeSelection) treeViewer.getSelection()).toArray();
+        Object[] nodes = ((TreeSelection) this.treeViewer.getSelection()).toArray();
 
         List<Integer> indexes = new ArrayList<Integer>();
         for (Object object : nodes) {
@@ -337,8 +345,8 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
         this.visibleColumnsEntries = visibleColumnsEntries;
         populateAvailableTree();
         populateSelectedList();
-        if (ObjectUtils.isNotNull(lastListSelection)) {
-            listViewer.setSelection(lastListSelection);
+        if (ObjectUtils.isNotNull(this.lastListSelection)) {
+            this.listViewer.setSelection(this.lastListSelection);
         }
     }
 }

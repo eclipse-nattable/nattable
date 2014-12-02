@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Example showing a NatTable grid composition.
- * 
+ *
  * @author Dirk Fauth
  *
  */

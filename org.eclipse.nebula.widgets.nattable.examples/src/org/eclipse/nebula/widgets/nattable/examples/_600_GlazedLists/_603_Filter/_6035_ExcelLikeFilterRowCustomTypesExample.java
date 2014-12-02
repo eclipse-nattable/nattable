@@ -75,7 +75,7 @@ import ca.odell.glazedlists.TransformedList;
  * Example showing how to add the filter row to the layer composition of a grid
  * that looks like the Excel filter. It also shows how to add support for
  * filtering custom data type in such a filter row.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -208,7 +208,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -236,13 +236,13 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
             // wrap the SortedList with the FilterList
             this.filterList = new FilterList<T>(getSortedList());
 
-            this.bodyDataProvider = new ListDataProvider<T>(filterList,
+            this.bodyDataProvider = new ListDataProvider<T>(this.filterList,
                     columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, filterList);
+                    this.bodyDataLayer, this.filterList);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
             ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
@@ -251,11 +251,11 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         }
 
         public SelectionLayer getSelectionLayer() {
-            return selectionLayer;
+            return this.selectionLayer;
         }
 
         public SortedList<T> getSortedList() {
-            return sortedList;
+            return this.sortedList;
         }
 
         public FilterList<T> getFilterList() {
@@ -263,11 +263,11 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         }
 
         public IDataProvider getBodyDataProvider() {
-            return bodyDataProvider;
+            return this.bodyDataProvider;
         }
 
         public DataLayer getBodyDataLayer() {
-            return bodyDataLayer;
+            return this.bodyDataLayer;
         }
     }
 
@@ -314,7 +314,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
             // an example
             // for a more complex way to convert custom data types
             String plz = displayValue.toString().substring(0, 4);
-            for (City city : possibleCities) {
+            for (City city : _6035_ExcelLikeFilterRowCustomTypesExample.this.possibleCities) {
                 if (city.getPlz() == Integer.valueOf(plz)) {
                     return city;
                 }
@@ -353,7 +353,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
     /**
      * The configuration to enable the edit mode for the grid and additional
      * edit configurations like converters and validators.
-     * 
+     *
      * @author Dirk Fauth
      */
     class FilterRowConfiguration extends AbstractRegistryConfiguration {
@@ -429,8 +429,8 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
             obj.setMoney(randomGenerator.nextDouble()
                     * randomGenerator.nextInt(100));
 
-            obj.setCity(possibleCities.get(randomGenerator
-                    .nextInt(possibleCities.size())));
+            obj.setCity(this.possibleCities.get(randomGenerator
+                    .nextInt(this.possibleCities.size())));
 
             result.add(obj);
         }
@@ -451,7 +451,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         City city;
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public void setName(String name) {
@@ -459,7 +459,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         }
 
         public int getAge() {
-            return age;
+            return this.age;
         }
 
         public void setAge(int age) {
@@ -467,7 +467,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         }
 
         public double getMoney() {
-            return money;
+            return this.money;
         }
 
         public void setMoney(double money) {
@@ -475,7 +475,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         }
 
         public Gender getGender() {
-            return gender;
+            return this.gender;
         }
 
         public void setGender(Gender gender) {
@@ -483,7 +483,7 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         }
 
         public City getCity() {
-            return city;
+            return this.city;
         }
 
         public void setCity(City city) {
@@ -494,12 +494,12 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
 
     private List<City> possibleCities = new ArrayList<City>();
     {
-        possibleCities.add(new City(1111, "Springfield"));
-        possibleCities.add(new City(2222, "Shelbyville"));
-        possibleCities.add(new City(3333, "Ogdenville"));
-        possibleCities.add(new City(4444, "Waverly Hills"));
-        possibleCities.add(new City(5555, "North Haverbrook"));
-        possibleCities.add(new City(6666, "Capital City"));
+        this.possibleCities.add(new City(1111, "Springfield"));
+        this.possibleCities.add(new City(2222, "Shelbyville"));
+        this.possibleCities.add(new City(3333, "Ogdenville"));
+        this.possibleCities.add(new City(4444, "Waverly Hills"));
+        this.possibleCities.add(new City(5555, "North Haverbrook"));
+        this.possibleCities.add(new City(6666, "Capital City"));
     }
 
     public static class City {
@@ -512,11 +512,11 @@ public class _6035_ExcelLikeFilterRowCustomTypesExample extends
         }
 
         public int getPlz() {
-            return plz;
+            return this.plz;
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
     }
 

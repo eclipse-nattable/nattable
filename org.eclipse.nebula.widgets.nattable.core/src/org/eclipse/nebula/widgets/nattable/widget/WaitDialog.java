@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -59,28 +59,28 @@ public class WaitDialog extends Dialog {
         composite.setRedraw(true);
 
         Label imgLabel = new Label(composite, SWT.NONE);
-        imgLabel.setImage(iconImage);
+        imgLabel.setImage(this.iconImage);
 
-        textLabel = new Label(composite, SWT.NONE);
-        textLabel.setLayoutData(new GridData(CENTER, CENTER, true, true));
-        textLabel
+        this.textLabel = new Label(composite, SWT.NONE);
+        this.textLabel.setLayoutData(new GridData(CENTER, CENTER, true, true));
+        this.textLabel
                 .setFont(GUIHelper.getFont(new FontData("Arial", 9, SWT.BOLD))); //$NON-NLS-1$
-        textLabel.setRedraw(true);
-        textLabel.setText(msg);
+        this.textLabel.setRedraw(true);
+        this.textLabel.setText(this.msg);
 
         return composite;
     }
 
     public void setMsg(String msg) {
         this.msg = msg;
-        textLabel.setText(msg);
-        getShell().layout(new Control[] { textLabel });
+        this.textLabel.setText(msg);
+        getShell().layout(new Control[] { this.textLabel });
     }
 
     @Override
     public boolean close() {
-        if (ObjectUtils.isNotNull(iconImage)) {
-            iconImage.dispose();
+        if (ObjectUtils.isNotNull(this.iconImage)) {
+            this.iconImage.dispose();
         }
         return super.close();
     }

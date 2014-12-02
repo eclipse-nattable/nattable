@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -47,6 +47,7 @@ public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
         this.sourceLayer = command.sourceLayer;
     }
 
+    @Override
     public ILayerCommand cloneCommand() {
         return new InitializeAutoResizeColumnsCommand(this);
     }
@@ -54,15 +55,15 @@ public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
     // Accessors
 
     public GCFactory getGCFactory() {
-        return gcFactory;
+        return this.gcFactory;
     }
 
     public IConfigRegistry getConfigRegistry() {
-        return configRegistry;
+        return this.configRegistry;
     }
 
     public ILayer getSourceLayer() {
-        return sourceLayer;
+        return this.sourceLayer;
     }
 
     public void setSelectedColumnPositions(int[] selectedColumnPositions) {
@@ -70,6 +71,6 @@ public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
     }
 
     public int[] getColumnPositions() {
-        return selectedColumnPositions;
+        return this.selectedColumnPositions;
     }
 }

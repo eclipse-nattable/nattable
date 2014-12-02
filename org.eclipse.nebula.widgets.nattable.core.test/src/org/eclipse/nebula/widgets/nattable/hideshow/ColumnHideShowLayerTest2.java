@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -40,24 +40,24 @@ public class ColumnHideShowLayerTest2 {
                         + "A1 | B1 | C1 | D1 \n" + "A2 | B2 | C2 | D2 \n"
                         + "A3 | B3 | C3 | D3 \n");
 
-        hideShowLayer = new ColumnHideShowLayer(dataLayer);
+        this.hideShowLayer = new ColumnHideShowLayer(dataLayer);
     }
 
     @Test
     public void hideColumn() {
-        hideShowLayer
+        this.hideShowLayer
                 .hideColumnPositions(Arrays.asList(new Integer[] { 0, 2 }));
 
         TestLayer expectedLayer = new TestLayer(2, 4, "1:1;100 | 3:3;100",
                 "0:0;40  | 1:1;40  | 2:2;40  | 3:3;40", "B0 | D0 \n"
                         + "B1 | D1 \n" + "B2 | D2 \n" + "B3 | D3 \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, hideShowLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.hideShowLayer);
     }
 
     @Test
     public void hideLastColumn() throws Exception {
-        hideShowLayer.hideColumnPositions(Arrays.asList(new Integer[] { 3 }));
+        this.hideShowLayer.hideColumnPositions(Arrays.asList(new Integer[] { 3 }));
 
         TestLayer expectedLayer = new TestLayer(3, 4,
                 "0:0;100 | 1:1;100 | 2:2;100",
@@ -65,7 +65,7 @@ public class ColumnHideShowLayerTest2 {
                         + "A1 | B1 | C1 \n" + "A2 | B2 | C2 \n"
                         + "A3 | B3 | C3 \n");
 
-        LayerAssert.assertLayerEquals(expectedLayer, hideShowLayer);
+        LayerAssert.assertLayerEquals(expectedLayer, this.hideShowLayer);
     }
 
     @Test

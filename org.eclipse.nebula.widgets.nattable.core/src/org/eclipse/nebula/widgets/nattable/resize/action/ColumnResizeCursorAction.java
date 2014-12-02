@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -23,21 +23,23 @@ public class ColumnResizeCursorAction implements IMouseAction {
 
     private Cursor columnResizeCursor;
 
+    @Override
     public void run(NatTable natTable, MouseEvent event) {
-        if (columnResizeCursor == null) {
-            columnResizeCursor = new Cursor(Display.getDefault(),
+        if (this.columnResizeCursor == null) {
+            this.columnResizeCursor = new Cursor(Display.getDefault(),
                     SWT.CURSOR_SIZEWE);
 
             natTable.addDisposeListener(new DisposeListener() {
 
+                @Override
                 public void widgetDisposed(DisposeEvent e) {
-                    columnResizeCursor.dispose();
+                    ColumnResizeCursorAction.this.columnResizeCursor.dispose();
                 }
 
             });
         }
 
-        natTable.setCursor(columnResizeCursor);
+        natTable.setCursor(this.columnResizeCursor);
     }
 
 }

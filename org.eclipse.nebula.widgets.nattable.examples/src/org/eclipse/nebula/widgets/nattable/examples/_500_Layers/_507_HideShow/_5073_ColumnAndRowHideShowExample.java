@@ -49,10 +49,10 @@ import org.eclipse.swt.widgets.Control;
  * Simple example showing how to add the {@link ColumnHideShowLayer} and the
  * {@link RowHideShowLayer} to the layer composition of a grid and how to add
  * the corresponding actions to the header menus.
- * 
+ *
  * Also adds the functionality to manage NatTable states to proof that the
  * visibility states are stored and loaded correctly.
- * 
+ *
  * @author Dirk Fauth
  *
  */

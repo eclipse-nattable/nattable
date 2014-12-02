@@ -23,93 +23,93 @@ public class SliderScroller implements IScroller<Slider> {
 
     @Override
     public Slider getUnderlying() {
-        return slider;
+        return this.slider;
     }
 
     @Override
     public boolean isDisposed() {
-        return slider.isDisposed();
+        return this.slider.isDisposed();
     }
 
     @Override
     public void addListener(int eventType, Listener listener) {
-        slider.addListener(eventType, listener);
+        this.slider.addListener(eventType, listener);
     }
 
     @Override
     public void removeListener(int eventType, Listener listener) {
-        slider.removeListener(eventType, listener);
+        this.slider.removeListener(eventType, listener);
     }
 
     @Override
     public int getSelection() {
-        return slider.getSelection();
+        return this.slider.getSelection();
     }
 
     @Override
     public void setSelection(int value) {
-        slider.setSelection(value);
+        this.slider.setSelection(value);
     }
 
     @Override
     public int getMaximum() {
-        return slider.getMaximum();
+        return this.slider.getMaximum();
     }
 
     @Override
     public void setMaximum(int value) {
-        slider.setMaximum(value);
-        slider.update();
+        this.slider.setMaximum(value);
+        this.slider.update();
     }
 
     @Override
     public int getPageIncrement() {
-        return slider.getPageIncrement();
+        return this.slider.getPageIncrement();
     }
 
     @Override
     public void setPageIncrement(int value) {
-        slider.setPageIncrement(value);
+        this.slider.setPageIncrement(value);
     }
 
     @Override
     public int getThumb() {
-        return slider.getThumb();
+        return this.slider.getThumb();
     }
 
     @Override
     public void setThumb(int value) {
-        slider.setThumb(value);
+        this.slider.setThumb(value);
     }
 
     @Override
     public int getIncrement() {
-        return slider.getIncrement();
+        return this.slider.getIncrement();
     }
 
     @Override
     public void setIncrement(int value) {
-        slider.setIncrement(value);
+        this.slider.setIncrement(value);
     }
 
     @Override
     public boolean getEnabled() {
-        return slider.getEnabled();
+        return this.slider.getEnabled();
     }
 
     @Override
     public void setEnabled(boolean b) {
-        slider.setEnabled(b);
+        this.slider.setEnabled(b);
     }
 
     @Override
     public boolean getVisible() {
-        return slider.getVisible();
+        return this.slider.getVisible();
     }
 
     @Override
     public void setVisible(boolean b) {
-        slider.setVisible(b);
+        this.slider.setVisible(b);
     }
 
 }

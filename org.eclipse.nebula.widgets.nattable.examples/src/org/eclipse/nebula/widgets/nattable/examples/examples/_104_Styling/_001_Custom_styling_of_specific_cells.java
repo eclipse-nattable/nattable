@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -65,6 +65,7 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
     private static final String FOO_LABEL = "FOO";
     private static final String BAR_LABEL = "BAR";
 
+    @Override
     public Control createExampleControl(Composite parent) {
         List<Person> myList = new ArrayList<Person>();
         for (int i = 1; i <= 100; i++) {
@@ -83,6 +84,7 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 
         // Custom label "FOO" for cell at column, row index (1, 5)
         IConfigLabelAccumulator cellLabelAccumulator = new IConfigLabelAccumulator() {
+            @Override
             public void accumulateConfigLabels(LabelStack configLabels,
                     int columnPosition, int rowPosition) {
                 int columnIndex = bodyLayer
@@ -121,14 +123,15 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
             {
                 // override the LineBorderDecorator here to show how to paint
                 // borders on single sides of a cell
-                cellPainter = new CustomLineBorderDecorator(new TextPainter());
+                this.cellPainter = new CustomLineBorderDecorator(new TextPainter());
                 // set a border style
-                borderStyle = new BorderStyle(2, GUIHelper.COLOR_BLUE,
+                this.borderStyle = new BorderStyle(2, GUIHelper.COLOR_BLUE,
                         LineStyleEnum.DASHDOT);
             }
         });
         // Custom style for label "FOO"
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
+            @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
                 Style cellStyle = new Style();
                 cellStyle.setAttributeValue(

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -53,17 +53,17 @@ public class TickUpdateCommandHandler extends
 
     @Override
     public boolean doCommand(TickUpdateCommand command) {
-        PositionCoordinate[] selectedPositions = selectionLayer
+        PositionCoordinate[] selectedPositions = this.selectionLayer
                 .getSelectedCellPositions();
         IConfigRegistry configRegistry = command.getConfigRegistry();
 
         // Tick update for multiple cells in selection
         if (selectedPositions.length > 1) {
             // Can all cells be updated ?
-            if (EditUtils.allCellsEditable(selectionLayer, configRegistry)
-                    && EditUtils.isEditorSame(selectionLayer, configRegistry)
+            if (EditUtils.allCellsEditable(this.selectionLayer, configRegistry)
+                    && EditUtils.isEditorSame(this.selectionLayer, configRegistry)
                     && EditUtils
-                            .isConverterSame(selectionLayer, configRegistry)) {
+                            .isConverterSame(this.selectionLayer, configRegistry)) {
                 for (PositionCoordinate position : selectedPositions) {
                     updateSingleCell(command, position);
                 }
@@ -71,7 +71,7 @@ public class TickUpdateCommandHandler extends
         } else {
             // Tick update for single selected cell
             updateSingleCell(command,
-                    selectionLayer.getLastSelectedCellPosition());
+                    this.selectionLayer.getLastSelectedCellPosition());
         }
 
         return true;
@@ -81,7 +81,7 @@ public class TickUpdateCommandHandler extends
      * Will calculate the new value after tick update processing for the cell at
      * the given coordinates, trying to update the value represented by that
      * cell. The update will only be processed if the new value is valid.
-     * 
+     *
      * @param command
      *            The command to process
      * @param selectedPosition
@@ -90,7 +90,7 @@ public class TickUpdateCommandHandler extends
      */
     private void updateSingleCell(TickUpdateCommand command,
             PositionCoordinate selectedPosition) {
-        ILayerCell cell = selectionLayer.getCellByPosition(
+        ILayerCell cell = this.selectionLayer.getCellByPosition(
                 selectedPosition.columnPosition, selectedPosition.rowPosition);
 
         IConfigRegistry configRegistry = command.getConfigRegistry();
@@ -110,8 +110,8 @@ public class TickUpdateCommandHandler extends
             try {
                 if (validator == null
                         || validator.validate(cell, configRegistry, newValue)) {
-                    selectionLayer.doCommand(new UpdateDataCommand(
-                            selectionLayer, selectedPosition.columnPosition,
+                    this.selectionLayer.doCommand(new UpdateDataCommand(
+                            this.selectionLayer, selectedPosition.columnPosition,
                             selectedPosition.rowPosition, newValue));
                 } else {
                     log.warn("Tick update failed for cell at " + selectedPosition + " and value " + newValue //$NON-NLS-1$ //$NON-NLS-2$
@@ -127,7 +127,7 @@ public class TickUpdateCommandHandler extends
     /**
      * Will calculate the new value for the given cell after tick update is
      * processed.
-     * 
+     *
      * @param command
      *            The command to process
      * @param cell

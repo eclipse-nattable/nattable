@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 
 /**
  * Fixture for the CompositeLayer with 2 rows and 2 columns
- * 
+ *
  * <pre>
  * {@code
  *             |  |
@@ -46,17 +46,17 @@ public class CompositeLayerFixture extends CompositeLayer {
     public CompositeLayerFixture() {
         super(COLUMN_COUNT, ROW_COUNT);
 
-        cornerLayer = new DataLayerFixture(5, 5);
-        setChildLayer(GridRegion.CORNER, cornerLayer, 0, 0);
+        this.cornerLayer = new DataLayerFixture(5, 5);
+        setChildLayer(GridRegion.CORNER, this.cornerLayer, 0, 0);
 
-        colHeaderLayer = new DataLayerFixture(25, 5);
-        setChildLayer(GridRegion.COLUMN_HEADER, colHeaderLayer, 1, 0);
+        this.colHeaderLayer = new DataLayerFixture(25, 5);
+        setChildLayer(GridRegion.COLUMN_HEADER, this.colHeaderLayer, 1, 0);
 
-        rowHeaderLayer = new DataLayerFixture(10, 5);
-        setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0, 1);
+        this.rowHeaderLayer = new DataLayerFixture(10, 5);
+        setChildLayer(GridRegion.ROW_HEADER, this.rowHeaderLayer, 0, 1);
 
-        bodyLayer = new ViewportLayerFixture();
-        setChildLayer(GridRegion.BODY, bodyLayer, 1, 1);
+        this.bodyLayer = new ViewportLayerFixture();
+        setChildLayer(GridRegion.BODY, this.bodyLayer, 1, 1);
     }
 
     /**
@@ -65,16 +65,16 @@ public class CompositeLayerFixture extends CompositeLayer {
     public CompositeLayerFixture(int width, int height) {
         super(COLUMN_COUNT, ROW_COUNT);
 
-        cornerLayer = new DataLayerFixture(width, height);
-        setChildLayer(GridRegion.CORNER, cornerLayer, 0, 0);
+        this.cornerLayer = new DataLayerFixture(width, height);
+        setChildLayer(GridRegion.CORNER, this.cornerLayer, 0, 0);
 
-        colHeaderLayer = new DataLayerFixture(width, height);
-        setChildLayer(GridRegion.COLUMN_HEADER, colHeaderLayer, 1, 0);
+        this.colHeaderLayer = new DataLayerFixture(width, height);
+        setChildLayer(GridRegion.COLUMN_HEADER, this.colHeaderLayer, 1, 0);
 
-        rowHeaderLayer = new DataLayerFixture(width, height);
-        setChildLayer(GridRegion.ROW_HEADER, rowHeaderLayer, 0, 1);
+        this.rowHeaderLayer = new DataLayerFixture(width, height);
+        setChildLayer(GridRegion.ROW_HEADER, this.rowHeaderLayer, 0, 1);
 
-        bodyLayer = new ViewportLayerFixture(width, height);
-        setChildLayer(GridRegion.BODY, bodyLayer, 1, 1);
+        this.bodyLayer = new ViewportLayerFixture(width, height);
+        setChildLayer(GridRegion.BODY, this.bodyLayer, 1, 1);
     }
 }

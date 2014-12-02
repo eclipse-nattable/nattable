@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -70,11 +70,11 @@ public class DefaultColumnGroupHeaderLayerConfiguration implements
         uiBindingRegistry.registerMouseDragMode(MouseEventMatcher
                 .columnGroupHeaderLeftClick(SWT.NONE), new AggregateDragMode(
                 new CellDragMode(), new ColumnGroupHeaderReorderDragMode(
-                        columnGroupModel)));
+                        this.columnGroupModel)));
 
         uiBindingRegistry.registerMouseDragMode(
                 MouseEventMatcher.columnHeaderLeftClick(SWT.NONE),
-                new ColumnHeaderReorderDragMode(columnGroupModel));
+                new ColumnHeaderReorderDragMode(this.columnGroupModel));
 
         // added NoOpMouseAction on single click because of Bug 428901
         uiBindingRegistry.registerFirstSingleClickBinding(

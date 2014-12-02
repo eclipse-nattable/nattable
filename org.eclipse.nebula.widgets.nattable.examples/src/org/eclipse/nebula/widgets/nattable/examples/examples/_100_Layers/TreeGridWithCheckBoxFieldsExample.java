@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -100,6 +100,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
                 new TreeGridWithCheckBoxFieldsExample());
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         ConfigRegistry configRegistry = new ConfigRegistry();
         configRegistry.registerConfigAttribute(
@@ -107,7 +108,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 
         // Underlying data source
         createDatums();
-        EventList<Datum> eventList = GlazedLists.eventList(datums.values());
+        EventList<Datum> eventList = GlazedLists.eventList(this.datums.values());
         SortedList<Datum> sortedList = new SortedList<Datum>(eventList, null);
         // TreeList <RowDataFixture> treeList = new
         // TreeList<RowDataFixture>(eventList, new RowDataFixtureTreeFormat(),
@@ -204,7 +205,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 
         // Grid
         GridLayer gridLayer = new GridLayer(viewportLayer,
-        // columnHeaderLayer,
+                // columnHeaderLayer,
                 sortHeaderLayer, rowHeaderLayer, cornerLayer);
 
         NatTable natTable = new NatTable(parent, gridLayer, false);
@@ -236,6 +237,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
             }
         };
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
+            @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
                 // Column header
                 configRegistry
@@ -335,6 +337,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
             this.sortModel = sortModel;
         }
 
+        @Override
         public void getPath(List<Datum> path, Datum element) {
             path.add(element);
             Datum parent = element.getParent();
@@ -345,23 +348,27 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
             Collections.reverse(path);
         }
 
+        @Override
         public boolean allowsChildren(Datum element) {
             return true;
         }
 
+        @Override
         public Comparator<Datum> getComparator(int depth) {
             return new SortableTreeComparator<Datum>(
                     GlazedLists.beanPropertyComparator(Datum.class, "self"),
-                    sortModel);
+                    this.sortModel);
         }
     }
 
     private static class DatumExpansionModel implements
             TreeList.ExpansionModel<Datum> {
+        @Override
         public boolean isExpanded(Datum element, List<Datum> path) {
             return true;
         }
 
+        @Override
         public void setExpanded(Datum element, List<Datum> path,
                 boolean expanded) {}
     }
@@ -407,15 +414,15 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         }
 
         public Datum getParent() {
-            return parent;
+            return this.parent;
         }
 
         public void addChild(Datum child) {
-            children.add(child);
+            this.children.add(child);
         }
 
         public List<Datum> getChildren() {
-            return children;
+            return this.children;
         }
 
         public Datum getSelf() {
@@ -423,40 +430,40 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public boolean isOn() {
-            if (children.size() == 0) {
-                return on;
+            if (this.children.size() == 0) {
+                return this.on;
             } else {
                 return getCheckBoxState() == CheckBoxStateEnum.CHECKED;
             }
         }
 
         public void setOn(boolean on) {
-            if (children.size() == 0) {
+            if (this.children.size() == 0) {
                 this.on = on;
             } else {
-                for (Datum child : children) {
+                for (Datum child : this.children) {
                     child.setOn(on);
                 }
             }
         }
 
         public int getBar() {
-            return bar;
+            return this.bar;
         }
 
         public CheckBoxStateEnum getCheckBoxState() {
-            if (children.size() == 0) {
-                return on ? CheckBoxStateEnum.CHECKED
+            if (this.children.size() == 0) {
+                return this.on ? CheckBoxStateEnum.CHECKED
                         : CheckBoxStateEnum.UNCHECKED;
             } else {
                 boolean atLeastOneChildChecked = false;
                 boolean atLeastOneChildUnchecked = false;
 
-                for (Datum child : children) {
+                for (Datum child : this.children) {
                     CheckBoxStateEnum childCheckBoxState = child
                             .getCheckBoxState();
                     switch (childCheckBoxState) {
@@ -485,13 +492,14 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
 
         @Override
         public String toString() {
-            return "[" + "parent=" + parent + ", name=" + name + ", on=" + on
-                    + ", bar=" + bar + "]";
+            return "[" + "parent=" + this.parent + ", name=" + this.name + ", on=" + this.on
+                    + ", bar=" + this.bar + "]";
         }
 
         /**
          * Comparison is based on name only
          */
+        @Override
         public int compareTo(Datum o) {
             return this.name.compareTo(o.name);
         }
@@ -501,8 +509,8 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
     private Map<String, Datum> datums = new HashMap<String, Datum>();
 
     private void createDatum(String parent, String foo, boolean fooFlag, int bar) {
-        Datum datum = new Datum(datums.get(parent), foo, fooFlag, bar);
-        datums.put(foo, datum);
+        Datum datum = new Datum(this.datums.get(parent), foo, fooFlag, bar);
+        this.datums.put(foo, datum);
     }
 
     private void createDatums() {

@@ -35,7 +35,7 @@ public class MultiRowReorderCommandHandler extends
         int toRowPosition = command.getToRowPosition();
         boolean reorderToTopEdge = command.isReorderToTopEdge();
 
-        rowReorderLayer.reorderMultipleRowPositions(fromRowPositions,
+        this.rowReorderLayer.reorderMultipleRowPositions(fromRowPositions,
                 toRowPosition, reorderToTopEdge);
 
         return true;

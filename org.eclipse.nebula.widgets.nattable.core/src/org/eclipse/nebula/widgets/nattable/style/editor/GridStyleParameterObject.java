@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -39,30 +39,30 @@ public class GridStyleParameterObject {
     }
 
     private void init(IConfigRegistry configRegistry) {
-        evenRowStyle = configRegistry.getConfigAttribute(
+        this.evenRowStyle = configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.EVEN_ROW_CONFIG_TYPE);
-        evenRowColor = evenRowStyle
+        this.evenRowColor = this.evenRowStyle
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 
-        oddRowStyle = configRegistry.getConfigAttribute(
+        this.oddRowStyle = configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
                 AlternatingRowConfigLabelAccumulator.ODD_ROW_CONFIG_TYPE);
-        oddRowColor = oddRowStyle
+        this.oddRowColor = this.oddRowStyle
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 
-        selectionStyle = configRegistry.getConfigAttribute(
+        this.selectionStyle = configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT);
-        selectionColor = selectionStyle
+        this.selectionColor = this.selectionStyle
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
 
-        tableStyle = configRegistry.getConfigAttribute(
+        this.tableStyle = configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL);
-        tableFont = tableStyle.getAttributeValue(CellStyleAttributes.FONT);
+        this.tableFont = this.tableStyle.getAttributeValue(CellStyleAttributes.FONT);
     }
 
     public IConfigRegistry getConfigRegistry() {
-        return configRegistry;
+        return this.configRegistry;
     }
 
 }

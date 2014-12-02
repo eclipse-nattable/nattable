@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,9 +24,9 @@ import java.util.Map;
  * Duplicated from the {@link RowDataListFixture} as the overriden hashcode and
  * equals in the RowDataFixture doesn't play nicely with hashmaps used in the
  * RowGroupModel.
- * 
+ *
  * @author stefan bolton
- * 
+ *
  */
 public class RowGroupDataListFixture {
 

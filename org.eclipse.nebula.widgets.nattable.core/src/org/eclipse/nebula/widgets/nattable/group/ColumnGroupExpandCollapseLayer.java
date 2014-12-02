@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -52,10 +52,10 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer
         // this is the same behaviour as it was before the modifications to
         // support
         // expand/collapse for two level column groups
-        if (row >= models.length) {
-            row = models.length - 1;
+        if (row >= this.models.length) {
+            row = this.models.length - 1;
         }
-        return models[row];
+        return this.models[row];
     }
 
     // Expand/collapse
@@ -72,7 +72,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer
         if (isHiddeninUnderlyingLayer)
             return true;
 
-        for (ColumnGroupModel model : models) {
+        for (ColumnGroupModel model : this.models) {
             ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
             boolean isCollapsedAndStaticColumn = columnGroup != null
                     && columnGroup.isCollapsed()
@@ -96,7 +96,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer
         for (int i = 0; i < underlyingColumnCount; i++) {
             int columnIndex = underlyingLayer.getColumnIndexByPosition(i);
 
-            for (ColumnGroupModel model : models) {
+            for (ColumnGroupModel model : this.models) {
                 ColumnGroup columnGroup = model
                         .getColumnGroupByIndex(columnIndex);
 

@@ -23,6 +23,7 @@ import org.eclipse.swt.SWT;
  */
 public class DefaultRowReorderBindings extends AbstractUiBindingConfiguration {
 
+    @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         uiBindingRegistry.registerMouseDragMode(MouseEventMatcher
                 .rowHeaderLeftClick(SWT.NONE), new AggregateDragMode(

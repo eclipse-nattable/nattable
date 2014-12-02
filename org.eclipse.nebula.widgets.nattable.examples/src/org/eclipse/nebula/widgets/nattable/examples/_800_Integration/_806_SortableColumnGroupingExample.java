@@ -59,7 +59,7 @@ import ca.odell.glazedlists.SortedList;
  * layer composition of a grid and how to add the corresponding actions to the
  * column header menu. This example also adds the ability to sort the data
  * model.
- * 
+ *
  * @author Dirk Fauth
  *
  */

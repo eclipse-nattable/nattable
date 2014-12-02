@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ public class CellSelectionDragMode implements IDragMode {
     @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
         natTable.forceFocus();
-        lastDragInCellPosition = new Point(
+        this.lastDragInCellPosition = new Point(
                 natTable.getColumnPositionByX(event.x),
                 natTable.getRowPositionByY(event.y));
     }
@@ -43,9 +43,9 @@ public class CellSelectionDragMode implements IDragMode {
         if (selectedColumnPosition > -1 && selectedRowPosition > -1) {
             Point dragInCellPosition = new Point(selectedColumnPosition,
                     selectedRowPosition);
-            if (lastDragInCellPosition == null
-                    || !dragInCellPosition.equals(lastDragInCellPosition)) {
-                lastDragInCellPosition = dragInCellPosition;
+            if (this.lastDragInCellPosition == null
+                    || !dragInCellPosition.equals(this.lastDragInCellPosition)) {
+                this.lastDragInCellPosition = dragInCellPosition;
 
                 fireSelectionCommand(natTable, selectedColumnPosition,
                         selectedRowPosition, true, false);
@@ -65,6 +65,6 @@ public class CellSelectionDragMode implements IDragMode {
     }
 
     private void endDrag() {
-        lastDragInCellPosition = null;
+        this.lastDragInCellPosition = null;
     }
 }

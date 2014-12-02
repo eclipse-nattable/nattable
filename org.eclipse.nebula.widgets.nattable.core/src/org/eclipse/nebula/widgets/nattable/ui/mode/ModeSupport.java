@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,93 +46,93 @@ public class ModeSupport implements KeyListener, MouseListener,
 
     /**
      * Register an event handler to handle events for a given mode.
-     * 
+     *
      * @param mode
      *            The mode.
      * @param modeEventHandler
      *            An IModeEventHandler instance that will handle events in the
      *            given mode.
-     * 
+     *
      * @see IModeEventHandler
      */
     public void registerModeEventHandler(String mode,
             IModeEventHandler modeEventHandler) {
-        modeEventHandlerMap.put(mode, modeEventHandler);
+        this.modeEventHandlerMap.put(mode, modeEventHandler);
     }
 
     /**
      * Switch to the given mode.
-     * 
+     *
      * @param mode
      *            The target mode to switch to.
      */
     public void switchMode(String mode) {
-        if (currentModeEventHandler != null) {
-            currentModeEventHandler.cleanup();
+        if (this.currentModeEventHandler != null) {
+            this.currentModeEventHandler.cleanup();
         }
-        currentModeEventHandler = modeEventHandlerMap.get(mode);
+        this.currentModeEventHandler = this.modeEventHandlerMap.get(mode);
     }
 
     public void switchMode(IModeEventHandler modeEventHandler) {
-        if (currentModeEventHandler != null) {
-            currentModeEventHandler.cleanup();
+        if (this.currentModeEventHandler != null) {
+            this.currentModeEventHandler.cleanup();
         }
-        currentModeEventHandler = modeEventHandler;
+        this.currentModeEventHandler = modeEventHandler;
     }
 
     @Override
     public void keyPressed(KeyEvent event) {
-        currentModeEventHandler.keyPressed(event);
+        this.currentModeEventHandler.keyPressed(event);
     }
 
     @Override
     public void keyReleased(KeyEvent event) {
-        currentModeEventHandler.keyReleased(event);
+        this.currentModeEventHandler.keyReleased(event);
     }
 
     @Override
     public void mouseDoubleClick(MouseEvent event) {
-        currentModeEventHandler.mouseDoubleClick(event);
+        this.currentModeEventHandler.mouseDoubleClick(event);
     }
 
     @Override
     public void mouseDown(MouseEvent event) {
-        currentModeEventHandler.mouseDown(event);
+        this.currentModeEventHandler.mouseDown(event);
     }
 
     @Override
     public void mouseUp(MouseEvent event) {
-        currentModeEventHandler.mouseUp(event);
+        this.currentModeEventHandler.mouseUp(event);
     }
 
     @Override
     public void mouseMove(MouseEvent event) {
-        currentModeEventHandler.mouseMove(event);
+        this.currentModeEventHandler.mouseMove(event);
     }
 
     @Override
     public void mouseEnter(MouseEvent e) {
-        currentModeEventHandler.mouseEnter(e);
+        this.currentModeEventHandler.mouseEnter(e);
     }
 
     @Override
     public void mouseExit(MouseEvent e) {
-        currentModeEventHandler.mouseExit(e);
+        this.currentModeEventHandler.mouseExit(e);
     }
 
     @Override
     public void mouseHover(MouseEvent e) {
-        currentModeEventHandler.mouseHover(e);
+        this.currentModeEventHandler.mouseHover(e);
     }
 
     @Override
     public void focusGained(FocusEvent event) {
-        currentModeEventHandler.focusGained(event);
+        this.currentModeEventHandler.focusGained(event);
     }
 
     @Override
     public void focusLost(FocusEvent event) {
-        currentModeEventHandler.focusLost(event);
+        this.currentModeEventHandler.focusLost(event);
     }
 
 }

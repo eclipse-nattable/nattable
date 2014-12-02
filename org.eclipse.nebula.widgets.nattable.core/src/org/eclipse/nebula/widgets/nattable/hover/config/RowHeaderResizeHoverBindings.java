@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -53,7 +53,7 @@ public class RowHeaderResizeHoverBindings extends
         // apply a hover styling on moving the mouse over a NatTable and clear
         // the cursor
         uiBindingRegistry.registerMouseMoveBinding(new MouseEventMatcher(
-                GridRegion.ROW_HEADER), new HoverStylingAction(layer));
+                GridRegion.ROW_HEADER), new HoverStylingAction(this.layer));
 
         // clear any hover styling if the mouse is moved out of the region area
         // uiBindingRegistry.registerMouseMoveBinding(

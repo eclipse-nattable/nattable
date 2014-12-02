@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Control;
  * Simple example showing how to add the {@link RowHideShowLayer} to the layer
  * composition of a grid and how to add the corresponding actions to the row
  * header menu.
- * 
+ *
  * @author Dirk Fauth
  *
  */

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -17,10 +17,10 @@ import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Implementations are responsible for painting a cell.
- * 
+ *
  * Custom {@link ICellPainter} can be registered in the {@link IConfigRegistry}.
  * This is a mechanism for plugging in custom cell painting.
- * 
+ *
  * @see PercentageBarCellPainter
  */
 public interface ICellPainter {
@@ -31,7 +31,7 @@ public interface ICellPainter {
     /**
      * Get the preferred width of the cell when rendered by this painter. Used
      * for auto-resize.
-     * 
+     *
      * @param cell
      *            The cell for which the preferred width is requested.
      * @param gc
@@ -48,7 +48,7 @@ public interface ICellPainter {
     /**
      * Get the preferred height of the cell when rendered by this painter. Used
      * for auto-resize.
-     * 
+     *
      * @param cell
      *            The cell for which the preferred height is requested.
      * @param gc

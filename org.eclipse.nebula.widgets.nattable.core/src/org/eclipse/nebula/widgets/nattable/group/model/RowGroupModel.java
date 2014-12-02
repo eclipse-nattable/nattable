@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -26,9 +26,9 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
  * A thread-safe implementation of {@link IRowGroupModel} which is optimised for
  * larger data-sets (it should cope with at least 10k rows spread across 2-300
  * groups).
- * 
+ *
  * @author Stefan Bolton
- * 
+ *
  * @param <T>
  */
 public class RowGroupModel<T> implements IRowGroupModel<T> {
@@ -53,29 +53,34 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
     private boolean suppressNoficiations;
 
     public RowGroupModel() {
-        rowToGroups = new ConcurrentHashMap<T, IRowGroup<T>>();
-        namesToGroups = new ConcurrentHashMap<String, IRowGroup<T>>();
+        this.rowToGroups = new ConcurrentHashMap<T, IRowGroup<T>>();
+        this.namesToGroups = new ConcurrentHashMap<String, IRowGroup<T>>();
         this.rowCache = new RowCache<T>();
-        listeners = new HashSet<IRowGroupModelListener>();
-        suppressNoficiations = false;
+        this.listeners = new HashSet<IRowGroupModelListener>();
+        this.suppressNoficiations = false;
     }
 
+    @Override
     public T getRowFromIndexCache(final int rowIndex) {
         return this.rowCache.getRowFromIndexCache(rowIndex);
     }
 
+    @Override
     public int getIndexFromRowCache(final T row) {
         return this.rowCache.getIndexFromRowCache(row);
     };
 
+    @Override
     public void invalidateIndexCache() {
         this.rowCache.invalidateIndexCache();
     }
 
+    @Override
     public void setDataProvider(IRowDataProvider<T> dataProvider) {
         this.rowCache.setDataProvider(dataProvider);
     }
 
+    @Override
     public IRowDataProvider<T> getDataProvider() {
         return this.rowCache.getDataProvider();
     }
@@ -86,11 +91,12 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
      * has changed.
      * </p>
      */
+    @Override
     public void notifyListeners() {
         invalidateIndexCache();
 
-        if (!suppressNoficiations) {
-            for (IRowGroupModelListener listener : listeners) {
+        if (!this.suppressNoficiations) {
+            for (IRowGroupModelListener listener : this.listeners) {
                 listener.rowGroupModelChanged();
             }
         }
@@ -98,7 +104,7 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
 
     /**
      * Set to true to stop model change notifications.
-     * 
+     *
      * @param suppressNoficiations
      */
     public void setSuppressNoficiations(boolean suppressNoficiations) {
@@ -106,67 +112,73 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
     }
 
     public boolean isSuppressNoficiations() {
-        return suppressNoficiations;
+        return this.suppressNoficiations;
     }
 
     void addMemberRow(final T row, final RowGroup<T> rowGroup) {
-        rowToGroups.put(row, rowGroup);
+        this.rowToGroups.put(row, rowGroup);
     }
 
     void removeMemberRow(final T row) {
-        rowToGroups.remove(row);
+        this.rowToGroups.remove(row);
     }
 
+    @Override
     public void addRowGroups(final List<IRowGroup<T>> rowGroups) {
 
         // Add the group into the model now.
         for (IRowGroup<T> rowGroup : rowGroups) {
-            namesToGroups.put(rowGroup.getGroupName(), rowGroup);
+            this.namesToGroups.put(rowGroup.getGroupName(), rowGroup);
         }
 
         notifyListeners();
     }
 
+    @Override
     public boolean addRowGroup(final IRowGroup<T> rowGroup) {
 
         // Only allow unique names.
-        if (namesToGroups.containsKey(rowGroup.getGroupName())) {
+        if (this.namesToGroups.containsKey(rowGroup.getGroupName())) {
             return false;
         }
 
         // Add the group into the model now.
-        namesToGroups.put(rowGroup.getGroupName(), rowGroup);
+        this.namesToGroups.put(rowGroup.getGroupName(), rowGroup);
 
         notifyListeners();
         return true;
     }
 
+    @Override
     public boolean removeRowGroup(final IRowGroup<T> rowGroup) {
 
-        boolean removed = namesToGroups.containsKey(rowGroup.getGroupName());
+        boolean removed = this.namesToGroups.containsKey(rowGroup.getGroupName());
 
         if (removed) {
             // Remove the group itself now.
-            namesToGroups.remove(rowGroup.getGroupName());
+            this.namesToGroups.remove(rowGroup.getGroupName());
             notifyListeners();
         }
 
         return removed;
     }
 
+    @Override
     public List<IRowGroup<T>> getRowGroups() {
         return Collections.unmodifiableList(new ArrayList<IRowGroup<T>>(
-                namesToGroups.values()));
+                this.namesToGroups.values()));
     }
 
+    @Override
     public IRowGroup<T> getRowGroupForName(final String groupName) {
-        return namesToGroups.get(groupName);
+        return this.namesToGroups.get(groupName);
     }
 
+    @Override
     public IRowGroup<T> getRowGroupForRow(T row) {
 
-        if (rowToGroups.containsKey(row)) {
-            return getUltimateParent(rowToGroups.get(row));
+        if (this.rowToGroups.containsKey(row)) {
+            return getUltimateParent(this.rowToGroups.get(row));
         }
 
         return null;
@@ -177,29 +189,35 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
                 : getUltimateParent(group.getParentGroup()));
     }
 
+    @Override
     public boolean isEmpty() {
-        return namesToGroups.isEmpty();
+        return this.namesToGroups.isEmpty();
     }
 
+    @Override
     public void clear() {
-        namesToGroups.clear();
-        rowToGroups.clear();
-        rowCache.invalidateIndexCache();
+        this.namesToGroups.clear();
+        this.rowToGroups.clear();
+        this.rowCache.invalidateIndexCache();
         notifyListeners();
     }
 
+    @Override
     public void registerRowGroupModelListener(
             final IRowGroupModelListener listener) {
         this.listeners.add(listener);
     }
 
+    @Override
     public void unregisterRowGroupModelListener(
             final IRowGroupModelListener listener) {
         this.listeners.remove(listener);
     }
 
+    @Override
     public void saveState(String prefix, Properties properties) {}
 
+    @Override
     public void loadState(String prefix, Properties properties) {}
 
     @Override
@@ -207,8 +225,8 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
         StringBuilder sb = new StringBuilder();
         sb.append(" ===== Row Group Model ==== \n"); //$NON-NLS-1$
 
-        synchronized (namesToGroups) {
-            for (IRowGroup<T> rowGroup : namesToGroups.values()) {
+        synchronized (this.namesToGroups) {
+            for (IRowGroup<T> rowGroup : this.namesToGroups.values()) {
                 sb.append(((RowGroup<T>) rowGroup).toString());
             }
         }

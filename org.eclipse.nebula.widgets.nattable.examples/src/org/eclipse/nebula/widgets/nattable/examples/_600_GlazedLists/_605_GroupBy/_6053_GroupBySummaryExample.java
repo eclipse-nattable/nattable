@@ -86,7 +86,7 @@ import ca.odell.glazedlists.TransformedList;
  * Simple example showing how to add the group by feature to the layer
  * composition of a grid in conjunction with showing summary values of
  * groupings.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -215,9 +215,9 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
         // add sorting configuration
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
-        sumMoneySummaryProvider = new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(
+        this.sumMoneySummaryProvider = new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(
                 columnPropertyAccessor);
-        avgMoneySummaryProvider = new AverageMoneyGroupBySummaryProvider();
+        this.avgMoneySummaryProvider = new AverageMoneyGroupBySummaryProvider();
 
         // add group by summary configuration
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
@@ -226,7 +226,7 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
             public void configureRegistry(IConfigRegistry configRegistry) {
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                        sumMoneySummaryProvider, DisplayMode.NORMAL,
+                        _6053_GroupBySummaryExample.this.sumMoneySummaryProvider, DisplayMode.NORMAL,
                         GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
                 configRegistry.registerConfigAttribute(
@@ -320,16 +320,16 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
                 // calculation gets triggered
                 bodyLayerStack.getBodyDataLayer().clearCache();
 
-                useMoneySum = !useMoneySum;
-                if (useMoneySum) {
+                _6053_GroupBySummaryExample.this.useMoneySum = !_6053_GroupBySummaryExample.this.useMoneySum;
+                if (_6053_GroupBySummaryExample.this.useMoneySum) {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            sumMoneySummaryProvider, DisplayMode.NORMAL,
+                            _6053_GroupBySummaryExample.this.sumMoneySummaryProvider, DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 } else {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            avgMoneySummaryProvider, DisplayMode.NORMAL,
+                            _6053_GroupBySummaryExample.this.avgMoneySummaryProvider, DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 }
                 natTable.doCommand(new VisualRefreshCommand());
@@ -342,7 +342,7 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
-     * 
+     *
      * @param <T>
      */
     class BodyLayerStack<T> extends AbstractLayerTransform {
@@ -373,13 +373,13 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
 
             // Use the GroupByDataLayer instead of the default DataLayer
             this.bodyDataLayer = new GroupByDataLayer<T>(getGroupByModel(),
-                    sortedList, columnPropertyAccessor, configRegistry);
+                    this.sortedList, columnPropertyAccessor, configRegistry);
             // get the IDataProvider that was created by the GroupByDataLayer
-            this.bodyDataProvider = bodyDataLayer.getDataProvider();
+            this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
             GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, sortedList);
+                    this.bodyDataLayer, this.sortedList);
 
             ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
                     glazedListsEventLayer);
@@ -388,8 +388,8 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
             this.selectionLayer = new SelectionLayer(columnHideShowLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(selectionLayer,
-                    bodyDataLayer.getTreeRowModel());
+            TreeLayer treeLayer = new TreeLayer(this.selectionLayer,
+                    this.bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 

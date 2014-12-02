@@ -35,10 +35,10 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
 
     public ColumnHeaderCheckBoxPainter(IUniqueIndexLayer columnDataLayer) {
         this(
-        		columnDataLayer, 
-        		GUIHelper.getImage("checked"), //$NON-NLS-1$
-        		GUIHelper.getImage("semichecked"), //$NON-NLS-1$
-        		GUIHelper.getImage("unchecked") //$NON-NLS-1$
+                columnDataLayer,
+                GUIHelper.getImage("checked"), //$NON-NLS-1$
+                GUIHelper.getImage("semichecked"), //$NON-NLS-1$
+                GUIHelper.getImage("unchecked") //$NON-NLS-1$
         );
     }
 

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -45,6 +45,7 @@ public class Using_a_predefined_configuration_object extends AbstractNatExample 
                 + "configurations. Otherwise NatTable will automatically call configure() on itself during construction.";
     }
 
+    @Override
     public Control createExampleControl(Composite parent) {
         NatTable natTable = new NatTable(parent, false);
 

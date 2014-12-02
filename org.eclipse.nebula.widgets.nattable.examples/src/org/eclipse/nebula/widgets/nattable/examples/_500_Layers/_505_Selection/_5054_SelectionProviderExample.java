@@ -70,7 +70,7 @@ import org.eclipse.swt.widgets.Text;
 /**
  * Example showing how to use JFace ISelectionProvider with a NatTable grid
  * composition.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -146,7 +146,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
                     @Override
                     public void accumulateConfigLabels(LabelStack configLabels,
                             int columnPosition, int rowPosition) {
-                        if (isFirstSelectionProvider) {
+                        if (_5054_SelectionProviderExample.this.isFirstSelectionProvider) {
                             configLabels.addLabelOnTop(ACTIVE_LABEL);
                         }
                     }
@@ -202,7 +202,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
                     @Override
                     public void accumulateConfigLabels(LabelStack configLabels,
                             int columnPosition, int rowPosition) {
-                        if (!isFirstSelectionProvider) {
+                        if (!_5054_SelectionProviderExample.this.isFirstSelectionProvider) {
                             configLabels.addLabelOnTop(ACTIVE_LABEL);
                         }
                     }
@@ -273,8 +273,8 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                isFirstSelectionProvider = !isFirstSelectionProvider;
-                if (isFirstSelectionProvider) {
+                _5054_SelectionProviderExample.this.isFirstSelectionProvider = !_5054_SelectionProviderExample.this.isFirstSelectionProvider;
+                if (_5054_SelectionProviderExample.this.isFirstSelectionProvider) {
                     selectionProvider.updateSelectionProvider(
                             firstSelectionLayer, firstBodyDataProvider);
                 } else {

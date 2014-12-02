@@ -19,7 +19,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
  * <p>
  * Note: On using this handler you are forced to call the UpdateDataCommand or
  * any other action to update the data model yourself!
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -42,6 +42,7 @@ public class DialogEditHandler implements ICellEditHandler {
      * editor will remain visible while a NatCombo will disappear after commit,
      * the editor itself needs to take care of the closing.
      */
+    @Override
     public boolean commit(Object canonicalValue, MoveDirectionEnum direction) {
         this.committedValue = canonicalValue;
         return true;

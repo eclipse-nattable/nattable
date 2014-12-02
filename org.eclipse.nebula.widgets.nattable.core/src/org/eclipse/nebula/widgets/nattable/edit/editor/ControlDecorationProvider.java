@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -79,13 +79,13 @@ public class ControlDecorationProvider {
 
     /**
      * Enables/disables the error decoration.
-     * 
+     *
      * @param enabled
      *            <code>true</code> if a decoration should be added,
      *            <code>false</code> if not.
      */
     public void setErrorDecorationEnabled(boolean enabled) {
-        errorDecorationEnabled = enabled;
+        this.errorDecorationEnabled = enabled;
     }
 
     /**
@@ -95,16 +95,16 @@ public class ControlDecorationProvider {
      * @see ControlDecoration#setDescriptionText(String)
      */
     public void setErrorDecorationText(String errorText) {
-        errorDecorationText = errorText;
-        if (errorDecoration != null) {
-            errorDecoration.setDescriptionText(errorText);
+        this.errorDecorationText = errorText;
+        if (this.errorDecoration != null) {
+            this.errorDecoration.setDescriptionText(errorText);
         }
     }
 
     /**
      * Will show the control decoration adding the given text as description
      * text.
-     * 
+     *
      * @param errorText
      *            the text to be shown in the info hover, or <code>null</code>
      *            if no text should be shown.
@@ -112,9 +112,9 @@ public class ControlDecorationProvider {
      * @see ControlDecoration#showHoverText(String)
      */
     public void showErrorDecorationHover(String errorText) {
-        if (errorDecoration != null) {
-            errorDecoration.show();
-            errorDecoration.showHoverText(errorText);
+        if (this.errorDecoration != null) {
+            this.errorDecoration.show();
+            this.errorDecoration.showHoverText(errorText);
         }
     }
 
@@ -122,7 +122,7 @@ public class ControlDecorationProvider {
      * Configure the id that should be used to retrieve the
      * {@link FieldDecoration} to be used by this
      * {@link ControlDecorationProvider}.
-     * 
+     *
      * @param fieldDecorationId
      *            The String to determine the {@link FieldDecoration} to use by
      *            the {@link ControlDecoration} that is provided by this
@@ -135,7 +135,7 @@ public class ControlDecorationProvider {
     /**
      * Set the position configuration where the decoration should be rendered
      * relative to the control that should be decorated.
-     * 
+     *
      * @param decorationPositionOverride
      *            bit-wise or of position constants (<code>SWT.TOP</code>,
      *            <code>SWT.BOTTOM</code>, <code>SWT.LEFT</code>,
@@ -147,23 +147,23 @@ public class ControlDecorationProvider {
 
     /**
      * Will show the control decoration.
-     * 
+     *
      * @see ControlDecoration#show()
      */
     public void showDecoration() {
-        if (errorDecoration != null) {
-            errorDecoration.show();
+        if (this.errorDecoration != null) {
+            this.errorDecoration.show();
         }
     }
 
     /**
      * Will hide the control decoration.
-     * 
+     *
      * @see ControlDecoration#hide()
      */
     public void hideDecoration() {
-        if (errorDecoration != null) {
-            errorDecoration.hide();
+        if (this.errorDecoration != null) {
+            this.errorDecoration.hide();
         }
     }
 
@@ -172,10 +172,10 @@ public class ControlDecorationProvider {
      * {@link ControlDecoration}
      */
     public void dispose() {
-        if (errorDecoration != null) {
-            errorDecoration.hide();
-            errorDecoration.dispose();
-            errorDecoration = null;
+        if (this.errorDecoration != null) {
+            this.errorDecoration.hide();
+            this.errorDecoration.dispose();
+            this.errorDecoration = null;
         }
     }
 
@@ -183,17 +183,17 @@ public class ControlDecorationProvider {
      * If showing an error decoration is enabled, this method will create and
      * add a {@link ControlDecoration} for the given {@link Control} by using
      * the configured information.
-     * 
+     *
      * @param controlToDecorate
      *            The {@link Control} to create the decoration for.
      */
     public void createErrorDecorationIfRequired(final Control controlToDecorate) {
 
-        if (errorDecorationEnabled) {
+        if (this.errorDecorationEnabled) {
 
             final Image errorImage = FieldDecorationRegistry.getDefault()
-                    .getFieldDecoration(fieldDecorationId).getImage();
-            if (decorationPositionOverride == SWT.DEFAULT) {
+                    .getFieldDecoration(this.fieldDecorationId).getImage();
+            if (this.decorationPositionOverride == SWT.DEFAULT) {
                 controlToDecorate.addPaintListener(new PaintListener() { // Using
                                                                          // a
                                                                          // PaintListener
@@ -221,13 +221,13 @@ public class ControlDecorationProvider {
                                 } else {
                                     position |= SWT.LEFT;
                                 }
-                                errorDecoration = newControlDecoration(
+                                ControlDecorationProvider.this.errorDecoration = newControlDecoration(
                                         controlToDecorate, errorImage, position);
                             }
                         });
             } else {
-                errorDecoration = newControlDecoration(controlToDecorate,
-                        errorImage, decorationPositionOverride);
+                this.errorDecoration = newControlDecoration(controlToDecorate,
+                        errorImage, this.decorationPositionOverride);
             }
         }
     }
@@ -236,7 +236,7 @@ public class ControlDecorationProvider {
      * Will create a new {@link ControlDecoration} for the given {@link Control}
      * . Setting position, image and text to the decoration, hiding it
      * initially.
-     * 
+     *
      * @param controlToDecorate
      *            The {@link Control} to create the decoration for.
      * @param errorImage
@@ -253,7 +253,7 @@ public class ControlDecorationProvider {
         final ControlDecoration errorDecoration = new ControlDecoration(
                 controlToDecorate, position);
         errorDecoration.setImage(errorImage);
-        errorDecoration.setDescriptionText(errorDecorationText);
+        errorDecoration.setDescriptionText(this.errorDecorationText);
         errorDecoration.hide();
         return errorDecoration;
     }

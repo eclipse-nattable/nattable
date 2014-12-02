@@ -67,11 +67,11 @@ public class PreserveSelectionModelTest {
         /*
          * row 0 in the immediate table is row 4 in the underlying virtual table
          * coordinate system:
-         * 
+         *
          * row 0: A B C
-         * 
+         *
          * row 1: _ D E
-         * 
+         *
          * row 2: _ _ F
          */
         mockCells();
@@ -297,9 +297,9 @@ public class PreserveSelectionModelTest {
     public void Changed_Sort_Order_Is_Properly_Reflected() {
         /*
          * row 0: A _ _
-         * 
+         *
          * row 1: _ D _
-         * 
+         *
          * row 2: _ _ F
          */
 
@@ -318,11 +318,11 @@ public class PreserveSelectionModelTest {
 
         /*
          * sort
-         * 
+         *
          * row 0: _ _ F
-         * 
+         *
          * row 1: _ D _
-         * 
+         *
          * row 2: A _ _
          */
         // let index row 4 and index row 6 change places:

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -49,18 +49,19 @@ public class ColumnStructureUpdatesGridExample extends AbstractNatExample {
      * NOTE - Glazed {@link EventList} class is thread ready but not thread
      * safe.
      */
+    @Override
     public Control createExampleControl(Composite parent) {
 
         EventList<PricingDataBean> eventList = GlazedLists
                 .eventList(PricingDataBeanGenerator.getData(10));
-        rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+        this.rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
         Map<String, String> propertyToLabelMap = populateColHeaderPropertiesToLabelsMap();
         String[] propertyNames = propertyToLabelMap.keySet().toArray(
                 ArrayUtil.STRING_TYPE_ARRAY);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
         final ColumnStructureUpdatesExampleGridLayer<PricingDataBean> glazedListsGridLayer = new ColumnStructureUpdatesExampleGridLayer<PricingDataBean>(
-                rowObjectsGlazedList, propertyNames, propertyToLabelMap,
+                this.rowObjectsGlazedList, propertyNames, propertyToLabelMap,
                 configRegistry, true);
         final NatTable natTable = new NatTable(parent, glazedListsGridLayer,
                 false);
@@ -80,25 +81,27 @@ public class ColumnStructureUpdatesGridExample extends AbstractNatExample {
         Button button = new Button(composite, SWT.PUSH);
         button.setText("Clear list, add 6 items, Change column count");
         button.addSelectionListener(new SelectionListener() {
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {}
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
-                rowObjectsGlazedList.getReadWriteLock().writeLock().lock();
+                ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.getReadWriteLock().writeLock().lock();
                 try {
-                    rowObjectsGlazedList.clear();
-                    rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.clear();
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
                     glazedListsGridLayer.bodyDataProvider.setColumnCount(8);
-                    rowObjectsGlazedList.add(new PricingDataBean());
-                    rowObjectsGlazedList.add(new PricingDataBean());
-                    rowObjectsGlazedList.add(new PricingDataBean());
-                    rowObjectsGlazedList.add(new PricingDataBean());
-                    rowObjectsGlazedList.add(new PricingDataBean());
-                    rowObjectsGlazedList.add(new PricingDataBean());
-                    rowObjectsGlazedList.add(new PricingDataBean());
-                    rowObjectsGlazedList.add(new PricingDataBean());
-                    rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.add(new PricingDataBean());
                 } finally {
-                    rowObjectsGlazedList.getReadWriteLock().writeLock()
+                    ColumnStructureUpdatesGridExample.this.rowObjectsGlazedList.getReadWriteLock().writeLock()
                             .unlock();
                 }
             }

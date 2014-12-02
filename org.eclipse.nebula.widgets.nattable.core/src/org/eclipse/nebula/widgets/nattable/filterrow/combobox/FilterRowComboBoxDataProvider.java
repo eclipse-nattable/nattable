@@ -40,11 +40,11 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
  * As the values are cached in here, this IComboBoxDataProvider registers itself
  * as ILayerListener to the body DataLayer. If values are updated or rows get
  * added/deleted, it will update the cache accordingly.
- * 
+ *
  * @param <T>
  *            The type of the objects shown within the NatTable. Needed to
  *            access the data columnwise.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -109,7 +109,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
      * Builds the local value cache for all columns.
      */
     protected void buildValueCache() {
-        for (int i = 0; i < columnAccessor.getColumnCount(); i++) {
+        for (int i = 0; i < this.columnAccessor.getColumnCount(); i++) {
             this.valueCache.put(i, collectValues(i));
         }
     }
@@ -118,7 +118,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
      * This method returns the column indexes of the columns for which values
      * was cached. Usually it will return all column indexes that are available
      * in the table.
-     * 
+     *
      * @return The column indexes of the columns for which values was cached.
      */
     public Collection<Integer> getCachedColumnIndexes() {
@@ -128,7 +128,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
     /**
      * Iterates over all rows of the local body IDataProvider and collects the
      * unique values for the given column index.
-     * 
+     *
      * @param columnIndex
      *            The column index for which the values should be collected
      * @return List of all unique values that are contained in the body
@@ -190,7 +190,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
      * Creates a FilterRowComboUpdateEvent for the given column index.
      * Calculates the diffs of the value cache for that column based on the
      * given lists.
-     * 
+     *
      * @param columnIndex
      *            The column index for which the value cache was updated.
      * @param cacheBefore
@@ -233,7 +233,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
 
     /**
      * Fire the given event to all registered listeners.
-     * 
+     *
      * @param event
      *            The event to handle.
      */
@@ -247,7 +247,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
 
     /**
      * Adds the given listener to the list of listeners for value cache updates.
-     * 
+     *
      * @param listener
      *            The listener to add.
      */
@@ -258,7 +258,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
     /**
      * Removes the given listener from the list of listeners for value cache
      * updates.
-     * 
+     *
      * @param listener
      *            The listener to remove.
      */

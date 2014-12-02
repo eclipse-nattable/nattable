@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,7 +22,7 @@ public interface Selectable {
 
     /**
      * Determine if a cell at a given position is selected.
-     * 
+     *
      * @param p
      *            cell to query
      * @return <code>true</code> if the given cell is selected

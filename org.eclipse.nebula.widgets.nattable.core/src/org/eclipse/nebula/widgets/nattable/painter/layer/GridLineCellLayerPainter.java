@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,7 +29,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
     /**
      * Create a GridLineCellLayerPainter that renders grid lines in the
      * specified color and uses the default clipping behaviour.
-     * 
+     *
      * @param gridColor
      *            The color that should be used to render the grid lines.
      */
@@ -48,7 +48,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
     /**
      * Create a GridLineCellLayerPainter that renders grid lines in the
      * specified color and uses the specified clipping behaviour.
-     * 
+     *
      * @param gridColor
      *            The color that should be used to render the grid lines.
      * @param clipLeft
@@ -71,7 +71,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
     /**
      * Create a GridLineCellLayerPainter that renders gray grid lines and uses
      * the specified clipping behaviour.
-     * 
+     *
      * @param clipLeft
      *            Configure the rendering behaviour when cells overlap. If set
      *            to <code>true</code> the left cell will be clipped, if set to
@@ -91,7 +91,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
      * @return The local configured color that is used to render the grid lines.
      */
     public Color getGridColor() {
-        return gridColor;
+        return this.gridColor;
     }
 
     @Override
@@ -129,7 +129,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
             IConfigRegistry configRegistry) {
         Color gColor = configRegistry.getConfigAttribute(
                 CellConfigAttributes.GRID_LINE_COLOR, DisplayMode.NORMAL);
-        gc.setForeground(gColor != null ? gColor : gridColor);
+        gc.setForeground(gColor != null ? gColor : this.gridColor);
 
         drawHorizontalLines(natLayer, gc, rectangle);
         drawVerticalLines(natLayer, gc, rectangle);

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -36,44 +36,44 @@ public class FontPicker {
     private Font displayFont;
 
     public FontPicker(final Composite parent, Font originalFont) {
-        button = new Button(parent, SWT.NONE);
+        this.button = new Button(parent, SWT.NONE);
         if (originalFont == null)
             throw new IllegalArgumentException("null"); //$NON-NLS-1$
 
         update(originalFont.getFontData()[0]);
 
-        button.addSelectionListener(new SelectionAdapter() {
+        this.button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 FontDialog dialog = new FontDialog(new Shell(Display
                         .getDefault(), SWT.SHELL_TRIM));
-                dialog.setFontList(fontData);
+                dialog.setFontList(FontPicker.this.fontData);
                 FontData selected = dialog.open();
                 if (selected != null) {
                     update(selected);
-                    button.pack(true);
+                    FontPicker.this.button.pack(true);
                 }
             }
         });
     }
 
     private void update(FontData data) {
-        fontData[0] = data;
-        selectedFont = GUIHelper.getFont(data);
-        if (originalFont == null) {
-            originalFont = selectedFont;
+        this.fontData[0] = data;
+        this.selectedFont = GUIHelper.getFont(data);
+        if (this.originalFont == null) {
+            this.originalFont = this.selectedFont;
         }
-        button.setText(data.getName() + ", " + data.getHeight() + "pt"); //$NON-NLS-1$ //$NON-NLS-2$
-        button.setFont(createDisplayFont(data));
-        button.setAlignment(SWT.CENTER);
-        button.setToolTipText(Messages.getString("FontPicker.tooltip")); //$NON-NLS-1$
+        this.button.setText(data.getName() + ", " + data.getHeight() + "pt"); //$NON-NLS-1$ //$NON-NLS-2$
+        this.button.setFont(createDisplayFont(data));
+        this.button.setAlignment(SWT.CENTER);
+        this.button.setToolTipText(Messages.getString("FontPicker.tooltip")); //$NON-NLS-1$
     }
 
     private Font createDisplayFont(FontData data) {
         FontData resizedData = new FontData(data.getName(), data.getHeight(),
                 data.getStyle());
-        displayFont = GUIHelper.getFont(resizedData);
-        return displayFont;
+        this.displayFont = GUIHelper.getFont(resizedData);
+        return this.displayFont;
     }
 
     /**
@@ -82,11 +82,11 @@ public class FontPicker {
      *         resource.</em>
      */
     public Font getSelectedFont() {
-        return selectedFont;
+        return this.selectedFont;
     }
 
     public Font getOriginalFont() {
-        return originalFont;
+        return this.originalFont;
     }
 
     /**
@@ -96,7 +96,7 @@ public class FontPicker {
      */
     public void setOriginalFont(Font font) {
         if (font != null) {
-            originalFont = font;
+            this.originalFont = font;
             update(font.getFontData()[0]);
         }
     }
@@ -105,10 +105,10 @@ public class FontPicker {
      * @return the button
      */
     public Button getButton() {
-        return button;
+        return this.button;
     }
 
     public void setLayoutData(GridData gridData) {
-        button.setLayoutData(gridData);
+        this.button.setLayoutData(gridData);
     }
 }

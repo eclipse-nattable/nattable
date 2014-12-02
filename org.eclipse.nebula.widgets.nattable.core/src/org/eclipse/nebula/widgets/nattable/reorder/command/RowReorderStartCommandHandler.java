@@ -31,7 +31,7 @@ public class RowReorderStartCommandHandler extends
     protected boolean doCommand(RowReorderStartCommand command) {
         int fromRowPosition = command.getFromRowPosition();
 
-        rowReorderLayer.setReorderFromRowPosition(fromRowPosition);
+        this.rowReorderLayer.setReorderFromRowPosition(fromRowPosition);
 
         return true;
     }

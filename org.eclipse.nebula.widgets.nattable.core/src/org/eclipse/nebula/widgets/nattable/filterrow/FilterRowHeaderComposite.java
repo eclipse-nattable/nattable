@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,7 +29,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent
  * is a {@link DimensionallyDependentLayer} dependent on the
  * {@link ColumnHeaderLayer}</li>
  * </ul>
- * 
+ *
  * @see FilterRowDataLayer
  */
 public class FilterRowHeaderComposite<T> extends CompositeLayer {
@@ -44,19 +44,19 @@ public class FilterRowHeaderComposite<T> extends CompositeLayer {
 
         setChildLayer("columnHeader", columnHeaderLayer, 0, 0); //$NON-NLS-1$
 
-        filterRowDataLayer = new FilterRowDataLayer<T>(filterStrategy,
+        this.filterRowDataLayer = new FilterRowDataLayer<T>(filterStrategy,
                 columnHeaderLayer, columnHeaderDataProvider, configRegistry);
 
-        setChildLayer(GridRegion.FILTER_ROW, filterRowDataLayer, 0, 1);
+        setChildLayer(GridRegion.FILTER_ROW, this.filterRowDataLayer, 0, 1);
     }
 
     public FilterRowDataLayer<T> getFilterRowDataLayer() {
-        return filterRowDataLayer;
+        return this.filterRowDataLayer;
     }
 
     @Override
     public int getHeight() {
-        if (filterRowVisible) {
+        if (this.filterRowVisible) {
             return super.getHeight();
         } else {
             return getHeightOffset(1);
@@ -65,7 +65,7 @@ public class FilterRowHeaderComposite<T> extends CompositeLayer {
 
     @Override
     public int getRowCount() {
-        if (filterRowVisible) {
+        if (this.filterRowVisible) {
             return super.getRowCount();
         } else {
             return super.getRowCount() - 1;
@@ -73,18 +73,18 @@ public class FilterRowHeaderComposite<T> extends CompositeLayer {
     }
 
     public boolean isFilterRowVisible() {
-        return filterRowVisible;
+        return this.filterRowVisible;
     }
 
     public void setFilterRowVisible(boolean filterRowVisible) {
         this.filterRowVisible = filterRowVisible;
-        fireLayerEvent(new RowStructuralRefreshEvent(filterRowDataLayer));
+        fireLayerEvent(new RowStructuralRefreshEvent(this.filterRowDataLayer));
     }
 
     @Override
     public boolean doCommand(ILayerCommand command) {
         if (command instanceof ToggleFilterRowCommand) {
-            setFilterRowVisible(!filterRowVisible);
+            setFilterRowVisible(!this.filterRowVisible);
             return true;
         }
         return super.doCommand(command);

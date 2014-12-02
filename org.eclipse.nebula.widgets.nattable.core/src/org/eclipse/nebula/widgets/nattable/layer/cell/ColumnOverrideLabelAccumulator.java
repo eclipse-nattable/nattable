@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -29,7 +29,7 @@ import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
  * Registers/Adds configuration labels for a given column (by index). Custom
  * {@link ICellEditor}, {@link ICellPainter}, {@link IStyle} can then be
  * registered in the {@link IConfigRegistry} against these labels.
- * 
+ *
  * Also @see {@link RowOverrideLabelAccumulator}
  */
 public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
@@ -53,7 +53,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
     @Override
     public void accumulateConfigLabels(LabelStack configLabels,
             int columnPosition, int rowPosition) {
-        int columnIndex = layer.getColumnIndexByPosition(columnPosition);
+        int columnIndex = this.layer.getColumnIndexByPosition(columnPosition);
 
         addOverrides(configLabels, Integer.valueOf(columnIndex));
 
@@ -73,7 +73,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
     /**
      * Register labels to be contributed a column. This label will be applied to
      * all cells in the column.
-     * 
+     *
      * @param columnIndex
      *            The column index of the column to which the config label
      *            should be contributed.
@@ -87,7 +87,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
     /**
      * Register labels to be contributed a column. This label will be applied to
      * all cells in the column.
-     * 
+     *
      * @param columnIndex
      *            The column index of the column to which the config label
      *            should be contributed.
@@ -103,7 +103,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
      * Register labels to be contributed a column. This label will be applied to
      * all cells in the column. Using this method will add the labels on top of
      * the label stack.
-     * 
+     *
      * @param columnIndex
      *            The column index of the column to which the config label
      *            should be contributed.
@@ -119,7 +119,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
      * Register labels to be contributed a column. This label will be applied to
      * all cells in the column. Using this method will add the labels on top of
      * the label stack.
-     * 
+     *
      * @param columnIndex
      *            The column index of the column to which the config label
      *            should be contributed.
@@ -133,7 +133,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 
     /**
      * Unregister a label that was contributed for a column.
-     * 
+     *
      * @param columnIndex
      *            The column index of the column to which a config label was
      *            contributed.
@@ -149,7 +149,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 
     /**
      * Unregister labels that were contributed for a column.
-     * 
+     *
      * @param columnIndex
      *            The column index of the column to which a config label was
      *            contributed.
@@ -166,7 +166,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
     /**
      * Register a label to be contributed to all columns. This label will be
      * applied to all cells.
-     * 
+     *
      * @param configLabel
      *            The config label that should be added to all cells.
      */
@@ -177,7 +177,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
     /**
      * Register labels to be contributed to all columns. These labels will be
      * applied to all cells.
-     * 
+     *
      * @param configLabels
      *            The config labels that should be added to all cells.
      */
@@ -188,7 +188,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
     /**
      * Register a label to be contributed to all columns. This label will be
      * applied to all cells.
-     * 
+     *
      * @param configLabel
      *            The config label that should be added to all cells.
      */
@@ -199,7 +199,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
     /**
      * Register labels to be contributed to all columns. These labels will be
      * applied to all cells.
-     * 
+     *
      * @param configLabels
      *            The config labels that should be added to all cells.
      */
@@ -209,7 +209,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 
     /**
      * Unregister a label that was contributed for all columns.
-     * 
+     *
      * @param configLabel
      *            The config label to remove.
      */
@@ -223,7 +223,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 
     /**
      * Unregister labels that were contributed for all columns.
-     * 
+     *
      * @param configLabels
      *            The config labels to remove.
      */
@@ -238,7 +238,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
     /**
      * Save the overrides to a properties file. A line is stored for every
      * column.
-     * 
+     *
      * Example for column 0: prefix.columnOverrideLabelAccumulator.0 =
      * LABEL1,LABEL2
      */
@@ -266,7 +266,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 
     /**
      * Load the overrides state from the given properties file.
-     * 
+     *
      * @see #saveState(String, Properties)
      */
     @Override

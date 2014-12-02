@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -43,7 +43,7 @@ public class FreezeSelectionCommand implements IFreezeCommand {
      * Creates a FreezeSelectionCommand that doesn't override a current frozen
      * state. If it should toggle the current frozen state can be specified by
      * parameter.
-     * 
+     *
      * @param toggle
      *            whether this command should toggle the frozen state between
      *            frozen and unfrozen, or if it should always result in a frozen
@@ -56,7 +56,7 @@ public class FreezeSelectionCommand implements IFreezeCommand {
     /**
      * Creates a FreezeSelectionCommand. If it should toggle or override the
      * current frozen state can be specified by parameter.
-     * 
+     *
      * @param toggle
      *            whether this command should toggle the frozen state between
      *            frozen and unfrozen, or if it should always result in a frozen
@@ -72,12 +72,12 @@ public class FreezeSelectionCommand implements IFreezeCommand {
 
     @Override
     public boolean isToggle() {
-        return toggle;
+        return this.toggle;
     }
 
     @Override
     public boolean isOverrideFreeze() {
-        return overrideFreeze;
+        return this.overrideFreeze;
     }
 
     @Override
