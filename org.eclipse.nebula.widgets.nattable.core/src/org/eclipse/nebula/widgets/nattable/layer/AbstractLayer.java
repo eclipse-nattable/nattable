@@ -7,8 +7,12 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+<<<<<<< HEAD
  *     Dirk Fauth <dirk.fauth@googlemail.com> - made commandHandlers and eventHandlers
  *                                              visible to subclasses for testing
+=======
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447145
+>>>>>>> Bug 447145 - added configurationApplied flag to ensure the configurations are only proceeded once
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
@@ -62,6 +66,8 @@ public abstract class AbstractLayer implements ILayer {
     private final List<IPersistable> persistables = new LinkedList<IPersistable>();
     private final Set<ILayerListener> listeners = new LinkedHashSet<ILayerListener>();
     private final Collection<IConfiguration> configurations = new LinkedList<IConfiguration>();
+
+    private boolean configurationApplied = false;
 
     // Dispose
 
@@ -147,10 +153,17 @@ public abstract class AbstractLayer implements ILayer {
 
     @Override
     public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
-        for (IConfiguration configuration : this.configurations) {
-            configuration.configureLayer(this);
-            configuration.configureRegistry(configRegistry);
-            configuration.configureUiBindings(uiBindingRegistry);
+        if (!this.configurationApplied) {
+            for (IConfiguration configuration : this.configurations) {
+                configuration.configureLayer(this);
+                configuration.configureRegistry(configRegistry);
+                configuration.configureUiBindings(uiBindingRegistry);
+            }
+
+            // Bug 447145
+            // to avoid registering configuration values multiple times, we
+            // remember that this layer has already been configured
+            this.configurationApplied = true;
         }
     }
 
