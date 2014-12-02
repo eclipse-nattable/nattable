@@ -52,7 +52,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * {@link Matcher} that is used by this command as a static
  * {@link MatcherEditor}. Otherwise these two functions will not work correctly
  * together.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -100,7 +100,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * instantiate this layer. To use this correctly you need to register the
      * local row hide {@link MatcherEditor} against the {@link FilterList}
      * yourself.
-     * 
+     *
      * @param underlyingLayer
      *            The underlying layer.
      * @param rowDataProvider
@@ -131,7 +131,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * {@link MatcherEditor} to the given {@link FilterList}. This might not
      * work correctly in combination with other filters like e.g. the filter
      * row.
-     * 
+     *
      * @param underlyingLayer
      *            The underlying layer.
      * @param rowDataProvider
@@ -171,7 +171,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * {@link MatcherEditor} to the given {@link CompositeMatcherEditor}. This
      * way it is possible to add more filter logic than only the row hide
      * filter.
-     * 
+     *
      * @param underlyingLayer
      *            The underlying layer.
      * @param rowDataProvider
@@ -210,6 +210,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * Register the {@link ILayerCommandHandler} that will handle the row
      * hide/show events for this layer.
      */
+    @Override
     protected void registerCommandHandlers() {
         registerCommandHandler(new RowHideCommandHandler(this));
         registerCommandHandler(new MultiRowHideCommandHandler(this));
@@ -221,7 +222,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * Hide the rows at the given positions. Will collect the id's of the rows
      * at the given positions as this layer operates on content rather than
      * positions.
-     * 
+     *
      * @param rowPositions
      *            The positions of the rows to hide.
      */
@@ -230,7 +231,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
         Collection<Serializable> rowIds = new HashSet<Serializable>();
         for (Integer rowPos : rowPositions) {
             int rowIndex = getRowIndexByPosition(rowPos);
-            rowIds.add(rowIdAccessor.getRowId(rowDataProvider
+            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider
                     .getRowObject(rowIndex)));
         }
         hideRows(rowIds);
@@ -240,7 +241,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * Hide the rows at the given indexes. Will collect the id's of the rows at
      * the given positions as this layer operates on content rather than
      * positions.
-     * 
+     *
      * @param rowIndexes
      *            The indexes of the rows to hide.
      */
@@ -248,7 +249,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
     public void hideRowIndexes(Collection<Integer> rowIndexes) {
         Collection<Serializable> rowIds = new HashSet<Serializable>();
         for (Integer rowIndex : rowIndexes) {
-            rowIds.add(rowIdAccessor.getRowId(rowDataProvider
+            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider
                     .getRowObject(rowIndex)));
         }
         hideRows(rowIds);
@@ -258,7 +259,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * Show the rows with the given indexes again. Will collect the id's of the
      * rows at the given positions as this layer operates on content rather than
      * positions.
-     * 
+     *
      * @param rowIndexes
      *            The indexes of the rows that should be showed again.
      */
@@ -266,7 +267,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
     public void showRowIndexes(Collection<Integer> rowIndexes) {
         Collection<Serializable> rowIds = new HashSet<Serializable>();
         for (Integer rowIndex : rowIndexes) {
-            rowIds.add(rowIdAccessor.getRowId(rowDataProvider
+            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider
                     .getRowObject(rowIndex)));
         }
         showRows(rowIds);
@@ -274,7 +275,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
 
     /**
      * Hide the rows that contain the objects with the given row ids.
-     * 
+     *
      * @param rowIds
      *            The row ids of the rows that should be hidden.
      */
@@ -286,7 +287,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
     /**
      * Show the rows that contain the objects with the given row ids. Will of
      * course only have impact if those rows are currently hidden.
-     * 
+     *
      * @param rowIds
      *            The row ids of the rows that should be showed.
      */
@@ -397,7 +398,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * {@link MatcherEditor} implementation that will only match objects that
      * are not hidden by id. It also enables to fire change events to indicate
      * changes to the filter.
-     * 
+     *
      * @author Dirk Fauth
      *
      */
@@ -409,8 +410,8 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
         private final Matcher<T> hideRowByIdMatcher = new Matcher<T>() {
             @Override
             public boolean matches(T rowObject) {
-                return !rowIdsToHide
-                        .contains(rowIdAccessor.getRowId(rowObject));
+                return !GlazedListsRowHideShowLayer.this.rowIdsToHide
+                        .contains(GlazedListsRowHideShowLayer.this.rowIdAccessor.getRowId(rowObject));
             }
         };
 

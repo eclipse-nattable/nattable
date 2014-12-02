@@ -44,13 +44,13 @@ import org.eclipse.swt.graphics.Image;
  * calculation of the row height, the GC is necessary. To support also bigger
  * fonts in the GroupBy header region, you are able to resize the GroupBy header
  * manually like this:<br/>
- * 
+ *
  * <pre>
  * natTable.doCommand(new RowResizeCommand(groupByHeaderLayer, 0, 50));
  * </pre>
- * 
+ *
  * </p>
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -167,7 +167,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
 
     /**
      * Registering the background color for the GroupBy header region.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -185,7 +185,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * Returns the {@link Color} that should be used to render the group by
      * header background. If <code>null</code> is returned, the default color
      * will be used.
-     * 
+     *
      * @return The {@link Color} that should be used to render group by header
      *         background.
      */
@@ -197,7 +197,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * Registering the style configuration for the GroupBy header region. Note
      * that it is not possible to exchange the ICellPainter that is used to
      * render the GroupBy header region, as it contains a lot of internal code.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -225,40 +225,40 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the GroupBy
      *         region in a NatTable.
      */
     protected IStyle getGroupByStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                groupByBgColor);
+                this.groupByBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                groupByFgColor);
+                this.groupByFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                groupByGradientBgColor);
+                this.groupByGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                groupByGradientFgColor);
+                this.groupByGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                groupByHAlign);
+                this.groupByHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                groupByVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, groupByFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, groupByImage);
+                this.groupByVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.groupByFont);
+        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.groupByImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                groupByBorderStyle);
+                this.groupByBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                groupByPWEchoChar);
+                this.groupByPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                groupByTextDecoration);
+                this.groupByTextDecoration);
         return cellStyle;
     }
 
     /**
      * Registering the style configuration for the GroupBy objects.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -293,36 +293,36 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the GroupBy
      *         object rows in a NatTable.
      */
     protected IStyle getGroupByObjectStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                groupByObjectBgColor);
+                this.groupByObjectBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                groupByObjectFgColor);
+                this.groupByObjectFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                groupByObjectGradientBgColor);
+                this.groupByObjectGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                groupByObjectGradientFgColor);
+                this.groupByObjectGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                groupByObjectHAlign);
+                this.groupByObjectHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                groupByObjectVAlign);
+                this.groupByObjectVAlign);
         cellStyle
-                .setAttributeValue(CellStyleAttributes.FONT, groupByObjectFont);
+                .setAttributeValue(CellStyleAttributes.FONT, this.groupByObjectFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                groupByObjectImage);
+                this.groupByObjectImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                groupByObjectBorderStyle);
+                this.groupByObjectBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                groupByObjectPWEchoChar);
+                this.groupByObjectPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                groupByObjectTextDecoration);
+                this.groupByObjectTextDecoration);
         return cellStyle;
     }
 
@@ -343,7 +343,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the
      *         GroupBy object row cells in a NatTable.
      */
@@ -353,7 +353,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
 
     /**
      * Registering the style configuration for the selected GroupBy objects.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -389,36 +389,36 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the selected
      *         GroupBy object rows in a NatTable.
      */
     protected IStyle getGroupByObjectSelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                groupByObjectSelectionBgColor);
+                this.groupByObjectSelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                groupByObjectSelectionFgColor);
+                this.groupByObjectSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                groupByObjectSelectionGradientBgColor);
+                this.groupByObjectSelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                groupByObjectSelectionGradientFgColor);
+                this.groupByObjectSelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                groupByObjectSelectionHAlign);
+                this.groupByObjectSelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                groupByObjectSelectionVAlign);
+                this.groupByObjectSelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                groupByObjectSelectionFont);
+                this.groupByObjectSelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                groupByObjectSelectionImage);
+                this.groupByObjectSelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                groupByObjectSelectionBorderStyle);
+                this.groupByObjectSelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                groupByObjectSelectionPWEchoChar);
+                this.groupByObjectSelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                groupByObjectSelectionTextDecoration);
+                this.groupByObjectSelectionTextDecoration);
         return cellStyle;
     }
 
@@ -439,7 +439,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the
      *         selected GroupBy object row cells in a NatTable.
      */
@@ -449,7 +449,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
 
     /**
      * Registering the style configuration for the GroupBy summary.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -484,36 +484,36 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the GroupBy
      *         summary row cells in a NatTable.
      */
     protected IStyle getGroupBySummaryStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                groupBySummaryBgColor);
+                this.groupBySummaryBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                groupBySummaryFgColor);
+                this.groupBySummaryFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                groupBySummaryGradientBgColor);
+                this.groupBySummaryGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                groupBySummaryGradientFgColor);
+                this.groupBySummaryGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                groupBySummaryHAlign);
+                this.groupBySummaryHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                groupBySummaryVAlign);
+                this.groupBySummaryVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                groupBySummaryFont);
+                this.groupBySummaryFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                groupBySummaryImage);
+                this.groupBySummaryImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                groupBySummaryBorderStyle);
+                this.groupBySummaryBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                groupBySummaryPWEchoChar);
+                this.groupBySummaryPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                groupBySummaryTextDecoration);
+                this.groupBySummaryTextDecoration);
         return cellStyle;
     }
 
@@ -534,7 +534,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the
      *         GroupBy row summary cells in a NatTable.
      */
@@ -544,7 +544,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
 
     /**
      * Registering the style configuration for the selected GroupBy summary.
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -580,36 +580,36 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link IStyle} that should be used to render the selected
      *         GroupBy summary row cells in a NatTable.
      */
     protected IStyle getGroupBySummarySelectionStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                groupBySummarySelectionBgColor);
+                this.groupBySummarySelectionBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                groupBySummarySelectionFgColor);
+                this.groupBySummarySelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                groupBySummarySelectionGradientBgColor);
+                this.groupBySummarySelectionGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                groupBySummarySelectionGradientFgColor);
+                this.groupBySummarySelectionGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                groupBySummarySelectionHAlign);
+                this.groupBySummarySelectionHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                groupBySummarySelectionVAlign);
+                this.groupBySummarySelectionVAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT,
-                groupBySummarySelectionFont);
+                this.groupBySummarySelectionFont);
         cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
-                groupBySummarySelectionImage);
+                this.groupBySummarySelectionImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                groupBySummarySelectionBorderStyle);
+                this.groupBySummarySelectionBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                groupBySummarySelectionPWEchoChar);
+                this.groupBySummarySelectionPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                groupBySummarySelectionTextDecoration);
+                this.groupBySummarySelectionTextDecoration);
         return cellStyle;
     }
 
@@ -630,7 +630,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * value is found in the IConfigRegistry. In this case the rendering will
      * fallback to the default configuration.
      * </p>
-     * 
+     *
      * @return The {@link ICellPainter} that should be used to render the
      *         selected GroupBy row summary cells in a NatTable.
      */
@@ -646,7 +646,7 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
      * registered a different {@link ICellPainter} for the GroupByHeaderLayer,
      * this might not be interpreted.
      * </p>
-     * 
+     *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to
      *            which the style configuration should be applied to.
@@ -680,28 +680,28 @@ public class DefaultGroupByThemeExtension implements IThemeExtension {
     protected IStyle getGroupByHintStyle() {
         IStyle cellStyle = new Style();
         cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
-                groupByHintBgColor);
+                this.groupByHintBgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
-                groupByHintFgColor);
+                this.groupByHintFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
-                groupByHintGradientBgColor);
+                this.groupByHintGradientBgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
-                groupByHintGradientFgColor);
+                this.groupByHintGradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
-                groupByHintHAlign);
+                this.groupByHintHAlign);
         cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
-                groupByHintVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, groupByHintFont);
+                this.groupByHintVAlign);
+        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.groupByHintFont);
         cellStyle
-                .setAttributeValue(CellStyleAttributes.IMAGE, groupByHintImage);
+                .setAttributeValue(CellStyleAttributes.IMAGE, this.groupByHintImage);
         cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
-                groupByHintBorderStyle);
+                this.groupByHintBorderStyle);
         cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
-                groupByHintPWEchoChar);
+                this.groupByHintPWEchoChar);
         cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
-                groupByHintTextDecoration);
+                this.groupByHintTextDecoration);
         return cellStyle;
     }
 

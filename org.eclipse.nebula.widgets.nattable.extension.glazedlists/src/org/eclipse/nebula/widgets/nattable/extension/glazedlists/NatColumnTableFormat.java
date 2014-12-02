@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,32 +46,37 @@ public class NatColumnTableFormat<R> implements AdvancedTableFormat<R> {
         this.columnHeaderDataLayer = columnHeaderDataLayer;
     }
 
+    @Override
     public Class<?> getColumnClass(int col) {
         return null;
     }
 
+    @Override
     public Comparator<?> getColumnComparator(final int col) {
-        ILayerCell cell = columnHeaderDataLayer.getCellByPosition(col, 0);
+        ILayerCell cell = this.columnHeaderDataLayer.getCellByPosition(col, 0);
         if (cell == null) {
             return null;
         }
-        Comparator<?> comparator = configRegistry.getConfigAttribute(
+        Comparator<?> comparator = this.configRegistry.getConfigAttribute(
                 SortConfigAttributes.SORT_COMPARATOR, cell.getDisplayMode(),
                 cell.getConfigLabels().getLabels());
 
         return (comparator instanceof NullComparator) ? null : comparator;
     }
 
+    @Override
     public String getColumnName(int col) {
-        return columnPropertyResolver.getColumnProperty(col);
+        return this.columnPropertyResolver.getColumnProperty(col);
     }
 
+    @Override
     public int getColumnCount() {
-        return columnAccessor.getColumnCount();
+        return this.columnAccessor.getColumnCount();
     }
 
+    @Override
     public Object getColumnValue(R rowObj, int col) {
-        return columnAccessor.getDataValue(rowObj, col);
+        return this.columnAccessor.getDataValue(rowObj, col);
     }
 
 }

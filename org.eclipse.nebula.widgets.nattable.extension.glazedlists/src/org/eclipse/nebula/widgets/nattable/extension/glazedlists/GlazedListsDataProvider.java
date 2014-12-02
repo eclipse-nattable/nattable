@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -24,7 +24,7 @@ import ca.odell.glazedlists.event.ListEventListener;
  * and if it's a re-request of the same row as last time, we simply return the
  * last cached row object (assuming the list didn't change in some important
  * way, as then we clear out our cache).
- * 
+ *
  * @author Emil Crumhorn
  */
 public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
@@ -50,13 +50,14 @@ public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
         // items and the index will never
         // be the same anyway.
         list.addListEventListener(new ListEventListener<T>() {
+            @Override
             public void listChanged(ListEvent<T> event) {
                 while (event.next()) {
                     int sourceIndex = event.getIndex();
                     int changeType = event.getType();
 
                     if (changeType == ListEvent.DELETE
-                            || sourceIndex == lastRowIndex) {
+                            || sourceIndex == GlazedListsDataProvider.this.lastRowIndex) {
                         inputChanged();
                         break;
                     }
@@ -66,39 +67,39 @@ public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
     }
 
     public void inputChanged() {
-        lastRowIndex = -1;
-        lastRowObject = null;
+        this.lastRowIndex = -1;
+        this.lastRowObject = null;
     }
 
     @Override
     public T getRowObject(int rowIndex) {
-        if (rowIndex != lastRowIndex || lastRowObject == null) {
-            ((EventList) list).getReadWriteLock().readLock().lock();
+        if (rowIndex != this.lastRowIndex || this.lastRowObject == null) {
+            ((EventList) this.list).getReadWriteLock().readLock().lock();
             try {
                 return super.getRowObject(rowIndex);
             } finally {
-                ((EventList) list).getReadWriteLock().readLock().unlock();
+                ((EventList) this.list).getReadWriteLock().readLock().unlock();
             }
         }
 
-        return lastRowObject;
+        return this.lastRowObject;
     }
 
     @Override
     public Object getDataValue(int colIndex, int rowIndex) {
         // new row to cache
-        if (rowIndex != lastRowIndex || lastRowObject == null) {
-            lastRowIndex = rowIndex;
-            ((EventList) list).getReadWriteLock().readLock().lock();
+        if (rowIndex != this.lastRowIndex || this.lastRowObject == null) {
+            this.lastRowIndex = rowIndex;
+            ((EventList) this.list).getReadWriteLock().readLock().lock();
             try {
-                lastRowObject = list.get(rowIndex);
+                this.lastRowObject = this.list.get(rowIndex);
             } finally {
-                ((EventList) list).getReadWriteLock().readLock().unlock();
+                ((EventList) this.list).getReadWriteLock().readLock().unlock();
             }
         }
 
         // same row as last, use its object as it's way faster than a
         // list.get(row);
-        return columnAccessor.getDataValue(lastRowObject, colIndex);
+        return this.columnAccessor.getDataValue(this.lastRowObject, colIndex);
     }
 }

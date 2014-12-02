@@ -17,7 +17,7 @@ public class SummationGroupBySummaryProvider<T> implements
     public Object summarize(int columnIndex, List<T> children) {
         double summaryValue = 0;
         for (T child : children) {
-            Object dataValue = columnAccessor.getDataValue(child, columnIndex);
+            Object dataValue = this.columnAccessor.getDataValue(child, columnIndex);
             if (dataValue instanceof Number) {
                 summaryValue += ((Number) dataValue).doubleValue();
             }

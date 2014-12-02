@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -25,8 +25,8 @@ public class GroupByModel extends Observable implements IPersistable {
     private List<Integer> groupByColumnIndexes = new ArrayList<Integer>();
 
     public boolean addGroupByColumnIndex(int columnIndex) {
-        if (!groupByColumnIndexes.contains(columnIndex)) {
-            groupByColumnIndexes.add(columnIndex);
+        if (!this.groupByColumnIndexes.contains(columnIndex)) {
+            this.groupByColumnIndexes.add(columnIndex);
             setChanged();
             notifyObservers();
             return true;
@@ -37,8 +37,8 @@ public class GroupByModel extends Observable implements IPersistable {
     }
 
     public boolean removeGroupByColumnIndex(int columnIndex) {
-        if (groupByColumnIndexes.contains(columnIndex)) {
-            groupByColumnIndexes.remove(Integer.valueOf(columnIndex));
+        if (this.groupByColumnIndexes.contains(columnIndex)) {
+            this.groupByColumnIndexes.remove(Integer.valueOf(columnIndex));
             setChanged();
             notifyObservers();
             return true;
@@ -49,20 +49,20 @@ public class GroupByModel extends Observable implements IPersistable {
     }
 
     public void clearGroupByColumnIndexes() {
-        groupByColumnIndexes.clear();
+        this.groupByColumnIndexes.clear();
         setChanged();
         notifyObservers();
     }
 
     public List<Integer> getGroupByColumnIndexes() {
-        return groupByColumnIndexes;
+        return this.groupByColumnIndexes;
     }
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        if (groupByColumnIndexes.size() > 0) {
+        if (this.groupByColumnIndexes.size() > 0) {
             StringBuilder strBuilder = new StringBuilder();
-            for (Integer index : groupByColumnIndexes) {
+            for (Integer index : this.groupByColumnIndexes) {
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
@@ -74,7 +74,7 @@ public class GroupByModel extends Observable implements IPersistable {
 
     @Override
     public void loadState(String prefix, Properties properties) {
-        groupByColumnIndexes.clear();
+        this.groupByColumnIndexes.clear();
         String property = properties.getProperty(prefix
                 + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES);
         if (property != null) {
@@ -82,7 +82,7 @@ public class GroupByModel extends Observable implements IPersistable {
                     IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
-                groupByColumnIndexes.add(Integer.valueOf(index));
+                this.groupByColumnIndexes.add(Integer.valueOf(index));
             }
         }
 

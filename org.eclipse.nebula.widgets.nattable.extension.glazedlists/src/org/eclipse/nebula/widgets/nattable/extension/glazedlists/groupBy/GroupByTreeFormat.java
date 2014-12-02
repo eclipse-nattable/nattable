@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ import ca.odell.glazedlists.TreeList;
  * the GroupByDataLayer. Note that the TreeList created by the GroupByDataLayer
  * is generic for Object because the groupBy functionality will add
  * GroupByObjects to the path for creating the grouping.
- * 
+ *
  * @param <T>
  *            The type of the base objects carried in the TreeList.
  */
@@ -54,7 +54,7 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
     private ISortModel sortModel;
 
     /**
-     * 
+     *
      * @param model
      *            The GroupByModel that carries the information about the
      *            groupBy states.
@@ -72,12 +72,12 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
     @SuppressWarnings("unchecked")
     @Override
     public void getPath(List<Object> path, Object element) {
-        List<Integer> groupByColumns = model.getGroupByColumnIndexes();
+        List<Integer> groupByColumns = this.model.getGroupByColumnIndexes();
         if (!groupByColumns.isEmpty()) {
             List<Entry<Integer, Object>> descriptor = new ArrayList<Entry<Integer, Object>>();
             for (int columnIndex : groupByColumns) {
                 // Build a unique descriptor for the group
-                Object columnValue = columnAccessor.getDataValue((T) element,
+                Object columnValue = this.columnAccessor.getDataValue((T) element,
                         columnIndex);
                 descriptor.add(new AbstractMap.SimpleEntry<Integer, Object>(
                         columnIndex, columnValue));
@@ -105,22 +105,22 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
     }
 
     public void setSortModel(ISortModel model) {
-        sortModel = model;
+        this.sortModel = model;
     }
 
     /**
      * Comparator that is used to sort the TreeList based on the groupBy
      * information.
-     * 
+     *
      * @author Dirk Fauth
-     * 
+     *
      */
     class GroupByComparator implements Comparator<Object> {
 
         @SuppressWarnings("unchecked")
         @Override
         public int compare(Object o1, Object o2) {
-            for (int columnIndex : model.getGroupByColumnIndexes()) {
+            for (int columnIndex : GroupByTreeFormat.this.model.getGroupByColumnIndexes()) {
                 if (o1 == null) {
                     if (o2 == null) {
                         return 0;
@@ -141,18 +141,18 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
                                 .compareTo((GroupByObject) o2);
 
                         if (result != 0) {
-                            if (sortModel != null) {
+                            if (GroupByTreeFormat.this.sortModel != null) {
                                 // Compare aggregated columns
-                                for (int sortedColumnIndex : sortModel
+                                for (int sortedColumnIndex : GroupByTreeFormat.this.sortModel
                                         .getSortedColumnIndexes()) {
                                     if (o1 instanceof GroupByObject
                                             && o2 instanceof GroupByObject) {
                                         GroupByObject grp1 = (GroupByObject) o1;
                                         GroupByObject grp2 = (GroupByObject) o2;
-                                        columnValue1 = columnAccessor
+                                        columnValue1 = GroupByTreeFormat.this.columnAccessor
                                                 .getDataValue((T) grp1,
                                                         sortedColumnIndex);
-                                        columnValue2 = columnAccessor
+                                        columnValue2 = GroupByTreeFormat.this.columnAccessor
                                                 .getDataValue((T) grp2,
                                                         sortedColumnIndex);
                                         if (columnValue1 != null
@@ -164,7 +164,7 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
                                             if (res == 0) {
                                                 continue;
                                             }
-                                            switch (sortModel
+                                            switch (GroupByTreeFormat.this.sortModel
                                                     .getSortDirection(sortedColumnIndex)) {
                                                 case ASC:
                                                     result = res;
@@ -184,9 +184,9 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
                             && o2 instanceof GroupByObject) {
                         result = -1;
                     } else {
-                        columnValue1 = columnAccessor.getDataValue((T) o1,
+                        columnValue1 = GroupByTreeFormat.this.columnAccessor.getDataValue((T) o1,
                                 columnIndex);
-                        columnValue2 = columnAccessor.getDataValue((T) o2,
+                        columnValue2 = GroupByTreeFormat.this.columnAccessor.getDataValue((T) o2,
                                 columnIndex);
                         result = DefaultComparator.getInstance().compare(
                                 columnValue1, columnValue2);

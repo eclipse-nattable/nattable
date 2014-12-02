@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -38,10 +38,10 @@ public class UngroupByColumnCommandHandler extends
     @Override
     protected boolean doCommand(UngroupByColumnIndexCommand command) {
         int columnIndex = command.getGroupByColumnIndex();
-        if (groupByHeaderLayer.getGroupByModel().removeGroupByColumnIndex(
+        if (this.groupByHeaderLayer.getGroupByModel().removeGroupByColumnIndex(
                 columnIndex)) {
-            groupByHeaderLayer.fireLayerEvent(new VisualRefreshEvent(
-                    groupByHeaderLayer));
+            this.groupByHeaderLayer.fireLayerEvent(new VisualRefreshEvent(
+                    this.groupByHeaderLayer));
         }
         return true;
     }

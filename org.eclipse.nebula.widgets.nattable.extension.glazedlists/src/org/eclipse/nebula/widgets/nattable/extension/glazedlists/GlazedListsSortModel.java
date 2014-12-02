@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -56,14 +56,14 @@ public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
     }
 
     protected NatTableComparatorChooser<T> getComparatorChooser() {
-        if (comparatorChooser == null) {
-            comparatorChooser = new NatTableComparatorChooser<T>(sortedList,
-                    new NatColumnTableFormat<T>(columnAccessor,
-                            columnPropertyResolver, configRegistry,
-                            columnHeaderDataLayer));
+        if (this.comparatorChooser == null) {
+            this.comparatorChooser = new NatTableComparatorChooser<T>(this.sortedList,
+                    new NatColumnTableFormat<T>(this.columnAccessor,
+                            this.columnPropertyResolver, this.configRegistry,
+                            this.columnHeaderDataLayer));
         }
 
-        return comparatorChooser;
+        return this.comparatorChooser;
     }
 
     @Override

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -46,14 +46,14 @@ public class GroupByObject implements Comparable<GroupByObject> {
      * @return The value that is used for grouping.
      */
     public Object getValue() {
-        return value;
+        return this.value;
     }
 
     /**
      * @return The description of the grouping (Index->Value)
      */
     public Collection<Entry<Integer, Object>> getDescriptor() {
-        return descriptor;
+        return this.descriptor;
     }
 
     @Override
@@ -64,13 +64,14 @@ public class GroupByObject implements Comparable<GroupByObject> {
         // next generation because
         // we can then inject the necessary values. Until then you should
         // consider implementing toString()
-        return value.toString();
+        return this.value.toString();
     }
 
     @Override
     public int compareTo(GroupByObject o) {
+        // TODO not null safe here
         if (this.value.getClass().equals(o.value.getClass())) {
-            return DefaultComparator.getInstance().compare(value, o.value);
+            return DefaultComparator.getInstance().compare(this.value, o.value);
         }
         return Integer.valueOf(this.descriptor.hashCode()).compareTo(
                 o.descriptor.hashCode());
@@ -81,8 +82,8 @@ public class GroupByObject implements Comparable<GroupByObject> {
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((descriptor == null) ? 0 : descriptor.hashCode());
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
+                + ((this.descriptor == null) ? 0 : this.descriptor.hashCode());
+        result = prime * result + ((this.value == null) ? 0 : this.value.hashCode());
         return result;
     }
 
@@ -95,15 +96,15 @@ public class GroupByObject implements Comparable<GroupByObject> {
         if (getClass() != obj.getClass())
             return false;
         GroupByObject other = (GroupByObject) obj;
-        if (descriptor == null) {
+        if (this.descriptor == null) {
             if (other.descriptor != null)
                 return false;
-        } else if (!descriptor.equals(other.descriptor))
+        } else if (!this.descriptor.equals(other.descriptor))
             return false;
-        if (value == null) {
+        if (this.value == null) {
             if (other.value != null)
                 return false;
-        } else if (!value.equals(other.value))
+        } else if (!this.value.equals(other.value))
             return false;
         return true;
     }

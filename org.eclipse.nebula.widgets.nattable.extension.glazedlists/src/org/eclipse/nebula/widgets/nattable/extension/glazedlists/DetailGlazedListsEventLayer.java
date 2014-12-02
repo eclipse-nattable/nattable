@@ -34,15 +34,15 @@ import ca.odell.glazedlists.event.ListEventListener;
  * <li>Glazed list events - {@link ListEvent}
  * <li>Bean updates - PropertyChangeEvent(s)
  * </ol>
- * 
+ *
  * Compared to the GlazedListsEventLayer, this layer does not conflate events
  * and only fire a single RowStructuralRefreshEvent for all events within 100ms.
  * Instead it will fire a corresponding NatTable event with the detail
  * information for every {@link ListEvent} fired by the GlazedLists immediately.
- * 
+ *
  * @param <T>
  *            Type of the bean in the backing list.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -71,7 +71,7 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
      * Create a new {@link DetailGlazedListsEventLayer} which is in fact a
      * {@link ListEventListener} that listens to GlazedLists events and
      * translate them into events that are understandable by the NatTable.
-     * 
+     *
      * @param underlyingLayer
      *            The underlying layer of type {@link IUniqueIndexLayer}
      * @param eventList
@@ -89,7 +89,7 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ca.odell.glazedlists.event.ListEventListener#listChanged(ca.odell.glazedlists
      * .event.ListEvent)
@@ -168,7 +168,7 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
      * ListEvent, while the list itself has already changed again. e.g.
      * filtering: clear + apply
      * </p>
-     * 
+     *
      * @param deleteRanges
      *            The ranges that were deleted and should be fired in an event.
      * @param insertRanges
@@ -199,7 +199,7 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.
      * PropertyChangeEvent)
      */
@@ -230,7 +230,7 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 
     /**
      * Change the underlying {@link EventList} this layer is listening to.
-     * 
+     *
      * @param newEventList
      *            the {@link EventList} to listen on.
      */
@@ -242,24 +242,24 @@ public class DetailGlazedListsEventLayer<T> extends AbstractLayerTransform
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer#
      * getColumnPositionByIndex(int)
      */
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return underlyingLayer.getColumnPositionByIndex(columnIndex);
+        return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer#
      * getRowPositionByIndex(int)
      */
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return underlyingLayer.getRowPositionByIndex(rowIndex);
+        return this.underlyingLayer.getRowPositionByIndex(rowIndex);
     }
 
 }

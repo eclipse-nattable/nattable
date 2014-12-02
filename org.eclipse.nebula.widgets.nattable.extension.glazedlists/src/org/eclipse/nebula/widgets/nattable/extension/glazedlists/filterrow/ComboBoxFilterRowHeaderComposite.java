@@ -46,7 +46,7 @@ import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
  * provide text fields for free filtering but adds comboboxes for all columns
  * that contain all available values for that column that can be de-/selected
  * via checkboxes.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -76,7 +76,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      * informations. Using this constructor will create the
      * FilterRowComboBoxDataProvider needed for filtering and add the default
      * ComboBoxFilterRowConfiguration.
-     * 
+     *
      * @param filterList
      *            The FilterList that will be used for filtering.
      * @param bodyLayer
@@ -118,7 +118,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      * Creates a new ComboBoxFilterRowHeaderComposite based on the given
      * informations. Using this constructor will create the
      * FilterRowComboBoxDataProvider needed for filtering .
-     * 
+     *
      * @param filterList
      *            The FilterList that will be used for filtering.
      * @param bodyLayer
@@ -172,7 +172,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      * absolutely necessary to use a custom CompositeMatcherEditor. This could
      * be for example to create a complex NatTable instance where several filter
      * rows need to be combined.
-     * 
+     *
      * @param filterList
      *            The FilterList that will be used for filtering.
      * @param matcherEditor
@@ -227,7 +227,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      * Creates a new ComboBoxFilterRowHeaderComposite based on the given
      * informations. Using this constructor will add the default
      * ComboBoxFilterRowConfiguration.
-     * 
+     *
      * @param filterList
      *            The FilterList that will be used for filtering.
      * @param comboBoxDataProvider
@@ -265,7 +265,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      * informations. Will use the given FilterList for creating the
      * ComboBoxGlazedListsFilterStrategy and the given
      * FilterRowComboBoxDataProvider instead of creating a new one.
-     * 
+     *
      * @param filterList
      *            The FilterList that will be used for filtering.
      * @param comboBoxDataProvider
@@ -315,7 +315,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      * absolutely necessary to use a custom CompositeMatcherEditor. This could
      * be for example to create a complex NatTable instance where several filter
      * rows need to be combined.
-     * 
+     *
      * @param filterList
      *            The FilterList that will be used for filtering.
      * @param matcherEditor
@@ -364,7 +364,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      * Creates a new ComboBoxFilterRowHeaderComposite based on the given
      * informations. Will use the given ComboBoxGlazedListsFilterStrategy
      * instead of creating a new one.
-     * 
+     *
      * @param filterStrategy
      *            The ComboBoxGlazedListsFilterStrategy that should be used for
      *            filtering.
@@ -410,7 +410,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
 
         setAllValuesSelected();
 
-        setChildLayer(GridRegion.FILTER_ROW, filterRowDataLayer, 0, 1);
+        setChildLayer(GridRegion.FILTER_ROW, this.filterRowDataLayer, 0, 1);
 
         if (useDefaultConfiguration) {
             addConfiguration(new ComboBoxFilterRowConfiguration(
@@ -432,7 +432,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      *         filter row.
      */
     public CompositeMatcherEditor<T> getMatcherEditor() {
-        return filterStrategy.getMatcherEditor();
+        return this.filterStrategy.getMatcherEditor();
     }
 
     /**
@@ -441,12 +441,12 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      * filters, e.g. using GlazedListsRowHideShowLayer together with this
      * ComboBoxFilterRowHeaderComposite by adding the MatcherEditor as static
      * filter to the ComboBoxGlazedListsFilterStrategy.
-     * 
+     *
      * @return The IFilterStrategy that is used by this
      *         ComboBoxFilterRowHeaderComposite.
      */
     public ComboBoxGlazedListsFilterStrategy<T> getFilterStrategy() {
-        return filterStrategy;
+        return this.filterStrategy;
     }
 
     /**
@@ -454,7 +454,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
      *         comboboxes.
      */
     public FilterRowComboBoxDataProvider<T> getComboBoxDataProvider() {
-        return comboBoxDataProvider;
+        return this.comboBoxDataProvider;
     }
 
     /**
@@ -467,7 +467,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
 
     /**
      * Sets the visibility state of the filter row.
-     * 
+     *
      * @param filterRowVisible
      *            <code>true</code> to set the filter row visible,
      *            <code>false</code> to hide it.
@@ -492,7 +492,7 @@ public class ComboBoxFilterRowHeaderComposite<T> extends CompositeLayer
                 .getFilterRowDataProvider();
         for (int i = 0; i < dataProvider.getColumnCount(); i++) {
             dataProvider.getFilterIndexToObjectMap().put(i,
-                    comboBoxDataProvider.getValues(i, 0));
+                    this.comboBoxDataProvider.getValues(i, 0));
         }
         getFilterStrategy().applyFilter(
                 dataProvider.getFilterIndexToObjectMap());

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -136,12 +136,12 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         this.groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor);
 
         this.treeFormat = new GroupByTreeFormat<T>(groupByModel,
-                (IColumnAccessor<T>) groupByColumnAccessor);
-        this.treeList = new TreeList(eventList, treeFormat,
+                (IColumnAccessor<T>) this.groupByColumnAccessor);
+        this.treeList = new TreeList(eventList, this.treeFormat,
                 new GroupByExpansionModel());
 
         this.treeData = new GlazedListTreeData<Object>(getTreeList());
-        this.treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
+        this.treeRowModel = new GlazedListTreeRowModel<Object>(this.treeData);
 
         this.configRegistry = configRegistry;
 
@@ -149,7 +149,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                 smoothUpdates);
 
         setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(),
-                groupByColumnAccessor));
+                this.groupByColumnAccessor));
 
         if (useDefaultConfiguration) {
             addConfiguration(new GroupByDataLayerConfiguration());
@@ -183,7 +183,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
             @Override
             public void run() {
-                eventList.getReadWriteLock().writeLock().lock();
+                GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().lock();
                 try {
                     /*
                      * The workaround for the update issue suggested on the
@@ -192,11 +192,11 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                      * time. Instead we are performing a clear()-addAll() which
                      * is slightly faster.
                      */
-                    EventList<T> temp = GlazedLists.eventList(eventList);
-                    eventList.clear();
-                    eventList.addAll(temp);
+                    EventList<T> temp = GlazedLists.eventList(GroupByDataLayer.this.eventList);
+                    GroupByDataLayer.this.eventList.clear();
+                    GroupByDataLayer.this.eventList.addAll(temp);
                 } finally {
-                    eventList.getReadWriteLock().writeLock().unlock();
+                    GroupByDataLayer.this.eventList.getReadWriteLock().writeLock().unlock();
                 }
             }
         });
@@ -320,7 +320,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * Usually it is not necessary to call this method manually. But for certain
      * use cases it might be useful, e.g. changing the summary provider
      * implementation at runtime.
-     * 
+     *
      * @see CalculatedValueCache#clearCache()
      */
     public void clearCache() {
@@ -335,7 +335,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * Usually it is not necessary to call this method manually. But for certain
      * use cases it might be useful, e.g. changing the summary provider
      * implementation at runtime.
-     * 
+     *
      * @see CalculatedValueCache#killCache()
      */
     public void killCache() {
@@ -385,11 +385,11 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     /**
      * Simple {@link ExpansionModel} that shows every node expanded initially
      * and doesn't react on expand/collapse state changes.
-     * 
+     *
      * It is not strictly necessary for implementors to record the
      * expand/collapsed state of all nodes, since TreeList caches node state
      * internally.
-     * 
+     *
      * @see http://publicobject.com/glazedlists/glazedlists-1.8.0/api/ca/odell/
      *      glazedlists/TreeList.ExpansionModel.html
      */
@@ -418,18 +418,18 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * Get the list of elements for a group, create it if it doesn't exists.<br/>
      * We could also use treeData.getChildren(groupDescriptor, true) but it's
      * less efficient.
-     * 
+     *
      * @param groupDescriptor
      *            The description of the group (columnIndexes..)
      * @return The FilterList of elements
      */
     public FilterList<T> getElementsInGroup(GroupByObject groupDescriptor) {
-        FilterList<T> elementsInGroup = filtersByGroup.get(groupDescriptor);
+        FilterList<T> elementsInGroup = this.filtersByGroup.get(groupDescriptor);
         if (elementsInGroup == null) {
-            elementsInGroup = new FilterList<T>(eventList,
+            elementsInGroup = new FilterList<T>(this.eventList,
                     new GroupDescriptorMatcher<T>(groupDescriptor,
-                            columnAccessor));
-            filtersByGroup.put(groupDescriptor, elementsInGroup);
+                            this.columnAccessor));
+            this.filtersByGroup.put(groupDescriptor, elementsInGroup);
         }
         return elementsInGroup;
     }
@@ -450,10 +450,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
         @Override
         public boolean matches(T element) {
-            for (Entry<Integer, Object> desc : group.getDescriptor()) {
+            for (Entry<Integer, Object> desc : this.group.getDescriptor()) {
                 int columnIndex = desc.getKey();
                 Object groupName = desc.getValue();
-                if (!groupName.equals(columnAccessor.getDataValue(element,
+                if (!groupName.equals(this.columnAccessor.getDataValue(element,
                         columnIndex))) {
                     return false;
                 }
@@ -486,10 +486,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             final int prime = 31;
             int result = 1;
             result = prime * result + getOuterType().hashCode();
-            result = prime * result + columnPosition;
+            result = prime * result + this.columnPosition;
             result = prime * result
-                    + ((groupBy == null) ? 0 : groupBy.hashCode());
-            result = prime * result + rowPosition;
+                    + ((this.groupBy == null) ? 0 : this.groupBy.hashCode());
+            result = prime * result + this.rowPosition;
             return result;
         }
 
@@ -505,14 +505,14 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             GroupByValueCacheKey other = (GroupByValueCacheKey) obj;
             if (!getOuterType().equals(other.getOuterType()))
                 return false;
-            if (columnPosition != other.columnPosition)
+            if (this.columnPosition != other.columnPosition)
                 return false;
-            if (groupBy == null) {
+            if (this.groupBy == null) {
                 if (other.groupBy != null)
                     return false;
-            } else if (!groupBy.equals(other.groupBy))
+            } else if (!this.groupBy.equals(other.groupBy))
                 return false;
-            if (rowPosition != other.rowPosition)
+            if (this.rowPosition != other.rowPosition)
                 return false;
             return true;
         }

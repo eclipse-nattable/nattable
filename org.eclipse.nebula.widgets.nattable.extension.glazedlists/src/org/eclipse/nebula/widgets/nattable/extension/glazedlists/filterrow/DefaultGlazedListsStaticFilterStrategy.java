@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * Default implementation of an {@link IFilterStrategy} for the filter row which
  * can also take static filters and combine them with the filter logic from the
  * filter row.
- * 
+ *
  * @author Dirk Fauth
  *
  * @param <T>
@@ -45,7 +45,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
      * Note: Using this constructor you don't need to create and set the
      * CompositeMatcherEditor as MatcherEditor on the FilterList yourself! The
      * necessary steps to get it working is done within this constructor.
-     * 
+     *
      * @param filterList
      *            The FilterList that is used within the GlazedLists based
      *            NatTable for filtering.
@@ -69,7 +69,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
      * Note: Using this constructor you need to create the
      * CompositeMatcherEditor yourself. It will be added automatically to the
      * given FilterList, so you can skip that step.
-     * 
+     *
      * @param filterList
      *            The FilterList that is used within the GlazedLists based
      *            NatTable for filtering.
@@ -96,13 +96,13 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
     public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
         super.applyFilter(filterIndexToObjectMap);
         this.getMatcherEditor().getMatcherEditors()
-                .addAll(staticMatcherEditor.values());
+                .addAll(this.staticMatcherEditor.values());
     }
 
     /**
      * Add a static filter to this filter strategy which will always be applied
      * additionally to any other filter.
-     * 
+     *
      * @param matcher
      *            the static filter to add
      */
@@ -120,7 +120,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
     /**
      * Add a static filter to this filter strategy which will always be applied
      * additionally to any other filter.
-     * 
+     *
      * @param matcherEditor
      *            the static filter to add
      */
@@ -130,26 +130,26 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
 
         // remember the MatcherEditor so it can be restored after new
         // MatcherEditors are added by the FilterRow
-        staticMatcherEditor.put(matcherEditor.getMatcher(), matcherEditor);
+        this.staticMatcherEditor.put(matcherEditor.getMatcher(), matcherEditor);
     }
 
     /**
      * Remove the static filter from this filter strategy.
-     * 
+     *
      * @param matcher
      *            the filter to remove
      */
     public void removeStaticFilter(final Matcher<T> matcher) {
-        staticMatcherEditor.remove(matcher);
+        this.staticMatcherEditor.remove(matcher);
     }
 
     /**
      * Remove the static filter from this filter strategy.
-     * 
+     *
      * @param matcherEditor
      *            the filter to remove
      */
     public void removeStaticFilter(final MatcherEditor<T> matcherEditor) {
-        staticMatcherEditor.remove(matcherEditor.getMatcher());
+        this.staticMatcherEditor.remove(matcherEditor.getMatcher());
     }
 }

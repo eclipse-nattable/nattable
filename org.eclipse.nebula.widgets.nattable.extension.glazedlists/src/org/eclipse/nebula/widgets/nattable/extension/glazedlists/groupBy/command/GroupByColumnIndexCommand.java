@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -22,13 +22,15 @@ public class GroupByColumnIndexCommand implements ILayerCommand {
     }
 
     public int getGroupByColumnIndex() {
-        return groupByColumnIndex;
+        return this.groupByColumnIndex;
     }
 
+    @Override
     public GroupByColumnIndexCommand cloneCommand() {
         return this;
     }
 
+    @Override
     public boolean convertToTargetLayer(ILayer targetLayer) {
         return true;
     }

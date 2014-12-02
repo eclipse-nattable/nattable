@@ -38,7 +38,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * <p>
  * The special case in here is that if nothing is selected in the filter
  * combobox, then everything should be filtered.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -63,7 +63,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
     };
 
     /**
-     * 
+     *
      * @param comboBoxDataProvider
      *            The FilterRowComboBoxDataProvider needed to determine whether
      *            filters should applied or not. If there are no values
@@ -119,7 +119,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
     @Override
     public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
         if (filterIndexToObjectMap.isEmpty()) {
-            this.getMatcherEditor().getMatcherEditors().add(matchNone);
+            this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
             return;
         }
 
@@ -138,7 +138,7 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
             if (filterCollection == null || filterCollection.isEmpty()) {
                 // for one column there are no items selected in the combo,
                 // therefore nothing matches
-                this.getMatcherEditor().getMatcherEditors().add(matchNone);
+                this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
                 return;
             } else if (filterCollectionsEqual(filterCollection,
                     dataProviderList)) {

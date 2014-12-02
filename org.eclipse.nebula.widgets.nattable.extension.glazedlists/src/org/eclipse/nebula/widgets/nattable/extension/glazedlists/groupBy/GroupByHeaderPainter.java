@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -62,7 +62,7 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
         // Draw background
         gc.fillRectangle(bounds);
 
-        groupByCellBounds.clear();
+        this.groupByCellBounds.clear();
 
         IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
         gc.setBackground(cellStyle
@@ -73,7 +73,7 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
         gc.setAntialias(GUIHelper.DEFAULT_ANTIALIAS);
         gc.setTextAntialias(GUIHelper.DEFAULT_TEXT_ANTIALIAS);
 
-        List<Integer> groupByColumnIndexes = groupByModel
+        List<Integer> groupByColumnIndexes = this.groupByModel
                 .getGroupByColumnIndexes();
         if (groupByColumnIndexes.size() > 0) {
 
@@ -92,11 +92,11 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
             for (int i = 0; i <= lastColumnIndex; i++) {
                 int columnIndex = groupByColumnIndexes.get(i);
 
-                String columnName = (String) columnHeaderDataProvider
+                String columnName = (String) this.columnHeaderDataProvider
                         .getDataValue(columnIndex, 0);
                 int textWidth = gc.textExtent(columnName).x;
 
-                groupByCellBounds.add(new Rectangle(x0, y0, X_PADDING
+                this.groupByCellBounds.add(new Rectangle(x0, y0, X_PADDING
                         + textWidth + X_PADDING, y_height));
 
                 gc.fillRectangle(x0, y0, X_PADDING + textWidth + X_PADDING,
@@ -184,10 +184,10 @@ public class GroupByHeaderPainter extends AbstractCellPainter {
     }
 
     public int getGroupByColumnIndexAtXY(int x, int y) {
-        for (int i = 0; i < groupByCellBounds.size(); i++) {
-            Rectangle bounds = groupByCellBounds.get(i);
+        for (int i = 0; i < this.groupByCellBounds.size(); i++) {
+            Rectangle bounds = this.groupByCellBounds.get(i);
             if (bounds.contains(x, y)) {
-                return groupByModel.getGroupByColumnIndexes().get(i);
+                return this.groupByModel.getGroupByColumnIndexes().get(i);
             }
         }
         return -1;

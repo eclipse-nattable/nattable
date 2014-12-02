@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -27,7 +27,7 @@ public class GroupByColumnAccessor<T> implements IColumnAccessor<Object> {
             GroupByObject groupByObject = (GroupByObject) rowObject;
             return groupByObject.getValue();
         } else {
-            return columnAccessor.getDataValue((T) rowObject, columnIndex);
+            return this.columnAccessor.getDataValue((T) rowObject, columnIndex);
         }
     }
 
@@ -37,12 +37,12 @@ public class GroupByColumnAccessor<T> implements IColumnAccessor<Object> {
         if (rowObject instanceof GroupByObject) {
             // do nothing
         } else {
-            columnAccessor.setDataValue((T) rowObject, columnIndex, newValue);
+            this.columnAccessor.setDataValue((T) rowObject, columnIndex, newValue);
         }
     }
 
     @Override
     public int getColumnCount() {
-        return columnAccessor.getColumnCount();
+        return this.columnAccessor.getColumnCount();
     }
 }

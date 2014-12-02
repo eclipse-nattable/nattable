@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -68,7 +68,7 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
         this.eventList.addListEventListener(this);
 
         // Start the event conflation thread
-        future = scheduler.scheduleAtFixedRate(getEventNotifier(), 0L, 100L);
+        this.future = scheduler.scheduleAtFixedRate(getEventNotifier(), 0L, 100L);
     }
 
     /**
@@ -78,9 +78,9 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
         return new Runnable() {
             @Override
             public void run() {
-                if (eventsToProcess && active) {
+                if (GlazedListsEventLayer.this.eventsToProcess && GlazedListsEventLayer.this.active) {
                     ILayerEvent layerEvent;
-                    if (structuralChangeEventsToProcess) {
+                    if (GlazedListsEventLayer.this.structuralChangeEventsToProcess) {
                         layerEvent = new RowStructuralRefreshEvent(
                                 getUnderlyingLayer());
                     } else {
@@ -89,8 +89,8 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
                     }
                     fireEventFromSWTDisplayThread(layerEvent);
                 }
-                eventsToProcess = false;
-                structuralChangeEventsToProcess = false;
+                GlazedListsEventLayer.this.eventsToProcess = false;
+                GlazedListsEventLayer.this.structuralChangeEventsToProcess = false;
             }
         };
     }
@@ -103,10 +103,10 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
         while (event.next()) {
             int eventType = event.getType();
             if (eventType == ListEvent.DELETE || eventType == ListEvent.INSERT) {
-                structuralChangeEventsToProcess = true;
+                this.structuralChangeEventsToProcess = true;
             }
         }
-        eventsToProcess = true;
+        this.eventsToProcess = true;
     }
 
     /**
@@ -128,7 +128,7 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
      * Painting can only be triggered from the SWT Display thread.
      */
     protected void fireEventFromSWTDisplayThread(final ILayerEvent event) {
-        if (!testMode && Display.getCurrent() == null) {
+        if (!this.testMode && Display.getCurrent() == null) {
             Display.getDefault().asyncExec(new Runnable() {
                 @Override
                 public void run() {
@@ -142,15 +142,15 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
 
     @Override
     public boolean doCommand(ILayerCommand command) {
-        if (!terminated && command instanceof DisposeResourcesCommand) {
-            terminated = true;
-            scheduler.unschedule(future);
+        if (!this.terminated && command instanceof DisposeResourcesCommand) {
+            this.terminated = true;
+            scheduler.unschedule(this.future);
         }
         return super.doCommand(command);
     }
 
     public boolean isDisposed() {
-        return terminated;
+        return this.terminated;
     }
 
     /**
@@ -158,9 +158,9 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
      *            the {@link EventList} to listen on.
      */
     public void setEventList(EventList<T> newEventList) {
-        eventList.removeListEventListener(this);
-        eventList = newEventList;
-        eventList.addListEventListener(this);
+        this.eventList.removeListEventListener(this);
+        this.eventList = newEventList;
+        this.eventList.addListEventListener(this);
     }
 
     public void setTestMode(boolean testMode) {
@@ -208,13 +208,13 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return underlyingLayer.getColumnPositionByIndex(columnIndex);
+        return this.underlyingLayer.getColumnPositionByIndex(columnIndex);
     }
 
     // Rows
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return underlyingLayer.getRowPositionByIndex(rowIndex);
+        return this.underlyingLayer.getRowPositionByIndex(rowIndex);
     }
 }

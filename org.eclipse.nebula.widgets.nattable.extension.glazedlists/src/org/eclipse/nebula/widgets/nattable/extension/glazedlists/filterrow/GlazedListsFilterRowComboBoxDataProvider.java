@@ -41,7 +41,7 @@ import ca.odell.glazedlists.event.ListEventListener;
  * <p>
  * This implementation solves this issue by listening to the wrapped source
  * EventList of the FilterList instead of the NatTable IStructuralChangeEvent.
- * 
+ *
  * @author Dirk Fauth
  *
  */
@@ -78,7 +78,7 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ca.odell.glazedlists.event.ListEventListener#listChanged(ca.odell.glazedlists
      * .event.ListEvent)
