@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupby;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Properties;
@@ -42,17 +43,14 @@ public class GroupByModelPersistenceTest {
         this.model.saveState("prefix", properties);
 
         assertEquals(1, properties.size());
-        assertEquals(
-                "5,3,7,",
-                properties.getProperty("prefix"
-                        + GroupByModel.PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES));
+        assertEquals("5,3,7,",
+                properties.getProperty("prefix" + GroupByModel.PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES));
     }
 
     @Test
     public void testLoadState() {
         Properties properties = new Properties();
-        properties.setProperty("prefix"
-                + GroupByModel.PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES,
+        properties.setProperty("prefix" + GroupByModel.PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES,
                 "9,5,7,");
 
         this.model.loadState("prefix", properties);
@@ -61,5 +59,31 @@ public class GroupByModelPersistenceTest {
         assertEquals(9, indexes.get(0).intValue());
         assertEquals(5, indexes.get(1).intValue());
         assertEquals(7, indexes.get(2).intValue());
+    }
+
+    @Test
+    public void testSaveStateAfterUngroup() {
+        Properties properties = new Properties();
+        properties.setProperty("prefix" + GroupByModel.PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES,
+                "9,5,7,");
+
+        this.model.loadState("prefix", properties);
+
+        List<Integer> indexes = this.model.getGroupByColumnIndexes();
+        assertEquals(9, indexes.get(0).intValue());
+        assertEquals(5, indexes.get(1).intValue());
+        assertEquals(7, indexes.get(2).intValue());
+
+        this.model.removeGroupByColumnIndex(7);
+        this.model.removeGroupByColumnIndex(5);
+        this.model.removeGroupByColumnIndex(9);
+
+        assertTrue("indexes are not empty", this.model.getGroupByColumnIndexes().isEmpty());
+
+        this.model.saveState("prefix", properties);
+
+        assertEquals(1, properties.size());
+        assertEquals("",
+                properties.getProperty("prefix" + GroupByModel.PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES));
     }
 }

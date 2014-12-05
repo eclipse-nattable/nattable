@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447185
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -60,26 +61,21 @@ public class GroupByModel extends Observable implements IPersistable {
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        if (this.groupByColumnIndexes.size() > 0) {
-            StringBuilder strBuilder = new StringBuilder();
-            for (Integer index : this.groupByColumnIndexes) {
-                strBuilder.append(index);
-                strBuilder.append(IPersistable.VALUE_SEPARATOR);
-            }
-            properties.setProperty(prefix
-                    + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES,
-                    strBuilder.toString());
+        StringBuilder strBuilder = new StringBuilder();
+        for (Integer index : this.groupByColumnIndexes) {
+            strBuilder.append(index);
+            strBuilder.append(IPersistable.VALUE_SEPARATOR);
         }
+        properties.setProperty(prefix + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES,
+                strBuilder.toString());
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
         this.groupByColumnIndexes.clear();
-        String property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES);
+        String property = properties.getProperty(prefix + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES);
         if (property != null) {
-            StringTokenizer tok = new StringTokenizer(property,
-                    IPersistable.VALUE_SEPARATOR);
+            StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
                 this.groupByColumnIndexes.add(Integer.valueOf(index));
