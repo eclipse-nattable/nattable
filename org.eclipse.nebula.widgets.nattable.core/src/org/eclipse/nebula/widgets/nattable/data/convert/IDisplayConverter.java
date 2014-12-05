@@ -39,8 +39,13 @@ public interface IDisplayConverter {
     public Object displayToCanonicalValue(Object displayValue);
 
     /**
-     * Convert backing data value to value to be displayed Typically converted
+     * Convert backing data value to value to be displayed. Typically converted
      * to a String for display. Use this method for contextual conversion.
+     * <p>
+     * Note that on returning a different type than String,
+     * <code>toString()</code> will be called on the returned object to render
+     * the value for displaying.
+     * </p>
      */
     public Object canonicalToDisplayValue(ILayerCell cell,
             IConfigRegistry configRegistry, Object canonicalValue);

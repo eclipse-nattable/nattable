@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453898
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
@@ -193,15 +194,13 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      *            The maximum number of items the drop down will show before
      *            introducing a scroll bar.
      */
-    public ComboBoxCellEditor(IComboBoxDataProvider dataProvider,
-            int maxVisibleItems) {
+    public ComboBoxCellEditor(IComboBoxDataProvider dataProvider, int maxVisibleItems) {
         this.dataProvider = dataProvider;
         this.maxVisibleItems = maxVisibleItems;
     }
 
     @Override
-    protected Control activateCell(Composite parent,
-            final Object originalCanonicalValue) {
+    protected Control activateCell(Composite parent, final Object originalCanonicalValue) {
         this.combo = createEditorControl(parent);
 
         fillCombo();
@@ -244,15 +243,13 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             // Item selected from list
             if (selectionIndex >= 0) {
                 if (this.dataProvider != null) {
-                    return this.dataProvider.getValues(getColumnIndex(),
-                            getRowIndex()).get(selectionIndex);
+                    return this.dataProvider.getValues(getColumnIndex(), getRowIndex()).get(selectionIndex);
                 } else {
                     return this.canonicalValues.get(selectionIndex);
                 }
             } else {
                 // if there is no selection in the dropdown, we need to check if
-                // there is a free edit
-                // in the NatCombo control
+                // there is a free edit in the NatCombo control
                 if (this.combo.getSelection().length > 0) {
                     return super.getCanonicalValue();
                 }
@@ -269,8 +266,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             if (selectionIndices.length > 0) {
                 List<?> values = null;
                 if (this.dataProvider != null) {
-                    values = this.dataProvider.getValues(getColumnIndex(),
-                            getRowIndex());
+                    values = this.dataProvider.getValues(getColumnIndex(), getRowIndex());
                 } else {
                     values = this.canonicalValues;
                 }
@@ -279,13 +275,11 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 }
             } else {
                 // if there is no selection in the dropdown, we need to check if
-                // there is a free edit
-                // in the NatCombo control
+                // there is a free edit in the NatCombo control
                 String[] comboSelection = this.combo.getSelection();
                 if (comboSelection.length > 0) {
                     for (String selection : comboSelection) {
-                        result.add(handleConversion(selection,
-                                this.conversionEditErrorHandler));
+                        result.add(handleConversion(selection, this.conversionEditErrorHandler));
                     }
                 }
             }
@@ -315,15 +309,13 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 List<?> temp = (List<?>) canonicalValue;
                 String[] result = new String[temp.size()];
                 for (int i = 0; i < temp.size(); i++) {
-                    result[i] = (String) this.displayConverter
-                            .canonicalToDisplayValue(this.layerCell,
-                                    this.configRegistry, temp.get(i));
+                    result[i] = (String) this.displayConverter.canonicalToDisplayValue(
+                            this.layerCell, this.configRegistry, temp.get(i));
                 }
                 editorValues = result;
             } else {
-                editorValues = new String[] { (String) this.displayConverter
-                        .canonicalToDisplayValue(this.layerCell,
-                                this.configRegistry, canonicalValue) };
+                editorValues = new String[] { (String) this.displayConverter.canonicalToDisplayValue(
+                        this.layerCell, this.configRegistry, canonicalValue) };
             }
             setEditorValue(editorValues);
         }
@@ -340,16 +332,15 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
 
         List<?> values;
         if (this.dataProvider != null) {
-            values = this.dataProvider.getValues(getColumnIndex(),
-                    getRowIndex());
+            values = this.dataProvider.getValues(getColumnIndex(), getRowIndex());
         } else {
             values = this.canonicalValues;
         }
 
         for (Object canonicalValue : values) {
-            displayValues.add((String) this.displayConverter
-                    .canonicalToDisplayValue(this.layerCell,
-                            this.configRegistry, canonicalValue));
+            Object displayValue = this.displayConverter.canonicalToDisplayValue(
+                    this.layerCell, this.configRegistry, canonicalValue);
+            displayValues.add(displayValue != null ? displayValue.toString() : ""); //$NON-NLS-1$
         }
 
         this.combo.setItems(displayValues.toArray(ArrayUtil.STRING_TYPE_ARRAY));
@@ -385,17 +376,15 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
         if (this.useCheckbox) {
             style |= SWT.CHECK;
         }
-        final NatCombo combo = this.iconImage == null ? new NatCombo(parent,
-                this.cellStyle, this.maxVisibleItems, style) : new NatCombo(
-                parent, this.cellStyle, this.maxVisibleItems, style,
-                this.iconImage);
+        final NatCombo combo = (this.iconImage == null)
+                ? new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style)
+                : new NatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage);
 
         combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
 
         if (this.multiselect) {
             combo.setMultiselectValueSeparator(this.multiselectValueSeparator);
-            combo.setMultiselectTextBracket(this.multiselectTextPrefix,
-                    this.multiselectTextSuffix);
+            combo.setMultiselectTextBracket(this.multiselectTextPrefix, this.multiselectTextSuffix);
         }
 
         addNatComboListener(combo);
@@ -417,8 +406,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
             public void keyPressed(KeyEvent event) {
                 if ((event.keyCode == SWT.CR)
                         || (event.keyCode == SWT.KEYPAD_CR)) {
-                    commit(MoveDirectionEnum.NONE,
-                            ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE);
+                    commit(MoveDirectionEnum.NONE, ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE);
                 } else if (event.keyCode == SWT.ESC) {
                     close();
                 }
@@ -518,8 +506,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
      * @see NatCombo#DEFAULT_MULTI_SELECT_PREFIX
      * @see NatCombo#DEFAULT_MULTI_SELECT_SUFFIX
      */
-    public void setMultiselectTextBracket(String multiselectTextPrefix,
-            String multiselectTextSuffix) {
+    public void setMultiselectTextBracket(String multiselectTextPrefix, String multiselectTextSuffix) {
         this.multiselectTextPrefix = multiselectTextPrefix;
         this.multiselectTextSuffix = multiselectTextSuffix;
     }
