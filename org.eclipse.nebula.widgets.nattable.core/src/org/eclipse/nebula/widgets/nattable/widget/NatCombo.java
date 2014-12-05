@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 454111
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.widget;
 
@@ -223,8 +224,7 @@ public class NatCombo extends Composite {
      *            adding internal styles via ConfigRegistry.
      */
     public NatCombo(Composite parent, IStyle cellStyle, int style) {
-        this(parent, cellStyle, DEFAULT_NUM_OF_VISIBLE_ITEMS, style, GUIHelper
-                .getImage("down_2")); //$NON-NLS-1$
+        this(parent, cellStyle, DEFAULT_NUM_OF_VISIBLE_ITEMS, style, GUIHelper.getImage("down_2")); //$NON-NLS-1$
     }
 
     /**
@@ -245,10 +245,8 @@ public class NatCombo extends Composite {
      *            The style for the Text Control to construct. Uses this style
      *            adding internal styles via ConfigRegistry.
      */
-    public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems,
-            int style) {
-        this(parent, cellStyle, maxVisibleItems, style, GUIHelper
-                .getImage("down_2")); //$NON-NLS-1$
+    public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style) {
+        this(parent, cellStyle, maxVisibleItems, style, GUIHelper.getImage("down_2")); //$NON-NLS-1$
     }
 
     /**
@@ -271,8 +269,7 @@ public class NatCombo extends Composite {
      *            dropdown is visible. Using this image will indicate that the
      *            control is an open combo to the user.
      */
-    public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems,
-            int style, Image iconImage) {
+    public NatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage) {
         super(parent, SWT.NONE);
 
         this.cellStyle = cellStyle;
@@ -294,26 +291,26 @@ public class NatCombo extends Composite {
         createTextControl(style);
         createDropdownControl(style);
 
+        // typically the dropdown shell should be hidden when the focus is lost
+        // but in case the NatCombo is the first control in a shell, the text
+        // control will get the focus immediately after the shell lost focus.
+        // as handling with focus listeners in such a case fails, we add a move
+        // listener that will update the position of the dropdown shell if the
+        // parent shell moves
+        final Listener moveListener = new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                calculateBounds();
+            }
+        };
+        getShell().addListener(SWT.Move, moveListener);
+
         addDisposeListener(new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent e) {
                 NatCombo.this.dropdownShell.dispose();
                 NatCombo.this.text.dispose();
-            }
-        });
-
-        // typically the dropdown shell should be hidden when the focus is lost
-        // but in case the NatCombo is the first control in a shell, the text
-        // control
-        // will get the focus immediately after the shell lost focus.
-        // as handling with focus listeners in such a case fails, we add a move
-        // listener
-        // that will update the position of the dropdown shell if the parent
-        // shell moves
-        getShell().addListener(SWT.Move, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                calculateBounds();
+                NatCombo.this.getShell().removeListener(SWT.Move, moveListener);
             }
         });
     }
@@ -346,13 +343,10 @@ public class NatCombo extends Composite {
      *            adding internal styles via ConfigRegistry.
      */
     protected void createTextControl(int style) {
-        int widgetStyle = style
-                | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle);
+        int widgetStyle = style | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle);
         this.text = new Text(this, widgetStyle);
-        this.text.setBackground(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-        this.text.setForeground(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+        this.text.setBackground(this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        this.text.setForeground(this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
         this.text.setFont(this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -374,12 +368,10 @@ public class NatCombo extends Composite {
                     // ensure the arrow key events do not have any further
                     // effect
                     event.doit = false;
-                } else if (!LetterOrDigitKeyEventMatcher
-                        .isLetterOrDigit(event.character)) {
+                } else if (!LetterOrDigitKeyEventMatcher.isLetterOrDigit(event.character)) {
                     if (NatCombo.this.freeEdit) {
                         // simply clear the selection in dropdownlist so the
-                        // free value in text control
-                        // will be used
+                        // free value in text control will be used
                         if (!NatCombo.this.dropdownTable.isDisposed()) {
                             NatCombo.this.dropdownTable.deselectAll();
                         }
@@ -400,8 +392,7 @@ public class NatCombo extends Composite {
                         showDropdownControl();
                     } else {
                         // if there is no free edit enabled, set the focus back
-                        // to the
-                        // dropdownlist so it handles key strokes itself
+                        // to the dropdownlist so it handles key strokes itself
                         NatCombo.this.dropdownTable.forceFocus();
                     }
                 }
@@ -427,8 +418,7 @@ public class NatCombo extends Composite {
             @Override
             public Point computeSize(int wHint, int hHint, boolean changed) {
                 Rectangle iconImageBounds = NatCombo.this.iconImage.getBounds();
-                return new Point(iconImageBounds.width + 2,
-                        iconImageBounds.height + 2);
+                return new Point(iconImageBounds.width + 2, iconImageBounds.height + 2);
             }
 
         };
@@ -444,21 +434,17 @@ public class NatCombo extends Composite {
 
                 Rectangle iconCanvasBounds = iconCanvas.getBounds();
                 Rectangle iconImageBounds = NatCombo.this.iconImage.getBounds();
-                int horizontalAlignmentPadding = CellStyleUtil
-                        .getHorizontalAlignmentPadding(
-                                HorizontalAlignmentEnum.CENTER,
-                                iconCanvasBounds, iconImageBounds.width);
-                int verticalAlignmentPadding = CellStyleUtil
-                        .getVerticalAlignmentPadding(
-                                VerticalAlignmentEnum.MIDDLE, iconCanvasBounds,
-                                iconImageBounds.height);
-                gc.drawImage(NatCombo.this.iconImage, horizontalAlignmentPadding,
-                        verticalAlignmentPadding);
+                int horizontalAlignmentPadding =
+                        CellStyleUtil.getHorizontalAlignmentPadding(
+                                HorizontalAlignmentEnum.CENTER, iconCanvasBounds, iconImageBounds.width);
+                int verticalAlignmentPadding =
+                        CellStyleUtil.getVerticalAlignmentPadding(
+                                VerticalAlignmentEnum.MIDDLE, iconCanvasBounds, iconImageBounds.height);
+                gc.drawImage(NatCombo.this.iconImage, horizontalAlignmentPadding, verticalAlignmentPadding);
 
                 Color originalFg = gc.getForeground();
                 gc.setForeground(GUIHelper.COLOR_WIDGET_BORDER);
-                gc.drawRectangle(0, 0, iconCanvasBounds.width - 1,
-                        iconCanvasBounds.height - 1);
+                gc.drawRectangle(0, 0, iconCanvasBounds.width - 1, iconCanvasBounds.height - 1);
                 gc.setForeground(originalFg);
             }
 
@@ -492,17 +478,18 @@ public class NatCombo extends Composite {
         this.dropdownShell = new Shell(getShell(), SWT.MODELESS);
         this.dropdownShell.setLayout(new FillLayout());
 
-        int dropdownListStyle = style | SWT.V_SCROLL
+        int dropdownListStyle = style
+                | SWT.V_SCROLL
                 | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
                 | SWT.FULL_SELECTION;
 
         this.dropdownTable = new Table(this.dropdownShell, dropdownListStyle);
-        this.dropdownTable.setBackground(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-        this.dropdownTable.setForeground(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-        this.dropdownTable.setFont(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.FONT));
+        this.dropdownTable.setBackground(
+                this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        this.dropdownTable.setForeground(
+                this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+        this.dropdownTable.setFont(
+                this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 
         // add a column to be able to resize the item width in the dropdown
         new TableColumn(this.dropdownTable, SWT.NONE);
@@ -532,8 +519,8 @@ public class NatCombo extends Composite {
                     // after selection is performed we need to ensure that
                     // selection and checkboxes are in sync
                     for (TableItem tableItem : NatCombo.this.dropdownTable.getItems()) {
-                        tableItem.setChecked(NatCombo.this.dropdownTable.isSelected(NatCombo.this.itemList
-                                .indexOf(tableItem.getText())));
+                        tableItem.setChecked(
+                                NatCombo.this.dropdownTable.isSelected(NatCombo.this.itemList.indexOf(tableItem.getText())));
                     }
                 }
 
@@ -652,27 +639,21 @@ public class NatCombo extends Composite {
         if (this.dropdownShell != null && !this.dropdownShell.isDisposed()) {
             Point size = getSize();
             // calculate the height by multiplying the number of visible items
-            // with
-            // the item height of items in the list and adding 2*grid line width
-            // to work around a
-            // calculation error regarding the descent of the font metrics for
-            // the
-            // last shown item
+            // with the item height of items in the list and adding 2*grid line
+            // width to work around a calculation error regarding the descent of
+            // the font metrics for the last shown item
             // Note: if there are no items to show in the combo, calculate with
-            // the item count of
-            // 3 so an empty combo will open
-            int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount()
-                    : 3)
+            // the item count of 3 so an empty combo will open
+            int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount() : 3)
                     * this.dropdownTable.getItemHeight()
                     + this.dropdownTable.getGridLineWidth() * 2;
 
             // since introduced the TableColumn for real full row selection, we
-            // call pack() to
-            // perform autoresize to ensure the width shows the whole content
+            // call pack() to perform autoresize to ensure the width shows the
+            // whole content
             this.dropdownTable.getColumn(0).pack();
             int listWidth = Math.max(
-                    this.dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x,
-                    size.x);
+                    this.dropdownTable.computeSize(SWT.DEFAULT, listHeight, true).x, size.x);
 
             // correction of the shell bounds to ensure the scrollbars are shown
             // full
@@ -681,8 +662,7 @@ public class NatCombo extends Composite {
                     && getVisibleItemCount() < this.dropdownTable.getItemCount()) {
                 correction = 2;
             }
-            this.dropdownTable.setSize(listWidth - correction, listHeight
-                    - correction);
+            this.dropdownTable.setSize(listWidth - correction, listHeight - correction);
 
             calculateColumnWidth();
 
@@ -690,18 +670,19 @@ public class NatCombo extends Composite {
 
             // by default the dropdown shell will be created below the cell in
             // the table
-            int dropdownShellStartingY = textPosition.y
-                    + this.text.getBounds().height;
-            int shellBottomY = textPosition.y + this.text.getBounds().height
-                    + listHeight;
+            int dropdownShellStartingY = textPosition.y + this.text.getBounds().height;
+            int shellBottomY = textPosition.y + this.text.getBounds().height + listHeight;
             // if the bottom of the drowdown is below the display, render it
             // above the cell
             if (shellBottomY > Display.getCurrent().getBounds().height) {
                 dropdownShellStartingY = textPosition.y - listHeight;
             }
 
-            Rectangle shellBounds = new Rectangle(textPosition.x,
-                    dropdownShellStartingY, listWidth, listHeight);
+            Rectangle shellBounds = new Rectangle(
+                    textPosition.x,
+                    dropdownShellStartingY,
+                    listWidth,
+                    listHeight);
 
             this.dropdownShell.setBounds(shellBounds);
         }
@@ -912,9 +893,8 @@ public class NatCombo extends Composite {
     @Override
     public void addMouseListener(MouseListener listener) {
         // only add the mouse listener to the dropdown, as clicking in the text
-        // control
-        // should not trigger anything else than it is handled by the text
-        // control itself.
+        // control should not trigger anything else than it is handled by the
+        // text control itself.
         if (this.dropdownTable != null && !this.dropdownTable.isDisposed())
             this.dropdownTable.addMouseListener(listener);
     }
@@ -1041,8 +1021,7 @@ public class NatCombo extends Composite {
                     }
                 }
             }
-            this.dropdownTable.setSelection(selectedItems
-                    .toArray(new TableItem[] {}));
+            this.dropdownTable.setSelection(selectedItems.toArray(new TableItem[] {}));
         }
     }
 
@@ -1066,8 +1045,7 @@ public class NatCombo extends Composite {
                     // for multiselect the String is defined by default in
                     // format [a, b, c]
                     // the prefix and suffix for multiselect String
-                    // representation need to
-                    // be removed
+                    // representation need to be removed
                     // in free edit mode we need to check if the format is used
                     int prefixLength = this.multiselectTextPrefix.length();
                     int suffixLength = this.multiselectTextSuffix.length();
@@ -1079,8 +1057,7 @@ public class NatCombo extends Composite {
                             suffixLength = 0;
                         }
                     }
-                    transform = transform.substring(prefixLength,
-                            transform.length() - suffixLength);
+                    transform = transform.substring(prefixLength, transform.length() - suffixLength);
                 }
                 // if the transform value length is still > 0, then try to split
                 if (transform.length() > 0) {
@@ -1137,8 +1114,7 @@ public class NatCombo extends Composite {
                     result += this.multiselectValueSeparator;
                 }
             }
-            result = this.multiselectTextPrefix + result
-                    + this.multiselectTextSuffix;
+            result = this.multiselectTextPrefix + result + this.multiselectTextSuffix;
         } else if (values.length > 0) {
             result = values[0];
         }
@@ -1176,8 +1152,7 @@ public class NatCombo extends Composite {
      * @see NatCombo#DEFAULT_MULTI_SELECT_PREFIX
      * @see NatCombo#DEFAULT_MULTI_SELECT_SUFFIX
      */
-    public void setMultiselectTextBracket(String multiselectTextPrefix,
-            String multiselectTextSuffix) {
+    public void setMultiselectTextBracket(String multiselectTextPrefix, String multiselectTextSuffix) {
         if (multiselectTextPrefix == null) {
             this.multiselectTextPrefix = DEFAULT_MULTI_SELECT_PREFIX;
         } else {
@@ -1198,9 +1173,6 @@ public class NatCombo extends Composite {
      * background thread for focus lost is started. If the other control gains
      * focus, the local focus flag is set to true which skips the execution of
      * the delayed background thread. This means the NatCombo hasn't lost focus.
-     *
-     * @author Dirk Fauth
-     *
      */
     class FocusListenerWrapper implements FocusListener {
 
