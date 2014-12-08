@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Dirk Fauth and others.
+ * Copyright (c) 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,6 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
- *    Roman Flueckiger <roman.flueckiger@mac.com> - added expand/collapse key bindings
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
@@ -64,6 +63,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
+import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -78,6 +78,7 @@ import org.eclipse.nebula.widgets.nattable.style.theme.DarkNatTableThemeConfigur
 import org.eclipse.nebula.widgets.nattable.style.theme.DefaultNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
+import org.eclipse.nebula.widgets.nattable.summaryrow.FixedSummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
@@ -110,7 +111,7 @@ import ca.odell.glazedlists.TransformedList;
  * composition of a grid in conjunction with showing summary values of
  * groupings.
  */
-public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
+public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExample {
 
     private static final String ROW_HEADER_SUMMARY_ROW = "rowHeaderSummaryRowLabel";
 
@@ -126,12 +127,13 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(800, 600,
-                new _809_GroupBySummarySummaryRowExample());
+                new _811_GroupBySummaryFixedSummaryRowExample());
     }
 
     @Override
     public String getDescription() {
-        return "This example shows the usage of the group by feature in conjunction with summary values of the groupings.";
+        return "This example shows the usage of the group by feature in conjunction with summary values of the groupings "
+                + "and a fixed summary row at the bottom.";
     }
 
     @Override
@@ -225,8 +227,16 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         GridLayer gridLayer =
                 new GridLayer(bodyLayerStack, sortHeaderLayer, rowHeaderLayer, cornerLayer, false);
 
+        FixedSummaryRowLayer summaryRowLayer =
+                new FixedSummaryRowLayer(bodyLayerStack.getGlazedListsEventLayer(), gridLayer, configRegistry, false);
+        summaryRowLayer.setSummaryRowLabel("\u2211");
+
+        // ensure the body data layer uses a layer painter with correct
+        // configured clipping
+        bodyLayerStack.getBodyDataLayer().setLayerPainter(new GridLineCellLayerPainter(false, true));
+
         // set the group by header on top of the grid
-        CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
+        CompositeLayer compositeGridLayer = new CompositeLayer(1, 3);
         final GroupByHeaderLayer groupByHeaderLayer = new GroupByHeaderLayer(
                 bodyLayerStack.getGroupByModel(),
                 gridLayer,
@@ -236,6 +246,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 groupByHeaderLayer,
                 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
+        compositeGridLayer.setChildLayer("Summary", summaryRowLayer, 0, 2);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
@@ -321,7 +332,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 // GroupBy summary configuration
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                        _809_GroupBySummarySummaryRowExample.this.sumMoneyGroupBySummaryProvider,
+                        _811_GroupBySummaryFixedSummaryRowExample.this.sumMoneyGroupBySummaryProvider,
                         DisplayMode.NORMAL,
                         GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
@@ -346,7 +357,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 // SummaryRow configuration
                 configRegistry.registerConfigAttribute(
                         SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                        _809_GroupBySummarySummaryRowExample.this.sumMoneySummaryProvider,
+                        _811_GroupBySummaryFixedSummaryRowExample.this.sumMoneySummaryProvider,
                         DisplayMode.NORMAL,
                         SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 
@@ -454,30 +465,30 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 // calculation gets triggered
                 bodyLayerStack.getBodyDataLayer().clearCache();
 
-                _809_GroupBySummarySummaryRowExample.this.useMoneySum = !_809_GroupBySummarySummaryRowExample.this.useMoneySum;
-                if (_809_GroupBySummarySummaryRowExample.this.useMoneySum) {
+                _811_GroupBySummaryFixedSummaryRowExample.this.useMoneySum = !_811_GroupBySummaryFixedSummaryRowExample.this.useMoneySum;
+                if (_811_GroupBySummaryFixedSummaryRowExample.this.useMoneySum) {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            _809_GroupBySummarySummaryRowExample.this.sumMoneyGroupBySummaryProvider,
+                            _811_GroupBySummaryFixedSummaryRowExample.this.sumMoneyGroupBySummaryProvider,
                             DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
                     configRegistry.registerConfigAttribute(
                             SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                            _809_GroupBySummarySummaryRowExample.this.sumMoneySummaryProvider,
+                            _811_GroupBySummaryFixedSummaryRowExample.this.sumMoneySummaryProvider,
                             DisplayMode.NORMAL,
                             SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 
                 } else {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            _809_GroupBySummarySummaryRowExample.this.avgMoneyGroupBySummaryProvider,
+                            _811_GroupBySummaryFixedSummaryRowExample.this.avgMoneyGroupBySummaryProvider,
                             DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
                     configRegistry.registerConfigAttribute(
                             SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                            _809_GroupBySummarySummaryRowExample.this.avgMoneySummaryProvider,
+                            _811_GroupBySummaryFixedSummaryRowExample.this.avgMoneySummaryProvider,
                             DisplayMode.NORMAL,
                             SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
                 }
@@ -490,15 +501,15 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         toggleThemeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (_809_GroupBySummarySummaryRowExample.this.currentTheme == 0) {
+                if (_811_GroupBySummaryFixedSummaryRowExample.this.currentTheme == 0) {
                     natTable.setTheme(modernTheme);
-                    _809_GroupBySummarySummaryRowExample.this.currentTheme++;
-                } else if (_809_GroupBySummarySummaryRowExample.this.currentTheme == 1) {
+                    _811_GroupBySummaryFixedSummaryRowExample.this.currentTheme++;
+                } else if (_811_GroupBySummaryFixedSummaryRowExample.this.currentTheme == 1) {
                     natTable.setTheme(darkTheme);
-                    _809_GroupBySummarySummaryRowExample.this.currentTheme++;
-                } else if (_809_GroupBySummarySummaryRowExample.this.currentTheme == 2) {
+                    _811_GroupBySummaryFixedSummaryRowExample.this.currentTheme++;
+                } else if (_811_GroupBySummaryFixedSummaryRowExample.this.currentTheme == 2) {
                     natTable.setTheme(defaultTheme);
-                    _809_GroupBySummarySummaryRowExample.this.currentTheme = 0;
+                    _811_GroupBySummaryFixedSummaryRowExample.this.currentTheme = 0;
                 }
             }
         });
@@ -530,6 +541,8 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
         private final GroupByDataLayer<T> bodyDataLayer;
 
+        private final GlazedListsEventLayer<T> glazedListsEventLayer;
+
         private final SelectionLayer selectionLayer;
 
         private final TreeLayer treeLayer;
@@ -557,13 +570,10 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                     this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer =
+            this.glazedListsEventLayer =
                     new GlazedListsEventLayer<T>(this.bodyDataLayer, this.sortedList);
 
-            SummaryRowLayer summaryRowLayer =
-                    new SummaryRowLayer(glazedListsEventLayer, configRegistry, false);
-
-            ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
+            ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);
             ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
             this.selectionLayer = new SelectionLayer(columnHideShowLayer);
 
@@ -593,6 +603,10 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
         public GroupByDataLayer<T> getBodyDataLayer() {
             return this.bodyDataLayer;
+        }
+
+        public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+            return this.glazedListsEventLayer;
         }
 
         public GroupByModel getGroupByModel() {

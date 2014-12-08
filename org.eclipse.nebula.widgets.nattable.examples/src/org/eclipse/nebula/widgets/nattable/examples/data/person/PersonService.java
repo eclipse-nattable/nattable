@@ -76,7 +76,7 @@ public class PersonService {
         List<PersonWithAddress> result = new ArrayList<PersonWithAddress>();
 
         for (int i = 0; i < numberOfPersons; i++) {
-            result.add(new PersonWithAddress(createPerson(i), createAddress()));
+            result.add(createPersonWithAddress(i));
         }
 
         return result;
@@ -95,10 +95,7 @@ public class PersonService {
         List<ExtendedPersonWithAddress> result = new ArrayList<ExtendedPersonWithAddress>();
 
         for (int i = 0; i < numberOfPersons; i++) {
-            result.add(new ExtendedPersonWithAddress(createPerson(i),
-                    createAddress(), generateSimplePassword(),
-                    createRandomLengthText(), createRandomMoneyAmount(),
-                    createFavouriteFood(), createFavouriteDrinks()));
+            result.add(createExtendedPersonWithAddress(i));
         }
 
         return result;
@@ -110,7 +107,7 @@ public class PersonService {
      *
      * @return
      */
-    private static Person createPerson(int id) {
+    public static Person createPerson(int id) {
         Random randomGenerator = new Random();
 
         Person result = new Person(id);
@@ -154,7 +151,7 @@ public class PersonService {
      *
      * @return
      */
-    private static Address createAddress() {
+    public static Address createAddress() {
         String[] streets = getStreetNames();
         int[] plz = { 11111, 22222, 33333, 44444, 55555, 66666 };
         String[] cities = getCityNames();
@@ -170,6 +167,37 @@ public class PersonService {
         result.setCity(cities[cityRandom]);
 
         return result;
+    }
+
+    /**
+     * Creates a random person out of names which are taken from "The Simpsons"
+     * and enrich them with random generated married state and birthday date.
+     * Also adds a random address out of street names, postal codes and city
+     * names which are taken from "The Simpsons" (i haven't found postal codes,
+     * so here i invented some for the example)
+     *
+     * @return
+     */
+    public static PersonWithAddress createPersonWithAddress(int id) {
+        return new PersonWithAddress(createPerson(id), createAddress());
+    }
+
+    /**
+     * Creates a random person out of names which are taken from "The Simpsons"
+     * and enrich them with random generated married state and birthday date.
+     * Adds a random address out of street names, postal codes and city names
+     * which are taken from "The Simpsons" (i haven't found postal codes, so
+     * here i invented some for the example). Also adds extended information
+     * like a password, a random long description text, a money balance and
+     * collections of favourite food and drinks.
+     *
+     * @return
+     */
+    public static ExtendedPersonWithAddress createExtendedPersonWithAddress(int id) {
+        return new ExtendedPersonWithAddress(createPerson(id),
+                createAddress(), generateSimplePassword(),
+                createRandomLengthText(), createRandomMoneyAmount(),
+                createFavouriteFood(), createFavouriteDrinks());
     }
 
     /**

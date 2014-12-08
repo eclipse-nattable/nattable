@@ -57,11 +57,11 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
  *      GridLayer gridLayer = new GridLayer(...);
  *      FixedSummaryRowLayer summaryRowLayer =
  *          new FixedSummaryRowLayer(bodyDataLayer, gridLayer, configRegistry);
- * 
+ *
  *      CompositeLayer composite = new CompositeLayer(1, 2);
  *      composite.setChildLayer("GRID", gridLayer, 0, 0);
  *      composite.setChildLayer(SUMMARY_REGION, summaryRowLayer, 0, 1);
- * 
+ *
  *      NatTable natTable = new NatTable(panel, composite);
  * </pre>
  * <p>
@@ -181,6 +181,13 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
      * @param bodyDataLayer
      *            The underlying layer on which this layer should be build.
      *            Typically the {@link DataLayer} of the body region.
+     *            <p>
+     *            <b>Note</b>: When using a different layer than the DataLayer,
+     *            e.g. the GlazedListsEventLayer to receive automatic updates,
+     *            you need to ensure that the GridLineCellLayerPainter
+     *            configured for clipping on top is set to the DataLayer for
+     *            correct rendering of the fixed summary row.
+     *            </p>
      * @param horizontalLayerDependency
      *            The layer that is above this layer in the surrounding
      *            composition. Typically a {@link GridLayer}.
