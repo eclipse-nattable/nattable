@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 454566
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -44,6 +45,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.TreeList;
+import ca.odell.glazedlists.TreeList.ExpansionModel;
 import ca.odell.glazedlists.matchers.Matcher;
 
 public class GroupByDataLayer<T> extends DataLayer implements Observer {
@@ -101,33 +103,38 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     /** Map the group to a dynamic list of group elements */
     private final Map<GroupByObject, FilterList<T>> filtersByGroup = new ConcurrentHashMap<GroupByObject, FilterList<T>>();
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList,
-            IColumnAccessor<T> columnAccessor) {
+    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor) {
         this(groupByModel, eventList, columnAccessor, null, true);
     }
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList,
-            IColumnAccessor<T> columnAccessor, boolean useDefaultConfiguration) {
-        this(groupByModel, eventList, columnAccessor, null,
-                useDefaultConfiguration);
+    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+            boolean useDefaultConfiguration) {
+
+        this(groupByModel, eventList, columnAccessor, null, useDefaultConfiguration);
     }
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList,
-            IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
+    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry) {
+
         this(groupByModel, eventList, columnAccessor, configRegistry, true);
     }
 
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList,
-            IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry,
-            boolean useDefaultConfiguration) {
-        this(groupByModel, eventList, columnAccessor, configRegistry, true,
-                useDefaultConfiguration);
+    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry, boolean useDefaultConfiguration) {
+
+        this(groupByModel, eventList, columnAccessor, configRegistry, true, useDefaultConfiguration);
+    }
+
+    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry, boolean smoothUpdates, boolean useDefaultConfiguration) {
+
+        this(groupByModel, eventList, columnAccessor, null, configRegistry, smoothUpdates, useDefaultConfiguration);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList,
-            IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry,
-            boolean smoothUpdates, boolean useDefaultConfiguration) {
+    public GroupByDataLayer(GroupByModel groupByModel, EventList<T> eventList, IColumnAccessor<T> columnAccessor,
+            ExpansionModel<Object> expansionModel, IConfigRegistry configRegistry, boolean smoothUpdates, boolean useDefaultConfiguration) {
+
         this.eventList = eventList;
         this.columnAccessor = columnAccessor;
 
@@ -135,21 +142,17 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
         this.groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor);
 
-        this.treeFormat = new GroupByTreeFormat<T>(groupByModel,
-                (IColumnAccessor<T>) this.groupByColumnAccessor);
-        this.treeList = new TreeList(eventList, this.treeFormat,
-                new GroupByExpansionModel());
+        this.treeFormat = new GroupByTreeFormat<T>(groupByModel, (IColumnAccessor<T>) this.groupByColumnAccessor);
+        this.treeList = new TreeList(eventList, this.treeFormat, expansionModel != null ? expansionModel : new GroupByExpansionModel());
 
         this.treeData = new GlazedListTreeData<Object>(getTreeList());
         this.treeRowModel = new GlazedListTreeRowModel<Object>(this.treeData);
 
         this.configRegistry = configRegistry;
 
-        this.valueCache = new CalculatedValueCache(this, true, false,
-                smoothUpdates);
+        this.valueCache = new CalculatedValueCache(this, true, false, smoothUpdates);
 
-        setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(),
-                this.groupByColumnAccessor));
+        setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(), this.groupByColumnAccessor));
 
         if (useDefaultConfiguration) {
             addConfiguration(new GroupByDataLayerConfiguration());
@@ -225,30 +228,24 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
-        LabelStack configLabels = super.getConfigLabelsByPosition(
-                columnPosition, rowPosition);
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
         if (this.treeData.getDataAtIndex(getRowIndexByPosition(rowPosition)) instanceof GroupByObject) {
             configLabels.addLabelOnTop(GROUP_BY_OBJECT);
             configLabels.addLabelOnTop(GROUP_BY_COLUMN_PREFIX + columnPosition);
             if (getGroupBySummaryProvider(configLabels) != null) {
                 configLabels.addLabelOnTop(GROUP_BY_SUMMARY);
-                configLabels.addLabelOnTop(GROUP_BY_SUMMARY_COLUMN_PREFIX
-                        + columnPosition);
+                configLabels.addLabelOnTop(GROUP_BY_SUMMARY_COLUMN_PREFIX + columnPosition);
             }
         }
         return configLabels;
     }
 
     @Override
-    public Object getDataValueByPosition(final int columnPosition,
-            final int rowPosition) {
-        LabelStack labelStack = getConfigLabelsByPosition(columnPosition,
-                rowPosition);
+    public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
+        LabelStack labelStack = getConfigLabelsByPosition(columnPosition, rowPosition);
         if (labelStack.hasLabel(GROUP_BY_OBJECT)) {
-            GroupByObject groupByObject = (GroupByObject) this.treeData
-                    .getDataAtIndex(rowPosition);
+            GroupByObject groupByObject = (GroupByObject) this.treeData.getDataAtIndex(rowPosition);
 
             // ensure to only load the children if they are needed
             List<T> children = null;
@@ -257,36 +254,25 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             if (summaryProvider != null) {
                 children = getElementsInGroup(groupByObject);
                 final List<T> c = children;
-                return this.valueCache.getCalculatedValue(columnPosition,
-                        rowPosition, new GroupByValueCacheKey(columnPosition,
-                                rowPosition, groupByObject), true,
-                        new ICalculator() {
-                            @Override
-                            public Object executeCalculation() {
-                                return summaryProvider.summarize(
-                                        columnPosition, c);
-                            }
-                        });
+                return this.valueCache.getCalculatedValue(columnPosition, rowPosition, new GroupByValueCacheKey(columnPosition, rowPosition, groupByObject), true, new ICalculator() {
+                    @Override
+                    public Object executeCalculation() {
+                        return summaryProvider.summarize(columnPosition, c);
+                    }
+                });
             }
 
             if (this.configRegistry != null) {
-                String childCountPattern = this.configRegistry
-                        .getConfigAttribute(
-                                GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
-                                DisplayMode.NORMAL, labelStack.getLabels());
+                String childCountPattern = this.configRegistry.getConfigAttribute(GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN, DisplayMode.NORMAL, labelStack.getLabels());
 
                 if (childCountPattern != null && childCountPattern.length() > 0) {
                     if (children == null) {
                         children = getElementsInGroup(groupByObject);
                     }
 
-                    int directChildCount = this.treeRowModel.getDirectChildren(
-                            rowPosition).size();
+                    int directChildCount = this.treeRowModel.getDirectChildren(rowPosition).size();
 
-                    return groupByObject.getValue()
-                            + " " + //$NON-NLS-1$
-                            MessageFormat.format(childCountPattern,
-                                    children.size(), directChildCount);
+                    return groupByObject.getValue() + " " + MessageFormat.format(childCountPattern, children.size(), directChildCount); //$NON-NLS-1$
                 }
             }
         }
@@ -294,12 +280,9 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     }
 
     @SuppressWarnings("unchecked")
-    public IGroupBySummaryProvider<T> getGroupBySummaryProvider(
-            LabelStack labelStack) {
+    public IGroupBySummaryProvider<T> getGroupBySummaryProvider(LabelStack labelStack) {
         if (this.configRegistry != null) {
-            return this.configRegistry.getConfigAttribute(
-                    GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                    DisplayMode.NORMAL, labelStack.getLabels());
+            return this.configRegistry.getConfigAttribute(GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER, DisplayMode.NORMAL, labelStack.getLabels());
         }
 
         return null;
@@ -353,20 +336,15 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                         LabelStack labelStack = getConfigLabelsByPosition(j, i);
                         final IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
                         if (summaryProvider != null) {
-                            GroupByObject groupByObject = (GroupByObject) this.treeData
-                                    .getDataAtIndex(i);
+                            GroupByObject groupByObject = (GroupByObject) this.treeData.getDataAtIndex(i);
                             final List<T> children = getElementsInGroup(groupByObject);
                             final int col = j;
-                            this.valueCache.getCalculatedValue(j, i,
-                                    new GroupByValueCacheKey(j, i,
-                                            groupByObject), false,
-                                    new ICalculator() {
-                                        @Override
-                                        public Object executeCalculation() {
-                                            return summaryProvider.summarize(
-                                                    col, children);
-                                        }
-                                    });
+                            this.valueCache.getCalculatedValue(j, i, new GroupByValueCacheKey(j, i, groupByObject), false, new ICalculator() {
+                                @Override
+                                public Object executeCalculation() {
+                                    return summaryProvider.summarize(col, children);
+                                }
+                            });
                         }
                     }
                 }
@@ -393,8 +371,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * @see http://publicobject.com/glazedlists/glazedlists-1.8.0/api/ca/odell/
      *      glazedlists/TreeList.ExpansionModel.html
      */
-    private class GroupByExpansionModel implements
-            TreeList.ExpansionModel<Object> {
+    private class GroupByExpansionModel implements TreeList.ExpansionModel<Object> {
         /**
          * Determine the specified element's initial expand/collapse state.
          */
@@ -408,8 +385,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
          * state has changed.
          */
         @Override
-        public void setExpanded(final Object element, final List<Object> path,
-                final boolean expanded) {
+        public void setExpanded(final Object element, final List<Object> path, final boolean expanded) {
             // do nothing
         }
     }
@@ -426,9 +402,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     public FilterList<T> getElementsInGroup(GroupByObject groupDescriptor) {
         FilterList<T> elementsInGroup = this.filtersByGroup.get(groupDescriptor);
         if (elementsInGroup == null) {
-            elementsInGroup = new FilterList<T>(this.eventList,
-                    new GroupDescriptorMatcher<T>(groupDescriptor,
-                            this.columnAccessor));
+            elementsInGroup = new FilterList<T>(this.eventList, new GroupDescriptorMatcher<T>(groupDescriptor, this.columnAccessor));
             this.filtersByGroup.put(groupDescriptor, elementsInGroup);
         }
         return elementsInGroup;
@@ -442,8 +416,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         private final GroupByObject group;
         private final IColumnAccessor<T> columnAccessor;
 
-        public GroupDescriptorMatcher(GroupByObject group,
-                IColumnAccessor<T> columnAccessor) {
+        public GroupDescriptorMatcher(GroupByObject group, IColumnAccessor<T> columnAccessor) {
             this.group = group;
             this.columnAccessor = columnAccessor;
         }
@@ -453,8 +426,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             for (Entry<Integer, Object> desc : this.group.getDescriptor()) {
                 int columnIndex = desc.getKey();
                 Object groupName = desc.getValue();
-                if (!groupName.equals(this.columnAccessor.getDataValue(element,
-                        columnIndex))) {
+                if (!groupName.equals(this.columnAccessor.getDataValue(element, columnIndex))) {
                     return false;
                 }
             }
@@ -474,8 +446,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         private final int rowPosition;
         private final GroupByObject groupBy;
 
-        public GroupByValueCacheKey(int columnPosition, int rowPosition,
-                GroupByObject groupBy) {
+        public GroupByValueCacheKey(int columnPosition, int rowPosition, GroupByObject groupBy) {
             this.columnPosition = columnPosition;
             this.rowPosition = rowPosition;
             this.groupBy = groupBy;
@@ -487,8 +458,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             int result = 1;
             result = prime * result + getOuterType().hashCode();
             result = prime * result + this.columnPosition;
-            result = prime * result
-                    + ((this.groupBy == null) ? 0 : this.groupBy.hashCode());
+            result = prime * result + ((this.groupBy == null) ? 0 : this.groupBy.hashCode());
             result = prime * result + this.rowPosition;
             return result;
         }
