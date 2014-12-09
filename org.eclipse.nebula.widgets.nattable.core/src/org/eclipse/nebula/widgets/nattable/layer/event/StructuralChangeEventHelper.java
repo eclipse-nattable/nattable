@@ -1,18 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -22,9 +21,6 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 /**
  * Helper class providing support for modifying cached index lists for
  * IStructuralChangeEvents.
- *
- * @author Dirk Fauth
- *
  */
 public class StructuralChangeEventHelper {
 
@@ -50,17 +46,15 @@ public class StructuralChangeEventHelper {
      *            flag to tell whether the not found row indexes should be taken
      *            into account or not. Needed for last row checks
      */
-    public static void handleRowDelete(Collection<StructuralDiff> rowDiffs,
-            ILayer underlyingLayer, Collection<Integer> cachedRowIndexes,
-            boolean handleNotFound) {
+    public static void handleRowDelete(
+            Collection<StructuralDiff> rowDiffs, ILayer underlyingLayer,
+            Collection<Integer> cachedRowIndexes, boolean handleNotFound) {
 
         // the number of all deleted rows that don't have a corresponding index
         // anymore (last row cases)
         int numberOfNoIndex = 0;
         List<Integer> toRemove = new ArrayList<Integer>();
-        for (Iterator<StructuralDiff> diffIterator = rowDiffs.iterator(); diffIterator
-                .hasNext();) {
-            StructuralDiff rowDiff = diffIterator.next();
+        for (StructuralDiff rowDiff : rowDiffs) {
             if (rowDiff.getDiffType() != null
                     && rowDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
                 Range beforePositionRange = rowDiff.getBeforePositionRange();
@@ -121,17 +115,16 @@ public class StructuralChangeEventHelper {
      *            indexes that are applied for a specific state (e.g. row hide
      *            state)
      */
-    public static void handleRowInsert(Collection<StructuralDiff> rowDiffs,
-            ILayer underlyingLayer, Collection<Integer> cachedRowIndexes,
-            boolean addToCache) {
+    public static void handleRowInsert(
+            Collection<StructuralDiff> rowDiffs, ILayer underlyingLayer,
+            Collection<Integer> cachedRowIndexes, boolean addToCache) {
 
         for (StructuralDiff rowDiff : rowDiffs) {
             if (rowDiff.getDiffType() != null
                     && rowDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
                 Range beforePositionRange = rowDiff.getBeforePositionRange();
                 List<Integer> modifiedRows = new ArrayList<Integer>();
-                int beforeIndex = underlyingLayer
-                        .getRowIndexByPosition(beforePositionRange.start);
+                int beforeIndex = underlyingLayer.getRowIndexByPosition(beforePositionRange.start);
                 for (Integer row : cachedRowIndexes) {
                     if (row >= beforeIndex) {
                         modifiedRows.add(row + 1);
@@ -179,9 +172,7 @@ public class StructuralChangeEventHelper {
         // index anymore (last column cases)
         int numberOfNoIndex = 0;
         List<Integer> toRemove = new ArrayList<Integer>();
-        for (Iterator<StructuralDiff> diffIterator = columnDiffs.iterator(); diffIterator
-                .hasNext();) {
-            StructuralDiff columnDiff = diffIterator.next();
+        for (StructuralDiff columnDiff : columnDiffs) {
             if (columnDiff.getDiffType() != null
                     && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
                 Range beforePositionRange = columnDiff.getBeforePositionRange();
@@ -251,8 +242,7 @@ public class StructuralChangeEventHelper {
                     && columnDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
                 Range beforePositionRange = columnDiff.getBeforePositionRange();
                 List<Integer> modifiedColumns = new ArrayList<Integer>();
-                int beforeIndex = underlyingLayer
-                        .getColumnIndexByPosition(beforePositionRange.start);
+                int beforeIndex = underlyingLayer.getColumnIndexByPosition(beforePositionRange.start);
                 for (Integer column : cachedColumnIndexes) {
                     if (column >= beforeIndex) {
                         modifiedColumns.add(column + 1);
@@ -304,9 +294,7 @@ public class StructuralChangeEventHelper {
         if (structuralDiffs != null && (structuralDiffs.size() % 2) == 0) {
             int numberOfDeleteCols = 0;
             int numberOfInsertCols = 0;
-            for (Iterator<StructuralDiff> diffIterator = structuralDiffs
-                    .iterator(); diffIterator.hasNext();) {
-                StructuralDiff columnDiff = diffIterator.next();
+            for (StructuralDiff columnDiff : structuralDiffs) {
                 if (columnDiff.getDiffType() != null
                         && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
                     numberOfDeleteCols = columnDiff.getBeforePositionRange().end
