@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - Bug 454503
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
@@ -18,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
@@ -38,12 +40,8 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * <p>
  * The special case in here is that if nothing is selected in the filter
  * combobox, then everything should be filtered.
- *
- * @author Dirk Fauth
- *
  */
-public class ComboBoxGlazedListsFilterStrategy<T> extends
-        DefaultGlazedListsStaticFilterStrategy<T> {
+public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStaticFilterStrategy<T> {
 
     /**
      * The FilterRowComboBoxDataProvider needed to determine whether filters
@@ -81,7 +79,8 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
      */
     public ComboBoxGlazedListsFilterStrategy(
             FilterRowComboBoxDataProvider<T> comboBoxDataProvider,
-            FilterList<T> filterList, IColumnAccessor<T> columnAccessor,
+            FilterList<T> filterList,
+            IColumnAccessor<T> columnAccessor,
             IConfigRegistry configRegistry) {
         super(filterList, columnAccessor, configRegistry);
         this.comboBoxDataProvider = comboBoxDataProvider;
@@ -109,8 +108,10 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
      */
     public ComboBoxGlazedListsFilterStrategy(
             FilterRowComboBoxDataProvider<T> comboBoxDataProvider,
-            FilterList<T> filterList, CompositeMatcherEditor<T> matcherEditor,
-            IColumnAccessor<T> columnAccessor, IConfigRegistry configRegistry) {
+            FilterList<T> filterList,
+            CompositeMatcherEditor<T> matcherEditor,
+            IColumnAccessor<T> columnAccessor,
+            IConfigRegistry configRegistry) {
         super(filterList, matcherEditor, columnAccessor, configRegistry);
         this.comboBoxDataProvider = comboBoxDataProvider;
     }
@@ -124,26 +125,25 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
         }
 
         // we need to create a new Map for applying a filter using the parent
-        // class
-        // otherwise we would remove the previous added pre-selected values
+        // class otherwise we would remove the previous added pre-selected
+        // values
         Map<Integer, Object> newIndexToObjectMap = new HashMap<Integer, Object>();
         newIndexToObjectMap.putAll(filterIndexToObjectMap);
 
         for (Integer index : this.comboBoxDataProvider.getCachedColumnIndexes()) {
-            List<?> dataProviderList = this.comboBoxDataProvider.getValues(
-                    index, 0);
+            List<?> dataProviderList = this.comboBoxDataProvider.getValues(index, 0);
             Object filterObject = newIndexToObjectMap.get(index);
-            Collection filterCollection = (filterObject != null && filterObject instanceof Collection) ? (Collection) filterObject
-                    : null;
-            if (filterCollection == null || filterCollection.isEmpty()) {
-                // for one column there are no items selected in the combo,
-                // therefore nothing matches
-                this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
-                return;
-            } else if (filterCollectionsEqual(filterCollection,
-                    dataProviderList)) {
-                newIndexToObjectMap.remove(index);
-            }
+            Collection filterCollection =
+                    (filterObject != null && filterObject instanceof Collection) ? (Collection) filterObject : null;
+                    if (filterCollection == null || filterCollection.isEmpty()) {
+                        // for one column there are no items selected in the combo,
+                        // therefore nothing matches
+                        this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
+                        return;
+                    } else if (filterCollectionsEqual(filterCollection,
+                            dataProviderList)) {
+                        newIndexToObjectMap.remove(index);
+                    }
         }
 
         super.applyFilter(newIndexToObjectMap);
@@ -157,11 +157,11 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
      */
     @SuppressWarnings("rawtypes")
     @Override
-    protected String getStringFromColumnObject(final int columnIndex,
-            final Object object) {
-        final IDisplayConverter displayConverter = this.configRegistry
-                .getConfigAttribute(FILTER_DISPLAY_CONVERTER, NORMAL,
-                        FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
+    protected String getStringFromColumnObject(final int columnIndex, final Object object) {
+        final IDisplayConverter displayConverter = this.configRegistry.getConfigAttribute(
+                FILTER_DISPLAY_CONVERTER,
+                NORMAL,
+                FILTER_ROW_COLUMN_LABEL_PREFIX + columnIndex);
 
         if (object instanceof Collection) {
             String result = ""; //$NON-NLS-1$
@@ -170,14 +170,15 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
                 if (result.length() > 0) {
                     result += "|"; //$NON-NLS-1$
                 }
-                String convertedValue = displayConverter
-                        .canonicalToDisplayValue(value).toString();
+                String convertedValue = displayConverter.canonicalToDisplayValue(value).toString();
                 if (convertedValue.isEmpty()) {
                     // for an empty String add the regular expression for empty
                     // String
-                    convertedValue = "^$"; //$NON-NLS-1$
+                    result += "^$"; //$NON-NLS-1$
                 }
-                result += convertedValue;
+                else {
+                    result += Pattern.quote(convertedValue);
+                }
             }
             return "(" + result + ")"; //$NON-NLS-1$//$NON-NLS-2$
         }
@@ -186,17 +187,14 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends
     }
 
     @SuppressWarnings("rawtypes")
-    protected boolean filterCollectionsEqual(Collection filter1,
-            Collection filter2) {
+    protected boolean filterCollectionsEqual(Collection filter1, Collection filter2) {
         if ((filter1 != null && filter2 != null)
                 && filter1.size() == filter2.size()) {
 
             if (!filter1.equals(filter2)) {
                 // as equality for collections take into account the order and
-                // the elements
-                // we perform an additional check if the same items regardless
-                // the order
-                // are contained in both lists
+                // the elements we perform an additional check if the same items
+                // regardless the order are contained in both lists
                 for (Object f1 : filter1) {
                     if (!filter2.contains(f1)) {
                         return false;
