@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447259, 446275, 447394
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447259, 446275, 447394, 446276
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -27,6 +27,9 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
+import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class RowSelectionModel<R> implements IRowSelectionModel<R> {
@@ -434,6 +437,35 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
                 }
             } finally {
                 this.selectionsLock.readLock().unlock();
+            }
+
+            // fire row selection event
+            // since we are not able to identify the row position of the deleted
+            // selection we use all rows in the event to indicate the selection
+            // change for all deleted rows
+            if (!keysToRemove.isEmpty()) {
+                Collection<Integer> rowPositions = new HashSet<Integer>();
+                Collection<StructuralDiff> diffs = event.getRowDiffs();
+                if (diffs != null) {
+                    for (StructuralDiff rowDiff : diffs) {
+                        if (rowDiff.getDiffType() != null
+                                && rowDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
+                            Range beforePositionRange = rowDiff.getBeforePositionRange();
+                            for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
+                                rowPositions.add(i);
+                            }
+                        }
+                    }
+                }
+                // if there is no diff in the event we assume everything has
+                // changed, in such a case we are not able to fire an
+                // appropriate event the layer stack upwards since it will be
+                // stopped while converting it to the target layer
+                // for the RowSelectionProvider this is sufficient because it
+                // registers itself as a listener to the SelectionLayer and
+                // therefore gets informed about the selection change
+                this.selectionLayer.fireLayerEvent(
+                        new RowSelectionEvent(this.selectionLayer, rowPositions, -1));
             }
         }
     }

@@ -71,7 +71,10 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
                 }));
 
         this.listener = new LayerListenerFixture();
-        this.nattable.addLayerListener(this.listener);
+        // we register the listener to the SelectionLayer because for some cases
+        // like clearing a collection, the selection change is not propagated
+        // the layer stack upwards as it gets stopped on layer conversion
+        this.selectionLayer.addLayerListener(this.listener);
     }
 
     @Test
@@ -251,8 +254,8 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
         assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
 
         RowSelectionEvent event = (RowSelectionEvent) this.listener.getReceivedEvents().get(0);
-        assertEquals(5, event.getRowPositionRanges().iterator().next().start);
-        assertEquals(6, event.getRowPositionRanges().iterator().next().end);
+        assertEquals(4, event.getRowPositionRanges().iterator().next().start);
+        assertEquals(5, event.getRowPositionRanges().iterator().next().end);
 
         // Select additional rows with shift
         this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 7, true, false));
@@ -265,8 +268,8 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
         event = (RowSelectionEvent) this.listener.getReceivedEvents().get(1);
         assertEquals(1, event.getRowPositionRanges().size());
 
-        assertEquals(5, event.getRowPositionRanges().iterator().next().start);
-        assertEquals(8, event.getRowPositionRanges().iterator().next().end);
+        assertEquals(4, event.getRowPositionRanges().iterator().next().start);
+        assertEquals(7, event.getRowPositionRanges().iterator().next().end);
     }
 
     @Test
@@ -280,8 +283,8 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
         assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
 
         RowSelectionEvent event = (RowSelectionEvent) this.listener.getReceivedEvents().get(0);
-        assertEquals(5, event.getRowPositionRanges().iterator().next().start);
-        assertEquals(6, event.getRowPositionRanges().iterator().next().end);
+        assertEquals(4, event.getRowPositionRanges().iterator().next().start);
+        assertEquals(5, event.getRowPositionRanges().iterator().next().end);
 
         // Deselect single row again
         this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 5, false, true));
@@ -294,8 +297,66 @@ public class RowSelectionModelStructuralChangeEventHandlerTest {
         event = (RowSelectionEvent) this.listener.getReceivedEvents().get(1);
         assertEquals(1, event.getRowPositionRanges().size());
 
-        assertEquals(5, event.getRowPositionRanges().iterator().next().start);
-        assertEquals(6, event.getRowPositionRanges().iterator().next().end);
+        assertEquals(4, event.getRowPositionRanges().iterator().next().start);
+        assertEquals(5, event.getRowPositionRanges().iterator().next().end);
+    }
+
+    @Test
+    public void shouldFireRowSelectionEventOnDelete() {
+        // Select single row
+        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 5, false, false));
+
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
+
+        assertEquals(1, this.listener.getEventsCount());
+        assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
+
+        RowSelectionEvent event = (RowSelectionEvent) this.listener.getReceivedEvents().get(0);
+        assertEquals(4, event.getRowPositionRanges().iterator().next().start);
+        assertEquals(5, event.getRowPositionRanges().iterator().next().end);
+
+        // Delete the selected row
+        this.listFixture.remove(4);
+        this.bodyDataLayer.fireLayerEvent(new RowDeleteEvent(this.bodyDataLayer, 4));
+
+        assertEquals(0, this.selectionLayer.getSelectedRowCount());
+
+        assertEquals(3, this.listener.getEventsCount());
+        assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
+
+        event = (RowSelectionEvent) this.listener.getReceivedEvents().get(1);
+        assertEquals(1, event.getRowPositionRanges().size());
+
+        assertEquals(4, event.getRowPositionRanges().iterator().next().start);
+        assertEquals(5, event.getRowPositionRanges().iterator().next().end);
+    }
+
+    @Test
+    public void shouldFireRowSelectionEventOnClear() {
+        // Select single row
+        this.nattable.doCommand(new SelectRowsCommand(this.nattable, 5, 5, false, false));
+
+        assertEquals(1, this.selectionLayer.getSelectedRowCount());
+
+        assertEquals(1, this.listener.getEventsCount());
+        assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
+
+        RowSelectionEvent event = (RowSelectionEvent) this.listener.getReceivedEvents().get(0);
+        assertEquals(4, event.getRowPositionRanges().iterator().next().start);
+        assertEquals(5, event.getRowPositionRanges().iterator().next().end);
+
+        // clear
+        this.listFixture.clear();
+        this.bodyDataLayer.fireLayerEvent(new StructuralRefreshEvent(this.bodyDataLayer));
+
+        assertEquals(0, this.selectionLayer.getSelectedRowCount());
+
+        assertEquals(3, this.listener.getEventsCount());
+        assertTrue(this.listener.containsInstanceOf(RowSelectionEvent.class));
+
+        event = (RowSelectionEvent) this.listener.getReceivedEvents().get(1);
+        // since the underlying collection is cleared the ranges should be empty
+        assertEquals(0, event.getRowPositionRanges().size());
     }
 
     private RowDataFixture getSelected() {
