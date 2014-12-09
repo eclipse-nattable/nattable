@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - Bug 454505
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
@@ -44,12 +45,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
  * @param <T>
  *            The type of the objects shown within the NatTable. Needed to
  *            access the data columnwise.
- *
- * @author Dirk Fauth
- *
  */
-public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
-        ILayerListener {
+public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, ILayerListener {
     /**
      * The base collection used to collect the unique values from. This need to
      * be a collection that is not filtered, otherwise after modifications the
@@ -89,8 +86,8 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
      *            The IColumnAccessor to be able to read the values out of the
      *            base collection objects.
      */
-    public FilterRowComboBoxDataProvider(ILayer bodyLayer,
-            Collection<T> baseCollection, IColumnAccessor<T> columnAccessor) {
+    public FilterRowComboBoxDataProvider(
+            ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> columnAccessor) {
         this.baseCollection = baseCollection;
         this.columnAccessor = columnAccessor;
 
@@ -138,14 +135,24 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
     protected List<?> collectValues(int columnIndex) {
         Set uniqueValues = new HashSet();
 
+        boolean nullFound = false;
         for (T rowObject : this.baseCollection) {
-            uniqueValues.add(this.columnAccessor.getDataValue(rowObject,
-                    columnIndex));
+            Object dataValue = this.columnAccessor.getDataValue(rowObject, columnIndex);
+            if (dataValue != null) {
+                uniqueValues.add(dataValue);
+            }
+            else {
+                nullFound = true;
+            }
         }
 
         List result = new ArrayList(uniqueValues);
         if (!result.isEmpty() && result.get(0) instanceof Comparable) {
             Collections.sort(result);
+        }
+
+        if (nullFound) {
+            result.add(0, null);
         }
 
         return result;
@@ -163,16 +170,13 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
             this.valueCache.put(column, collectValues(column));
 
             // get the diff and fire the event
-            fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore,
-                    this.valueCache.get(column)));
+            fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, this.valueCache.get(column)));
         } else if (event instanceof IStructuralChangeEvent
-                && ((IStructuralChangeEvent) event)
-                        .isVerticalStructureChanged()) {
+                && ((IStructuralChangeEvent) event).isVerticalStructureChanged()) {
             // a new row was added or a row was deleted
 
             // remember the cache before updating
-            Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(
-                    this.valueCache);
+            Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(this.valueCache);
 
             // perform a refresh of the whole cache
             this.valueCache.clear();
@@ -180,8 +184,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
 
             // fire events for every column
             for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-                fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(),
-                        entry.getValue(), this.valueCache.get(entry.getKey())));
+                fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(), entry.getValue(), this.valueCache.get(entry.getKey())));
             }
         }
     }
@@ -202,8 +205,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
      * @return Event to tell about value cache updates for the given column or
      *         <code>null</code> if nothing has changed.
      */
-    protected FilterRowComboUpdateEvent buildUpdateEvent(int columnIndex,
-            List<?> cacheBefore, List<?> cacheAfter) {
+    protected FilterRowComboUpdateEvent buildUpdateEvent(int columnIndex, List<?> cacheBefore, List<?> cacheAfter) {
         Set<Object> addedValues = new HashSet<Object>();
         Set<Object> removedValues = new HashSet<Object>();
 
@@ -223,8 +225,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider,
 
         // only create a new update event if there has something changed
         if (!addedValues.isEmpty() || !removedValues.isEmpty()) {
-            return new FilterRowComboUpdateEvent(columnIndex, addedValues,
-                    removedValues);
+            return new FilterRowComboUpdateEvent(columnIndex, addedValues, removedValues);
         }
 
         // nothing has changed so nothing to update
