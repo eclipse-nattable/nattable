@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447256
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447259
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.config;
 

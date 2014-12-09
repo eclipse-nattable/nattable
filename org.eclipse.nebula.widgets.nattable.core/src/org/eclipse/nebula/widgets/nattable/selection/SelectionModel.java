@@ -8,10 +8,12 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 450334
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 446276, 446275
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -22,8 +24,12 @@ import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.graphics.Rectangle;
@@ -47,12 +53,13 @@ public class SelectionModel implements ISelectionModel {
     private final List<Rectangle> selections;
     private final ReadWriteLock selectionsLock;
 
+    private boolean clearSelectionOnChange = true;
+
     public SelectionModel(SelectionLayer selectionLayer) {
         this(selectionLayer, true);
     }
 
-    public SelectionModel(SelectionLayer selectionLayer,
-            boolean multipleSelectionAllowed) {
+    public SelectionModel(SelectionLayer selectionLayer, boolean multipleSelectionAllowed) {
         this.selectionLayer = selectionLayer;
         this.multipleSelectionAllowed = multipleSelectionAllowed;
 
@@ -114,8 +121,7 @@ public class SelectionModel implements ISelectionModel {
             } else {
                 this.selections.clear();
                 // as no multiple selection is allowed, ensure that only one
-                // column
-                // and one row will be selected
+                // column and one row will be selected
                 selection.height = 1;
                 selection.width = 1;
             }
@@ -226,12 +232,12 @@ public class SelectionModel implements ISelectionModel {
         this.selectionsLock.readLock().lock();
 
         try {
-            ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition,
-                    rowPosition);
+            ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition, rowPosition);
             if (cell != null) {
                 Rectangle cellRectangle = new Rectangle(
                         cell.getOriginColumnPosition(),
-                        cell.getOriginRowPosition(), cell.getColumnSpan(),
+                        cell.getOriginRowPosition(),
+                        cell.getColumnSpan(),
                         cell.getRowSpan());
 
                 for (Rectangle selectionRectangle : this.selections) {
@@ -259,12 +265,10 @@ public class SelectionModel implements ISelectionModel {
             for (Rectangle r : this.selections) {
                 int startColumn = r.x;
                 if (startColumn < columnCount) {
-                    int numColumns = (r.x + r.width <= columnCount) ? r.width
-                            : columnCount - r.x;
+                    int numColumns = (r.x + r.width <= columnCount) ? r.width : columnCount - r.x;
 
                     // Change from row < startRow to row < startRow+numRows
-                    for (int column = startColumn; column < startColumn
-                            + numColumns; column++) {
+                    for (int column = startColumn; column < startColumn + numColumns; column++) {
                         selectedColumns.add(Integer.valueOf(column));
                     }
                 }
@@ -317,8 +321,7 @@ public class SelectionModel implements ISelectionModel {
      * See the related tests for a better understanding.
      */
     @Override
-    public boolean isColumnPositionFullySelected(int columnPosition,
-            int columnHeight) {
+    public boolean isColumnPositionFullySelected(int columnPosition, int columnHeight) {
         this.selectionsLock.readLock().lock();
 
         try {
@@ -331,15 +334,21 @@ public class SelectionModel implements ISelectionModel {
                 // Column is within the bounds of the selcted rectangle
                 if (columnPosition >= r.x && columnPosition < r.x + r.width) {
                     selectedRectanglesInColumn.add(new Rectangle(
-                            columnPosition, r.y, 1, r.height));
+                            columnPosition,
+                            r.y,
+                            1,
+                            r.height));
                 }
             }
             if (selectedRectanglesInColumn.isEmpty()) {
                 return false;
             }
             sortByY(selectedRectanglesInColumn);
-            Rectangle finalRectangle = new Rectangle(columnPosition,
-                    selectedRectanglesInColumn.get(0).y, 0, 0);
+            Rectangle finalRectangle = new Rectangle(
+                    columnPosition,
+                    selectedRectanglesInColumn.get(0).y,
+                    0,
+                    0);
 
             // Ensure that selections in the column are contiguous and cover the
             // entire column
@@ -387,8 +396,7 @@ public class SelectionModel implements ISelectionModel {
         try {
             for (Rectangle r : this.selections) {
                 if (r.y < rowCount) {
-                    int height = (r.y + r.height <= rowCount) ? r.height
-                            : rowCount - r.y;
+                    int height = (r.y + r.height <= rowCount) ? r.height : rowCount - r.y;
                     selectedRowsRange.add(new Range(r.y, r.y + height));
                 }
             }
@@ -407,8 +415,7 @@ public class SelectionModel implements ISelectionModel {
                 Range currentRange = ranges.get(i);
                 if (previousRange.overlap(currentRange)
                         || (previousRange.end == currentRange.start)) {
-                    int largerRangeEnd = (previousRange.end > currentRange.end) ? previousRange.end
-                            : currentRange.end;
+                    int largerRangeEnd = (previousRange.end > currentRange.end) ? previousRange.end : currentRange.end;
                     uniqueRanges.get(uniqueRanges.size() - 1).end = largerRangeEnd;
                     ranges.get(i).end = largerRangeEnd;
                 } else {
@@ -468,8 +475,11 @@ public class SelectionModel implements ISelectionModel {
             for (Rectangle r : this.selections) {
                 // Row is within the bounds of the selcted rectangle
                 if (rowPosition >= r.y && rowPosition < r.y + r.height) {
-                    selectedRectanglesInRow.add(new Rectangle(r.x, rowPosition,
-                            r.width, 1));
+                    selectedRectanglesInRow.add(new Rectangle(
+                            r.x,
+                            rowPosition,
+                            r.width,
+                            1));
                 }
             }
             if (selectedRectanglesInRow.isEmpty()) {
@@ -477,7 +487,10 @@ public class SelectionModel implements ISelectionModel {
             }
             sortByX(selectedRectanglesInRow);
             Rectangle finalRectangle = new Rectangle(
-                    selectedRectanglesInRow.get(0).x, rowPosition, 0, 0);
+                    selectedRectanglesInRow.get(0).x,
+                    rowPosition,
+                    0,
+                    0);
 
             // Ensure that selections in the row are contiguous and cover the
             // entire row
@@ -511,8 +524,7 @@ public class SelectionModel implements ISelectionModel {
         Collections.sort(selectionRectanglesInRow, new Comparator<Rectangle>() {
             @Override
             public int compare(Rectangle rectangle1, Rectangle rectangle2) {
-                return new Integer(rectangle1.x).compareTo(new Integer(
-                        rectangle2.x));
+                return new Integer(rectangle1.x).compareTo(new Integer(rectangle2.x));
             }
         });
     }
@@ -521,32 +533,34 @@ public class SelectionModel implements ISelectionModel {
         Collections.sort(selectionRectanglesInColumn,
                 new Comparator<Rectangle>() {
                     @Override
-                    public int compare(Rectangle rectangle1,
-                            Rectangle rectangle2) {
-                        return new Integer(rectangle1.y).compareTo(new Integer(
-                                rectangle2.y));
+                    public int compare(Rectangle rectangle1, Rectangle rectangle2) {
+                        return new Integer(rectangle1.y).compareTo(new Integer(rectangle2.y));
                     }
                 });
     }
 
-    private Rectangle getLeftSelection(Rectangle intersection,
-            Rectangle selection) {
+    private Rectangle getLeftSelection(Rectangle intersection, Rectangle selection) {
         if (intersection.x > selection.x) {
-            Rectangle leftSelection = new Rectangle(selection.x, selection.y,
-                    intersection.x - selection.x, selection.height);
+            Rectangle leftSelection = new Rectangle(
+                    selection.x,
+                    selection.y,
+                    intersection.x - selection.x,
+                    selection.height);
             return leftSelection;
         }
 
         return null;
     }
 
-    private Rectangle getRightSelection(Rectangle intersection,
-            Rectangle selection) {
+    private Rectangle getRightSelection(Rectangle intersection, Rectangle selection) {
         int newX = intersection.x + intersection.width;
 
         if (newX < selection.x + selection.width) {
-            Rectangle rightSelection = new Rectangle(newX, selection.y,
-                    selection.x + selection.width - newX, selection.height);
+            Rectangle rightSelection = new Rectangle(
+                    newX,
+                    selection.y,
+                    selection.x + selection.width - newX,
+                    selection.height);
 
             return rightSelection;
         }
@@ -554,35 +568,31 @@ public class SelectionModel implements ISelectionModel {
         return null;
     }
 
-    private Rectangle getTopSelection(Rectangle intersection,
-            Rectangle selectoin) {
-        if (intersection.y > selectoin.y) {
-            Rectangle topSelection = new Rectangle(selectoin.x, selectoin.y,
-                    selectoin.width, intersection.y - selectoin.y);
+    private Rectangle getTopSelection(Rectangle intersection, Rectangle selection) {
+        if (intersection.y > selection.y) {
+            Rectangle topSelection = new Rectangle(
+                    selection.x,
+                    selection.y,
+                    selection.width,
+                    intersection.y - selection.y);
             return topSelection;
         }
         return null;
     }
 
-    private Rectangle getBottomSelection(Rectangle intersection,
-            Rectangle selection) {
+    private Rectangle getBottomSelection(Rectangle intersection, Rectangle selection) {
         int newY = intersection.y + intersection.height;
 
         if (newY < selection.y + selection.height) {
-            Rectangle bottomSelection = new Rectangle(selection.x, newY,
-                    selection.width, selection.y + selection.height - newY);
+            Rectangle bottomSelection = new Rectangle(
+                    selection.x,
+                    newY,
+                    selection.width,
+                    selection.y + selection.height - newY);
             return bottomSelection;
         }
 
         return null;
-    }
-
-    @Override
-    public void updateSelection() {
-        // since this selection model is not able to restore a selection
-        // on structural changes, we simply clear on update to ensure
-        // there are no selection updates
-        this.selectionLayer.clear();
     }
 
     // Object methods
@@ -598,4 +608,121 @@ public class SelectionModel implements ISelectionModel {
         }
     }
 
+    @Override
+    public void handleLayerEvent(IStructuralChangeEvent event) {
+        if (this.clearSelectionOnChange) {
+            if (event.isHorizontalStructureChanged()) {
+                if (event.getColumnDiffs() == null) {
+                    Collection<Rectangle> rectangles = event.getChangedPositionRectangles();
+                    for (Rectangle rectangle : rectangles) {
+                        Range changedRange = new Range(rectangle.y, rectangle.y + rectangle.height);
+                        if (selectedColumnModified(changedRange)) {
+                            this.selectionLayer.clear();
+                            break;
+                        }
+                    }
+                }
+                else {
+                    for (StructuralDiff diff : event.getColumnDiffs()) {
+                        // DiffTypeEnum.CHANGE is used for resizing and
+                        // shouldn't result in clearing the selection
+                        if (diff.getDiffType() != DiffTypeEnum.CHANGE) {
+                            if (selectedColumnModified(diff.getBeforePositionRange())) {
+                                this.selectionLayer.clear();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (event.isVerticalStructureChanged()) {
+                // if there are no row diffs, it seems to be a complete refresh
+                if (event.getRowDiffs() == null) {
+                    Collection<Rectangle> rectangles = event.getChangedPositionRectangles();
+                    for (Rectangle rectangle : rectangles) {
+                        Range changedRange = new Range(rectangle.y, rectangle.y + rectangle.height);
+                        if (selectedRowModified(changedRange)) {
+                            this.selectionLayer.clear();
+                            break;
+                        }
+                    }
+                } else {
+                    // there are row diffs so we try to determine the diffs to
+                    // process
+                    for (StructuralDiff diff : event.getRowDiffs()) {
+                        // DiffTypeEnum.CHANGE is used for resizing and
+                        // shouldn't result in clearing the selection
+                        if (diff.getDiffType() != DiffTypeEnum.CHANGE) {
+                            if (selectedRowModified(diff.getBeforePositionRange())) {
+                                this.selectionLayer.clear();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            // keep the selection as is in case of changes
+            // Note:
+            // this is the the same code I posted in various forums as a
+            // workaround for the cleaning of the selection on changes
+            // search for PreserveSelectionStructuralChangeEventHandler to get
+            // more information on this
+            PositionCoordinate[] coords = this.selectionLayer.getSelectedCellPositions();
+            for (PositionCoordinate coord : coords) {
+                if (coord.getColumnPosition() >= this.selectionLayer.getColumnCount()
+                        || coord.getRowPosition() >= this.selectionLayer.getRowCount()) {
+                    // if the coordinates of the selected cells are outside the
+                    // valid range remove the selection
+                    this.selectionLayer.clearSelection(
+                            coord.getColumnPosition(),
+                            coord.getRowPosition());
+                }
+            }
+        }
+    }
+
+    private boolean selectedRowModified(Range changedRange) {
+        Set<Range> selectedRows = this.selectionLayer.getSelectedRowPositions();
+        for (Range rowRange : selectedRows) {
+            if (rowRange.overlap(changedRange)) {
+                return true;
+            }
+        }
+
+        // if the selection layer is empty, we should clear the selection also
+        if (this.selectionLayer.getRowCount() == 0 && !this.isEmpty()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean selectedColumnModified(Range changedRange) {
+        for (int i = changedRange.start; i <= changedRange.end; i++) {
+            if (isColumnPositionSelected(i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * @param clearSelectionOnChange
+     *            <code>true</code> to simply clear the selection on structural
+     *            changes, <code>false</code> to keep the valid selection
+     *            (selection of cells that still exist)
+     */
+    public void setClearSelectionOnChange(boolean clearSelectionOnChange) {
+        this.clearSelectionOnChange = clearSelectionOnChange;
+    }
+
+    @Override
+    public Class<IStructuralChangeEvent> getLayerEventClass() {
+        return IStructuralChangeEvent.class;
+    }
 }

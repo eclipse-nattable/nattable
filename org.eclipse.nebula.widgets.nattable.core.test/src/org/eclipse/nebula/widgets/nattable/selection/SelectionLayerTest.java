@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - Test delegation of markers to
  *         model iff model is an IMarkerSelectionModel. Test getters and setters
  *         for marker fields.
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 446275
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -21,14 +22,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.test.LayerAssert;
 import org.eclipse.nebula.widgets.nattable.test.fixture.TestLayer;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,9 +38,7 @@ import org.junit.Test;
 public class SelectionLayerTest {
 
     private TestLayer testLayer;
-    private SelectionLayer selectionLayer;
-
-    private StubbedMarkerSelectionModel markerSelectionModel = new StubbedMarkerSelectionModel();
+    private TestSelectionLayer selectionLayer;
 
     @Before
     public void setup() {
@@ -50,7 +50,7 @@ public class SelectionLayerTest {
 
         this.testLayer = new TestLayer(4, 4, columnInfo, rowInfo, cellInfo);
 
-        this.selectionLayer = new SelectionLayer(this.testLayer);
+        this.selectionLayer = new TestSelectionLayer(this.testLayer);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class SelectionLayerTest {
     // Clear
 
     @Test
-    public void testClearAllClearsAllMarkers() throws Exception {
+    public void testClearAllClearsAllMarkers() {
         this.selectionLayer.selectAll();
 
         this.selectionLayer.clear();
@@ -77,7 +77,7 @@ public class SelectionLayerTest {
     }
 
     @Test
-    public void testClearSingleCellClearsNoMarkers() throws Exception {
+    public void testClearSingleCellClearsNoMarkers() {
         this.selectionLayer.selectAll();
 
         this.selectionLayer.clearSelection(1, 1);
@@ -91,7 +91,7 @@ public class SelectionLayerTest {
     }
 
     @Test
-    public void testClearAnchorRectangleClearsOnlyAnchor() throws Exception {
+    public void testClearAnchorRectangleClearsOnlyAnchor() {
         this.selectionLayer.selectAll();
 
         this.selectionLayer.clearSelection(new Rectangle(0, 0, 1, 1));
@@ -107,8 +107,7 @@ public class SelectionLayerTest {
     }
 
     @Test
-    public void testClearOutsideAnchorRectangleClearsNoMarkers()
-            throws Exception {
+    public void testClearOutsideAnchorRectangleClearsNoMarkers() {
         this.selectionLayer.selectAll();
 
         this.selectionLayer.clearSelection(new Rectangle(1, 1, 1, 1));
@@ -120,8 +119,7 @@ public class SelectionLayerTest {
     // Last Selected Region
 
     @Test
-    public void testGetLastSelectedRegionDoesNotDelegateToModel()
-            throws Exception {
+    public void testGetLastSelectedRegionDoesNotDelegateToModel() {
         Rectangle lastSelectedRegion = new Rectangle(22, 22, 22, 22);
         this.selectionLayer.lastSelectedRegion = lastSelectedRegion;
 
@@ -129,31 +127,7 @@ public class SelectionLayerTest {
     }
 
     @Test
-    public void testGetLastSelectedRegionDelegatesToAnchorModel()
-            throws Exception {
-        this.selectionLayer.setSelectionModel(this.markerSelectionModel);
-
-        Rectangle lastSelectedRegion = new Rectangle(22, 22, 22, 22);
-        this.markerSelectionModel.setLastSelectedRegion(lastSelectedRegion);
-
-        assertEquals(lastSelectedRegion, this.selectionLayer.getLastSelectedRegion());
-    }
-
-    @Test
-    public void testSetLastSelectedRegionDelegatesToAnchorModel()
-            throws Exception {
-        this.selectionLayer.setSelectionModel(this.markerSelectionModel);
-
-        Rectangle region = new Rectangle(23454234, 123123, 12, 5);
-        this.selectionLayer.setLastSelectedRegion(region);
-
-        assertSame(region, this.markerSelectionModel.getLastSelectedRegion());
-        assertNull(this.selectionLayer.lastSelectedRegion);
-    }
-
-    @Test
-    public void testSetLastSelectedRegionDoesNotDelegateToModel()
-            throws Exception {
+    public void testSetLastSelectedRegionDoesNotDelegateToModel() {
         Rectangle region = new Rectangle(23454234, 123123, 12, 5);
         this.selectionLayer.setLastSelectedRegion(region);
 
@@ -161,35 +135,20 @@ public class SelectionLayerTest {
     }
 
     @Test
-    public void testSetLastSelectedRegionPreservesNULL() throws Exception {
+    public void testSetLastSelectedRegionPreservesNULL() {
         this.selectionLayer.setLastSelectedRegion(null);
 
         assertNull(this.selectionLayer.lastSelectedRegion);
     }
 
     @Test
-    public void testSetLastSelectedRegionFieldsDelegatesToAnchorModel()
-            throws Exception {
-        this.selectionLayer.setSelectionModel(this.markerSelectionModel);
-
-        Rectangle region = new Rectangle(23454234, 123123, 12, 5);
-        this.selectionLayer.setLastSelectedRegion(region.x, region.y, region.width,
-                region.height);
-
-        assertEquals(region, this.markerSelectionModel.getLastSelectedRegion());
-        assertNull(this.selectionLayer.lastSelectedRegion);
-    }
-
-    @Test
-    public void testSetLastSelectedRegionFieldsDoesNotDelegateToModel()
-            throws Exception {
+    public void testSetLastSelectedRegionFieldsDoesNotDelegateToModel() {
         this.selectionLayer.selectAll();
 
         Rectangle existingRegion = this.selectionLayer.lastSelectedRegion;
 
         Rectangle region = new Rectangle(23454234, 123123, 12, 5);
-        this.selectionLayer.setLastSelectedRegion(region.x, region.y, region.width,
-                region.height);
+        this.selectionLayer.setLastSelectedRegion(region.x, region.y, region.width, region.height);
 
         assertEquals(region, this.selectionLayer.lastSelectedRegion);
         assertSame(existingRegion, this.selectionLayer.lastSelectedRegion);
@@ -198,37 +157,14 @@ public class SelectionLayerTest {
     // Selection Anchor
 
     @Test
-    public void testGetAnchorDoesNotDelegateToModel() throws Exception {
+    public void testGetAnchorDoesNotDelegateToModel() {
         PositionCoordinate existingAnchor = this.selectionLayer.selectionAnchor;
 
         assertSame(existingAnchor, this.selectionLayer.getSelectionAnchor());
     }
 
     @Test
-    public void testGetAnchorDelegatesToAnchorModel() throws Exception {
-        this.selectionLayer.setSelectionModel(this.markerSelectionModel);
-
-        Point anchor = new Point(5, 7);
-        this.markerSelectionModel.setSelectionAnchor(anchor);
-
-        assertEquals(anchor.x,
-                this.selectionLayer.getSelectionAnchor().columnPosition);
-        assertEquals(anchor.y, this.selectionLayer.getSelectionAnchor().rowPosition);
-    }
-
-    @Test
-    public void testSetSelectionAnchorDelegatesToAnchorModel() throws Exception {
-        this.selectionLayer.setSelectionModel(this.markerSelectionModel);
-
-        this.selectionLayer.setSelectionAnchor(456, 8);
-
-        assertEquals(456, this.markerSelectionModel.getSelectionAnchor().x);
-        assertEquals(8, this.markerSelectionModel.getSelectionAnchor().y);
-        assertFalse(SelectionLayer.hasSelection(this.selectionLayer.selectionAnchor));
-    }
-
-    @Test
-    public void testSetSelectionAnchorDoesNotDelegateToModel() throws Exception {
+    public void testSetSelectionAnchorDoesNotDelegateToModel() {
         this.selectionLayer.selectAll();
 
         this.selectionLayer.setSelectionAnchor(456, 8);
@@ -240,21 +176,7 @@ public class SelectionLayerTest {
     // Last Selected Cell
 
     @Test
-    public void testSetLastSelectedCellDelegatesToAnchorModel()
-            throws Exception {
-        this.selectionLayer.setSelectionModel(this.markerSelectionModel);
-
-        this.selectionLayer.setLastSelectedCell(456, 8);
-
-        assertEquals(456, this.markerSelectionModel.getLastSelectedCell().x);
-        assertEquals(8, this.markerSelectionModel.getLastSelectedCell().y);
-        assertFalse(SelectionLayer
-                .hasSelection(this.selectionLayer.lastSelectedCell));
-    }
-
-    @Test
-    public void testSetLastSelectedCellDoesNotDelegateToModel()
-            throws Exception {
+    public void testSetLastSelectedCellDoesNotDelegateToModel() {
         this.selectionLayer.selectAll();
 
         this.selectionLayer.setLastSelectedCell(456, 8);
@@ -264,8 +186,7 @@ public class SelectionLayerTest {
     }
 
     @Test
-    public void testGetLastSelectedCellDoesNotDelegateToModel()
-            throws Exception {
+    public void testGetLastSelectedCellDoesNotDelegateToModel() {
         this.selectionLayer.selectAll();
         PositionCoordinate existingSelectedCell = this.selectionLayer.lastSelectedCell;
 
@@ -273,168 +194,49 @@ public class SelectionLayerTest {
     }
 
     @Test
-    public void testGetLastSelectedCellDelegatesToAnchorModel()
-            throws Exception {
-        this.selectionLayer.setSelectionModel(this.markerSelectionModel);
-
-        Point lastSelected = new Point(5, 7);
-        this.markerSelectionModel.setLastSelectedCell(lastSelected);
-
-        assertEquals(lastSelected.x,
-                this.selectionLayer.getLastSelectedCell().columnPosition);
-        assertEquals(lastSelected.y,
-                this.selectionLayer.getLastSelectedCell().rowPosition);
-    }
-
-    @Test
-    public void testGetLastSelectedCellPosition() throws Exception {
+    public void testGetLastSelectedCellPosition() {
         this.selectionLayer.selectAll();
-        PositionCoordinate existingSelectedCell = this.selectionLayer
-                .getLastSelectedCell();
+        PositionCoordinate existingSelectedCell = this.selectionLayer.getLastSelectedCell();
 
-        assertSame(existingSelectedCell,
-                this.selectionLayer.getLastSelectedCellPosition());
+        assertSame(existingSelectedCell, this.selectionLayer.getLastSelectedCellPosition());
         assertNotNull(existingSelectedCell);
     }
 
     @Test
-    public void testGetLastSelectedCellPositionReturnsNullWhenUnselected()
-            throws Exception {
+    public void testGetLastSelectedCellPositionReturnsNullWhenUnselected() {
         assertNull(this.selectionLayer.getLastSelectedCellPosition());
     }
 
-    public class StubbedMarkerSelectionModel implements IMarkerSelectionModel {
+    // Register / unregister event handler
 
-        private Rectangle lastSelectedRegion = new Rectangle(0, 0, 0, 0);
-        private Point anchor;
-        private Point lastSelectedCell;
+    @Test
+    public void testIsModelEventHandlerRegistered() {
+        assertEquals(1, this.selectionLayer.getEventHandler().size());
 
-        @Override
-        public boolean isMultipleSelectionAllowed() {
-            return false;
-        }
+        ILayerEventHandler<? extends ILayerEvent> handler = this.selectionLayer.getEventHandler().get(IStructuralChangeEvent.class);
 
-        @Override
-        public void setMultipleSelectionAllowed(boolean multipleSelectionAllowed) {}
-
-        @Override
-        public void addSelection(int columnPosition, int rowPosition) {}
-
-        @Override
-        public void addSelection(Rectangle range) {}
-
-        @Override
-        public void clearSelection() {}
-
-        @Override
-        public void clearSelection(int columnPosition, int rowPosition) {}
-
-        @Override
-        public void clearSelection(Rectangle removedSelection) {}
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public List<Rectangle> getSelections() {
-            return null;
-        }
-
-        @Override
-        public boolean isCellPositionSelected(int columnPosition,
-                int rowPosition) {
-            return false;
-        }
-
-        @Override
-        public int[] getSelectedColumnPositions() {
-            return null;
-        }
-
-        @Override
-        public boolean isColumnPositionSelected(int columnPosition) {
-            return false;
-        }
-
-        @Override
-        public int[] getFullySelectedColumnPositions(int columnHeight) {
-            return null;
-        }
-
-        @Override
-        public boolean isColumnPositionFullySelected(int columnPosition,
-                int columnHeight) {
-            return false;
-        }
-
-        @Override
-        public int getSelectedRowCount() {
-            return 0;
-        }
-
-        @Override
-        public Set<Range> getSelectedRowPositions() {
-            return null;
-        }
-
-        @Override
-        public boolean isRowPositionSelected(int rowPosition) {
-            return false;
-        }
-
-        @Override
-        public int[] getFullySelectedRowPositions(int rowWidth) {
-            return null;
-        }
-
-        @Override
-        public boolean isRowPositionFullySelected(int rowPosition, int rowWidth) {
-            return false;
-        }
-
-        @Override
-        public Point getSelectionAnchor() {
-            return this.anchor;
-        }
-
-        @Override
-        public Point getLastSelectedCell() {
-            return this.lastSelectedCell;
-        }
-
-        @Override
-        public Rectangle getLastSelectedRegion() {
-            return this.lastSelectedRegion;
-        }
-
-        @Override
-        public void setSelectionAnchor(Point anchor) {
-            this.anchor = anchor;
-        }
-
-        @Override
-        public void setLastSelectedCell(Point lastSelectedCell) {
-            this.lastSelectedCell = lastSelectedCell;
-        }
-
-        @Override
-        public void setLastSelectedRegion(Rectangle region) {
-            this.lastSelectedRegion = region;
-        }
-
-        @Override
-        public void setLastSelectedRegion(int x, int y, int width, int height) {
-            this.lastSelectedRegion.x = x;
-            this.lastSelectedRegion.y = y;
-            this.lastSelectedRegion.width = width;
-            this.lastSelectedRegion.height = height;
-        }
-
-        @Override
-        public void updateSelection() {}
-
+        assertSame(this.selectionLayer.getSelectionModel(), handler);
     }
 
+    @Test
+    public void testUnregisterModelEventHandler() {
+        this.selectionLayer.unregisterEventHandler(this.selectionLayer.getSelectionModel());
+
+        assertEquals(0, this.selectionLayer.getEventHandler().size());
+    }
+
+    /**
+     * Simple SelectionLayer that makes the event handler accessible for
+     * testing.
+     */
+    class TestSelectionLayer extends SelectionLayer {
+
+        public TestSelectionLayer(IUniqueIndexLayer underlyingLayer) {
+            super(underlyingLayer);
+        }
+
+        public Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> getEventHandler() {
+            return this.eventHandlers;
+        }
+    }
 }

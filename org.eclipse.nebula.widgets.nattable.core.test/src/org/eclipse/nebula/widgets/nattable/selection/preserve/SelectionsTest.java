@@ -8,6 +8,7 @@
  * Contributors:
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - initial test
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - made Selections.Row a static inner class
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.preserve;
 
@@ -18,7 +19,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.HashSet;
 
-import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.CellPosition;
 import org.junit.Test;
 
@@ -144,7 +144,7 @@ public class SelectionsTest {
         this.testee.select(this.rowB, this.rowObjectB, this.columnPosition2);
 
         HashSet<Serializable> actualRowIds = new HashSet<Serializable>();
-        for (Selections<String[]>.Row row : this.testee.getRows()) {
+        for (Selections.Row<String[]> row : this.testee.getRows()) {
             actualRowIds.add(row.getId());
         }
 

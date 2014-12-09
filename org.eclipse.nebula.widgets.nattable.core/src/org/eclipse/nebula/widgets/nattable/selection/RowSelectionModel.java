@@ -7,12 +7,13 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447256
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447259, 446275, 447394
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.swt.graphics.Rectangle;
 
 public class RowSelectionModel<R> implements IRowSelectionModel<R> {
@@ -153,7 +155,8 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 
         try {
             int maxY = Math.min(
-                    removedSelection.y + removedSelection.height, this.selectionLayer.getRowCount());
+                    removedSelection.y + removedSelection.height,
+                    this.selectionLayer.getRowCount());
             for (int rowPosition = removedSelection.y; rowPosition < maxY; rowPosition++) {
                 clearSelection(0, rowPosition);
             }
@@ -167,7 +170,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
         this.selectionsLock.writeLock().lock();
 
         try {
-            this.selectedRows.values().remove(rowObject);
+            this.selectedRows.remove(this.rowIdAccessor.getRowId(rowObject));
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
@@ -411,8 +414,32 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
     }
 
     @Override
-    public void updateSelection() {
-        // do nothing, the selection state is held internally by id
+    public void handleLayerEvent(IStructuralChangeEvent event) {
+        // handling for deleting rows
+        if (event.isVerticalStructureChanged()) {
+            // the change is already done and we don't know about indexes, so we
+            // need to check if the selected objects still exist
+            Collection<Serializable> keysToRemove = new ArrayList<Serializable>();
+            for (Map.Entry<Serializable, R> entry : this.selectedRows.entrySet()) {
+                int rowIndex = this.rowDataProvider.indexOfRowObject(entry.getValue());
+                if (rowIndex == -1) {
+                    keysToRemove.add(entry.getKey());
+                }
+            }
+
+            this.selectionsLock.readLock().lock();
+            try {
+                for (Serializable toRemove : keysToRemove) {
+                    this.selectedRows.remove(toRemove);
+                }
+            } finally {
+                this.selectionsLock.readLock().unlock();
+            }
+        }
     }
 
+    @Override
+    public Class<IStructuralChangeEvent> getLayerEventClass() {
+        return IStructuralChangeEvent.class;
+    }
 }

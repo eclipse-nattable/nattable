@@ -11,7 +11,7 @@
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - Delegate markers to model if
  *         model is an IMarkerSelectionModel. Add getters and setters for marker fields
  *     neal zhang <nujiah001@126.com> - change some methods and fields visibility
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453851
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 446275, 453851
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -47,7 +47,6 @@ import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsC
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectAllCommand;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
-import org.eclipse.nebula.widgets.nattable.selection.event.SelectionLayerStructuralChangeEventHandler;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.swt.graphics.Point;
@@ -93,6 +92,10 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         this(underlyingLayer, selectionModel, useDefaultConfiguration, true);
     }
 
+    /**
+     * @deprecated the ISelectionModel is now itself an ILayerEventHandler
+     */
+    @Deprecated
     public SelectionLayer(IUniqueIndexLayer underlyingLayer, ISelectionModel selectionModel,
             boolean useDefaultConfiguration, boolean registerDefaultEventHandler) {
         super(underlyingLayer);
@@ -100,7 +103,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
         setLayerPainter(new SelectionLayerPainter());
 
-        this.selectionModel = selectionModel != null ? selectionModel : new SelectionModel(this);
+        setSelectionModel(selectionModel);
 
         this.lastSelectedCell = new PositionCoordinate(this, NO_SELECTION, NO_SELECTION);
         this.selectionAnchor = new PositionCoordinate(this, NO_SELECTION, NO_SELECTION);
@@ -111,9 +114,6 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
         registerCommandHandlers();
 
-        if (registerDefaultEventHandler) {
-            registerEventHandler(new SelectionLayerStructuralChangeEventHandler(this));
-        }
         if (useDefaultConfiguration) {
             addConfiguration(new DefaultSelectionLayerConfiguration());
         }
@@ -124,7 +124,11 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     public void setSelectionModel(ISelectionModel selectionModel) {
-        this.selectionModel = selectionModel;
+        if (this.selectionModel != null) {
+            unregisterEventHandler(this.selectionModel);
+        }
+        this.selectionModel = selectionModel != null ? selectionModel : new SelectionModel(this);
+        registerEventHandler(this.selectionModel);
     }
 
     @Override
@@ -133,7 +137,6 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     }
 
     public void addSelection(Rectangle selection) {
-        // if (selection != getLastSelectedRegion()) {
         if (!selection.equals(getLastSelectedRegion())) {
             setSelectionAnchor(getLastSelectedCell().columnPosition, getLastSelectedCell().rowPosition);
             setLastSelectedRegion(selection);
@@ -708,9 +711,5 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         } else {
             return super.doCommand(command);
         }
-    }
-
-    public void updateSelection() {
-        this.selectionModel.updateSelection();
     }
 }

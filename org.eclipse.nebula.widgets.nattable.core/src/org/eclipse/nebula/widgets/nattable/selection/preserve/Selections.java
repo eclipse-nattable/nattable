@@ -8,6 +8,8 @@
  * Contributors:
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447396
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - made inner classes static for better generic handling
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.preserve;
 
@@ -31,7 +33,7 @@ class Selections<T> {
     /**
      * A map for looking up rows given their row IDs
      */
-    private Map<Serializable, Row> selectedRows = new HashMap<Serializable, Row>();
+    private Map<Serializable, Row<T>> selectedRows = new HashMap<Serializable, Row<T>>();
 
     /**
      * A map for looking up columns given their column positions
@@ -47,7 +49,7 @@ class Selections<T> {
      * @param columnPosition
      */
     void select(Serializable rowId, T rowObject, int columnPosition) {
-        Row row = retrieveRow(rowId, rowObject);
+        Row<T> row = retrieveRow(rowId, rowObject);
         row.addItem(columnPosition);
 
         Column column = retrieveColumn(columnPosition);
@@ -62,7 +64,7 @@ class Selections<T> {
      * @param columnPosition
      */
     void deselect(Serializable rowId, int columnPosition) {
-        Row row = getSelectedColumns(rowId);
+        Row<T> row = getSelectedColumns(rowId);
         if (row != null) {
             row.removeItem(columnPosition);
             if (!row.hasSelection()) {
@@ -80,6 +82,116 @@ class Selections<T> {
     }
 
     /**
+     * Removes the selection of all cells for the specified row id.
+     *
+     * @param rowId
+     */
+    void deselectRow(Serializable rowId) {
+        Row<T> row = getSelectedColumns(rowId);
+        if (row != null) {
+            row.clearItems();
+            this.selectedRows.remove(rowId);
+        }
+
+        Collection<Integer> toRemove = new HashSet<Integer>();
+        for (Map.Entry<Integer, Column> entry : this.selectedColumns.entrySet()) {
+            entry.getValue().removeItem(rowId);
+            if (!entry.getValue().hasSelection()) {
+                toRemove.add(entry.getKey());
+            }
+        }
+
+        for (Integer key : toRemove) {
+            this.selectedColumns.remove(key);
+        }
+    }
+
+    /**
+     * Removes the selection of all cells for the specified column.
+     *
+     * @param columnPosition
+     */
+    void deselectColumn(int columnPosition) {
+        Column column = getSelectedRows(columnPosition);
+        if (column != null) {
+            column.clearItems();
+            this.selectedColumns.remove(columnPosition);
+        }
+
+        Collection<Serializable> toRemove = new HashSet<Serializable>();
+        for (Map.Entry<Serializable, Row<T>> entry : this.selectedRows.entrySet()) {
+            entry.getValue().removeItem(columnPosition);
+            if (!entry.getValue().hasSelection()) {
+                toRemove.add(entry.getKey());
+            }
+        }
+
+        for (Serializable key : toRemove) {
+            this.selectedRows.remove(key);
+        }
+    }
+
+    void updateColumnsForRemoval(int columnPosition) {
+        // find maximum selected column
+        int maxColumn = 0;
+        for (Integer pos : this.selectedColumns.keySet()) {
+            maxColumn = Math.max(maxColumn, pos);
+        }
+
+        for (int i = columnPosition + 1; i <= maxColumn; i++) {
+            Column column = this.selectedColumns.get(i);
+            if (column != null) {
+                this.selectedColumns.put(i - 1, new Column(i - 1));
+                this.selectedColumns.remove(i);
+
+                // also update the row references
+                for (Row<T> row : this.selectedRows.values()) {
+                    Collection<Integer> toRemove = new HashSet<Integer>();
+                    Collection<Integer> toAdd = new HashSet<Integer>();
+                    for (Integer col : row.getItems()) {
+                        if (col <= i) {
+                            toRemove.add(i);
+                            toAdd.add(i - 1);
+                        }
+                    }
+                    row.getItems().removeAll(toRemove);
+                    row.getItems().addAll(toAdd);
+                }
+            }
+        }
+    }
+
+    void updateColumnsForAddition(int columnPosition) {
+        // find maximum selected column
+        int maxColumn = 0;
+        for (Integer pos : this.selectedColumns.keySet()) {
+            maxColumn = Math.max(maxColumn, pos);
+        }
+
+        for (int i = maxColumn; i >= columnPosition; i--) {
+            Column column = this.selectedColumns.get(i);
+            if (column != null) {
+                this.selectedColumns.put(i + 1, new Column(i + 1));
+                this.selectedColumns.remove(i);
+
+                // also update the row references
+                for (Row<T> row : this.selectedRows.values()) {
+                    Collection<Integer> toRemove = new HashSet<Integer>();
+                    Collection<Integer> toAdd = new HashSet<Integer>();
+                    for (Integer col : row.getItems()) {
+                        if (col >= i) {
+                            toRemove.add(i);
+                            toAdd.add(i + 1);
+                        }
+                    }
+                    row.getItems().removeAll(toRemove);
+                    row.getItems().addAll(toAdd);
+                }
+            }
+        }
+    }
+
+    /**
      * Removes all cell selections.
      */
     void clear() {
@@ -92,7 +204,7 @@ class Selections<T> {
      *
      * @return all rows that have selected cells
      */
-    Collection<Row> getRows() {
+    Collection<Row<T>> getRows() {
         return this.selectedRows.values();
     }
 
@@ -128,7 +240,7 @@ class Selections<T> {
      * @return selected columns of rowId, or null if no selected columns in that
      *         row
      */
-    Row getSelectedColumns(Serializable rowId) {
+    Row<T> getSelectedColumns(Serializable rowId) {
         return this.selectedRows.get(rowId);
     }
 
@@ -141,10 +253,9 @@ class Selections<T> {
      */
     Collection<CellPosition<T>> getSelections() {
         ArrayList<CellPosition<T>> selectedCells = new ArrayList<CellPosition<T>>();
-        for (Row row : this.selectedRows.values()) {
+        for (Row<T> row : this.selectedRows.values()) {
             for (Integer columnPosition : row.getItems()) {
-                CellPosition<T> cell = new CellPosition<T>(row.getRowObject(),
-                        columnPosition);
+                CellPosition<T> cell = new CellPosition<T>(row.getRowObject(), columnPosition);
                 selectedCells.add(cell);
             }
         }
@@ -199,10 +310,10 @@ class Selections<T> {
      *            row object with the row rowId
      * @return a collection of selected columns for the row
      */
-    private Row retrieveRow(Serializable rowId, T rowObject) {
-        Row row = getSelectedColumns(rowId);
+    private Row<T> retrieveRow(Serializable rowId, T rowObject) {
+        Row<T> row = getSelectedColumns(rowId);
         if (row == null) {
-            row = new Row(rowId, rowObject);
+            row = new Row<T>(rowId, rowObject);
             this.selectedRows.put(rowId, row);
         }
         return row;
@@ -229,11 +340,11 @@ class Selections<T> {
      * Integer> where <Serializable> denotes the row ID of the row and <Integer>
      * denotes the type of the selected columns (column positions).
      */
-    class Row extends Line<Serializable, Integer> {
+    static class Row<R> extends Line<Serializable, Integer> {
         /**
          * The underlying row object
          */
-        private final T rowObject;
+        private final R rowObject;
 
         /**
          * Creates a row with the specified row
@@ -243,7 +354,7 @@ class Selections<T> {
          * @param rowObject
          *            underlying row object
          */
-        Row(Serializable rowId, T rowObject) {
+        Row(Serializable rowId, R rowObject) {
             super(rowId);
             this.rowObject = rowObject;
         }
@@ -253,7 +364,7 @@ class Selections<T> {
          *
          * @return the underlying row object
          */
-        T getRowObject() {
+        R getRowObject() {
             return this.rowObject;
         }
     }
@@ -263,7 +374,7 @@ class Selections<T> {
      * Serializable> where <Integer> denotes the column position of the column
      * and <Serializable> denotes the type of the selected rows (row ID).
      */
-    class Column extends Line<Integer, Serializable> {
+    static class Column extends Line<Integer, Serializable> {
         /**
          * Creates a column with the specified column
          *
@@ -331,6 +442,13 @@ class Selections<T> {
          */
         void removeItem(S item) {
             this.content.remove(item);
+        }
+
+        /**
+         * Clears the selected items.
+         */
+        void clearItems() {
+            this.content.clear();
         }
 
         /**

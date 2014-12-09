@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,8 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - made commandHandlers and eventHandlers
+ *                                              visible to subclasses for testing
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
@@ -52,8 +54,10 @@ public abstract class AbstractLayer implements ILayer {
     private IClientAreaProvider clientAreaProvider = IClientAreaProvider.DEFAULT;
     private IConfigLabelAccumulator configLabelAccumulator;
 
-    private final Map<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>> commandHandlers = new LinkedHashMap<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>>();
-    private final Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> eventHandlers = new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>();
+    protected final Map<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>> commandHandlers =
+            new LinkedHashMap<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>>();
+    protected final Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> eventHandlers =
+            new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>();
 
     private final List<IPersistable> persistables = new LinkedList<IPersistable>();
     private final Set<ILayerListener> listeners = new LinkedHashSet<ILayerListener>();
@@ -86,12 +90,10 @@ public abstract class AbstractLayer implements ILayer {
     // Config lables
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         LabelStack configLabels = new LabelStack();
         if (this.configLabelAccumulator != null) {
-            this.configLabelAccumulator.accumulateConfigLabels(configLabels,
-                    columnPosition, rowPosition);
+            this.configLabelAccumulator.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
         }
         if (this.regionName != null) {
             configLabels.addLabel(this.regionName);
@@ -103,8 +105,7 @@ public abstract class AbstractLayer implements ILayer {
         return this.configLabelAccumulator;
     }
 
-    public void setConfigLabelAccumulator(
-            IConfigLabelAccumulator cellLabelAccumulator) {
+    public void setConfigLabelAccumulator(IConfigLabelAccumulator cellLabelAccumulator) {
         this.configLabelAccumulator = cellLabelAccumulator;
     }
 
@@ -145,8 +146,7 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     @Override
-    public void configure(ConfigRegistry configRegistry,
-            UiBindingRegistry uiBindingRegistry) {
+    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         for (IConfiguration configuration : this.configurations) {
             configuration.configureLayer(this);
             configuration.configureRegistry(configRegistry);
@@ -159,11 +159,9 @@ public abstract class AbstractLayer implements ILayer {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean doCommand(ILayerCommand command) {
-        for (Class<? extends ILayerCommand> commandClass : this.commandHandlers
-                .keySet()) {
+        for (Class<? extends ILayerCommand> commandClass : this.commandHandlers.keySet()) {
             if (commandClass.isInstance(command)) {
-                ILayerCommandHandler commandHandler = this.commandHandlers
-                        .get(commandClass);
+                ILayerCommandHandler commandHandler = this.commandHandlers.get(commandClass);
                 if (commandHandler.doCommand(this, command)) {
                     return true;
                 }
@@ -190,8 +188,7 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     @Override
-    public void unregisterCommandHandler(
-            Class<? extends ILayerCommand> commandClass) {
+    public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
         this.commandHandlers.remove(commandClass);
     }
 
@@ -208,8 +205,7 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     @Override
-    public boolean hasLayerListener(
-            Class<? extends ILayerListener> layerListenerClass) {
+    public boolean hasLayerListener(Class<? extends ILayerListener> layerListenerClass) {
         for (ILayerListener listener : this.listeners) {
             if (listener.getClass().equals(layerListenerClass)) {
                 return true;
@@ -266,8 +262,7 @@ public abstract class AbstractLayer implements ILayer {
 
                 // Fire cloned event to first n-1 listeners; fire original event
                 // to last listener
-                ILayerEvent eventToFire = isLastListener ? event : event
-                        .cloneEvent();
+                ILayerEvent eventToFire = isLastListener ? event : event.cloneEvent();
                 l.handleLayerEvent(eventToFire);
             } while (!isLastListener);
         }
@@ -363,11 +358,13 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     @Override
-    public ICellPainter getCellPainter(int columnPosition, int rowPosition,
+    public ICellPainter getCellPainter(
+            int columnPosition, int rowPosition,
             ILayerCell cell, IConfigRegistry configRegistry) {
         return configRegistry.getConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, cell.getDisplayMode(), cell
-                        .getConfigLabels().getLabels());
+                CellConfigAttributes.CELL_PAINTER,
+                cell.getDisplayMode(),
+                cell.getConfigLabels().getLabels());
     }
 
 }

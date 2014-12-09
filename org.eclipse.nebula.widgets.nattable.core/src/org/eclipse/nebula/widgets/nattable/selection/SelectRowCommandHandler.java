@@ -10,7 +10,7 @@
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - Use getters and setters for
  *         the markers of SelectionLayer instead of the fields.
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447256, 447261
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447259, 447261
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -65,8 +65,8 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
      * @param withControlMask
      *            The control mask information of the {@link SelectRowsCommand}.
      * @param rowPositionToMoveIntoViewport
-     *            Information whether the row should be moved to the viewport or
-     *            not, transported by the {@link SelectRowsCommand}.
+     *            Information which row should be moved to the viewport,
+     *            transported by the {@link SelectRowsCommand}.
      */
     protected void selectRows(
             int columnPosition, Collection<Integer> rowPositions,

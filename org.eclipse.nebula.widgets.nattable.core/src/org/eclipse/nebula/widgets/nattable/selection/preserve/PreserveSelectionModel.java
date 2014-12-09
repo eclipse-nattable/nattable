@@ -8,7 +8,7 @@
  * Contributors:
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453851
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453851, 446275, 447396
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.preserve;
 
@@ -28,6 +28,9 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEnum;
 import org.eclipse.nebula.widgets.nattable.selection.IMarkerSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.preserve.Selections.CellPosition;
@@ -135,11 +138,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
                 clearSelection();
             }
 
-            T rowObject = getRowObjectByPosition(rowPosition);
-            if (rowObject != null) {
-                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
-                this.selections.select(rowId, rowObject, columnPosition);
-            }
+            internalAddSelection(columnPosition, rowPosition);
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
@@ -149,16 +148,34 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void addSelection(Rectangle range) {
         this.selectionsLock.writeLock().lock();
         try {
-            SelectionOperation addSelectionOperation = new SelectionOperation() {
+            if (!this.allowMultiSelection) {
+                clearSelection();
+            }
 
+            performOnKnownCells(range, new SelectionOperation() {
                 @Override
                 public void run(int columnPosition, int rowPosition) {
-                    addSelection(columnPosition, rowPosition);
+                    internalAddSelection(columnPosition, rowPosition);
                 }
-            };
-            performOnKnownCells(range, addSelectionOperation);
+            });
         } finally {
             this.selectionsLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Selects a cell by given coordinates without performing locking.
+     *
+     * @param columnPosition
+     *            column position of the cell to select
+     * @param rowPosition
+     *            row position of the cell to select
+     */
+    private void internalAddSelection(int columnPosition, int rowPosition) {
+        T rowObject = getRowObjectByPosition(rowPosition);
+        if (rowObject != null) {
+            Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+            this.selections.select(rowId, rowObject, columnPosition);
         }
     }
 
@@ -176,11 +193,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void clearSelection(int columnPosition, int rowPosition) {
         this.selectionsLock.writeLock().lock();
         try {
-            T rowObject = getRowObjectByPosition(rowPosition);
-            if (rowObject != null) {
-                Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
-                this.selections.deselect(rowId, columnPosition);
-            }
+            internalClearSelection(columnPosition, rowPosition);
         } finally {
             this.selectionsLock.writeLock().unlock();
         }
@@ -190,16 +203,30 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void clearSelection(Rectangle removedSelection) {
         this.selectionsLock.writeLock().lock();
         try {
-            SelectionOperation clearSelectionOperation = new SelectionOperation() {
-
+            performOnKnownCells(removedSelection, new SelectionOperation() {
                 @Override
                 public void run(int columnPosition, int rowPosition) {
-                    clearSelection(columnPosition, rowPosition);
+                    internalClearSelection(columnPosition, rowPosition);
                 }
-            };
-            performOnKnownCells(removedSelection, clearSelectionOperation);
+            });
         } finally {
             this.selectionsLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Deselects a cell by given coordinates without performing locking.
+     *
+     * @param columnPosition
+     *            column position of the cell to select
+     * @param rowPosition
+     *            row position of the cell to select
+     */
+    private void internalClearSelection(int columnPosition, int rowPosition) {
+        T rowObject = getRowObjectByPosition(rowPosition);
+        if (rowObject != null) {
+            Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
+            this.selections.deselect(rowId, columnPosition);
         }
     }
 
@@ -318,7 +345,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public boolean isColumnPositionSelected(int columnPosition) {
         this.selectionsLock.readLock().lock();
         try {
-            for (Selections<T>.Row row : this.selections.getRows()) {
+            for (Selections.Row<T> row : this.selections.getRows()) {
                 if (row.contains(columnPosition)) {
                     return true;
                 }
@@ -351,10 +378,10 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         TreeSet<Integer> selectedRowIndices = new TreeSet<Integer>();
         this.selectionsLock.readLock().lock();
         try {
-            Selections<T>.Column selectedRowsInColumn = this.selections.getSelectedRows(columnPosition);
+            Selections.Column selectedRowsInColumn = this.selections.getSelectedRows(columnPosition);
             if (hasColumnsSelectedRows(selectedRowsInColumn)) {
                 for (Serializable rowId : selectedRowsInColumn.getItems()) {
-                    Selections<T>.Row row = this.selections.getSelectedColumns(rowId);
+                    Selections.Row<T> row = this.selections.getSelectedColumns(rowId);
                     T rowObject = row.getRowObject();
                     int rowIndex = this.rowDataProvider.indexOfRowObject(rowObject);
                     selectedRowIndices.add(rowIndex);
@@ -373,7 +400,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      *            collections of selected cells for a column
      * @return whether there are selected cells in column
      */
-    private boolean hasColumnsSelectedRows(Selections<T>.Column column) {
+    private boolean hasColumnsSelectedRows(Selections.Column column) {
         return column != null;
     }
 
@@ -425,7 +452,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
 
         this.selectionsLock.readLock().lock();
         try {
-            for (Selections<T>.Row row : this.selections.getRows()) {
+            for (Selections.Row<T> row : this.selections.getRows()) {
                 int rowPosition = getRowPositionByRowObject(row.getRowObject());
                 if (isRowVisible(rowPosition)) {
                     visiblySelectedRowPositions.add(new Range(rowPosition, rowPosition + 1));
@@ -453,7 +480,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
         this.selectionsLock.readLock().lock();
         try {
             List<Integer> fullySelectedRows = new ArrayList<Integer>();
-            for (Selections<T>.Row selectedRow : this.selections.getRows()) {
+            for (Selections.Row<T> selectedRow : this.selections.getRows()) {
                 T rowObject = selectedRow.getRowObject();
                 int rowPosition = getRowPositionByRowObject(rowObject);
                 if (isRowVisible(rowPosition)
@@ -477,7 +504,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
             T rowObject = getRowObjectByPosition(rowPosition);
             if (rowObject != null) {
                 Serializable rowId = this.rowIdAccessor.getRowId(rowObject);
-                Selections<T>.Row selectedColumnsInRow = this.selections.getSelectedColumns(rowId);
+                Selections.Row<T> selectedColumnsInRow = this.selections.getSelectedColumns(rowId);
                 if (hasRowSelectedColumns(selectedColumnsInRow)) {
                     for (Integer columnPosition : selectedColumnsInRow.getItems()) {
                         selectedColumnPositions.add(columnPosition);
@@ -497,7 +524,7 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
      *            collections of selected cells for a row
      * @return whether there are selected cells in row
      */
-    private boolean hasRowSelectedColumns(Selections<T>.Row row) {
+    private boolean hasRowSelectedColumns(Selections.Row<T> row) {
         return row != null;
     }
 
@@ -648,7 +675,14 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     public void setLastSelectedRegion(Rectangle region) {
         this.selectionsLock.writeLock().lock();
         try {
-            this.selections.clear();
+            if (region != null && this.lastSelectedRegion != null) {
+                performOnKnownCells(this.lastSelectedRegion, new SelectionOperation() {
+                    @Override
+                    public void run(int columnPosition, int rowPosition) {
+                        internalClearSelection(columnPosition, rowPosition);
+                    }
+                });
+            }
 
             this.lastSelectedRegion = region;
 
@@ -676,8 +710,63 @@ public class PreserveSelectionModel<T> implements IMarkerSelectionModel {
     }
 
     @Override
-    public void updateSelection() {
-        // do nothing, the selection state is held internally by id
+    public void handleLayerEvent(IStructuralChangeEvent event) {
+        // handling for deleting columns
+        if (event.isHorizontalStructureChanged()) {
+            Collection<StructuralDiff> diffs = event.getColumnDiffs();
+            if (diffs != null) {
+                // first handle deletion, then handle insert
+                // this is to avoid mixed operations that might lead to
+                // confusing indexes
+                for (StructuralDiff columnDiff : diffs) {
+                    if (columnDiff.getDiffType() != null
+                            && columnDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
+                        Range beforePositionRange = columnDiff.getBeforePositionRange();
+                        for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
+                            this.selections.deselectColumn(i);
+                            // ask for further column selections that need to be
+                            // modified
+                            this.selections.updateColumnsForRemoval(i);
+                        }
+                    }
+                }
+
+                for (StructuralDiff columnDiff : diffs) {
+                    if (columnDiff.getDiffType() != null
+                            && columnDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
+                        Range afterPositionRange = columnDiff.getAfterPositionRange();
+                        for (int i = afterPositionRange.start; i < afterPositionRange.end; i++) {
+                            // ask for column selections that need to be
+                            // modified
+                            this.selections.updateColumnsForAddition(i);
+                        }
+                    }
+                }
+            }
+        }
+
+        // handling for deleting rows
+        if (event.isVerticalStructureChanged()) {
+            // the change is already done and we don't know about indexes, so we
+            // need to check if the selected objects still exist
+            Collection<Serializable> keysToRemove = new ArrayList<Serializable>();
+            for (Selections.Row<T> row : this.selections.getRows())
+            {
+                int rowIndex = this.rowDataProvider.indexOfRowObject(row.getRowObject());
+                if (rowIndex == -1) {
+                    keysToRemove.add(row.getId());
+                }
+            }
+
+            for (Serializable toRemove : keysToRemove) {
+                this.selections.deselectRow(toRemove);
+            }
+        }
+    }
+
+    @Override
+    public Class<IStructuralChangeEvent> getLayerEventClass() {
+        return IStructuralChangeEvent.class;
     }
 
     /**

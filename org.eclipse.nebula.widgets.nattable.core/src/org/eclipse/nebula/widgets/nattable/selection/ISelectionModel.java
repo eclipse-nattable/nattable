@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 446275 ISelectionModel extends ILayerEventHandler
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -14,12 +15,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Tracks the selections made in the table.
  */
-public interface ISelectionModel {
+public interface ISelectionModel extends ILayerEventHandler<IStructuralChangeEvent> {
 
     /**
      * Determines whether multiple cells can be selected simultaneously
@@ -180,10 +183,4 @@ public interface ISelectionModel {
      *         <code>false</code> if not
      */
     public boolean isRowPositionFullySelected(int rowPosition, int rowWidth);
-
-    /**
-     * Callback function that is called by default on structural changes in the
-     * data model.
-     */
-    public void updateSelection();
 }

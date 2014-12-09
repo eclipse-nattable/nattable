@@ -7,6 +7,8 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 446275 - deprecated because ISelectionModel
+ *                                              is not itself the event handler
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.event;
 
@@ -22,8 +24,11 @@ import org.eclipse.nebula.widgets.nattable.selection.ISelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class SelectionLayerStructuralChangeEventHandler implements
-        ILayerEventHandler<IStructuralChangeEvent> {
+/**
+ * @deprecated ISelectionModel is now itself a ILayerEventHandler
+ */
+@Deprecated
+public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHandler<IStructuralChangeEvent> {
 
     private final SelectionLayer selectionLayer;
 
@@ -34,8 +39,7 @@ public class SelectionLayerStructuralChangeEventHandler implements
      *            Needed to clear selections and retrieve selection states while
      *            handling {@link IStructuralChangeEvent}s
      */
-    public SelectionLayerStructuralChangeEventHandler(
-            SelectionLayer selectionLayer) {
+    public SelectionLayerStructuralChangeEventHandler(SelectionLayer selectionLayer) {
         this.selectionLayer = selectionLayer;
     }
 
@@ -72,7 +76,7 @@ public class SelectionLayerStructuralChangeEventHandler implements
                     Range changedRange = new Range(rectangle.y, rectangle.y
                             + rectangle.height);
                     if (selectedRowModified(changedRange)) {
-                        this.selectionLayer.updateSelection();
+                        this.selectionLayer.clear();
                         break;
                     }
                 }
@@ -84,7 +88,7 @@ public class SelectionLayerStructuralChangeEventHandler implements
                     // result in clearing the selection
                     if (diff.getDiffType() != DiffTypeEnum.CHANGE) {
                         if (selectedRowModified(diff.getBeforePositionRange())) {
-                            this.selectionLayer.updateSelection();
+                            this.selectionLayer.clear();
                             break;
                         }
                     }
