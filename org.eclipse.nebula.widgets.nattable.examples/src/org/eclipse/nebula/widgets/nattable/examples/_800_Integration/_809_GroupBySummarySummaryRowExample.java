@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *    Roman Flueckiger <roman.flueckiger@mac.com> - added expand/collapse key bindings
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
@@ -38,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSort
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DarkGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DefaultGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigLabelModifier;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
@@ -571,6 +572,10 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
             this.treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
+
+            // this will avoid tree specific rendering regarding alignment and
+            // indentation in case no grouping is active
+            viewportLayer.setConfigLabelAccumulator(new GroupByConfigLabelModifier(getGroupByModel()));
 
             setUnderlyingLayer(viewportLayer);
         }

@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
@@ -46,6 +46,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEven
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigLabelModifier;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
@@ -123,12 +124,8 @@ import ca.odell.glazedlists.TransformedList;
  * Simple example showing how to add the group by feature to the layer
  * composition of a grid in conjunction with showing summary values of
  * groupings.
- *
- * @author Dirk Fauth
- *
  */
-public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
-        AbstractNatExample {
+public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends AbstractNatExample {
 
     private static final String ROW_HEADER_SUMMARY_ROW = "rowHeaderSummaryRowLabel";
 
@@ -140,8 +137,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
     private ColumnGroupModel columnGroupModel = new ColumnGroupModel();
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner
-                .run(new _810_SortableGroupByFilterColumnGroupAndFreezeExample());
+        StandaloneNatExampleRunner.run(new _810_SortableGroupByFilterColumnGroupAndFreezeExample());
     }
 
     @Override
@@ -172,104 +168,108 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
         propertyToLabelMap.put("gender", "Gender");
         propertyToLabelMap.put("birthday", "Birthday");
 
-        final IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(
-                propertyNames);
+        final IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
 
         // to enable the group by summary feature, the GroupByDataLayer needs to
         // know the ConfigRegistry
-        final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack = new BodyLayerStack<ExtendedPersonWithAddress>(
-                PersonService.getExtendedPersonsWithAddress(10),
-                columnPropertyAccessor, configRegistry);
+        final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack =
+                new BodyLayerStack<ExtendedPersonWithAddress>(
+                        PersonService.getExtendedPersonsWithAddress(10),
+                        columnPropertyAccessor,
+                        configRegistry);
 
-        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(
-                new ColumnLabelAccumulator());
+        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, bodyLayerStack,
-                bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // add sorting
         SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer = new SortHeaderLayer<ExtendedPersonWithAddress>(
                 columnHeaderLayer,
                 new GlazedListsSortModel<ExtendedPersonWithAddress>(
-                        bodyLayerStack.getSortedList(), columnPropertyAccessor,
-                        configRegistry, columnHeaderDataLayer), false);
+                        bodyLayerStack.getSortedList(),
+                        columnPropertyAccessor,
+                        configRegistry,
+                        columnHeaderDataLayer),
+                false);
 
         // connect sortModel to GroupByDataLayer to support sorting by group by
         // summary values
-        bodyLayerStack.getBodyDataLayer().setSortModel(
-                sortHeaderLayer.getSortModel());
+        bodyLayerStack.getBodyDataLayer().setSortModel(sortHeaderLayer.getSortModel());
 
         ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
-                sortHeaderLayer, bodyLayerStack.getSelectionLayer(),
+                sortHeaderLayer,
+                bodyLayerStack.getSelectionLayer(),
                 this.columnGroupModel);
         columnGroupHeaderLayer.setCalculateHeight(true);
 
         // add the filter row functionality
-        final FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer = new FilterRowHeaderComposite<ExtendedPersonWithAddress>(
-                new DefaultGlazedListsFilterStrategy<ExtendedPersonWithAddress>(
-                        bodyLayerStack.getFilterList(), columnPropertyAccessor,
-                        configRegistry), columnGroupHeaderLayer,
-                columnHeaderDataLayer.getDataProvider(), configRegistry);
+        final FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer =
+                new FilterRowHeaderComposite<ExtendedPersonWithAddress>(
+                        new DefaultGlazedListsFilterStrategy<ExtendedPersonWithAddress>(
+                                bodyLayerStack.getFilterList(),
+                                columnPropertyAccessor,
+                                configRegistry),
+                        columnGroupHeaderLayer,
+                        columnHeaderDataLayer.getDataProvider(),
+                        configRegistry);
 
         // Row header
         // Adding the specialized DefaultSummaryRowHeaderDataProvider to
         // indicate the summary row in the row header
-        IDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(
-                bodyLayerStack.getBodyDataLayer().getDataProvider(), "\u2211");
-        final DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultSummaryRowHeaderDataProvider(bodyLayerStack.getBodyDataLayer().getDataProvider(), "\u2211");
+        final DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
         // add a label to the row header summary row cell aswell, so it can be
         // styled differently too
         // in this case it will simply use the same styling as the summary row
         // in the body
         rowHeaderDataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
             @Override
-            public void accumulateConfigLabels(LabelStack configLabels,
-                    int columnPosition, int rowPosition) {
+            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
                 if ((rowPosition + 1) == rowHeaderDataLayer.getRowCount()) {
                     configLabels.addLabel(ROW_HEADER_SUMMARY_ROW);
-                    configLabels
-                            .addLabel(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+                    configLabels.addLabel(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
                 }
             }
         });
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                filterRowHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, filterRowHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack,
-                filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer = new GridLayer(bodyLayerStack, filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // set the group by header on top of the grid
         CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
         final GroupByHeaderLayer groupByHeaderLayer = new GroupByHeaderLayer(
-                bodyLayerStack.getGroupByModel(), gridLayer,
+                bodyLayerStack.getGroupByModel(),
+                gridLayer,
                 columnHeaderDataProvider);
-        compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION,
-                groupByHeaderLayer, 0, 0);
+        compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
-        final NatTable natTable = new NatTable(container, compositeGridLayer,
-                false);
+        final NatTable natTable = new NatTable(container, compositeGridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
@@ -294,9 +294,10 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
         // add sorting configuration
         natTable.addConfiguration(new SingleClickSortConfiguration());
 
-        this.sumMoneySummaryProvider = new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(
-                columnPropertyAccessor);
-        this.avgMoneySummaryProvider = new AverageMoneyGroupBySummaryProvider();
+        this.sumMoneySummaryProvider =
+                new SummationGroupBySummaryProvider<ExtendedPersonWithAddress>(columnPropertyAccessor);
+        this.avgMoneySummaryProvider =
+                new AverageMoneyGroupBySummaryProvider();
 
         // add group by summary configuration
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
@@ -305,7 +306,8 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             public void configureRegistry(IConfigRegistry configRegistry) {
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                        _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.sumMoneySummaryProvider, DisplayMode.NORMAL,
+                        _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.sumMoneySummaryProvider,
+                        DisplayMode.NORMAL,
                         GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
 
                 configRegistry.registerConfigAttribute(
@@ -323,57 +325,56 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
                         "Drag columns here");
 
                 Style hintStyle = new Style();
-                hintStyle.setAttributeValue(CellStyleAttributes.FONT, GUIHelper
-                        .getFont(new FontData("Arial", 10, SWT.ITALIC)));
+                hintStyle.setAttributeValue(
+                        CellStyleAttributes.FONT,
+                        GUIHelper.getFont(new FontData("Arial", 10, SWT.ITALIC)));
                 configRegistry.registerConfigAttribute(
-                        GroupByConfigAttributes.GROUP_BY_HINT_STYLE, hintStyle);
+                        GroupByConfigAttributes.GROUP_BY_HINT_STYLE,
+                        hintStyle);
 
                 // register a groupBy double display converter to avoid
                 // rendering rounding issues
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
-                        new SummaryDisplayConverter(
-                                new DefaultDoubleDisplayConverter()),
+                        new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
                         DisplayMode.NORMAL,
                         GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3);
 
                 configRegistry
                         .registerConfigAttribute(
                                 SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                new SummationSummaryProvider(
-                                        bodyLayerStack.bodyDataProvider, false),
+                                new SummationSummaryProvider(bodyLayerStack.bodyDataProvider, false),
                                 DisplayMode.NORMAL,
                                 SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 
                 configRegistry
                         .registerConfigAttribute(
                                 SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                new AverageAgeSummaryProvider(
-                                        bodyLayerStack.bodyDataProvider),
+                                new AverageAgeSummaryProvider(bodyLayerStack.bodyDataProvider),
                                 DisplayMode.NORMAL,
                                 SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 2);
 
                 configRegistry
                         .registerConfigAttribute(
                                 CellConfigAttributes.DISPLAY_CONVERTER,
-                                new SummaryDisplayConverter(
-                                        new DefaultDoubleDisplayConverter()),
+                                new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
                                 DisplayMode.NORMAL,
                                 SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 
                 // the main styling of the summary row cell in the row header is
-                // done via
-                // summary row default style, but we need to override the
-                // alignment
+                // done via summary row default style, but we need to override
+                // the alignment
                 IStyle style = new Style();
                 style.setAttributeValue(
                         CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                         HorizontalAlignmentEnum.CENTER);
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, style,
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
                         DisplayMode.NORMAL, ROW_HEADER_SUMMARY_ROW);
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, style,
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
                         DisplayMode.SELECT, ROW_HEADER_SUMMARY_ROW);
             }
         });
@@ -406,13 +407,17 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
 
         natTable.configure();
 
-        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                natTable));
+        natTable.registerCommandHandler(
+                new DisplayPersistenceDialogCommandHandler(natTable));
 
-        DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-                bodyLayerStack.getSelectionLayer(),
-                bodyLayerStack.getColumnHideShowLayer(), columnHeaderLayer,
-                columnHeaderDataLayer, null, null);
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler =
+                new DisplayColumnChooserCommandHandler(
+                        bodyLayerStack.getSelectionLayer(),
+                        bodyLayerStack.getColumnHideShowLayer(),
+                        columnHeaderLayer,
+                        columnHeaderDataLayer,
+                        null,
+                        null);
         natTable.registerCommandHandler(columnChooserCommandHandler);
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
@@ -435,8 +440,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
         toggleFilterButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                filterRowHeaderLayer.setFilterRowVisible(!filterRowHeaderLayer
-                        .isFilterRowVisible());
+                filterRowHeaderLayer.setFilterRowVisible(!filterRowHeaderLayer.isFilterRowVisible());
             }
         });
 
@@ -459,8 +463,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
         });
 
         Button toggleMoneySummaryButton = new Button(buttonPanel, SWT.PUSH);
-        toggleMoneySummaryButton
-                .setText("Toggle Money Group Summary (SUM/AVG)");
+        toggleMoneySummaryButton.setText("Toggle Money Group Summary (SUM/AVG)");
         toggleMoneySummaryButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -468,16 +471,19 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
                 // calculation gets triggered
                 bodyLayerStack.getBodyDataLayer().clearCache();
 
-                _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.useMoneySum = !_810_SortableGroupByFilterColumnGroupAndFreezeExample.this.useMoneySum;
+                _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.useMoneySum =
+                        !_810_SortableGroupByFilterColumnGroupAndFreezeExample.this.useMoneySum;
                 if (_810_SortableGroupByFilterColumnGroupAndFreezeExample.this.useMoneySum) {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.sumMoneySummaryProvider, DisplayMode.NORMAL,
+                            _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.sumMoneySummaryProvider,
+                            DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 } else {
                     configRegistry.registerConfigAttribute(
                             GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
-                            _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.avgMoneySummaryProvider, DisplayMode.NORMAL,
+                            _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.avgMoneySummaryProvider,
+                            DisplayMode.NORMAL,
                             GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3);
                 }
                 natTable.doCommand(new VisualRefreshCommand());
@@ -498,27 +504,21 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
                 address.setPostalCode(12345);
                 address.setCity("In the clouds");
 
-                Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE,
-                        false, new Date());
-                ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(
-                        person, address, "0000", "The little Ralphy",
-                        PersonService.createRandomMoneyAmount(),
+                Person person = new Person(42, "Ralph", "Wiggum", Gender.MALE, false, new Date());
+                ExtendedPersonWithAddress entry = new ExtendedPersonWithAddress(person, address,
+                        "0000", "The little Ralphy", PersonService.createRandomMoneyAmount(),
                         new ArrayList<String>(), new ArrayList<String>());
                 bodyLayerStack.getEventList().add(entry);
 
-                person = new Person(42, "Clancy", "Wiggum", Gender.MALE, true,
-                        new Date());
-                entry = new ExtendedPersonWithAddress(person, address, "XXXL",
-                        "It is Chief Wiggum", PersonService
-                                .createRandomMoneyAmount(),
+                person = new Person(42, "Clancy", "Wiggum", Gender.MALE, true, new Date());
+                entry = new ExtendedPersonWithAddress(person, address,
+                        "XXXL", "It is Chief Wiggum", PersonService.createRandomMoneyAmount(),
                         new ArrayList<String>(), new ArrayList<String>());
                 bodyLayerStack.getEventList().add(entry);
 
-                person = new Person(42, "Sarah", "Wiggum", Gender.FEMALE, true,
-                        new Date());
-                entry = new ExtendedPersonWithAddress(person, address, "mommy",
-                        "Little Ralphy's mother", PersonService
-                                .createRandomMoneyAmount(),
+                person = new Person(42, "Sarah", "Wiggum", Gender.FEMALE, true, new Date());
+                entry = new ExtendedPersonWithAddress(person, address,
+                        "mommy", "Little Ralphy's mother", PersonService.createRandomMoneyAmount(),
                         new ArrayList<String>(), new ArrayList<String>());
                 bodyLayerStack.getEventList().add(entry);
             }
@@ -564,8 +564,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
             this.eventList = GlazedLists.eventList(values);
-            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(this.eventList);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(this.eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
@@ -575,39 +574,48 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             this.filterList = new FilterList<T>(this.sortedList);
 
             // Use the GroupByDataLayer instead of the default DataLayer
-            this.bodyDataLayer = new GroupByDataLayer<T>(getGroupByModel(),
-                    this.filterList, columnPropertyAccessor, configRegistry);
+            this.bodyDataLayer = new GroupByDataLayer<T>(
+                    getGroupByModel(),
+                    this.filterList,
+                    columnPropertyAccessor,
+                    configRegistry);
             // get the IDataProvider that was created by the GroupByDataLayer
             this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    this.bodyDataLayer, this.filterList);
+            GlazedListsEventLayer<T> glazedListsEventLayer =
+                    new GlazedListsEventLayer<T>(this.bodyDataLayer, this.filterList);
 
-            SummaryRowLayer summaryRowLayer = new SummaryRowLayer(
-                    glazedListsEventLayer, configRegistry, false);
+            SummaryRowLayer summaryRowLayer =
+                    new SummaryRowLayer(glazedListsEventLayer, configRegistry, false);
 
-            ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                    summaryRowLayer);
-            ColumnGroupReorderLayer columnGroupReorderLayer = new ColumnGroupReorderLayer(
-                    columnReorderLayer, _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.columnGroupModel);
-            this.columnHideShowLayer = new ColumnHideShowLayer(
-                    columnGroupReorderLayer);
-            ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
-                    this.columnHideShowLayer, _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.columnGroupModel);
+            ColumnReorderLayer columnReorderLayer =
+                    new ColumnReorderLayer(summaryRowLayer);
+            ColumnGroupReorderLayer columnGroupReorderLayer =
+                    new ColumnGroupReorderLayer(
+                            columnReorderLayer,
+                            _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.columnGroupModel);
+            this.columnHideShowLayer =
+                    new ColumnHideShowLayer(columnGroupReorderLayer);
+            ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
+                    new ColumnGroupExpandCollapseLayer(
+                            this.columnHideShowLayer,
+                            _810_SortableGroupByFilterColumnGroupAndFreezeExample.this.columnGroupModel);
 
-            this.selectionLayer = new SelectionLayer(
-                    columnGroupExpandCollapseLayer);
+            this.selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(this.selectionLayer,
-                    this.bodyDataLayer.getTreeRowModel());
+            TreeLayer treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
+            // this will avoid tree specific rendering regarding alignment and
+            // indentation in case no grouping is active
+            viewportLayer.setConfigLabelAccumulator(new GroupByConfigLabelModifier(getGroupByModel()));
+
             FreezeLayer freezeLayer = new FreezeLayer(treeLayer);
-            CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(
-                    freezeLayer, viewportLayer, this.selectionLayer);
+            CompositeFreezeLayer compositeFreezeLayer =
+                    new CompositeFreezeLayer(freezeLayer, viewportLayer, this.selectionLayer);
 
             setUnderlyingLayer(compositeFreezeLayer);
         }
@@ -650,12 +658,10 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
      * calculates the average age of ExtendedPersonWithAddress objects in a
      * grouping.
      */
-    class AverageAgeGroupBySummaryProvider implements
-            IGroupBySummaryProvider<ExtendedPersonWithAddress> {
+    class AverageAgeGroupBySummaryProvider implements IGroupBySummaryProvider<ExtendedPersonWithAddress> {
 
         @Override
-        public Object summarize(int columnIndex,
-                List<ExtendedPersonWithAddress> children) {
+        public Object summarize(int columnIndex, List<ExtendedPersonWithAddress> children) {
             int summaryValue = 0;
             for (ExtendedPersonWithAddress child : children) {
                 summaryValue += child.getAge();
@@ -670,12 +676,10 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
      * calculates the average money of ExtendedPersonWithAddress objects in a
      * grouping.
      */
-    class AverageMoneyGroupBySummaryProvider implements
-            IGroupBySummaryProvider<ExtendedPersonWithAddress> {
+    class AverageMoneyGroupBySummaryProvider implements IGroupBySummaryProvider<ExtendedPersonWithAddress> {
 
         @Override
-        public Object summarize(int columnIndex,
-                List<ExtendedPersonWithAddress> children) {
+        public Object summarize(int columnIndex, List<ExtendedPersonWithAddress> children) {
             int summaryValue = 0;
             for (ExtendedPersonWithAddress child : children) {
                 summaryValue += child.getMoney();
@@ -704,8 +708,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             int valueRows = 0;
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = this.dataProvider.getDataValue(columnIndex,
-                        rowIndex);
+                Object dataValue = this.dataProvider.getDataValue(columnIndex, rowIndex);
                 // this check is necessary because of the GroupByObject
                 if (dataValue instanceof Number) {
                     total = total + Double.parseDouble(dataValue.toString());
@@ -736,8 +739,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
             int valueRows = 0;
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object dataValue = this.dataProvider.getDataValue(columnIndex,
-                        rowIndex);
+                Object dataValue = this.dataProvider.getDataValue(columnIndex, rowIndex);
                 // this check is necessary because of the GroupByObject
                 if (dataValue instanceof Number) {
                     total = total + Double.parseDouble(dataValue.toString());
@@ -757,8 +759,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
         Properties properties = new Properties();
 
         try {
-            System.out
-                    .println("Loading NatTable state from " + PROPERTIES_FILE);
+            System.out.println("Loading NatTable state from " + PROPERTIES_FILE);
             properties.load(new FileInputStream(new File(PROPERTIES_FILE)));
             this.natTable.loadState("", properties);
         } catch (FileNotFoundException e) {
@@ -777,8 +778,7 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends
 
         try {
             System.out.println("Saving NatTable state to " + PROPERTIES_FILE);
-            properties.store(new FileOutputStream(new File(PROPERTIES_FILE)),
-                    "NatTable state");
+            properties.store(new FileOutputStream(new File(PROPERTIES_FILE)), "NatTable state");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSort
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DarkGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DefaultGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigLabelModifier;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
@@ -126,8 +127,7 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
     private int currentTheme = 1;
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(800, 600,
-                new _811_GroupBySummaryFixedSummaryRowExample());
+        StandaloneNatExampleRunner.run(800, 600, new _811_GroupBySummaryFixedSummaryRowExample());
     }
 
     @Override
@@ -168,16 +168,15 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
         final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack =
                 new BodyLayerStack<ExtendedPersonWithAddress>(persons, columnPropertyAccessor, configRegistry);
 
-        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(
-                new ColumnLabelAccumulator());
+        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // add sorting
         SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer =
@@ -253,8 +252,8 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
         final NatTable natTable = new NatTable(container, compositeGridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
@@ -581,6 +580,10 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
             this.treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
+
+            // this will avoid tree specific rendering regarding alignment and
+            // indentation in case no grouping is active
+            viewportLayer.setConfigLabelAccumulator(new GroupByConfigLabelModifier(getGroupByModel()));
 
             setUnderlyingLayer(viewportLayer);
         }
