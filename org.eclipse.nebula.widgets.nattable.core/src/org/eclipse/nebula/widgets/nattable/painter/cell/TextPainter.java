@@ -134,11 +134,9 @@ public class TextPainter extends AbstractTextPainter {
     }
 
     @Override
-    public int getPreferredHeight(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-        return gc.textExtent(convertDataType(cell, configRegistry)).y
-                + (this.spacing * 2) + 1;
+        return gc.textExtent(convertDataType(cell, configRegistry)).y + (this.spacing * 2) + 1;
     }
 
     @Override
