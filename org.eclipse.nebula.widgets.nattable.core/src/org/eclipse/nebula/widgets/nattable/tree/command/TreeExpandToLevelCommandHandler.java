@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree.command;
 
-import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 
 /**
@@ -24,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
  * @see TreeExpandToLevelCommand
  *
  */
-public class TreeExpandToLevelCommandHandler implements ILayerCommandHandler<TreeExpandToLevelCommand> {
+public class TreeExpandToLevelCommandHandler extends AbstractLayerCommandHandler<TreeExpandToLevelCommand> {
 
     /**
      * The TreeLayer to which this command handler is connected.
@@ -42,8 +41,13 @@ public class TreeExpandToLevelCommandHandler implements ILayerCommandHandler<Tre
     }
 
     @Override
-    public boolean doCommand(ILayer targetLayer, TreeExpandToLevelCommand command) {
-        this.treeLayer.expandToLevel(command.getLevel());
+    public boolean doCommand(TreeExpandToLevelCommand command) {
+        if (command.getParentIndex() == null) {
+            this.treeLayer.expandAllToLevel(command.getLevel());
+        }
+        else {
+            this.treeLayer.expandTreeRowToLevel(command.getParentIndex(), command.getLevel());
+        }
         return true;
     }
 

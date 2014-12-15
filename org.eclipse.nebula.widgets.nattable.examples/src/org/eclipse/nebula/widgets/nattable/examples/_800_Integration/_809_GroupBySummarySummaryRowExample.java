@@ -20,6 +20,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -63,6 +64,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
@@ -87,9 +89,16 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
+import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandToLevelCommand;
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKeyBindings;
+import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
+import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -100,6 +109,8 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
@@ -373,7 +384,8 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
-                        .withHideColumnMenuItem().withShowAllColumnsMenuItem()
+                        .withHideColumnMenuItem()
+                        .withShowAllColumnsMenuItem()
                         .withStateManagerMenuItemProvider();
             }
 
@@ -392,7 +404,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                         bodyLayerStack.getTreeLayer(),
                         bodyLayerStack.getSelectionLayer()));
 
-        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
+        natTable.addConfiguration(new TreeDebugMenuConfiguration(natTable));
 
         natTable.configure();
 
@@ -707,4 +719,48 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
     }
 
+    class TreeDebugMenuConfiguration extends AbstractUiBindingConfiguration {
+
+        private final Menu menu;
+
+        public TreeDebugMenuConfiguration(final NatTable natTable) {
+            this.menu = new PopupMenuBuilder(natTable)
+                    .withMenuItemProvider("expandToLevel", new IMenuItemProvider() {
+                        @Override
+                        public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                            MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                            menuItem.setText("Expand 2 level");
+                            menuItem.setEnabled(true);
+
+                            menuItem.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent event) {
+                                    NatEventData eventData = MenuItemProviders.getNatEventData(event);
+                                    int rowIndex = natTable.getRowIndexByPosition(eventData.getRowPosition());
+                                    natTable.doCommand(new TreeExpandToLevelCommand(rowIndex, 2));
+                                }
+                            });
+                        }
+                    })
+                    .withVisibleState("expandToLevel", new IMenuItemState() {
+
+                        @Override
+                        public boolean isActive(NatEventData natEventData) {
+                            ILayerCell cell = natTable.getCellByPosition(
+                                    natEventData.getColumnPosition(), natEventData.getRowPosition());
+                            return cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL);
+                        }
+                    })
+                    .withInspectLabelsMenuItem()
+                    .build();
+        }
+
+        @Override
+        public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+            uiBindingRegistry.registerMouseDownBinding(
+                    new MouseEventMatcher(SWT.NONE, null, 3),
+                    new PopupMenuAction(this.menu));
+        }
+
+    }
 }

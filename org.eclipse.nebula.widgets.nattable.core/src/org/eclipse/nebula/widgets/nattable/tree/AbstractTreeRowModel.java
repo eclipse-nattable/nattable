@@ -83,6 +83,11 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
     };
 
     @Override
+    public List<Integer> expandToLevel(T object, int level) {
+        return expandToLevel(this.getTreeData().indexOf(object), level);
+    }
+
+    @Override
     public List<Integer> getChildIndexes(int parentIndex) {
         List<Integer> result = new ArrayList<Integer>();
         List<T> children = getDirectChildren(parentIndex);

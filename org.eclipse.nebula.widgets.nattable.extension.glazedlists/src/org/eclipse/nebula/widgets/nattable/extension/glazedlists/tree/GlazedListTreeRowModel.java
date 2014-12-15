@@ -12,6 +12,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.tree.AbstractTreeRowModel;
@@ -112,6 +113,43 @@ public class GlazedListTreeRowModel<T> extends AbstractTreeRowModel<T> {
         }
 
         return new ArrayList<Integer>();
+    }
+
+    @Override
+    public List<Integer> expandToLevel(int parentIndex, int level) {
+        if (this.getTreeData().isValidIndex(parentIndex)) {
+            internalExpandToLevel(parentIndex, level);
+            notifyListeners();
+        }
+
+        return new ArrayList<Integer>();
+    }
+
+    /**
+     * Performs the expand operations iteratively without notifying the
+     * listeners while processing.
+     *
+     * @param parentIndex
+     *            The index of the node in the collection that should be
+     *            expanded.
+     * @param level
+     *            The level to which the tree nodes should be expanded.
+     */
+    protected void internalExpandToLevel(int parentIndex, int level) {
+        if (this.getTreeData().isValidIndex(parentIndex)
+                && depth(parentIndex) <= (level - 1)) {
+
+            this.getTreeData().getTreeList().setExpanded(parentIndex, true);
+
+            List<Integer> directChildren = getDirectChildIndexes(parentIndex);
+            // iterate backwards because the indexes are changing on expand
+            Collections.sort(directChildren, Collections.reverseOrder());
+            for (Integer child : directChildren) {
+                if (hasChildren(child) && depth(child) <= (level - 1)) {
+                    internalExpandToLevel(child, level);
+                }
+            }
+        }
     }
 
     /**

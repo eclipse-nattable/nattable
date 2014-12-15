@@ -135,7 +135,20 @@ public interface ITreeRowModel<T> {
     List<Integer> expand(int parentIndex);
 
     /**
-     * Expand the tree node that represent the given object.
+     * Expands the tree node at the given index to a certain level.
+     *
+     * @param parentIndex
+     *            The index of the node in the collection that should be
+     *            expanded.
+     * @param level
+     *            The level to which the tree node should be expanded.
+     * @return The indexes of all children that are showed after the expand
+     *         operation is performed.
+     */
+    List<Integer> expandToLevel(int parentIndex, int level);
+
+    /**
+     * Expands the tree node that represents the given object.
      *
      * @param object
      *            The object that represents the tree node to expand.
@@ -146,6 +159,19 @@ public interface ITreeRowModel<T> {
     List<Integer> expand(T object);
 
     /**
+     * Expands the tree node that represents the given object to a certain
+     * level.
+     *
+     * @param object
+     *            The object that represents the tree node to expand.
+     * @param level
+     *            The level to which the tree node should be expanded.
+     * @return The indexes of all children that are showed after the expand
+     *         operation is performed.
+     */
+    List<Integer> expandToLevel(T object, int level);
+
+    /**
      * Expands all tree nodes.
      *
      * @return The indexes of all children that are showed after the expand
@@ -154,7 +180,7 @@ public interface ITreeRowModel<T> {
     List<Integer> expandAll();
 
     /**
-     * Expands tree nodes to a certain level.
+     * Expands all tree nodes to a certain level.
      *
      * @param level
      *            The level to which the tree nodes should be expanded.

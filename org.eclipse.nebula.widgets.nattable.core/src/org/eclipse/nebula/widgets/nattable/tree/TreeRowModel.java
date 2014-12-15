@@ -146,6 +146,14 @@ public class TreeRowModel<T> extends AbstractTreeRowModel<T> {
         return children;
     }
 
+    @Override
+    public List<Integer> expandToLevel(int parentIndex, int level) {
+        List<Integer> children = new ArrayList<Integer>(internalExpandToLevel(parentIndex, level));
+        Collections.sort(children);
+        notifyListeners();
+        return children;
+    }
+
     /**
      * Performs the expand operations iteratively without notifying the
      * listeners while processing.

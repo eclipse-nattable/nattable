@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -51,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -65,6 +67,14 @@ import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandToLevelCommand
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.tree.painter.IndentedTreeImagePainter;
 import org.eclipse.nebula.widgets.nattable.tree.painter.TreeImagePainter;
+import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
+import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -76,6 +86,8 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
@@ -216,6 +228,8 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
             }
         });
 
+        natTable.addConfiguration(new TreeDebugMenuConfiguration(natTable));
+
         natTable.configure();
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
@@ -323,7 +337,8 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
                             return object.toString();
                         }
                     };
-            ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
+            ITreeRowModel<Object> treeRowModel = new
+                    GlazedListTreeRowModel<Object>(treeData);
 
             // ITreeRowModel<Object> treeRowModel = new
             // TreeRowModel<Object>(treeData);
@@ -572,4 +587,50 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
             return this.firstName.compareTo(o.firstName);
         }
     }
+
+    class TreeDebugMenuConfiguration extends AbstractUiBindingConfiguration {
+
+        private final Menu menu;
+
+        public TreeDebugMenuConfiguration(final NatTable natTable) {
+            this.menu = new PopupMenuBuilder(natTable)
+                    .withMenuItemProvider("expandToLevel", new IMenuItemProvider() {
+                        @Override
+                        public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                            MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                            menuItem.setText("Expand 1 level");
+                            menuItem.setEnabled(true);
+
+                            menuItem.addSelectionListener(new SelectionAdapter() {
+                                @Override
+                                public void widgetSelected(SelectionEvent event) {
+                                    NatEventData eventData = MenuItemProviders.getNatEventData(event);
+                                    int rowIndex = natTable.getRowIndexByPosition(eventData.getRowPosition());
+                                    natTable.doCommand(new TreeExpandToLevelCommand(rowIndex, 1));
+                                }
+                            });
+                        }
+                    })
+                    .withVisibleState("expandToLevel", new IMenuItemState() {
+
+                        @Override
+                        public boolean isActive(NatEventData natEventData) {
+                            ILayerCell cell = natTable.getCellByPosition(
+                                    natEventData.getColumnPosition(), natEventData.getRowPosition());
+                            return cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL);
+                        }
+                    })
+                    .withInspectLabelsMenuItem()
+                    .build();
+        }
+
+        @Override
+        public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+            uiBindingRegistry.registerMouseDownBinding(
+                    new MouseEventMatcher(SWT.NONE, null, 3),
+                    new PopupMenuAction(this.menu));
+        }
+
+    }
+
 }

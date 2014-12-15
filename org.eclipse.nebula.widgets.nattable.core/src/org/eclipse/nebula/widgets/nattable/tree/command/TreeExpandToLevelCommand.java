@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
  */
 public class TreeExpandToLevelCommand extends AbstractContextFreeCommand {
 
+    private final Integer parentIndex;
     private final int level;
 
     /**
@@ -32,7 +33,41 @@ public class TreeExpandToLevelCommand extends AbstractContextFreeCommand {
      *            The level to which the tree should be expanded.
      */
     public TreeExpandToLevelCommand(int level) {
+        this(null, level);
+    }
+
+    /**
+     * Create a {@link TreeExpandToLevelCommand} that expands the node at the
+     * given index in a tree to the given level. Nodes below the given level
+     * will not be expanded and stay collapsed.
+     * <p>
+     * Using a parentIndex of
+     * </p>
+     *
+     * @param parentIndex
+     *            The index of the tree node in the tree that should be
+     *            expanded. <code>null</code> if the whole tree should be
+     *            expanded to a certain level.
+     * @param level
+     *            The level to which the tree node should be expanded.
+     */
+    public TreeExpandToLevelCommand(Integer parentIndex, int level) {
+        this.parentIndex = parentIndex;
         this.level = level;
+    }
+
+    protected TreeExpandToLevelCommand(TreeExpandToLevelCommand command) {
+        this(command.parentIndex, command.level);
+    }
+
+    /**
+     *
+     * @return The index of the tree node in the tree that should be expanded to
+     *         a certain level or <code>null</code> if the whole tree should be
+     *         expanded to a certain level.
+     */
+    public Integer getParentIndex() {
+        return this.parentIndex;
     }
 
     /**

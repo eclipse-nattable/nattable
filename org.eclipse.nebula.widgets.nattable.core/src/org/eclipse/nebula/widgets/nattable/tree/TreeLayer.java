@@ -397,6 +397,27 @@ public class TreeLayer extends AbstractRowHideShowLayer {
     }
 
     /**
+     * Expands the tree node for the given row index in the tree to a certain
+     * level.
+     *
+     * @param parentIndex
+     *            The index of the row that shows the node that should be
+     *            expanded
+     * @param level
+     *            The level to which the tree node should be expanded.
+     */
+    public void expandTreeRowToLevel(int parentIndex, int level) {
+        List<Integer> rowIndexes = this.treeRowModel.expandToLevel(parentIndex, level);
+        // Bug 432865: iterating and removing every single item is faster than
+        // removeAll()
+        for (final Integer expandedChildRowIndex : rowIndexes) {
+            this.hiddenRowIndexes.remove(expandedChildRowIndex);
+        }
+        invalidateCache();
+        fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
+    }
+
+    /**
      * Expands all tree nodes in the tree.
      */
     public void expandAll() {
@@ -406,7 +427,13 @@ public class TreeLayer extends AbstractRowHideShowLayer {
         fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
     }
 
-    public void expandToLevel(int level) {
+    /**
+     * Expands all tree nodes in the tree to a certain level.
+     *
+     * @param level
+     *            The level to which the tree node should be expanded.
+     */
+    public void expandAllToLevel(int level) {
         List<Integer> rowIndexes = this.treeRowModel.expandToLevel(level);
         // Bug 432865: iterating and removing every single item is faster than
         // removeAll()
