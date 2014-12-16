@@ -197,20 +197,6 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                 new DefaultSummaryRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider(), "\u2211");
         final DataLayer rowHeaderDataLayer =
                 new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-        // add a label to the row header summary row cell aswell, so it can be
-        // styled differently too
-        // in this case it will simply use the same styling as the summary row
-        // in the body
-        rowHeaderDataLayer.setConfigLabelAccumulator(new AbstractOverrider() {
-            @Override
-            public void accumulateConfigLabels(LabelStack configLabels,
-                    int columnPosition, int rowPosition) {
-                if ((rowPosition + 1) == rowHeaderDataLayer.getRowCount()) {
-                    configLabels.addLabel(ROW_HEADER_SUMMARY_ROW);
-                    configLabels.addLabel(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
-                }
-            }
-        });
         ILayer rowHeaderLayer =
                 new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
@@ -229,6 +215,16 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
         FixedSummaryRowLayer summaryRowLayer =
                 new FixedSummaryRowLayer(bodyLayerStack.getGlazedListsEventLayer(), gridLayer, configRegistry, false);
         summaryRowLayer.setSummaryRowLabel("\u2211");
+        summaryRowLayer.setConfigLabelAccumulator(new AbstractOverrider() {
+            @Override
+            public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+                if (columnPosition == 0) {
+                    // our label is more important regarding styling than the
+                    // summary row labels
+                    configLabels.addLabelOnTop(ROW_HEADER_SUMMARY_ROW);
+                }
+            }
+        });
 
         // ensure the body data layer uses a layer painter with correct
         // configured clipping
@@ -344,14 +340,6 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
                         "[{0}] - ({1})");
-
-                // set a custom display converter to the money groupby column
-                // that transforms the values correctly localized
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.DISPLAY_CONVERTER,
-                        new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
-                        DisplayMode.NORMAL,
-                        GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3);
 
                 // SummaryRow configuration
                 configRegistry.registerConfigAttribute(

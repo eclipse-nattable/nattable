@@ -301,7 +301,13 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
         if (!isBodyColumn(columnPosition)) {
             LabelStack labelStack = this.horizontalLayerDependency.getConfigLabelsByPosition(
                     columnPosition, this.horizontalLayerDependency.getRowCount() - 1);
+
             labelStack.addLabelOnTop(SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+
+            if (getConfigLabelAccumulator() != null) {
+                getConfigLabelAccumulator().accumulateConfigLabels(
+                        labelStack, columnPosition, rowPosition);
+            }
             return labelStack;
         }
 
