@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,12 +7,12 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455327
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 
@@ -24,7 +24,7 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 public class GroupByObject implements Comparable<GroupByObject> {
 
     /** The columnIndex->value */
-    private final List<Entry<Integer, Object>> descriptor;
+    private final Map<Integer, Object> descriptor;
 
     /**
      * The value that is used for grouping.
@@ -35,9 +35,11 @@ public class GroupByObject implements Comparable<GroupByObject> {
      * @param value
      *            The value that is used for grouping.
      * @param descriptor
-     *            The description of the grouping (Index->Value)
+     *            The description of the grouping (Index->Value).<br/>
+     *            <b>Note:</b> The map needs to be an ordered map to work
+     *            correctly, e.g. {@link LinkedHashMap}
      */
-    public GroupByObject(Object value, List<Entry<Integer, Object>> descriptor) {
+    public GroupByObject(Object value, Map<Integer, Object> descriptor) {
         this.value = value;
         this.descriptor = descriptor;
     }
@@ -52,18 +54,12 @@ public class GroupByObject implements Comparable<GroupByObject> {
     /**
      * @return The description of the grouping (Index->Value)
      */
-    public Collection<Entry<Integer, Object>> getDescriptor() {
+    public Map<Integer, Object> getDescriptor() {
         return this.descriptor;
     }
 
     @Override
     public String toString() {
-        // Without adjusting a lot of API and adding dependencies to the
-        // DataLayer and the ConfigRegistry
-        // we can not get the IDataConverter here. It might be solvable with the
-        // next generation because
-        // we can then inject the necessary values. Until then you should
-        // consider implementing toString()
         return this.value.toString();
     }
 

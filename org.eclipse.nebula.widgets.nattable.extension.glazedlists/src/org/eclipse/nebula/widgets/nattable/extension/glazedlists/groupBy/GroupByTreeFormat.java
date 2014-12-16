@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,14 +7,13 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455327
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
@@ -63,8 +62,7 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
      *            the columns that are grouped by. Needed for compare operations
      *            and creating the path in the tree.
      */
-    public GroupByTreeFormat(GroupByModel model,
-            IColumnAccessor<T> columnAccessor) {
+    public GroupByTreeFormat(GroupByModel model, IColumnAccessor<T> columnAccessor) {
         this.model = model;
         this.columnAccessor = columnAccessor;
     }
@@ -74,15 +72,13 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
     public void getPath(List<Object> path, Object element) {
         List<Integer> groupByColumns = this.model.getGroupByColumnIndexes();
         if (!groupByColumns.isEmpty()) {
-            List<Entry<Integer, Object>> descriptor = new ArrayList<Entry<Integer, Object>>();
+            LinkedHashMap<Integer, Object> descriptor = new LinkedHashMap<Integer, Object>();
             for (int columnIndex : groupByColumns) {
                 // Build a unique descriptor for the group
-                Object columnValue = this.columnAccessor.getDataValue((T) element,
-                        columnIndex);
-                descriptor.add(new AbstractMap.SimpleEntry<Integer, Object>(
-                        columnIndex, columnValue));
-                GroupByObject groupByObject = new GroupByObject(columnValue,
-                        new ArrayList<Entry<Integer, Object>>(descriptor));
+                Object columnValue = this.columnAccessor.getDataValue((T) element, columnIndex);
+                descriptor.put(columnIndex, columnValue);
+                GroupByObject groupByObject =
+                        new GroupByObject(columnValue, new LinkedHashMap<Integer, Object>(descriptor));
                 path.add(groupByObject);
             }
         }
