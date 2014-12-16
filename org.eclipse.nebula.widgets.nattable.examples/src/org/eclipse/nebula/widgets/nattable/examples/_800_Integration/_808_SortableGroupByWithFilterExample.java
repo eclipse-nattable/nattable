@@ -71,7 +71,6 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
@@ -279,14 +278,6 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_HINT_STYLE,
                         hintStyle);
-
-                // register a groupBy double display converter to avoid
-                // rendering rounding issues
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.DISPLAY_CONVERTER,
-                        new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
-                        DisplayMode.NORMAL,
-                        GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3);
             }
         });
 

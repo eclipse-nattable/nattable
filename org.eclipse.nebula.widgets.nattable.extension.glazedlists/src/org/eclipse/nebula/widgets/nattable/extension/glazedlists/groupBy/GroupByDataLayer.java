@@ -8,10 +8,10 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 454566
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 448115, 449361
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -155,7 +155,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(), this.groupByColumnAccessor));
 
         if (useDefaultConfiguration) {
-            addConfiguration(new GroupByDataLayerConfiguration());
+            addConfiguration(new GroupByDataLayerConfiguration(this));
         }
     }
 
@@ -261,20 +261,6 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                     }
                 });
             }
-
-            if (this.configRegistry != null) {
-                String childCountPattern = this.configRegistry.getConfigAttribute(GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN, DisplayMode.NORMAL, labelStack.getLabels());
-
-                if (childCountPattern != null && childCountPattern.length() > 0) {
-                    if (children == null) {
-                        children = getElementsInGroup(groupByObject);
-                    }
-
-                    int directChildCount = this.treeRowModel.getDirectChildren(rowPosition).size();
-
-                    return groupByObject.getValue() + " " + MessageFormat.format(childCountPattern, children.size(), directChildCount); //$NON-NLS-1$
-                }
-            }
         }
         return super.getDataValueByPosition(columnPosition, rowPosition);
     }
@@ -282,7 +268,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     @SuppressWarnings("unchecked")
     public IGroupBySummaryProvider<T> getGroupBySummaryProvider(LabelStack labelStack) {
         if (this.configRegistry != null) {
-            return this.configRegistry.getConfigAttribute(GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER, DisplayMode.NORMAL, labelStack.getLabels());
+            return this.configRegistry.getConfigAttribute(
+                    GroupByConfigAttributes.GROUP_BY_SUMMARY_PROVIDER,
+                    DisplayMode.NORMAL,
+                    labelStack.getLabels());
         }
 
         return null;
@@ -350,9 +339,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
                 }
             }
             // we do not return true here, as there might be other layers
-            // involved in
-            // the composition that also need to calculate the summary values
-            // immediately
+            // involved in the composition that also need to calculate the
+            // summary values immediately
         } else if (command instanceof DisposeResourcesCommand) {
             this.valueCache.dispose();
         }
@@ -423,7 +411,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
         @Override
         public boolean matches(T element) {
-            for (Entry<Integer, Object> desc : this.group.getDescriptor()) {
+            for (Entry<Integer, Object> desc : this.group.getDescriptor().entrySet()) {
                 int columnIndex = desc.getKey();
                 Object groupName = desc.getValue();
                 if (!groupName.equals(this.columnAccessor.getDataValue(element, columnIndex))) {

@@ -23,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
@@ -32,6 +33,10 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
+import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.export.action.ExportAction;
+import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
+import org.eclipse.nebula.widgets.nattable.export.excel.DefaultExportFormatter;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.DarkGroupByThemeExtension;
@@ -45,6 +50,8 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.ModernGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
+import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
+import org.eclipse.nebula.widgets.nattable.extension.poi.PoiExcelExporter;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultSummaryRowHeaderDataProvider;
@@ -89,6 +96,8 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeCollapseAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.command.TreeExpandAllCommand;
 import org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKeyBindings;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -242,6 +251,34 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
         compositeGridLayer.setChildLayer("Summary", summaryRowLayer, 0, 2);
+
+        // add the export configuration to the composite layer
+        compositeGridLayer.registerCommandHandler(new ExportCommandHandler(compositeGridLayer));
+        compositeGridLayer.addConfiguration(new IConfiguration() {
+
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                uiBindingRegistry.registerKeyBinding(
+                        new KeyEventMatcher(SWT.CTRL, 'e'), new ExportAction());
+            }
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                PoiExcelExporter exporter = new HSSFExcelExporter();
+                exporter.setApplyBackgroundColor(false);
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORTER,
+                        exporter);
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.EXPORT_FORMATTER,
+                        new DefaultExportFormatter());
+                configRegistry.registerConfigAttribute(
+                        ExportConfigAttributes.DATE_FORMAT, "m/d/yy h:mm"); //$NON-NLS-1$
+            }
+
+            @Override
+            public void configureLayer(ILayer layer) {}
+        });
 
         // turn the auto configuration off as we want to add our header menu
         // configuration

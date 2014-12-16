@@ -332,34 +332,23 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends Abstr
                         GroupByConfigAttributes.GROUP_BY_HINT_STYLE,
                         hintStyle);
 
-                // register a groupBy double display converter to avoid
-                // rendering rounding issues
+                configRegistry.registerConfigAttribute(
+                        SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                        new SummationSummaryProvider(bodyLayerStack.bodyDataProvider, false),
+                        DisplayMode.NORMAL,
+                        SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
+
+                configRegistry.registerConfigAttribute(
+                        SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                        new AverageAgeSummaryProvider(bodyLayerStack.bodyDataProvider),
+                        DisplayMode.NORMAL,
+                        SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 2);
+
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
                         new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
                         DisplayMode.NORMAL,
-                        GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3);
-
-                configRegistry
-                        .registerConfigAttribute(
-                                SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                new SummationSummaryProvider(bodyLayerStack.bodyDataProvider, false),
-                                DisplayMode.NORMAL,
-                                SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
-
-                configRegistry
-                        .registerConfigAttribute(
-                                SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                                new AverageAgeSummaryProvider(bodyLayerStack.bodyDataProvider),
-                                DisplayMode.NORMAL,
-                                SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 2);
-
-                configRegistry
-                        .registerConfigAttribute(
-                                CellConfigAttributes.DISPLAY_CONVERTER,
-                                new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
-                                DisplayMode.NORMAL,
-                                SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
+                        SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 3);
 
                 // the main styling of the summary row cell in the row header is
                 // done via summary row default style, but we need to override

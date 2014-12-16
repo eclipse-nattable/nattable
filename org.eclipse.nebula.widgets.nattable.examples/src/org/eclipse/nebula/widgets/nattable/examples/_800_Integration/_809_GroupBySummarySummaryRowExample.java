@@ -95,6 +95,7 @@ import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
 import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
@@ -259,6 +260,8 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
+        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
+
         // add some additional styling
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
 
@@ -346,14 +349,6 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                 configRegistry.registerConfigAttribute(
                         GroupByConfigAttributes.GROUP_BY_CHILD_COUNT_PATTERN,
                         "[{0}] - ({1})");
-
-                // set a custom display converter to the money groupby column
-                // that transforms the values correctly localized
-                configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.DISPLAY_CONVERTER,
-                        new SummaryDisplayConverter(new DefaultDoubleDisplayConverter()),
-                        DisplayMode.NORMAL,
-                        GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3);
 
                 // SummaryRow configuration
                 configRegistry.registerConfigAttribute(
