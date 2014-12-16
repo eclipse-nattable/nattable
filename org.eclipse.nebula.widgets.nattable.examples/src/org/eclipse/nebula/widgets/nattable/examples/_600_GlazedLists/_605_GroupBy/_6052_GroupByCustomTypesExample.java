@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
@@ -51,6 +52,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
+import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
@@ -74,9 +76,6 @@ import ca.odell.glazedlists.TransformedList;
 /**
  * Simple example showing how to add the group by feature to the layer
  * composition of a grid.
- *
- * @author Dirk Fauth
- *
  */
 public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
 
@@ -109,49 +108,47 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         propertyToLabelMap.put("gender", "Gender");
         propertyToLabelMap.put("city", "City");
 
-        IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<MyRowObject>(
-                propertyNames);
+        IColumnPropertyAccessor<MyRowObject> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<MyRowObject>(propertyNames);
 
-        BodyLayerStack<MyRowObject> bodyLayerStack = new BodyLayerStack<MyRowObject>(
-                createMyRowObjects(50), columnPropertyAccessor);
+        BodyLayerStack<MyRowObject> bodyLayerStack =
+                new BodyLayerStack<MyRowObject>(createMyRowObjects(50), columnPropertyAccessor);
         // add a label accumulator to be able to register converter
-        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(
-                new ColumnLabelAccumulator());
+        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyLayerStack.getBodyDataProvider());
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // set the group by header on top of the grid
         CompositeLayer compositeGridLayer = new CompositeLayer(1, 2);
-        final GroupByHeaderLayer groupByHeaderLayer = new GroupByHeaderLayer(
-                bodyLayerStack.getGroupByModel(), gridLayer,
-                columnHeaderDataProvider);
-        compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION,
-                groupByHeaderLayer, 0, 0);
+        final GroupByHeaderLayer groupByHeaderLayer =
+                new GroupByHeaderLayer(bodyLayerStack.getGroupByModel(), gridLayer, columnHeaderDataProvider);
+        compositeGridLayer.setChildLayer(GroupByHeaderLayer.GROUP_BY_REGION, groupByHeaderLayer, 0, 0);
         compositeGridLayer.setChildLayer("Grid", gridLayer, 0, 1);
 
         // turn the auto configuration off as we want to add our header menu
@@ -164,8 +161,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         // add group by configuration
-        natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable,
-                groupByHeaderLayer));
+        natTable.addConfiguration(new GroupByHeaderMenuConfiguration(natTable, groupByHeaderLayer));
         natTable.addConfiguration(new MyRowObjectTableConfiguration());
 
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
@@ -176,20 +172,15 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
                         .withMenuItemProvider(new IMenuItemProvider() {
 
                             @Override
-                            public void addMenuItem(NatTable natTable,
-                                    Menu popupMenu) {
-                                MenuItem menuItem = new MenuItem(popupMenu,
-                                        SWT.PUSH);
+                            public void addMenuItem(NatTable natTable, Menu popupMenu) {
+                                MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
                                 menuItem.setText("Toggle Group By Header"); //$NON-NLS-1$
                                 menuItem.setEnabled(true);
 
                                 menuItem.addSelectionListener(new SelectionAdapter() {
                                     @Override
-                                    public void widgetSelected(
-                                            SelectionEvent event) {
-                                        groupByHeaderLayer
-                                                .setVisible(!groupByHeaderLayer
-                                                        .isVisible());
+                                    public void widgetSelected(SelectionEvent event) {
+                                        groupByHeaderLayer.setVisible(!groupByHeaderLayer.isVisible());
                                     }
                                 });
                             }
@@ -199,8 +190,8 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
 
         natTable.configure();
 
-        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                natTable));
+        natTable.registerCommandHandler(
+                new DisplayPersistenceDialogCommandHandler(natTable));
 
         return natTable;
     }
@@ -222,13 +213,11 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
 
         private final GroupByModel groupByModel = new GroupByModel();
 
-        public BodyLayerStack(List<T> values,
-                IColumnPropertyAccessor<T> columnPropertyAccessor) {
+        public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
             EventList<T> eventList = GlazedLists.eventList(values);
-            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(eventList);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator
@@ -236,24 +225,29 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 
             // Use the GroupByDataLayer instead of the default DataLayer
-            this.bodyDataLayer = new GroupByDataLayer<T>(getGroupByModel(),
-                    this.sortedList, columnPropertyAccessor);
+            this.bodyDataLayer =
+                    new GroupByDataLayer<T>(getGroupByModel(), this.sortedList, columnPropertyAccessor);
             // get the IDataProvider that was created by the GroupByDataLayer
             this.bodyDataProvider = this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    this.bodyDataLayer, this.sortedList);
+            GlazedListsEventLayer<T> glazedListsEventLayer =
+                    new GlazedListsEventLayer<T>(this.bodyDataLayer, this.sortedList);
 
-            this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
+            ColumnReorderLayer reorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
+            this.selectionLayer = new SelectionLayer(reorderLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(this.selectionLayer,
-                    this.bodyDataLayer.getTreeRowModel());
+            TreeLayer treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
 
             ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
             setUnderlyingLayer(viewportLayer);
+
+            CopyDataCommandHandler copyHandler = new CopyDataCommandHandler(this.selectionLayer);
+            copyHandler.setCopyLayer(treeLayer);
+            copyHandler.setCopyFormattedText(true);
+            registerCommandHandler(copyHandler);
         }
 
         public SelectionLayer getSelectionLayer() {
@@ -286,8 +280,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         public Object canonicalToDisplayValue(Object canonicalValue) {
             if (canonicalValue instanceof Gender) {
                 String result = canonicalValue.toString();
-                result = result.substring(0, 1)
-                        + result.substring(1).toLowerCase();
+                result = result.substring(0, 1) + result.substring(1).toLowerCase();
                 return result;
             }
             return "";
@@ -308,8 +301,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         @Override
         public Object canonicalToDisplayValue(Object canonicalValue) {
             if (canonicalValue instanceof City) {
-                return ((City) canonicalValue).getPlz() + " "
-                        + ((City) canonicalValue).getName();
+                return ((City) canonicalValue).getPlz() + " " + ((City) canonicalValue).getName();
             }
             return "";
         }
@@ -317,8 +309,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         @Override
         public Object displayToCanonicalValue(Object displayValue) {
             // I know there are better ways for conversion, this should only be
-            // an example
-            // for a more complex way to convert custom data types
+            // an example for a more complex way to convert custom data types
             String plz = displayValue.toString().substring(0, 4);
             for (City city : _6052_GroupByCustomTypesExample.this.possibleCities) {
                 if (city.getPlz() == Integer.valueOf(plz)) {
@@ -336,22 +327,26 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         public void configureRegistry(IConfigRegistry configRegistry) {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultDoubleDisplayConverter(), DisplayMode.NORMAL,
+                    new DefaultDoubleDisplayConverter(),
+                    DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new GenderDisplayConverter(), DisplayMode.NORMAL,
+                    new GenderDisplayConverter(),
+                    DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new CityDisplayConverter(), DisplayMode.NORMAL,
+                    new CityDisplayConverter(),
+                    DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
         }
     }
@@ -372,26 +367,20 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
 
             Random randomGenerator = new Random();
 
-            obj.setGender(MyRowObject.Gender.values()[randomGenerator
-                    .nextInt(2)]);
+            obj.setGender(MyRowObject.Gender.values()[randomGenerator.nextInt(2)]);
 
             if (obj.getGender().equals(MyRowObject.Gender.MALE)) {
                 obj.setName(maleNames[randomGenerator.nextInt(maleNames.length)]
-                        + " "
-                        + lastNames[randomGenerator.nextInt(lastNames.length)]);
+                        + " " + lastNames[randomGenerator.nextInt(lastNames.length)]);
             } else {
-                obj.setName(femaleNames[randomGenerator
-                        .nextInt(femaleNames.length)]
-                        + " "
-                        + lastNames[randomGenerator.nextInt(lastNames.length)]);
+                obj.setName(femaleNames[randomGenerator.nextInt(femaleNames.length)]
+                        + " " + lastNames[randomGenerator.nextInt(lastNames.length)]);
             }
 
             obj.setAge(randomGenerator.nextInt(100));
-            obj.setMoney(randomGenerator.nextDouble()
-                    * randomGenerator.nextInt(100));
+            obj.setMoney(randomGenerator.nextDouble() * randomGenerator.nextInt(100));
 
-            obj.setCity(this.possibleCities.get(randomGenerator
-                    .nextInt(this.possibleCities.size())));
+            obj.setCity(this.possibleCities.get(randomGenerator.nextInt(this.possibleCities.size())));
 
             result.add(obj);
         }
@@ -478,13 +467,6 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
 
         public String getName() {
             return this.name;
-        }
-
-        // we implement toString() here because the GroupByObject does not know
-        // about the IDisplayConverter
-        @Override
-        public String toString() {
-            return this.plz + " " + this.name;
         }
     }
 }
