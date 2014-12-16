@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453707
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453707, 455364
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree;
 
@@ -47,6 +47,7 @@ public abstract class AbstractTreeRowModel<T> implements ITreeRowModel<T> {
     }
 
     @Override
+    @Deprecated
     public String getObjectAtIndexAndDepth(int index, int depth) {
         return this.treeData.formatDataForDepth(depth, index);
     }

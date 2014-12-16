@@ -97,8 +97,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         // property names of the Person class
-        String[] propertyNames = { "lastName", "firstName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = { "lastName", "firstName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -108,47 +107,49 @@ public class _6041_TreeGridExample extends AbstractNatExample {
         propertyToLabelMap.put("married", "Married");
         propertyToLabelMap.put("birthday", "Birthday");
 
-        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<PersonWithAddress>(
-                propertyNames);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 
-        final BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
-                PersonService.getPersonsWithAddress(50),
-                columnPropertyAccessor, new PersonWithAddressTreeFormat());
+        final BodyLayerStack<PersonWithAddress> bodyLayerStack =
+                new BodyLayerStack<PersonWithAddress>(
+                        PersonService.getPersonsWithAddress(50),
+                        columnPropertyAccessor, new PersonWithAddressTreeFormat());
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyLayerStack.getBodyDataProvider());
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
         final NatTable natTable = new NatTable(container, gridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
@@ -160,7 +161,8 @@ public class _6041_TreeGridExample extends AbstractNatExample {
                 // information
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.CELL_PAINTER,
-                        new CheckBoxPainter(), DisplayMode.NORMAL,
+                        new CheckBoxPainter(),
+                        DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
                 configRegistry.registerConfigAttribute(
@@ -174,7 +176,10 @@ public class _6041_TreeGridExample extends AbstractNatExample {
 
         // adds the key bindings that allows pressing space bar to
         // expand/collapse tree nodes
-        natTable.addConfiguration(new TreeLayerExpandCollapseKeyBindings(bodyLayerStack.getTreeLayer(), bodyLayerStack.getSelectionLayer()));
+        natTable.addConfiguration(
+                new TreeLayerExpandCollapseKeyBindings(
+                        bodyLayerStack.getTreeLayer(),
+                        bodyLayerStack.getSelectionLayer()));
 
         natTable.configure();
 
@@ -228,41 +233,25 @@ public class _6041_TreeGridExample extends AbstractNatExample {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
             EventList<T> eventList = GlazedLists.eventList(values);
-            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(eventList);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
-            // because the Comparator
-            // will be set by configuration
-            SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList,
-                    null);
+            // because the Comparator will be set by configuration
+            SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList, null);
             // wrap the SortedList with the TreeList
-            this.treeList = new TreeList<T>(sortedList, treeFormat,
-                    TreeList.NODES_START_EXPANDED);
+            this.treeList = new TreeList<T>(sortedList, treeFormat, TreeList.NODES_START_EXPANDED);
 
-            this.bodyDataProvider = new GlazedListsDataProvider<T>(this.treeList,
-                    columnPropertyAccessor);
+            this.bodyDataProvider = new GlazedListsDataProvider<T>(this.treeList, columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
             // simply apply labels for every column by index
-            bodyDataLayer
-                    .setConfigLabelAccumulator(new ColumnLabelAccumulator());
+            bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    bodyDataLayer, this.treeList);
+            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, this.treeList);
 
-            GlazedListTreeData<T> treeData = new GlazedListTreeData<T>(this.treeList) {
-                @Override
-                public String formatDataForDepth(int depth, T object) {
-                    if (object instanceof PersonWithAddress) {
-                        return ((PersonWithAddress) object).getLastName();
-                    }
-                    return null;
-                }
-            };
-            ITreeRowModel<T> treeRowModel = new GlazedListTreeRowModel<T>(
-                    treeData);
+            GlazedListTreeData<T> treeData = new GlazedListTreeData<T>(this.treeList);
+            ITreeRowModel<T> treeRowModel = new GlazedListTreeRowModel<T>(treeData);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
@@ -296,8 +285,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
      * Using a String directly as the tree item has the possible disadvantage of
      * haven non-unique items in the tree within subtrees.
      */
-    private class PersonWithAddressTreeFormat implements
-            TreeList.Format<PersonWithAddress> {
+    private class PersonWithAddressTreeFormat implements TreeList.Format<PersonWithAddress> {
 
         private Map<String, PersonWithAddress> parentMapping = new HashMap<String, PersonWithAddress>();
 
@@ -311,8 +299,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
          * for the path.
          */
         @Override
-        public void getPath(List<PersonWithAddress> path,
-                PersonWithAddress element) {
+        public void getPath(List<PersonWithAddress> path, PersonWithAddress element) {
             if (this.parentMapping.get(element.getLastName()) != null) {
                 path.add(this.parentMapping.get(element.getLastName()));
             } else {

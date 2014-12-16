@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455364
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree.config;
 
@@ -24,10 +25,8 @@ public class TreeExportFormatter extends DefaultExportFormatter {
     }
 
     @Override
-    public Object formatForExport(ILayerCell cell,
-            IConfigRegistry configRegistry) {
-        int index = cell.getLayer()
-                .getRowIndexByPosition(cell.getRowPosition());
+    public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
+        int index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
         int depth = this.treeRowModel.depth(index);
 
         StringBuilder str = new StringBuilder();
@@ -37,11 +36,7 @@ public class TreeExportFormatter extends DefaultExportFormatter {
             }
         }
 
-        if (this.treeRowModel.isLeaf(index)) {
-            str.append(super.formatForExport(cell, configRegistry));
-        } else {
-            str.append(this.treeRowModel.getObjectAtIndexAndDepth(index, depth));
-        }
+        str.append(super.formatForExport(cell, configRegistry));
 
         return str.toString();
     }

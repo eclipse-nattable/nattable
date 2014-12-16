@@ -327,18 +327,8 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
             GlazedListsEventLayer<PersonWithAddress> glazedListsEventLayer =
                     new GlazedListsEventLayer<PersonWithAddress>(bodyDataLayer, this.treeList);
 
-            GlazedListTreeData<Object> treeData =
-                    new GlazedListTreeData<Object>(this.treeList) {
-                        @Override
-                        public String formatDataForDepth(int depth, Object object) {
-                            if (object instanceof PersonWithAddress) {
-                                return ((PersonWithAddress) object).getLastName();
-                            }
-                            return object.toString();
-                        }
-                    };
-            ITreeRowModel<Object> treeRowModel = new
-                    GlazedListTreeRowModel<Object>(treeData);
+            GlazedListTreeData<Object> treeData = new GlazedListTreeData<Object>(this.treeList);
+            ITreeRowModel<Object> treeRowModel = new GlazedListTreeRowModel<Object>(treeData);
 
             // ITreeRowModel<Object> treeRowModel = new
             // TreeRowModel<Object>(treeData);

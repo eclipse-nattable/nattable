@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Deprecated expand/collapse methods since they should reside in ITreeRowModel
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455364
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree;
 
@@ -36,11 +37,13 @@ public class GlazedListTreeData<T> implements ITreeData<T> {
     }
 
     @Override
+    @Deprecated
     public String formatDataForDepth(int depth, int index) {
         return formatDataForDepth(depth, getDataAtIndex(index));
     }
 
     @Override
+    @Deprecated
     public String formatDataForDepth(int depth, T object) {
         if (object != null) {
             return object.toString();

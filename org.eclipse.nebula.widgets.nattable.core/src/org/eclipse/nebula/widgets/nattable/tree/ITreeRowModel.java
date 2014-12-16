@@ -7,11 +7,13 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453707
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 453707, 455364
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.tree;
 
 import java.util.List;
+
+import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
 
 /**
  * The {@link ITreeRowModel} is used by the {@link TreeLayer} to build up and
@@ -56,7 +58,10 @@ public interface ITreeRowModel<T> {
      *            The depth of the tree node at the requested index.
      * @return The String representation of the tree node at the given index
      *         with the given depth.
+     *
+     * @deprecated formatting should be done in the {@link IExportFormatter}
      */
+    @Deprecated
     String getObjectAtIndexAndDepth(int index, int depth);
 
     /**

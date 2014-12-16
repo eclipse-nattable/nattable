@@ -98,7 +98,7 @@ public class TreeGridExample extends AbstractNatExample {
 
         final TreeList<Datum> treeList = new TreeList<Datum>(sortedList,
                 new DatumTreeFormat(sortModel), new DatumExpansionModel());
-        GlazedListTreeData<Datum> treeData = new DatumTreeData(treeList);
+        GlazedListTreeData<Datum> treeData = new GlazedListTreeData<Datum>(treeList);
 
         GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(
                 treeList, columnPropertyAccessor);
@@ -181,19 +181,6 @@ public class TreeGridExample extends AbstractNatExample {
         return natTable;
     }
 
-    private static class DatumTreeData extends GlazedListTreeData<Datum> {
-
-        public DatumTreeData(TreeList<Datum> treeList) {
-            super(treeList);
-        }
-
-        @Override
-        public String formatDataForDepth(int depth, Datum object) {
-            return object.getFoo();
-        }
-
-    }
-
     private static class DatumTreeFormat implements TreeList.Format<Datum> {
 
         private final ISortModel sortModel;
@@ -254,7 +241,7 @@ public class TreeGridExample extends AbstractNatExample {
             else
                 System.out.print("  ");
 
-            System.out.println(treeData.formatDataForDepth(depth, location));
+            System.out.println(location.getFoo());
         }
     }
 

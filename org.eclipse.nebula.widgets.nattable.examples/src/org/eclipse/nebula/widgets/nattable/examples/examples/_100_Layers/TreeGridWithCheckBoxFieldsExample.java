@@ -96,15 +96,13 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
     protected static final String NO_SORT_LABEL = "noSortLabel";
 
     public static void main(String[] args) {
-        StandaloneNatExampleRunner.run(800, 400,
-                new TreeGridWithCheckBoxFieldsExample());
+        StandaloneNatExampleRunner.run(800, 400, new TreeGridWithCheckBoxFieldsExample());
     }
 
     @Override
     public Control createExampleControl(Composite parent) {
         ConfigRegistry configRegistry = new ConfigRegistry();
-        configRegistry.registerConfigAttribute(
-                SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
+        configRegistry.registerConfigAttribute(SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
 
         // Underlying data source
         createDatums();
@@ -115,41 +113,32 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         // new RowDataFixtureExpansionModel());
 
         String[] propertyNames = new String[] { "self", "bar" };
-        IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(
-                propertyNames);
+        IColumnPropertyAccessor<Datum> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Datum>(propertyNames);
 
         // Column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
 
-        ISortModel sortModel = new GlazedListsSortModel<Datum>(sortedList,
-                columnPropertyAccessor, configRegistry, columnHeaderDataLayer);
+        ISortModel sortModel = new GlazedListsSortModel<Datum>(sortedList, columnPropertyAccessor, configRegistry, columnHeaderDataLayer);
 
-        final TreeList<Datum> treeList = new TreeList<Datum>(sortedList,
-                new DatumTreeFormat(sortModel), new DatumExpansionModel());
-        GlazedListTreeData<Datum> treeData = new DatumTreeData(treeList);
+        final TreeList<Datum> treeList = new TreeList<Datum>(sortedList, new DatumTreeFormat(sortModel), new DatumExpansionModel());
+        GlazedListTreeData<Datum> treeData = new GlazedListTreeData<Datum>(treeList);
 
-        GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(
-                treeList, columnPropertyAccessor);
+        GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(treeList, columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
         // Handle update of CheckBoxField objects in column 0
-        bodyDataLayer.registerCommandHandler(new UpdateDataCommandHandler(
-                bodyDataLayer) {
+        bodyDataLayer.registerCommandHandler(new UpdateDataCommandHandler(bodyDataLayer) {
             @Override
             protected boolean doCommand(UpdateDataCommand command) {
                 int columnPosition = command.getColumnPosition();
                 int rowPosition = command.getRowPosition();
 
                 if (columnPosition == 0) {
-                    Datum datum = (Datum) bodyDataLayer.getDataProvider()
-                            .getDataValue(columnPosition, rowPosition);
+                    Datum datum = (Datum) bodyDataLayer.getDataProvider().getDataValue(columnPosition, rowPosition);
                     datum.setOn((Boolean) command.getNewValue());
 
-                    bodyDataLayer.fireLayerEvent(new CellVisualChangeEvent(
-                            bodyDataLayer, columnPosition, rowPosition));
+                    bodyDataLayer.fireLayerEvent(new CellVisualChangeEvent(bodyDataLayer, columnPosition, rowPosition));
                     return true;
                 } else {
                     return super.doCommand(command);
@@ -158,55 +147,40 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         });
 
         // Body layer
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                bodyDataLayer);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                columnReorderLayer);
+        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
+        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
         SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
 
         // Switch the ITreeRowModel implementation between using native grid
         // Hide/Show or GlazedList TreeList Hide/Show
         // TreeLayer treeLayer = new TreeLayer(selectionLayer, new
         // TreeRowModel<Datum>(treeData), true);
-        final TreeLayer treeLayer = new TreeLayer(selectionLayer,
-                new GlazedListTreeRowModel<Datum>(treeData));
+        final TreeLayer treeLayer = new TreeLayer(selectionLayer, new GlazedListTreeRowModel<Datum>(treeData));
 
         ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
 
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, viewportLayer, selectionLayer);
+        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
         // Note: The column header layer is wrapped in a filter row composite.
         // This plugs in the filter row functionality
 
-        ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
-                columnHeaderDataLayer);
+        ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
         columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
         // Register labels
-        SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<Datum>(
-                columnHeaderLayer, sortModel, false);
+        SortHeaderLayer<Datum> sortHeaderLayer = new SortHeaderLayer<Datum>(columnHeaderLayer, sortModel, false);
 
         // Row header layer
-        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 
         // Corner layer
-        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
+        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
         DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        // CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
-        // rowHeaderLayer, columnHeaderLayer);
-        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
-                rowHeaderLayer, sortHeaderLayer);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, sortHeaderLayer);
 
         // Grid
-        GridLayer gridLayer = new GridLayer(viewportLayer,
-                // columnHeaderLayer,
-                sortHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer, rowHeaderLayer, cornerLayer);
 
         NatTable natTable = new NatTable(parent, gridLayer, false);
         natTable.setConfigRegistry(configRegistry);
@@ -217,18 +191,17 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         // Uncomment to see the native tree list printed to stout.
         // printTree(treeList, treeData);
 
-        columnHeaderDataLayer
-                .setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        columnHeaderDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
-        final ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter = new ColumnHeaderCheckBoxPainter(
-                bodyDataLayer) {
-            @Override
-            protected Boolean convertDataType(ILayerCell cell,
-                    IConfigRegistry configRegistry) {
-                Datum dataValue = (Datum) cell.getDataValue();
-                return dataValue.isOn();
-            }
-        };
+        final ColumnHeaderCheckBoxPainter columnHeaderCheckBoxPainter =
+                new ColumnHeaderCheckBoxPainter(bodyDataLayer) {
+                    @Override
+                    protected Boolean convertDataType(ILayerCell cell,
+                            IConfigRegistry configRegistry) {
+                        Datum dataValue = (Datum) cell.getDataValue();
+                        return dataValue.isOn();
+                    }
+                };
         final ICellPainter checkBoxPainter = new TreeCheckBoxPainter() {
             @Override
             protected CheckBoxStateEnum getCheckBoxState(ILayerCell cell) {
@@ -240,16 +213,15 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
             @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
                 // Column header
-                configRegistry
-                        .registerConfigAttribute(
-                                CellConfigAttributes.CELL_PAINTER,
-                                new BeveledBorderDecorator(
-                                        new CellPainterDecorator(
-                                                new SortableHeaderTextPainter(),
-                                                CellEdgeEnum.LEFT,
-                                                columnHeaderCheckBoxPainter)),
-                                DisplayMode.NORMAL,
-                                ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0);
+                configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.CELL_PAINTER,
+                        new BeveledBorderDecorator(
+                                new CellPainterDecorator(
+                                        new SortableHeaderTextPainter(),
+                                        CellEdgeEnum.LEFT,
+                                        columnHeaderCheckBoxPainter)),
+                        DisplayMode.NORMAL,
+                        ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0);
 
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.CELL_PAINTER,
@@ -264,15 +236,18 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
                                         return dataValue.getName();
                                     }
                                 }, CellEdgeEnum.LEFT, checkBoxPainter)),
-                        DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+                        DisplayMode.NORMAL,
+                        TreeLayer.TREE_COLUMN_CELL);
 
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
                         new DefaultBooleanDisplayConverter(),
-                        DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+                        DisplayMode.NORMAL,
+                        TreeLayer.TREE_COLUMN_CELL);
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.CELL_EDITABLE_RULE,
-                        IEditableRule.ALWAYS_EDITABLE, DisplayMode.EDIT,
+                        IEditableRule.ALWAYS_EDITABLE,
+                        DisplayMode.EDIT,
                         TreeLayer.TREE_COLUMN_CELL);
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.CELL_EDITOR,
@@ -282,7 +257,9 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
                                 Datum value = (Datum) canonicalValue;
                                 super.setCanonicalValue(value.isOn());
                             }
-                        }, DisplayMode.NORMAL, TreeLayer.TREE_COLUMN_CELL);
+                        },
+                        DisplayMode.NORMAL,
+                        TreeLayer.TREE_COLUMN_CELL);
             }
 
             @Override
@@ -292,41 +269,26 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
                                 GridRegion.COLUMN_HEADER,
                                 MouseEventMatcher.LEFT_BUTTON,
                                 columnHeaderCheckBoxPainter),
-                        new ToggleCheckBoxColumnAction(
-                                columnHeaderCheckBoxPainter, bodyDataLayer));
+                        new ToggleCheckBoxColumnAction(columnHeaderCheckBoxPainter, bodyDataLayer));
 
-                uiBindingRegistry
-                        .registerFirstSingleClickBinding(
-                                new CellPainterMouseEventMatcher(
-                                        GridRegion.BODY,
-                                        MouseEventMatcher.LEFT_BUTTON,
-                                        checkBoxPainter), new MouseEditAction());
+                uiBindingRegistry.registerFirstSingleClickBinding(
+                        new CellPainterMouseEventMatcher(
+                                GridRegion.BODY,
+                                MouseEventMatcher.LEFT_BUTTON,
+                                checkBoxPainter),
+                        new MouseEditAction());
 
-                uiBindingRegistry
-                        .registerFirstMouseDragMode(
-                                new CellPainterMouseEventMatcher(
-                                        GridRegion.BODY,
-                                        MouseEventMatcher.LEFT_BUTTON,
-                                        checkBoxPainter),
-                                new CellEditDragMode());
+                uiBindingRegistry.registerFirstMouseDragMode(
+                        new CellPainterMouseEventMatcher(
+                                GridRegion.BODY,
+                                MouseEventMatcher.LEFT_BUTTON,
+                                checkBoxPainter),
+                        new CellEditDragMode());
             }
         });
 
         natTable.configure();
         return natTable;
-    }
-
-    private static class DatumTreeData extends GlazedListTreeData<Datum> {
-
-        public DatumTreeData(TreeList<Datum> treeList) {
-            super(treeList);
-        }
-
-        @Override
-        public String formatDataForDepth(int depth, Datum object) {
-            return object.getName();
-        }
-
     }
 
     private static class DatumTreeFormat implements TreeList.Format<Datum> {
@@ -361,8 +323,8 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
         }
     }
 
-    private static class DatumExpansionModel implements
-            TreeList.ExpansionModel<Datum> {
+    private static class DatumExpansionModel implements TreeList.ExpansionModel<Datum> {
+
         @Override
         public boolean isExpanded(Datum element, List<Datum> path) {
             return true;
@@ -389,7 +351,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
             else
                 System.out.print("  ");
 
-            System.out.println(treeData.formatDataForDepth(depth, location));
+            System.out.println(location.getName());
         }
     }
 
@@ -464,8 +426,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
                 boolean atLeastOneChildUnchecked = false;
 
                 for (Datum child : this.children) {
-                    CheckBoxStateEnum childCheckBoxState = child
-                            .getCheckBoxState();
+                    CheckBoxStateEnum childCheckBoxState = child.getCheckBoxState();
                     switch (childCheckBoxState) {
                         case CHECKED:
                             atLeastOneChildChecked = true;
