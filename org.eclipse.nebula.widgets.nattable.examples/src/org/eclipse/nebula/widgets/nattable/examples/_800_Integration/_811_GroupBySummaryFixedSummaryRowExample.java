@@ -99,7 +99,6 @@ import org.eclipse.nebula.widgets.nattable.tree.config.TreeLayerExpandCollapseKe
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -425,8 +424,6 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
                 new TreeLayerExpandCollapseKeyBindings(
                         bodyLayerStack.getTreeLayer(),
                         bodyLayerStack.getSelectionLayer()));
-
-        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
         natTable.configure();
 

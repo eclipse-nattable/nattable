@@ -61,6 +61,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.ModernGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultSummaryRowHeaderDataProvider;
@@ -112,7 +113,6 @@ import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
 import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
@@ -300,12 +300,10 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
         final NatTable natTable = new NatTable(container, compositeGridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-
-        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
         // add some additional styling
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
@@ -664,7 +662,9 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
                     if (super.doCommand(command)) {
                         T o = ((IRowDataProvider<T>) BodyLayerStack.this.bodyDataProvider).getRowObject(command.getRowPosition());
                         int rowIndex = BodyLayerStack.this.sortedList.indexOf(o);
-                        BodyLayerStack.this.sortedList.set(rowIndex, o);
+                        if (rowIndex >= 0) {
+                            BodyLayerStack.this.sortedList.set(rowIndex, o);
+                        }
                         return true;
                     }
                     return false;
@@ -839,7 +839,7 @@ public class _812_EditableGroupBySummarySummaryRowExample extends AbstractNatExa
         @Override
         public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
             uiBindingRegistry.registerMouseDownBinding(
-                    new MouseEventMatcher(SWT.NONE, null, 3),
+                    new MouseEventMatcher(SWT.NONE, GridRegion.BODY, 3),
                     new PopupMenuAction(this.menu));
         }
 
