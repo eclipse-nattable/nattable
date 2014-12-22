@@ -22,8 +22,6 @@ import org.eclipse.nebula.widgets.nattable.test.data.Person.Gender;
 /**
  * Class that acts as service for accessing numerous {@link Person}s. The values
  * are randomly put together out of names and places from "The Simpsons"
- *
- * @author Dirk Fauth
  */
 public class PersonService {
 
@@ -60,50 +58,50 @@ public class PersonService {
         // create 10 Simpsons
         // 3 Homer
         result.add(new Person(1, maleNames[1], lastNames[0], Gender.MALE, true,
-                new Date()));
+                new Date(), 100d));
         result.add(new Person(2, maleNames[1], lastNames[0], Gender.MALE, true,
-                new Date()));
+                new Date(), 100d));
         result.add(new Person(3, maleNames[1], lastNames[0], Gender.MALE, true,
-                new Date()));
+                new Date(), 100d));
         // 3 Bart
         result.add(new Person(4, maleNames[0], lastNames[0], Gender.MALE,
-                false, new Date()));
+                false, new Date(), 100d));
         result.add(new Person(5, maleNames[0], lastNames[0], Gender.MALE,
-                false, new Date()));
+                false, new Date(), 100d));
         result.add(new Person(6, maleNames[0], lastNames[0], Gender.MALE,
-                false, new Date()));
+                false, new Date(), 100d));
         // 2 Marge
         result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(8, femaleNames[0], lastNames[0], Gender.FEMALE,
-                true, new Date()));
+                true, new Date(), 100d));
         // 2 Lisa
         result.add(new Person(9, femaleNames[1], lastNames[0], Gender.FEMALE,
-                false, new Date()));
+                false, new Date(), 100d));
         result.add(new Person(10, femaleNames[1], lastNames[0], Gender.FEMALE,
-                false, new Date()));
+                false, new Date(), 100d));
 
         // create 8 Flanders
         // 2 Ned
         result.add(new Person(11, maleNames[5], lastNames[4], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(12, maleNames[5], lastNames[4], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
         // 2 Maude
         result.add(new Person(13, femaleNames[6], lastNames[4], Gender.FEMALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(14, femaleNames[6], lastNames[4], Gender.FEMALE,
-                true, new Date()));
+                true, new Date(), 100d));
         // 2 Rod
         result.add(new Person(15, maleNames[7], lastNames[4], Gender.MALE,
-                false, new Date()));
+                false, new Date(), 100d));
         result.add(new Person(16, maleNames[7], lastNames[4], Gender.MALE,
-                false, new Date()));
+                false, new Date(), 100d));
         // 2 Tod
         result.add(new Person(17, maleNames[8], lastNames[4], Gender.MALE,
-                false, new Date()));
+                false, new Date(), 100d));
         result.add(new Person(18, maleNames[8], lastNames[4], Gender.MALE,
-                false, new Date()));
+                false, new Date(), 100d));
 
         return result;
     }
@@ -112,25 +110,25 @@ public class PersonService {
         List<Person> result = new ArrayList<Person>();
 
         result.add(new Person(21, maleNames[0], lastNames[2], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(22, maleNames[1], lastNames[2], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(23, maleNames[5], lastNames[2], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(24, femaleNames[0], lastNames[2], Gender.FEMALE,
-                false, new Date()));
+                false, new Date(), 100d));
         result.add(new Person(25, femaleNames[6], lastNames[2], Gender.FEMALE,
-                false, new Date()));
+                false, new Date(), 100d));
 
         // add doubles
         result.add(new Person(30, maleNames[1], lastNames[0], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(31, maleNames[1], lastNames[0], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(32, maleNames[1], lastNames[2], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
         result.add(new Person(33, maleNames[1], lastNames[2], Gender.MALE,
-                true, new Date()));
+                true, new Date(), 100d));
 
         return result;
     }
@@ -148,11 +146,9 @@ public class PersonService {
         result.setGender(Gender.values()[randomGenerator.nextInt(2)]);
 
         if (result.getGender().equals(Gender.MALE)) {
-            result.setFirstName(maleNames[randomGenerator
-                    .nextInt(maleNames.length)]);
+            result.setFirstName(maleNames[randomGenerator.nextInt(maleNames.length)]);
         } else {
-            result.setFirstName(femaleNames[randomGenerator
-                    .nextInt(femaleNames.length)]);
+            result.setFirstName(femaleNames[randomGenerator.nextInt(femaleNames.length)]);
         }
 
         result.setLastName(lastNames[randomGenerator.nextInt(lastNames.length)]);
@@ -174,6 +170,7 @@ public class PersonService {
             e.printStackTrace();
         }
 
+        result.setMoney(randomGenerator.nextDouble() * 100);
         return result;
     }
 }

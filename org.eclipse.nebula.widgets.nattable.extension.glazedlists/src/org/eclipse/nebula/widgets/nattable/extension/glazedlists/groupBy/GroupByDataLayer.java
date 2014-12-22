@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 454566
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 448115, 449361
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 448115, 449361, 453874
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedList
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
@@ -229,37 +230,75 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
     @Override
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-        LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
         if (this.treeData.getDataAtIndex(getRowIndexByPosition(rowPosition)) instanceof GroupByObject) {
-            configLabels.addLabelOnTop(GROUP_BY_OBJECT);
-            configLabels.addLabelOnTop(GROUP_BY_COLUMN_PREFIX + columnPosition);
+            LabelStack configLabels = new LabelStack();
+            configLabels.addLabel(GROUP_BY_COLUMN_PREFIX + columnPosition);
+            configLabels.addLabel(GROUP_BY_OBJECT);
+
+            if (this.getConfigLabelAccumulator() != null) {
+                this.getConfigLabelAccumulator().accumulateConfigLabels(configLabels, columnPosition, rowPosition);
+            }
+            if (this.getRegionName() != null) {
+                configLabels.addLabel(this.getRegionName());
+            }
+
             if (getGroupBySummaryProvider(configLabels) != null) {
                 configLabels.addLabelOnTop(GROUP_BY_SUMMARY);
                 configLabels.addLabelOnTop(GROUP_BY_SUMMARY_COLUMN_PREFIX + columnPosition);
             }
+
+            return configLabels;
         }
-        return configLabels;
+        return super.getConfigLabelsByPosition(columnPosition, rowPosition);
     }
 
     @Override
     public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
         LabelStack labelStack = getConfigLabelsByPosition(columnPosition, rowPosition);
+        return getDataValueByPosition(columnPosition, rowPosition, labelStack, true);
+    }
+
+    /**
+     * This method is used to retrieve a data value of an {@link ILayerCell}. It
+     * is intended to be used for conditional formatting. It allows to specify
+     * the {@link LabelStack} and to disable background calculation processing,
+     * since the conditional formatting needs the summary value without a delay.
+     * 
+     * @param columnPosition
+     *            The column position of the cell whose data value is requested.
+     * @param rowPosition
+     *            The row position of the cell whose data value is requested.
+     * @param labelStack
+     *            The {@link LabelStack} of the cell whose data value is
+     *            requested. Needed to retrieve a possible existing
+     *            {@link IGroupBySummaryProvider}.
+     * @param calculateInBackground
+     *            <code>true</code> to calculate the summary value in the
+     *            background, <code>false</code> if the calculation should be
+     *            processed in the UI thread.
+     * @return The data value for the {@link ILayerCell} at the given
+     *         coordinates.
+     */
+    public Object getDataValueByPosition(final int columnPosition, final int rowPosition,
+            LabelStack labelStack, boolean calculateInBackground) {
+
         if (labelStack.hasLabel(GROUP_BY_OBJECT)) {
             GroupByObject groupByObject = (GroupByObject) this.treeData.getDataAtIndex(rowPosition);
 
-            // ensure to only load the children if they are needed
-            List<T> children = null;
-
             final IGroupBySummaryProvider<T> summaryProvider = getGroupBySummaryProvider(labelStack);
             if (summaryProvider != null) {
-                children = getElementsInGroup(groupByObject);
-                final List<T> c = children;
-                return this.valueCache.getCalculatedValue(columnPosition, rowPosition, new GroupByValueCacheKey(columnPosition, rowPosition, groupByObject), true, new ICalculator() {
-                    @Override
-                    public Object executeCalculation() {
-                        return summaryProvider.summarize(columnPosition, c);
-                    }
-                });
+                final List<T> children = getElementsInGroup(groupByObject);
+                return this.valueCache.getCalculatedValue(
+                        columnPosition,
+                        rowPosition,
+                        new GroupByValueCacheKey(columnPosition, rowPosition, groupByObject),
+                        calculateInBackground,
+                        new ICalculator() {
+                            @Override
+                            public Object executeCalculation() {
+                                return summaryProvider.summarize(columnPosition, children);
+                            }
+                        });
             }
         }
         return super.getDataValueByPosition(columnPosition, rowPosition);

@@ -23,19 +23,21 @@ public class Person {
     private Gender gender;
     private boolean married;
     private Date birthday;
+    private Double money;
 
     public Person(int id) {
         this.id = id;
     }
 
     public Person(int id, String firstName, String lastName, Gender gender,
-            boolean married, Date birthday) {
+            boolean married, Date birthday, Double money) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.married = married;
         this.birthday = birthday;
+        this.money = money;
     }
 
     /**
@@ -118,5 +120,20 @@ public class Person {
      */
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    /**
+     * @return the money
+     */
+    public Double getMoney() {
+        return this.money;
+    }
+
+    /**
+     * @param money
+     *            the money to set
+     */
+    public void setMoney(Double money) {
+        this.money = money;
     }
 }
