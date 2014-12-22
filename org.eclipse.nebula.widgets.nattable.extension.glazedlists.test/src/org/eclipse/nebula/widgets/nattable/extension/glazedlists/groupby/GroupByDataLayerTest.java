@@ -22,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
-import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -86,7 +86,7 @@ public class GroupByDataLayerTest {
             }
         };
 
-        AggregrateConfigLabelAccumulator aggregate = new AggregrateConfigLabelAccumulator();
+        AggregateConfigLabelAccumulator aggregate = new AggregateConfigLabelAccumulator();
         aggregate.add(new ColumnLabelAccumulator());
         aggregate.add(conditional);
 

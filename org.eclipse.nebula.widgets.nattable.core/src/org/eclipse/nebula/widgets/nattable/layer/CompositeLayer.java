@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 451152, 453055, 455949
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
@@ -21,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.TranslatedLayerCell;
@@ -505,8 +506,7 @@ public class CompositeLayer extends AbstractLayer {
         int childColumnPosition = compositeColumnPosition - getColumnPositionOffset(layoutCoordinate.x);
         int childRowPosition = compositeRowPosition - getRowPositionOffset(layoutCoordinate.y);
 
-        ILayerCell cell = childLayer.getCellByPosition(
-                childColumnPosition, childRowPosition);
+        ILayerCell cell = childLayer.getCellByPosition(childColumnPosition, childRowPosition);
 
         if (cell != null) {
             cell = new TranslatedLayerCell(
@@ -565,8 +565,7 @@ public class CompositeLayer extends AbstractLayer {
     @Override
     public LabelStack getConfigLabelsByPosition(
             int compositeColumnPosition, int compositeRowPosition) {
-        Point layoutCoordinate = getLayoutXYByPosition(
-                compositeColumnPosition, compositeRowPosition);
+        Point layoutCoordinate = getLayoutXYByPosition(compositeColumnPosition, compositeRowPosition);
         if (layoutCoordinate == null) {
             return new LabelStack();
         }
@@ -578,8 +577,7 @@ public class CompositeLayer extends AbstractLayer {
                 childColumnPosition, childRowPosition);
 
         String regionName = this.childLayerToRegionNameMap.get(childLayer);
-        IConfigLabelAccumulator configLabelAccumulator = this.regionNameToConfigLabelAccumulatorMap
-                .get(regionName);
+        IConfigLabelAccumulator configLabelAccumulator = this.regionNameToConfigLabelAccumulatorMap.get(regionName);
         if (configLabelAccumulator != null) {
             configLabelAccumulator.accumulateConfigLabels(
                     configLabels, childColumnPosition, childRowPosition);
@@ -663,11 +661,11 @@ public class CompositeLayer extends AbstractLayer {
             String regionName, IConfigLabelAccumulator configLabelAccumulator) {
         IConfigLabelAccumulator existingConfigLabelAccumulator =
                 this.regionNameToConfigLabelAccumulatorMap.get(regionName);
-        AggregrateConfigLabelAccumulator aggregateAccumulator;
-        if (existingConfigLabelAccumulator instanceof AggregrateConfigLabelAccumulator) {
-            aggregateAccumulator = (AggregrateConfigLabelAccumulator) existingConfigLabelAccumulator;
+        AggregateConfigLabelAccumulator aggregateAccumulator;
+        if (existingConfigLabelAccumulator instanceof AggregateConfigLabelAccumulator) {
+            aggregateAccumulator = (AggregateConfigLabelAccumulator) existingConfigLabelAccumulator;
         } else {
-            aggregateAccumulator = new AggregrateConfigLabelAccumulator();
+            aggregateAccumulator = new AggregateConfigLabelAccumulator();
             aggregateAccumulator.add(existingConfigLabelAccumulator);
             this.regionNameToConfigLabelAccumulatorMap.put(regionName, aggregateAccumulator);
         }

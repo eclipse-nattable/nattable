@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455949
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples._104_Styling;
 
@@ -21,7 +22,7 @@ import org.eclipse.nebula.widgets.nattable.examples.fixtures.StyledRowHeaderConf
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultRowStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
@@ -94,16 +95,15 @@ public class _000_Styled_grid extends AbstractNatExample {
         final NatTable natTable = new NatTable(parent, gridLayer, false);
         DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 
-        // Add an AggregrateConfigLabelAccumulator - we can add other
+        // Add an AggregateConfigLabelAccumulator - we can add other
         // accumulators to this as required
-        AggregrateConfigLabelAccumulator aggregrateConfigLabelAccumulator = new AggregrateConfigLabelAccumulator();
-        bodyDataLayer
-                .setConfigLabelAccumulator(aggregrateConfigLabelAccumulator);
+        AggregateConfigLabelAccumulator aggregrateConfigLabelAccumulator = new AggregateConfigLabelAccumulator();
+        bodyDataLayer.setConfigLabelAccumulator(aggregrateConfigLabelAccumulator);
 
-        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyDataLayer);
-        ColumnOverrideLabelAccumulator bodyLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyDataLayer);
+        ColumnOverrideLabelAccumulator columnLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(bodyDataLayer);
+        ColumnOverrideLabelAccumulator bodyLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(bodyDataLayer);
 
         aggregrateConfigLabelAccumulator.add(columnLabelAccumulator);
         aggregrateConfigLabelAccumulator.add(bodyLabelAccumulator);
@@ -114,9 +114,11 @@ public class _000_Styled_grid extends AbstractNatExample {
         columnLabelAccumulator.registerColumnOverrides(2, COLUMN_LABEL_1);
 
         // Register a command handler for the StyleEditorDialog
-        DisplayColumnStyleEditorCommandHandler styleChooserCommandHandler = new DisplayColumnStyleEditorCommandHandler(
-                gridLayer.getBodyLayer().getSelectionLayer(),
-                columnLabelAccumulator, natTable.getConfigRegistry());
+        DisplayColumnStyleEditorCommandHandler styleChooserCommandHandler =
+                new DisplayColumnStyleEditorCommandHandler(
+                        gridLayer.getBodyLayer().getSelectionLayer(),
+                        columnLabelAccumulator,
+                        natTable.getConfigRegistry());
 
         DefaultBodyLayerStack bodyLayer = gridLayer.getBodyLayer();
         bodyLayer.registerCommandHandler(styleChooserCommandHandler);
@@ -137,14 +139,15 @@ public class _000_Styled_grid extends AbstractNatExample {
      */
     private void addColumnHighlight(IConfigRegistry configRegistry) {
         Style style = new Style();
-        style.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        style.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 GUIHelper.COLOR_BLUE);
-        style.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        style.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 HorizontalAlignmentEnum.RIGHT);
 
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, // attribute
-                                                                                // to
-                                                                                // apply
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE, // attribute to apply
                 style, // value of the attribute
                 DisplayMode.NORMAL, // apply during normal rendering i.e not
                                     // during selection or edit
@@ -163,8 +166,7 @@ public class _000_Styled_grid extends AbstractNatExample {
         natTableConfiguration.vAlign = VerticalAlignmentEnum.TOP;
 
         // A custom painter can be plugged in to paint the cells differently
-        natTableConfiguration.cellPainter = new PaddingDecorator(
-                new TextPainter(), 1);
+        natTableConfiguration.cellPainter = new PaddingDecorator(new TextPainter(), 1);
 
         // Setup even odd row colors - row colors override the NatTable default
         // colors
@@ -174,15 +176,12 @@ public class _000_Styled_grid extends AbstractNatExample {
 
         // Setup selection styling
         DefaultSelectionStyleConfiguration selectionStyle = new DefaultSelectionStyleConfiguration();
-        selectionStyle.selectionFont = GUIHelper.getFont(new FontData(
-                "Verdana", 8, SWT.NORMAL));
+        selectionStyle.selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
         selectionStyle.selectionBgColor = GUIHelper.getColor(217, 232, 251);
         selectionStyle.selectionFgColor = GUIHelper.COLOR_BLACK;
-        selectionStyle.anchorBorderStyle = new BorderStyle(1,
-                GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
+        selectionStyle.anchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
         selectionStyle.anchorBgColor = GUIHelper.getColor(65, 113, 43);
-        selectionStyle.selectedHeaderBgColor = GUIHelper
-                .getColor(156, 209, 103);
+        selectionStyle.selectedHeaderBgColor = GUIHelper.getColor(156, 209, 103);
 
         // Add all style configurations to NatTable
         natTable.addConfiguration(natTableConfiguration);

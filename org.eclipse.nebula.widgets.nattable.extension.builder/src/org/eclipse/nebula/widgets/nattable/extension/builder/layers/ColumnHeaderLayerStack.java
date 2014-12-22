@@ -29,7 +29,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
@@ -46,7 +46,7 @@ public class ColumnHeaderLayerStack<T extends TableRow> extends
     private SortHeaderLayer<T> sortableColumnHeaderLayer;
     private final IDataProvider columnHeaderDataProvider;
     private final DataLayer columnHeaderDataLayer;
-    private AggregrateConfigLabelAccumulator aggregateLabelAccumulator;
+    private AggregateConfigLabelAccumulator aggregateLabelAccumulator;
     private FilterRowHeaderComposite<T> filterRowHeaderLayer;
 
     public ColumnHeaderLayerStack(SortedList<T> sortedList,
@@ -117,7 +117,7 @@ public class ColumnHeaderLayerStack<T extends TableRow> extends
     }
 
     private void setupAggregateLabelAccumulator() {
-        aggregateLabelAccumulator = new AggregrateConfigLabelAccumulator();
+        aggregateLabelAccumulator = new AggregateConfigLabelAccumulator();
         getDataLayer().setConfigLabelAccumulator(aggregateLabelAccumulator);
     }
 

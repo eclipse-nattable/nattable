@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2014 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455949
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder;
 
@@ -20,9 +21,8 @@ import java.util.List;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.LayerCommandFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.BaseDataLayerFixture;
@@ -94,11 +94,9 @@ public class ColumnReorderLayerTest {
      *  Position 	0 	1	2	3
      */
     public void reorderMultipleColumnsLeftToRight() throws Exception {
-        List<Integer> fromColumnPositions = Arrays
-                .asList(new Integer[] { 0, 1 });
+        List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 0, 1 });
 
-        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
-                3);
+        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 3);
 
         assertEquals(2, this.columnReorderLayer.getColumnIndexByPosition(0));
         assertEquals(0, this.columnReorderLayer.getColumnIndexByPosition(1));
@@ -114,11 +112,9 @@ public class ColumnReorderLayerTest {
      *  Position 	0 	1	2	3
      */
     public void reorderMultipleColumnsLeftToRightToTheEnd() throws Exception {
-        List<Integer> fromColumnPositions = Arrays
-                .asList(new Integer[] { 0, 1 });
+        List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 0, 1 });
 
-        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
-                4);
+        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 4);
 
         assertEquals(2, this.columnReorderLayer.getColumnIndexByPosition(0));
         assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(1));
@@ -150,11 +146,9 @@ public class ColumnReorderLayerTest {
      *  Position 	0 	1	2	3
      */
     public void reorderMultipleColumnsRightToLeft() throws Exception {
-        List<Integer> fromColumnPositions = Arrays
-                .asList(new Integer[] { 2, 3 });
+        List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 2, 3 });
 
-        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
-                0);
+        this.columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 0);
 
         assertEquals(2, this.columnReorderLayer.getColumnIndexByPosition(0));
         assertEquals(3, this.columnReorderLayer.getColumnIndexByPosition(1));
@@ -171,11 +165,9 @@ public class ColumnReorderLayerTest {
      */
     public void reorderMultipleColumnsLargeArrayToEdges() throws Exception {
 
-        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(
-                new BaseDataLayerFixture(20, 20));
+        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(new BaseDataLayerFixture(20, 20));
 
-        List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 10,
-                11, 12, 13 });
+        List<Integer> fromColumnPositions = Arrays.asList(new Integer[] { 10, 11, 12, 13 });
 
         reorderLayer.reorderMultipleColumnPositions(fromColumnPositions, 0);
 
@@ -196,8 +188,7 @@ public class ColumnReorderLayerTest {
 
         fromColumnPositions = Arrays.asList(new Integer[] { 8, 9, 10, 11 });
 
-        reorderLayer.reorderMultipleColumnPositions(fromColumnPositions,
-                reorderLayer.getColumnCount());
+        reorderLayer.reorderMultipleColumnPositions(fromColumnPositions, reorderLayer.getColumnCount());
 
         /*
          * System.out.println("\n"); // See output for idea on what is going on
@@ -214,17 +205,14 @@ public class ColumnReorderLayerTest {
 
     @Test
     public void commandPassedOnToParentIfCannotBeHandled() throws Exception {
-        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(
-                new DataLayerFixture());
+        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(new DataLayerFixture());
         assertFalse(reorderLayer.doCommand(new LayerCommandFixture()));
     }
 
     @Test
     public void canHandleColumnReorderCommand() throws Exception {
-        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(
-                new DataLayerFixture());
-        ColumnReorderCommand reorderCommand = new ColumnReorderCommand(
-                reorderLayer, 0, 2);
+        ColumnReorderLayer reorderLayer = new ColumnReorderLayer(new DataLayerFixture());
+        ColumnReorderCommand reorderCommand = new ColumnReorderCommand(reorderLayer, 0, 2);
         assertTrue(reorderLayer.doCommand(reorderCommand));
     }
 
@@ -251,8 +239,7 @@ public class ColumnReorderLayerTest {
         this.columnReorderLayer = new ColumnReorderLayer(this.underlyingLayer);
 
         // 0 1 2 3 4 - see DataLayerFixture
-        this.columnReorderLayer.reorderMultipleColumnPositions(Arrays.asList(1, 2),
-                5);
+        this.columnReorderLayer.reorderMultipleColumnPositions(Arrays.asList(1, 2), 5);
 
         // 0 3 4 1 2
         assertEquals(150, this.columnReorderLayer.getColumnWidthByPosition(0));
@@ -282,14 +269,12 @@ public class ColumnReorderLayerTest {
     public void getConfigLabelsByPosition() throws Exception {
         DataLayer underlyingLayer = new DataLayerFixture();
         this.columnReorderLayer = new ColumnReorderLayer(underlyingLayer);
-        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                underlyingLayer);
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(underlyingLayer);
         registerCellStyleAccumulators(underlyingLayer, columnLabelAccumulator);
 
         columnLabelAccumulator.registerColumnOverrides(4, "INDEX_4_LABEL");
 
-        List<String> labelsForIndex4 = this.columnReorderLayer
-                .getConfigLabelsByPosition(4, 0).getLabels();
+        List<String> labelsForIndex4 = this.columnReorderLayer.getConfigLabelsByPosition(4, 0).getLabels();
         assertEquals(2, labelsForIndex4.size());
         assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
         assertEquals("EVEN_BODY", labelsForIndex4.get(1));
@@ -298,20 +283,16 @@ public class ColumnReorderLayerTest {
         this.columnReorderLayer.reorderColumnPosition(0, 5);
 
         // Index: 1 2 3 4 0 Width: 100 35 100 80 150
-        labelsForIndex4 = this.columnReorderLayer.getConfigLabelsByPosition(3, 0)
-                .getLabels();
+        labelsForIndex4 = this.columnReorderLayer.getConfigLabelsByPosition(3, 0).getLabels();
         assertEquals(2, labelsForIndex4.size());
         assertEquals("INDEX_4_LABEL", labelsForIndex4.get(0));
         assertEquals("EVEN_BODY", labelsForIndex4.get(1));
     }
 
-    private void registerCellStyleAccumulators(DataLayer bodyDataLayer,
-            ColumnOverrideLabelAccumulator columnLabelAccumulator) {
-        AggregrateConfigLabelAccumulator aggregrateConfigLabelAccumulator = new AggregrateConfigLabelAccumulator();
-        aggregrateConfigLabelAccumulator.add(columnLabelAccumulator,
-                new AlternatingRowConfigLabelAccumulator());
-        bodyDataLayer
-                .setConfigLabelAccumulator(aggregrateConfigLabelAccumulator);
+    private void registerCellStyleAccumulators(DataLayer bodyDataLayer, ColumnOverrideLabelAccumulator columnLabelAccumulator) {
+        AggregateConfigLabelAccumulator aggregrateConfigLabelAccumulator = new AggregateConfigLabelAccumulator();
+        aggregrateConfigLabelAccumulator.add(columnLabelAccumulator, new AlternatingRowConfigLabelAccumulator());
+        bodyDataLayer.setConfigLabelAccumulator(aggregrateConfigLabelAccumulator);
     }
 
 }

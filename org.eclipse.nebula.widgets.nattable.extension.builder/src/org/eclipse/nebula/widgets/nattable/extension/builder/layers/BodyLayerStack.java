@@ -25,7 +25,7 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -43,7 +43,7 @@ public class BodyLayerStack<T extends TableRow> extends AbstractLayerTransform {
     private final DataLayer bodyDataLayer;
     private final ListDataProvider<T> bodyDataProvider;
     private final GlazedListsEventLayer<T> glazedListsEventLayer;
-    private AggregrateConfigLabelAccumulator aggregateLabelAccumulator;
+    private AggregateConfigLabelAccumulator aggregateLabelAccumulator;
     private ColumnGroupReorderLayer columnGroupReorderLayer;
     private ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer;
     private final FreezeLayer freezeLayer;
@@ -90,7 +90,7 @@ public class BodyLayerStack<T extends TableRow> extends AbstractLayerTransform {
     }
 
     private void setupAggregateLabelAccumulator() {
-        aggregateLabelAccumulator = new AggregrateConfigLabelAccumulator();
+        aggregateLabelAccumulator = new AggregateConfigLabelAccumulator();
         getDataLayer().setConfigLabelAccumulator(aggregateLabelAccumulator);
     }
 
