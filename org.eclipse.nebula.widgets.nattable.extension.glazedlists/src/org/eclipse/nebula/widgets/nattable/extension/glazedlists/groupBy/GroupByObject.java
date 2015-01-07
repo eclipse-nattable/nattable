@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,21 +7,19 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455327
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455327, 444839, 453885
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
-
 /**
  * This class is used to add tree items that are added to the tree path for
  * grouping purposes. Contains the value that is used for grouping and the
  * grouping index to ensure the correct ordering.
  */
-public class GroupByObject implements Comparable<GroupByObject> {
+public class GroupByObject {
 
     /** The columnIndex->value */
     private final Map<Integer, Object> descriptor;
@@ -61,16 +59,6 @@ public class GroupByObject implements Comparable<GroupByObject> {
     @Override
     public String toString() {
         return this.value.toString();
-    }
-
-    @Override
-    public int compareTo(GroupByObject o) {
-        // TODO not null safe here
-        if (this.value.getClass().equals(o.value.getClass())) {
-            return DefaultComparator.getInstance().compare(this.value, o.value);
-        }
-        return Integer.valueOf(this.descriptor.hashCode()).compareTo(
-                o.descriptor.hashCode());
     }
 
     @Override

@@ -102,7 +102,7 @@ public class TreeGridWithCheckBoxFieldsExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         ConfigRegistry configRegistry = new ConfigRegistry();
-        configRegistry.registerConfigAttribute(SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
+        configRegistry.registerConfigAttribute(SortConfigAttributes.SORT_COMPARATOR, DefaultComparator.getInstance());
 
         // Underlying data source
         createDatums();

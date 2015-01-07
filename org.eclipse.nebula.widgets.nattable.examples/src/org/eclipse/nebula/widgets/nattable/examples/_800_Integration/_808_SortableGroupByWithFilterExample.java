@@ -171,7 +171,10 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
 
         // connect sortModel to GroupByDataLayer to support sorting by group by
         // summary values
-        bodyLayerStack.getBodyDataLayer().setSortModel(sortHeaderLayer.getSortModel());
+        bodyLayerStack.getBodyDataLayer().initializeTreeComparator(
+                sortHeaderLayer.getSortModel(),
+                bodyLayerStack.getTreeLayer(),
+                true);
 
         // add the filter row functionality
         final FilterRowHeaderComposite<ExtendedPersonWithAddress> filterRowHeaderLayer =
@@ -430,6 +433,8 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
 
         private final SelectionLayer selectionLayer;
 
+        private final TreeLayer treeLayer;
+
         private final GroupByModel groupByModel = new GroupByModel();
 
         public BodyLayerStack(List<T> values,
@@ -468,16 +473,19 @@ public class _808_SortableGroupByWithFilterExample extends AbstractNatExample {
                     new SelectionLayer(columnHideShowLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer =
-                    new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
+            this.treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
 
-            ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+            ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
 
             // this will avoid tree specific rendering regarding alignment and
             // indentation in case no grouping is active
             viewportLayer.setConfigLabelAccumulator(new GroupByConfigLabelModifier(getGroupByModel()));
 
             setUnderlyingLayer(viewportLayer);
+        }
+
+        public TreeLayer getTreeLayer() {
+            return this.treeLayer;
         }
 
         public SelectionLayer getSelectionLayer() {

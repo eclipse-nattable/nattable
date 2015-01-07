@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._605_GroupBy;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._605_GroupBy._6052_GroupByCustomTypesExample.MyRowObject.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByHeaderMenuConfiguration;
@@ -54,6 +56,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
@@ -124,6 +127,10 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
         ILayer columnHeaderLayer =
                 new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
+        // also set the config label accumulator to the column header to make
+        // the ISortModel work correctly
+        columnHeaderDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
                 new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
@@ -188,6 +195,17 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             }
         });
 
+        // the composition in this example does not have a SortHeaderLayer
+        // but in order to show the custom objects sorted by comparator, we
+        // need to set the appropriate ISortModel to the GroupByDataLayer
+        bodyLayerStack.bodyDataLayer.initializeTreeComparator(
+                new GlazedListsSortModel<MyRowObject>(
+                        bodyLayerStack.sortedList,
+                        columnPropertyAccessor,
+                        configRegistry,
+                        columnHeaderDataLayer),
+                null, false);
+
         natTable.configure();
 
         natTable.registerCommandHandler(
@@ -220,8 +238,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
-            // because the Comparator
-            // will be set by configuration
+            // because the Comparator will be set by configuration
             this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 
             // Use the GroupByDataLayer instead of the default DataLayer
@@ -283,7 +300,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
                 result = result.substring(0, 1) + result.substring(1).toLowerCase();
                 return result;
             }
-            return "";
+            return canonicalValue != null ? canonicalValue : "";
         }
 
         @Override
@@ -303,7 +320,7 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             if (canonicalValue instanceof City) {
                 return ((City) canonicalValue).getPlz() + " " + ((City) canonicalValue).getName();
             }
-            return "";
+            return canonicalValue != null ? canonicalValue : "";
         }
 
         @Override
@@ -317,6 +334,25 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
                 }
             }
             return null;
+        }
+
+    }
+
+    /**
+     * Comparator for the City type
+     */
+    public static class CityComparator implements Comparator<City> {
+
+        @Override
+        public int compare(City o1, City o2) {
+            int result = 0;
+            if (o1 != null && o2 != null) {
+                result = Integer.valueOf(o1.plz).compareTo(Integer.valueOf(o2.plz));
+                if (result == 0) {
+                    result = o1.name.compareTo(o2.name);
+                }
+            }
+            return result;
         }
 
     }
@@ -346,6 +382,13 @@ public class _6052_GroupByCustomTypesExample extends AbstractNatExample {
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new CityDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
+
+            // register comparator for custom objects additionally to converters
+            configRegistry.registerConfigAttribute(
+                    SortConfigAttributes.SORT_COMPARATOR,
+                    new CityComparator(),
                     DisplayMode.NORMAL,
                     ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
         }

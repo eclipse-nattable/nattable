@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 444839
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists;
 
@@ -29,6 +30,7 @@ import ca.odell.glazedlists.SortedList;
 public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
 
     private NatTableComparatorChooser<T> comparatorChooser;
+    private NatColumnTableFormat<T> tableFormat;
     protected final SortedList<T> sortedList;
     protected final IColumnAccessor<T> columnAccessor;
     protected final IColumnPropertyResolver columnPropertyResolver;
@@ -37,15 +39,21 @@ public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
 
     public GlazedListsSortModel(SortedList<T> sortedList,
             IColumnPropertyAccessor<T> columnPropertyAccessor,
-            IConfigRegistry configRegistry, ILayer dataLayer) {
-        this(sortedList, columnPropertyAccessor, columnPropertyAccessor,
-                configRegistry, dataLayer);
+            IConfigRegistry configRegistry,
+            ILayer dataLayer) {
+
+        this(sortedList,
+                columnPropertyAccessor,
+                columnPropertyAccessor,
+                configRegistry,
+                dataLayer);
     }
 
     public GlazedListsSortModel(SortedList<T> sortedList,
             IColumnAccessor<T> columnAccessor,
             IColumnPropertyResolver columnPropertyResolver,
-            IConfigRegistry configRegistry, ILayer dataLayer) {
+            IConfigRegistry configRegistry,
+            ILayer dataLayer) {
         this.sortedList = sortedList;
         this.columnAccessor = columnAccessor;
         this.columnPropertyResolver = columnPropertyResolver;
@@ -57,10 +65,14 @@ public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
 
     protected NatTableComparatorChooser<T> getComparatorChooser() {
         if (this.comparatorChooser == null) {
-            this.comparatorChooser = new NatTableComparatorChooser<T>(this.sortedList,
-                    new NatColumnTableFormat<T>(this.columnAccessor,
-                            this.columnPropertyResolver, this.configRegistry,
-                            this.columnHeaderDataLayer));
+            this.tableFormat = new NatColumnTableFormat<T>(
+                    this.columnAccessor,
+                    this.columnPropertyResolver,
+                    this.configRegistry,
+                    this.columnHeaderDataLayer);
+            this.comparatorChooser = new NatTableComparatorChooser<T>(
+                    this.sortedList,
+                    this.tableFormat);
         }
 
         return this.comparatorChooser;
@@ -78,8 +90,7 @@ public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
 
     @Override
     public SortDirectionEnum getSortDirection(int columnIndex) {
-        return getComparatorChooser().getSortDirectionForColumnIndex(
-                columnIndex);
+        return getComparatorChooser().getSortDirectionForColumnIndex(columnIndex);
     }
 
     @Override
@@ -87,14 +98,19 @@ public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
         return getComparatorChooser().isColumnIndexSorted(columnIndex);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
         return getComparatorChooser().getComparatorsForColumn(columnIndex);
     }
 
     @Override
-    public void sort(int columnIndex, SortDirectionEnum sortDirection,
-            boolean accumulate) {
+    public Comparator<?> getColumnComparator(int columnIndex) {
+        return this.tableFormat.getColumnComparator(columnIndex);
+    }
+
+    @Override
+    public void sort(int columnIndex, SortDirectionEnum sortDirection, boolean accumulate) {
         getComparatorChooser().sort(columnIndex, sortDirection, accumulate);
     }
 
@@ -106,8 +122,7 @@ public class GlazedListsSortModel<T> implements ISortModel, ILayerListener {
     @Override
     public void handleLayerEvent(ILayerEvent event) {
         if (event instanceof StructuralRefreshEvent
-                && ((StructuralRefreshEvent) event)
-                        .isHorizontalStructureChanged()) {
+                && ((StructuralRefreshEvent) event).isHorizontalStructureChanged()) {
             String test = getComparatorChooser().toString();
             this.comparatorChooser = null;
             getComparatorChooser().fromString(test);

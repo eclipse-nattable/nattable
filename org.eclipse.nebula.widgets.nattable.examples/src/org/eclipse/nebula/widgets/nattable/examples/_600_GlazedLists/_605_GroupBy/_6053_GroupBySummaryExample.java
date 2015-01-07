@@ -161,7 +161,10 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
 
         // connect sortModel to GroupByDataLayer to support sorting by group by
         // summary values
-        bodyLayerStack.getBodyDataLayer().setSortModel(sortHeaderLayer.getSortModel());
+        bodyLayerStack.getBodyDataLayer().initializeTreeComparator(
+                sortHeaderLayer.getSortModel(),
+                bodyLayerStack.getTreeLayer(),
+                true);
 
         // build the row header layer
         IDataProvider rowHeaderDataProvider =
@@ -359,6 +362,8 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
 
         private final SelectionLayer selectionLayer;
 
+        private final TreeLayer treeLayer;
+
         private final GroupByModel groupByModel = new GroupByModel();
 
         public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor, ConfigRegistry configRegistry) {
@@ -385,11 +390,15 @@ public class _6053_GroupBySummaryExample extends AbstractNatExample {
             this.selectionLayer = new SelectionLayer(columnHideShowLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
+            this.treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
 
-            ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+            ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
 
             setUnderlyingLayer(viewportLayer);
+        }
+
+        public TreeLayer getTreeLayer() {
+            return this.treeLayer;
         }
 
         public SelectionLayer getSelectionLayer() {

@@ -57,9 +57,6 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Simple example showing how to add the {@link SortHeaderLayer} to the layer
  * composition of a grid.
- *
- * @author Dirk Fauth
- *
  */
 public class _509_SortHeaderLayerExample extends AbstractNatExample {
 
@@ -95,48 +92,47 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
         // directly as body layer is also working.
         List<PersonWithAddress> data = PersonService.getPersonsWithAddress(10);
 
-        IColumnPropertyAccessor<PersonWithAddress> accessor = new ReflectiveColumnPropertyAccessor<PersonWithAddress>(
-                propertyNames);
-        IDataProvider bodyDataProvider = new ListDataProvider<PersonWithAddress>(
-                data, accessor);
+        IColumnPropertyAccessor<PersonWithAddress> accessor =
+                new ReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<PersonWithAddress>(data, accessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                bodyDataLayer);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                columnReorderLayer);
+        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
+        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
         SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
-        SortHeaderLayer<PersonWithAddress> sortHeaderLayer = new SortHeaderLayer<PersonWithAddress>(
-                columnHeaderLayer, new PersonWithAddressSortModel(data));
+        SortHeaderLayer<PersonWithAddress> sortHeaderLayer =
+                new SortHeaderLayer<PersonWithAddress>(columnHeaderLayer, new PersonWithAddressSortModel(data));
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                sortHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, sortHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(viewportLayer, sortHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add custom
         // configurations
@@ -145,8 +141,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
         natTable.setConfigRegistry(configRegistry);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration manually
+        // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         // enable sorting on single click on the column header
         natTable.addConfiguration(new SingleClickSortConfiguration());
@@ -162,8 +157,6 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
      * and doesn't support multiple column sorting and it won't be possible to
      * remove the sorting. Of course this can be implemented to work like the
      * default behaviour of the NatTable.
-     *
-     * @author Dirk Fauth
      */
     class PersonWithAddressSortModel implements ISortModel {
 
@@ -274,8 +267,7 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
          * column.
          */
         @Override
-        public void sort(int columnIndex, SortDirectionEnum sortDirection,
-                boolean accumulate) {
+        public void sort(int columnIndex, SortDirectionEnum sortDirection, boolean accumulate) {
             if (!isColumnIndexSorted(columnIndex)) {
                 clear();
             }
@@ -285,27 +277,34 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
                 sortDirection = SortDirectionEnum.ASC;
             }
 
-            Collections.sort(this.persons, new PersonWithAddressComparator(
-                    columnIndex, sortDirection));
+            Collections.sort(this.persons, new PersonWithAddressComparator(columnIndex, sortDirection));
             this.sortDirections[columnIndex] = sortDirection;
-            this.sorted[columnIndex] = sortDirection.equals(SortDirectionEnum.NONE) ? false
-                    : true;
+            this.sorted[columnIndex] = sortDirection.equals(SortDirectionEnum.NONE) ? false : true;
 
             this.currentSortColumn = columnIndex;
             this.currentSortDirection = sortDirection;
         }
 
+        @SuppressWarnings("rawtypes")
+        @Override
+        public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
+            return null;
+        }
+
+        @Override
+        public Comparator<?> getColumnComparator(int columnIndex) {
+            return null;
+        }
+
         /**
          * Custom comparator for {@link PersonWithAddress} objects
          */
-        class PersonWithAddressComparator implements
-                Comparator<PersonWithAddress> {
+        class PersonWithAddressComparator implements Comparator<PersonWithAddress> {
 
             int colIdx = 0;
             SortDirectionEnum sortDirection;
 
-            public PersonWithAddressComparator(int columnIndex,
-                    SortDirectionEnum sortDirection) {
+            public PersonWithAddressComparator(int columnIndex, SortDirectionEnum sortDirection) {
                 this.colIdx = columnIndex;
                 this.sortDirection = sortDirection;
             }
@@ -382,18 +381,6 @@ public class _509_SortHeaderLayerExample extends AbstractNatExample {
                 return result;
             }
 
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.eclipse.nebula.widgets.nattable.sort.ISortModel#
-         * getComparatorsForColumnIndex(int)
-         */
-        @SuppressWarnings("rawtypes")
-        @Override
-        public List<Comparator> getComparatorsForColumnIndex(int columnIndex) {
-            return null;
         }
     }
 }

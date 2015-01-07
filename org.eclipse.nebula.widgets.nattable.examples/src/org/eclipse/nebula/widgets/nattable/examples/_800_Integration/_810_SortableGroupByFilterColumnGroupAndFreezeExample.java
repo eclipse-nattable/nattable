@@ -201,7 +201,10 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends Abstr
 
         // connect sortModel to GroupByDataLayer to support sorting by group by
         // summary values
-        bodyLayerStack.getBodyDataLayer().setSortModel(sortHeaderLayer.getSortModel());
+        bodyLayerStack.getBodyDataLayer().initializeTreeComparator(
+                sortHeaderLayer.getSortModel(),
+                bodyLayerStack.getTreeLayer(),
+                true);
 
         ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
                 sortHeaderLayer,
@@ -545,6 +548,8 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends Abstr
         private final ColumnHideShowLayer columnHideShowLayer;
         private final SelectionLayer selectionLayer;
 
+        private final TreeLayer treeLayer;
+
         private final GroupByModel groupByModel = new GroupByModel();
 
         public BodyLayerStack(List<T> values,
@@ -594,15 +599,15 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends Abstr
             this.selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
 
             // add a tree layer to visualise the grouping
-            TreeLayer treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
+            this.treeLayer = new TreeLayer(this.selectionLayer, this.bodyDataLayer.getTreeRowModel());
 
-            ViewportLayer viewportLayer = new ViewportLayer(treeLayer);
+            ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
 
             // this will avoid tree specific rendering regarding alignment and
             // indentation in case no grouping is active
             viewportLayer.setConfigLabelAccumulator(new GroupByConfigLabelModifier(getGroupByModel()));
 
-            FreezeLayer freezeLayer = new FreezeLayer(treeLayer);
+            FreezeLayer freezeLayer = new FreezeLayer(this.treeLayer);
             CompositeFreezeLayer compositeFreezeLayer =
                     new CompositeFreezeLayer(freezeLayer, viewportLayer, this.selectionLayer);
 
@@ -611,6 +616,10 @@ public class _810_SortableGroupByFilterColumnGroupAndFreezeExample extends Abstr
 
         public ColumnHideShowLayer getColumnHideShowLayer() {
             return this.columnHideShowLayer;
+        }
+
+        public TreeLayer getTreeLayer() {
+            return this.treeLayer;
         }
 
         public SelectionLayer getSelectionLayer() {

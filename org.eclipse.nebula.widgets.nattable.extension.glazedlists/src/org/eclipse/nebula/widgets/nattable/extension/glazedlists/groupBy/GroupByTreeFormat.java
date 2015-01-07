@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,15 +8,17 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 455327
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 444839, 444855, 453885
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 
 import ca.odell.glazedlists.TreeList;
@@ -46,11 +48,7 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
      * Comparator that is used to sort the TreeList based on the groupBy
      * information.
      */
-    private final GroupByComparator groupByComparator = new GroupByComparator();
-    /**
-     * To provide sorting functionality
-     */
-    private ISortModel sortModel;
+    private IGroupByComparator<T> groupByComparator;
 
     /**
      *
@@ -77,12 +75,25 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
                 // Build a unique descriptor for the group
                 Object columnValue = this.columnAccessor.getDataValue((T) element, columnIndex);
                 descriptor.put(columnIndex, columnValue);
-                GroupByObject groupByObject =
-                        new GroupByObject(columnValue, new LinkedHashMap<Integer, Object>(descriptor));
+                GroupByObject groupByObject = getGroupByObject(columnValue, descriptor);
                 path.add(groupByObject);
             }
         }
         path.add(element);
+    }
+
+    /**
+     *
+     * @param columnValue
+     *            The column value that is used to create the
+     *            {@link GroupByObject}. Specifies the groupBy value.
+     * @param descriptor
+     *            The descriptor that is used to create the
+     *            {@link GroupByObject}. Specifies the groupBy depth.
+     * @return The {@link GroupByObject} for the given value and descriptor.
+     */
+    protected GroupByObject getGroupByObject(Object columnValue, Map<Integer, Object> descriptor) {
+        return new GroupByObject(columnValue, new LinkedHashMap<Integer, Object>(descriptor));
     }
 
     @Override
@@ -100,101 +111,67 @@ public class GroupByTreeFormat<T> implements TreeList.Format<Object> {
         return this.groupByComparator;
     }
 
-    public void setSortModel(ISortModel model) {
-        this.sortModel = model;
+    /**
+     * Clear the comparator local cache of summary information that is used to
+     * increase performance on sorting. Can be called often since the cache is
+     * only valid for a sorting operation.
+     */
+    public void clearComparatorCache() {
+        this.groupByComparator.clearCache();
     }
 
     /**
-     * Comparator that is used to sort the TreeList based on the groupBy
-     * information.
      *
-     * @author Dirk Fauth
-     *
+     * @param model
+     *            The {@link ISortModel} that should be set to the
+     *            {@link IGroupByComparator}.
+     * @see IGroupByComparator#setSortModel(ISortModel)
      */
-    class GroupByComparator implements Comparator<Object> {
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public int compare(Object o1, Object o2) {
-            for (int columnIndex : GroupByTreeFormat.this.model.getGroupByColumnIndexes()) {
-                if (o1 == null) {
-                    if (o2 == null) {
-                        return 0;
-                    } else {
-                        return -1;
-                    }
-                } else if (o2 == null) {
-                    return 1;
-                } else {
-                    Object columnValue1 = null;
-                    Object columnValue2 = null;
-                    int result = 0;
-                    if (o1 instanceof GroupByObject
-                            && o2 instanceof GroupByObject) {
-                        columnValue1 = o1;
-                        columnValue2 = o2;
-                        result = ((GroupByObject) o1)
-                                .compareTo((GroupByObject) o2);
-
-                        if (result != 0) {
-                            if (GroupByTreeFormat.this.sortModel != null) {
-                                // Compare aggregated columns
-                                for (int sortedColumnIndex : GroupByTreeFormat.this.sortModel
-                                        .getSortedColumnIndexes()) {
-                                    if (o1 instanceof GroupByObject
-                                            && o2 instanceof GroupByObject) {
-                                        GroupByObject grp1 = (GroupByObject) o1;
-                                        GroupByObject grp2 = (GroupByObject) o2;
-                                        columnValue1 = GroupByTreeFormat.this.columnAccessor
-                                                .getDataValue((T) grp1,
-                                                        sortedColumnIndex);
-                                        columnValue2 = GroupByTreeFormat.this.columnAccessor
-                                                .getDataValue((T) grp2,
-                                                        sortedColumnIndex);
-                                        if (columnValue1 != null
-                                                && columnValue2 != null) {
-                                            int res = DefaultComparator
-                                                    .getInstance().compare(
-                                                            columnValue1,
-                                                            columnValue2);
-                                            if (res == 0) {
-                                                continue;
-                                            }
-                                            switch (GroupByTreeFormat.this.sortModel
-                                                    .getSortDirection(sortedColumnIndex)) {
-                                                case ASC:
-                                                    result = res;
-                                                    break;
-                                                case DESC:
-                                                    result = res * -1;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if (o1 instanceof GroupByObject
-                            && !(o2 instanceof GroupByObject)) {
-                        result = 1;
-                    } else if (!(o1 instanceof GroupByObject)
-                            && o2 instanceof GroupByObject) {
-                        result = -1;
-                    } else {
-                        columnValue1 = GroupByTreeFormat.this.columnAccessor.getDataValue((T) o1,
-                                columnIndex);
-                        columnValue2 = GroupByTreeFormat.this.columnAccessor.getDataValue((T) o2,
-                                columnIndex);
-                        result = DefaultComparator.getInstance().compare(
-                                columnValue1, columnValue2);
-                    }
-
-                    if (result != 0) {
-                        return result;
-                    }
-                }
-            }
-            return 0;
-        }
-
+    public void setSortModel(ISortModel model) {
+        this.groupByComparator.setSortModel(model);
     }
+
+    /**
+     *
+     * @return The {@link ISortModel} that is set to the
+     *         {@link IGroupByComparator}.
+     * @see IGroupByComparator#getSortModel()
+     */
+    public ISortModel getSortModel() {
+        return this.groupByComparator.getSortModel();
+    }
+
+    /**
+     *
+     * @param treeLayer
+     *            The {@link IUniqueIndexLayer} that should be set to the
+     *            {@link IGroupByComparator}.
+     * @see IGroupByComparator#setTreeLayer(IUniqueIndexLayer)
+     */
+    void setTreeLayer(IUniqueIndexLayer treeLayer) {
+        this.groupByComparator.setTreeLayer(treeLayer);
+    }
+
+    /**
+     *
+     * @param dataLayer
+     *            The {@link GroupByDataLayer} that should be set to the
+     *            {@link IGroupByComparator}.
+     * @see IGroupByComparator#setDataLayer(GroupByDataLayer)
+     */
+    void setDataLayer(GroupByDataLayer<T> dataLayer) {
+        this.groupByComparator.setDataLayer(dataLayer);
+    }
+
+    /**
+     *
+     * @param comparator
+     *            The {@link IGroupByComparator} that should be used to sort the
+     *            {@link TreeList} in order to be able to build the tree
+     *            structure correctly.
+     */
+    public void setComparator(IGroupByComparator<T> comparator) {
+        this.groupByComparator = comparator;
+    }
+
 }

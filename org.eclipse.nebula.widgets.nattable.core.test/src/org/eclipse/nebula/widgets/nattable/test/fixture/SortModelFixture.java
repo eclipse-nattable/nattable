@@ -23,6 +23,7 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 
+@SuppressWarnings("rawtypes")
 public class SortModelFixture implements ISortModel {
     List<Integer> sortedColumnIndexes;
     List<Integer> sortOrder;
@@ -30,20 +31,19 @@ public class SortModelFixture implements ISortModel {
     Map<Integer, List<Comparator>> columnComparators = new HashMap<Integer, List<Comparator>>();
 
     public SortModelFixture() {
-        this(Arrays.asList(0, 5, 6, 3), Arrays.asList(6, 5, 3, 0), Arrays
-                .asList(ASC, DESC, ASC, DESC));
+        this(Arrays.asList(0, 5, 6, 3), Arrays.asList(6, 5, 3, 0), Arrays.asList(ASC, DESC, ASC, DESC));
     }
 
-    public SortModelFixture(List<Integer> sortedColumnIndexes,
-            List<Integer> sortOrder, List<SortDirectionEnum> sortDirection) {
+    public SortModelFixture(
+            List<Integer> sortedColumnIndexes, List<Integer> sortOrder, List<SortDirectionEnum> sortDirection) {
         this.sortedColumnIndexes = sortedColumnIndexes;
         this.sortOrder = sortOrder;
         this.sortDirection = sortDirection;
     }
 
     public static SortModelFixture getEmptyModel() {
-        return new SortModelFixture(new ArrayList<Integer>(),
-                new ArrayList<Integer>(), new ArrayList<SortDirectionEnum>());
+        return new SortModelFixture(
+                new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<SortDirectionEnum>());
     }
 
     @Override
@@ -78,8 +78,12 @@ public class SortModelFixture implements ISortModel {
     }
 
     @Override
-    public void sort(int columnIndex, SortDirectionEnum direction,
-            boolean accumulate) {
+    public Comparator<?> getColumnComparator(int columnIndex) {
+        return null;
+    }
+
+    @Override
+    public void sort(int columnIndex, SortDirectionEnum direction, boolean accumulate) {
         this.sortedColumnIndexes.add(columnIndex);
         this.sortOrder.add(columnIndex);
         this.sortDirection.add(direction);

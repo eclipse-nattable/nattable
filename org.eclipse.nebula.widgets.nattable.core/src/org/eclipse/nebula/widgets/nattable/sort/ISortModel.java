@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 444839
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.sort;
 
@@ -45,7 +46,24 @@ public interface ISortModel {
      */
     public int getSortOrder(int columnIndex);
 
+    /**
+     * @param columnIndex
+     *            The index of the column for which the row objects should be
+     *            sorted.
+     * @return The collection of Comparators used to sort row objects by column
+     *         values.
+     */
+    @SuppressWarnings("rawtypes")
     public List<Comparator> getComparatorsForColumnIndex(int columnIndex);
+
+    /**
+     * @param columnIndex
+     *            The index of the column for which the {@link Comparator} is
+     *            requested.
+     * @return The {@link Comparator} that is used for sorting the values of a
+     *         specified column. Needed in case of data model wrapping, e.g. GroupBy
+     */
+    public Comparator<?> getColumnComparator(int columnIndex);
 
     /**
      * This method is called by the {@link SortCommandHandler} in response to a
@@ -54,8 +72,7 @@ public interface ISortModel {
      * @param accumulate
      *            flag indicating if the column should added to a previous sort.
      */
-    public void sort(int columnIndex, SortDirectionEnum sortDirection,
-            boolean accumulate);
+    public void sort(int columnIndex, SortDirectionEnum sortDirection, boolean accumulate);
 
     /**
      * Remove all sorting

@@ -50,7 +50,7 @@ public class DefaultSortConfiguration implements IConfiguration {
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
-                SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
+                SortConfigAttributes.SORT_COMPARATOR, DefaultComparator.getInstance());
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.CELL_PAINTER, this.cellPainter,

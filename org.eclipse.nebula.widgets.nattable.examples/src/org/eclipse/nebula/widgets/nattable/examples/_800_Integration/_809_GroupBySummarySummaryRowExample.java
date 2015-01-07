@@ -47,6 +47,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupBy
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.ModernGroupByThemeExtension;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.SummationGroupBySummaryProvider;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultSummaryRowHeaderDataProvider;
@@ -95,7 +96,6 @@ import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.AbstractHeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
 import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
@@ -175,32 +175,35 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
         // to enable the group by summary feature, the GroupByDataLayer needs to
         // know the ConfigRegistry
-        List<ExtendedPersonWithAddress> persons = PersonService.getExtendedPersonsWithAddress(10);
+        List<ExtendedPersonWithAddress> persons = PersonService.getExtendedPersonsWithAddress(10000);
         final BodyLayerStack<ExtendedPersonWithAddress> bodyLayerStack =
                 new BodyLayerStack<ExtendedPersonWithAddress>(persons, columnPropertyAccessor, configRegistry);
 
-        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(
-                new ColumnLabelAccumulator());
+        bodyLayerStack.getBodyDataLayer().setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
         // add sorting
         SortHeaderLayer<ExtendedPersonWithAddress> sortHeaderLayer =
                 new SortHeaderLayer<ExtendedPersonWithAddress>(
                         columnHeaderLayer,
                         new GlazedListsSortModel<ExtendedPersonWithAddress>(
-                                bodyLayerStack.getSortedList(), columnPropertyAccessor,
-                                configRegistry, columnHeaderDataLayer), false);
+                                bodyLayerStack.getSortedList(),
+                                columnPropertyAccessor,
+                                configRegistry,
+                                columnHeaderDataLayer),
+                        false);
 
         // connect sortModel to GroupByDataLayer to support sorting by group by
         // summary values
-        bodyLayerStack.getBodyDataLayer().setSortModel(sortHeaderLayer.getSortModel());
+        bodyLayerStack.getBodyDataLayer().initializeTreeComparator(
+                sortHeaderLayer.getSortModel(), bodyLayerStack.getTreeLayer(), true);
 
         // build the row header layer
         // Adding the specialized DefaultSummaryRowHeaderDataProvider to
@@ -255,12 +258,10 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         final NatTable natTable = new NatTable(container, compositeGridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-
-        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
         // add some additional styling
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
@@ -753,7 +754,7 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         @Override
         public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
             uiBindingRegistry.registerMouseDownBinding(
-                    new MouseEventMatcher(SWT.NONE, null, 3),
+                    new MouseEventMatcher(SWT.NONE, GridRegion.BODY, 3),
                     new PopupMenuAction(this.menu));
         }
 

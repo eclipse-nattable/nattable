@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,9 +9,13 @@
  *     Original authors and others - initial API and implementation
  *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 454566
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 448115, 449361, 453874
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 444839, 444855, 453885
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,14 +32,17 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
+import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
+import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCacheKey;
 import org.eclipse.nebula.widgets.nattable.util.ICalculator;
@@ -143,7 +150,9 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
         this.groupByColumnAccessor = new GroupByColumnAccessor(columnAccessor);
 
-        this.treeFormat = new GroupByTreeFormat<T>(groupByModel, (IColumnAccessor<T>) this.groupByColumnAccessor);
+        this.treeFormat = createGroupByTreeFormat(groupByModel, (IColumnAccessor<T>) this.groupByColumnAccessor);
+        this.treeFormat.setComparator(new GroupByComparator<T>(groupByModel, columnAccessor, this));
+
         this.treeList = new TreeList(eventList, this.treeFormat, expansionModel != null ? expansionModel : new GroupByExpansionModel());
 
         this.treeData = new GlazedListTreeData<Object>(getTreeList());
@@ -160,8 +169,83 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         }
     }
 
+    /**
+     *
+     * @param groupByModel
+     *            The {@link GroupByModel} that is used to specify the tree
+     *            structure.
+     * @param groupByColumnAccessor
+     *            The {@link IColumnAccessor} that is used to access the values
+     *            in the data model, should be of type
+     *            {@link GroupByColumnAccessor}.
+     * @return The {@link GroupByTreeFormat} that is used to build the tree
+     *         structure.
+     */
+    protected GroupByTreeFormat<T> createGroupByTreeFormat(GroupByModel groupByModel, IColumnAccessor<T> groupByColumnAccessor) {
+        return new GroupByTreeFormat<T>(groupByModel, groupByColumnAccessor);
+    }
+
+    /**
+     * @param model
+     *            The {@link ISortModel} that should be set to the
+     *            {@link IGroupByComparator} that is necessary to create the
+     *            sorted tree structure.
+     * @see IGroupByComparator#setSortModel(ISortModel)
+     * @deprecated use
+     *             {@link #initializeTreeComparator(ISortModel, IUniqueIndexLayer, boolean)}
+     */
+    @Deprecated
     public void setSortModel(ISortModel model) {
         this.treeFormat.setSortModel(model);
+    }
+
+    /**
+     * Initialize the {@link Comparator} that is used to build the tree
+     * structure. Adding all the below information will enable correct sorting
+     * of the tree structure taking the summary values and the groupBy values
+     * correctly into account.
+     *
+     * @param sortModel
+     *            The {@link ISortModel} that should be set to the
+     *            {@link IGroupByComparator}. Setting the {@link ISortModel}
+     *            enables the usage of the configured {@link Comparator} per
+     *            column on creating the sorted tree structure.
+     * @param treeLayer
+     *            The {@link IUniqueIndexLayer} that should be set to the
+     *            {@link IGroupByComparator}. Typically the {@link TreeLayer}
+     *            and is needed to determine if the sort operation is performed
+     *            on the tree column. Will only be inspected if a valid
+     *            {@link ISortModel} is set.
+     * @param setDataLayerReference
+     *            <code>true</code> for setting the {@link GroupByDataLayer}
+     *            reference to this instance to the {@link GroupByComparator},
+     *            <code>false</code> to set the reference to <code>null</code>.
+     *            The {@link GroupByDataLayer} reference is used in the
+     *            comparator to be able to sort by summary values. If summary
+     *            values are not configured or the sorting by summary value is
+     *            not needed, you should avoid setting the reference.
+     *
+     * @see IGroupByComparator#setSortModel(ISortModel)
+     * @see IGroupByComparator#setTreeLayer(IUniqueIndexLayer)
+     * @see IGroupByComparator#setDataLayer(GroupByDataLayer)
+     */
+    public void initializeTreeComparator(ISortModel sortModel, IUniqueIndexLayer treeLayer, boolean setDataLayerReference) {
+        this.treeFormat.setSortModel(sortModel);
+        this.treeFormat.setTreeLayer(treeLayer);
+        this.treeFormat.setDataLayer(setDataLayerReference ? this : null);
+    }
+
+    /**
+     *
+     * @param comparator
+     *            The {@link IGroupByComparator} that is necessary to create the
+     *            sorted tree structure. Can not be <code>null</code>.
+     */
+    public void setComparator(IGroupByComparator<T> comparator) {
+        if (comparator == null) {
+            throw new IllegalArgumentException("IGroupByComparator can not be null"); //$NON-NLS-1$
+        }
+        this.treeFormat.setComparator(comparator);
     }
 
     /**
@@ -180,9 +264,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      */
     protected void updateTree() {
         // Perform the update showing the busy indicator, as creating the
-        // groupby structure
-        // costs time. This is related to dynamically building a tree structure
-        // with additional objects
+        // groupby structure costs time. This is related to dynamically building
+        // a tree structure with additional objects
         BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
 
             @Override
@@ -208,7 +291,32 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        // if we know the sort model, we need to clear the sort model to avoid
+        // strange side effects while updating the tree structure (e.g. not
+        // applied sorting although showing the sort indicator)
+        // for better user experience we remember the sort state and reapply it
+        // after the tree update
+        List<Integer> sortedIndexes = null;
+        List<SortDirectionEnum> sortDirections = null;
+        if (this.treeFormat.getSortModel() != null) {
+            sortedIndexes = this.treeFormat.getSortModel().getSortedColumnIndexes();
+            sortDirections = new ArrayList<SortDirectionEnum>();
+            for (Integer index : sortedIndexes) {
+                sortDirections.add(this.treeFormat.getSortModel().getSortDirection(index));
+            }
+            this.treeFormat.getSortModel().clear();
+        }
+
         updateTree();
+
+        // re-apply the sorting after the tree update
+        if (this.treeFormat.getSortModel() != null) {
+            for (int i = 0; i < sortedIndexes.size(); i++) {
+                Integer index = sortedIndexes.get(i);
+                this.treeFormat.getSortModel().sort(index, sortDirections.get(i), true);
+            }
+        }
+
         fireLayerEvent(new RowStructuralRefreshEvent(this));
     }
 
@@ -263,7 +371,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * is intended to be used for conditional formatting. It allows to specify
      * the {@link LabelStack} and to disable background calculation processing,
      * since the conditional formatting needs the summary value without a delay.
-     * 
+     *
      * @param columnPosition
      *            The column position of the cell whose data value is requested.
      * @param rowPosition
@@ -336,6 +444,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      */
     public void clearCache() {
         this.valueCache.clearCache();
+        // also clear the comparator cache to ensure correct sorting
+        this.treeFormat.clearComparatorCache();
     }
 
     /**
@@ -351,6 +461,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      */
     public void killCache() {
         this.valueCache.killCache();
+        // also clear the comparator cache to ensure correct sorting
+        this.treeFormat.clearComparatorCache();
     }
 
     @Override
@@ -381,6 +493,9 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             // involved in the composition that also need to calculate the
             // summary values immediately
         } else if (command instanceof DisposeResourcesCommand) {
+            // ensure to clear the caches to avoid memory leaks
+            this.treeFormat.clearComparatorCache();
+            this.valueCache.killCache();
             this.valueCache.dispose();
         }
 
@@ -388,23 +503,32 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     }
 
     /**
-     * Simple {@link ExpansionModel} that shows every node expanded initially
-     * and doesn't react on expand/collapse state changes.
-     *
+     * Simple {@link ExpansionModel} that shows every node expanded initially.
+     * <p>
      * It is not strictly necessary for implementors to record the
      * expand/collapsed state of all nodes, since TreeList caches node state
-     * internally.
+     * internally. But because of the update workaround on changes to the
+     * {@link TreeList#Format}, we need to keep track of the expand/collapse
+     * state ourself.
+     * </p>
      *
      * @see http://publicobject.com/glazedlists/glazedlists-1.8.0/api/ca/odell/
      *      glazedlists/TreeList.ExpansionModel.html
      */
     private class GroupByExpansionModel implements TreeList.ExpansionModel<Object> {
+
+        // remember expand states because of update workaround
+        Map<Object, Boolean> expandStates = new HashMap<Object, Boolean>();
+
         /**
          * Determine the specified element's initial expand/collapse state.
          */
         @Override
         public boolean isExpanded(final Object element, final List<Object> path) {
-            return true;
+            if (!this.expandStates.containsKey(element)) {
+                this.expandStates.put(element, true);
+            }
+            return this.expandStates.get(element);
         }
 
         /**
@@ -413,7 +537,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
          */
         @Override
         public void setExpanded(final Object element, final List<Object> path, final boolean expanded) {
-            // do nothing
+            this.expandStates.put(element, expanded);
         }
     }
 
@@ -422,17 +546,35 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * We could also use treeData.getChildren(groupDescriptor, true) but it's
      * less efficient.
      *
-     * @param groupDescriptor
-     *            The description of the group (columnIndexes..)
-     * @return The FilterList of elements
+     * @param group
+     *            The {@link GroupByObject} for which the children should be
+     *            retrieved.
+     * @return The {@link FilterList} of elements
      */
-    public FilterList<T> getElementsInGroup(GroupByObject groupDescriptor) {
-        FilterList<T> elementsInGroup = this.filtersByGroup.get(groupDescriptor);
+    public FilterList<T> getElementsInGroup(GroupByObject group) {
+        FilterList<T> elementsInGroup = this.filtersByGroup.get(group);
         if (elementsInGroup == null) {
-            elementsInGroup = new FilterList<T>(this.eventList, new GroupDescriptorMatcher<T>(groupDescriptor, this.columnAccessor));
-            this.filtersByGroup.put(groupDescriptor, elementsInGroup);
+            elementsInGroup = new FilterList<T>(this.eventList, getGroupDescriptorMatcher(group, this.columnAccessor));
+            this.filtersByGroup.put(group, elementsInGroup);
         }
         return elementsInGroup;
+    }
+
+    /**
+     *
+     * @param group
+     *            The {@link GroupByObject} for which the children should be
+     *            retrieved.
+     * @param columnAccessor
+     *            The {@link IColumnAccessor} that is used to retrieve column
+     *            value of an element.
+     * @return The {@link Matcher} that is used to identify the children of a
+     *         {@link GroupByObject}
+     *
+     * @see GroupDescriptorMatcher
+     */
+    protected Matcher<T> getGroupDescriptorMatcher(GroupByObject group, IColumnAccessor<T> columnAccessor) {
+        return new GroupDescriptorMatcher<T>(group, columnAccessor);
     }
 
     /**

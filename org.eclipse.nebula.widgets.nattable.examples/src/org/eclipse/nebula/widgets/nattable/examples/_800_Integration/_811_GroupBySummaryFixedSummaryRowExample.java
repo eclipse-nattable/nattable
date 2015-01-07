@@ -196,7 +196,10 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
 
         // connect sortModel to GroupByDataLayer to support sorting by group by
         // summary values
-        bodyLayerStack.getBodyDataLayer().setSortModel(sortHeaderLayer.getSortModel());
+        bodyLayerStack.getBodyDataLayer().initializeTreeComparator(
+                sortHeaderLayer.getSortModel(),
+                bodyLayerStack.getTreeLayer(),
+                true);
 
         // build the row header layer
         // Adding the specialized DefaultSummaryRowHeaderDataProvider to

@@ -76,7 +76,7 @@ public class TreeGridExample extends AbstractNatExample {
     public Control createExampleControl(Composite parent) {
         ConfigRegistry configRegistry = new ConfigRegistry();
         configRegistry.registerConfigAttribute(
-                SortConfigAttributes.SORT_COMPARATOR, new DefaultComparator());
+                SortConfigAttributes.SORT_COMPARATOR, DefaultComparator.getInstance());
 
         // Underlying data source
         createDatums();
