@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 457304
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.poi;
 
@@ -59,6 +60,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     private boolean applyBackgroundColor = true;
     private boolean applyVerticalTextConfiguration = false;
 
+    private String sheetname;
+
     public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
         this.outputStreamProvider = outputStreamProvider;
     }
@@ -86,33 +89,36 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     }
 
     @Override
-    public void exportLayerBegin(OutputStream outputStream, String layerName)
-            throws IOException {
+    public void exportLayerBegin(OutputStream outputStream, String layerName) throws IOException {
         this.sheetNumber++;
         if (layerName == null || layerName.length() == 0) {
-            layerName = "Sheet" + this.sheetNumber; //$NON-NLS-1$
+            layerName = this.sheetname;
+
+            if (layerName == null || layerName.length() == 0) {
+                layerName = "Sheet" + this.sheetNumber; //$NON-NLS-1$
+            }
         }
         this.xlSheet = this.xlWorkbook.createSheet(layerName);
     }
 
     @Override
-    public void exportLayerEnd(OutputStream outputStream, String layerName)
-            throws IOException {}
+    public void exportLayerEnd(OutputStream outputStream, String layerName) throws IOException {}
 
     @Override
-    public void exportRowBegin(OutputStream outputStream, int rowPosition)
-            throws IOException {
+    public void exportRowBegin(OutputStream outputStream, int rowPosition) throws IOException {
         this.xlRow = this.xlSheet.createRow(rowPosition);
     }
 
     @Override
-    public void exportRowEnd(OutputStream outputStream, int rowPosition)
-            throws IOException {}
+    public void exportRowEnd(OutputStream outputStream, int rowPosition) throws IOException {}
 
     @Override
-    public void exportCell(OutputStream outputStream,
-            Object exportDisplayValue, ILayerCell cell,
+    public void exportCell(
+            OutputStream outputStream,
+            Object exportDisplayValue,
+            ILayerCell cell,
             IConfigRegistry configRegistry) throws IOException {
+
         int columnPosition = cell.getColumnPosition();
         int rowPosition = cell.getRowPosition();
 
@@ -132,23 +138,23 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                     columnPosition, lastColumn));
         }
 
-        CellStyleProxy cellStyle = new CellStyleProxy(configRegistry,
-                DisplayMode.NORMAL, cell.getConfigLabels().getLabels());
-        Color fg = cellStyle
-                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
-        Color bg = cellStyle
-                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
-        org.eclipse.swt.graphics.Font font = cellStyle
-                .getAttributeValue(CellStyleAttributes.FONT);
+        CellStyleProxy cellStyle = new CellStyleProxy(
+                configRegistry,
+                DisplayMode.NORMAL,
+                cell.getConfigLabels().getLabels());
+        Color fg = cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
+        Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
+        org.eclipse.swt.graphics.Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
         FontData fontData = font.getFontData()[0];
         String dataFormat = null;
 
         int hAlign = HorizontalAlignmentEnum.getSWTStyle(cellStyle);
         int vAlign = VerticalAlignmentEnum.getSWTStyle(cellStyle);
 
-        boolean vertical = this.applyVerticalTextConfiguration ? isVertical(configRegistry
-                .getConfigAttribute(CellConfigAttributes.CELL_PAINTER,
-                        DisplayMode.NORMAL, cell.getConfigLabels().getLabels()))
+        boolean vertical = this.applyVerticalTextConfiguration ? isVertical(configRegistry.getConfigAttribute(
+                CellConfigAttributes.CELL_PAINTER,
+                DisplayMode.NORMAL,
+                cell.getConfigLabels().getLabels()))
                 : false;
 
         if (exportDisplayValue == null)
@@ -168,8 +174,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             xlCell.setCellValue(exportDisplayValue.toString());
         }
 
-        CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat,
-                hAlign, vAlign, vertical);
+        CellStyle xlCellStyle = getExcelCellStyle(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical);
         xlCell.setCellStyle(xlCellStyle);
     }
 
@@ -177,12 +182,10 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         if (cellPainter instanceof VerticalTextPainter) {
             return true;
         } else if (cellPainter instanceof CellPainterWrapper) {
-            return isVertical(((CellPainterWrapper) cellPainter)
-                    .getWrappedPainter());
+            return isVertical(((CellPainterWrapper) cellPainter).getWrappedPainter());
         } else if (cellPainter instanceof CellPainterDecorator) {
-            return (isVertical(((CellPainterDecorator) cellPainter)
-                    .getBaseCellPainter()) || isVertical(((CellPainterDecorator) cellPainter)
-                    .getDecoratorCellPainter()));
+            return (isVertical(((CellPainterDecorator) cellPainter).getBaseCellPainter())
+                    || isVertical(((CellPainterDecorator) cellPainter).getDecoratorCellPainter()));
         }
         return false;
     }
@@ -236,8 +239,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
             if (dataFormat != null) {
                 CreationHelper createHelper = this.xlWorkbook.getCreationHelper();
-                xlCellStyle.setDataFormat(createHelper.createDataFormat()
-                        .getFormat(dataFormat));
+                xlCellStyle.setDataFormat(createHelper.createDataFormat().getFormat(dataFormat));
             }
 
             this.xlCellStyles.put(new ExcelCellStyleAttributes(fg, bg, fontData,
@@ -255,11 +257,11 @@ public abstract class PoiExcelExporter implements ILayerExporter {
      * @return The date format that should be used to format Date or Calendar
      *         values in the export.
      */
-    protected String getDataFormatString(ILayerCell cell,
-            IConfigRegistry configRegistry) {
+    protected String getDataFormatString(ILayerCell cell, IConfigRegistry configRegistry) {
         String dataFormat = configRegistry.getConfigAttribute(
-                ExportConfigAttributes.DATE_FORMAT, DisplayMode.NORMAL, cell
-                        .getConfigLabels().getLabels());
+                ExportConfigAttributes.DATE_FORMAT,
+                DisplayMode.NORMAL,
+                cell.getConfigLabels().getLabels());
         if (dataFormat == null) {
             dataFormat = "m/d/yy h:mm"; //$NON-NLS-1$
         }
@@ -304,14 +306,25 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     protected abstract Workbook createWorkbook();
 
-    protected abstract void setFillForegroundColor(CellStyle xlCellStyle,
-            Color swtColor);
+    protected abstract void setFillForegroundColor(CellStyle xlCellStyle, Color swtColor);
 
     protected abstract void setFontColor(Font xlFont, Color swtColor);
 
     @Override
     public Object getResult() {
         return this.outputStreamProvider.getResult();
+    }
+
+    /**
+     *
+     * @param sheetname
+     *            The name that should be set as sheet name in the resulting
+     *            Excel file. Setting this value to <code>null</code> will
+     *            result in a sheet name following the pattern <i>Sheet +
+     *            &lt;sheet number&gt;</i>
+     */
+    public void setSheetname(String sheetname) {
+        this.sheetname = sheetname;
     }
 
 }
