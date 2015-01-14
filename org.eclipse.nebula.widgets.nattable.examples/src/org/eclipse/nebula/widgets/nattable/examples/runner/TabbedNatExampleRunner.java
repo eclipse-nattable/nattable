@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - extended width of tree
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.runner;
 
@@ -50,14 +51,12 @@ public class TabbedNatExampleRunner {
     private static Link link;;
 
     public static void run(String... examplePaths)
-            throws InstantiationException, IllegalAccessException,
-            ClassNotFoundException {
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         run(1000, 600, examplePaths);
     }
 
-    public static void run(int shellWidth, int shellHeight,
-            final String... examplePaths) throws InstantiationException,
-            IllegalAccessException, ClassNotFoundException {
+    public static void run(int shellWidth, int shellHeight, final String... examplePaths)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         // Setup
         final Display display = Display.getDefault();
         final Shell shell = new Shell(display, SWT.SHELL_TRIM);
@@ -68,7 +67,7 @@ public class TabbedNatExampleRunner {
         // Nav tree
         final TreeViewer navTreeViewer = new TreeViewer(shell);
         GridData gridData = new GridData(GridData.FILL_VERTICAL);
-        gridData.widthHint = 200;
+        gridData.widthHint = 300;
         navTreeViewer.getControl().setLayoutData(gridData);
         final NavContentProvider contentProvider = new NavContentProvider();
         navTreeViewer.setContentProvider(contentProvider);
@@ -119,8 +118,7 @@ public class TabbedNatExampleRunner {
     }
 
     @SuppressWarnings("unchecked")
-    public static Class<? extends INatExample> getExampleClass(
-            String examplePath) {
+    public static Class<? extends INatExample> getExampleClass(String examplePath) {
         String className = examplePath.replace('/', '.');
         try {
             Class<?> clazz = Class.forName(className);
@@ -139,16 +137,10 @@ public class TabbedNatExampleRunner {
         INatExample example = examplePathMap.get(examplePath);
         if (example == null) {
             String path = examplePath;
-            if (examplePath.startsWith("/"
-                    + INatExample.TUTORIAL_EXAMPLES_PREFIX)) {
-                path = examplePath.replace("/"
-                        + INatExample.TUTORIAL_EXAMPLES_PREFIX,
-                        INatExample.BASE_PATH + "/");
-            } else if (examplePath.startsWith("/"
-                    + INatExample.CLASSIC_EXAMPLES_PREFIX)) {
-                path = examplePath.replace("/"
-                        + INatExample.CLASSIC_EXAMPLES_PREFIX,
-                        INatExample.CLASSIC_BASE_PATH + "/");
+            if (examplePath.startsWith("/" + INatExample.TUTORIAL_EXAMPLES_PREFIX)) {
+                path = examplePath.replace("/" + INatExample.TUTORIAL_EXAMPLES_PREFIX, INatExample.BASE_PATH + "/");
+            } else if (examplePath.startsWith("/" + INatExample.CLASSIC_EXAMPLES_PREFIX)) {
+                path = examplePath.replace("/" + INatExample.CLASSIC_EXAMPLES_PREFIX, INatExample.CLASSIC_BASE_PATH + "/");
             }
 
             if (path.startsWith("/"))
@@ -198,8 +190,7 @@ public class TabbedNatExampleRunner {
         tabComposite.setLayout(new GridLayout(1, false));
 
         // Create example control
-        final Control exampleControl = example
-                .createExampleControl(tabComposite);
+        final Control exampleControl = example.createExampleControl(tabComposite);
         exampleControl.setLayoutData(new GridData(GridData.FILL_BOTH));
         exampleControlMap.put(example, exampleControl);
 
@@ -208,8 +199,7 @@ public class TabbedNatExampleRunner {
         if (description != null && description.length() > 0) {
             final Group descriptionGroup = new Group(tabComposite, SWT.NONE);
             descriptionGroup.setText("Description");
-            descriptionGroup.setLayoutData(new GridData(
-                    GridData.FILL_HORIZONTAL));
+            descriptionGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
             descriptionGroup.setLayout(new FillLayout());
 
             final Label descriptionLabel = new Label(descriptionGroup, SWT.WRAP);
@@ -224,14 +214,9 @@ public class TabbedNatExampleRunner {
             public void widgetSelected(SelectionEvent event) {
                 String path = event.text;
                 if (path.startsWith("/" + INatExample.TUTORIAL_EXAMPLES_PREFIX)) {
-                    path = path.replace("/"
-                            + INatExample.TUTORIAL_EXAMPLES_PREFIX,
-                            INatExample.BASE_PATH + "/");
-                } else if (path.startsWith("/"
-                        + INatExample.CLASSIC_EXAMPLES_PREFIX)) {
-                    path = path.replace("/"
-                            + INatExample.CLASSIC_EXAMPLES_PREFIX,
-                            INatExample.CLASSIC_BASE_PATH + "/");
+                    path = path.replace("/" + INatExample.TUTORIAL_EXAMPLES_PREFIX, INatExample.BASE_PATH + "/");
+                } else if (path.startsWith("/" + INatExample.CLASSIC_EXAMPLES_PREFIX)) {
+                    path = path.replace("/" + INatExample.CLASSIC_EXAMPLES_PREFIX, INatExample.CLASSIC_BASE_PATH + "/");
                 }
                 String source = getResourceAsString(path + ".java");
                 if (source != null) {
@@ -250,8 +235,7 @@ public class TabbedNatExampleRunner {
     }
 
     private static String getResourceAsString(String resource) {
-        InputStream inStream = TabbedNatExampleRunner.class
-                .getResourceAsStream(resource);
+        InputStream inStream = TabbedNatExampleRunner.class.getResourceAsStream(resource);
 
         if (inStream != null) {
             StringBuffer strBuf = new StringBuffer();

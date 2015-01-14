@@ -276,8 +276,6 @@ public class _5124_SummaryRowPositionGridExample extends AbstractNatExample {
                 // we need to set the composite dependency to false
                 summaryRowLayer.setHorizontalCompositeDependency(false);
 
-                // configure the SummaryRowLayer to be rendered standalone
-                summaryRowLayer.setStandalone(true);
                 summaryRowLayer.addConfiguration(
                         new ExampleSummaryRowGridConfiguration(this.bodyDataLayer.getDataProvider()));
 
