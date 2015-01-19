@@ -29,11 +29,10 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
                 GUIHelper.getImage("checked"), //$NON-NLS-1$
                 GUIHelper.getImage("semichecked"), //$NON-NLS-1$
                 GUIHelper.getImage("unchecked") //$NON-NLS-1$
-        );
+                );
     }
 
-    public TreeCheckBoxPainter(Image checkedImg, Image semicheckedImage,
-            Image uncheckedImg) {
+    public TreeCheckBoxPainter(Image checkedImg, Image semicheckedImage, Image uncheckedImg) {
         this.checkedImg = checkedImg;
         this.semicheckedImg = semicheckedImage;
         this.uncheckedImg = uncheckedImg;
@@ -47,13 +46,11 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
         return getImage(checked).getBounds().height;
     }
 
-    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset,
-            boolean checked) {
+    public void paintIconImage(GC gc, Rectangle rectangle, int yOffset, boolean checked) {
         Image checkBoxImage = getImage(checked);
 
         // Center image
-        int x = rectangle.x + (rectangle.width / 2)
-                - (checkBoxImage.getBounds().width / 2);
+        int x = rectangle.x + (rectangle.width / 2) - (checkBoxImage.getBounds().width / 2);
 
         gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
     }
@@ -68,10 +65,13 @@ public abstract class TreeCheckBoxPainter extends ImagePainter {
         switch (getCheckBoxState(cell)) {
             case CHECKED:
                 result = this.checkedImg;
+                break;
             case SEMICHECKED:
                 result = this.semicheckedImg;
+                break;
             default:
                 result = this.uncheckedImg;
+                break;
         }
         return result;
     }
