@@ -94,13 +94,13 @@ public class DisplayColumnChooserCommandHandler extends AbstractLayerCommandHand
     }
 
     public void addNonModifiableColumn(Integer... columnIndexes) {
-        for (int column : columnIndexes) {
+        for (Integer column : columnIndexes) {
             this.nonModifiableColumns.add(column);
         }
     }
 
     public void removeNonModifiableColumn(Integer... columnIndexes) {
-        for (int column : columnIndexes) {
+        for (Integer column : columnIndexes) {
             this.nonModifiableColumns.remove(column);
         }
     }
