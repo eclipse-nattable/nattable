@@ -261,7 +261,7 @@ public class _811_GroupBySummaryFixedSummaryRowExample extends AbstractNatExampl
             @Override
             public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
                 uiBindingRegistry.registerKeyBinding(
-                        new KeyEventMatcher(SWT.CTRL, 'e'), new ExportAction());
+                        new KeyEventMatcher(SWT.MOD1, 'e'), new ExportAction());
             }
 
             @Override

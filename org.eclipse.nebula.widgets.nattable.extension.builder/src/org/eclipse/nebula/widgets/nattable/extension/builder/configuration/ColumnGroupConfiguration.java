@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459029
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.builder.configuration;
 
@@ -36,14 +37,12 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-public class ColumnGroupConfiguration extends
-        DefaultColumnGroupHeaderLayerConfiguration {
+public class ColumnGroupConfiguration extends DefaultColumnGroupHeaderLayerConfiguration {
 
     private final ColumnGroupModel columnGroupModel;
     private final TableModel tableModel;
 
-    public ColumnGroupConfiguration(ColumnGroupModel columnGroupModel,
-            TableModel tableModel) {
+    public ColumnGroupConfiguration(ColumnGroupModel columnGroupModel, TableModel tableModel) {
         super(columnGroupModel);
         this.columnGroupModel = columnGroupModel;
         this.tableModel = tableModel;
@@ -54,39 +53,38 @@ public class ColumnGroupConfiguration extends
         // Column Group Header is a part of the Group Header.
         // Register the 'column group header matcher' first so that it gets
         // picked up before the more general 'column header matcher'.
-        uiBindingRegistry.registerMouseDragMode(MouseEventMatcher
-                .columnGroupHeaderLeftClick(SWT.NONE), new AggregateDragMode(
-                new CellDragMode(), new ColumnGroupHeaderReorderDragMode(
-                        columnGroupModel)));
+        uiBindingRegistry.registerMouseDragMode(
+                MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
+                new AggregateDragMode(new CellDragMode(), new ColumnGroupHeaderReorderDragMode(this.columnGroupModel)));
 
         uiBindingRegistry.registerMouseDragMode(
                 MouseEventMatcher.columnHeaderLeftClick(SWT.NONE),
-                new ColumnHeaderReorderDragMode(columnGroupModel));
+                new ColumnHeaderReorderDragMode(this.columnGroupModel));
 
         uiBindingRegistry.registerFirstSingleClickBinding(
                 MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
                 new ColumnGroupExpandCollapseAction());
 
         uiBindingRegistry.registerKeyBinding(
-                new KeyEventMatcher(SWT.CTRL, 'g'),
+                new KeyEventMatcher(SWT.MOD1, 'g'),
                 new CreateColumnGroupAction());
         uiBindingRegistry.registerKeyBinding(
-                new KeyEventMatcher(SWT.CTRL, 'u'), new UngroupColumnsAction());
+                new KeyEventMatcher(SWT.MOD1, 'u'),
+                new UngroupColumnsAction());
     }
 
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
-        Image bgImage = tableModel.tableStyle.columnHeaderBgImage;
+        Image bgImage = this.tableModel.tableStyle.columnHeaderBgImage;
 
         if (ObjectUtils.isNotNull(bgImage)) {
             TextPainter txtPainter = new TextPainter(false, false);
-            ICellPainter cellPainter = new BackgroundImagePainter(txtPainter,
-                    bgImage, GUIHelper.getColor(192, 192, 192));
+            ICellPainter cellPainter = new BackgroundImagePainter(txtPainter, bgImage, GUIHelper.getColor(192, 192, 192));
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new ColumnGroupHeaderTextPainter(columnGroupModel,
-                            cellPainter), DisplayMode.NORMAL,
+                    new ColumnGroupHeaderTextPainter(this.columnGroupModel, cellPainter),
+                    DisplayMode.NORMAL,
                     GridRegion.COLUMN_GROUP_HEADER);
         } else {
             super.configureRegistry(configRegistry);

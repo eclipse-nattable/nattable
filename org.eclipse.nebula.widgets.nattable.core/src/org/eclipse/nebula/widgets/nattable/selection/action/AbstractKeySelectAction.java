@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459029
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
@@ -27,8 +28,7 @@ public abstract class AbstractKeySelectAction implements IKeyAction {
         this.direction = direction;
     }
 
-    public AbstractKeySelectAction(MoveDirectionEnum direction,
-            boolean shiftMask, boolean ctrlMask) {
+    public AbstractKeySelectAction(MoveDirectionEnum direction, boolean shiftMask, boolean ctrlMask) {
         this.direction = direction;
         this.shiftMask = shiftMask;
         this.controlMask = ctrlMask;
@@ -39,7 +39,7 @@ public abstract class AbstractKeySelectAction implements IKeyAction {
     public void run(NatTable natTable, KeyEvent event) {
         if (!this.isStateMaskSpecified) {
             this.shiftMask = (event.stateMask & SWT.SHIFT) != 0;
-            this.controlMask = (event.stateMask & SWT.CTRL) != 0;
+            this.controlMask = (event.stateMask & SWT.MOD1) != 0;
         }
     }
 

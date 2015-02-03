@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459029
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.export.config;
 
@@ -26,12 +27,14 @@ public class DefaultExportBindings implements IConfiguration {
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         uiBindingRegistry.registerKeyBinding(
-                new KeyEventMatcher(SWT.CTRL, 'e'), new ExportAction());
+                new KeyEventMatcher(SWT.MOD1, 'e'),
+                new ExportAction());
     }
 
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
-        configRegistry.registerConfigAttribute(ExportConfigAttributes.EXPORTER,
+        configRegistry.registerConfigAttribute(
+                ExportConfigAttributes.EXPORTER,
                 new ExcelExporter());
         configRegistry.registerConfigAttribute(
                 ExportConfigAttributes.EXPORT_FORMATTER,

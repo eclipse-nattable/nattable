@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459029
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
@@ -25,7 +26,7 @@ public class AbstractMouseSelectionAction implements IMouseAction {
     @Override
     public void run(NatTable natTable, MouseEvent event) {
         this.withShiftMask = (event.stateMask & SWT.SHIFT) != 0;
-        this.withControlMask = (event.stateMask & SWT.CTRL) != 0;
+        this.withControlMask = (event.stateMask & SWT.MOD1) != 0;
 
         this.gridColumnPosition = natTable.getColumnPositionByX(event.x);
         this.gridRowPosition = natTable.getRowPositionByY(event.y);

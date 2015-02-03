@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447259
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447259, 459029
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection.config;
 
@@ -29,7 +29,7 @@ public class RowOnlySelectionBindings extends DefaultSelectionBindings {
         uiBindingRegistry.registerFirstMouseDownBinding(
                 MouseEventMatcher.bodyLeftClick(SWT.SHIFT), action);
         uiBindingRegistry.registerFirstMouseDownBinding(
-                MouseEventMatcher.bodyLeftClick(SWT.CTRL), action);
+                MouseEventMatcher.bodyLeftClick(SWT.MOD1), action);
         uiBindingRegistry.registerFirstMouseDownBinding(
                 MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), action);
     }

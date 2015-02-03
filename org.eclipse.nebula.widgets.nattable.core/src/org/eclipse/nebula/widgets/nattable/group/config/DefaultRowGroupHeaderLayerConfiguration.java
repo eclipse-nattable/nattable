@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459029
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group.config;
 
@@ -26,8 +27,7 @@ import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
 
-public class DefaultRowGroupHeaderLayerConfiguration<T> implements
-        IConfiguration {
+public class DefaultRowGroupHeaderLayerConfiguration<T> implements IConfiguration {
 
     public static final String GROUP_COLLAPSED_CONFIG_TYPE = "GROUP_COLLAPSED"; //$NON-NLS-1$
     public static final String GROUP_EXPANDED_CONFIG_TYPE = "GROUP_EXPANDED"; //$NON-NLS-1$
@@ -48,8 +48,7 @@ public class DefaultRowGroupHeaderLayerConfiguration<T> implements
      *             anymore
      */
     @Deprecated
-    public DefaultRowGroupHeaderLayerConfiguration(
-            final IRowGroupModel<T> rowGroupModel) {
+    public DefaultRowGroupHeaderLayerConfiguration(final IRowGroupModel<T> rowGroupModel) {
         this.rowGroupModel = rowGroupModel;
     }
 
@@ -61,8 +60,9 @@ public class DefaultRowGroupHeaderLayerConfiguration<T> implements
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, new BeveledBorderDecorator(
-                        new RowGroupHeaderTextPainter()), DisplayMode.NORMAL,
+                CellConfigAttributes.CELL_PAINTER,
+                new BeveledBorderDecorator(new RowGroupHeaderTextPainter()),
+                DisplayMode.NORMAL,
                 GridRegion.ROW_GROUP_HEADER);
         // We are not setting a special configuration for rendering grid lines,
         // as this would override the column header configuration. This is
@@ -77,7 +77,7 @@ public class DefaultRowGroupHeaderLayerConfiguration<T> implements
         uiBindingRegistry.registerSingleClickBinding(
                 MouseEventMatcher.rowGroupHeaderLeftClick(SWT.NONE), action);
         uiBindingRegistry.registerSingleClickBinding(
-                MouseEventMatcher.rowGroupHeaderLeftClick(SWT.CTRL), action);
+                MouseEventMatcher.rowGroupHeaderLeftClick(SWT.MOD1), action);
         uiBindingRegistry.registerSingleClickBinding(
                 MouseEventMatcher.rowGroupHeaderLeftClick(SWT.SHIFT), action);
 
