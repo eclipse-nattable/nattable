@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459246
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.summaryrow;
 
@@ -30,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
+import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 
 /**
@@ -82,7 +84,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      * The value cache that contains the summary values and performs summary
      * calculation in background processes if necessary.
      */
-    private CalculatedValueCache valueCache;
+    private ICalculatedValueCache valueCache;
     /**
      * Converter that is used to ensure the row height of the summary row is
      * scaled correctly.
@@ -487,5 +489,33 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      */
     public void setStandalone(boolean standalone) {
         this.standalone = standalone;
+    }
+
+    /**
+     * @return The {@link ICalculatedValueCache} that contains the summary
+     *         values and performs summary calculation in background processes
+     *         if necessary.
+     */
+    public ICalculatedValueCache getValueCache() {
+        return this.valueCache;
+    }
+
+    /**
+     * Set the {@link ICalculatedValueCache} that should be used internally to
+     * calculate the summary values in a background thread and cache the
+     * results.
+     * <p>
+     * <b><u>Note:</u></b> By default the {@link CalculatedValueCache} is used.
+     * Be sure you know what you are doing when you are trying to exchange the
+     * implementation.
+     * </p>
+     *
+     * @param valueCache
+     *            The {@link ICalculatedValueCache} that contains the summary
+     *            values and performs summary calculation in background
+     *            processes if necessary.
+     */
+    public void setValueCache(ICalculatedValueCache valueCache) {
+        this.valueCache = valueCache;
     }
 }

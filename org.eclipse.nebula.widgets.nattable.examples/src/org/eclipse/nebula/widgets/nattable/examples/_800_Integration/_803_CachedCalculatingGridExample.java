@@ -63,6 +63,7 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
@@ -288,7 +289,7 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
     class CachedValueCalculatingDataProvider<T> extends
             GlazedListsDataProvider<T> {
 
-        private CalculatedValueCache valueCache;
+        private ICalculatedValueCache valueCache;
 
         public CachedValueCalculatingDataProvider(EventList<T> list,
                 IColumnAccessor<T> columnAccessor) {

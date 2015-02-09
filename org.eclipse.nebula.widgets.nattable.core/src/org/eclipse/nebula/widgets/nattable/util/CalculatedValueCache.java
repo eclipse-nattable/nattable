@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
  *    Roman Flueckiger <roman.flueckiger@mac.com - switched to concurrent hash maps to prevent a concurrency issue
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459246
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
@@ -29,10 +30,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
  * {@link ICalculatedValueCacheKey} as the key for the value cache. Usually the
  * internal default implementations for column or row position, or the
  * column-row coordinates should fit most of the use cases.
- *
- * @author Dirk Fauth
  */
-public class CalculatedValueCache {
+public class CalculatedValueCache implements ICalculatedValueCache {
 
     /**
      * The ILayer this value cache is connected to. Needed to perform cell
@@ -114,8 +113,7 @@ public class CalculatedValueCache {
      *            Flag to specify if the row position should be used as cache
      *            key.
      */
-    public CalculatedValueCache(ILayer layer, boolean useColumnAsKey,
-            boolean useRowAsKey) {
+    public CalculatedValueCache(ILayer layer, boolean useColumnAsKey, boolean useRowAsKey) {
         this(layer, useColumnAsKey, useRowAsKey, true);
     }
 
@@ -146,8 +144,7 @@ public class CalculatedValueCache {
      *            Flag to specify if the update of the calculated values should
      *            be performed smoothly.
      */
-    public CalculatedValueCache(ILayer layer, boolean useColumnAsKey,
-            boolean useRowAsKey, boolean smoothUpdates) {
+    public CalculatedValueCache(ILayer layer, boolean useColumnAsKey, boolean useRowAsKey, boolean smoothUpdates) {
         this.layer = layer;
         this.executor = Executors.newCachedThreadPool();
 
@@ -156,36 +153,9 @@ public class CalculatedValueCache {
         this.smoothUpdates = smoothUpdates;
     }
 
-    /**
-     * Returns the calculated value for the specified column and row position.
-     * If there is no calculated value for that coordinates in the cache or
-     * there is a potentially stale value, the re-calculation of the value is
-     * executed.
-     * <p>
-     * This method tries to use a predefined cache key dependent on the
-     * configuration of this CalculatedValueCache.
-     *
-     * @param columnPosition
-     *            The column position of the requested value.
-     * @param rowPosition
-     *            The row position of the requested value.
-     * @param calculateInBackground
-     *            Flag to specify whether the value calculation should be
-     *            processed in the background or not. Setting this value to
-     *            <code>false</code> will cause calculation in the UI thread,
-     *            which is usually necessary in case of exporting and printing.
-     * @param calculator
-     *            The {@link ICalculator} that is used for calculating the
-     *            values.
-     * @return The value for the given coordinates.
-     *
-     * @throws IllegalStateException
-     *             if this CalculatedValueCache is configured to not use the
-     *             column and row position for cache key definition.
-     */
-    public Object getCalculatedValue(final int columnPosition,
-            final int rowPosition, boolean calculateInBackground,
-            final ICalculator calculator) {
+    @Override
+    public Object getCalculatedValue(final int columnPosition, final int rowPosition,
+            boolean calculateInBackground, final ICalculator calculator) {
 
         ICalculatedValueCacheKey key = null;
         if (this.useColumnAsKey && this.useRowAsKey) {
@@ -204,35 +174,9 @@ public class CalculatedValueCache {
                 calculateInBackground, calculator);
     }
 
-    /**
-     * Returns the calculated value for the specified column and row position.
-     * If there is no calculated value for that coordinates in the cache or
-     * there is a potentially stale value, the re-calculation of the value is
-     * executed.
-     * <p>
-     * This method uses the given ICalculatedValueCacheKey instead of
-     * determining the cache key out of the CalculatedValueCache key
-     * configuration.
-     *
-     * @param columnPosition
-     *            The column position of the requested value.
-     * @param rowPosition
-     *            The row position of the requested value.
-     * @param key
-     *            The key that is used by this CalculatedValueCache.
-     * @param calculateInBackground
-     *            Flag to specify whether the value calculation should be
-     *            processed in the background or not. Setting this value to
-     *            <code>false</code> will cause calculation in the UI thread,
-     *            which is usually necessary in case of exporting and printing.
-     * @param calculator
-     *            The {@link ICalculator} that is used for calculating the
-     *            values.
-     * @return The value for the given coordinates.
-     */
-    public Object getCalculatedValue(final int columnPosition,
-            final int rowPosition, final ICalculatedValueCacheKey key,
-            boolean calculateInBackground, final ICalculator calculator) {
+    @Override
+    public Object getCalculatedValue(final int columnPosition, final int rowPosition,
+            final ICalculatedValueCacheKey key, boolean calculateInBackground, final ICalculator calculator) {
 
         Object result = null;
 
@@ -243,14 +187,12 @@ public class CalculatedValueCache {
             result = cacheCopyValue;
 
             // if the calculated value is not the same as the cache value, we
-            // need to
-            // start the calculation process
+            // need to start the calculation process
             if (cacheCopyValue == null
                     || !cacheValuesEqual(cacheValue, cacheCopyValue)) {
 
                 // if this CalculatedValueCache is not configured for smooth
-                // updates, return null
-                // instead of the previous calculated value
+                // updates, return null instead of the previous calculated value
                 if (!this.smoothUpdates) {
                     result = null;
                 }
@@ -262,8 +204,7 @@ public class CalculatedValueCache {
                         addToCache(key, summaryValue);
 
                         // only fire an update event if the new calculated value
-                        // is
-                        // different to the value in the cache copy
+                        // is different to the value in the cache copy
                         if (!cacheValuesEqual(summaryValue, cacheCopyValue)
                                 && CalculatedValueCache.this.layer != null) {
                             CalculatedValueCache.this.layer.fireLayerEvent(new CellVisualChangeEvent(
@@ -284,22 +225,12 @@ public class CalculatedValueCache {
         return result;
     }
 
-    /**
-     * Clear the internal cache. Doing this will result in triggering new
-     * calculations. If the values where calculated before, using the cache copy
-     * still the already calculated values will be returned until the new
-     * calculation is done.
-     */
+    @Override
     public void clearCache() {
         this.cache.clear();
     }
 
-    /**
-     * Kills all cached values. The internal cache aswell as the cache copy to
-     * support smooth updates of values. This is necessary because on structural
-     * changes, e.g. deleting/adding rows, the cache copy would return false
-     * values.
-     */
+    @Override
     public void killCache() {
         this.cache.clear();
         this.cacheCopy.clear();
@@ -324,9 +255,7 @@ public class CalculatedValueCache {
         }
     }
 
-    /**
-     * Cleaning up internal resources like shutting down the ExecutorService.
-     */
+    @Override
     public void dispose() {
         this.executor.shutdownNow();
     }
@@ -346,17 +275,7 @@ public class CalculatedValueCache {
                 && value2 != null && value1.equals(value2)));
     }
 
-    /**
-     * Set the layer that should be used by this CalculatedValueCache to trigger
-     * updates after the calculation processing is done. Necessary if the
-     * caching is connected to a data provider for example, which is not able to
-     * fire events itself.
-     *
-     * @param layer
-     *            The ILayer that should be used to fire the
-     *            CellVisualChangeEvent after the background calculation process
-     *            is done.
-     */
+    @Override
     public void setLayer(ILayer layer) {
         this.layer = layer;
     }
@@ -364,8 +283,6 @@ public class CalculatedValueCache {
     /**
      * ICalculatedValueCacheKey that uses either the column or row position as
      * key.
-     *
-     * @author Dirk Fauth
      */
     class PositionValueCacheKey implements ICalculatedValueCacheKey {
 
@@ -407,8 +324,6 @@ public class CalculatedValueCache {
 
     /**
      * ICalculatedValueCacheKey that uses the column and row position as key.
-     *
-     * @author Dirk Fauth
      */
     class CoordinateValueCacheKey implements ICalculatedValueCacheKey {
 

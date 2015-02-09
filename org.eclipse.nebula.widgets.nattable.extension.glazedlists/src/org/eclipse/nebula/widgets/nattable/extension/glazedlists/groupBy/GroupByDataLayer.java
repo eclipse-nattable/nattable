@@ -10,6 +10,7 @@
  *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 454566
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 448115, 449361, 453874
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 444839, 444855, 453885
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459246
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -44,6 +45,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.util.CalculatedValueCache;
+import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCache;
 import org.eclipse.nebula.widgets.nattable.util.ICalculatedValueCacheKey;
 import org.eclipse.nebula.widgets.nattable.util.ICalculator;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -106,7 +108,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
      * The value cache that contains the summary values and performs summary
      * calculation in background processes if necessary.
      */
-    private CalculatedValueCache valueCache;
+    private ICalculatedValueCache valueCache;
 
     /** Map the group to a dynamic list of group elements */
     private final Map<GroupByObject, FilterList<T>> filtersByGroup = new ConcurrentHashMap<GroupByObject, FilterList<T>>();
@@ -500,6 +502,34 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
         }
 
         return super.doCommand(command);
+    }
+
+    /**
+     * @return The {@link ICalculatedValueCache} that contains the summary
+     *         values and performs summary calculation in background processes
+     *         if necessary.
+     */
+    public ICalculatedValueCache getValueCache() {
+        return this.valueCache;
+    }
+
+    /**
+     * Set the {@link ICalculatedValueCache} that should be used internally to
+     * calculate the summary values in a background thread and cache the
+     * results.
+     * <p>
+     * <b><u>Note:</u></b> By default the {@link CalculatedValueCache} is used.
+     * Be sure you know what you are doing when you are trying to exchange the
+     * implementation.
+     * </p>
+     *
+     * @param valueCache
+     *            The {@link ICalculatedValueCache} that contains the summary
+     *            values and performs summary calculation in background
+     *            processes if necessary.
+     */
+    public void setValueCache(ICalculatedValueCache valueCache) {
+        this.valueCache = valueCache;
     }
 
     /**

@@ -24,7 +24,7 @@ import org.junit.Test;
  */
 public class CalculatedValueCacheTest {
 
-    CalculatedValueCache valueCache;
+    ICalculatedValueCache valueCache;
 
     ICalculator calculator = new ICalculator() {
 
