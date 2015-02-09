@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459422
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -125,7 +126,15 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
                     GroupByObject g1 = (GroupByObject) o1;
                     GroupByObject g2 = (GroupByObject) o2;
 
-                    Comparator comparator = getComparator(columnIndex);
+                    // get column index for groupBy value
+                    // we assume the descriptor is an ordered map, therefore we
+                    // choose the last element in the map
+                    int groupByIndex = columnIndex;
+                    for (Map.Entry<Integer, Object> entry : g1.getDescriptor().entrySet()) {
+                        groupByIndex = entry.getKey();
+                    }
+
+                    Comparator comparator = getComparator(groupByIndex);
                     result = g1.getDescriptor().size() - g2.getDescriptor().size();
                     if (result == 0) {
                         if (this.sortModel != null

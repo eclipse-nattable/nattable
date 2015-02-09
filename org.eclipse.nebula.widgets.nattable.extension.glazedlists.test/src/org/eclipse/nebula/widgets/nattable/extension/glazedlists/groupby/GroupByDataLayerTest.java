@@ -14,6 +14,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Comparator;
+
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
@@ -125,6 +127,7 @@ public class GroupByDataLayerTest {
                 new DefaultColumnHeaderDataProvider(this.propertyNames);
         DataLayer columnHeaderDataLayer =
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        columnHeaderDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
         this.sortModel = new GlazedListsSortModel<Person>(
                 this.sortedList,
                 this.columnPropertyAccessor,
@@ -801,4 +804,30 @@ public class GroupByDataLayerTest {
         assertEquals(200.0d, this.dataLayer.getDataValueByPosition(2, row, labelStack, false));
     }
 
+    @Test
+    public void testTwoLevelGroupWithCustomComparator() {
+        addSortingCapability();
+
+        this.configRegistry.registerConfigAttribute(
+                SortConfigAttributes.SORT_COMPARATOR,
+                new Comparator<Double>() {
+
+                    @Override
+                    public int compare(Double o1, Double o2) {
+                        return o2.compareTo(o1);
+                    }
+
+                },
+                DisplayMode.NORMAL,
+                ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+
+        // groupBy money
+        this.groupByModel.addGroupByColumnIndex(2);
+        // groupBy lastname
+        this.groupByModel.addGroupByColumnIndex(1);
+
+        // if we get here, there is no class cast exception as reported in 
+        // Bug 459422
+
+    }
 }
