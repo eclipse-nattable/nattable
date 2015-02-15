@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Roman Flueckiger <roman.flueckiger@mac.com> - Bug 451486
+ *     Roman Flueckiger <rflueckiger@inventage.com> - Bug 459582
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnChooser.gui;
 
@@ -488,7 +489,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         tree.showSelection();
     }
 
-    private void moveSelectedToTop() {
+    void moveSelectedToTop() {
         if (isAnyLeafSelected(this.selectedTree)) {
             if (!isFirstLeafSelected(this.selectedTree)) {
                 List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
@@ -500,7 +501,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
                 List<Integer> toPositions = new ArrayList<Integer>();
 
-                int shift = getUpperMostIndex();
+                int shift = getUpperMostPosition();
                 for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
                     toPositions.add(shift);
                     shift += groupedPositions.size();
@@ -545,6 +546,12 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
                     // Previous column entry
                     ColumnEntry previousColumnEntry = getPreviousColumnEntryForPosition(this.selectedTree, firstPositionInGroup - 1);
+
+                    // Previous column entry is null if the last leaf in the
+                    // tree is selected
+                    if (previousColumnEntry == null) {
+                        return;
+                    }
                     int previousColumnEntryIndex = previousColumnEntry.getIndex();
 
                     if (columnGroupMoved) {
@@ -671,7 +678,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         }
     }
 
-    private void moveSelectedToBottom() {
+    void moveSelectedToBottom() {
         if (isAnyLeafSelected(this.selectedTree)) {
             if (!isLastLeafSelected(this.selectedTree)) {
                 List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(this.selectedTree);
@@ -686,7 +693,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
                 List<List<Integer>> reversed = new ArrayList<List<Integer>>(postionsGroupedByContiguous);
                 Collections.reverse(reversed);
 
-                int lowerMost = getLowerMostIndex();
+                int lowerMost = getLowerMostPosition();
 
                 int shift = 0;
                 for (List<Integer> groupedPositions : reversed) {
@@ -723,7 +730,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
     private ColumnEntry getPreviousColumnEntryForPosition(Tree tree, int columnEntryPosition) {
         ColumnEntry result = null;
-        while (result == null && columnEntryPosition >= 0) {
+        while (result == null && columnEntryPosition >= getUpperMostPosition()) {
             result = getColumnEntryForPosition(tree, columnEntryPosition);
             if (result == null) {
                 columnEntryPosition--;
@@ -734,7 +741,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
     private ColumnEntry getNextColumnEntryForPosition(Tree tree, int columnEntryPosition) {
         ColumnEntry result = null;
-        while (result == null && columnEntryPosition <= getLowerMostIndex()) {
+        while (result == null && columnEntryPosition <= getLowerMostPosition()) {
             result = getColumnEntryForPosition(tree, columnEntryPosition);
             if (result == null) {
                 columnEntryPosition++;
@@ -907,7 +914,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
      * With this option, the dialog can be configure to either allow removing
      * all columns from the set of visible columns or prevent such a state by
      * disabling the "remove from selection" button if the selection contains
-     * all remaining visble columns.
+     * all remaining visible columns.
      *
      * @param preventHidingAllColumns
      *            if true, the dialog will prevent that the user selects no
@@ -956,26 +963,14 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
         }
     }
 
-    private int getUpperMostIndex() {
+    private int getUpperMostPosition() {
         List<ColumnEntry> entries = getColumnEntriesIncludingNested(this.selectedTree.getItems());
-        int result = Integer.MAX_VALUE;
-
-        for (ColumnEntry entry : entries) {
-            result = Math.min(result, entry.getIndex());
-        }
-
-        return result;
+        return entries.get(0).getPosition();
     }
 
-    private int getLowerMostIndex() {
+    private int getLowerMostPosition() {
         List<ColumnEntry> entries = getColumnEntriesIncludingNested(this.selectedTree.getItems());
-        int result = -1;
-
-        for (ColumnEntry entry : entries) {
-            result = Math.max(result, entry.getIndex());
-        }
-
-        return result;
+        return entries.get(entries.size() - 1).getPosition();
     }
 
 }
