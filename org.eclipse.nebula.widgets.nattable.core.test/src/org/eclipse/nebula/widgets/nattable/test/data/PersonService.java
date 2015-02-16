@@ -106,6 +106,38 @@ public class PersonService {
         return result;
     }
 
+    /**
+     * Creates a fixed list of {@link Person}s with a few null values.
+     */
+    public static List<Person> getFixedPersonsWithNull() {
+        List<Person> result = new ArrayList<Person>();
+
+        // create 5 Simpsons
+        // 2 Homer
+        result.add(new Person(1, maleNames[1], lastNames[0], Gender.MALE, true,
+                new Date(), 100d));
+        result.add(new Person(3, maleNames[1], lastNames[0], Gender.MALE, true,
+                new Date(), 100d));
+        // 2 Marge
+        result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE,
+                true, new Date(), 100d));
+        result.add(new Person(8, femaleNames[0], lastNames[0], Gender.FEMALE,
+                true, new Date(), 100d));
+        // 1 Bart without money
+        result.add(new Person(7, femaleNames[0], lastNames[0], Gender.FEMALE,
+                true, new Date(), null));
+
+        // create 2 Flanders without last name
+        // 1 Ned
+        result.add(new Person(11, maleNames[5], null, Gender.MALE,
+                true, new Date(), 100d));
+        // 1 Maude
+        result.add(new Person(13, femaleNames[6], null, Gender.FEMALE,
+                true, new Date(), 100d));
+
+        return result;
+    }
+
     public static List<Person> getFixedMixedPersons() {
         List<Person> result = new ArrayList<Person>();
 

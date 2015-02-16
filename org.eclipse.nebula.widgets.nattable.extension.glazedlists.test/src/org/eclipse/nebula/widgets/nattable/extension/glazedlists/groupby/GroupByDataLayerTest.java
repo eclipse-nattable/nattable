@@ -14,7 +14,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
@@ -155,6 +157,34 @@ public class GroupByDataLayerTest {
         o = this.dataLayer.getTreeList().get(9);
         assertTrue("Object is not a GroupByObject", o instanceof GroupByObject);
         assertEquals("Simpson", ((GroupByObject) o).getValue());
+    }
+
+    @Test
+    public void testGetElementsInGroupWithNullValue() {
+        // Test with another list with null values
+        this.sortedList.clear();
+        this.sortedList.addAll(PersonService.getFixedPersonsWithNull());
+
+        // groupBy lastname
+        this.groupByModel.addGroupByColumnIndex(1);
+
+        // collect GroupBy Objects
+        List<GroupByObject> groupByObjects = new ArrayList<GroupByObject>();
+        for (Object o : this.dataLayer.getTreeList()) {
+            if (o instanceof GroupByObject) {
+                groupByObjects.add((GroupByObject) o);
+            }
+        }
+
+        // test with getElementsInGroup() class GroupDescriptorMatcher.
+        // testing like this, cause setup would be complex
+        for (GroupByObject o : groupByObjects) {
+            this.dataLayer.getElementsInGroup(o);
+        }
+
+        // if we get here, there is no NullPointerException in
+        // GroupDescriptorMatcher.
+
     }
 
     @Test
@@ -826,7 +856,7 @@ public class GroupByDataLayerTest {
         // groupBy lastname
         this.groupByModel.addGroupByColumnIndex(1);
 
-        // if we get here, there is no class cast exception as reported in 
+        // if we get here, there is no class cast exception as reported in
         // Bug 459422
 
     }

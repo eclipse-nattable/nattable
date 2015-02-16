@@ -11,6 +11,7 @@
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 448115, 449361, 453874
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 444839, 444855, 453885
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459246
+ *     Daniel Fritsch <danielw.fritsch@web.de> - Bug 460031
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -625,11 +626,18 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             for (Entry<Integer, Object> desc : this.group.getDescriptor().entrySet()) {
                 int columnIndex = desc.getKey();
                 Object groupName = desc.getValue();
-                if (!groupName.equals(this.columnAccessor.getDataValue(element, columnIndex))) {
+                if (!equals(groupName, this.columnAccessor.getDataValue(element, columnIndex))) {
                     return false;
                 }
             }
             return true;
+        }
+
+        /**
+         * java 1.7 style Objects.equals() logic
+         */
+        private boolean equals(Object a, Object b) {
+            return (a == b) || (a != null && a.equals(b));
         }
     }
 
