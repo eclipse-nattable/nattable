@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com - Bug 449764
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 460077
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.mode;
 
@@ -47,13 +48,13 @@ public class ColumnResizeDragMode implements IDragMode {
     @Override
     public void mouseDown(NatTable natTable, MouseEvent event) {
         natTable.forceFocus();
-        this.columnPositionToResize = CellEdgeDetectUtil.getColumnPositionToResize(
-                natTable, new Point(event.x, event.y));
+        this.columnPositionToResize =
+                CellEdgeDetectUtil.getColumnPositionToResize(natTable, new Point(event.x, event.y));
         if (this.columnPositionToResize >= 0) {
-            this.gridColumnStartX = natTable
-                    .getStartXOfColumnPosition(this.columnPositionToResize);
-            this.originalColumnWidth = natTable
-                    .getColumnWidthByPosition(this.columnPositionToResize);
+            this.gridColumnStartX =
+                    natTable.getStartXOfColumnPosition(this.columnPositionToResize);
+            this.originalColumnWidth =
+                    natTable.getColumnWidthByPosition(this.columnPositionToResize);
             this.startX = event.x;
             natTable.addOverlayPainter(this.overlayPainter);
         }
@@ -69,21 +70,18 @@ public class ColumnResizeDragMode implements IDragMode {
         if (this.checkMinimumWidth
                 && this.currentX < this.gridColumnStartX + getColumnWidthMinimum()) {
             this.currentX = this.gridColumnStartX + getColumnWidthMinimum();
-        } else {
+        }
+        else {
             int overlayExtent = ColumnResizeOverlayPainter.COLUMN_RESIZE_OVERLAY_WIDTH / 2;
 
             Set<Integer> columnsToRepaint = new HashSet<Integer>();
 
-            columnsToRepaint.add(Integer.valueOf(natTable
-                    .getColumnPositionByX(this.currentX - overlayExtent)));
-            columnsToRepaint.add(Integer.valueOf(natTable
-                    .getColumnPositionByX(this.currentX + overlayExtent)));
+            columnsToRepaint.add(natTable.getColumnPositionByX(this.currentX - overlayExtent));
+            columnsToRepaint.add(natTable.getColumnPositionByX(this.currentX + overlayExtent));
 
             if (this.lastX >= 0) {
-                columnsToRepaint.add(Integer.valueOf(natTable
-                        .getColumnPositionByX(this.lastX - overlayExtent)));
-                columnsToRepaint.add(Integer.valueOf(natTable
-                        .getColumnPositionByX(this.lastX + overlayExtent)));
+                columnsToRepaint.add(natTable.getColumnPositionByX(this.lastX - overlayExtent));
+                columnsToRepaint.add(natTable.getColumnPositionByX(this.lastX + overlayExtent));
             }
 
             for (Integer columnToRepaint : columnsToRepaint) {
@@ -105,14 +103,15 @@ public class ColumnResizeDragMode implements IDragMode {
     private void updateColumnWidth(ILayer natLayer, MouseEvent e) {
         int dragWidth = e.x - this.startX;
         int newColumnWidth = this.originalColumnWidth + dragWidth;
-        if (newColumnWidth < getColumnWidthMinimum())
+        if (newColumnWidth < getColumnWidthMinimum()) {
             newColumnWidth = getColumnWidthMinimum();
-        natLayer.doCommand(new ColumnResizeCommand(natLayer,
-                this.columnPositionToResize, newColumnWidth));
+        }
+        natLayer.doCommand(
+                new ColumnResizeCommand(natLayer, this.columnPositionToResize, newColumnWidth));
     }
 
     // XXX: This method must ask the layer what it's minimum width is!
-    private int getColumnWidthMinimum() {
+    protected int getColumnWidthMinimum() {
         return DEFAULT_COLUMN_WIDTH_MINIMUM;
     }
 
@@ -124,8 +123,11 @@ public class ColumnResizeDragMode implements IDragMode {
         public void paintOverlay(GC gc, ILayer layer) {
             Color originalBackgroundColor = gc.getBackground();
             gc.setBackground(GUIHelper.COLOR_DARK_GRAY);
-            gc.fillRectangle(ColumnResizeDragMode.this.currentX - (COLUMN_RESIZE_OVERLAY_WIDTH / 2), 0,
-                    COLUMN_RESIZE_OVERLAY_WIDTH, layer.getHeight());
+            gc.fillRectangle(
+                    ColumnResizeDragMode.this.currentX - (COLUMN_RESIZE_OVERLAY_WIDTH / 2),
+                    0,
+                    COLUMN_RESIZE_OVERLAY_WIDTH,
+                    layer.getHeight());
             gc.setBackground(originalBackgroundColor);
         }
     }
