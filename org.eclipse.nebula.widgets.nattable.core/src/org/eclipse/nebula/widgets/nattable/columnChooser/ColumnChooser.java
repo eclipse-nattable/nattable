@@ -55,6 +55,8 @@ public class ColumnChooser {
     protected final boolean sortAvailableColumns;
     protected final boolean preventHidingAllColumns;
 
+    List<Integer> nonModifiableColumns = new ArrayList<Integer>();
+
     public ColumnChooser(Shell shell, SelectionLayer selectionLayer,
             ColumnHideShowLayer columnHideShowLayer,
             ColumnHeaderLayer columnHeaderLayer,
@@ -254,16 +256,14 @@ public class ColumnChooser {
         return columnEntries;
     }
 
-    List<Integer> nonModifiableColumns = new ArrayList<Integer>();
-
     public void addNonModifiableColumn(Integer... columnIndexes) {
-        for (int column : columnIndexes) {
+        for (Integer column : columnIndexes) {
             this.nonModifiableColumns.add(column);
         }
     }
 
     public void removeNonModifiableColumn(Integer... columnIndexes) {
-        for (int column : columnIndexes) {
+        for (Integer column : columnIndexes) {
             this.nonModifiableColumns.remove(column);
         }
     }
