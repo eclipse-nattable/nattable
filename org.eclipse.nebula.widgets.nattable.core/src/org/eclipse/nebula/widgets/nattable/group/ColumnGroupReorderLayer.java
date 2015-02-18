@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 460052
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 460052, 460074
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
@@ -20,6 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.command.GroupColumnReorderCommandHandler;
+import org.eclipse.nebula.widgets.nattable.group.command.GroupColumnReorderEndCommandHandler;
+import org.eclipse.nebula.widgets.nattable.group.command.GroupColumnReorderStartCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.GroupMultiColumnReorderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.command.ReorderColumnGroupEndCommandHandler;
@@ -91,6 +93,8 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
         registerCommandHandler(new ReorderColumnsAndGroupsCommandHandler(this));
         registerCommandHandler(new GroupColumnReorderCommandHandler(this));
         registerCommandHandler(new GroupMultiColumnReorderCommandHandler(this));
+        registerCommandHandler(new GroupColumnReorderStartCommandHandler(this));
+        registerCommandHandler(new GroupColumnReorderEndCommandHandler(this));
     }
 
     // Horizontal features
@@ -314,7 +318,11 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
                 }
             }
             else {
-                this.model.removeColumnIndexes(fromColumnGroup.getName(), fromColumnIndexes);
+                // only remove if we are at the edge of a column group
+                if (ColumnGroupUtils.isLeftEdgeOfAColumnGroup(this, fromColumnPosition, fromColumnIndex, this.model)
+                        || ColumnGroupUtils.isRightEdgeOfAColumnGroup(this, fromColumnPosition, fromColumnIndex, this.model)) {
+                    this.model.removeColumnIndexes(fromColumnGroup.getName(), fromColumnIndexes);
+                }
             }
 
             consumeCommand = true;
