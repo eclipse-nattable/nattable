@@ -232,6 +232,7 @@ public class ColumnGroupModel implements IPersistable {
      *            The column indexes to remove.
      * @return <code>true</code> if at least one column was removed from the
      *         column group.
+     * @since 1.3
      */
     public boolean removeColumnIndexes(String colGroupName, int... columnIndexesToRemove) {
         ColumnGroup columnGroup = getColumnGroupByName(colGroupName);

@@ -495,6 +495,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      * @return The {@link ICalculatedValueCache} that contains the summary
      *         values and performs summary calculation in background processes
      *         if necessary.
+     * @since 1.3
      */
     public ICalculatedValueCache getValueCache() {
         return this.valueCache;
@@ -514,6 +515,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
      *            The {@link ICalculatedValueCache} that contains the summary
      *            values and performs summary calculation in background
      *            processes if necessary.
+     * @since 1.3
      */
     public void setValueCache(ICalculatedValueCache valueCache) {
         this.valueCache = valueCache;

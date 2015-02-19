@@ -14,6 +14,9 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndCommand;
 
+/**
+ * @since 1.3
+ */
 public class GroupColumnReorderEndCommandHandler extends AbstractLayerCommandHandler<ColumnReorderEndCommand> {
 
     private final ColumnGroupReorderLayer columnGroupReorderLayer;

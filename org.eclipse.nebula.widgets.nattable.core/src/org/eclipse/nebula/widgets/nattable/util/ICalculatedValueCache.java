@@ -17,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
  * background thread.
  *
  * @see CalculatedValueCache
+ * @since 1.3
  */
 public interface ICalculatedValueCache {
 

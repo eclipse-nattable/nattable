@@ -78,6 +78,9 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
         return this.model;
     }
 
+    /**
+     * @since 1.3
+     */
     @Override
     public IUniqueIndexLayer getUnderlyingLayer() {
         return (IUniqueIndexLayer) super.getUnderlyingLayer();
@@ -174,6 +177,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
      *         was triggered and no column reordering is necessary,
      *         <code>false</code> if additionally a column reordering needs to
      *         be performed.
+     * @since 1.3
      */
     public boolean updateColumnGroupModel(
             List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
@@ -211,6 +215,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
      *         was triggered and no column reordering is necessary,
      *         <code>false</code> if additionally a column reordering needs to
      *         be performed.
+     * @since 1.3
      */
     public boolean updateColumnGroupModel(
             int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
@@ -226,6 +231,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
      * @param fromColumnPositions
      *            The column positions to transform.
      * @return An array that contains the indexes for the given positions.
+     * @since 1.3
      */
     protected int[] getColumnIndexesForPositions(List<Integer> fromColumnPositions) {
         int[] fromColumnIndexes = new int[fromColumnPositions.size()];
@@ -254,6 +260,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
      *         was triggered and no column reordering is necessary,
      *         <code>false</code> if additionally a column reordering needs to
      *         be performed.
+     * @since 1.3
      */
     public boolean updateColumnGroupModel(
             int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge, List<Integer> fromColumnPositions) {

@@ -111,6 +111,9 @@ public class ColumnResizeDragMode implements IDragMode {
     }
 
     // XXX: This method must ask the layer what it's minimum width is!
+    /**
+     * @since 1.3
+     */
     protected int getColumnWidthMinimum() {
         return DEFAULT_COLUMN_WIDTH_MINIMUM;
     }
