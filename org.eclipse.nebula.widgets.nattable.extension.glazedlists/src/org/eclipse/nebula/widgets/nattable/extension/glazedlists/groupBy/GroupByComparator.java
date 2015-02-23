@@ -8,6 +8,7 @@
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 459422
+ *     Evan O'Connell <oconn.e@gmail.com> - Bug 460640
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -217,7 +218,9 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
         if (this.treeLayer != null) {
             int columnPosition = this.treeLayer.getColumnPositionByIndex(columnIndex);
             ILayerCell cell = this.treeLayer.getCellByPosition(columnPosition, 0);
-            return cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL);
+            if (cell != null) {
+                return cell.getConfigLabels().hasLabel(TreeLayer.TREE_COLUMN_CELL);
+            }
         }
         // there is no layer set, so we can not determine which column is the
         // tree column and therefore no column is treated that way
