@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Daniel Fritsch <danielw.fritsch@web.de> - Bug 460794
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow;
 
@@ -87,7 +88,10 @@ public class FilterRowTextCellEditor extends TextCellEditor {
             Display.getDefault().syncExec(new Runnable() {
                 @Override
                 public void run() {
-                    if (KeyPressCommitRunnable.this.toCommit != null && KeyPressCommitRunnable.this.toCommit.equals(getEditorValue())) {
+                    if (getEditorControl() != null
+                            && !getEditorControl().isDisposed()
+                            && KeyPressCommitRunnable.this.toCommit != null
+                            && KeyPressCommitRunnable.this.toCommit.equals(getEditorValue())) {
                         commit(MoveDirectionEnum.NONE, false);
                     }
                 }
