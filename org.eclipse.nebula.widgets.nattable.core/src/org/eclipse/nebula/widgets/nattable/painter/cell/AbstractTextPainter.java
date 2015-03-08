@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 461261
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
@@ -56,6 +57,8 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     protected boolean calculateByTextHeight;
     private boolean underline;
     private boolean strikethrough;
+
+    private boolean trimText = true;
 
     private static Map<String, Integer> temporaryMap = new WeakHashMap<String, Integer>();
     private static Map<org.eclipse.swt.graphics.Font, FontData[]> fontDataCache = new WeakHashMap<org.eclipse.swt.graphics.Font, FontData[]>();
@@ -204,7 +207,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         TextDecorationEnum decoration = cellStyle.getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
         if (decoration != null) {
             return (decoration.equals(TextDecorationEnum.UNDERLINE)
-            || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
+                    || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
         }
         return this.underline;
     }
@@ -223,7 +226,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         TextDecorationEnum decoration = cellStyle.getAttributeValue(CellStyleAttributes.TEXT_DECORATION);
         if (decoration != null) {
             return (decoration.equals(TextDecorationEnum.STRIKETHROUGH)
-            || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
+                    || decoration.equals(TextDecorationEnum.UNDERLINE_STRIKETHROUGH));
         }
         return this.strikethrough;
     }
@@ -302,7 +305,9 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
         StringBuilder output = new StringBuilder();
 
-        text = text.trim();
+        if (isTrimText()) {
+            text = text.trim();
+        }
 
         // take the whole width of the text
         int textLength = getLengthFromCache(gc, text);
@@ -605,6 +610,27 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      */
     public void setCalculateByTextHeight(boolean calculateByTextHeight) {
         this.calculateByTextHeight = calculateByTextHeight;
+    }
+
+    /**
+     * @return <code>true</code> if the text to display should be trimmed,
+     *         <code>false</code> if not. Default is <code>true</code>
+     *
+     * @since 1.3
+     */
+    public boolean isTrimText() {
+        return this.trimText;
+    }
+
+    /**
+     * @param trimText
+     *            <code>true</code> if the text to display should be trimmed,
+     *            <code>false</code> if not.
+     *
+     * @since 1.3
+     */
+    public void setTrimText(boolean trimText) {
+        this.trimText = trimText;
     }
 
 }
