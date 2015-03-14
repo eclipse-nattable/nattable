@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 462143
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport;
 
@@ -28,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.ScrollSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.command.MoveSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.ScrollSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
@@ -52,8 +54,7 @@ import org.eclipse.swt.widgets.Scrollable;
  * Introduces scroll bars over the table and keeps them in sync with the data
  * being displayed. This is typically placed over the {@link SelectionLayer}.
  */
-public class ViewportLayer extends AbstractLayerTransform implements
-        IUniqueIndexLayer {
+public class ViewportLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
     private static final int EDGE_HOVER_REGION_SIZE = 12;
 
@@ -1551,6 +1552,64 @@ public class ViewportLayer extends AbstractLayerTransform implements
     }
 
     /**
+     * Used to scroll in the given direction on drag operations outside the
+     * visible region. Does not start a background thread for automatic
+     * scrolling.
+     *
+     * @param horizontal
+     *            The horizontal movement for the scroll operation
+     *            <code>MoveDirectionEnum.LEFT</code>,
+     *            <code>MoveDirectionEnum.RIGHT</code>,
+     *            <code>MoveDirectionEnum.NONE</code>
+     * @param vertical
+     *            The vertical movement for the scroll operation
+     *            <code>MoveDirectionEnum.UP</code>,
+     *            <code>MoveDirectionEnum.DOWN</code>,
+     *            <code>MoveDirectionEnum.NONE</code>
+     * @since 1.3
+     */
+    public void drag(MoveDirectionEnum horizontal, MoveDirectionEnum vertical) {
+        if ((horizontal == null && vertical == null)
+                || MoveDirectionEnum.NONE.equals(horizontal) && MoveDirectionEnum.NONE.equals(vertical)) {
+            return;
+        }
+
+        int x = 0;
+        int y = 0;
+
+        switch (horizontal) {
+            case LEFT:
+                x = -1;
+                break;
+            case RIGHT:
+                x = 1;
+                break;
+            case NONE:
+                x = 0;
+        }
+
+        switch (vertical) {
+            case UP:
+                y = -1;
+                break;
+            case DOWN:
+                y = 1;
+                break;
+            case NONE:
+                y = 0;
+        }
+
+        if (x != 0) {
+            setOriginX(getUnderlyingLayer().getStartXOfColumnPosition(
+                    getOriginColumnPosition() + x));
+        }
+        if (y != 0) {
+            setOriginY(getUnderlyingLayer().getStartYOfRowPosition(
+                    getOriginRowPosition() + y));
+        }
+    }
+
+    /**
      * Cancels an edge hover scroll.
      */
     private void cancelEdgeHoverScroll() {
@@ -1643,8 +1702,7 @@ public class ViewportLayer extends AbstractLayerTransform implements
      * for dynamic row height calculations that occur after a row got moved into
      * the viewport and is therefore moved out of it afterwards.
      */
-    class KeepRowInsideViewportEventHandler implements
-            ILayerEventHandler<RowResizeEvent> {
+    class KeepRowInsideViewportEventHandler implements ILayerEventHandler<RowResizeEvent> {
 
         private final int rowPosition;
 

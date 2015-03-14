@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Edwin Park and others.
+ * Copyright (c) 2012, 2015 Edwin Park and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,14 +7,14 @@
  *
  * Contributors:
  *     Edwin Park - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 462143
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-public class ViewportDragCommandHandler extends
-        AbstractLayerCommandHandler<ViewportDragCommand> {
+public class ViewportDragCommandHandler extends AbstractLayerCommandHandler<ViewportDragCommand> {
 
     private ViewportLayer viewportLayer;
 
@@ -29,7 +29,12 @@ public class ViewportDragCommandHandler extends
 
     @Override
     protected boolean doCommand(ViewportDragCommand command) {
-        this.viewportLayer.drag(command.getX(), command.getY());
+        if (command.isConfiguredForMoveDirection()) {
+            this.viewportLayer.drag(command.getHorizontal(), command.getVertical());
+        }
+        else {
+            this.viewportLayer.drag(command.getX(), command.getY());
+        }
         return true;
     }
 
