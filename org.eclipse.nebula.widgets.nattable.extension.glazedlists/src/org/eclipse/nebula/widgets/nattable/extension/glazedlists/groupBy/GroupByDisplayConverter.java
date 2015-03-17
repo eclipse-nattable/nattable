@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 462367
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
@@ -51,6 +52,7 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
     private Object defaultSummaryValue = ISummaryProvider.DEFAULT_SUMMARY_VALUE;
 
     protected final Map<Integer, IDisplayConverter> wrappedConverters = new HashMap<Integer, IDisplayConverter>();
+    protected final Map<Integer, IDisplayConverter> converterCache = new HashMap<Integer, IDisplayConverter>();
 
     protected final GroupByDataLayer<T> groupByDataLayer;
 
@@ -152,17 +154,37 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
             }
 
             if (lastGroupingIndex >= 0) {
-                int rowPosition = cell.getRowPosition() + 1;
-                LabelStack stackBelow = this.groupByDataLayer.getConfigLabelsByPosition(lastGroupingIndex, rowPosition);
-                while (stackBelow.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT)) {
-                    stackBelow = this.groupByDataLayer.getConfigLabelsByPosition(lastGroupingIndex, ++rowPosition);
-                }
-
-                converter = configRegistry.getConfigAttribute(
-                        CellConfigAttributes.DISPLAY_CONVERTER,
-                        DisplayMode.NORMAL,
-                        stackBelow.getLabels());
                 canonical = ((GroupByObject) canonicalValue).getValue();
+
+                // check if we already have a converter for that index in the
+                // cache
+                if (this.converterCache.containsKey(lastGroupingIndex)) {
+                    converter = this.converterCache.get(lastGroupingIndex);
+                }
+                else {
+                    int rowPosition = cell.getRowPosition() + 1;
+                    LabelStack stackBelow = this.groupByDataLayer.getConfigLabelsByPosition(lastGroupingIndex, rowPosition);
+                    while (stackBelow.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT)) {
+                        stackBelow = this.groupByDataLayer.getConfigLabelsByPosition(lastGroupingIndex, ++rowPosition);
+                    }
+
+                    converter = configRegistry.getConfigAttribute(
+                            CellConfigAttributes.DISPLAY_CONVERTER,
+                            DisplayMode.NORMAL,
+                            stackBelow.getLabels());
+
+                    // this way we are caching the found converters to avoid
+                    // performance issues on searching for the correct one
+                    // Note:
+                    // Doing this avoids the possibility to change the converter
+                    // at runtime, which is a rather uncommon scenario.
+                    // In case the exchanging the converter at runtime is
+                    // necessary you need to unregister any cached converter in
+                    // this converter additionally
+                    if (!this.converterCache.containsKey(lastGroupingIndex)) {
+                        this.converterCache.put(lastGroupingIndex, converter);
+                    }
+                }
             }
         }
         else {
@@ -216,5 +238,13 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
      */
     public void unregisterUnderlyingDisplayConverter(int columnIndex) {
         this.wrappedConverters.remove(columnIndex);
+    }
+
+    /**
+     * Clear the internal converter cache. Needed in case of dynamical converter
+     * registry updates.
+     */
+    public void clearConverterCache() {
+        this.converterCache.clear();
     }
 }
