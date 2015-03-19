@@ -796,18 +796,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Recalculate horizontal dimension properties.
      */
     protected void recalculateAvailableWidthAndColumnCount() {
-        int clientAreaWidth = getMaxColumnPosition() >= 0 ? Math.min(
-                getMaxWidth(), getClientAreaWidth()) : getClientAreaWidth();
+        int clientAreaWidth = getMaxColumnPosition() >= 0 ? Math.min(getMaxWidth(), getClientAreaWidth()) : getClientAreaWidth();
         int availableWidth = clientAreaWidth;
         int originColumnPosition = getOriginColumnPosition();
         if (originColumnPosition >= 0) {
-            availableWidth += getOrigin().getX()
-                    - getUnderlyingLayer().getStartXOfColumnPosition(
-                            originColumnPosition);
+            availableWidth += getOrigin().getX() - getUnderlyingLayer().getStartXOfColumnPosition(originColumnPosition);
         }
 
-        int maxColumnCount = getMaxColumnPosition() < 0 ? getUnderlyingLayer()
-                .getColumnCount() : getMaxColumnPosition();
+        int maxColumnCount = getMaxColumnPosition() < 0 ? getUnderlyingLayer().getColumnCount() : getMaxColumnPosition();
 
         this.cachedWidth = 0;
         this.cachedColumnCount = 0;
@@ -815,15 +811,20 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         for (int columnPosition = originColumnPosition; columnPosition >= 0
                 && columnPosition < maxColumnCount && availableWidth > 0; columnPosition++) {
 
-            int width = getUnderlyingLayer().getColumnWidthByPosition(
-                    columnPosition);
+            int width = getUnderlyingLayer().getColumnWidthByPosition(columnPosition);
             availableWidth -= width;
             this.cachedWidth += width;
             this.cachedColumnCount++;
         }
 
-        if (this.cachedWidth > clientAreaWidth)
+        if (this.cachedColumnCount == maxColumnCount
+                && this.cachedWidth != getUnderlyingLayer().getWidth()) {
+            this.cachedWidth = getUnderlyingLayer().getWidth();
+        }
+
+        if (this.cachedWidth > clientAreaWidth) {
             this.cachedWidth = clientAreaWidth;
+        }
 
         int checkedOriginX = boundsCheckOriginX(this.origin.getX());
         if (checkedOriginX != this.origin.getX()) {
@@ -835,14 +836,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Recalculate vertical dimension properties.
      */
     protected void recalculateAvailableHeightAndRowCount() {
-        int clientAreaHeight = getMaxRowPosition() >= 0 ? Math.min(
-                getMaxHeight(), getClientAreaHeight()) : getClientAreaHeight();
+        int clientAreaHeight = getMaxRowPosition() >= 0 ? Math.min(getMaxHeight(), getClientAreaHeight()) : getClientAreaHeight();
         int availableHeight = clientAreaHeight;
         int originRowPosition = getOriginRowPosition();
         if (originRowPosition >= 0) {
-            availableHeight += getOrigin().getY()
-                    - getUnderlyingLayer().getStartYOfRowPosition(
-                            originRowPosition);
+            availableHeight += getOrigin().getY() - getUnderlyingLayer().getStartYOfRowPosition(originRowPosition);
         }
 
         int maxRowCount = getMaxRowPosition() < 0 ? getUnderlyingLayer().getRowCount() : getMaxRowPosition();
@@ -852,11 +850,15 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
         for (int rowPosition = originRowPosition; rowPosition >= 0
                 && rowPosition < maxRowCount && availableHeight > 0; rowPosition++) {
-            int height = getUnderlyingLayer().getRowHeightByPosition(
-                    rowPosition);
+            int height = getUnderlyingLayer().getRowHeightByPosition(rowPosition);
             availableHeight -= height;
             this.cachedHeight += height;
             this.cachedRowCount++;
+        }
+
+        if (this.cachedRowCount == maxRowCount
+                && this.cachedHeight != getUnderlyingLayer().getHeight()) {
+            this.cachedHeight = getUnderlyingLayer().getHeight();
         }
 
         if (this.cachedHeight > clientAreaHeight)
