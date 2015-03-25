@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 463121
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
@@ -50,8 +51,7 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
      * painted checkbox image.
      */
     @Override
-    protected Control activateCell(Composite parent,
-            Object originalCanonicalValue) {
+    protected Control activateCell(Composite parent, Object originalCanonicalValue) {
         // if this editor was activated by clicking a letter or digit key, do
         // nothing
         if (originalCanonicalValue instanceof Character) {
@@ -67,14 +67,9 @@ public class CheckBoxCellEditor extends AbstractCellEditor {
         commit(MoveDirectionEnum.NONE, false);
 
         if (this.editMode == EditModeEnum.INLINE) {
-            // Close editor so will react to subsequent clicks on the cell
+            // Close editor so it will react to subsequent clicks on the cell
             if (this.canvas != null && !this.canvas.isDisposed()) {
-                this.canvas.getDisplay().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        close();
-                    }
-                });
+                close();
             }
         }
 
