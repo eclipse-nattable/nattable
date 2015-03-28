@@ -107,6 +107,8 @@ public class DynamicColumnExample extends AbstractNatExample {
                 glazedListsGridLayer.getBodyDataLayer().fireLayerEvent(
                         new ColumnInsertEvent(glazedListsGridLayer
                                 .getBodyDataLayer(), DynamicColumnExample.this.columns.size() - 1));
+
+                natTable.refresh();
             }
         });
 
