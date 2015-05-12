@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Thorsten Schlathölter <tschlat@gmx.de> - Bug 467047
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
@@ -217,13 +218,26 @@ public class CellDisplayValueSearchUtil {
             columnPosition = secondDimStart;
             rowPosition = firstDimIndex;
         }
+
         for (int i = secondDimStart; direction * (secondDimEnd - i) > 0; i += direction) {
-            if (compare(layer, configRegistry, pattern, stringValue,
-                    comparator, caseSensitive, wholeWord, regex,
-                    columnPosition, rowPosition)) {
-                return new PositionCoordinate(layer, columnPosition,
-                        rowPosition);
+            ILayerCell cellByPosition = layer.getCellByPosition(columnPosition, rowPosition);
+            PositionCoordinate searchAnchor = getSearchAnchor(cellByPosition, direction);
+
+            // If we do not hit the searchAnchor with our current position it
+            // means that we have hit a spanned cell somewhere else than in the
+            // top left (for direction == 1) or bottom right (for direction ==
+            // -1). That in turn means that we have already visited that cell.
+            // Thus we skip the compare and proceed to the next position.
+            if (searchAnchor.columnPosition == columnPosition &&
+                    searchAnchor.rowPosition == rowPosition) {
+                if (compare(layer, configRegistry, pattern, stringValue,
+                        comparator, caseSensitive, wholeWord, regex,
+                        columnPosition, rowPosition)) {
+                    return new PositionCoordinate(layer, columnPosition,
+                            rowPosition);
+                }
             }
+
             if (columnFirst) {
                 rowPosition += direction;
             } else {
@@ -231,6 +245,25 @@ public class CellDisplayValueSearchUtil {
             }
         }
         return null;
+    }
+
+    /**
+     * Get an anchor for the search of the given cell.
+     *
+     * @param cell
+     * @param direction
+     * @return
+     */
+    private static PositionCoordinate getSearchAnchor(ILayerCell cell, int direction) {
+        if (direction > 0) {
+            // Return the original position of the cell (upper left corner)
+            return new PositionCoordinate(cell.getLayer(), cell.getOriginColumnPosition(), cell.getOriginRowPosition());
+        }
+
+        // Return the lower right corner as we are approaching bottom up.
+        return new PositionCoordinate(cell.getLayer(),
+                cell.getOriginColumnPosition() + cell.getColumnSpan() - 1,
+                cell.getOriginRowPosition() + cell.getRowSpan() - 1);
     }
 
     private static boolean compare(ILayer layer,

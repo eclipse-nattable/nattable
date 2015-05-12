@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 458537
+ *     Thorsten Schlathölter <tschlat@gmx.de> - Bug 467047
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
@@ -20,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
@@ -54,6 +56,10 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
         }
         SelectionLayer selectionLayer = (SelectionLayer) contextLayer;
         PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
+
+        // Pick start and end values depending on the direction of the search.
+        int direction = this.searchDirection.equals(ISearchDirection.SEARCH_FORWARD) ? 1 : -1;
+
         boolean hadSelectionAnchor = selectionAnchor.columnPosition >= 0 && selectionAnchor.rowPosition >= 0;
         if (!hadSelectionAnchor) {
             selectionAnchor.columnPosition = 0;
@@ -66,20 +72,34 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
         int firstDimCount;
         int secondDimPosition;
         int secondDimCount;
+
         if (this.columnFirst) {
             firstDimPosition = selectionAnchor.columnPosition;
             firstDimCount = selectionLayer.getColumnCount();
             secondDimPosition = selectionAnchor.rowPosition;
             secondDimCount = selectionLayer.getRowCount();
+
+            if (direction < 0) {
+                // If we are searching backwards we must accommodate spanned
+                // cells by starting the search from the right of the cell.
+                ILayerCell cellByPosition = selectionLayer.getCellByPosition(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
+                firstDimPosition = selectionAnchor.columnPosition + cellByPosition.getColumnSpan() - 1;
+            }
+
         } else {
             firstDimPosition = selectionAnchor.rowPosition;
             firstDimCount = selectionLayer.getRowCount();
             secondDimPosition = selectionAnchor.columnPosition;
             secondDimCount = selectionLayer.getColumnCount();
+
+            if (direction < 0) {
+                // If we are searching backwards we must accommodate spanned
+                // cells by starting the search from the bottom of the cell.
+                ILayerCell cellByPosition = selectionLayer.getCellByPosition(selectionAnchor.columnPosition, selectionAnchor.rowPosition);
+                firstDimPosition = selectionAnchor.rowPosition + cellByPosition.getRowSpan() - 1;
+            }
         }
 
-        // Pick start and end values depending on the direction of the search.
-        int direction = this.searchDirection.equals(ISearchDirection.SEARCH_FORWARD) ? 1 : -1;
         int firstDimStart;
         int firstDimEnd;
         int secondDimStart;
