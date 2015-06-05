@@ -18,6 +18,8 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.formula.command.DisableFormulaEvaluationCommand;
+import org.eclipse.nebula.widgets.nattable.formula.command.EnableFormulaEvaluationCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
@@ -50,10 +52,13 @@ public class NatExporter {
      *            The ConfigRegistry of the NatTable instance to export, that
      *            contains the necessary export configurations.
      */
-    public void exportSingleLayer(final ILayer layer,
+    public void exportSingleLayer(
+            final ILayer layer,
             final IConfigRegistry configRegistry) {
+
         final ILayerExporter exporter = configRegistry.getConfigAttribute(
-                ExportConfigAttributes.EXPORTER, DisplayMode.NORMAL);
+                ExportConfigAttributes.EXPORTER,
+                DisplayMode.NORMAL);
 
         final OutputStream outputStream = exporter.getOutputStream(this.shell);
         if (outputStream == null) {
@@ -102,8 +107,10 @@ public class NatExporter {
      *            used as sheet titles while the values are the instances to
      *            export.
      */
-    public void exportMultipleNatTables(final ILayerExporter exporter,
+    public void exportMultipleNatTables(
+            final ILayerExporter exporter,
             final Map<String, NatTable> natTablesMap) {
+
         final OutputStream outputStream = exporter.getOutputStream(this.shell);
         if (outputStream == null) {
             return;
@@ -159,11 +166,14 @@ public class NatExporter {
      * @param layer
      * @param configRegistry
      */
-    protected void exportLayer(final ILayerExporter exporter,
-            final OutputStream outputStream, final String layerName,
-            final ILayer layer, final IConfigRegistry configRegistry) {
-        IClientAreaProvider originalClientAreaProvider = layer
-                .getClientAreaProvider();
+    protected void exportLayer(
+            final ILayerExporter exporter,
+            final OutputStream outputStream,
+            final String layerName,
+            final ILayer layer,
+            final IConfigRegistry configRegistry) {
+
+        IClientAreaProvider originalClientAreaProvider = layer.getClientAreaProvider();
 
         // This needs to be done so that the layer can return all the cells
         // not just the ones visible in the viewport
@@ -174,11 +184,15 @@ public class NatExporter {
         // the values are calculated
         layer.doCommand(new CalculateSummaryRowValuesCommand());
 
+        // if a FormulaDataProvider is involved, we need to ensure that the
+        // formula evaluation is disabled so the formula itself is exported
+        // instead of the calculated value
+        layer.doCommand(new DisableFormulaEvaluationCommand());
+
         ProgressBar progressBar = null;
 
         if (this.shell != null) {
-            Shell childShell = new Shell(this.shell.getDisplay(), SWT.DIALOG_TRIM
-                    | SWT.APPLICATION_MODAL);
+            Shell childShell = new Shell(this.shell.getDisplay(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
             childShell.setText(Messages.getString("NatExporter.exporting")); //$NON-NLS-1$
 
             int startRow = 0;
@@ -203,21 +217,16 @@ public class NatExporter {
                     progressBar.setSelection(rowPosition);
                 }
 
-                for (int columnPosition = 0; columnPosition < layer
-                        .getColumnCount(); columnPosition++) {
-                    ILayerCell cell = layer.getCellByPosition(columnPosition,
-                            rowPosition);
+                for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
+                    ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
 
-                    IExportFormatter exportFormatter = configRegistry
-                            .getConfigAttribute(
-                                    ExportConfigAttributes.EXPORT_FORMATTER,
-                                    cell.getDisplayMode(), cell
-                                            .getConfigLabels().getLabels());
-                    Object exportDisplayValue = exportFormatter
-                            .formatForExport(cell, configRegistry);
+                    IExportFormatter exportFormatter = configRegistry.getConfigAttribute(
+                            ExportConfigAttributes.EXPORT_FORMATTER,
+                            cell.getDisplayMode(),
+                            cell.getConfigLabels().getLabels());
+                    Object exportDisplayValue = exportFormatter.formatForExport(cell, configRegistry);
 
-                    exporter.exportCell(outputStream, exportDisplayValue, cell,
-                            configRegistry);
+                    exporter.exportCell(outputStream, exportDisplayValue, cell, configRegistry);
                 }
 
                 exporter.exportRowEnd(outputStream, rowPosition);
@@ -226,22 +235,23 @@ public class NatExporter {
             exporter.exportLayerEnd(outputStream, layerName);
         } catch (Exception e) {
             e.printStackTrace(System.err);
-        }
+        } finally {
+            // These must be fired at the end of the thread execution
+            layer.setClientAreaProvider(originalClientAreaProvider);
+            layer.doCommand(new TurnViewportOnCommand());
 
-        // These must be fired at the end of the thread execution
-        layer.setClientAreaProvider(originalClientAreaProvider);
-        layer.doCommand(new TurnViewportOnCommand());
+            layer.doCommand(new EnableFormulaEvaluationCommand());
 
-        if (progressBar != null) {
-            Shell childShell = progressBar.getShell();
-            progressBar.dispose();
-            childShell.dispose();
+            if (progressBar != null) {
+                Shell childShell = progressBar.getShell();
+                progressBar.dispose();
+                childShell.dispose();
+            }
         }
     }
 
     private void setClientAreaToMaximum(ILayer layer) {
-        final Rectangle maxClientArea = new Rectangle(0, 0, layer.getWidth(),
-                layer.getHeight());
+        final Rectangle maxClientArea = new Rectangle(0, 0, layer.getWidth(), layer.getHeight());
 
         layer.setClientAreaProvider(new IClientAreaProvider() {
             @Override

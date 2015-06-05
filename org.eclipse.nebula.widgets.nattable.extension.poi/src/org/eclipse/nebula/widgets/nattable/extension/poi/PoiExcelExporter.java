@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.extension.poi;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.ILayerExporter;
 import org.eclipse.nebula.widgets.nattable.export.IOutputStreamProvider;
+import org.eclipse.nebula.widgets.nattable.formula.FormulaParser;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -61,6 +63,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
     private boolean applyVerticalTextConfiguration = false;
 
     private String sheetname;
+
+    private FormulaParser formulaParser;
 
     public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
         this.outputStreamProvider = outputStreamProvider;
@@ -134,8 +138,7 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         if (columnSpan > 1 || rowSpan > 1) {
             int lastRow = rowPosition + rowSpan - 1;
             int lastColumn = columnPosition + columnSpan - 1;
-            this.xlSheet.addMergedRegion(new CellRangeAddress(rowPosition, lastRow,
-                    columnPosition, lastColumn));
+            this.xlSheet.addMergedRegion(new CellRangeAddress(rowPosition, lastRow, columnPosition, lastColumn));
         }
 
         CellStyleProxy cellStyle = new CellStyleProxy(
@@ -170,6 +173,19 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             xlCell.setCellValue((Date) exportDisplayValue);
         } else if (exportDisplayValue instanceof Number) {
             xlCell.setCellValue(((Number) exportDisplayValue).doubleValue());
+        } else if (this.formulaParser != null) {
+            // formula export is enabled, so we perform checks on the cell
+            // values
+            String cellValue = exportDisplayValue.toString();
+            if (this.formulaParser.isFunction(cellValue)) {
+                xlCell.setCellFormula(this.formulaParser.getFunctionOnly(cellValue));
+            }
+            else if (this.formulaParser.isNumber(cellValue)) {
+                xlCell.setCellValue(new BigDecimal(cellValue).doubleValue());
+            }
+            else {
+                xlCell.setCellValue(exportDisplayValue.toString());
+            }
         } else {
             xlCell.setCellValue(exportDisplayValue.toString());
         }
@@ -190,11 +206,9 @@ public abstract class PoiExcelExporter implements ILayerExporter {
         return false;
     }
 
-    private CellStyle getExcelCellStyle(Color fg, Color bg, FontData fontData,
-            String dataFormat, int hAlign, int vAlign, boolean vertical) {
+    private CellStyle getExcelCellStyle(Color fg, Color bg, FontData fontData, String dataFormat, int hAlign, int vAlign, boolean vertical) {
 
-        CellStyle xlCellStyle = this.xlCellStyles.get(new ExcelCellStyleAttributes(
-                fg, bg, fontData, dataFormat, hAlign, vAlign, vertical));
+        CellStyle xlCellStyle = this.xlCellStyles.get(new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical));
 
         if (xlCellStyle == null) {
             xlCellStyle = this.xlWorkbook.createCellStyle();
@@ -242,8 +256,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
                 xlCellStyle.setDataFormat(createHelper.createDataFormat().getFormat(dataFormat));
             }
 
-            this.xlCellStyles.put(new ExcelCellStyleAttributes(fg, bg, fontData,
-                    dataFormat, hAlign, vAlign, vertical), xlCellStyle);
+            this.xlCellStyles.put(
+                    new ExcelCellStyleAttributes(fg, bg, fontData, dataFormat, hAlign, vAlign, vertical), xlCellStyle);
         }
         return xlCellStyle;
     }
@@ -325,6 +339,25 @@ public abstract class PoiExcelExporter implements ILayerExporter {
      */
     public void setSheetname(String sheetname) {
         this.sheetname = sheetname;
+    }
+
+    /**
+     * Configure the {@link FormulaParser} that should be used to determine
+     * whether formulas should be exported or not. If <code>null</code> is set,
+     * formulas and cell values of type string will be simply exported as
+     * string. If a valid {@link FormulaParser} is set, cell values will get
+     * inspected so that number values are converted to numbers and formulas
+     * will be exported as formulas.
+     *
+     * @param formulaParser
+     *            The {@link FormulaParser} that should be used to determine
+     *            whether cell values should be interpreted as formulas or
+     *            <code>null</code> to disable formula export handling.
+     *
+     * @since 1.4
+     */
+    public void setFormulaParser(FormulaParser formulaParser) {
+        this.formulaParser = formulaParser;
     }
 
 }
