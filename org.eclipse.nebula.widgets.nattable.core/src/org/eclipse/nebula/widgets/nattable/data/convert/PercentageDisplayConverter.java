@@ -15,7 +15,7 @@ public class PercentageDisplayConverter extends DisplayConverter {
     @Override
     public Object canonicalToDisplayValue(Object canonicalValue) {
         if (canonicalValue != null) {
-            double percentageValue = ((Double) canonicalValue).doubleValue();
+            double percentageValue = ((Number) canonicalValue).doubleValue();
             int displayInt = (int) (percentageValue * 100);
             return String.valueOf(displayInt) + "%"; //$NON-NLS-1$
         }

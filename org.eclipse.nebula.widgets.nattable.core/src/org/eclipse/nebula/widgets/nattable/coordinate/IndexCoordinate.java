@@ -30,31 +30,32 @@ public final class IndexCoordinate {
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName()
-                + "[" + this.columnIndex + "," + this.rowIndex + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    }
-
-    @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
+        if (this == obj)
             return true;
-        }
-
-        if (obj instanceof IndexCoordinate == false) {
+        if (obj == null)
             return false;
-        }
-
-        IndexCoordinate that = (IndexCoordinate) obj;
-        return this.getColumnIndex() == that.getColumnIndex()
-                && this.getRowIndex() == that.getRowIndex();
+        if (getClass() != obj.getClass())
+            return false;
+        IndexCoordinate other = (IndexCoordinate) obj;
+        if (this.columnIndex != other.columnIndex)
+            return false;
+        if (this.rowIndex != other.rowIndex)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 95;
-        hash = 35 * hash + getColumnIndex();
-        hash = 35 * hash + getRowIndex() + 87;
-        return hash;
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.columnIndex;
+        result = prime * result + this.rowIndex;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "IndexCoordinate [columnIndex=" + this.columnIndex + ", rowIndex=" + this.rowIndex + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 }

@@ -41,8 +41,10 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
     /**
      * The {@link SelectionLayer} needed to retrieve the selected data to copy
      * to the clipboard.
+     *
+     * @since 1.4
      */
-    private final SelectionLayer selectionLayer;
+    protected final SelectionLayer selectionLayer;
     /**
      * The column header layer of the grid, needed to also copy the column
      * header data.
