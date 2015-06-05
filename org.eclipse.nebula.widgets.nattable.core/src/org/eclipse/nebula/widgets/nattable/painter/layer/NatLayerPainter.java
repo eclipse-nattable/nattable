@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -28,6 +30,8 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class NatLayerPainter implements ILayerPainter {
 
+    private static final Log log = LogFactory.getLog(NatLayerPainter.class);
+
     private final NatTable natTable;
 
     public NatLayerPainter(NatTable natTable) {
@@ -35,47 +39,48 @@ public class NatLayerPainter implements ILayerPainter {
     }
 
     @Override
-    public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset,
-            Rectangle rectangle, IConfigRegistry configRegistry) {
+    public void paintLayer(
+            ILayer natLayer, GC gc,
+            int xOffset, int yOffset, Rectangle rectangle,
+            IConfigRegistry configRegistry) {
+
         try {
-            paintBackground(natLayer, gc, xOffset, yOffset, rectangle,
-                    configRegistry);
+            paintBackground(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 
             gc.setForeground(this.natTable.getForeground());
 
             ILayerPainter layerPainter = this.natTable.getLayer().getLayerPainter();
-            layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle,
-                    configRegistry);
+            layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 
-            paintOverlays(natLayer, gc, xOffset, yOffset, rectangle,
-                    configRegistry);
+            paintOverlays(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
         } catch (Exception e) {
-            e.printStackTrace(System.err);
-            System.err.println("Error while painting table: " + e.getMessage()); //$NON-NLS-1$
+            log.error("Error while painting table", e); //$NON-NLS-1$
         }
     }
 
-    protected void paintBackground(ILayer natLayer, GC gc, int xOffset,
-            int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+    protected void paintBackground(ILayer natLayer, GC gc,
+            int xOffset, int yOffset, Rectangle rectangle,
+            IConfigRegistry configRegistry) {
+
         gc.setBackground(this.natTable.getBackground());
 
         // Clean Background
         gc.fillRectangle(rectangle);
     }
 
-    protected void paintOverlays(ILayer natLayer, GC gc, int xOffset,
-            int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+    protected void paintOverlays(ILayer natLayer, GC gc,
+            int xOffset, int yOffset, Rectangle rectangle,
+            IConfigRegistry configRegistry) {
+
         for (IOverlayPainter overlayPainter : this.natTable.getOverlayPainters()) {
             overlayPainter.paintOverlay(gc, this.natTable);
         }
     }
 
     @Override
-    public Rectangle adjustCellBounds(int columnPosition, int rowPosition,
-            Rectangle cellBounds) {
+    public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
         ILayerPainter layerPainter = this.natTable.getLayer().getLayerPainter();
-        return layerPainter.adjustCellBounds(columnPosition, rowPosition,
-                cellBounds);
+        return layerPainter.adjustCellBounds(columnPosition, rowPosition, cellBounds);
     }
 
 }

@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
@@ -55,6 +57,7 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.ISelectionEvent;
+import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.theme.ThemeManager;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
@@ -89,8 +92,9 @@ import org.eclipse.swt.widgets.ScrollBar;
 
 //this warning suppression is because of the ActiveCellEditorRegistry usage to ensure backwards compatibility
 @SuppressWarnings("deprecation")
-public class NatTable extends Canvas implements ILayer, PaintListener,
-        IClientAreaProvider, ILayerListener, IPersistable {
+public class NatTable extends Canvas implements ILayer, PaintListener, IClientAreaProvider, ILayerListener, IPersistable {
+
+    private static final Log log = LogFactory.getLog(NatTable.class);
 
     public static final int DEFAULT_STYLE_OPTIONS = SWT.NO_BACKGROUND
             | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.V_SCROLL
@@ -638,7 +642,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener,
                 try {
                     notifyListeners(SWT.Selection, e);
                 } catch (RuntimeException re) {
-                    re.printStackTrace();
+                    log.error("Error on SWT selection processing", re); //$NON-NLS-1$
                 }
             }
 

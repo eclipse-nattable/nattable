@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -35,6 +37,8 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
 public class NatExporter {
+
+    private static final Log log = LogFactory.getLog(NatExporter.class);
 
     private final Shell shell;
 
@@ -80,7 +84,7 @@ public class NatExporter {
                     try {
                         outputStream.close();
                     } catch (IOException e) {
-                        e.printStackTrace(System.err);
+                        log.error("Failed to close the output stream", e); //$NON-NLS-1$
                     }
                 }
 
@@ -135,7 +139,7 @@ public class NatExporter {
                     try {
                         outputStream.close();
                     } catch (IOException e) {
-                        e.printStackTrace(System.err);
+                        log.error("Failed to close the output stream", e); //$NON-NLS-1$
                     }
                 }
 
@@ -234,7 +238,7 @@ public class NatExporter {
 
             exporter.exportLayerEnd(outputStream, layerName);
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            log.error("Export failed", e); //$NON-NLS-1$
         } finally {
             // These must be fired at the end of the thread execution
             layer.setClientAreaProvider(originalClientAreaProvider);

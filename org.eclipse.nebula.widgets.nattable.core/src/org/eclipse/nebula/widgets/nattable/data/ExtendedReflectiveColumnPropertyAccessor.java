@@ -12,8 +12,12 @@ package org.eclipse.nebula.widgets.nattable.data;
 
 import java.lang.reflect.Method;
 
-public class ExtendedReflectiveColumnPropertyAccessor<R> extends
-        ReflectiveColumnPropertyAccessor<R> {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColumnPropertyAccessor<R> {
+
+    private static final Log log = LogFactory.getLog(ExtendedReflectiveColumnPropertyAccessor.class);
 
     /**
      * @param propertyNames
@@ -77,11 +81,11 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
                     getterMethod = objectClass.getMethod(getterName);
                     child = getterMethod.invoke(child);
                 } catch (Exception e1) {
-                    e.printStackTrace();
+                    log.error("Error on reflective accessing the data model", e1); //$NON-NLS-1$
                     throw new RuntimeException(e);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Error on reflective accessing the data model", e); //$NON-NLS-1$
                 throw new RuntimeException(e);
             }
 
@@ -110,8 +114,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
      * @param value
      *            the value to set
      */
-    private void setPropertyValue(Object object, String propertyName,
-            Object value) {
+    private void setPropertyValue(Object object, String propertyName, Object value) {
         assert object != null : "object can not be null!"; //$NON-NLS-1$
 
         try {
@@ -121,8 +124,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
                 singlePropertyObject = getPropertyValue(
                         object,
                         propertyName.substring(0, propertyName.lastIndexOf("."))); //$NON-NLS-1$
-                singlePropertyName = propertyName.substring(propertyName
-                        .lastIndexOf(".") + 1); //$NON-NLS-1$
+                singlePropertyName = propertyName.substring(propertyName.lastIndexOf(".") + 1); //$NON-NLS-1$
             } else {
                 singlePropertyObject = object;
                 singlePropertyName = propertyName;
@@ -137,8 +139,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
                         setterName, new Class<?>[] { value.getClass() });
             } else {
                 // as the value is null we can not access the setter method
-                // directly
-                // and have to search for the method
+                // directly and have to search for the method
                 Method[] methods = singlePropertyObject.getClass().getMethods();
                 for (Method m : methods) {
                     if (m.getName().equals(setterName)) {
@@ -148,7 +149,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends
             }
             setterMethod.invoke(singlePropertyObject, value);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error on reflective accessing the data model", e); //$NON-NLS-1$
             throw new RuntimeException(e);
         }
     }

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style.editor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -27,6 +29,8 @@ import org.eclipse.swt.widgets.Shell;
 
 public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
+    private static final Log log = LogFactory.getLog(ColumnStyleEditorDialog.class);
+
     // Tabs in the dialog
     private CellStyleEditorPanel cellStyleEditorPanel;
     private BorderStyleEditorPanel borderStyleEditorPanel;
@@ -43,8 +47,7 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
         this.newColumnCellStyle = columnCellStyle;
         if (columnCellStyle != null) {
-            this.newBorderStyle = this.columnStyle
-                    .getAttributeValue(CellStyleAttributes.BORDER_STYLE);
+            this.newBorderStyle = this.columnStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE);
         }
     }
 
@@ -82,10 +85,9 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
 
         try {
             this.cellStyleEditorPanel.edit(this.columnStyle);
-            this.borderStyleEditorPanel.edit(this.columnStyle
-                    .getAttributeValue(CellStyleAttributes.BORDER_STYLE));
+            this.borderStyleEditorPanel.edit(this.columnStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE));
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            log.error("Error on style editing", e); //$NON-NLS-1$
         }
     }
 
@@ -111,14 +113,11 @@ public class ColumnStyleEditorDialog extends AbstractStyleEditorDialog {
         Composite columnPanel = new Composite(parent, SWT.NONE);
         columnPanel.setLayout(new GridLayout());
 
-        new SeparatorPanel(columnPanel,
-                Messages.getString("ColumnStyleEditorDialog.styling")); //$NON-NLS-1$
+        new SeparatorPanel(columnPanel, Messages.getString("ColumnStyleEditorDialog.styling")); //$NON-NLS-1$
         this.cellStyleEditorPanel = new CellStyleEditorPanel(columnPanel, SWT.NONE);
 
-        new SeparatorPanel(columnPanel,
-                Messages.getString("ColumnStyleEditorDialog.border")); //$NON-NLS-1$
-        this.borderStyleEditorPanel = new BorderStyleEditorPanel(columnPanel,
-                SWT.NONE);
+        new SeparatorPanel(columnPanel, Messages.getString("ColumnStyleEditorDialog.border")); //$NON-NLS-1$
+        this.borderStyleEditorPanel = new BorderStyleEditorPanel(columnPanel, SWT.NONE);
         return columnPanel;
     }
 

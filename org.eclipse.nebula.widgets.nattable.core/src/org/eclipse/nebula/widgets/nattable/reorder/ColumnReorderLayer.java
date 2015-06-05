@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -43,8 +45,9 @@ import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
  *
  * @see DefaultColumnReorderLayerConfiguration
  */
-public class ColumnReorderLayer extends AbstractLayerTransform implements
-        IUniqueIndexLayer {
+public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
+
+    private static final Log log = LogFactory.getLog(ColumnReorderLayer.class);
 
     public static final String PERSISTENCE_KEY_COLUMN_INDEX_ORDER = ".columnIndexOrder"; //$NON-NLS-1$
 
@@ -80,8 +83,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
         if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
             if (structuralChangeEvent.isHorizontalStructureChanged()) {
-                Collection<StructuralDiff> structuralDiffs = structuralChangeEvent
-                        .getColumnDiffs();
+                Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getColumnDiffs();
                 if (structuralDiffs == null) {
                     // Assume everything changed
                     this.columnIndexOrder.clear();
@@ -89,11 +91,9 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
                 } else {
                     // only react on ADD or DELETE and not on CHANGE
                     StructuralChangeEventHelper.handleColumnDelete(
-                            structuralDiffs, this.underlyingLayer,
-                            this.columnIndexOrder, true);
+                            structuralDiffs, this.underlyingLayer, this.columnIndexOrder, true);
                     StructuralChangeEventHelper.handleColumnInsert(
-                            structuralDiffs, this.underlyingLayer,
-                            this.columnIndexOrder, true);
+                            structuralDiffs, this.underlyingLayer, this.columnIndexOrder, true);
                 }
                 invalidateCache();
             }
@@ -122,16 +122,14 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
                 strBuilder.append(index);
                 strBuilder.append(',');
             }
-            properties.setProperty(prefix + PERSISTENCE_KEY_COLUMN_INDEX_ORDER,
-                    strBuilder.toString());
+            properties.setProperty(prefix + PERSISTENCE_KEY_COLUMN_INDEX_ORDER, strBuilder.toString());
         }
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
         super.loadState(prefix, properties);
-        String property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_COLUMN_INDEX_ORDER);
+        String property = properties.getProperty(prefix + PERSISTENCE_KEY_COLUMN_INDEX_ORDER);
 
         if (property != null) {
             List<Integer> newColumnIndexOrder = new ArrayList<Integer>();
@@ -159,19 +157,17 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
      */
     protected boolean isRestoredStateValid(List<Integer> newColumnIndexOrder) {
         if (newColumnIndexOrder.size() != getColumnCount()) {
-            System.err
-                    .println("Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
-                            "is not the same as the number of columns in the data source (" //$NON-NLS-1$
-                            + getColumnCount() + ").\n" + //$NON-NLS-1$
-                            "Skipping restore of column ordering"); //$NON-NLS-1$
+            log.error("Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
+                    "is not the same as the number of columns in the data source (" //$NON-NLS-1$
+                    + getColumnCount() + ").\n" + //$NON-NLS-1$
+                    "Skipping restore of column ordering"); //$NON-NLS-1$
             return false;
         }
 
         for (Integer index : newColumnIndexOrder) {
             if (!this.columnIndexOrder.contains(index)) {
-                System.err
-                        .println("Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
-                                "Skipping restore of column ordering"); //$NON-NLS-1$
+                log.error("Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
+                        "Skipping restore of column ordering"); //$NON-NLS-1$
                 return false;
             }
         }
@@ -206,25 +202,18 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
     }
 
     @Override
-    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
-            int underlyingColumnPosition) {
-        int columnIndex = this.underlyingLayer
-                .getColumnIndexByPosition(underlyingColumnPosition);
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
+        int columnIndex = this.underlyingLayer.getColumnIndexByPosition(underlyingColumnPosition);
         return getColumnPositionByIndex(columnIndex);
     }
 
     @Override
-    public Collection<Range> underlyingToLocalColumnPositions(
-            ILayer sourceUnderlyingLayer,
-            Collection<Range> underlyingColumnPositionRanges) {
+    public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
         List<Integer> reorderedColumnPositions = new ArrayList<Integer>();
         for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
             for (int underlyingColumnPosition = underlyingColumnPositionRange.start; underlyingColumnPosition < underlyingColumnPositionRange.end; underlyingColumnPosition++) {
-                int localColumnPosition = underlyingToLocalColumnPosition(
-                        sourceUnderlyingLayer,
-                        underlyingColumnPositionRange.start);
-                reorderedColumnPositions.add(Integer
-                        .valueOf(localColumnPosition));
+                int localColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start);
+                reorderedColumnPositions.add(Integer.valueOf(localColumnPosition));
             }
         }
         Collections.sort(reorderedColumnPositions);
@@ -241,29 +230,24 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
 
     @Override
     public int getStartXOfColumnPosition(int targetColumnPosition) {
-        Integer cachedStartX = this.startXCache.get(Integer
-                .valueOf(targetColumnPosition));
+        Integer cachedStartX = this.startXCache.get(Integer.valueOf(targetColumnPosition));
         if (cachedStartX != null) {
             return cachedStartX.intValue();
         }
 
         int aggregateWidth = 0;
         for (int columnPosition = 0; columnPosition < targetColumnPosition; columnPosition++) {
-            aggregateWidth += this.underlyingLayer
-                    .getColumnWidthByPosition(localToUnderlyingColumnPosition(columnPosition));
+            aggregateWidth += this.underlyingLayer.getColumnWidthByPosition(localToUnderlyingColumnPosition(columnPosition));
         }
 
-        this.startXCache.put(Integer.valueOf(targetColumnPosition),
-                Integer.valueOf(aggregateWidth));
+        this.startXCache.put(Integer.valueOf(targetColumnPosition), Integer.valueOf(aggregateWidth));
         return aggregateWidth;
     }
 
     private void populateIndexOrder() {
         ILayer underlyingLayer = getUnderlyingLayer();
-        for (int columnPosition = 0; columnPosition < underlyingLayer
-                .getColumnCount(); columnPosition++) {
-            this.columnIndexOrder.add(Integer.valueOf(underlyingLayer
-                    .getColumnIndexByPosition(columnPosition)));
+        for (int columnPosition = 0; columnPosition < underlyingLayer.getColumnCount(); columnPosition++) {
+            this.columnIndexOrder.add(Integer.valueOf(underlyingLayer.getColumnIndexByPosition(columnPosition)));
         }
     }
 
@@ -284,8 +268,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
      * @param toColumnPosition
      *            position to move the column to
      */
-    private void moveColumn(int fromColumnPosition, int toColumnPosition,
-            boolean reorderToLeftEdge) {
+    private void moveColumn(int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
         if (!reorderToLeftEdge) {
             toColumnPosition++;
         }
@@ -293,13 +276,11 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
         Integer fromColumnIndex = this.columnIndexOrder.get(fromColumnPosition);
         this.columnIndexOrder.add(toColumnPosition, fromColumnIndex);
 
-        this.columnIndexOrder.remove(fromColumnPosition
-                + (fromColumnPosition > toColumnPosition ? 1 : 0));
+        this.columnIndexOrder.remove(fromColumnPosition + (fromColumnPosition > toColumnPosition ? 1 : 0));
         invalidateCache();
     }
 
-    public void reorderColumnPosition(int fromColumnPosition,
-            int toColumnPosition) {
+    public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition) {
         boolean reorderToLeftEdge;
         if (toColumnPosition < getColumnCount()) {
             reorderToLeftEdge = true;
@@ -307,19 +288,15 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
             reorderToLeftEdge = false;
             toColumnPosition--;
         }
-        reorderColumnPosition(fromColumnPosition, toColumnPosition,
-                reorderToLeftEdge);
+        reorderColumnPosition(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
     }
 
-    public void reorderColumnPosition(int fromColumnPosition,
-            int toColumnPosition, boolean reorderToLeftEdge) {
+    public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
         moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
-        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPosition,
-                toColumnPosition, reorderToLeftEdge));
+        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPosition, toColumnPosition, reorderToLeftEdge));
     }
 
-    public void reorderMultipleColumnPositions(
-            List<Integer> fromColumnPositions, int toColumnPosition) {
+    public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition) {
         boolean reorderToLeftEdge;
         if (toColumnPosition < getColumnCount()) {
             reorderToLeftEdge = true;
@@ -327,42 +304,33 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements
             reorderToLeftEdge = false;
             toColumnPosition--;
         }
-        reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition,
-                reorderToLeftEdge);
+        reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition, reorderToLeftEdge);
     }
 
-    public void reorderMultipleColumnPositions(
-            List<Integer> fromColumnPositions, int toColumnPosition,
-            boolean reorderToLeftEdge) {
+    public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
         // Moving from left to right
         final int fromColumnPositionsCount = fromColumnPositions.size();
 
-        if (toColumnPosition > fromColumnPositions.get(
-                fromColumnPositionsCount - 1).intValue()) {
+        if (toColumnPosition > fromColumnPositions.get(fromColumnPositionsCount - 1)) {
             int firstColumnPosition = fromColumnPositions.get(0).intValue();
 
             for (int columnCount = 0; columnCount < fromColumnPositionsCount; columnCount++) {
-                final int fromColumnPosition = fromColumnPositions.get(0)
-                        .intValue();
-                moveColumn(fromColumnPosition, toColumnPosition,
-                        reorderToLeftEdge);
+                final int fromColumnPosition = fromColumnPositions.get(0);
+                moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
                 if (fromColumnPosition < firstColumnPosition) {
                     firstColumnPosition = fromColumnPosition;
                 }
             }
-        } else if (toColumnPosition < fromColumnPositions.get(
-                fromColumnPositionsCount - 1).intValue()) {
+        } else if (toColumnPosition < fromColumnPositions.get(fromColumnPositionsCount - 1).intValue()) {
             // Moving from right to left
             int targetColumnPosition = toColumnPosition;
             for (Integer fromColumnPosition : fromColumnPositions) {
                 final int fromColumnPositionInt = fromColumnPosition.intValue();
-                moveColumn(fromColumnPositionInt, targetColumnPosition++,
-                        reorderToLeftEdge);
+                moveColumn(fromColumnPositionInt, targetColumnPosition++, reorderToLeftEdge);
             }
         }
 
-        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPositions,
-                toColumnPosition, reorderToLeftEdge));
+        fireLayerEvent(new ColumnReorderEvent(this, fromColumnPositions, toColumnPosition, reorderToLeftEdge));
     }
 
     private void invalidateCache() {

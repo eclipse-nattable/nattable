@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
@@ -25,6 +27,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 
 public class UiBindingRegistry implements IUiBindingRegistry {
+
+    private static final Log log = LogFactory.getLog(UiBindingRegistry.class);
 
     private NatTable natTable;
 
@@ -52,12 +56,10 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     @Override
     public IDragMode getDragMode(MouseEvent event) {
-        LabelStack regionLabels = this.natTable
-                .getRegionLabelsByXY(event.x, event.y);
+        LabelStack regionLabels = this.natTable.getRegionLabelsByXY(event.x, event.y);
 
         for (DragBinding dragBinding : this.dragBindings) {
-            if (dragBinding.getMouseEventMatcher().matches(this.natTable, event,
-                    regionLabels)) {
+            if (dragBinding.getMouseEventMatcher().matches(this.natTable, event, regionLabels)) {
                 return dragBinding.getDragMode();
             }
         }
@@ -102,8 +104,7 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     // /////////////////////////////////////////////////////////////////////////
 
-    private IMouseAction getMouseEventAction(MouseEventTypeEnum mouseEventType,
-            MouseEvent event) {
+    private IMouseAction getMouseEventAction(MouseEventTypeEnum mouseEventType, MouseEvent event) {
 
         // TODO: This code can be made more performant by mapping mouse bindings
         // not only to the mouseEventType but
@@ -112,22 +113,19 @@ public class UiBindingRegistry implements IUiBindingRegistry {
         // list of mouse bindings that need to be searched. -- Azubuko.Obele
 
         try {
-            LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap
-                    .get(mouseEventType);
+            LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap.get(mouseEventType);
             if (mouseEventBindings != null) {
-                LabelStack regionLabels = this.natTable.getRegionLabelsByXY(event.x,
-                        event.y);
+                LabelStack regionLabels = this.natTable.getRegionLabelsByXY(event.x, event.y);
 
                 for (MouseBinding mouseBinding : mouseEventBindings) {
 
-                    if (mouseBinding.getMouseEventMatcher().matches(this.natTable,
-                            event, regionLabels)) {
+                    if (mouseBinding.getMouseEventMatcher().matches(this.natTable, event, regionLabels)) {
                         return mouseBinding.getAction();
                     }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception on retrieving a mouse event action", e); //$NON-NLS-1$
         }
         return null;
     }
@@ -136,13 +134,11 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     // Key
 
-    public void registerFirstKeyBinding(IKeyEventMatcher keyMatcher,
-            IKeyAction action) {
+    public void registerFirstKeyBinding(IKeyEventMatcher keyMatcher, IKeyAction action) {
         this.keyBindings.addFirst(new KeyBinding(keyMatcher, action));
     }
 
-    public void registerKeyBinding(IKeyEventMatcher keyMatcher,
-            IKeyAction action) {
+    public void registerKeyBinding(IKeyEventMatcher keyMatcher, IKeyAction action) {
         this.keyBindings.addLast(new KeyBinding(keyMatcher, action));
     }
 
@@ -157,13 +153,11 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     // Drag
 
-    public void registerFirstMouseDragMode(
-            IMouseEventMatcher mouseEventMatcher, IDragMode dragMode) {
+    public void registerFirstMouseDragMode(IMouseEventMatcher mouseEventMatcher, IDragMode dragMode) {
         this.dragBindings.addFirst(new DragBinding(mouseEventMatcher, dragMode));
     }
 
-    public void registerMouseDragMode(IMouseEventMatcher mouseEventMatcher,
-            IDragMode dragMode) {
+    public void registerMouseDragMode(IMouseEventMatcher mouseEventMatcher, IDragMode dragMode) {
         this.dragBindings.addLast(new DragBinding(mouseEventMatcher, dragMode));
     }
 
@@ -178,16 +172,12 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     // Mouse move
 
-    public void registerFirstMouseMoveBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_MOVE,
-                mouseEventMatcher, action);
+    public void registerFirstMouseMoveBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_MOVE, mouseEventMatcher, action);
     }
 
-    public void registerMouseMoveBinding(IMouseEventMatcher mouseEventMatcher,
-            IMouseAction action) {
-        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_MOVE,
-                mouseEventMatcher, action);
+    public void registerMouseMoveBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_MOVE, mouseEventMatcher, action);
     }
 
     public void unregisterMouseMoveBinding(IMouseEventMatcher mouseEventMatcher) {
@@ -196,16 +186,12 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     // Mouse down
 
-    public void registerFirstMouseDownBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_DOWN,
-                mouseEventMatcher, action);
+    public void registerFirstMouseDownBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_DOWN, mouseEventMatcher, action);
     }
 
-    public void registerMouseDownBinding(IMouseEventMatcher mouseEventMatcher,
-            IMouseAction action) {
-        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_DOWN,
-                mouseEventMatcher, action);
+    public void registerMouseDownBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_DOWN, mouseEventMatcher, action);
     }
 
     public void unregisterMouseDownBinding(IMouseEventMatcher mouseEventMatcher) {
@@ -214,94 +200,68 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 
     // Single click
 
-    public void registerFirstSingleClickBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_SINGLE_CLICK,
-                mouseEventMatcher, action);
+    public void registerFirstSingleClickBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_SINGLE_CLICK, mouseEventMatcher, action);
     }
 
-    public void registerSingleClickBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_SINGLE_CLICK,
-                mouseEventMatcher, action);
+    public void registerSingleClickBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_SINGLE_CLICK, mouseEventMatcher, action);
     }
 
-    public void unregisterSingleClickBinding(
-            IMouseEventMatcher mouseEventMatcher) {
-        unregisterMouseBinding(MouseEventTypeEnum.MOUSE_SINGLE_CLICK,
-                mouseEventMatcher);
+    public void unregisterSingleClickBinding(IMouseEventMatcher mouseEventMatcher) {
+        unregisterMouseBinding(MouseEventTypeEnum.MOUSE_SINGLE_CLICK, mouseEventMatcher);
     }
 
     // Double click
 
-    public void registerFirstDoubleClickBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_DOUBLE_CLICK,
-                mouseEventMatcher, action);
+    public void registerFirstDoubleClickBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_DOUBLE_CLICK, mouseEventMatcher, action);
     }
 
-    public void registerDoubleClickBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_DOUBLE_CLICK,
-                mouseEventMatcher, action);
+    public void registerDoubleClickBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_DOUBLE_CLICK, mouseEventMatcher, action);
     }
 
-    public void unregisterDoubleClickBinding(
-            IMouseEventMatcher mouseEventMatcher) {
-        unregisterMouseBinding(MouseEventTypeEnum.MOUSE_DOUBLE_CLICK,
-                mouseEventMatcher);
+    public void unregisterDoubleClickBinding(IMouseEventMatcher mouseEventMatcher) {
+        unregisterMouseBinding(MouseEventTypeEnum.MOUSE_DOUBLE_CLICK, mouseEventMatcher);
     }
 
     // Mouse hover
 
-    public void registerFirstMouseHoverBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_HOVER,
-                mouseEventMatcher, action);
+    public void registerFirstMouseHoverBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_HOVER, mouseEventMatcher, action);
     }
 
-    public void registerMouseHoverBinding(IMouseEventMatcher mouseEventMatcher,
-            IMouseAction action) {
-        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_HOVER,
-                mouseEventMatcher, action);
+    public void registerMouseHoverBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_HOVER, mouseEventMatcher, action);
     }
 
     public void unregisterMouseHoverBinding(IMouseEventMatcher mouseEventMatcher) {
-        unregisterMouseBinding(MouseEventTypeEnum.MOUSE_HOVER,
-                mouseEventMatcher);
+        unregisterMouseBinding(MouseEventTypeEnum.MOUSE_HOVER, mouseEventMatcher);
     }
 
     // Mouse enter
 
-    public void registerFirstMouseEnterBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_ENTER,
-                mouseEventMatcher, action);
+    public void registerFirstMouseEnterBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_ENTER, mouseEventMatcher, action);
     }
 
-    public void registerMouseEnterBinding(IMouseEventMatcher mouseEventMatcher,
-            IMouseAction action) {
-        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_ENTER,
-                mouseEventMatcher, action);
+    public void registerMouseEnterBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_ENTER, mouseEventMatcher, action);
     }
 
     public void unregisterMouseEnterBinding(IMouseEventMatcher mouseEventMatcher) {
-        unregisterMouseBinding(MouseEventTypeEnum.MOUSE_ENTER,
-                mouseEventMatcher);
+        unregisterMouseBinding(MouseEventTypeEnum.MOUSE_ENTER, mouseEventMatcher);
     }
 
     // Mouse exit
 
-    public void registerFirstMouseExitBinding(
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_EXIT,
-                mouseEventMatcher, action);
+    public void registerFirstMouseExitBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(true, MouseEventTypeEnum.MOUSE_EXIT, mouseEventMatcher, action);
     }
 
-    public void registerMouseExitBinding(IMouseEventMatcher mouseEventMatcher,
-            IMouseAction action) {
-        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_EXIT,
-                mouseEventMatcher, action);
+    public void registerMouseExitBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        registerMouseBinding(false, MouseEventTypeEnum.MOUSE_EXIT, mouseEventMatcher, action);
     }
 
     public void unregisterMouseExitBinding(IMouseEventMatcher mouseEventMatcher) {
@@ -311,27 +271,21 @@ public class UiBindingRegistry implements IUiBindingRegistry {
     // /////////////////////////////////////////////////////////////////////////
 
     private void registerMouseBinding(boolean first,
-            MouseEventTypeEnum mouseEventType,
-            IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
-        LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap
-                .get(mouseEventType);
+            MouseEventTypeEnum mouseEventType, IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+        LinkedList<MouseBinding> mouseEventBindings = this.mouseBindingsMap.get(mouseEventType);
         if (mouseEventBindings == null) {
             mouseEventBindings = new LinkedList<MouseBinding>();
             this.mouseBindingsMap.put(mouseEventType, mouseEventBindings);
         }
         if (first) {
-            mouseEventBindings.addFirst(new MouseBinding(mouseEventMatcher,
-                    action));
+            mouseEventBindings.addFirst(new MouseBinding(mouseEventMatcher, action));
         } else {
-            mouseEventBindings.addLast(new MouseBinding(mouseEventMatcher,
-                    action));
+            mouseEventBindings.addLast(new MouseBinding(mouseEventMatcher, action));
         }
     }
 
-    private void unregisterMouseBinding(MouseEventTypeEnum mouseEventType,
-            IMouseEventMatcher mouseEventMatcher) {
-        LinkedList<MouseBinding> mouseBindings = this.mouseBindingsMap
-                .get(mouseEventType);
+    private void unregisterMouseBinding(MouseEventTypeEnum mouseEventType, IMouseEventMatcher mouseEventMatcher) {
+        LinkedList<MouseBinding> mouseBindings = this.mouseBindingsMap.get(mouseEventType);
         for (MouseBinding mouseBinding : mouseBindings) {
             if (mouseBinding.getMouseEventMatcher().equals(mouseEventMatcher)) {
                 mouseBindings.remove(mouseBinding);

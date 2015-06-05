@@ -52,15 +52,10 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * {@link Matcher} that is used by this command as a static
  * {@link MatcherEditor}. Otherwise these two functions will not work correctly
  * together.
- *
- * @author Dirk Fauth
- *
  */
-public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
-        implements IRowHideShowCommandLayer, IUniqueIndexLayer {
+public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform implements IRowHideShowCommandLayer, IUniqueIndexLayer {
 
-    private static final Log log = LogFactory
-            .getLog(GlazedListsRowHideShowLayer.class);
+    private static final Log log = LogFactory.getLog(GlazedListsRowHideShowLayer.class);
 
     /**
      * Key for persisting the number of hidden row id's. This is necessary
@@ -112,8 +107,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      *            of the row object. This is necessary to determine the row
      *            object to hide in terms of content.
      */
-    public GlazedListsRowHideShowLayer(ILayer underlyingLayer,
-            IRowDataProvider<T> rowDataProvider, IRowIdAccessor<T> rowIdAccessor) {
+    public GlazedListsRowHideShowLayer(ILayer underlyingLayer, IRowDataProvider<T> rowDataProvider, IRowIdAccessor<T> rowIdAccessor) {
         super(underlyingLayer);
         if (rowIdAccessor == null) {
             throw new IllegalArgumentException("rowIdAccessor can not be null!"); //$NON-NLS-1$
@@ -146,9 +140,11 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      *            The {@link FilterList} to apply the local row hide
      *            {@link Matcher} to.
      */
-    public GlazedListsRowHideShowLayer(ILayer underlyingLayer,
+    public GlazedListsRowHideShowLayer(
+            ILayer underlyingLayer,
             IRowDataProvider<T> rowDataProvider,
-            IRowIdAccessor<T> rowIdAccessor, FilterList<T> filterList) {
+            IRowIdAccessor<T> rowIdAccessor,
+            FilterList<T> filterList) {
         super(underlyingLayer);
         if (rowIdAccessor == null) {
             throw new IllegalArgumentException("rowIdAccessor can not be null!"); //$NON-NLS-1$
@@ -186,7 +182,8 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      *            The {@link CompositeMatcherEditor} to which the local row hide
      *            {@link Matcher} should be added.
      */
-    public GlazedListsRowHideShowLayer(ILayer underlyingLayer,
+    public GlazedListsRowHideShowLayer(
+            ILayer underlyingLayer,
             IRowDataProvider<T> rowDataProvider,
             IRowIdAccessor<T> rowIdAccessor,
             CompositeMatcherEditor<T> matcherEditor) {
@@ -231,8 +228,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
         Collection<Serializable> rowIds = new HashSet<Serializable>();
         for (Integer rowPos : rowPositions) {
             int rowIndex = getRowIndexByPosition(rowPos);
-            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider
-                    .getRowObject(rowIndex)));
+            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)));
         }
         hideRows(rowIds);
     }
@@ -249,8 +245,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
     public void hideRowIndexes(Collection<Integer> rowIndexes) {
         Collection<Serializable> rowIds = new HashSet<Serializable>();
         for (Integer rowIndex : rowIndexes) {
-            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider
-                    .getRowObject(rowIndex)));
+            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)));
         }
         hideRows(rowIds);
     }
@@ -267,8 +262,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
     public void showRowIndexes(Collection<Integer> rowIndexes) {
         Collection<Serializable> rowIds = new HashSet<Serializable>();
         for (Integer rowIndex : rowIndexes) {
-            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider
-                    .getRowObject(rowIndex)));
+            rowIds.add(this.rowIdAccessor.getRowId(this.rowDataProvider.getRowObject(rowIndex)));
         }
         showRows(rowIds);
     }
@@ -315,14 +309,12 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return ((IUniqueIndexLayer) getUnderlyingLayer())
-                .getColumnPositionByIndex(columnIndex);
+        return ((IUniqueIndexLayer) getUnderlyingLayer()).getColumnPositionByIndex(columnIndex);
     }
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return ((IUniqueIndexLayer) getUnderlyingLayer())
-                .getRowPositionByIndex(rowIndex);
+        return ((IUniqueIndexLayer) getUnderlyingLayer()).getRowPositionByIndex(rowIndex);
     }
 
     @Override
@@ -349,7 +341,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
                     try {
                         out.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        log.error("Error on closing the output stream", e); //$NON-NLS-1$
                     }
                 }
             }
@@ -361,16 +353,13 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
     @Override
     public void loadState(String prefix, Properties properties) {
         this.rowIdsToHide.clear();
-        String property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_HIDDEN_ROW_IDS_COUNT);
+        String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS_COUNT);
         int count = property != null ? Integer.valueOf(property) : 0;
-        property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_HIDDEN_ROW_IDS);
+        property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_IDS);
         if (property != null) {
             ObjectInputStream in = null;
             try {
-                ByteArrayInputStream bis = new ByteArrayInputStream(
-                        Base64.decodeBase64(property.getBytes()));
+                ByteArrayInputStream bis = new ByteArrayInputStream(Base64.decodeBase64(property.getBytes()));
                 in = new ObjectInputStream(bis);
                 Serializable ser = null;
                 for (int i = 0; i < count; i++) {
@@ -384,7 +373,7 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
                     try {
                         in.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        log.error("Error on closing the input stream", e); //$NON-NLS-1$
                     }
                 }
             }
@@ -398,9 +387,6 @@ public class GlazedListsRowHideShowLayer<T> extends AbstractLayerTransform
      * {@link MatcherEditor} implementation that will only match objects that
      * are not hidden by id. It also enables to fire change events to indicate
      * changes to the filter.
-     *
-     * @author Dirk Fauth
-     *
      */
     class HideRowMatcherEditor extends AbstractMatcherEditor<T> {
         /**

@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -44,8 +46,9 @@ import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
  *
  * @see DefaultRowReorderLayerConfiguration
  */
-public class RowReorderLayer extends AbstractLayerTransform implements
-        IUniqueIndexLayer {
+public class RowReorderLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
+
+    private static final Log log = LogFactory.getLog(RowReorderLayer.class);
 
     public static final String PERSISTENCE_KEY_ROW_INDEX_ORDER = ".rowIndexOrder"; //$NON-NLS-1$
 
@@ -73,8 +76,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements
         this(underlyingLayer, true);
     }
 
-    public RowReorderLayer(IUniqueIndexLayer underlyingLayer,
-            boolean useDefaultConfiguration) {
+    public RowReorderLayer(IUniqueIndexLayer underlyingLayer, boolean useDefaultConfiguration) {
         super(underlyingLayer);
         this.underlyingLayer = underlyingLayer;
 
@@ -92,20 +94,15 @@ public class RowReorderLayer extends AbstractLayerTransform implements
         if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
             if (structuralChangeEvent.isVerticalStructureChanged()) {
-                Collection<StructuralDiff> structuralDiffs = structuralChangeEvent
-                        .getRowDiffs();
+                Collection<StructuralDiff> structuralDiffs = structuralChangeEvent.getRowDiffs();
                 if (structuralDiffs == null) {
                     // Assume everything changed
                     this.rowIndexOrder.clear();
                     populateIndexOrder();
                 } else {
                     // only react on ADD or DELETE and not on CHANGE
-                    StructuralChangeEventHelper.handleRowDelete(
-                            structuralDiffs, this.underlyingLayer,
-                            this.rowIndexOrder, true);
-                    StructuralChangeEventHelper.handleRowInsert(
-                            structuralDiffs, this.underlyingLayer,
-                            this.rowIndexOrder, true);
+                    StructuralChangeEventHelper.handleRowDelete(structuralDiffs, this.underlyingLayer, this.rowIndexOrder, true);
+                    StructuralChangeEventHelper.handleRowInsert(structuralDiffs, this.underlyingLayer, this.rowIndexOrder, true);
                 }
                 invalidateCache();
             }
@@ -134,21 +131,18 @@ public class RowReorderLayer extends AbstractLayerTransform implements
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
-            properties.setProperty(prefix + PERSISTENCE_KEY_ROW_INDEX_ORDER,
-                    strBuilder.toString());
+            properties.setProperty(prefix + PERSISTENCE_KEY_ROW_INDEX_ORDER, strBuilder.toString());
         }
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
         super.loadState(prefix, properties);
-        String property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_ROW_INDEX_ORDER);
+        String property = properties.getProperty(prefix + PERSISTENCE_KEY_ROW_INDEX_ORDER);
 
         if (property != null) {
             List<Integer> newRowIndexOrder = new ArrayList<Integer>();
-            StringTokenizer tok = new StringTokenizer(property,
-                    IPersistable.VALUE_SEPARATOR);
+            StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
                 newRowIndexOrder.add(Integer.valueOf(index));
@@ -172,19 +166,17 @@ public class RowReorderLayer extends AbstractLayerTransform implements
      */
     protected boolean isRestoredStateValid(List<Integer> newRowIndexOrder) {
         if (newRowIndexOrder.size() != getRowCount()) {
-            System.err
-                    .println("Number of persisted rows (" + newRowIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
-                            "is not the same as the number of rows in the data source (" //$NON-NLS-1$
-                            + getRowCount() + ").\n" + //$NON-NLS-1$
-                            "Skipping restore of row ordering"); //$NON-NLS-1$
+            log.error("Number of persisted rows (" + newRowIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
+                    "is not the same as the number of rows in the data source (" //$NON-NLS-1$
+                    + getRowCount() + ").\n" + //$NON-NLS-1$
+                    "Skipping restore of row ordering"); //$NON-NLS-1$
             return false;
         }
 
         for (Integer index : newRowIndexOrder) {
             if (!this.rowIndexOrder.contains(index)) {
-                System.err
-                        .println("Row index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
-                                "Skipping restore of row ordering"); //$NON-NLS-1$
+                log.error("Row index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
+                        "Skipping restore of row ordering"); //$NON-NLS-1$
                 return false;
             }
         }
@@ -214,8 +206,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements
 
         int aggregateWidth = 0;
         for (int rowPosition = 0; rowPosition < targetRowPosition; rowPosition++) {
-            aggregateWidth += this.underlyingLayer
-                    .getRowHeightByPosition(localToUnderlyingRowPosition(rowPosition));
+            aggregateWidth += this.underlyingLayer.getRowHeightByPosition(localToUnderlyingRowPosition(rowPosition));
         }
 
         this.startYCache.put(targetRowPosition, aggregateWidth);
@@ -228,8 +219,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements
     private void populateIndexOrder() {
         ILayer underlyingLayer = getUnderlyingLayer();
         for (int rowPosition = 0; rowPosition < underlyingLayer.getRowCount(); rowPosition++) {
-            this.rowIndexOrder.add(underlyingLayer
-                    .getRowIndexByPosition(rowPosition));
+            this.rowIndexOrder.add(underlyingLayer.getRowIndexByPosition(rowPosition));
         }
     }
 
@@ -264,22 +254,17 @@ public class RowReorderLayer extends AbstractLayerTransform implements
     }
 
     @Override
-    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
-            int underlyingRowPosition) {
-        int rowIndex = this.underlyingLayer
-                .getRowIndexByPosition(underlyingRowPosition);
+    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
+        int rowIndex = this.underlyingLayer.getRowIndexByPosition(underlyingRowPosition);
         return getRowPositionByIndex(rowIndex);
     }
 
     @Override
-    public Collection<Range> underlyingToLocalRowPositions(
-            ILayer sourceUnderlyingLayer,
-            Collection<Range> underlyingRowPositionRanges) {
+    public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
         List<Integer> reorderedRowPositions = new ArrayList<Integer>();
         for (Range underlyingRowPositionRange : underlyingRowPositionRanges) {
             for (int underlyingRowPosition = underlyingRowPositionRange.start; underlyingRowPosition < underlyingRowPositionRange.end; underlyingRowPosition++) {
-                int localRowPosition = underlyingToLocalRowPosition(
-                        sourceUnderlyingLayer, underlyingRowPositionRange.start);
+                int localRowPosition = underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPositionRange.start);
                 reorderedRowPositions.add(localRowPosition);
             }
         }
@@ -301,8 +286,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements
      *            whether the move should be done above the given to position or
      *            not
      */
-    private void moveRow(int fromRowPosition, int toRowPosition,
-            boolean reorderToTopEdge) {
+    private void moveRow(int fromRowPosition, int toRowPosition, boolean reorderToTopEdge) {
         if (!reorderToTopEdge) {
             toRowPosition++;
         }
@@ -310,8 +294,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements
         Integer fromRowIndex = this.rowIndexOrder.get(fromRowPosition);
         this.rowIndexOrder.add(toRowPosition, fromRowIndex);
 
-        this.rowIndexOrder.remove(fromRowPosition
-                + (fromRowPosition > toRowPosition ? 1 : 0));
+        this.rowIndexOrder.remove(fromRowPosition + (fromRowPosition > toRowPosition ? 1 : 0));
         invalidateCache();
     }
 
@@ -348,11 +331,9 @@ public class RowReorderLayer extends AbstractLayerTransform implements
      *            whether the move should be done above the given to position or
      *            not
      */
-    public void reorderRowPosition(int fromRowPosition, int toRowPosition,
-            boolean reorderToTopEdge) {
+    public void reorderRowPosition(int fromRowPosition, int toRowPosition, boolean reorderToTopEdge) {
         moveRow(fromRowPosition, toRowPosition, reorderToTopEdge);
-        fireLayerEvent(new RowReorderEvent(this, fromRowPosition,
-                toRowPosition, reorderToTopEdge));
+        fireLayerEvent(new RowReorderEvent(this, fromRowPosition, toRowPosition, reorderToTopEdge));
     }
 
     /**
@@ -365,8 +346,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements
      * @param toRowPosition
      *            position to move the rows to
      */
-    public void reorderMultipleRowPositions(List<Integer> fromRowPositions,
-            int toRowPosition) {
+    public void reorderMultipleRowPositions(List<Integer> fromRowPositions, int toRowPosition) {
         boolean reorderToTopEdge;
         if (toRowPosition < getRowCount()) {
             reorderToTopEdge = true;
@@ -374,8 +354,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements
             reorderToTopEdge = false;
             toRowPosition--;
         }
-        reorderMultipleRowPositions(fromRowPositions, toRowPosition,
-                reorderToTopEdge);
+        reorderMultipleRowPositions(fromRowPositions, toRowPosition, reorderToTopEdge);
     }
 
     /**
@@ -390,8 +369,7 @@ public class RowReorderLayer extends AbstractLayerTransform implements
      *            whether the move should be done above the given to position or
      *            not
      */
-    public void reorderMultipleRowPositions(List<Integer> fromRowPositions,
-            int toRowPosition, boolean reorderToTopEdge) {
+    public void reorderMultipleRowPositions(List<Integer> fromRowPositions, int toRowPosition, boolean reorderToTopEdge) {
         final int fromRowPositionsCount = fromRowPositions.size();
 
         if (toRowPosition > fromRowPositions.get(fromRowPositionsCount - 1)) {
@@ -405,19 +383,16 @@ public class RowReorderLayer extends AbstractLayerTransform implements
                     firstRowPosition = fromRowPosition;
                 }
             }
-        } else if (toRowPosition < fromRowPositions
-                .get(fromRowPositionsCount - 1)) {
+        } else if (toRowPosition < fromRowPositions.get(fromRowPositionsCount - 1)) {
             // Moving from bottom to top
             int targetRowPosition = toRowPosition;
             for (Integer fromRowPosition : fromRowPositions) {
                 final int fromRowPositionInt = fromRowPosition;
-                moveRow(fromRowPositionInt, targetRowPosition++,
-                        reorderToTopEdge);
+                moveRow(fromRowPositionInt, targetRowPosition++, reorderToTopEdge);
             }
         }
 
-        fireLayerEvent(new RowReorderEvent(this, fromRowPositions,
-                toRowPosition, reorderToTopEdge));
+        fireLayerEvent(new RowReorderEvent(this, fromRowPositions, toRowPosition, reorderToTopEdge));
     }
 
     /**
