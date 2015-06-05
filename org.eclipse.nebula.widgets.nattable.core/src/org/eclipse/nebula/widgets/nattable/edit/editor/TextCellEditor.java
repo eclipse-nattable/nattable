@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 469486
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
@@ -54,6 +55,13 @@ public class TextCellEditor extends AbstractCellEditor {
     private final boolean commitOnUpDown;
 
     /**
+     * Flag to configure whether the editor should commit and move the selection
+     * in the corresponding way if the left or right key is pressed on the
+     * according content edge.
+     */
+    private final boolean commitOnLeftRight;
+
+    /**
      * Flag to configure whether the selection should move after a value was
      * committed after pressing enter.
      */
@@ -92,8 +100,7 @@ public class TextCellEditor extends AbstractCellEditor {
      * {@link RenderErrorHandling} which will render the content in the editor
      * red to indicate a conversion error.
      */
-    private IEditErrorHandler inputConversionErrorHandler = new RenderErrorHandling(
-            this.decorationProvider);
+    private IEditErrorHandler inputConversionErrorHandler = new RenderErrorHandling(this.decorationProvider);
 
     /**
      * The {@link IEditErrorHandler} that is used for showing validation errors
@@ -101,8 +108,7 @@ public class TextCellEditor extends AbstractCellEditor {
      * {@link RenderErrorHandling} which will render the content in the editor
      * red to indicate a validation error.
      */
-    private IEditErrorHandler inputValidationErrorHandler = new RenderErrorHandling(
-            this.decorationProvider);
+    private IEditErrorHandler inputValidationErrorHandler = new RenderErrorHandling(this.decorationProvider);
 
     /**
      * Flag to determine whether this editor should try to commit and close on
@@ -135,7 +141,8 @@ public class TextCellEditor extends AbstractCellEditor {
     }
 
     /**
-     * Creates a TextCellEditor.
+     * Creates a TextCellEditor that will not move the selection on pressing the
+     * left or right arrow keys on the according edges.
      *
      * @param commitOnUpDown
      *            Flag to configure whether the editor should commit and move
@@ -146,28 +153,46 @@ public class TextCellEditor extends AbstractCellEditor {
      *            value was committed after pressing enter.
      */
     public TextCellEditor(boolean commitOnUpDown, boolean moveSelectionOnEnter) {
+        this(commitOnUpDown, moveSelectionOnEnter, false);
+    }
+
+    /**
+     * Creates a TextCellEditor.
+     *
+     * @param commitOnUpDown
+     *            Flag to configure whether the editor should commit and move
+     *            the selection in the corresponding way if the up or down key
+     *            is pressed.
+     * @param moveSelectionOnEnter
+     *            Flag to configure whether the selection should move after a
+     *            value was committed after pressing enter.
+     * @param commitOnLeftRight
+     *            Flag to configure whether the editor should commit and move
+     *            the selection in the corresponding way if the left or right
+     *            key is pressed on the according content edge.
+     * @since 1.4
+     */
+    public TextCellEditor(boolean commitOnUpDown, boolean moveSelectionOnEnter, boolean commitOnLeftRight) {
         this.commitOnUpDown = commitOnUpDown;
         this.moveSelectionOnEnter = moveSelectionOnEnter;
+        this.commitOnLeftRight = commitOnLeftRight;
     }
 
     @Override
-    protected Control activateCell(final Composite parent,
-            Object originalCanonicalValue) {
+    protected Control activateCell(final Composite parent, Object originalCanonicalValue) {
         this.text = createEditorControl(parent);
 
         // If the originalCanonicalValue is a Character it is possible the
         // editor is activated by keypress
         if (originalCanonicalValue instanceof Character) {
             this.text.setText(originalCanonicalValue.toString());
-            selectText(this.selectionMode != null ? this.selectionMode
-                    : EditorSelectionEnum.END);
+            selectText(this.selectionMode != null ? this.selectionMode : EditorSelectionEnum.END);
         }
         // if there is no initial value, handle the original canonical value to
         // transfer it to the text control
         else {
             setCanonicalValue(originalCanonicalValue);
-            selectText(this.selectionMode != null ? this.selectionMode
-                    : EditorSelectionEnum.ALL);
+            selectText(this.selectionMode != null ? this.selectionMode : EditorSelectionEnum.ALL);
         }
 
         if (!isEditable()) {
@@ -178,30 +203,27 @@ public class TextCellEditor extends AbstractCellEditor {
         this.decorationProvider.createErrorDecorationIfRequired(this.text);
 
         // if the input error handlers are of type RenderErrorHandler (default)
-        // than
-        // we also check for a possible configured error styling in the
+        // than we also check for a possible configured error styling in the
         // configuration
         // Note: this is currently only implemented in here, as the
-        // TextCellEditor is
-        // the only editor that supports just in time conversion/validation
+        // TextCellEditor is the only editor that supports just in time
+        // conversion/validation
         if (this.inputConversionErrorHandler instanceof RenderErrorHandling) {
-            IStyle conversionErrorStyle = this.configRegistry
-                    .getConfigAttribute(
-                            EditConfigAttributes.CONVERSION_ERROR_STYLE,
-                            DisplayMode.EDIT, this.labelStack.getLabels());
+            IStyle conversionErrorStyle = this.configRegistry.getConfigAttribute(
+                    EditConfigAttributes.CONVERSION_ERROR_STYLE,
+                    DisplayMode.EDIT,
+                    this.labelStack.getLabels());
 
-            ((RenderErrorHandling) this.inputConversionErrorHandler)
-                    .setErrorStyle(conversionErrorStyle);
+            ((RenderErrorHandling) this.inputConversionErrorHandler).setErrorStyle(conversionErrorStyle);
         }
 
         if (this.inputValidationErrorHandler instanceof RenderErrorHandling) {
-            IStyle validationErrorStyle = this.configRegistry
-                    .getConfigAttribute(
-                            EditConfigAttributes.VALIDATION_ERROR_STYLE,
-                            DisplayMode.EDIT, this.labelStack.getLabels());
+            IStyle validationErrorStyle = this.configRegistry.getConfigAttribute(
+                    EditConfigAttributes.VALIDATION_ERROR_STYLE,
+                    DisplayMode.EDIT,
+                    this.labelStack.getLabels());
 
-            ((RenderErrorHandling) this.inputValidationErrorHandler)
-                    .setErrorStyle(validationErrorStyle);
+            ((RenderErrorHandling) this.inputValidationErrorHandler).setErrorStyle(validationErrorStyle);
         }
 
         this.text.forceFocus();
@@ -216,9 +238,7 @@ public class TextCellEditor extends AbstractCellEditor {
 
     @Override
     public void setEditorValue(Object value) {
-        this.text
-                .setText(value != null && value.toString().length() > 0 ? value
-                        .toString() : ""); //$NON-NLS-1$
+        this.text.setText(value != null && value.toString().length() > 0 ? value.toString() : ""); //$NON-NLS-1$
     }
 
     @Override
@@ -251,19 +271,14 @@ public class TextCellEditor extends AbstractCellEditor {
         final Text textControl = new Text(parent, style);
 
         // set style information configured in the associated cell style
-        textControl.setBackground(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-        textControl.setForeground(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-        textControl.setFont(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.FONT));
+        textControl.setBackground(this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        textControl.setForeground(this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+        textControl.setFont(this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 
-        textControl
-                .setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
+        textControl.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
 
         // add a key listener that will commit or close the editor for special
-        // key strokes
-        // and executes conversion/validation on input to the editor
+        // key strokes and executes conversion/validation on input to the editor
         textControl.addKeyListener(new KeyAdapter() {
 
             @Override
@@ -271,10 +286,10 @@ public class TextCellEditor extends AbstractCellEditor {
                 if (TextCellEditor.this.commitOnEnter
                         && (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR)) {
 
-                    boolean commit = (event.stateMask == SWT.ALT) ? false
-                            : true;
+                    boolean commit = (event.stateMask == SWT.ALT) ? false : true;
                     MoveDirectionEnum move = MoveDirectionEnum.NONE;
-                    if (TextCellEditor.this.moveSelectionOnEnter && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
+                    if (TextCellEditor.this.moveSelectionOnEnter
+                            && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
                         if (event.stateMask == 0) {
                             move = MoveDirectionEnum.DOWN;
                         } else if (event.stateMask == SWT.SHIFT) {
@@ -282,19 +297,36 @@ public class TextCellEditor extends AbstractCellEditor {
                         }
                     }
 
-                    if (commit)
+                    if (commit) {
                         commit(move);
+                    }
 
                     if (TextCellEditor.this.editMode == EditModeEnum.DIALOG) {
                         parent.forceFocus();
                     }
                 } else if (event.keyCode == SWT.ESC && event.stateMask == 0) {
                     close();
-                } else if (TextCellEditor.this.commitOnUpDown && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
-                    if (event.keyCode == SWT.ARROW_UP) {
+                } else if ((TextCellEditor.this.commitOnUpDown || TextCellEditor.this.commitOnLeftRight)
+                        && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
+
+                    Text control = (Text) event.widget;
+
+                    if (TextCellEditor.this.commitOnUpDown
+                            && event.keyCode == SWT.ARROW_UP) {
                         commit(MoveDirectionEnum.UP);
-                    } else if (event.keyCode == SWT.ARROW_DOWN) {
+                    } else if (TextCellEditor.this.commitOnUpDown
+                            && event.keyCode == SWT.ARROW_DOWN) {
                         commit(MoveDirectionEnum.DOWN);
+                    } else if (TextCellEditor.this.commitOnLeftRight
+                            && control.getSelectionCount() == 0
+                            && event.keyCode == SWT.ARROW_LEFT
+                            && control.getCaretPosition() == 0) {
+                        commit(MoveDirectionEnum.LEFT);
+                    } else if (TextCellEditor.this.commitOnLeftRight
+                            && control.getSelectionCount() == 0
+                            && event.keyCode == SWT.ARROW_RIGHT
+                            && control.getCaretPosition() == control.getCharCount()) {
+                        commit(MoveDirectionEnum.RIGHT);
                     }
                 }
             }
@@ -304,18 +336,15 @@ public class TextCellEditor extends AbstractCellEditor {
                 try {
                     // always do the conversion
                     Object canonicalValue = getCanonicalValue(TextCellEditor.this.inputConversionErrorHandler);
-                    // and always do the validation
-                    // even if for commiting the validation should be skipped,
-                    // on editing
+                    // and always do the validation, even if for committing the
+                    // validation should be skipped, on editing
                     // a validation failure should be made visible
                     // otherwise there would be no need for validation!
-                    validateCanonicalValue(canonicalValue,
-                            TextCellEditor.this.inputValidationErrorHandler);
+                    validateCanonicalValue(canonicalValue, TextCellEditor.this.inputValidationErrorHandler);
                 } catch (Exception ex) {
                     // do nothing as exceptions caused by conversion or
-                    // validation are handled already
-                    // we just need this catch block for stopping the process if
-                    // conversion failed with
+                    // validation are handled already we just need this catch
+                    // block for stopping the process if conversion failed with
                     // an exception
                 }
             }
@@ -327,16 +356,16 @@ public class TextCellEditor extends AbstractCellEditor {
     @Override
     public void close() {
         // ensure to reset the error handlers in case this editor was closed
-        // rendering invalid
-        // this is necessary because if the editor is closed rendering invalid,
-        // opening the editor
-        // again inserting an invalid value again, it is not rendered invalid
-        // because of a wrong
-        // state in the internal error handlers
-        if (this.inputConversionErrorHandler != null)
+        // rendering invalid this is necessary because if the editor is closed
+        // rendering invalid, opening the editor again inserting an invalid
+        // value again, it is not rendered invalid because of a wrong state in
+        // the internal error handlers
+        if (this.inputConversionErrorHandler != null) {
             this.inputConversionErrorHandler.removeError(this);
-        if (this.inputValidationErrorHandler != null)
+        }
+        if (this.inputValidationErrorHandler != null) {
             this.inputValidationErrorHandler.removeError(this);
+        }
 
         super.close();
 
@@ -489,8 +518,7 @@ public class TextCellEditor extends AbstractCellEditor {
      * @see ControlDecoration#ControlDecoration(Control, int)
      */
     public void setDecorationPositionOverride(int decorationPositionOverride) {
-        this.decorationProvider
-                .setDecorationPositionOverride(decorationPositionOverride);
+        this.decorationProvider.setDecorationPositionOverride(decorationPositionOverride);
     }
 
     /**
@@ -508,8 +536,7 @@ public class TextCellEditor extends AbstractCellEditor {
      *            The {@link IEditErrorHandler} that is should be used for
      *            showing conversion errors on typing into this editor.
      */
-    public void setInputConversionErrorHandler(
-            IEditErrorHandler inputConversionErrorHandler) {
+    public void setInputConversionErrorHandler(IEditErrorHandler inputConversionErrorHandler) {
         this.inputConversionErrorHandler = inputConversionErrorHandler;
     }
 
@@ -528,8 +555,7 @@ public class TextCellEditor extends AbstractCellEditor {
      *            The {@link IEditErrorHandler} that is should used for showing
      *            validation errors on typing into this editor.
      */
-    public void setInputValidationErrorHandler(
-            IEditErrorHandler inputValidationErrorHandler) {
+    public void setInputValidationErrorHandler(IEditErrorHandler inputValidationErrorHandler) {
         this.inputValidationErrorHandler = inputValidationErrorHandler;
     }
 }
