@@ -10,7 +10,7 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.formula.command;
+package org.eclipse.nebula.widgets.nattable.copy;
 
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 

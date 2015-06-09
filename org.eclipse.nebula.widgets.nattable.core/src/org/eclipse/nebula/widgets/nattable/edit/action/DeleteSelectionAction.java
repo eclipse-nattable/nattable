@@ -10,34 +10,23 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.formula.command;
+package org.eclipse.nebula.widgets.nattable.edit.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.edit.command.DeleteSelectionCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
 /**
- * {@link IKeyAction} to clear the {@link InternalCellClipboard}.
+ * {@link IKeyAction} that triggers the {@link DeleteSelectionCommand}.
  *
  * @since 1.4
  */
-public class ClearClipboardAction implements IKeyAction {
-
-    private InternalCellClipboard clipboard;
-
-    /**
-     * @param clipboard
-     *            The clipboard that is used for internal copy/paste actions.
-     */
-    public ClearClipboardAction(InternalCellClipboard clipboard) {
-        this.clipboard = clipboard;
-    }
+public class DeleteSelectionAction implements IKeyAction {
 
     @Override
     public void run(NatTable natTable, KeyEvent event) {
-        this.clipboard.clear();
-        natTable.fireLayerEvent(new VisualRefreshEvent(natTable));
+        natTable.doCommand(new DeleteSelectionCommand(natTable.getConfigRegistry()));
     }
 
 }

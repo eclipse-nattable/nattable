@@ -12,6 +12,7 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula.command;
 
+import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardCommand;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
