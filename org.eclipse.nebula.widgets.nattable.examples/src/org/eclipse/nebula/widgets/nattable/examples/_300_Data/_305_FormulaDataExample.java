@@ -173,6 +173,9 @@ public class _305_FormulaDataExample extends AbstractNatExample {
             this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
             this.viewportLayer = new ViewportLayer(this.selectionLayer);
             setUnderlyingLayer(this.viewportLayer);
+
+            // enable formula result caching
+            // this.formulaDataProvider.configureCaching(this.bodyDataLayer);
         }
 
         public FormulaDataProvider getFormulaDataProvider() {

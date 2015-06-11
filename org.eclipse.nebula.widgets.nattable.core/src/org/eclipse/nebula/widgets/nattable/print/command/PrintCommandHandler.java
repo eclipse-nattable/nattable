@@ -11,14 +11,15 @@
 package org.eclipse.nebula.widgets.nattable.print.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.LayerPrinter;
 
 /**
- * ILayerCommandHandler for handling the PrintCommand. Simply delegates to the
+ * {@link ILayerCommandHandler} for handling the {@link PrintCommand}. Simply
+ * delegates to the {@link LayerPrinter}
  */
-public class PrintCommandHandler extends
-        AbstractLayerCommandHandler<PrintCommand> {
+public class PrintCommandHandler extends AbstractLayerCommandHandler<PrintCommand> {
 
     private final ILayer layer;
 
@@ -33,8 +34,7 @@ public class PrintCommandHandler extends
 
     @Override
     public boolean doCommand(PrintCommand command) {
-        new LayerPrinter(this.layer, command.getConfigRegistry()).print(command
-                .getShell());
+        new LayerPrinter(this.layer, command.getConfigRegistry()).print(command.getShell());
         return true;
     }
 

@@ -855,7 +855,7 @@ public class FormulaParserTest {
         this.dataProvider.setDataValue(1, 2, "=SUM(B1:B2)");
 
         // this should fail for circular dependencies
-        this.dataProvider.setDataValue(2, 2, "==SUM(A3:C3)");
+        this.dataProvider.setDataValue(2, 2, "=SUM(A3:C3)");
 
         this.parser.parseFunction("=C3");
     }

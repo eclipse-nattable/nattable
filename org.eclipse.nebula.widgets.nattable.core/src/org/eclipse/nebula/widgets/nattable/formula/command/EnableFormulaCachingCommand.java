@@ -14,14 +14,20 @@ package org.eclipse.nebula.widgets.nattable.formula.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaDataProvider;
 
 /**
- * {@link ILayerCommand} that is used to disable formula evaluation in the
+ * {@link ILayerCommand} that is used to enable formula result caching in the
  * {@link FormulaDataProvider}.
+ * <p>
+ * Enabling formula result caching means that the parsing and calculation
+ * processing is performed in a background thread and the processing is
+ * performed only in case values in the {@link IDataProvider} have changed.
+ * </p>
  *
- * @see DisableFormulaEvaluationCommandHandler
+ * @see EnableFormulaCachingCommandHandler
  *
  * @since 1.4
  */
-public class DisableFormulaEvaluationCommand extends AbstractContextFreeCommand {}
+public class EnableFormulaCachingCommand extends AbstractContextFreeCommand {}

@@ -15,6 +15,8 @@ import java.util.Date;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.formula.command.DisableFormulaCachingCommand;
+import org.eclipse.nebula.widgets.nattable.formula.command.EnableFormulaCachingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
@@ -102,10 +104,8 @@ public class LayerPrinter {
         Rectangle printArea = computePrintArea(printer);
         Point scaleFactor = computeScaleFactor(printer);
 
-        int numOfHorizontalPages = layerArea.width
-                / (printArea.width / scaleFactor.x);
-        int numOfVerticalPages = layerArea.height
-                / (printArea.height / scaleFactor.y);
+        int numOfHorizontalPages = layerArea.width / (printArea.width / scaleFactor.x);
+        int numOfVerticalPages = layerArea.height / (printArea.height / scaleFactor.y);
 
         // Adjusting for 0 index
         return new Point(numOfHorizontalPages + 1, numOfVerticalPages + 1);
@@ -135,16 +135,12 @@ public class LayerPrinter {
         }
 
         // Note: As we are operating on the same layer instance that is shown in
-        // the UI
-        // executing the print job asynchronously will not cause a real
-        // asynchronous
-        // execution. The UI will hang until the print job is done, because we
-        // access
-        // the information to print from the same instance.
+        // the UI executing the print job asynchronously will not cause a real
+        // asynchronous execution. The UI will hang until the print job is done,
+        // because we access the information to print from the same instance.
         // For further developments we need to ensure that for printing a deep
-        // copy
-        // of the layer needs to be performed instead of operating on the same
-        // instance.
+        // copy of the layer needs to be performed instead of operating on the
+        // same instance.
         Display.getDefault().asyncExec(new PrintJob(printer));
     }
 
@@ -253,80 +249,82 @@ public class LayerPrinter {
         @Override
         public void run() {
             if (this.printer.startJob("NatTable")) { //$NON-NLS-1$
-                // if a SummaryRowLayer is in the layer stack, we need to ensure
-                // that the values are calculated
-                LayerPrinter.this.layer.doCommand(new CalculateSummaryRowValuesCommand());
+                try {
+                    // if a SummaryRowLayer is in the layer stack, we need to
+                    // ensure that the values are calculated
+                    LayerPrinter.this.layer.doCommand(new CalculateSummaryRowValuesCommand());
 
-                // ensure that the viewport is turned off
-                LayerPrinter.this.layer.doCommand(new TurnViewportOffCommand());
+                    // ensure that the viewport is turned off
+                    LayerPrinter.this.layer.doCommand(new TurnViewportOffCommand());
 
-                // set the size of the layer according to the print setttings
-                // made by the user
-                setLayerSize(this.printer.getPrinterData());
+                    // ensure that formula processing is performed in the
+                    // current thread
+                    LayerPrinter.this.layer.doCommand(new DisableFormulaCachingCommand());
 
-                final Rectangle printerClientArea = computePrintArea(this.printer);
-                final Point scaleFactor = computeScaleFactor(this.printer);
-                final Point pageCount = getPageCount(this.printer);
-                GC gc = new GC(this.printer);
+                    // set the size of the layer according to the print
+                    // settings made by the user
+                    setLayerSize(this.printer.getPrinterData());
 
-                // Print pages Left to Right and then Top to Down
-                int currentPage = 1;
-                for (int verticalPageNumber = 0; verticalPageNumber < pageCount.y; verticalPageNumber++) {
+                    final Rectangle printerClientArea = computePrintArea(this.printer);
+                    final Point scaleFactor = computeScaleFactor(this.printer);
+                    final Point pageCount = getPageCount(this.printer);
+                    GC gc = new GC(this.printer);
 
-                    for (int horizontalPageNumber = 0; horizontalPageNumber < pageCount.x; horizontalPageNumber++) {
+                    // Print pages Left to Right and then Top to Down
+                    int currentPage = 1;
+                    for (int verticalPageNumber = 0; verticalPageNumber < pageCount.y; verticalPageNumber++) {
 
-                        // Calculate bounds for the next page
-                        Rectangle printBounds = new Rectangle(
-                                (printerClientArea.width / scaleFactor.x)
-                                        * horizontalPageNumber,
-                                ((printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor.y)
-                                        * verticalPageNumber,
-                                printerClientArea.width / scaleFactor.x,
-                                (printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI)
-                                        / scaleFactor.y);
+                        for (int horizontalPageNumber = 0; horizontalPageNumber < pageCount.x; horizontalPageNumber++) {
 
-                        if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
-                            this.printer.startPage();
+                            // Calculate bounds for the next page
+                            Rectangle printBounds = new Rectangle(
+                                    (printerClientArea.width / scaleFactor.x) * horizontalPageNumber,
+                                    ((printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor.y) * verticalPageNumber,
+                                    printerClientArea.width / scaleFactor.x,
+                                    (printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor.y);
 
-                            Transform printerTransform = new Transform(this.printer);
+                            if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
+                                this.printer.startPage();
 
-                            // Adjust for DPI difference between display and
-                            // printer
-                            printerTransform
-                                    .scale(scaleFactor.x, scaleFactor.y);
+                                Transform printerTransform = new Transform(this.printer);
 
-                            // Adjust for margins
-                            printerTransform.translate(printerClientArea.x
-                                    / scaleFactor.x, printerClientArea.y
-                                    / scaleFactor.y);
+                                // Adjust for DPI difference between display and
+                                // printer
+                                printerTransform.scale(scaleFactor.x, scaleFactor.y);
 
-                            // Grid will not automatically print the pages at
-                            // the left margin.
-                            // Example: page 1 will print at x = 0, page 2 at x
-                            // = 100, page 3 at x = 300
-                            // Adjust to print from the left page margin. i.e x
-                            // = 0
-                            printerTransform.translate(-1 * printBounds.x, -1
-                                    * printBounds.y);
-                            gc.setTransform(printerTransform);
+                                // Adjust for margins
+                                printerTransform.translate(
+                                        printerClientArea.x / scaleFactor.x,
+                                        printerClientArea.y / scaleFactor.y);
 
-                            printLayer(gc, printBounds);
+                                // Grid will not automatically print the pages
+                                // at the left margin.
+                                // Example: page 1 will print at x = 0, page 2
+                                // at x = 100, page 3 at x = 300
+                                // Adjust to print from the left page margin.
+                                // i.e x = 0
+                                printerTransform.translate(-1 * printBounds.x, -1 * printBounds.y);
+                                gc.setTransform(printerTransform);
 
-                            printFooter(gc, currentPage, printBounds);
+                                printLayer(gc, printBounds);
 
-                            this.printer.endPage();
-                            printerTransform.dispose();
+                                printFooter(gc, currentPage, printBounds);
+
+                                this.printer.endPage();
+                                printerTransform.dispose();
+                            }
+                            currentPage++;
                         }
-                        currentPage++;
                     }
+
+                    this.printer.endJob();
+
+                    gc.dispose();
+                    this.printer.dispose();
+                } finally {
+                    restoreLayerState();
                 }
-
-                this.printer.endJob();
-
-                gc.dispose();
-                this.printer.dispose();
             }
-            restoreLayerState();
         }
 
         /**
@@ -342,7 +340,8 @@ public class LayerPrinter {
         private void setLayerSize(PrinterData printerData) {
             if (printerData.scope == PrinterData.SELECTION) {
                 LayerPrinter.this.layer.setClientAreaProvider(LayerPrinter.this.originalClientAreaProvider);
-            } else {
+            }
+            else {
                 final Rectangle fullLayerSize = getTotalArea();
 
                 LayerPrinter.this.layer.setClientAreaProvider(new IClientAreaProvider() {
@@ -353,8 +352,8 @@ public class LayerPrinter {
                 });
 
                 // in case the whole layer should be printed or only the
-                // selected pages,
-                // we need to ensure to set the starting point to 0/0
+                // selected pages, we need to ensure to set the starting point
+                // to 0/0
                 LayerPrinter.this.layer.doCommand(new PrintEntireGridCommand());
             }
         }
@@ -368,8 +367,8 @@ public class LayerPrinter {
          *            The bounds of the print page.
          */
         private void printLayer(GC gc, Rectangle printBounds) {
-            LayerPrinter.this.layer.getLayerPainter().paintLayer(LayerPrinter.this.layer, gc, 0, 0, printBounds,
-                    LayerPrinter.this.configRegistry);
+            LayerPrinter.this.layer.getLayerPainter().paintLayer(
+                    LayerPrinter.this.layer, gc, 0, 0, printBounds, LayerPrinter.this.configRegistry);
         }
 
         /**
@@ -382,16 +381,15 @@ public class LayerPrinter {
          * @param printBounds
          *            The bounds of the print page.
          */
-        private void printFooter(GC gc, int totalPageCount,
-                Rectangle printBounds) {
-            gc.setForeground(Display.getCurrent().getSystemColor(
-                    SWT.COLOR_BLACK));
-            gc.setBackground(Display.getCurrent().getSystemColor(
-                    SWT.COLOR_WHITE));
+        private void printFooter(GC gc, int totalPageCount, Rectangle printBounds) {
+            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+            gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 
-            gc.drawLine(printBounds.x, printBounds.y + printBounds.height + 10,
-                    printBounds.x + printBounds.width, printBounds.y
-                            + printBounds.height + 10);
+            gc.drawLine(
+                    printBounds.x,
+                    printBounds.y + printBounds.height + 10,
+                    printBounds.x + printBounds.width,
+                    printBounds.y + printBounds.height + 10);
 
             gc.drawText(
                     Messages.getString("Printer.page") + " " + totalPageCount, //$NON-NLS-1$ //$NON-NLS-2$
@@ -404,12 +402,13 @@ public class LayerPrinter {
 
         /**
          * Restores the layer state to match the display characteristics again.
-         * This is done by resetting the client area provider and turning the
-         * viewport on again.
+         * This is done by resetting the client area provider, turning the
+         * viewport on and enabling formula result caching again.
          */
         private void restoreLayerState() {
             LayerPrinter.this.layer.setClientAreaProvider(LayerPrinter.this.originalClientAreaProvider);
             LayerPrinter.this.layer.doCommand(new TurnViewportOnCommand());
+            LayerPrinter.this.layer.doCommand(new EnableFormulaCachingCommand());
         }
 
     }
