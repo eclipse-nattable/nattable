@@ -682,8 +682,6 @@ public class PopupMenuBuilder {
      */
     protected class PopupContributionItem extends ContributionItem {
 
-        private String id;
-
         private IMenuItemProvider provider;
 
         public PopupContributionItem(IMenuItemProvider provider) {
@@ -691,7 +689,7 @@ public class PopupMenuBuilder {
         }
 
         public PopupContributionItem(String id, IMenuItemProvider provider) {
-            this.id = id;
+            super(id);
             this.provider = provider;
         }
 
@@ -706,7 +704,7 @@ public class PopupMenuBuilder {
                     // isEnabled() seems to be not called by the framework on
                     // opening a menu therefore we set it ourself. For this we
                     // also need to ensure isDynamic() returns true for
-                    // rerendering.
+                    // re-rendering.
                     item.setEnabled(isEnabled());
                 }
             }
@@ -714,15 +712,15 @@ public class PopupMenuBuilder {
 
         @Override
         public boolean isDynamic() {
-            return (this.id != null);
+            return (getId() != null);
         }
 
         @Override
         public boolean isEnabled() {
-            if (this.id != null) {
+            if (getId() != null) {
                 Object eventData = PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
                 if (eventData != null && eventData instanceof NatEventData) {
-                    return PopupMenuBuilder.this.enablement.isActive(this.id, (NatEventData) eventData);
+                    return PopupMenuBuilder.this.enablement.isActive(getId(), (NatEventData) eventData);
                 }
             }
             return true;
@@ -730,13 +728,14 @@ public class PopupMenuBuilder {
 
         @Override
         public boolean isVisible() {
-            if (this.id != null) {
+            if (getId() != null) {
                 Object eventData = PopupMenuBuilder.this.popupMenu.getData(MenuItemProviders.NAT_EVENT_DATA_KEY);
                 if (eventData != null && eventData instanceof NatEventData) {
-                    return PopupMenuBuilder.this.visibility.isActive(this.id, (NatEventData) eventData);
+                    return PopupMenuBuilder.this.visibility.isActive(getId(), (NatEventData) eventData);
                 }
             }
             return true;
         }
+
     }
 }
