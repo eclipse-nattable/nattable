@@ -1042,7 +1042,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
             // after handling the scrollbars recalculate the area to use for
             // percentage calculation
-            Rectangle possibleArea = clientArea;
+            Rectangle possibleArea = scrollable.getClientArea();
             possibleArea.width = possibleArea.width - widthDiff;
             possibleArea.height = possibleArea.height - heightDiff;
             clientAreaResizeCommand.setCalcArea(possibleArea);
@@ -1657,6 +1657,14 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      */
     public void setVerticalScrollbarEnabled(boolean enabled) {
         this.verticalScrollbarEnabled = enabled;
+    }
+
+    /**
+     * @since 1.4
+     */
+    @Override
+    public boolean isDynamicSizeLayer() {
+        return true;
     }
 
     /**

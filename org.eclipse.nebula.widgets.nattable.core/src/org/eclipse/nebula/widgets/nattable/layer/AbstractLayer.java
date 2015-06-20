@@ -7,12 +7,9 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
-<<<<<<< HEAD
  *     Dirk Fauth <dirk.fauth@googlemail.com> - made commandHandlers and eventHandlers
  *                                              visible to subclasses for testing
-=======
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447145
->>>>>>> Bug 447145 - added configurationApplied flag to ensure the configurations are only proceeded once
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
@@ -378,6 +375,13 @@ public abstract class AbstractLayer implements ILayer {
                 CellConfigAttributes.CELL_PAINTER,
                 cell.getDisplayMode(),
                 cell.getConfigLabels().getLabels());
+    }
+
+    /**
+     * @since 1.4
+     */
+    public boolean isDynamicSizeLayer() {
+        return false;
     }
 
 }

@@ -84,8 +84,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     // Configuration
 
     @Override
-    public void configure(ConfigRegistry configRegistry,
-            UiBindingRegistry uiBindingRegistry) {
+    public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
         this.underlyingLayer.configure(configRegistry, uiBindingRegistry);
         super.configure(configRegistry, uiBindingRegistry);
     }
@@ -137,8 +136,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     @Override
     public int getColumnIndexByPosition(int columnPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
-        return this.underlyingLayer
-                .getColumnIndexByPosition(underlyingColumnPosition);
+        return this.underlyingLayer.getColumnIndexByPosition(underlyingColumnPosition);
     }
 
     @Override
@@ -147,23 +145,19 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     }
 
     @Override
-    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
-            int underlyingColumnPosition) {
+    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
         return underlyingColumnPosition;
     }
 
     @Override
     public Collection<Range> underlyingToLocalColumnPositions(
-            ILayer sourceUnderlyingLayer,
-            Collection<Range> underlyingColumnPositionRanges) {
+            ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
         Collection<Range> localColumnPositionRanges = new ArrayList<Range>();
 
         for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
             localColumnPositionRanges.add(new Range(
-                    underlyingToLocalColumnPosition(sourceUnderlyingLayer,
-                            underlyingColumnPositionRange.start),
-                    underlyingToLocalColumnPosition(sourceUnderlyingLayer,
-                            underlyingColumnPositionRange.end)));
+                    underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start),
+                    underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.end)));
         }
 
         return localColumnPositionRanges;
@@ -184,8 +178,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     @Override
     public int getColumnWidthByPosition(int columnPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
-        return this.underlyingLayer
-                .getColumnWidthByPosition(underlyingColumnPosition);
+        return this.underlyingLayer.getColumnWidthByPosition(underlyingColumnPosition);
     }
 
     // Column resize
@@ -193,8 +186,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     @Override
     public boolean isColumnPositionResizable(int columnPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
-        return this.underlyingLayer
-                .isColumnPositionResizable(underlyingColumnPosition);
+        return this.underlyingLayer.isColumnPositionResizable(underlyingColumnPosition);
     }
 
     // X
@@ -207,15 +199,13 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     @Override
     public int getStartXOfColumnPosition(int columnPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
-        return this.underlyingLayer
-                .getStartXOfColumnPosition(underlyingColumnPosition);
+        return this.underlyingLayer.getStartXOfColumnPosition(underlyingColumnPosition);
     }
 
     // Underlying
 
     @Override
-    public Collection<ILayer> getUnderlyingLayersByColumnPosition(
-            int columnPosition) {
+    public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
         Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
         underlyingLayers.add(this.underlyingLayer);
         return underlyingLayers;
@@ -247,8 +237,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     }
 
     @Override
-    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
-            int underlyingRowPosition) {
+    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
         return underlyingRowPosition;
     }
 
@@ -259,10 +248,9 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
         Collection<Range> localRowPositionRanges = new ArrayList<Range>();
 
         for (Range underlyingRowPositionRange : underlyingRowPositionRanges) {
-            localRowPositionRanges.add(new Range(underlyingToLocalRowPosition(
-                    sourceUnderlyingLayer, underlyingRowPositionRange.start),
-                    underlyingToLocalRowPosition(sourceUnderlyingLayer,
-                            underlyingRowPositionRange.end)));
+            localRowPositionRanges.add(new Range(
+                    underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPositionRange.start),
+                    underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingRowPositionRange.end)));
         }
 
         return localRowPositionRanges;
@@ -322,18 +310,13 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
         int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-        ILayerCell cell = this.underlyingLayer.getCellByPosition(
-                underlyingColumnPosition, underlyingRowPosition);
+        ILayerCell cell = this.underlyingLayer.getCellByPosition(underlyingColumnPosition, underlyingRowPosition);
         if (cell != null) {
             cell = new TranslatedLayerCell(cell, this,
-                    underlyingToLocalColumnPosition(this.underlyingLayer,
-                            cell.getOriginColumnPosition()),
-                    underlyingToLocalRowPosition(this.underlyingLayer,
-                            cell.getOriginRowPosition()),
-                    underlyingToLocalColumnPosition(this.underlyingLayer,
-                            cell.getColumnPosition()),
-                    underlyingToLocalRowPosition(this.underlyingLayer,
-                            cell.getRowPosition()));
+                    underlyingToLocalColumnPosition(this.underlyingLayer, cell.getOriginColumnPosition()),
+                    underlyingToLocalRowPosition(this.underlyingLayer, cell.getOriginRowPosition()),
+                    underlyingToLocalColumnPosition(this.underlyingLayer, cell.getColumnPosition()),
+                    underlyingToLocalRowPosition(this.underlyingLayer, cell.getRowPosition()));
         }
         return cell;
     }
@@ -342,21 +325,17 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
         int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-        return this.underlyingLayer.getDisplayModeByPosition(
-                underlyingColumnPosition, underlyingRowPosition);
+        return this.underlyingLayer.getDisplayModeByPosition(underlyingColumnPosition, underlyingRowPosition);
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
         int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-        LabelStack configLabels = this.underlyingLayer.getConfigLabelsByPosition(
-                underlyingColumnPosition, underlyingRowPosition);
+        LabelStack configLabels = this.underlyingLayer.getConfigLabelsByPosition(underlyingColumnPosition, underlyingRowPosition);
         IConfigLabelAccumulator configLabelAccumulator = getConfigLabelAccumulator();
         if (configLabelAccumulator != null) {
-            configLabelAccumulator.accumulateConfigLabels(configLabels,
-                    columnPosition, rowPosition);
+            configLabelAccumulator.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
         }
         String regionName = getRegionName();
         if (regionName != null) {
@@ -369,15 +348,14 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     public Object getDataValueByPosition(int columnPosition, int rowPosition) {
         int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
         int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-        return this.underlyingLayer.getDataValueByPosition(underlyingColumnPosition,
-                underlyingRowPosition);
+        return this.underlyingLayer.getDataValueByPosition(underlyingColumnPosition, underlyingRowPosition);
     }
 
     @Override
-    public ICellPainter getCellPainter(int columnPosition, int rowPosition,
+    public ICellPainter getCellPainter(
+            int columnPosition, int rowPosition,
             ILayerCell cell, IConfigRegistry configRegistry) {
-        return this.underlyingLayer.getCellPainter(columnPosition, rowPosition,
-                cell, configRegistry);
+        return this.underlyingLayer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
     }
 
     // IRegionResolver
@@ -393,9 +371,13 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
     }
 
     @Override
-    public ILayer getUnderlyingLayerByPosition(int columnPosition,
-            int rowPosition) {
+    public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
         return this.underlyingLayer;
+    }
+
+    @Override
+    public boolean isDynamicSizeLayer() {
+        return ((AbstractLayer) this.underlyingLayer).isDynamicSizeLayer();
     }
 
 }

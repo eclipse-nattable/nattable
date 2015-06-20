@@ -677,36 +677,40 @@ public class CompositeLayer extends AbstractLayer {
 
         final Rectangle compositeClientArea = getClientAreaProvider().getClientArea();
 
-        // check if there are further sections to the bottom and reduce the
-        // height accordingly necessary in case the current child layer is
-        // a viewport layer that takes the whole space
-        if (this.childLayerLayout[layoutX].length > layoutY + 1) {
-            for (int bottomY = (layoutY + 1); bottomY < this.childLayerLayout[layoutX].length; bottomY++) {
-                ILayer bottomChildLayer = this.childLayerLayout[layoutX][bottomY];
-                int bottomHeight = bottomChildLayer.getPreferredHeight();
-                // if the layer to the bottom is bigger than the client area
-                // we assume it is the layer that takes the remaining space
-                // e.g. ViewportLayer
-                if (bottomHeight < compositeClientArea.height) {
-                    compositeClientArea.height -= bottomHeight;
-                }
-            }
-        }
+        if (childLayer instanceof AbstractLayer && ((AbstractLayer) childLayer).isDynamicSizeLayer()) {
 
-        // check if there are further sections to the right and reduce the
-        // width accordingly necessary in case the current child layer is
-        // a viewport layer that takes the whole space
-        if (this.childLayerLayout.length > layoutX + 1) {
-            for (int rightX = (layoutX + 1); rightX < this.childLayerLayout.length; rightX++) {
-                ILayer rightChildLayer = this.childLayerLayout[rightX][layoutY];
-                int rightWidth = rightChildLayer.getPreferredWidth();
-                // if the layer to the right is bigger than the client area
-                // we assume it is the layer that takes the remaining space
-                // e.g. ViewportLayer
-                if (rightWidth < compositeClientArea.width) {
-                    compositeClientArea.width -= rightWidth;
+            // check if there are further sections to the bottom and reduce the
+            // height accordingly necessary in case the current child layer is
+            // a viewport layer that takes the whole space
+            if (this.childLayerLayout[layoutX].length > layoutY + 1) {
+                for (int bottomY = (layoutY + 1); bottomY < this.childLayerLayout[layoutX].length; bottomY++) {
+                    ILayer bottomChildLayer = this.childLayerLayout[layoutX][bottomY];
+                    int bottomHeight = bottomChildLayer.getPreferredHeight();
+                    // if the layer to the bottom is bigger than the client area
+                    // we assume it is the layer that takes the remaining space
+                    // e.g. ViewportLayer
+                    if (bottomHeight < compositeClientArea.height) {
+                        compositeClientArea.height -= bottomHeight;
+                    }
                 }
             }
+
+            // check if there are further sections to the right and reduce the
+            // width accordingly necessary in case the current child layer is
+            // a viewport layer that takes the whole space
+            if (this.childLayerLayout.length > layoutX + 1) {
+                for (int rightX = (layoutX + 1); rightX < this.childLayerLayout.length; rightX++) {
+                    ILayer rightChildLayer = this.childLayerLayout[rightX][layoutY];
+                    int rightWidth = rightChildLayer.getPreferredWidth();
+                    // if the layer to the right is bigger than the client area
+                    // we assume it is the layer that takes the remaining space
+                    // e.g. ViewportLayer
+                    if (rightWidth < compositeClientArea.width) {
+                        compositeClientArea.width -= rightWidth;
+                    }
+                }
+            }
+
         }
 
         final Rectangle childClientArea = new Rectangle(
@@ -969,6 +973,19 @@ public class CompositeLayer extends AbstractLayer {
      */
     public int getLayoutYCount() {
         return this.layoutYCount;
+    }
+
+    @Override
+    public boolean isDynamicSizeLayer() {
+        for (int layoutX = 0; layoutX < this.layoutXCount; layoutX++) {
+            for (int layoutY = 0; layoutY < this.layoutYCount; layoutY++) {
+                if (this.childLayerLayout[layoutX][layoutY] instanceof AbstractLayer
+                        && ((AbstractLayer) this.childLayerLayout[layoutX][layoutY]).isDynamicSizeLayer()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected class CompositeLayerPainter implements ILayerPainter {
