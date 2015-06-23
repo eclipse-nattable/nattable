@@ -21,6 +21,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
+import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
+import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
@@ -43,18 +45,17 @@ public class FreezeHandlerTest {
 
     @Before
     public void setUp() {
-        final DataLayer bodyDataLayer = new DataLayer(
-                new DummyBodyDataProvider(10, 10));
-        final DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(
-                bodyDataLayer);
+        final DataLayer bodyDataLayer = new DataLayer(new DummyBodyDataProvider(10, 10));
+        final DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(bodyDataLayer);
         this.selectionLayer = bodyLayer.getSelectionLayer();
 
-        this.freezeLayer = new FreezeLayer(this.selectionLayer);
-        this.compositeFreezeLayer = new CompositeFreezeLayer(this.freezeLayer,
-                bodyLayer.getViewportLayer(), bodyLayer.getSelectionLayer());
+        this.freezeLayer =
+                new FreezeLayer(this.selectionLayer);
+        this.compositeFreezeLayer =
+                new CompositeFreezeLayer(this.freezeLayer, bodyLayer.getViewportLayer(), bodyLayer.getSelectionLayer());
         this.viewportLayer = bodyLayer.getViewportLayer();
-        this.commandHandler = new FreezeCommandHandler(this.freezeLayer, this.viewportLayer,
-                this.selectionLayer);
+        this.commandHandler =
+                new FreezeCommandHandler(this.freezeLayer, this.viewportLayer, this.selectionLayer);
         this.compositeFreezeLayer.registerCommandHandler(this.commandHandler);
 
         this.compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
@@ -65,22 +66,19 @@ public class FreezeHandlerTest {
         });
 
         // Shoot this command so that the viewport can be initialized
-        this.compositeFreezeLayer.doCommand(new ClientAreaResizeCommand(new Shell(
-                Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
+        this.compositeFreezeLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
     }
 
     @Test
     public void shouldFreezeFirstColumn() {
         // This is what would happen if we selected to freeze a column from some
         // sort of menu action
-        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(
-                this.compositeFreezeLayer, 1));
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(this.compositeFreezeLayer, 1));
         Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().columnPosition);
         Assert.assertEquals(-1, this.freezeLayer.getTopLeftPosition().rowPosition);
-        Assert.assertEquals(1,
-                this.freezeLayer.getBottomRightPosition().columnPosition);
-        Assert.assertEquals(-1,
-                this.freezeLayer.getBottomRightPosition().rowPosition);
+        Assert.assertEquals(1, this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(-1, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // Check viewport origin
         Assert.assertEquals(2, this.viewportLayer.getMinimumOriginColumnPosition());
@@ -89,12 +87,10 @@ public class FreezeHandlerTest {
 
     @Test
     public void shouldFreezeRowsAndColumnsBasedOnSelection() {
-        this.compositeFreezeLayer.doCommand(new SelectCellCommand(
-                this.compositeFreezeLayer, 2, 2, false, false));
+        this.compositeFreezeLayer.doCommand(new SelectCellCommand(this.compositeFreezeLayer, 2, 2, false, false));
 
         // Make sure selection layer processed command
-        final PositionCoordinate lastSelectedCell = this.selectionLayer
-                .getLastSelectedCellPosition();
+        final PositionCoordinate lastSelectedCell = this.selectionLayer.getLastSelectedCellPosition();
         Assert.assertEquals(2, lastSelectedCell.columnPosition);
         Assert.assertEquals(2, lastSelectedCell.rowPosition);
 
@@ -104,8 +100,7 @@ public class FreezeHandlerTest {
         Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().columnPosition);
         Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
         Assert.assertNotNull(this.freezeLayer.getBottomRightPosition());
-        Assert.assertEquals(1,
-                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(1, this.freezeLayer.getBottomRightPosition().columnPosition);
         Assert.assertEquals(1, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // Check viewport origin
@@ -116,13 +111,11 @@ public class FreezeHandlerTest {
     @Test
     public void shouldFreezeAfterScrolling() {
         // Scroll the viewport to the first column
-        this.viewportLayer.resetOrigin(this.viewportLayer.getStartXOfColumnPosition(0),
-                this.viewportLayer.getStartYOfRowPosition(0));
+        this.viewportLayer.resetOrigin(this.viewportLayer.getStartXOfColumnPosition(0), this.viewportLayer.getStartYOfRowPosition(0));
         this.viewportLayer.setOriginX(this.viewportLayer.getStartXOfColumnPosition(1));
         Assert.assertEquals(1, this.viewportLayer.getColumnIndexByPosition(0));
 
-        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 3, 3,
-                false, false));
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 3, 3, false, false));
         this.compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
 
         // Freezelayer
@@ -131,8 +124,7 @@ public class FreezeHandlerTest {
         // Test Positions
         Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
         Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
-        Assert.assertEquals(2,
-                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(2, this.freezeLayer.getBottomRightPosition().columnPosition);
         Assert.assertEquals(2, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // Test indexes
@@ -140,10 +132,8 @@ public class FreezeHandlerTest {
         Assert.assertEquals(1, this.freezeLayer.getTopLeftPosition().columnPosition);
         Assert.assertEquals(0, this.freezeLayer.getTopLeftPosition().rowPosition);
 
-        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(this.freezeLayer
-                .getColumnCount() - 1));
-        Assert.assertEquals(2,
-                this.freezeLayer.getBottomRightPosition().columnPosition);
+        Assert.assertEquals(2, this.freezeLayer.getColumnIndexByPosition(this.freezeLayer.getColumnCount() - 1));
+        Assert.assertEquals(2, this.freezeLayer.getBottomRightPosition().columnPosition);
         Assert.assertEquals(2, this.freezeLayer.getBottomRightPosition().rowPosition);
 
         // Test viewport
@@ -158,21 +148,149 @@ public class FreezeHandlerTest {
         this.viewportLayer.addLayerListener(reorderListener);
 
         // Scroll the viewport to the first column
-        this.viewportLayer.resetOrigin(this.viewportLayer.getStartXOfColumnPosition(0),
-                this.viewportLayer.getStartYOfRowPosition(0));
+        this.viewportLayer.resetOrigin(this.viewportLayer.getStartXOfColumnPosition(0), this.viewportLayer.getStartYOfRowPosition(0));
         this.viewportLayer.setOriginX(this.viewportLayer.getStartXOfColumnPosition(1));
         Assert.assertEquals(1, this.viewportLayer.getColumnIndexByPosition(0));
 
-        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 3, 3,
-                false, false));
+        this.selectionLayer.doCommand(new SelectCellCommand(this.selectionLayer, 3, 3, false, false));
         this.compositeFreezeLayer.doCommand(new FreezeSelectionCommand());
 
         // Move right edge out of frozen area
         Assert.assertEquals(2, this.freezeLayer.getColumnCount());
-        this.compositeFreezeLayer.doCommand(new ColumnReorderCommand(
-                this.compositeFreezeLayer, 1, 3));
+        this.compositeFreezeLayer.doCommand(new ColumnReorderCommand(this.compositeFreezeLayer, 1, 3));
 
         Assert.assertEquals(1, this.freezeLayer.getColumnCount());
+    }
+
+    @Test
+    public void testFreezeColumnResize() {
+        this.compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 400);
+            }
+        });
+
+        // Fire this command so that the viewport can be initialized
+        this.compositeFreezeLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
+
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(this.compositeFreezeLayer, 2));
+
+        Assert.assertEquals(3, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(7, this.viewportLayer.getColumnCount());
+        Assert.assertEquals(300, this.viewportLayer.getOrigin().getX());
+
+        this.compositeFreezeLayer.doCommand(new ColumnResizeCommand(this.freezeLayer, 2, 200));
+
+        Assert.assertEquals(3, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(7, this.viewportLayer.getColumnCount());
+        Assert.assertEquals(400, this.viewportLayer.getOrigin().getX());
+    }
+
+    @Test
+    public void testFreezeAllColumnsResize() {
+        this.compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 400);
+            }
+        });
+
+        // Fire this command so that the viewport can be initialized
+        this.compositeFreezeLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
+
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(this.compositeFreezeLayer, 9));
+
+        Assert.assertEquals(10, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(0, this.viewportLayer.getColumnCount());
+        Assert.assertEquals(1000, this.viewportLayer.getOrigin().getX());
+
+        this.compositeFreezeLayer.doCommand(new ColumnResizeCommand(this.freezeLayer, 2, 200));
+
+        Assert.assertEquals(10, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(0, this.viewportLayer.getColumnCount());
+        Assert.assertEquals(1100, this.viewportLayer.getOrigin().getX());
+    }
+
+    @Test
+    public void testFreezeReorderToAllColumns() {
+        this.compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 400);
+            }
+        });
+
+        // Fire this command so that the viewport can be initialized
+        this.compositeFreezeLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
+
+        // freeze all-1 columns
+        this.compositeFreezeLayer.doCommand(new FreezeColumnCommand(this.compositeFreezeLayer, 8));
+
+        Assert.assertEquals(9, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(1, this.viewportLayer.getColumnCount());
+        Assert.assertEquals(900, this.viewportLayer.getOrigin().getX());
+
+        this.compositeFreezeLayer.doCommand(new ColumnReorderCommand(this.compositeFreezeLayer, 9, 7));
+
+        Assert.assertEquals(10, this.freezeLayer.getColumnCount());
+        Assert.assertEquals(0, this.viewportLayer.getColumnCount());
+        Assert.assertEquals(1000, this.viewportLayer.getOrigin().getX());
+    }
+
+    @Test
+    public void testFreezeRowResize() {
+        this.compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 400);
+            }
+        });
+
+        // Fire this command so that the viewport can be initialized
+        this.compositeFreezeLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
+
+        this.compositeFreezeLayer.doCommand(new FreezeRowCommand(this.compositeFreezeLayer, 2));
+
+        Assert.assertEquals(3, this.freezeLayer.getRowCount());
+        Assert.assertEquals(7, this.viewportLayer.getRowCount());
+        Assert.assertEquals(60, this.viewportLayer.getOrigin().getY());
+
+        this.compositeFreezeLayer.doCommand(new RowResizeCommand(this.freezeLayer, 2, 120));
+
+        Assert.assertEquals(3, this.freezeLayer.getRowCount());
+        Assert.assertEquals(7, this.viewportLayer.getRowCount());
+        Assert.assertEquals(160, this.viewportLayer.getOrigin().getY());
+    }
+
+    @Test
+    public void testFreezeAllRowsResize() {
+        this.compositeFreezeLayer.setClientAreaProvider(new IClientAreaProvider() {
+            @Override
+            public Rectangle getClientArea() {
+                return new Rectangle(0, 0, 1500, 400);
+            }
+        });
+
+        // Shoot this command so that the viewport can be initialized
+        this.compositeFreezeLayer.doCommand(
+                new ClientAreaResizeCommand(new Shell(Display.getDefault(), SWT.H_SCROLL | SWT.V_SCROLL)));
+
+        this.compositeFreezeLayer.doCommand(new FreezeRowCommand(this.compositeFreezeLayer, 9));
+
+        Assert.assertEquals(10, this.freezeLayer.getRowCount());
+        Assert.assertEquals(0, this.viewportLayer.getRowCount());
+        Assert.assertEquals(200, this.viewportLayer.getOrigin().getY());
+
+        this.compositeFreezeLayer.doCommand(new RowResizeCommand(this.freezeLayer, 2, 120));
+
+        Assert.assertEquals(10, this.freezeLayer.getRowCount());
+        Assert.assertEquals(0, this.viewportLayer.getRowCount());
+        Assert.assertEquals(300, this.viewportLayer.getOrigin().getY());
     }
 
     class ReorderListener implements ILayerListener {

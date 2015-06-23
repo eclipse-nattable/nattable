@@ -29,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -96,6 +97,17 @@ public class CompositeFreezeLayer extends CompositeLayer implements IUniqueIndex
                 this.viewportLayer.setMinimumOriginX(this.freezeLayer.getWidth());
             }
         }
+        // Bug 470061
+        // in case the all columns are frozen, we also need to "repair"
+        // the inconsistent freeze-viewport states, as the viewport is not
+        // able to update itself since it doesn't handle the structural change
+        // event
+        else if (event instanceof ColumnResizeEvent
+                && this.freezeLayer.getColumnCount() == this.selectionLayer.getColumnCount()
+                && this.viewportLayer.getMinimumOriginColumnPosition() < this.freezeLayer.getColumnCount()) {
+            this.viewportLayer.setMinimumOriginX(this.freezeLayer.getWidth());
+        }
+
         super.handleLayerEvent(event);
     }
 
