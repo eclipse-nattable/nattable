@@ -462,6 +462,9 @@ public class NatCombo extends Composite {
                         showDropdownControl();
                     }
                 }
+                else {
+                    showDropdownControl();
+                }
             }
         });
     }

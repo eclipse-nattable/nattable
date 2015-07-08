@@ -408,7 +408,12 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                         || (event.keyCode == SWT.KEYPAD_CR)) {
                     commit(MoveDirectionEnum.NONE, ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE);
                 } else if (event.keyCode == SWT.ESC) {
-                    close();
+                    if (ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE) {
+                        close();
+                    }
+                    else {
+                        combo.hideDropdownControl();
+                    }
                 }
             }
 
