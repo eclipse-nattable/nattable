@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsC
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
+import org.eclipse.nebula.widgets.nattable.ui.util.MouseEventHelper;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportDragCommand;
 import org.eclipse.swt.events.MouseEvent;
@@ -72,20 +73,22 @@ public class ColumnReorderDragMode implements IDragMode {
     public void mouseUp(NatTable natTable, MouseEvent event) {
         natTable.removeOverlayPainter(this.targetOverlayPainter);
 
-        int dragToGridColumnPosition = getDragToGridColumnPosition(
-                getMoveDirection(event.x),
-                natTable.getColumnPositionByX(event.x));
+        // only trigger column reordering in case there is a real drag operation
+        if (!MouseEventHelper.treatAsClick(this.initialEvent, this.currentEvent)) {
+            int dragToGridColumnPosition = getDragToGridColumnPosition(
+                    getMoveDirection(event.x),
+                    natTable.getColumnPositionByX(event.x));
 
-        if (!isValidTargetColumnPosition(natTable, this.dragFromGridColumnPosition,
-                dragToGridColumnPosition)) {
-            dragToGridColumnPosition = -1;
+            if (!isValidTargetColumnPosition(natTable, this.dragFromGridColumnPosition,
+                    dragToGridColumnPosition)) {
+                dragToGridColumnPosition = -1;
+            }
+
+            fireMoveEndCommand(natTable, dragToGridColumnPosition);
         }
 
-        fireMoveEndCommand(natTable, dragToGridColumnPosition);
-
-        natTable.doCommand(new ViewportDragCommand(-1, -1)); // Cancel any
-                                                             // active viewport
-                                                             // drag
+        // Cancel any active viewport drag
+        natTable.doCommand(new ViewportDragCommand(-1, -1));
 
         natTable.redraw();
     }
