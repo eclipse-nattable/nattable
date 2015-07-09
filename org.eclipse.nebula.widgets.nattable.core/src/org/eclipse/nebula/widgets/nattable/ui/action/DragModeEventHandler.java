@@ -16,6 +16,7 @@ import org.eclipse.nebula.widgets.nattable.ui.mode.AbstractModeEventHandler;
 import org.eclipse.nebula.widgets.nattable.ui.mode.Mode;
 import org.eclipse.nebula.widgets.nattable.ui.mode.ModeSupport;
 import org.eclipse.nebula.widgets.nattable.ui.mode.MouseModeEventHandler;
+import org.eclipse.nebula.widgets.nattable.ui.util.MouseEventHelper;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MouseEvent;
 
@@ -53,7 +54,7 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
         // Bug 379884
         // check if the drag operation started and ended within the same cell
         // in that case the registered click operation is executed also
-        if (eventOnSameCell(this.mouseDownEvent, event)) {
+        if (MouseEventHelper.eventOnSameCell(this.natTable, this.mouseDownEvent, event)) {
             this.parentModeEventHandler.mouseUp(event);
         }
     }

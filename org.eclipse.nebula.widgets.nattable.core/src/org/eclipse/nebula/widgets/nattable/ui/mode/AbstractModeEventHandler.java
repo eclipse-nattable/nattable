@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.ui.mode;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.ui.util.MouseEventHelper;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
@@ -87,7 +88,12 @@ public class AbstractModeEventHandler implements IModeEventHandler {
      *            The MouseEvent for mouse up.
      * @return <code>true</code> if the mouse up event was triggered on the same
      *         cell as the intial mouse down event.
+     *
+     * @deprecated Use
+     *             {@link MouseEventHelper#eventOnSameCell(NatTable, MouseEvent, MouseEvent)}
+     *             instead
      */
+    @Deprecated
     protected boolean eventOnSameCell(MouseEvent downEvent, MouseEvent upEvent) {
         int startCol = this.natTable.getColumnPositionByX(downEvent.x);
         int startRow = this.natTable.getRowPositionByY(downEvent.y);
