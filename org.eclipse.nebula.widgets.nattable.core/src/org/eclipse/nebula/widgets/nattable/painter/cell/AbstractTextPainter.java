@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 461261
+ *     Loris Securo <lorissek@gmail.com> - Bug 472668
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
@@ -394,26 +395,19 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         String result = one;
         // if one is empty or one ends with newline just add two
         if (one == null || one.length() == 0 || one.endsWith(LINE_SEPARATOR)) {
-            result += two;
+            result += modifyTextToDisplay(two, gc, availableSpace);
         }
-        // if one does not contain a newline
-        else if (one.indexOf(LINE_SEPARATOR) == -1) {
-            //
+        else {
+            // if one contains a newline
+            if (one.indexOf(LINE_SEPARATOR) != -1) {
+                // get the end of the last part after the last newline
+                one = one.substring(one.lastIndexOf(LINE_SEPARATOR) + LINE_SEPARATOR.length());
+            }
+
             if (getLengthFromCache(gc, one) == availableSpace
                     || getLengthFromCache(gc, one + " " + two) >= availableSpace) { //$NON-NLS-1$
                 result += LINE_SEPARATOR;
                 result += modifyTextToDisplay(two, gc, availableSpace);
-            } else {
-                result += ' ';
-                result += two;
-            }
-        } else {
-            // get the end of the last part after the last newline
-            String endString = one.substring(one.lastIndexOf(LINE_SEPARATOR) + 1);
-            if (getLengthFromCache(gc, endString) == availableSpace
-                    || getLengthFromCache(gc, endString + " " + two) >= availableSpace) { //$NON-NLS-1$
-                result += LINE_SEPARATOR;
-                result += two;
             } else {
                 result += ' ';
                 result += two;
