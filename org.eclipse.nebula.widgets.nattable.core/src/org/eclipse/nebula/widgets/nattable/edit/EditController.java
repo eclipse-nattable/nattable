@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,9 +32,6 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Controller to handle the activation of the edit mode of NatTable cells.
- *
- * @author Dirk Fauth
- *
  */
 public class EditController {
 
@@ -76,25 +73,22 @@ public class EditController {
 
             // read the configuration for the specified cell for
             // - which editor to use for that cell
-            final List<String> configLabels = cell.getConfigLabels()
-                    .getLabels();
+            final List<String> configLabels = cell.getConfigLabels().getLabels();
 
             // check which editor to use
             final ICellEditor cellEditor = configRegistry.getConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT,
+                    EditConfigAttributes.CELL_EDITOR,
+                    DisplayMode.EDIT,
                     configLabels);
 
             if (cellEditor.openInline(configRegistry, configLabels)) {
                 // edit inline
-                ICellEditHandler editHandler = new InlineEditHandler(layer,
-                        columnPosition, rowPosition);
+                ICellEditHandler editHandler = new InlineEditHandler(layer, columnPosition, rowPosition);
 
-                Rectangle editorBounds = layer.getLayerPainter()
-                        .adjustCellBounds(
-                                columnPosition,
-                                rowPosition,
-                                new Rectangle(cellBounds.x, cellBounds.y,
-                                        cellBounds.width, cellBounds.height));
+                Rectangle editorBounds = layer.getLayerPainter().adjustCellBounds(
+                        columnPosition,
+                        rowPosition,
+                        new Rectangle(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height));
 
                 cellEditor.activateCell(parent, initialCanonicalValue,
                         EditModeEnum.INLINE, editHandler, cell, configRegistry);
@@ -103,13 +97,17 @@ public class EditController {
 
                 editorBounds = cellEditor.calculateControlBounds(editorBounds);
 
+                // TODO introduce some more generic way to identify the border width
+                if (editorBounds.x == 0) {
+                    editorBounds.x += 1;
+                    editorBounds.width -= 1;
+                }
+
                 if (editorControl != null && !editorControl.isDisposed()) {
                     editorControl.setBounds(editorBounds);
                     // We need to add the control listeners after setting the
-                    // bounds to it
-                    // because of the strange behaviour on Mac OS where a
-                    // control loses focus
-                    // if its bounds are set
+                    // bounds to it because of the strange behaviour on Mac OS
+                    // where a control loses focus if its bounds are set
                     cellEditor.addEditorControlListeners();
                     layer.fireLayerEvent(new CellEditorCreatedEvent(cellEditor));
                 }
@@ -120,11 +118,9 @@ public class EditController {
             }
         } catch (Exception e) {
             if (cell == null) {
-                log.error(
-                        "Cell being edited is no longer available. Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$
+                log.error("Cell being edited is no longer available. Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$
             } else {
-                log.error(
-                        "Error while editing cell: Cell: " + cell + "; Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$ //$NON-NLS-2$
+                log.error("Error while editing cell: Cell: " + cell + "; Initial value: " + initialCanonicalValue, e); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }
@@ -163,28 +159,26 @@ public class EditController {
             // get the editor to use, because the editor contains information if
             // it allows editing on a multi edit dialog
             // Note: this works because previous to calling this method it is
-            // checked
-            // if all cells have the same editor configured. Otherwise this
-            // method
-            // will have serious issues further on.
+            // checked if all cells have the same editor configured. Otherwise
+            // this method will have serious issues further on.
             ICellEditor cellEditor = configRegistry.getConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, DisplayMode.EDIT, cells
-                            .iterator().next().getConfigLabels().getLabels());
+                    EditConfigAttributes.CELL_EDITOR,
+                    DisplayMode.EDIT,
+                    cells.iterator().next().getConfigLabels().getLabels());
 
             if (cells.size() == 1
-                    || (cells.size() > 1 && supportMultiEdit(cells, cellEditor,
-                            configRegistry))) {
+                    || (cells.size() > 1 && supportMultiEdit(cells, cellEditor, configRegistry))) {
 
                 if (cellEditor.openMultiEditDialog()) {
                     // as the EditSelectionCommandHandler already ensured that
-                    // all cells have the same
-                    // configuration, we can simply use any cell for multi cell
-                    // edit handling
-                    ICellEditDialog dialog = CellEditDialogFactory
-                            .createCellEditDialog(
-                                    parent != null ? parent.getShell() : null,
-                                    initialCanonicalValue, cells.iterator()
-                                            .next(), cellEditor, configRegistry);
+                    // all cells have the same configuration, we can simply use
+                    // any cell for multi cell edit handling
+                    ICellEditDialog dialog = CellEditDialogFactory.createCellEditDialog(
+                            parent != null ? parent.getShell() : null,
+                            initialCanonicalValue,
+                                    cells.iterator().next(),
+                                    cellEditor,
+                                    configRegistry);
 
                     int returnValue = dialog.open();
 
@@ -198,30 +192,28 @@ public class EditController {
                             }
                             ILayer layer = selectedCell.getLayer();
 
-                            layer.doCommand(new UpdateDataCommand(layer,
+                            layer.doCommand(new UpdateDataCommand(
+                                    layer,
                                     selectedCell.getColumnPosition(),
-                                    selectedCell.getRowPosition(), editorValue));
+                                    selectedCell.getRowPosition(),
+                                    editorValue));
                         }
                     }
                 } else {
                     // if the editor is configured to do not open a multi edit
-                    // dialog for
-                    // multi editing, we simply activate all editors for cells
-                    // that are
-                    // selected for multi editing
-                    // this only works for editors that have no interactive
-                    // control for
+                    // dialog for multi editing, we simply activate all editors
+                    // for cells that are selected for multi editing this only
+                    // works for editors that have no interactive control for
                     // editing, like for example the CheckBoxCellEditor that
-                    // directly
-                    // changes the value and closes right away.
+                    // directly changes the value and closes right away.
                     for (ILayerCell cell : cells) {
                         ICellEditHandler editHandler = new InlineEditHandler(
-                                cell.getLayer(), cell.getColumnPosition(),
+                                cell.getLayer(),
+                                cell.getColumnPosition(),
                                 cell.getRowPosition());
 
                         cellEditor.activateCell(parent, initialCanonicalValue,
-                                EditModeEnum.INLINE, editHandler, cell,
-                                configRegistry);
+                                EditModeEnum.INLINE, editHandler, cell, configRegistry);
                     }
                 }
             }
@@ -252,8 +244,7 @@ public class EditController {
     private static boolean supportMultiEdit(Collection<ILayerCell> cells,
             ICellEditor cellEditor, IConfigRegistry configRegistry) {
         for (ILayerCell cell : cells) {
-            if (!cellEditor.supportMultiEdit(configRegistry, cell
-                    .getConfigLabels().getLabels())) {
+            if (!cellEditor.supportMultiEdit(configRegistry, cell.getConfigLabels().getLabels())) {
                 return false;
             }
         }
