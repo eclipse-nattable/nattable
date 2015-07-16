@@ -636,7 +636,7 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         }
 
         if (event instanceof ISelectionEvent) {
-            if (event instanceof CellSelectionEvent) {
+            if (event instanceof CellSelectionEvent || event instanceof RowSelectionEvent) {
                 Event e = new Event();
                 e.widget = this;
                 try {
