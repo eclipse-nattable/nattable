@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,8 @@ import org.eclipse.swt.widgets.MenuItem;
  */
 public class GroupByHeaderMenuConfiguration extends AbstractUiBindingConfiguration {
 
+    public static final String UNGROUP_BY_MENU_ITEM_ID = "ungroupByMenuItem"; //$NON-NLS-1$
+
     /**
      * The {@link GroupByHeaderLayer} to which the menu should be attached.
      */
@@ -57,8 +59,7 @@ public class GroupByHeaderMenuConfiguration extends AbstractUiBindingConfigurati
      *            The {@link GroupByHeaderLayer} to which the menu should be
      *            attached.
      */
-    public GroupByHeaderMenuConfiguration(
-            NatTable natTable, GroupByHeaderLayer groupByHeaderLayer) {
+    public GroupByHeaderMenuConfiguration(NatTable natTable, GroupByHeaderLayer groupByHeaderLayer) {
 
         this.groupByHeaderLayer = groupByHeaderLayer;
         this.groupByHeaderMenu = createGroupByHeaderMenu(natTable).build();
@@ -90,12 +91,12 @@ public class GroupByHeaderMenuConfiguration extends AbstractUiBindingConfigurati
      *         header menu.
      */
     protected PopupMenuBuilder createGroupByHeaderMenu(NatTable natTable) {
-        return new PopupMenuBuilder(natTable).withMenuItemProvider(
+        return new PopupMenuBuilder(natTable).withMenuItemProvider(UNGROUP_BY_MENU_ITEM_ID,
                 new IMenuItemProvider() {
                     @Override
                     public void addMenuItem(final NatTable natTable, Menu popupMenu) {
                         MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-                        menuItem.setText(Messages.getString("GroupByHeaderMenuConfiguration.ungroupBy")); //$NON-NLS-1$
+                        menuItem.setText(Messages.getLocalizedMessage("%GroupByHeaderMenuConfiguration.ungroupBy")); //$NON-NLS-1$
                         menuItem.setEnabled(true);
 
                         menuItem.addSelectionListener(new SelectionAdapter() {
