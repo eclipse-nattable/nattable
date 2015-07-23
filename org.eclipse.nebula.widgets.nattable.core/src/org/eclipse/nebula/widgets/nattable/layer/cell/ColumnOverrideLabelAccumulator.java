@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,8 +32,7 @@ import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
  *
  * Also @see {@link RowOverrideLabelAccumulator}
  */
-public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
-        IPersistable {
+public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements IPersistable {
 
     public static final String PERSISTENCE_KEY = ".columnOverrideLabelAccumulator"; //$NON-NLS-1$
     private final ILayer layer;
@@ -51,8 +50,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
      * {@inheritDoc}
      */
     @Override
-    public void accumulateConfigLabels(LabelStack configLabels,
-            int columnPosition, int rowPosition) {
+    public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
         int columnIndex = this.layer.getColumnIndexByPosition(columnPosition);
 
         addOverrides(configLabels, Integer.valueOf(columnIndex));
@@ -94,8 +92,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
      * @param configLabels
      *            The config labels to add.
      */
-    public void registerColumnOverrides(int columnIndex,
-            List<String> configLabels) {
+    public void registerColumnOverrides(int columnIndex, List<String> configLabels) {
         super.registerOverrides(columnIndex, configLabels);
     }
 
@@ -110,8 +107,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
      * @param configLabels
      *            The config labels to add.
      */
-    public void registerColumnOverridesOnTop(int columnIndex,
-            String... configLabels) {
+    public void registerColumnOverridesOnTop(int columnIndex, String... configLabels) {
         super.registerOverridesOnTop(columnIndex, configLabels);
     }
 
@@ -126,8 +122,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
      * @param configLabels
      *            The config labels to add.
      */
-    public void registerColumnOverridesOnTop(int columnIndex,
-            List<String> configLabels) {
+    public void registerColumnOverridesOnTop(int columnIndex, List<String> configLabels) {
         super.registerOverridesOnTop(columnIndex, configLabels);
     }
 
@@ -215,9 +210,11 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
      */
     public void unregisterOverrides(String configLabel) {
         List<String> overrides = getOverrides(ALL_COLUMN_KEY);
-        overrides.remove(configLabel);
-        if (overrides.isEmpty()) {
-            removeOverride(ALL_COLUMN_KEY);
+        if (overrides != null) {
+            overrides.remove(configLabel);
+            if (overrides.isEmpty()) {
+                removeOverride(ALL_COLUMN_KEY);
+            }
         }
     }
 
@@ -229,9 +226,11 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
      */
     public void unregisterOverrides(List<String> configLabels) {
         List<String> overrides = getOverrides(ALL_COLUMN_KEY);
-        overrides.removeAll(configLabels);
-        if (overrides.isEmpty()) {
-            removeOverride(ALL_COLUMN_KEY);
+        if (overrides != null) {
+            overrides.removeAll(configLabels);
+            if (overrides.isEmpty()) {
+                removeOverride(ALL_COLUMN_KEY);
+            }
         }
     }
 
@@ -255,11 +254,9 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
             // Strip the last comma
             String propertyValue = strBuilder.toString();
             if (propertyValue.endsWith(VALUE_SEPARATOR)) {
-                propertyValue = propertyValue.substring(0,
-                        propertyValue.length() - 1);
+                propertyValue = propertyValue.substring(0, propertyValue.length() - 1);
             }
-            String propertyKey = prefix + PERSISTENCE_KEY + DOT
-                    + entry.getKey();
+            String propertyKey = prefix + PERSISTENCE_KEY + DOT + entry.getKey();
             properties.setProperty(propertyKey, propertyValue);
         }
     }
@@ -275,18 +272,16 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
         for (Object key : keySet) {
             String keyString = (String) key;
             if (keyString.contains(PERSISTENCE_KEY)) {
-                String labelsFromPropertyValue = properties.getProperty(
-                        keyString).trim();
-                String overrideKey = keyString.substring(keyString
-                        .lastIndexOf(DOT) + 1);
+                String labelsFromPropertyValue = properties.getProperty(keyString).trim();
+                String overrideKey = keyString.substring(keyString.lastIndexOf(DOT) + 1);
                 try {
-                    registerColumnOverrides(Integer.parseInt(overrideKey),
+                    registerColumnOverrides(
+                            Integer.parseInt(overrideKey),
                             labelsFromPropertyValue.split(VALUE_SEPARATOR));
                 } catch (NumberFormatException e) {
                     // if the last part of the key can not be parsed to an
                     // Integer, we use the key as is
-                    registerOverrides(overrideKey,
-                            labelsFromPropertyValue.split(VALUE_SEPARATOR));
+                    registerOverrides(overrideKey, labelsFromPropertyValue.split(VALUE_SEPARATOR));
                 }
             }
         }
