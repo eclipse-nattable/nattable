@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Roman Flueckiger <rflueckiger@inventage.com> - Bug 463130
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.mode;
 
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
@@ -29,8 +31,13 @@ import org.eclipse.swt.events.MouseTrackListener;
  * event handling for a given mode. This allows the event handling behavior for
  * different modes to be grouped together and isolated from each other.
  */
-public class ModeSupport implements KeyListener, MouseListener,
-        MouseMoveListener, MouseTrackListener, FocusListener {
+public class ModeSupport implements KeyListener, MouseListener, MouseMoveListener, MouseTrackListener, FocusListener {
+
+    private static final boolean isMac;
+
+    static {
+        isMac = System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0; //$NON-NLS-1$ //$NON-NLS-2$
+    }
 
     private Map<String, IModeEventHandler> modeEventHandlerMap = new HashMap<String, IModeEventHandler>();
 
@@ -55,8 +62,7 @@ public class ModeSupport implements KeyListener, MouseListener,
      *
      * @see IModeEventHandler
      */
-    public void registerModeEventHandler(String mode,
-            IModeEventHandler modeEventHandler) {
+    public void registerModeEventHandler(String mode, IModeEventHandler modeEventHandler) {
         this.modeEventHandlerMap.put(mode, modeEventHandler);
     }
 
@@ -92,21 +98,25 @@ public class ModeSupport implements KeyListener, MouseListener,
 
     @Override
     public void mouseDoubleClick(MouseEvent event) {
+        modifyMouseEventForMac(event);
         this.currentModeEventHandler.mouseDoubleClick(event);
     }
 
     @Override
     public void mouseDown(MouseEvent event) {
+        modifyMouseEventForMac(event);
         this.currentModeEventHandler.mouseDown(event);
     }
 
     @Override
     public void mouseUp(MouseEvent event) {
+        modifyMouseEventForMac(event);
         this.currentModeEventHandler.mouseUp(event);
     }
 
     @Override
     public void mouseMove(MouseEvent event) {
+        modifyMouseEventForMac(event);
         this.currentModeEventHandler.mouseMove(event);
     }
 
@@ -133,6 +143,23 @@ public class ModeSupport implements KeyListener, MouseListener,
     @Override
     public void focusLost(FocusEvent event) {
         this.currentModeEventHandler.focusLost(event);
+    }
+
+    /**
+     * Modifies the {@link MouseEvent} in case a CTRL + left click is performed.
+     * This is necessary because on Mac that combination is used to trigger a
+     * right click.
+     *
+     * @param event
+     *            The {@link MouseEvent} to modify
+     */
+    private void modifyMouseEventForMac(MouseEvent event) {
+        if (isMac) {
+            if (event.stateMask == SWT.MOD4 && event.button == 1) {
+                event.stateMask = event.stateMask & ~SWT.MOD4;
+                event.button = 3;
+            }
+        }
     }
 
 }
