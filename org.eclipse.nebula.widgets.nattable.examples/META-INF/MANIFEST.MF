@@ -26,7 +26,6 @@ Import-Package: ca.odell.glazedlists,
  org.eclipse.swt.widgets
 Require-Bundle: org.eclipse.nebula.widgets.nattable.core,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists,
- org.eclipse.nebula.widgets.nattable.extension.builder,
  org.eclipse.nebula.widgets.nattable.dataset,
  org.eclipse.nebula.widgets.nattable.extension.poi
 Bundle-Vendor: Eclipse Nebula NatTable
