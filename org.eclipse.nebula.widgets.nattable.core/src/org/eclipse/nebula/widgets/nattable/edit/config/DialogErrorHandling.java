@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,8 +27,6 @@ import org.eclipse.swt.widgets.Shell;
  * up. The warning dialog gives the opportunity to discard the invalid input or
  * change it, which will cause the editor to stay open. Only handles errors on
  * commit.
- *
- * @author Dirk Fauth
  */
 public class DialogErrorHandling extends AbstractEditErrorHandler {
 
@@ -50,38 +48,32 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * The shell title that will be used if there is no conversion or validation
      * shell title configured.
      */
-    private String failureShellTitle = Messages
-            .getString("DialogErrorHandlingStrategy.failureTitle"); //$NON-NLS-1$
+    private String failureShellTitle = "%DialogErrorHandlingStrategy.failureTitle"; //$NON-NLS-1$
     /**
      * The shell title that will be used in case this
      * {@link DialogErrorHandling} is called to handle a
      * {@link ConversionFailedException}.
      */
-    private String conversionFailureShellTitle = Messages
-            .getString("DialogErrorHandlingStrategy.conversionFailureTitle"); //$NON-NLS-1$
+    private String conversionFailureShellTitle = "%DialogErrorHandlingStrategy.conversionFailureTitle"; //$NON-NLS-1$
     /**
      * The shell title that will be used in case this
      * {@link DialogErrorHandling} is called to handle a
      * {@link ValidationFailedException}.
      */
-    private String validationFailureShellTitle = Messages
-            .getString("DialogErrorHandlingStrategy.validationFailureTitle"); //$NON-NLS-1$
+    private String validationFailureShellTitle = "%DialogErrorHandlingStrategy.validationFailureTitle"; //$NON-NLS-1$
     /**
      * The text on the button for changing the entered value.
      */
-    private String changeButtonLabel = Messages
-            .getString("DialogErrorHandlingStrategy.warningDialog.changeButton"); //$NON-NLS-1$
+    private String changeButtonLabel = "%DialogErrorHandlingStrategy.warningDialog.changeButton"; //$NON-NLS-1$
     /**
      * The text on the button to discard the entered value.
      */
-    private String discardButtonLabel = Messages
-            .getString("DialogErrorHandlingStrategy.warningDialog.discardButton"); //$NON-NLS-1$
+    private String discardButtonLabel = "%DialogErrorHandlingStrategy.warningDialog.discardButton"; //$NON-NLS-1$
     /**
      * The text on the button to commit the entered invalid value. Needed to
      * support cross validation.
      */
-    private String commitButtonLabel = Messages
-            .getString("DialogErrorHandlingStrategy.warningDialog.commitButton"); //$NON-NLS-1$
+    private String commitButtonLabel = "%DialogErrorHandlingStrategy.warningDialog.commitButton"; //$NON-NLS-1$
 
     /**
      * Create a new {@link DialogErrorHandling} with no underlying
@@ -132,8 +124,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *            additional button for committing the invalid data will be
      *            provided within the dialog.
      */
-    public DialogErrorHandling(IEditErrorHandler underlyingErrorHandler,
-            boolean allowCommit) {
+    public DialogErrorHandling(IEditErrorHandler underlyingErrorHandler, boolean allowCommit) {
         super(underlyingErrorHandler);
         this.allowCommit = allowCommit;
     }
@@ -150,13 +141,13 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
         super.displayError(cellEditor, e);
         this.editor = cellEditor;
 
-        String shellTitle = this.failureShellTitle;
+        String shellTitle = getFailureShellTitle();
         if (e instanceof ConversionFailedException
-                && this.conversionFailureShellTitle != null) {
-            shellTitle = this.conversionFailureShellTitle;
+                && !getConversionFailureShellTitle().isEmpty()) {
+            shellTitle = getConversionFailureShellTitle();
         } else if (e instanceof ValidationFailedException
-                && this.validationFailureShellTitle != null) {
-            shellTitle = this.validationFailureShellTitle;
+                && !getValidationFailureShellTitle().isEmpty()) {
+            shellTitle = getValidationFailureShellTitle();
         }
         showWarningDialog(e.getLocalizedMessage(), shellTitle);
     }
@@ -170,13 +161,18 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
             // conversion/validation failed - so open dialog with error message
 
             if (dialogMessage != null) {
-                String[] buttonLabels = this.allowCommit ? new String[] {
-                        this.changeButtonLabel, this.discardButtonLabel,
-                        this.commitButtonLabel } : new String[] { this.changeButtonLabel,
-                        this.discardButtonLabel };
-                MessageDialog warningDialog = new MessageDialog(Display
-                        .getCurrent().getActiveShell(), dialogTitle, null,
-                        dialogMessage, MessageDialog.WARNING, buttonLabels, 0);
+                String[] buttonLabels = this.allowCommit ?
+                        new String[] { getChangeButtonLabel(), getDiscardButtonLabel(), getCommitButtonLabel() }
+                        : new String[] { getChangeButtonLabel(), getDiscardButtonLabel() };
+
+                MessageDialog warningDialog = new MessageDialog(
+                    Display.getDefault().getActiveShell(),
+                    dialogTitle,
+                    null,
+                    dialogMessage,
+                    MessageDialog.WARNING,
+                    buttonLabels,
+                    0);
 
                 // if discard was selected close the editor
                 int returnCode = warningDialog.open();
@@ -202,12 +198,11 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
     protected boolean isWarningDialogActive() {
         // check if the current active shell is a conversion or validation
         // failure warning dialog
-        Shell control = Display.getCurrent().getActiveShell();
+        Shell control = Display.getDefault().getActiveShell();
         if (control != null
-                && (this.conversionFailureShellTitle.equals(control.getText())
-                        || this.validationFailureShellTitle
-                                .equals(control.getText()) || this.failureShellTitle
-                            .equals(control.getText()))) {
+                && (getConversionFailureShellTitle().equals(control.getText())
+                        || getValidationFailureShellTitle().equals(control.getText())
+                        || getFailureShellTitle().equals(control.getText()))) {
             return true;
         }
         return false;
@@ -218,7 +213,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *         validation shell title configured.
      */
     public String getFailureShellTitle() {
-        return this.failureShellTitle;
+        return getLocalized(this.failureShellTitle);
     }
 
     /**
@@ -236,7 +231,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *         {@link ConversionFailedException}.
      */
     public String getConversionFailureShellTitle() {
-        return this.conversionFailureShellTitle;
+        return getLocalized(this.conversionFailureShellTitle);
     }
 
     /**
@@ -245,8 +240,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *            {@link DialogErrorHandling} is called to handle a
      *            {@link ConversionFailedException}.
      */
-    public void setConversionFailureShellTitle(
-            String conversionFailureShellTitle) {
+    public void setConversionFailureShellTitle(String conversionFailureShellTitle) {
         this.conversionFailureShellTitle = conversionFailureShellTitle;
     }
 
@@ -256,7 +250,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *         {@link ValidationFailedException}.
      */
     public String getValidationFailureShellTitle() {
-        return this.validationFailureShellTitle;
+        return getLocalized(this.validationFailureShellTitle);
     }
 
     /**
@@ -265,8 +259,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      *            {@link DialogErrorHandling} is called to handle a
      *            {@link ValidationFailedException}.
      */
-    public void setValidationFailureShellTitle(
-            String validationFailureShellTitle) {
+    public void setValidationFailureShellTitle(String validationFailureShellTitle) {
         this.validationFailureShellTitle = validationFailureShellTitle;
     }
 
@@ -274,7 +267,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * @return The text on the button for changing the entered value.
      */
     public String getChangeButtonLabel() {
-        return this.changeButtonLabel;
+        return getLocalized(this.changeButtonLabel);
     }
 
     /**
@@ -289,7 +282,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      * @return The text on the button to discard the entered value.
      */
     public String getDiscardButtonLabel() {
-        return this.discardButtonLabel;
+        return getLocalized(this.discardButtonLabel);
     }
 
     /**
@@ -298,6 +291,27 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
      */
     public void setDiscardButtonLabel(String discardButtonLabel) {
         this.discardButtonLabel = discardButtonLabel;
+    }
+
+    /**
+     * @return The text on the button to commit the entered value.
+     * @since 1.4
+     */
+    public String getCommitButtonLabel() {
+        return getLocalized(this.commitButtonLabel);
+    }
+
+    /**
+     * @param commitButtonLabel
+     *            The text on the button to commit the entered value.
+     * @since 1.4
+     */
+    public void setCommitButtonLabel(String commitButtonLabel) {
+        this.commitButtonLabel = commitButtonLabel;
+    }
+
+    private String getLocalized(String text) {
+        return (text != null) ? Messages.getLocalizedMessage(text) : ""; //$NON-NLS-1$
     }
 
 }
