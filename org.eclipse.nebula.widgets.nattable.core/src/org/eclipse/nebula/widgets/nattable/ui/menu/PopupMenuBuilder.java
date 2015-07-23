@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.action.ContributionItem;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
@@ -583,7 +584,15 @@ public class PopupMenuBuilder {
      * @see MenuItemProviders#separatorMenuItemProvider()
      */
     public PopupMenuBuilder withSeparator() {
-        return withSeparator(SEPARATOR_MENU_ITEM_ID);
+        int count = 0;
+        if (this.menuManager != null) {
+            for (IContributionItem item : this.menuManager.getItems()) {
+                if (item.getId() != null && item.getId().startsWith(SEPARATOR_MENU_ITEM_ID)) {
+                    count++;
+                }
+            }
+        }
+        return withSeparator(SEPARATOR_MENU_ITEM_ID + "." + count); //$NON-NLS-1$
     }
 
     /**
@@ -591,7 +600,7 @@ public class PopupMenuBuilder {
      *
      * @param id
      *            The id to identify the separator. Necessary if there should be
-     *            visibility contraints for specific separators.
+     *            visibility constraints for specific separators.
      * @return The {@link PopupMenuBuilder} with an added separator.
      * @see MenuItemProviders#separatorMenuItemProvider()
      */

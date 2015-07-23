@@ -43,7 +43,6 @@ import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.swt.SWT;
@@ -165,8 +164,8 @@ public class _000_Column_groups extends AbstractNatExample {
 
         // Column group header menu
         final Menu columnGroupHeaderMenu = new PopupMenuBuilder(natTable)
-                .withMenuItemProvider(MenuItemProviders.renameColumnGroupMenuItemProvider())
-                .withMenuItemProvider(MenuItemProviders.removeColumnGroupMenuItemProvider())
+                .withRenameColumnGroupMenuItem()
+                .withRemoveColumnGroupMenuItem()
                 .build();
 
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
