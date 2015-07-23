@@ -48,7 +48,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.ui.menu.VisibleColumnsRemaining;
@@ -62,9 +61,6 @@ import org.eclipse.swt.widgets.Menu;
  * Simple example showing how to add the {@link ColumnGroupHeaderLayer} to the
  * layer composition of a grid and how to add the corresponding actions to the
  * column header menu.
- *
- * @author Dirk Fauth
- *
  */
 public class _5111_ColumnGroupingExample extends AbstractNatExample {
 
@@ -156,8 +152,7 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
         NatTable natTable = new NatTable(parent, gridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration manually
+        // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
         natTable.addConfiguration(new HeaderMenuConfiguration(natTable) {
@@ -171,8 +166,9 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
 
         // Column group header menu
         final Menu columnGroupHeaderMenu = new PopupMenuBuilder(natTable)
-                .withMenuItemProvider(MenuItemProviders.renameColumnGroupMenuItemProvider())
-                .withMenuItemProvider(MenuItemProviders.removeColumnGroupMenuItemProvider()).build();
+                .withRenameColumnGroupMenuItem()
+                .withRemoveColumnGroupMenuItem()
+                .build();
 
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
             @Override
