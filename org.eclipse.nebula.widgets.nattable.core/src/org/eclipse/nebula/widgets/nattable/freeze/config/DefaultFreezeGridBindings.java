@@ -23,10 +23,10 @@ public class DefaultFreezeGridBindings extends AbstractUiBindingConfiguration {
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         uiBindingRegistry.registerKeyBinding(
-                new KeyEventMatcher(SWT.MOD1 | SWT.SHIFT, 'f'),
+                new KeyEventMatcher(SWT.MOD1 | SWT.MOD2, 'f'),
                 new FreezeGridAction());
         uiBindingRegistry.registerKeyBinding(
-                new KeyEventMatcher(SWT.MOD1 | SWT.SHIFT, 'u'),
+                new KeyEventMatcher(SWT.MOD1 | SWT.MOD2, 'u'),
                 new UnFreezeGridAction());
     }
 }

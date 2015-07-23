@@ -286,13 +286,13 @@ public class TextCellEditor extends AbstractCellEditor {
                 if (TextCellEditor.this.commitOnEnter
                         && (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR)) {
 
-                    boolean commit = (event.stateMask == SWT.ALT) ? false : true;
+                    boolean commit = (event.stateMask == SWT.MOD3) ? false : true;
                     MoveDirectionEnum move = MoveDirectionEnum.NONE;
                     if (TextCellEditor.this.moveSelectionOnEnter
                             && TextCellEditor.this.editMode == EditModeEnum.INLINE) {
                         if (event.stateMask == 0) {
                             move = MoveDirectionEnum.DOWN;
-                        } else if (event.stateMask == SWT.SHIFT) {
+                        } else if (event.stateMask == SWT.MOD2) {
                             move = MoveDirectionEnum.UP;
                         }
                     }

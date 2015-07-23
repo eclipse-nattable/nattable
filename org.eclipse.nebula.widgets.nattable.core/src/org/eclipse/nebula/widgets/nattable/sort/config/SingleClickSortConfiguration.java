@@ -42,7 +42,7 @@ public class SingleClickSortConfiguration extends DefaultSortConfiguration {
                 new SortColumnAction(false));
 
         uiBindingRegistry.registerSingleClickBinding(
-                MouseEventMatcher.columnHeaderLeftClick(SWT.ALT),
+                MouseEventMatcher.columnHeaderLeftClick(SWT.MOD3),
                 new SortColumnAction(true));
     }
 

@@ -27,11 +27,11 @@ public class RowOnlySelectionBindings extends DefaultSelectionBindings {
         uiBindingRegistry.registerFirstMouseDownBinding(
                 MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
         uiBindingRegistry.registerFirstMouseDownBinding(
-                MouseEventMatcher.bodyLeftClick(SWT.SHIFT), action);
+                MouseEventMatcher.bodyLeftClick(SWT.MOD2), action);
         uiBindingRegistry.registerFirstMouseDownBinding(
                 MouseEventMatcher.bodyLeftClick(SWT.MOD1), action);
         uiBindingRegistry.registerFirstMouseDownBinding(
-                MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), action);
+                MouseEventMatcher.bodyLeftClick(SWT.MOD2 | SWT.MOD1), action);
     }
 
     @Override
@@ -40,10 +40,10 @@ public class RowOnlySelectionBindings extends DefaultSelectionBindings {
         uiBindingRegistry.registerFirstMouseDragMode(
                 MouseEventMatcher.bodyLeftClick(SWT.NONE), dragMode);
         uiBindingRegistry.registerFirstMouseDragMode(
-                MouseEventMatcher.bodyLeftClick(SWT.SHIFT), dragMode);
+                MouseEventMatcher.bodyLeftClick(SWT.MOD2), dragMode);
         uiBindingRegistry.registerFirstMouseDragMode(
                 MouseEventMatcher.bodyLeftClick(SWT.MOD1), dragMode);
         uiBindingRegistry.registerFirstMouseDragMode(
-                MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), dragMode);
+                MouseEventMatcher.bodyLeftClick(SWT.MOD2 | SWT.MOD1), dragMode);
     }
 }

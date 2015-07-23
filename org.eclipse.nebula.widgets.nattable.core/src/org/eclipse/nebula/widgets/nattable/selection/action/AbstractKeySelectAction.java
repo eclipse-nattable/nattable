@@ -38,7 +38,7 @@ public abstract class AbstractKeySelectAction implements IKeyAction {
     @Override
     public void run(NatTable natTable, KeyEvent event) {
         if (!this.isStateMaskSpecified) {
-            this.shiftMask = (event.stateMask & SWT.SHIFT) != 0;
+            this.shiftMask = (event.stateMask & SWT.MOD2) != 0;
             this.controlMask = (event.stateMask & SWT.MOD1) != 0;
         }
     }

@@ -52,14 +52,18 @@ public class DefaultEditBindings extends AbstractUiBindingConfiguration {
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
         // configure the space key to activate a cell editor via keyboard
         // this is especially useful for changing the value for a checkbox
-        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, 32),
-                new KeyEditAction());
-        uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE,
-                SWT.F2), new KeyEditAction());
         uiBindingRegistry.registerKeyBinding(
-                new LetterOrDigitKeyEventMatcher(), new KeyEditAction());
-        uiBindingRegistry.registerKeyBinding(new LetterOrDigitKeyEventMatcher(
-                SWT.SHIFT), new KeyEditAction());
+                new KeyEventMatcher(SWT.NONE, 32),
+                new KeyEditAction());
+        uiBindingRegistry.registerKeyBinding(
+                new KeyEventMatcher(SWT.NONE, SWT.F2),
+                new KeyEditAction());
+        uiBindingRegistry.registerKeyBinding(
+                new LetterOrDigitKeyEventMatcher(),
+                new KeyEditAction());
+        uiBindingRegistry.registerKeyBinding(
+                new LetterOrDigitKeyEventMatcher(SWT.MOD2),
+                new KeyEditAction());
 
         uiBindingRegistry.registerSingleClickBinding(
                 new CellEditorMouseEventMatcher(GridRegion.BODY),
@@ -70,13 +74,11 @@ public class DefaultEditBindings extends AbstractUiBindingConfiguration {
                 new CellEditDragMode());
 
         uiBindingRegistry.registerFirstSingleClickBinding(
-                new CellPainterMouseEventMatcher(GridRegion.BODY,
-                        MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
+                new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
                 new MouseEditAction());
 
         uiBindingRegistry.registerFirstMouseDragMode(
-                new CellPainterMouseEventMatcher(GridRegion.BODY,
-                        MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
+                new CellPainterMouseEventMatcher(GridRegion.BODY, MouseEventMatcher.LEFT_BUTTON, CheckBoxPainter.class),
                 new CellEditDragMode());
 
     }

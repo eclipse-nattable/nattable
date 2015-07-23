@@ -39,9 +39,6 @@ import org.eclipse.swt.widgets.Text;
  * {@link ICellEditor#openInline(org.eclipse.nebula.widgets.nattable.config.IConfigRegistry, java.util.List)}
  * to always return <code>false</code>.
  * </p>
- *
- * @author Dirk Fauth
- *
  */
 public class MultiLineTextCellEditor extends TextCellEditor {
 
@@ -76,23 +73,19 @@ public class MultiLineTextCellEditor extends TextCellEditor {
 
     @Override
     public Text createEditorControl(Composite parent) {
-        boolean openInline = openInline(this.configRegistry,
-                this.labelStack.getLabels());
+        boolean openInline = openInline(this.configRegistry, this.labelStack.getLabels());
 
-        int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
-                | SWT.MULTI | SWT.BORDER;
+        int style = HorizontalAlignmentEnum.getSWTStyle(this.cellStyle) | SWT.MULTI | SWT.BORDER;
         if (!openInline) {
             // if the editor control is opened in a dialog, we add scrolling as
-            // the size of the
-            // control is dependent on the dialog size
+            // the size of the control is dependent on the dialog size
             style = style | SWT.V_SCROLL;
         }
         if (this.lineWrap) {
             style = style | SWT.WRAP;
         } else if (!openInline) {
             // if the editor control is opened in a dialog, we add scrolling as
-            // the size of the
-            // control is dependent on the dialog size
+            // the size of the control is dependent on the dialog size
             style = style | SWT.H_SCROLL;
         }
         final Text textControl = super.createEditorControl(parent, style);
@@ -100,18 +93,14 @@ public class MultiLineTextCellEditor extends TextCellEditor {
         if (!openInline) {
             // add the layout data directly so it will not be layouted by the
             // CellEditDialog
-            GridDataFactory.fillDefaults().grab(true, true).hint(100, 50)
-                    .applyTo(textControl);
+            GridDataFactory.fillDefaults().grab(true, true).hint(100, 50).applyTo(textControl);
         }
 
         // on inline editing there need to be a different handling of the return
-        // key
-        // as the Text control is performing a new line on return, it is not
-        // possible to
-        // commit a value by pressing enter. So for inline editing we catch
-        // enter to
-        // perform the commit, while pressing Alt/Shift + enter will add a new
-        // line
+        // key as the Text control is performing a new line on return, it is not
+        // possible to commit a value by pressing enter. So for inline editing
+        // we catch enter to perform the commit, while pressing Alt/Shift +
+        // enter will add a new line
         if (openInline) {
             this.commitOnEnter = true;
             textControl.addKeyListener(new KeyListener() {
@@ -120,7 +109,7 @@ public class MultiLineTextCellEditor extends TextCellEditor {
                 public void keyReleased(KeyEvent event) {
                     if (event.keyCode == SWT.CR
                             || event.keyCode == SWT.KEYPAD_CR) {
-                        if (event.stateMask == SWT.ALT) {
+                        if (event.stateMask == SWT.MOD3) {
                             textControl.insert(textControl.getLineDelimiter());
                         }
                     }
@@ -139,24 +128,27 @@ public class MultiLineTextCellEditor extends TextCellEditor {
         Point size = getEditorControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
 
         // add a listener that increases/decreases the size of the control if
-        // the text is modified
-        // as the calculateControlBounds method is only called in case of inline
-        // editing, this
-        // listener shouldn't hurt anybody else
+        // the text is modified as the calculateControlBounds method is only
+        // called in case of inline editing, this listener shouldn't hurt
+        // anybody else
         getEditorControl().addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                Point p = getEditorControl().computeSize(SWT.DEFAULT,
-                        SWT.DEFAULT, true);
+                Point p = getEditorControl().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
                 Point loc = getEditorControl().getLocation();
-                getEditorControl().setBounds(loc.x, loc.y,
+                getEditorControl().setBounds(
+                        loc.x,
+                        loc.y,
                         Math.max(p.x, cellBounds.width),
                         Math.max(p.y, cellBounds.height));
             }
         });
 
-        return new Rectangle(cellBounds.x, cellBounds.y, Math.max(size.x,
-                cellBounds.width), Math.max(size.y, cellBounds.height));
+        return new Rectangle(
+                cellBounds.x,
+                cellBounds.y,
+                Math.max(size.x, cellBounds.width),
+                Math.max(size.y, cellBounds.height));
     }
 
     /**
