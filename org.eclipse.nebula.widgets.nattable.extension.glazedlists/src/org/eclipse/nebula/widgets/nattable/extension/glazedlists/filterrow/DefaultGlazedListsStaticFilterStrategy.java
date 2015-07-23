@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,13 +28,10 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * can also take static filters and combine them with the filter logic from the
  * filter row.
  *
- * @author Dirk Fauth
- *
  * @param <T>
  *            the type of the objects shown within the NatTable
  */
-public class DefaultGlazedListsStaticFilterStrategy<T> extends
-        DefaultGlazedListsFilterStrategy<T> {
+public class DefaultGlazedListsStaticFilterStrategy<T> extends DefaultGlazedListsFilterStrategy<T> {
 
     protected Map<Matcher<T>, MatcherEditor<T>> staticMatcherEditor = new HashMap<Matcher<T>, MatcherEditor<T>>();
 
@@ -95,8 +92,7 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
     @Override
     public void applyFilter(Map<Integer, Object> filterIndexToObjectMap) {
         super.applyFilter(filterIndexToObjectMap);
-        this.getMatcherEditor().getMatcherEditors()
-                .addAll(this.staticMatcherEditor.values());
+        this.getMatcherEditor().getMatcherEditors().addAll(this.staticMatcherEditor.values());
     }
 
     /**
@@ -140,7 +136,10 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
      *            the filter to remove
      */
     public void removeStaticFilter(final Matcher<T> matcher) {
-        this.staticMatcherEditor.remove(matcher);
+        MatcherEditor<T> removed = this.staticMatcherEditor.remove(matcher);
+        if (removed != null) {
+            this.getMatcherEditor().getMatcherEditors().remove(removed);
+        }
     }
 
     /**
@@ -150,6 +149,6 @@ public class DefaultGlazedListsStaticFilterStrategy<T> extends
      *            the filter to remove
      */
     public void removeStaticFilter(final MatcherEditor<T> matcherEditor) {
-        this.staticMatcherEditor.remove(matcherEditor.getMatcher());
+        removeStaticFilter(matcherEditor.getMatcher());
     }
 }
