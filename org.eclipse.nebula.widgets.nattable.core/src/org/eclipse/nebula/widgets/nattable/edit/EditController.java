@@ -97,7 +97,10 @@ public class EditController {
 
                 editorBounds = cellEditor.calculateControlBounds(editorBounds);
 
-                // TODO introduce some more generic way to identify the border width
+                // TODO introduce more generic way to identify the border width
+                // the currently fixed border width of 1 is handled
+                // because of the fixed border width possibly applied via
+                // NatTableBorderOverlayPainter
                 if (editorBounds.x == 0) {
                     editorBounds.x += 1;
                     editorBounds.width -= 1;
