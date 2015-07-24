@@ -299,12 +299,8 @@ public class TableCellEditor extends AbstractCellEditor {
         tableControl.addListener(SWT.MeasureItem, new Listener() {
             @Override
             public void handleEvent(Event event) {
-                event.height = TableCellEditor.this.fixedSubCellHeight + 1; // +1
-                                                                            // because
-                                                                            // of
-                                                                            // the
-                                                                            // grid
-                // lines
+            	// +1 because of the grid lines
+                event.height = TableCellEditor.this.fixedSubCellHeight + 1;
             }
         });
 
@@ -567,7 +563,7 @@ public class TableCellEditor extends AbstractCellEditor {
                                 ((Text) TableCellEditingSupport.this.editor.getControl()).getText());
 
                         boolean committed = false;
-                        if (event.stateMask == SWT.SHIFT) {
+                        if (event.stateMask == SWT.MOD2) {
                             committed = commit(MoveDirectionEnum.LEFT);
                         } else if (event.stateMask == 0) {
                             committed = commit(MoveDirectionEnum.RIGHT);
@@ -594,22 +590,18 @@ public class TableCellEditor extends AbstractCellEditor {
                             // if move selection and not last item -> move the
                             // selection one down
                             if (TableCellEditor.this.moveSelectionOnEnter
-                                    && selectionIndex + 1 < TableCellEditor.this.viewer.getTable()
-                                            .getItemCount()) {
+                                    && selectionIndex + 1 < TableCellEditor.this.viewer.getTable().getItemCount()) {
                                 selectionIndex++;
                                 TableCellEditor.this.viewer.getTable().setSelection(selectionIndex);
                                 if (TableCellEditor.this.alwaysOpenEditor) {
                                     TableCellEditor.this.viewer.editElement(
-                                            ((StructuredSelection) TableCellEditor.this.viewer
-                                                    .getSelection())
-                                                    .getFirstElement(), 1);
+                                            ((StructuredSelection) TableCellEditor.this.viewer.getSelection()).getFirstElement(), 1);
                                 }
                             } else {
                                 commit(MoveDirectionEnum.NONE);
                             }
                         } else {
-                            TableCellEditor.this.viewer.editElement(((StructuredSelection) TableCellEditor.this.viewer
-                                    .getSelection()).getFirstElement(), 1);
+                            TableCellEditor.this.viewer.editElement(((StructuredSelection) TableCellEditor.this.viewer.getSelection()).getFirstElement(), 1);
                         }
                     } else if (event.keyCode == SWT.ARROW_DOWN) {
                         TableCellEditingSupport.this.setValue(element,

@@ -510,7 +510,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
         @Override
         public void keyTraversed(TraverseEvent event) {
             boolean committed = false;
-            if (event.keyCode == SWT.TAB && event.stateMask == SWT.SHIFT) {
+            if (event.keyCode == SWT.TAB && event.stateMask == SWT.MOD2) {
                 committed = commit(MoveDirectionEnum.LEFT);
             } else if (event.keyCode == SWT.TAB && event.stateMask == 0) {
                 committed = commit(MoveDirectionEnum.RIGHT);

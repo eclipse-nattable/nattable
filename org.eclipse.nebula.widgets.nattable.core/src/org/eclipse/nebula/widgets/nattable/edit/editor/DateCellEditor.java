@@ -37,9 +37,6 @@ import org.eclipse.swt.widgets.DateTime;
  * on setting the focus programmatically and it is not possible to open the
  * dropdown programmatically, we suggest to rather use some Nebula widget or a
  * custom widget for date editing.
- *
- * @author Dirk Fauth
- *
  */
 public class DateCellEditor extends AbstractCellEditor {
 
@@ -76,8 +73,7 @@ public class DateCellEditor extends AbstractCellEditor {
     @Override
     public Object getEditorValue() {
         Calendar cal = Calendar.getInstance();
-        cal.set(this.dateTime.getYear(), this.dateTime.getMonth(),
-                this.dateTime.getDay());
+        cal.set(this.dateTime.getYear(), this.dateTime.getMonth(), this.dateTime.getDay());
         return cal;
     }
 
@@ -87,8 +83,7 @@ public class DateCellEditor extends AbstractCellEditor {
         // but an additional check to ensure type safety doesn't hurt
         if (value instanceof Calendar) {
             Calendar cal = (Calendar) value;
-            this.dateTime.setDate(cal.get(Calendar.YEAR),
-                    cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
+            this.dateTime.setDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
         }
     }
 
@@ -124,16 +119,12 @@ public class DateCellEditor extends AbstractCellEditor {
 
     @Override
     public DateTime createEditorControl(final Composite parent) {
-        final DateTime dateControl = new DateTime(parent, SWT.DATE
-                | SWT.DROP_DOWN);
+        final DateTime dateControl = new DateTime(parent, SWT.DATE | SWT.DROP_DOWN);
 
         // set style information configured in the associated cell style
-        dateControl.setBackground(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-        dateControl.setForeground(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
-        dateControl.setFont(this.cellStyle
-                .getAttributeValue(CellStyleAttributes.FONT));
+        dateControl.setBackground(this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        dateControl.setForeground(this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+        dateControl.setFont(this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 
         // add a key listener that will commit or close the editor for special
         // key strokes
@@ -143,13 +134,13 @@ public class DateCellEditor extends AbstractCellEditor {
             public void keyPressed(KeyEvent event) {
                 if (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR) {
 
-                    boolean commit = (event.stateMask == SWT.ALT) ? false
-                            : true;
+                    boolean commit = (event.stateMask == SWT.MOD3) ? false : true;
                     MoveDirectionEnum move = MoveDirectionEnum.NONE;
-                    if (DateCellEditor.this.moveSelectionOnEnter && DateCellEditor.this.editMode == EditModeEnum.INLINE) {
+                    if (DateCellEditor.this.moveSelectionOnEnter
+                            && DateCellEditor.this.editMode == EditModeEnum.INLINE) {
                         if (event.stateMask == 0) {
                             move = MoveDirectionEnum.DOWN;
-                        } else if (event.stateMask == SWT.SHIFT) {
+                        } else if (event.stateMask == SWT.MOD2) {
                             move = MoveDirectionEnum.UP;
                         }
                     }
@@ -170,16 +161,14 @@ public class DateCellEditor extends AbstractCellEditor {
     }
 
     @Override
-    protected Control activateCell(Composite parent,
-            Object originalCanonicalValue) {
+    protected Control activateCell(Composite parent, Object originalCanonicalValue) {
         this.dateTime = createEditorControl(parent);
         setCanonicalValue(originalCanonicalValue);
 
         // this is necessary so the control gets the focus
         // but this also causing some issues as focusing the DateTime control
         // programmatically does some strange things with showing the editable
-        // data
-        // also it seems to be not possible to open the dropdown
+        // data also it seems to be not possible to open the dropdown
         // programmatically
         this.dateTime.forceFocus();
 

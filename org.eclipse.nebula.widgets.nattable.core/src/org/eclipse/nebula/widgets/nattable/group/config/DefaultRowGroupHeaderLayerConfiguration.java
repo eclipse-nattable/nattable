@@ -79,7 +79,7 @@ public class DefaultRowGroupHeaderLayerConfiguration<T> implements IConfiguratio
         uiBindingRegistry.registerSingleClickBinding(
                 MouseEventMatcher.rowGroupHeaderLeftClick(SWT.MOD1), action);
         uiBindingRegistry.registerSingleClickBinding(
-                MouseEventMatcher.rowGroupHeaderLeftClick(SWT.SHIFT), action);
+                MouseEventMatcher.rowGroupHeaderLeftClick(SWT.MOD2), action);
 
         uiBindingRegistry.registerDoubleClickBinding(
                 MouseEventMatcher.rowGroupHeaderLeftClick(SWT.NONE),

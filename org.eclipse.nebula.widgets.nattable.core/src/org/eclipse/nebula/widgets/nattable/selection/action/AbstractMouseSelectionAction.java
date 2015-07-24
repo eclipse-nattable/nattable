@@ -25,7 +25,7 @@ public class AbstractMouseSelectionAction implements IMouseAction {
 
     @Override
     public void run(NatTable natTable, MouseEvent event) {
-        this.withShiftMask = (event.stateMask & SWT.SHIFT) != 0;
+        this.withShiftMask = (event.stateMask & SWT.MOD2) != 0;
         this.withControlMask = (event.stateMask & SWT.MOD1) != 0;
 
         this.gridColumnPosition = natTable.getColumnPositionByX(event.x);

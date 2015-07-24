@@ -50,24 +50,29 @@ public class DefaultSortConfiguration implements IConfiguration {
     @Override
     public void configureRegistry(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
-                SortConfigAttributes.SORT_COMPARATOR, DefaultComparator.getInstance());
+                SortConfigAttributes.SORT_COMPARATOR,
+                DefaultComparator.getInstance());
 
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, this.cellPainter,
-                DisplayMode.NORMAL, SORT_DOWN_CONFIG_TYPE);
+                CellConfigAttributes.CELL_PAINTER,
+                this.cellPainter,
+                DisplayMode.NORMAL,
+                SORT_DOWN_CONFIG_TYPE);
         configRegistry.registerConfigAttribute(
-                CellConfigAttributes.CELL_PAINTER, this.cellPainter,
-                DisplayMode.NORMAL, SORT_UP_CONFIG_TYPE);
+                CellConfigAttributes.CELL_PAINTER,
+                this.cellPainter,
+                DisplayMode.NORMAL,
+                SORT_UP_CONFIG_TYPE);
     }
 
     @Override
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-        uiBindingRegistry.registerSingleClickBinding(new MouseEventMatcher(
-                SWT.ALT, GridRegion.COLUMN_HEADER.toString(), 1),
+        uiBindingRegistry.registerSingleClickBinding(
+                new MouseEventMatcher(SWT.MOD3, GridRegion.COLUMN_HEADER.toString(), 1),
                 new SortColumnAction(false));
 
-        uiBindingRegistry.registerSingleClickBinding(new MouseEventMatcher(
-                SWT.ALT | SWT.SHIFT, GridRegion.COLUMN_HEADER.toString(), 1),
+        uiBindingRegistry.registerSingleClickBinding(
+                new MouseEventMatcher(SWT.MOD3 | SWT.MOD2, GridRegion.COLUMN_HEADER.toString(), 1),
                 new SortColumnAction(true));
     }
 
