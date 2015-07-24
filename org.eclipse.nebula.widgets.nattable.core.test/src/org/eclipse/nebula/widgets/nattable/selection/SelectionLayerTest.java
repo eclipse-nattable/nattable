@@ -116,6 +116,39 @@ public class SelectionLayerTest {
         assertFalse(this.selectionLayer.getSelectionAnchor().rowPosition == SelectionLayer.NO_SELECTION);
     }
 
+    @Test
+    public void testClearSingleSelectedCellClearsAllMarkers() {
+        this.selectionLayer.selectCell(3, 3, false, false);
+
+        assertNotNull(this.selectionLayer.getLastSelectedCellPosition());
+        assertTrue(this.selectionLayer.getLastSelectedRegion().width > 0);
+        assertTrue(this.selectionLayer.getLastSelectedRegion().height > 0);
+        assertFalse(this.selectionLayer.getSelectionAnchor().columnPosition == SelectionLayer.NO_SELECTION);
+        assertFalse(this.selectionLayer.getSelectionAnchor().rowPosition == SelectionLayer.NO_SELECTION);
+
+        this.selectionLayer.clearSelection(new Rectangle(3, 3, 1, 1));
+
+        assertNull(this.selectionLayer.getLastSelectedCellPosition());
+
+        assertTrue(this.selectionLayer.getSelectionAnchor().columnPosition == SelectionLayer.NO_SELECTION);
+        assertTrue(this.selectionLayer.getSelectionAnchor().rowPosition == SelectionLayer.NO_SELECTION);
+
+        this.selectionLayer.selectCell(3, 3, false, false);
+
+        assertNotNull(this.selectionLayer.getLastSelectedCellPosition());
+        assertTrue(this.selectionLayer.getLastSelectedRegion().width > 0);
+        assertTrue(this.selectionLayer.getLastSelectedRegion().height > 0);
+        assertFalse(this.selectionLayer.getSelectionAnchor().columnPosition == SelectionLayer.NO_SELECTION);
+        assertFalse(this.selectionLayer.getSelectionAnchor().rowPosition == SelectionLayer.NO_SELECTION);
+
+        this.selectionLayer.clearSelection(3, 3);
+
+        assertNull(this.selectionLayer.getLastSelectedCellPosition());
+
+        assertTrue(this.selectionLayer.getSelectionAnchor().columnPosition == SelectionLayer.NO_SELECTION);
+        assertTrue(this.selectionLayer.getSelectionAnchor().rowPosition == SelectionLayer.NO_SELECTION);
+    }
+
     // Last Selected Region
 
     @Test
