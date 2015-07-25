@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 451152, 453055, 455949
+ *     drgler <dsp@bdal.de> - Bug 473532
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
@@ -666,7 +667,9 @@ public class CompositeLayer extends AbstractLayer {
             aggregateAccumulator = (AggregateConfigLabelAccumulator) existingConfigLabelAccumulator;
         } else {
             aggregateAccumulator = new AggregateConfigLabelAccumulator();
-            aggregateAccumulator.add(existingConfigLabelAccumulator);
+            if (existingConfigLabelAccumulator != null) {
+                aggregateAccumulator.add(existingConfigLabelAccumulator);
+            }            
             this.regionNameToConfigLabelAccumulatorMap.put(regionName, aggregateAccumulator);
         }
         aggregateAccumulator.add(configLabelAccumulator);
