@@ -19,9 +19,11 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 
@@ -57,11 +59,11 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
  *      GridLayer gridLayer = new GridLayer(...);
  *      FixedSummaryRowLayer summaryRowLayer =
  *          new FixedSummaryRowLayer(bodyDataLayer, gridLayer, configRegistry);
- *
+ * 
  *      CompositeLayer composite = new CompositeLayer(1, 2);
  *      composite.setChildLayer("GRID", gridLayer, 0, 0);
  *      composite.setChildLayer(SUMMARY_REGION, summaryRowLayer, 0, 1);
- *
+ * 
  *      NatTable natTable = new NatTable(panel, composite);
  * </pre>
  * <p>
@@ -214,6 +216,17 @@ public class FixedSummaryRowLayer extends SummaryRowLayer {
         // on top
         if (bodyDataLayer instanceof AbstractLayer) {
             ((AbstractLayer) bodyDataLayer).setLayerPainter(new GridLineCellLayerPainter(false, true));
+        }
+
+        // if the layer we are dependent to has changed, we need to update
+        if (this.horizontalLayerDependency != null) {
+            horizontalLayerDependency.addLayerListener(new ILayerListener() {
+
+                @Override
+                public void handleLayerEvent(ILayerEvent event) {
+                    FixedSummaryRowLayer.this.handleLayerEvent(event);
+                }
+            });
         }
     }
 
