@@ -168,6 +168,15 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
     public void clearSelection(int columnPosition, int rowPosition) {
         this.selectionModel.clearSelection(columnPosition, rowPosition);
+
+        if (getSelectionAnchor().columnPosition == columnPosition
+                && getSelectionAnchor().rowPosition == rowPosition) {
+            setSelectionAnchor(NO_SELECTION, NO_SELECTION);
+        }
+
+        if (this.selectionModel.isEmpty()) {
+            setLastSelectedCell(NO_SELECTION, NO_SELECTION);
+        }
     }
 
     public void clearSelection(Rectangle selection) {
@@ -180,6 +189,10 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                 getSelectionAnchor().rowPosition);
         if (selection.contains(anchorPoint)) {
             setSelectionAnchor(NO_SELECTION, NO_SELECTION);
+        }
+
+        if (this.selectionModel.isEmpty()) {
+            setLastSelectedCell(NO_SELECTION, NO_SELECTION);
         }
     }
 
