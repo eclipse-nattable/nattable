@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,7 +46,7 @@ import ca.odell.glazedlists.event.ListEventListener;
  *            Type of the bean in the backing list.
  */
 public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
-        IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
+IUniqueIndexLayer, ListEventListener<T>, PropertyChangeListener {
 
     private static final Scheduler scheduler = new Scheduler("GlazedListsEventLayer"); //$NON-NLS-1$
     private final IUniqueIndexLayer underlyingLayer;
@@ -59,8 +59,7 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
 
     private boolean active = true;
 
-    public GlazedListsEventLayer(IUniqueIndexLayer underlyingLayer,
-            EventList<T> eventList) {
+    public GlazedListsEventLayer(IUniqueIndexLayer underlyingLayer, EventList<T> eventList) {
         super(underlyingLayer);
         this.underlyingLayer = underlyingLayer;
         this.eventList = eventList;
@@ -81,16 +80,15 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
                 if (GlazedListsEventLayer.this.eventsToProcess && GlazedListsEventLayer.this.active) {
                     ILayerEvent layerEvent;
                     if (GlazedListsEventLayer.this.structuralChangeEventsToProcess) {
-                        layerEvent = new RowStructuralRefreshEvent(
-                                getUnderlyingLayer());
+                        layerEvent = new RowStructuralRefreshEvent(getUnderlyingLayer());
                     } else {
-                        layerEvent = new VisualRefreshEvent(
-                                getUnderlyingLayer());
+                        layerEvent = new VisualRefreshEvent(getUnderlyingLayer());
                     }
                     fireEventFromSWTDisplayThread(layerEvent);
+
+                    GlazedListsEventLayer.this.eventsToProcess = false;
+                    GlazedListsEventLayer.this.structuralChangeEventsToProcess = false;
                 }
-                GlazedListsEventLayer.this.eventsToProcess = false;
-                GlazedListsEventLayer.this.structuralChangeEventsToProcess = false;
             }
         };
     }
@@ -116,9 +114,12 @@ public class GlazedListsEventLayer<T> extends AbstractLayerTransform implements
     @SuppressWarnings("unchecked")
     public void propertyChange(PropertyChangeEvent event) {
         // We can cast since we know that the EventList is of type T
-        PropertyUpdateEvent<T> updateEvent = new PropertyUpdateEvent<T>(this,
-                (T) event.getSource(), event.getPropertyName(),
-                event.getOldValue(), event.getNewValue());
+        PropertyUpdateEvent<T> updateEvent = new PropertyUpdateEvent<T>(
+                this,
+                (T) event.getSource(),
+                event.getPropertyName(),
+                event.getOldValue(),
+                event.getNewValue());
         fireEventFromSWTDisplayThread(updateEvent);
     }
 
