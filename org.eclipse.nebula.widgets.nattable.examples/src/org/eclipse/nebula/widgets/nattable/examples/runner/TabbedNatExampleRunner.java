@@ -32,6 +32,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -62,7 +63,13 @@ public class TabbedNatExampleRunner {
         final Shell shell = new Shell(display, SWT.SHELL_TRIM);
         shell.setLayout(new GridLayout(2, false));
         shell.setSize(shellWidth, shellHeight);
-        shell.setText("Examples demonstrating NatTable features");
+        shell.setText("NatTable Examples Application");
+
+        Image nebula16 = new Image(display, TabbedNatExampleRunner.class.getResourceAsStream("nebula_logo_16.png"));
+        Image nebula32 = new Image(display, TabbedNatExampleRunner.class.getResourceAsStream("nebula_logo_32.png"));
+        Image nebula64 = new Image(display, TabbedNatExampleRunner.class.getResourceAsStream("nebula_logo_64.png"));
+
+        shell.setImages(new Image[] { nebula16, nebula32, nebula64 });
 
         // Nav tree
         final TreeViewer navTreeViewer = new TreeViewer(shell);
