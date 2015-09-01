@@ -29,7 +29,7 @@ import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.summary.IGroupBySummaryProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
@@ -165,7 +165,7 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
         this.valueCache = new CalculatedValueCache(this, true, false, smoothUpdates);
 
-        setDataProvider(new GlazedListsDataProvider<Object>(getTreeList(), this.groupByColumnAccessor));
+        setDataProvider(new ListDataProvider<Object>(getTreeList(), this.groupByColumnAccessor));
 
         if (useDefaultConfiguration) {
             addConfiguration(new GroupByDataLayerConfiguration(this));

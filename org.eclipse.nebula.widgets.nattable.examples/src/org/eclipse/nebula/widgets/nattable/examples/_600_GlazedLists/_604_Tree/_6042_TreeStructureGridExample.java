@@ -28,13 +28,13 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
@@ -126,8 +126,7 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         // property names of the Person class
-        String[] propertyNames = { "lastName", "firstName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = { "lastName", "firstName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -303,7 +302,7 @@ public class _6042_TreeStructureGridExample extends AbstractNatExample {
                     new TreeList(sortedList, treeFormat, TreeList.nodesStartExpanded());
 
             this.bodyDataProvider =
-                    new GlazedListsDataProvider<Object>(
+                    new ListDataProvider<Object>(
                             this.treeList, new PersonWithAddressTreeColumnPropertyAccessor(columnPropertyAccessor));
             DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 

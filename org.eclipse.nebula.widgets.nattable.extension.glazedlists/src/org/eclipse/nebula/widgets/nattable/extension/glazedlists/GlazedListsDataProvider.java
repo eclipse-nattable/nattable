@@ -27,7 +27,13 @@ import ca.odell.glazedlists.event.ListEventListener;
  * way, as then we clear out our cache).
  *
  * @author Emil Crumhorn
+ *
+ * @deprecated Use a default {@link ListDataProvider} instead as the performance
+ *             boost can not be verified with current Java and GlazedLists
+ *             implementations and as this implementation is not thread-safe it
+ *             introduces more issues than it tries to solve.
  */
+@Deprecated
 public class GlazedListsDataProvider<T> extends ListDataProvider<T> {
 
     private int lastRowIndex = -1;

@@ -19,13 +19,13 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.hideshow.GlazedListsRowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -54,15 +54,11 @@ import ca.odell.glazedlists.GlazedLists;
  * Simple example showing how to add the row hide/show functionality to a grid
  * that is build using GlazedLists and how to add the corresponding actions to
  * the row header menu.
- *
- * @author Dirk Fauth
- *
  */
 public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner
-                .run(new _606_GlazedListsRowHideShowExample());
+        StandaloneNatExampleRunner.run(new _606_GlazedListsRowHideShowExample());
     }
 
     @Override
@@ -76,8 +72,7 @@ public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -89,21 +84,18 @@ public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
-        // directly as body layer is also working.
+        // AbstractIndexLayerTransform and setting the ViewportLayer as
+        // underlying layer. But in this case using the ViewportLayer directly
+        // as body layer is also working.
 
         // first wrap the base list in a GlazedLists EventList and a FilterList
         // so it is possible to filter
-        EventList<Person> eventList = GlazedLists.eventList(PersonService
-                .getPersons(10));
+        EventList<Person> eventList = GlazedLists.eventList(PersonService.getPersons(10));
         FilterList<Person> filterList = new FilterList<Person>(eventList);
 
         // use the GlazedListsDataProvider for some performance tweaks
-        final IRowDataProvider<Person> bodyDataProvider = new GlazedListsDataProvider<Person>(
-                filterList, new ReflectiveColumnPropertyAccessor<Person>(
-                        propertyNames));
+        final IRowDataProvider<Person> bodyDataProvider =
+                new ListDataProvider<Person>(filterList, new ReflectiveColumnPropertyAccessor<Person>(propertyNames));
         // create the IRowIdAccessor that is necessary for row hide/show
         final IRowIdAccessor<Person> rowIdAccessor = new IRowIdAccessor<Person>() {
             @Override
@@ -116,50 +108,39 @@ public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
 
         // add a DetailGlazedListsEventLayer event layer that is responsible for
         // updating the grid on list changes
-        DetailGlazedListsEventLayer<Person> glazedListsEventLayer = new DetailGlazedListsEventLayer<Person>(
-                bodyDataLayer, filterList);
+        DetailGlazedListsEventLayer<Person> glazedListsEventLayer =
+                new DetailGlazedListsEventLayer<Person>(bodyDataLayer, filterList);
 
-        GlazedListsRowHideShowLayer<Person> rowHideShowLayer = new GlazedListsRowHideShowLayer<Person>(
-                glazedListsEventLayer, bodyDataProvider, rowIdAccessor,
-                filterList);
+        GlazedListsRowHideShowLayer<Person> rowHideShowLayer =
+                new GlazedListsRowHideShowLayer<Person>(glazedListsEventLayer, bodyDataProvider, rowIdAccessor, filterList);
 
         SelectionLayer selectionLayer = new SelectionLayer(rowHideShowLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
         DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnHeaderLayer);
+        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
         NatTable natTable = new NatTable(parent, gridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration manually
+        // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
         // add the header menu configuration for adding the column header menu
@@ -168,7 +149,8 @@ public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
 
             @Override
             protected PopupMenuBuilder createRowHeaderMenu(NatTable natTable) {
-                return new PopupMenuBuilder(natTable).withHideRowMenuItem()
+                return new PopupMenuBuilder(natTable)
+                        .withHideRowMenuItem()
                         .withShowAllRowsMenuItem();
             }
 
@@ -181,8 +163,7 @@ public class _606_GlazedListsRowHideShowExample extends AbstractNatExample {
         });
         natTable.configure();
 
-        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                natTable));
+        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
 
         return natTable;
     }

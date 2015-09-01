@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
@@ -66,7 +65,7 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
 
         IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<T>(
                 propertyNames);
-        this.bodyDataProvider = new GlazedListsDataProvider<T>(eventList,
+        this.bodyDataProvider = new ListDataProvider<T>(eventList,
                 columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer,

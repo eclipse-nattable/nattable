@@ -26,6 +26,7 @@ import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
@@ -45,7 +46,6 @@ import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWi
 import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
@@ -206,7 +206,7 @@ public class _804_GlazedListsEditorExample extends AbstractNatExample {
             this.sortedList = new SortedList<T>(this.rowObjectsGlazedList, null);
             this.filterList = new FilterList<T>(this.sortedList);
 
-            IDataProvider dataProvider = new GlazedListsDataProvider<T>(this.filterList, cpa);
+            IDataProvider dataProvider = new ListDataProvider<T>(this.filterList, cpa);
             this.bodyDataLayer = new DataLayer(dataProvider);
             this.glazedListsEventLayer = new GlazedListsEventLayer<T>(this.bodyDataLayer, this.filterList);
             this.columnReorderLayer = new ColumnReorderLayer(this.glazedListsEventLayer);

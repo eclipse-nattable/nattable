@@ -25,13 +25,13 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
@@ -241,7 +241,7 @@ public class _6041_TreeGridExample extends AbstractNatExample {
             // wrap the SortedList with the TreeList
             this.treeList = new TreeList<T>(sortedList, treeFormat, TreeList.NODES_START_EXPANDED);
 
-            this.bodyDataProvider = new GlazedListsDataProvider<T>(this.treeList, columnPropertyAccessor);
+            this.bodyDataProvider = new ListDataProvider<T>(this.treeList, columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
             // simply apply labels for every column by index

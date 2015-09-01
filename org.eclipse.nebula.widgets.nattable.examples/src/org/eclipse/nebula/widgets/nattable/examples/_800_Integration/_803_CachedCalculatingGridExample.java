@@ -27,13 +27,13 @@ import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.data.NumberValues;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -81,9 +81,6 @@ import ca.odell.glazedlists.GlazedLists;
  * Example that demonstrates how to implement a NatTable instance that shows
  * calculated values by using the CalculatedValueCache. Also demonstrates the
  * usage of the SummaryRow on updating the NatTable.
- *
- * @author Dirk Fauth
- *
  */
 public class _803_CachedCalculatingGridExample extends AbstractNatExample {
 
@@ -93,8 +90,7 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
     public static String COLUMN_FOUR_LABEL = "ColumnFourLabel";
     public static String COLUMN_FIVE_LABEL = "ColumnFiveLabel";
 
-    private EventList<NumberValues> valuesToShow = GlazedLists
-            .eventList(new ArrayList<NumberValues>());
+    private EventList<NumberValues> valuesToShow = GlazedLists.eventList(new ArrayList<NumberValues>());
 
     public static void main(String[] args) throws Exception {
         StandaloneNatExampleRunner.run(new _803_CachedCalculatingGridExample());
@@ -113,13 +109,6 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                 + "CalculatedValueCache in a specialised ListDataProvider.";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
-     * (org.eclipse.swt.widgets.Composite)
-     */
     @Override
     public Control createExampleControl(Composite parent) {
         Composite panel = new Composite(parent, SWT.NONE);
@@ -151,12 +140,12 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
-        CalculatingGridLayer gridLayer = new CalculatingGridLayer(this.valuesToShow,
-                configRegistry, propertyNames, propertyToLabelMap);
+        CalculatingGridLayer gridLayer =
+                new CalculatingGridLayer(this.valuesToShow, configRegistry, propertyNames, propertyToLabelMap);
         DataLayer bodyDataLayer = gridLayer.getBodyDataLayer();
 
-        final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyDataLayer);
+        final ColumnOverrideLabelAccumulator columnLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(bodyDataLayer);
         bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
         registerColumnLabels(columnLabelAccumulator);
 
@@ -190,8 +179,7 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
         return panel;
     }
 
-    private void registerColumnLabels(
-            ColumnOverrideLabelAccumulator columnLabelAccumulator) {
+    private void registerColumnLabels(ColumnOverrideLabelAccumulator columnLabelAccumulator) {
         columnLabelAccumulator.registerColumnOverrides(0, COLUMN_ONE_LABEL);
         columnLabelAccumulator.registerColumnOverrides(1, COLUMN_TWO_LABEL);
         columnLabelAccumulator.registerColumnOverrides(2, COLUMN_THREE_LABEL);
@@ -217,13 +205,6 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
      */
     class BasicDataColumnAccessor implements IColumnAccessor<NumberValues> {
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getDataValue
-         * (java.lang.Object, int)
-         */
         @Override
         public Object getDataValue(NumberValues rowObject, int columnIndex) {
             switch (columnIndex) {
@@ -237,16 +218,8 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#setDataValue
-         * (java.lang.Object, int, java.lang.Object)
-         */
         @Override
-        public void setDataValue(NumberValues rowObject, int columnIndex,
-                Object newValue) {
+        public void setDataValue(NumberValues rowObject, int columnIndex, Object newValue) {
             // because of the registered conversion, the new value has to be an
             // Integer
             switch (columnIndex) {
@@ -262,13 +235,6 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
             }
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.eclipse.nebula.widgets.nattable.data.IColumnAccessor#getColumnCount
-         * ()
-         */
         @Override
         public int getColumnCount() {
             // this example will show exactly 5 columns
@@ -286,13 +252,11 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
      * construction time. But the DataLayer e.g. needs to be set in order to
      * make the automatic updates on data modifications work.
      */
-    class CachedValueCalculatingDataProvider<T> extends
-            GlazedListsDataProvider<T> {
+    class CachedValueCalculatingDataProvider<T> extends ListDataProvider<T> {
 
         private ICalculatedValueCache valueCache;
 
-        public CachedValueCalculatingDataProvider(EventList<T> list,
-                IColumnAccessor<T> columnAccessor) {
+        public CachedValueCalculatingDataProvider(EventList<T> list, IColumnAccessor<T> columnAccessor) {
             super(list, columnAccessor);
             // create the CalculatedValueCache without layer reference, as the
             // data provider is no layer
@@ -303,13 +267,14 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
         public Object getDataValue(final int colIndex, final int rowIndex) {
             if (colIndex == 3) {
                 Object result = this.valueCache.getCalculatedValue(colIndex,
-                        rowIndex, true, new ICalculator() {
+                        rowIndex,
+                        true,
+                        new ICalculator() {
                             @Override
                             public Object executeCalculation() {
                                 // calculate the sum
                                 int colTwo = (Integer) getDataValue(1, rowIndex);
-                                int colThree = (Integer) getDataValue(2,
-                                        rowIndex);
+                                int colThree = (Integer) getDataValue(2, rowIndex);
                                 // add some delay
                                 try {
                                     Thread.sleep(500);
@@ -321,14 +286,15 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                 return result == null ? 0 : result;
             } else if (colIndex == 4) {
                 Object result = this.valueCache.getCalculatedValue(colIndex,
-                        rowIndex, true, new ICalculator() {
+                        rowIndex,
+                        true,
+                        new ICalculator() {
                             @Override
                             public Object executeCalculation() {
                                 // calculate the percentage
                                 int colOne = (Integer) getDataValue(0, rowIndex);
                                 int colTwo = (Integer) getDataValue(1, rowIndex);
-                                int colThree = (Integer) getDataValue(2,
-                                        rowIndex);
+                                int colThree = (Integer) getDataValue(2, rowIndex);
                                 // add some delay
                                 try {
                                     Thread.sleep(500);
@@ -371,10 +337,9 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
         private final SelectionLayer selectionLayer;
         private final ViewportLayer viewportLayer;
 
-        public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow,
-                ConfigRegistry configRegistry) {
-            final CachedValueCalculatingDataProvider<NumberValues> dataProvider = new CachedValueCalculatingDataProvider<NumberValues>(
-                    valuesToShow, new BasicDataColumnAccessor());
+        public CalculatingBodyLayerStack(EventList<NumberValues> valuesToShow, ConfigRegistry configRegistry) {
+            final CachedValueCalculatingDataProvider<NumberValues> dataProvider =
+                    new CachedValueCalculatingDataProvider<NumberValues>(valuesToShow, new BasicDataColumnAccessor());
             this.bodyDataLayer = new DataLayer(dataProvider);
             // adding this listener will trigger updates on data changes
             this.bodyDataLayer.addLayerListener(new ILayerListener() {
@@ -386,33 +351,30 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                 }
             });
             // register a layer listener to ensure the value cache gets disposed
-            this.bodyDataLayer
-                    .registerCommandHandler(new ILayerCommandHandler<DisposeResourcesCommand>() {
+            this.bodyDataLayer.registerCommandHandler(new ILayerCommandHandler<DisposeResourcesCommand>() {
 
-                        @Override
-                        public boolean doCommand(ILayer targetLayer,
-                                DisposeResourcesCommand command) {
-                            dataProvider.valueCache.dispose();
-                            return false;
-                        }
+                @Override
+                public boolean doCommand(ILayer targetLayer, DisposeResourcesCommand command) {
+                    dataProvider.valueCache.dispose();
+                    return false;
+                }
 
-                        @Override
-                        public Class<DisposeResourcesCommand> getCommandClass() {
-                            return DisposeResourcesCommand.class;
-                        }
-                    });
+                @Override
+                public Class<DisposeResourcesCommand> getCommandClass() {
+                    return DisposeResourcesCommand.class;
+                }
+            });
 
             // connect the DataLayer with the data provider so the value cache
             // knows how to fire updates
             dataProvider.setCacheEventLayer(this.bodyDataLayer);
 
-            this.glazedListsEventLayer = new GlazedListsEventLayer<NumberValues>(
-                    this.bodyDataLayer, valuesToShow);
-            this.summaryRowLayer = new SummaryRowLayer(this.glazedListsEventLayer,
-                    configRegistry, false);
-            this.summaryRowLayer
-                    .addConfiguration(new CalculatingSummaryRowConfiguration(
-                            this.bodyDataLayer.getDataProvider()));
+            this.glazedListsEventLayer =
+                    new GlazedListsEventLayer<NumberValues>(this.bodyDataLayer, valuesToShow);
+            this.summaryRowLayer =
+                    new SummaryRowLayer(this.glazedListsEventLayer, configRegistry, false);
+            this.summaryRowLayer.addConfiguration(
+                    new CalculatingSummaryRowConfiguration(this.bodyDataLayer.getDataProvider()));
             this.columnReorderLayer = new ColumnReorderLayer(this.summaryRowLayer);
             this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
             this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
@@ -438,40 +400,42 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
     class CalculatingGridLayer extends GridLayer {
 
         public CalculatingGridLayer(EventList<NumberValues> valuesToShow,
-                ConfigRegistry configRegistry, final String[] propertyNames,
+                ConfigRegistry configRegistry,
+                final String[] propertyNames,
                 Map<String, String> propertyToLabelMap) {
             super(true);
-            init(valuesToShow, configRegistry, propertyNames,
-                    propertyToLabelMap);
+            init(valuesToShow, configRegistry, propertyNames, propertyToLabelMap);
         }
 
         private void init(EventList<NumberValues> valuesToShow,
-                ConfigRegistry configRegistry, final String[] propertyNames,
+                ConfigRegistry configRegistry,
+                final String[] propertyNames,
                 Map<String, String> propertyToLabelMap) {
             // Body
-            CalculatingBodyLayerStack bodyLayer = new CalculatingBodyLayerStack(
-                    valuesToShow, configRegistry);
+            CalculatingBodyLayerStack bodyLayer = new CalculatingBodyLayerStack(valuesToShow, configRegistry);
 
             SelectionLayer selectionLayer = bodyLayer.getSelectionLayer();
 
             // Column header
-            IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                    propertyNames, propertyToLabelMap);
+            IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
             ILayer columnHeaderLayer = new ColumnHeaderLayer(
                     new DefaultColumnHeaderDataLayer(columnHeaderDataProvider),
-                    bodyLayer, selectionLayer);
+                    bodyLayer,
+                    selectionLayer);
 
             // Row header
-            IDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(
-                    bodyLayer.getDataLayer().getDataProvider(), "\u2211");
+            IDataProvider rowHeaderDataProvider =
+                    new DefaultSummaryRowHeaderDataProvider(bodyLayer.getDataLayer().getDataProvider(), "\u2211");
             ILayer rowHeaderLayer = new RowHeaderLayer(
                     new DefaultRowHeaderDataLayer(rowHeaderDataProvider),
-                    bodyLayer, selectionLayer);
+                    bodyLayer,
+                    selectionLayer);
 
             // Corner
-            ILayer cornerLayer = new CornerLayer(new DataLayer(
-                    new DefaultCornerDataProvider(columnHeaderDataProvider,
-                            rowHeaderDataProvider)), rowHeaderLayer,
+            ILayer cornerLayer = new CornerLayer(
+                    new DataLayer(
+                            new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)),
+                    rowHeaderLayer,
                     columnHeaderLayer);
 
             setBodyLayer(bodyLayer);
@@ -497,49 +461,52 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                     IEditableRule.ALWAYS_EDITABLE);
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE,
-                    IEditableRule.NEVER_EDITABLE, DisplayMode.EDIT,
+                    IEditableRule.NEVER_EDITABLE,
+                    DisplayMode.EDIT,
                     _803_CachedCalculatingGridExample.COLUMN_FOUR_LABEL);
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE,
-                    IEditableRule.NEVER_EDITABLE, DisplayMode.EDIT,
+                    IEditableRule.NEVER_EDITABLE,
+                    DisplayMode.EDIT,
                     _803_CachedCalculatingGridExample.COLUMN_FIVE_LABEL);
             // configure the summary row to be not editable
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE,
-                    IEditableRule.NEVER_EDITABLE, DisplayMode.EDIT,
+                    IEditableRule.NEVER_EDITABLE,
+                    DisplayMode.EDIT,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL);
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.NORMAL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultIntegerDisplayConverter(), DisplayMode.EDIT);
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.EDIT);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new PercentageDisplayConverter(), DisplayMode.NORMAL,
+                    new PercentageDisplayConverter(),
+                    DisplayMode.NORMAL,
                     _803_CachedCalculatingGridExample.COLUMN_FIVE_LABEL);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new SummaryDisplayConverter(
-                            new DefaultIntegerDisplayConverter()),
+                    new SummaryDisplayConverter(new DefaultIntegerDisplayConverter()),
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
             configRegistry
                     .registerConfigAttribute(
                             CellConfigAttributes.DISPLAY_CONVERTER,
-                            new SummaryDisplayConverter(
-                                    new PercentageDisplayConverter()),
+                            new SummaryDisplayConverter(new PercentageDisplayConverter()),
                             DisplayMode.NORMAL,
                             SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
         }
     }
 
-    class CalculatingSummaryRowConfiguration extends
-            DefaultSummaryRowConfiguration {
+    class CalculatingSummaryRowConfiguration extends DefaultSummaryRowConfiguration {
 
         private final IDataProvider dataProvider;
 
@@ -563,12 +530,11 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
             // Average summary provider for column index 2
-            configRegistry
-                    .registerConfigAttribute(
-                            SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                            new AverageSummaryProvider(),
-                            DisplayMode.NORMAL,
-                            SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
+            configRegistry.registerConfigAttribute(
+                    SummaryRowConfigAttributes.SUMMARY_PROVIDER,
+                    new AverageSummaryProvider(),
+                    DisplayMode.NORMAL,
+                    SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
         }
 
         /**
@@ -581,8 +547,8 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                 int rowCount = CalculatingSummaryRowConfiguration.this.dataProvider.getRowCount();
 
                 for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                    Object dataValue = CalculatingSummaryRowConfiguration.this.dataProvider.getDataValue(columnIndex,
-                            rowIndex);
+                    Object dataValue =
+                            CalculatingSummaryRowConfiguration.this.dataProvider.getDataValue(columnIndex, rowIndex);
                     total = total + Double.parseDouble(dataValue.toString());
                 }
                 return total / rowCount;
