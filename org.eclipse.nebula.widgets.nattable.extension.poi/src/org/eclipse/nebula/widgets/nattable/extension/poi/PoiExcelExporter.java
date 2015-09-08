@@ -13,7 +13,8 @@ package org.eclipse.nebula.widgets.nattable.extension.poi;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,7 +65,8 @@ public abstract class PoiExcelExporter implements ILayerExporter {
 
     private String sheetname;
 
-    private FormulaParser formulaParser;
+    protected FormulaParser formulaParser;
+    protected NumberFormat nf = NumberFormat.getInstance();
 
     public PoiExcelExporter(IOutputStreamProvider outputStreamProvider) {
         this.outputStreamProvider = outputStreamProvider;
@@ -178,12 +180,21 @@ public abstract class PoiExcelExporter implements ILayerExporter {
             // values
             String cellValue = exportDisplayValue.toString();
             if (this.formulaParser.isFunction(cellValue)) {
-                xlCell.setCellFormula(this.formulaParser.getFunctionOnly(cellValue));
-            }
-            else if (this.formulaParser.isNumber(cellValue)) {
-                xlCell.setCellValue(new BigDecimal(cellValue).doubleValue());
-            }
-            else {
+                String functionString = this.formulaParser.getFunctionOnly(cellValue);
+                // POI expects the formula parameters to be separated by ,
+                // instead of ;
+                // also localized decimal separators need to be modified for
+                // export
+                functionString = functionString.replace(',', '.');
+                functionString = functionString.replace(';', ',');
+                xlCell.setCellFormula(functionString);
+            } else if (this.formulaParser.isNumber(cellValue)) {
+                try {
+                    xlCell.setCellValue(this.nf.parse(cellValue).doubleValue());
+                } catch (ParseException e) {
+                    throw new IOException("Error on parsing number value: " + cellValue, e); //$NON-NLS-1$
+                }
+            } else {
                 xlCell.setCellValue(exportDisplayValue.toString());
             }
         } else {
@@ -358,6 +369,16 @@ public abstract class PoiExcelExporter implements ILayerExporter {
      */
     public void setFormulaParser(FormulaParser formulaParser) {
         this.formulaParser = formulaParser;
+    }
+
+    /**
+     *
+     * @param nf
+     *            The {@link NumberFormat} that should be used to format numeric
+     *            values.
+     */
+    public void setNumberFormat(NumberFormat nf) {
+        this.nf = nf;
     }
 
 }
