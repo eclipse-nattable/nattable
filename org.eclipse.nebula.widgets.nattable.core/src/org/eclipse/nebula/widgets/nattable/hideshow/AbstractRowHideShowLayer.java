@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,9 +23,9 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.VisualRefreshEvent;
 
-public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
-        implements IUniqueIndexLayer {
+public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
     private Map<Integer, Integer> cachedVisibleRowIndexOrder;
     private Map<Integer, Integer> cachedVisibleRowPositionOrder;
@@ -43,8 +43,13 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
         if (event instanceof IStructuralChangeEvent) {
             IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
             if (structuralChangeEvent.isVerticalStructureChanged()) {
+                // vertical structure has changed, update cached row information
                 invalidateCache();
             }
+        } else if (event instanceof VisualRefreshEvent) {
+            // visual change, e.g. font change, the startYCache needs to be
+            // cleared in order to re-render correctly
+            this.startYCache.clear();
         }
         super.handleLayerEvent(event);
     }
@@ -55,8 +60,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int getColumnPositionByIndex(int columnIndex) {
-        return ((IUniqueIndexLayer) getUnderlyingLayer())
-                .getColumnPositionByIndex(columnIndex);
+        return ((IUniqueIndexLayer) getUnderlyingLayer()).getColumnPositionByIndex(columnIndex);
     }
 
     // Vertical features
@@ -76,7 +80,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
 
         Integer rowIndex = getCachedVisibleRowPositons().get(rowPosition);
         if (rowIndex != null) {
-            return rowIndex.intValue();
+            return rowIndex;
         } else {
             return -1;
         }
@@ -84,13 +88,11 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        final Integer position = getCachedVisibleRowIndexes().get(
-                Integer.valueOf(rowIndex));
+        final Integer position = getCachedVisibleRowIndexes().get(rowIndex);
         return position != null ? position : -1;
     }
 
-    public Collection<Integer> getRowPositionsByIndexes(
-            Collection<Integer> rowIndexes) {
+    public Collection<Integer> getRowPositionsByIndexes(Collection<Integer> rowIndexes) {
         Collection<Integer> rowPositions = new HashSet<Integer>();
         for (int rowIndex : rowIndexes) {
             rowPositions.add(getRowPositionByIndex(rowIndex));
@@ -101,23 +103,19 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
     @Override
     public int localToUnderlyingRowPosition(int localRowPosition) {
         int rowIndex = getRowIndexByPosition(localRowPosition);
-        return ((IUniqueIndexLayer) getUnderlyingLayer())
-                .getRowPositionByIndex(rowIndex);
+        return ((IUniqueIndexLayer) getUnderlyingLayer()).getRowPositionByIndex(rowIndex);
     }
 
     @Override
-    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
-            int underlyingRowPosition) {
-        int rowIndex = getUnderlyingLayer().getRowIndexByPosition(
-                underlyingRowPosition);
+    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
+        int rowIndex = getUnderlyingLayer().getRowIndexByPosition(underlyingRowPosition);
         int rowPosition = getRowPositionByIndex(rowIndex);
         if (rowPosition >= 0) {
             return rowPosition;
         } else {
-            Integer hiddenRowPosition = this.cachedHiddenRowIndexToPositionMap
-                    .get(Integer.valueOf(rowIndex));
+            Integer hiddenRowPosition = this.cachedHiddenRowIndexToPositionMap.get(rowIndex);
             if (hiddenRowPosition != null) {
-                return hiddenRowPosition.intValue();
+                return hiddenRowPosition;
             } else {
                 return -1;
             }
@@ -126,28 +124,26 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
 
     @Override
     public Collection<Range> underlyingToLocalRowPositions(
-            ILayer sourceUnderlyingLayer,
-            Collection<Range> underlyingRowPositionRanges) {
+            ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
         Collection<Range> localRowPositionRanges = new ArrayList<Range>();
 
         for (Range underlyingRowPositionRange : underlyingRowPositionRanges) {
             int startRowPosition = getAdjustedUnderlyingToLocalStartPosition(
-                    sourceUnderlyingLayer, underlyingRowPositionRange.start,
+                    sourceUnderlyingLayer,
+                    underlyingRowPositionRange.start,
                     underlyingRowPositionRange.end);
             int endRowPosition = getAdjustedUnderlyingToLocalEndPosition(
-                    sourceUnderlyingLayer, underlyingRowPositionRange.end,
+                    sourceUnderlyingLayer,
+                    underlyingRowPositionRange.end,
                     underlyingRowPositionRange.start);
 
             // teichstaedt: fixes the problem that ranges where added even if
-            // the
-            // corresponding startPosition weren't found in the underlying
-            // layer.
-            // Without that fix a bunch of ranges of kind Range [-1, 180] which
-            // causes strange behaviour in Freeze- and other Layers were
+            // the corresponding startPosition weren't found in the underlying
+            // layer. Without that fix a bunch of ranges of kind Range [-1, 180]
+            // which causes strange behaviour in Freeze- and other Layers were
             // returned.
             if (startRowPosition > -1) {
-                localRowPositionRanges.add(new Range(startRowPosition,
-                        endRowPosition));
+                localRowPositionRanges.add(new Range(startRowPosition, endRowPosition));
             }
         }
 
@@ -155,29 +151,29 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
     }
 
     private int getAdjustedUnderlyingToLocalStartPosition(
-            ILayer sourceUnderlyingLayer, int startUnderlyingPosition,
+            ILayer sourceUnderlyingLayer,
+            int startUnderlyingPosition,
             int endUnderlyingPosition) {
-        int localStartRowPosition = underlyingToLocalRowPosition(
-                sourceUnderlyingLayer, startUnderlyingPosition);
+        int localStartRowPosition = underlyingToLocalRowPosition(sourceUnderlyingLayer, startUnderlyingPosition);
         int offset = 0;
         while (localStartRowPosition < 0
                 && (startUnderlyingPosition + offset < endUnderlyingPosition)) {
-            localStartRowPosition = underlyingToLocalRowPosition(
-                    sourceUnderlyingLayer, startUnderlyingPosition + offset++);
+            localStartRowPosition =
+                    underlyingToLocalRowPosition(sourceUnderlyingLayer, startUnderlyingPosition + offset++);
         }
         return localStartRowPosition;
     }
 
     private int getAdjustedUnderlyingToLocalEndPosition(
-            ILayer sourceUnderlyingLayer, int endUnderlyingPosition,
+            ILayer sourceUnderlyingLayer,
+            int endUnderlyingPosition,
             int startUnderlyingPosition) {
-        int localEndRowPosition = underlyingToLocalRowPosition(
-                sourceUnderlyingLayer, endUnderlyingPosition - 1);
+        int localEndRowPosition = underlyingToLocalRowPosition(sourceUnderlyingLayer, endUnderlyingPosition - 1);
         int offset = 0;
         while (localEndRowPosition < 0
                 && (endUnderlyingPosition - offset > startUnderlyingPosition)) {
-            localEndRowPosition = underlyingToLocalRowPosition(
-                    sourceUnderlyingLayer, endUnderlyingPosition - offset++);
+            localEndRowPosition =
+                    underlyingToLocalRowPosition(sourceUnderlyingLayer, endUnderlyingPosition - offset++);
         }
         return localEndRowPosition + 1;
     }
@@ -187,8 +183,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
     @Override
     public int getHeight() {
         int lastRowPosition = getRowCount() - 1;
-        return getStartYOfRowPosition(lastRowPosition)
-                + getRowHeightByPosition(lastRowPosition);
+        return getStartYOfRowPosition(lastRowPosition) + getRowHeightByPosition(lastRowPosition);
     }
 
     // Y
@@ -200,10 +195,9 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
 
     @Override
     public int getStartYOfRowPosition(int localRowPosition) {
-        Integer cachedStartY = this.startYCache.get(Integer
-                .valueOf(localRowPosition));
+        Integer cachedStartY = this.startYCache.get(localRowPosition);
         if (cachedStartY != null) {
-            return cachedStartY.intValue();
+            return cachedStartY;
         }
 
         IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
@@ -211,26 +205,21 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
         if (underlyingPosition < 0) {
             return -1;
         }
-        int underlyingStartY = underlyingLayer
-                .getStartYOfRowPosition(underlyingPosition);
+        int underlyingStartY = underlyingLayer.getStartYOfRowPosition(underlyingPosition);
         if (underlyingStartY < 0) {
             return -1;
         }
 
         for (Integer hiddenIndex : getHiddenRowIndexes()) {
-            int hiddenPosition = underlyingLayer
-                    .getRowPositionByIndex(hiddenIndex.intValue());
+            int hiddenPosition = underlyingLayer.getRowPositionByIndex(hiddenIndex);
             // if the hidden position is -1, it is hidden in the underlying
-            // layer
-            // therefore the underlying layer should handle the positioning
+            // layertherefore the underlying layer should handle the positioning
             if (hiddenPosition >= 0 && hiddenPosition <= underlyingPosition) {
-                underlyingStartY -= underlyingLayer
-                        .getRowHeightByPosition(hiddenPosition);
+                underlyingStartY -= underlyingLayer.getRowHeightByPosition(hiddenPosition);
             }
         }
 
-        this.startYCache.put(Integer.valueOf(localRowPosition),
-                Integer.valueOf(underlyingStartY));
+        this.startYCache.put(localRowPosition, underlyingStartY);
         return underlyingStartY;
     }
 
@@ -292,21 +281,15 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform
 
         ILayer underlyingLayer = getUnderlyingLayer();
         int rowPosition = 0;
-        for (int parentRowPosition = 0; parentRowPosition < underlyingLayer
-                .getRowCount(); parentRowPosition++) {
-            int rowIndex = underlyingLayer
-                    .getRowIndexByPosition(parentRowPosition);
+        for (int parentRowPosition = 0; parentRowPosition < underlyingLayer.getRowCount(); parentRowPosition++) {
+            int rowIndex = underlyingLayer.getRowIndexByPosition(parentRowPosition);
 
             if (!isRowIndexHidden(rowIndex)) {
-                this.cachedVisibleRowIndexOrder.put(Integer.valueOf(rowIndex),
-                        rowPosition);
-                this.cachedVisibleRowPositionOrder.put(rowPosition,
-                        Integer.valueOf(rowIndex));
+                this.cachedVisibleRowIndexOrder.put(rowIndex, rowPosition);
+                this.cachedVisibleRowPositionOrder.put(rowPosition, rowIndex);
                 rowPosition++;
             } else {
-                this.cachedHiddenRowIndexToPositionMap
-                        .put(Integer.valueOf(rowIndex),
-                                Integer.valueOf(rowPosition));
+                this.cachedHiddenRowIndexToPositionMap.put(rowIndex, rowPosition);
             }
         }
     }
