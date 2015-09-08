@@ -296,14 +296,12 @@ public class _4222_CellPainterExample extends AbstractNatExample {
                     _4222_CellPainterExample.COLUMN_SIX_LABEL);
 
             // the CustomLineBorderDecorator needs an additional border label to
-            // know where to render a border
-            // within the cell
+            // know where to render a border within the cell
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
                     new CustomLineBorderDecorator(
-                            new PaddingDecorator(
-                                    new TextPainter(), 0, 5, 0, 0), new BorderStyle(2,
-                                    GUIHelper.COLOR_GREEN, LineStyleEnum.SOLID)),
+                            new PaddingDecorator(new TextPainter(), 0, 5, 0, 0),
+                            new BorderStyle(2, GUIHelper.COLOR_GREEN, LineStyleEnum.SOLID)),
                     DisplayMode.NORMAL,
                     _4222_CellPainterExample.COLUMN_SIX_LABEL);
 
