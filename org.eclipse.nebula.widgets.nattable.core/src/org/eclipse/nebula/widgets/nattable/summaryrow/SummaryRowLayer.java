@@ -11,12 +11,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.summaryrow;
 
+import java.util.Collection;
+
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
@@ -287,8 +290,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
             if (isSummaryRowPosition(rowResizeCommand.getRowPosition())) {
                 if (this.dpiConverter != null) {
                     this.summaryRowHeight = this.dpiConverter.convertDpiToPixel(rowResizeCommand.getNewHeight());
-                }
-                else {
+                } else {
                     this.summaryRowHeight = rowResizeCommand.getNewHeight();
                 }
                 fireLayerEvent(new RowResizeEvent(this, getSummaryRowPosition()));
@@ -303,8 +305,7 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
             // the summary values immediately
         } else if (command instanceof DisposeResourcesCommand) {
             this.valueCache.dispose();
-        }
-        else if (command instanceof ConfigureScalingCommand) {
+        } else if (command instanceof ConfigureScalingCommand) {
             this.dpiConverter = ((ConfigureScalingCommand) command).getVerticalDpiConverter();
         }
         return super.doCommand(command);
@@ -520,4 +521,32 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
     public void setValueCache(ICalculatedValueCache valueCache) {
         this.valueCache = valueCache;
     }
+
+    @Override
+    public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
+        // Bug 475766
+        // if this SummaryRowLayer is configured to be standalone, return null
+        // to ensure that possible transformations are not skipped due to layer
+        // composition
+        return this.standalone ? null : super.getUnderlyingLayersByColumnPosition(columnPosition);
+    }
+
+    @Override
+    public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
+        // Bug 475766
+        // if this SummaryRowLayer is configured to be standalone, return null
+        // to ensure that possible transformations are not skipped due to layer
+        // composition
+        return this.standalone ? null : super.getUnderlyingLayersByRowPosition(rowPosition);
+    }
+
+    @Override
+    public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
+        // Bug 475766
+        // if this SummaryRowLayer is configured to be standalone, return null
+        // to ensure that possible transformations are not skipped due to layer
+        // composition
+        return this.standalone ? null : super.getUnderlyingLayerByPosition(columnPosition, rowPosition);
+    }
+
 }
