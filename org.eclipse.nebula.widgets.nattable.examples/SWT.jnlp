@@ -12,7 +12,7 @@
       <all-permissions/>
    </security>
    <resources>
-      <jar href="org.eclipse.swt_3.5.1.v3555a-signed.jar"/>
+      <jar href="org.eclipse.swt_3.103.2.v20150203-1313.jar"/>
    </resources>
    <component-desc/>
 </jnlp> 

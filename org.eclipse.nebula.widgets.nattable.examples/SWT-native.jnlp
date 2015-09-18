@@ -12,27 +12,27 @@
     <all-permissions/>
   </security>
   <resources os="Windows" arch="x86">
-    <jar href="org.eclipse.swt.win32.win32.x86_3.5.1.v3555a-signed.jar"/>
+    <jar href="org.eclipse.swt.win32.win32.x86_3.103.2.v20150203-1351.jar"/>
   </resources>
   <resources os="Windows">
-    <jar href="org.eclipse.swt.win32.win32.x86_64_3.5.1.v3555a-signed.jar"/>
+    <jar href="org.eclipse.swt.win32.win32.x86_64_3.103.2.v20150203-1351.jar"/>
   </resources>
   <resources os="Mac" arch="x86_64">
     <j2se version="1.6+" java-vm-args="-XstartOnFirstThread"/>
-    <jar href="org.eclipse.swt.cocoa.macosx.x86_64_3.5.1.v3555a-signed.jar"/>
+    <jar href="org.eclipse.swt.cocoa.macosx.x86_64_3.103.2.v20150203-1351.jar"/>
   </resources>
   <resources os="Mac">
     <j2se version="1.6+" java-vm-args="-XstartOnFirstThread"/>
-    <jar href="org.eclipse.swt.cocoa.macosx_3.5.1.v3555a-signed.jar"/>
+    <jar href="org.eclipse.swt.cocoa.macosx_3.103.2.v20150203-1351.jar"/>
   </resources>
   <resources os="Linux" arch="x86">
-    <jar href="org.eclipse.swt.gtk.linux.x86_3.5.1.v3555a-signed.jar"/>
+    <jar href="org.eclipse.swt.gtk.linux.x86_3.103.2.v20150203-1351.jar"/>
   </resources>
   <resources os="Linux" arch="x86_64">
-    <jar href="org.eclipse.swt.gtk.linux.x86_64_3.5.1.v3555a-signed.jar"/>
+    <jar href="org.eclipse.swt.gtk.linux.x86_64_3.103.2.v20150203-1351.jar"/>
   </resources>
   <resources os="Linux" arch="amd64">
-    <jar href="org.eclipse.swt.gtk.linux.x86_64_3.5.1.v3555a-signed.jar"/>
+    <jar href="org.eclipse.swt.gtk.linux.x86_64_3.103.2.v20150203-1351.jar"/>
   </resources>
   <component-desc/>
 </jnlp> 

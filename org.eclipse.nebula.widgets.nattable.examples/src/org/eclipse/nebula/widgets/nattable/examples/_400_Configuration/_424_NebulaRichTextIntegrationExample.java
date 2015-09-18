@@ -12,7 +12,6 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._400_Configuration;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,6 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
-import org.eclipse.nebula.widgets.richtext.RichTextEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -64,18 +62,12 @@ public class _424_NebulaRichTextIntegrationExample extends AbstractNatExample {
                 + "columns. While the lastname column also has a MarkupDisplayConverter that "
                 + "renders 'Simpson' and 'Smithers' differently, the description column also "
                 + "has the RichTextCellEditor configured, to be free to enter content with HTML markups.\n\n"
-                + "NOTE: ";
+                + "NOTE: Because the rich text control resources need to be unpacked when deployed in a JAR,"
+                + "the first time opening the description cell editor takes some more time.";
     }
 
     @Override
     public Control createExampleControl(Composite parent) {
-
-        // TODO init rich text in jar
-        System.setProperty(
-                RichTextEditor.JAR_UNPACK_LOCATION_PROPERTY,
-                System.getProperty("user.dir")
-                        + File.separator
-                        + RichTextEditor.class.getPackage().getName());
 
         String[] propertyNames = new String[] { "firstName", "lastName", "gender", "married", "description" };
 
