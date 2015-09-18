@@ -3,29 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NatTable Examples
 Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.examples
 Bundle-Version: 1.4.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: ca.odell.glazedlists,
- ca.odell.glazedlists.event,
- ca.odell.glazedlists.matchers,
- ca.odell.glazedlists.swt,
- ca.odell.glazedlists.util.concurrent,
- org.eclipse.core.commands.common,
- org.eclipse.jface.dialogs,
- org.eclipse.jface.layout,
- org.eclipse.jface.resource,
- org.eclipse.jface.util,
- org.eclipse.jface.viewers,
- org.eclipse.jface.window,
- org.eclipse.swt,
- org.eclipse.swt.browser,
- org.eclipse.swt.custom,
- org.eclipse.swt.dnd,
- org.eclipse.swt.events,
- org.eclipse.swt.graphics,
- org.eclipse.swt.layout,
- org.eclipse.swt.widgets
-Require-Bundle: org.eclipse.nebula.widgets.nattable.core,
- org.eclipse.nebula.widgets.nattable.extension.glazedlists,
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: ca.odell.glazedlists;bundle-version="1.9.0",
+ org.eclipse.swt;bundle-version="3.5.1",
+ org.eclipse.jface;bundle-version="3.5.1",
+ org.eclipse.nebula.widgets.richtext;bundle-version="0.1.0",
+ org.eclipse.nebula.widgets.nattable.core,
  org.eclipse.nebula.widgets.nattable.dataset,
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists,
+ org.eclipse.nebula.widgets.nattable.extension.nebula,
  org.eclipse.nebula.widgets.nattable.extension.poi
 Bundle-Vendor: Eclipse Nebula NatTable

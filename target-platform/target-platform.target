@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="6">
+<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="17">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="3.5.1.M20090917-0800"/>
-<repository location="http://download.eclipse.org/releases/galileo"/>
+<unit id="org.eclipse.sdk.ide" version="4.4.2.M20150204-1700"/>
+<repository location="http://download.eclipse.org/releases/luna"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.apache.poi" version="3.9.0.v201303080712"/>
@@ -11,6 +11,10 @@
 <unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
 <unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="0.1.0.201509170804"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 </locations>
 </target>
