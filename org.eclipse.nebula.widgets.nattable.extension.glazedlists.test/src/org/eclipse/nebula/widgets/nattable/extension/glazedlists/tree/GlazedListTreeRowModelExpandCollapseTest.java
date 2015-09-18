@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.nebula.widgets.nattable.test.data.Person;
-import org.eclipse.nebula.widgets.nattable.test.data.PersonService;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -174,13 +174,11 @@ public class GlazedListTreeRowModelExpandCollapseTest {
                 assertFalse(
                         MessageFormat.format("Node at index {0} is collapsed", i),
                         this.treeRowModel.isCollapsed(i));
-            }
-            else if (this.treeList.get(i) instanceof FirstNameGroup) {
+            } else if (this.treeList.get(i) instanceof FirstNameGroup) {
                 assertTrue(
                         MessageFormat.format("Node at index {0} is expanded", i),
                         this.treeRowModel.isCollapsed(i));
-            }
-            else {
+            } else {
                 // there should be no other values visible right now
                 fail("Another object than LastNameGroup and FirstNameGroup is visible");
             }
@@ -191,10 +189,12 @@ public class GlazedListTreeRowModelExpandCollapseTest {
 
         AtomicInteger counter = new AtomicInteger();
         Map<String, LastNameGroup> lastNames = new HashMap<String, LastNameGroup>();
+
         {
             this.lastNames.put("Simpsons", new LastNameGroup(1, "Simpsons"));
             this.lastNames.put("Flanders", new LastNameGroup(2, "Flanders"));
         }
+
         Map<String, FirstNameGroup> firstNames = new HashMap<String, FirstNameGroup>();
 
         @Override

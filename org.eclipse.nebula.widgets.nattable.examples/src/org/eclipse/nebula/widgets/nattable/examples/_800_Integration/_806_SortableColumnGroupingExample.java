@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
@@ -20,9 +20,9 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
@@ -59,15 +59,11 @@ import ca.odell.glazedlists.SortedList;
  * layer composition of a grid and how to add the corresponding actions to the
  * column header menu. This example also adds the ability to sort the data
  * model.
- *
- * @author Dirk Fauth
- *
  */
 public class _806_SortableColumnGroupingExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner
-                .run(new _806_SortableColumnGroupingExample());
+        StandaloneNatExampleRunner.run(new _806_SortableColumnGroupingExample());
     }
 
     @Override
@@ -81,8 +77,13 @@ public class _806_SortableColumnGroupingExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = {
+                "firstName",
+                "lastName",
+                "gender",
+                "married",
+                "birthday"
+        };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -96,51 +97,56 @@ public class _806_SortableColumnGroupingExample extends AbstractNatExample {
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
-        // directly as body layer is also working.
+        // AbstractIndexLayerTransform and setting the ViewportLayer as
+        // underlying layer. But in this case using the ViewportLayer directly
+        // as body layer is also working.
 
-        EventList<Person> persons = GlazedLists.eventList(PersonService
-                .getPersons(10));
+        EventList<Person> persons = GlazedLists.eventList(PersonService.getPersons(10));
         SortedList<Person> sortedList = new SortedList<Person>(persons, null);
 
-        IColumnPropertyAccessor<Person> accessor = new ReflectiveColumnPropertyAccessor<Person>(
-                propertyNames);
-        IDataProvider bodyDataProvider = new ListDataProvider<Person>(
-                sortedList, accessor);
-        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        IColumnPropertyAccessor<Person> accessor =
+                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<Person>(sortedList, accessor);
+        DataLayer bodyDataLayer =
+                new DataLayer(bodyDataProvider);
 
-        GlazedListsEventLayer<Person> eventLayer = new GlazedListsEventLayer<Person>(
-                bodyDataLayer, sortedList);
+        GlazedListsEventLayer<Person> eventLayer =
+                new GlazedListsEventLayer<Person>(bodyDataLayer, sortedList);
 
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                eventLayer);
-        ColumnGroupReorderLayer columnGroupReorderLayer = new ColumnGroupReorderLayer(
-                columnReorderLayer, columnGroupModel);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                columnGroupReorderLayer);
-        ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
-                columnHideShowLayer, columnGroupModel);
-        SelectionLayer selectionLayer = new SelectionLayer(
-                columnGroupExpandCollapseLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        ColumnReorderLayer columnReorderLayer =
+                new ColumnReorderLayer(eventLayer);
+        ColumnGroupReorderLayer columnGroupReorderLayer =
+                new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
+        ColumnHideShowLayer columnHideShowLayer =
+                new ColumnHideShowLayer(columnGroupReorderLayer);
+        ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
+                new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
+        SelectionLayer selectionLayer =
+                new SelectionLayer(columnGroupExpandCollapseLayer);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
-        SortHeaderLayer<Person> sortHeaderLayer = new SortHeaderLayer<Person>(
-                columnHeaderLayer, new GlazedListsSortModel<Person>(sortedList,
-                        accessor, configRegistry, columnHeaderDataLayer));
+        SortHeaderLayer<Person> sortHeaderLayer =
+                new SortHeaderLayer<Person>(
+                        columnHeaderLayer,
+                        new GlazedListsSortModel<Person>(
+                                sortedList,
+                                accessor,
+                                configRegistry,
+                                columnHeaderDataLayer));
 
-        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
-                sortHeaderLayer, selectionLayer, columnGroupModel);
+        ColumnGroupHeaderLayer columnGroupHeaderLayer =
+                new ColumnGroupHeaderLayer(sortHeaderLayer, selectionLayer, columnGroupModel);
 
         // configure the column groups
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Name", 0, 1);
@@ -148,23 +154,24 @@ public class _806_SortableColumnGroupingExample extends AbstractNatExample {
         columnGroupHeaderLayer.setGroupUnbreakable(1);
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnGroupHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnGroupHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(viewportLayer,
-                columnGroupHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(viewportLayer, columnGroupHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
@@ -173,8 +180,7 @@ public class _806_SortableColumnGroupingExample extends AbstractNatExample {
         natTable.setConfigRegistry(configRegistry);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration manually
+        // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new SingleClickSortConfiguration());
 

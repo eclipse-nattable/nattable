@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@gogglemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._504_Viewport;
 
@@ -15,9 +15,9 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -44,15 +44,11 @@ import org.eclipse.swt.widgets.Slider;
 /**
  * Example showing how to implement NatTable that contains two horizontal split
  * viewports.
- *
- * @author Dirk Fauth
- *
  */
 public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400,
-                new _5042_HorizontalSplitViewportExample());
+        StandaloneNatExampleRunner.run(600, 400, new _5042_HorizontalSplitViewportExample());
     }
 
     @Override
@@ -64,12 +60,11 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday", "address.street", "address.housenumber",
-                "address.postalCode", "address.city" };
+        String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday",
+                "address.street", "address.housenumber", "address.postalCode", "address.city" };
 
-        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(
-                propertyNames);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 
         IDataProvider bodyDataProvider = new ListDataProvider<PersonWithAddress>(
                 PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
@@ -77,18 +72,15 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
 
         // use a cell layer painter that is configured for left clipping
         // this ensures that the rendering works correctly for split viewports
-        bodyDataLayer
-                .setLayerPainter(new GridLineCellLayerPainter(true, false));
+        bodyDataLayer.setLayerPainter(new GridLineCellLayerPainter(true, false));
 
         // create a ViewportLayer for the left part of the table and configure
-        // it to only contain
-        // the first 5 columns
+        // it to only contain the first 5 columns
         final ViewportLayer viewportLayerLeft = new ViewportLayer(bodyDataLayer);
         viewportLayerLeft.setMaxColumnPosition(5);
 
         // create a ViewportLayer for the right part of the table and configure
-        // it to only contain
-        // the last 4 columns
+        // it to only contain the last 4 columns
         ViewportLayer viewportLayerRight = new ViewportLayer(bodyDataLayer);
         viewportLayerRight.setMinColumnPosition(5);
 
@@ -98,28 +90,23 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
         compositeLayer.setChildLayer("REGION_B", viewportLayerRight, 1, 0);
 
         // in order to make printing and exporting work correctly you need to
-        // register the following
-        // command handlers
+        // register the following command handlers
         // although in this example printing and exporting is not enabled, we
         // show the registering
-        compositeLayer
-                .registerCommandHandler(new MultiTurnViewportOnCommandHandler(
-                        viewportLayerLeft, viewportLayerRight));
-        compositeLayer
-                .registerCommandHandler(new MultiTurnViewportOffCommandHandler(
-                        viewportLayerLeft, viewportLayerRight));
+        compositeLayer.registerCommandHandler(
+                new MultiTurnViewportOnCommandHandler(viewportLayerLeft, viewportLayerRight));
+        compositeLayer.registerCommandHandler(
+                new MultiTurnViewportOffCommandHandler(viewportLayerLeft, viewportLayerRight));
 
         // set the width of the left viewport to only showing 2 columns at the
         // same time
         int leftWidth = bodyDataLayer.getStartXOfColumnPosition(2);
 
         // as the CompositeLayer is setting a IClientAreaProvider for the
-        // composition
-        // we need to set a special ClientAreaAdapter after the creation of the
-        // CompositeLayer
-        // to support split viewports
-        ClientAreaAdapter leftClientAreaAdapter = new ClientAreaAdapter(
-                viewportLayerLeft.getClientAreaProvider());
+        // composition we need to set a special ClientAreaAdapter after the
+        // creation of the CompositeLayer to support split viewports
+        ClientAreaAdapter leftClientAreaAdapter =
+                new ClientAreaAdapter(viewportLayerLeft.getClientAreaProvider());
         leftClientAreaAdapter.setWidth(leftWidth);
         viewportLayerLeft.setClientAreaProvider(leftClientAreaAdapter);
 
@@ -144,9 +131,8 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
         createSplitSliders(composite, viewportLayerLeft, viewportLayerRight);
 
         // add an IOverlayPainter to ensure the right border of the left
-        // viewport always
-        // this is necessary because the left border of layer stacks is not
-        // rendered by default
+        // viewport always this is necessary because the left border of layer
+        // stacks is not rendered by default
         natTable.addOverlayPainter(new IOverlayPainter() {
 
             @Override
@@ -154,8 +140,7 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
                 Color beforeColor = gc.getForeground();
                 gc.setForeground(GUIHelper.COLOR_GRAY);
                 int viewportBorderX = viewportLayerLeft.getWidth() - 1;
-                gc.drawLine(viewportBorderX, 0, viewportBorderX,
-                        layer.getHeight() - 1);
+                gc.drawLine(viewportBorderX, 0, viewportBorderX, layer.getHeight() - 1);
                 gc.setForeground(beforeColor);
             }
         });
@@ -163,8 +148,8 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
         return composite;
     }
 
-    private void createSplitSliders(Composite natTableParent,
-            final ViewportLayer left, final ViewportLayer right) {
+    private void createSplitSliders(
+            Composite natTableParent, final ViewportLayer left, final ViewportLayer right) {
         Composite sliderComposite = new Composite(natTableParent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.FILL;
@@ -186,8 +171,7 @@ public class _5042_HorizontalSplitViewportExample extends AbstractNatExample {
         Composite sliderLeftComposite = new Composite(sliderComposite, SWT.NONE) {
             @Override
             public Point computeSize(int wHint, int hHint, boolean changed) {
-                int width = ((ClientAreaAdapter) left.getClientAreaProvider())
-                        .getWidth();
+                int width = ((ClientAreaAdapter) left.getClientAreaProvider()).getWidth();
                 return new Point(width, 17);
             }
         };

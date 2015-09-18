@@ -20,6 +20,10 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.DataLayerFixture;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
@@ -27,10 +31,6 @@ import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConf
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.filterrow.event.FilterAppliedEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,7 +61,8 @@ public class FilterRowDataProviderTest {
                         this.filterList,
                         new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                                 RowDataListFixture.getPropertyNames()),
-                        this.configRegistry), this.columnHeaderLayer,
+                        this.configRegistry),
+                this.columnHeaderLayer,
                 this.columnHeaderLayer.getDataProvider(), this.configRegistry);
     }
 

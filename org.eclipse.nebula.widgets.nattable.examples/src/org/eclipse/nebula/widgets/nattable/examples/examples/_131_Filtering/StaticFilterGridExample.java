@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,11 +21,13 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.PricingTypeBean;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.PersistentNatExampleWrapper;
 import org.eclipse.nebula.widgets.nattable.examples.examples._110_Editing.EditableGridExample;
+import org.eclipse.nebula.widgets.nattable.examples.fixtures.PricingTypeBeanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.StaticFilterExampleGridLayer;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
@@ -34,7 +36,6 @@ import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttri
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.PricingTypeBean;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -42,8 +43,7 @@ import org.eclipse.swt.widgets.Control;
 public class StaticFilterGridExample extends AbstractNatExample {
 
     public static void main(String[] args) {
-        StandaloneNatExampleRunner.run(new PersistentNatExampleWrapper(
-                new StaticFilterGridExample()));
+        StandaloneNatExampleRunner.run(new PersistentNatExampleWrapper(new StaticFilterGridExample()));
     }
 
     @Override
@@ -59,8 +59,7 @@ public class StaticFilterGridExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         IConfigRegistry configRegistry = new ConfigRegistry();
-        StaticFilterExampleGridLayer underlyingLayer = new StaticFilterExampleGridLayer(
-                configRegistry);
+        StaticFilterExampleGridLayer underlyingLayer = new StaticFilterExampleGridLayer(configRegistry);
 
         DataLayer bodyDataLayer = underlyingLayer.getBodyDataLayer();
         IDataProvider dataProvider = underlyingLayer.getBodyDataProvider();
@@ -68,8 +67,7 @@ public class StaticFilterGridExample extends AbstractNatExample {
         // NOTE: Register the accumulator on the body data layer.
         // This ensures that the labels are bound to the column index and are
         // unaffected by column order.
-        final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                bodyDataLayer);
+        final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
         bodyDataLayer.setConfigLabelAccumulator(columnLabelAccumulator);
 
         NatTable natTable = new NatTable(parent, underlyingLayer, false);
@@ -78,8 +76,7 @@ public class StaticFilterGridExample extends AbstractNatExample {
         // natTable.addConfiguration(new DebugMenuConfiguration(natTable));
         natTable.addConfiguration(new FilterRowCustomConfiguration());
 
-        natTable.addConfiguration(EditableGridExample
-                .editableGridConfiguration(columnLabelAccumulator, dataProvider));
+        natTable.addConfiguration(EditableGridExample.editableGridConfiguration(columnLabelAccumulator, dataProvider));
 
         natTable.setConfigRegistry(configRegistry);
         natTable.configure();
@@ -87,8 +84,7 @@ public class StaticFilterGridExample extends AbstractNatExample {
         return natTable;
     }
 
-    static class FilterRowCustomConfiguration extends
-            AbstractRegistryConfiguration {
+    static class FilterRowCustomConfiguration extends AbstractRegistryConfiguration {
 
         final DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter();
 
@@ -97,45 +93,46 @@ public class StaticFilterGridExample extends AbstractNatExample {
             // Configure custom comparator on the rating column
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_COMPARATOR,
-                    getIngnorecaseComparator(), DisplayMode.NORMAL,
+                    getIngnorecaseComparator(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 2);
 
             // If threshold comparison is used we have to convert the string
-            // entered by the
-            // user to the correct underlying type (double), so that it can be
-            // compared
+            // entered by the user to the correct underlying type (double), so
+            // that it can be compared
 
             // Configure Bid column
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    this.doubleDisplayConverter, DisplayMode.NORMAL,
+                    this.doubleDisplayConverter,
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                    TextMatchingMode.REGULAR_EXPRESSION, DisplayMode.NORMAL,
+                    TextMatchingMode.REGULAR_EXPRESSION,
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 5);
 
             // Configure Ask column
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    this.doubleDisplayConverter, DisplayMode.NORMAL,
+                    this.doubleDisplayConverter,
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 6);
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.TEXT_MATCHING_MODE,
-                    TextMatchingMode.REGULAR_EXPRESSION, DisplayMode.NORMAL,
+                    TextMatchingMode.REGULAR_EXPRESSION,
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 6);
 
             // Configure a combo box on the pricing type column
 
             // Register a combo box editor to be displayed in the filter row
-            // cell
-            // when a value is selected from the combo, the object is converted
-            // to a string
-            // using the converter (registered below)
+            // cell when a value is selected from the combo, the object is
+            // converted to a string using the converter (registered below)
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
-                    new ComboBoxCellEditor(Arrays.asList(new PricingTypeBean(
-                            "MN"), new PricingTypeBean("AT"))),
+                    new ComboBoxCellEditor(Arrays.asList(new PricingTypeBean("MN"), new PricingTypeBean("AT"))),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
 
@@ -145,17 +142,20 @@ public class StaticFilterGridExample extends AbstractNatExample {
             // box
             configRegistry.registerConfigAttribute(
                     FilterRowConfigAttributes.FILTER_DISPLAY_CONVERTER,
-                    PricingTypeBean.getDisplayConverter(), DisplayMode.NORMAL,
+                    new PricingTypeBeanDisplayConverter(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    PricingTypeBean.getDisplayConverter(), DisplayMode.NORMAL,
+                    new PricingTypeBeanDisplayConverter(),
+                    DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX + 4);
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    PricingTypeBean.getDisplayConverter(), DisplayMode.NORMAL,
+                    new PricingTypeBeanDisplayConverter(),
+                    DisplayMode.NORMAL,
                     "PRICING_TYPE_PROP_NAME");
         }
     }

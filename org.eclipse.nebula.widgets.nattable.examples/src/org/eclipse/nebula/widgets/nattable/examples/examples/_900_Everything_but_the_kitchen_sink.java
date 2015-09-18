@@ -10,11 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.examples;
 
-import static org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture.ASK_PRICE_PROP_NAME;
-import static org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture.getColumnIndexOfProperty;
 import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
 
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +34,10 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.BlinkingRowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.PersistentNatExampleWrapper;
 import org.eclipse.nebula.widgets.nattable.examples.examples._110_Editing.EditableGridExample;
@@ -63,8 +65,6 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.ISummaryProvider;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.BlinkingRowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -126,9 +126,17 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
         SortedList<BlinkingRowDataFixture> sortedList = new SortedList<BlinkingRowDataFixture>(
                 filterList, null);
 
-        FullFeaturedBodyLayerStack<BlinkingRowDataFixture> bodyLayer = new FullFeaturedBodyLayerStack<BlinkingRowDataFixture>(
-                sortedList, BlinkingRowDataFixture.rowIdAccessor,
-                propertyNames, configRegistry, columnGroupModel);
+        FullFeaturedBodyLayerStack<BlinkingRowDataFixture> bodyLayer =
+                new FullFeaturedBodyLayerStack<BlinkingRowDataFixture>(
+                        sortedList,
+                        new IRowIdAccessor<BlinkingRowDataFixture>() {
+
+                            @Override
+                            public Serializable getRowId(BlinkingRowDataFixture rowObject) {
+                                return rowObject.getSecurity_description();
+                            }
+                        },
+                        propertyNames, configRegistry, columnGroupModel);
 
         this.bodyDataProvider = bodyLayer.getBodyDataProvider();
         this.propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
@@ -386,7 +394,8 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
                         if (DataUpdater.this.dataProvider.getRowCount() > index) {
                             BlinkingRowDataFixture rowObject = DataUpdater.this.dataProvider
                                     .getRowObject(index);
-                            // System.out.println("Ask: "+rowObject.getAsk_price()+" --> "+nextAsk);
+                            // System.out.println("Ask:
+                            // "+rowObject.getAsk_price()+" --> "+nextAsk);
                             rowObject.setAsk_price(nextAsk);
                             rowObject.setBid_price(-1 * nextAsk);
                         }
@@ -412,12 +421,13 @@ public class _900_Everything_but_the_kitchen_sink extends AbstractNatExample {
                     new SummationSummaryProvider(this.dataProvider),
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX
-                            + getColumnIndexOfProperty(ASK_PRICE_PROP_NAME));
+                            + RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME));
 
             // No Summary by default
             configRegistry.registerConfigAttribute(
                     SummaryRowConfigAttributes.SUMMARY_PROVIDER,
-                    ISummaryProvider.NONE, DisplayMode.NORMAL,
+                    ISummaryProvider.NONE,
+                    DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
         }
     }

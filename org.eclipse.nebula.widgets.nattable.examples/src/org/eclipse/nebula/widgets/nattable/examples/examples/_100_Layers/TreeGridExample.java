@@ -22,11 +22,11 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
@@ -100,7 +100,7 @@ public class TreeGridExample extends AbstractNatExample {
                 new DatumTreeFormat(sortModel), new DatumExpansionModel());
         GlazedListTreeData<Datum> treeData = new GlazedListTreeData<Datum>(treeList);
 
-        GlazedListsDataProvider<Datum> bodyDataProvider = new GlazedListsDataProvider<Datum>(
+        ListDataProvider<Datum> bodyDataProvider = new ListDataProvider<Datum>(
                 treeList, columnPropertyAccessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
@@ -207,8 +207,92 @@ public class TreeGridExample extends AbstractNatExample {
 
         @Override
         public Comparator<Datum> getComparator(int depth) {
+            final Comparator<Datum> dComp = GlazedLists.beanPropertyComparator(Datum.class, "foo");
+            Comparator<Datum> test = new Comparator<TreeGridExample.Datum>() {
+
+                @Override
+                public int compare(Datum o1, Datum o2) {
+                    int result = 0;
+                    if (o1.getParent() != null && o2.getParent() != null) {
+                        // test the depth
+                        Integer o1Depth = depth(o1);
+                        Integer o2Depth = depth(o2);
+
+                        // result = o1Depth.compareTo(o2Depth);
+                        // if (result == 0) {
+                        // result = dComp.compare(o1.getParent(),
+                        // o2.getParent());
+                        // }
+                        // else {
+                        // FIXME correct order for different levels
+                        if (o1Depth > o2Depth) {
+                            result = dComp.compare(o1.getParent(), o2);
+                            if (result == 0) {
+                                // we have a parent-child relationship
+                                return 1;
+                            }
+                        }
+                        else {
+                            result = dComp.compare(o1, o2.getParent());
+                            if (result == 0) {
+                                // we have a parent-child relationship
+                                return -1;
+                            }
+                        }
+                        // }
+                    }
+                    else if (!isRoot(o1) && isRoot(o2)) {
+                        result = dComp.compare(getRoot(o1), o2);
+                        if (result == 0) {
+                            // the given root and the root of the child are
+                            // equal
+                            // therefore the child is "lower" than the root
+                            result = -1;
+                        }
+                    }
+                    else if (isRoot(o1) && !isRoot(o2)) {
+                        result = dComp.compare(o1, getRoot(o2));
+                        if (result == 0) {
+                            // the given root and the root of the child are
+                            // equal
+                            // therefore the child is "bigger" than the root
+                            result = 1;
+                        }
+                    }
+                    else if (isRoot(o1) && isRoot(o2)) {
+                        return dComp.compare(o1, o2);
+                    }
+                    return result;
+                }
+
+                int depth(Datum datum) {
+                    int d = 0;
+                    while (datum.getParent() != null) {
+                        d++;
+                        datum = datum.getParent();
+                    }
+                    return d;
+                }
+
+                boolean isRoot(Datum datum) {
+                    return datum.getParent() == null;
+                }
+
+                Datum getRoot(Datum datum) {
+                    Datum result = datum;
+
+                    while (!isRoot(result)) {
+                        result = result.getParent();
+                    }
+
+                    return result;
+                }
+            };
+
+            // return test;
             return new SortableTreeComparator<Datum>(
-                    GlazedLists.beanPropertyComparator(Datum.class, "foo"),
+                    test,
+                    // GlazedLists.beanPropertyComparator(Datum.class, "foo"),
                     this.sortModel);
         }
     }
@@ -287,7 +371,7 @@ public class TreeGridExample extends AbstractNatExample {
     }
 
     private void createDatums() {
-        createDatum(null, "root", 1);
+        createDatum(null, "root", 2);
         createDatum("root", "A", 10);
         createDatum("A", "A.1", 100);
         createDatum("A", "A.2", 110);

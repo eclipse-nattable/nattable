@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._300_Data;
 
@@ -19,11 +19,11 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.DataModelConstants;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.DataModelConstants;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -39,16 +39,12 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Example showing how to implement and use a custom IColumnPropertyAccessor.
- *
- * @author Dirk Fauth
- *
  */
 public class _302_CustomColumnPropertyAccessorExample extends
         AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400,
-                new _302_CustomColumnPropertyAccessorExample());
+        StandaloneNatExampleRunner.run(600, 400, new _302_CustomColumnPropertyAccessorExample());
     }
 
     @Override
@@ -58,23 +54,30 @@ public class _302_CustomColumnPropertyAccessorExample extends
 
     @Override
     public Control createExampleControl(Composite parent) {
-        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new PersonWithAddressColumnPropertyAccessor();
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
+                new PersonWithAddressColumnPropertyAccessor();
 
-        IDataProvider bodyDataProvider = new ListDataProvider<PersonWithAddress>(
-                PersonService.getPersonsWithAddress(10), columnPropertyAccessor);
-        final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-        final SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<PersonWithAddress>(
+                        PersonService.getPersonsWithAddress(10),
+                        columnPropertyAccessor);
+        final DataLayer bodyDataLayer =
+                new DataLayer(bodyDataProvider);
+        final SelectionLayer selectionLayer =
+                new SelectionLayer(bodyDataLayer);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(
-                createColumnHeaderDataProvider()), viewportLayer,
-                selectionLayer);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(
+                        new DataLayer(createColumnHeaderDataProvider()),
+                        viewportLayer,
+                        selectionLayer);
 
         // set the region labels to make default configurations work, e.g.
         // selection
         CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                columnHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
         compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
         return new NatTable(parent, compositeLayer);
@@ -90,43 +93,38 @@ public class _302_CustomColumnPropertyAccessorExample extends
      * approach is to implement a completely new {@link IDataProvider}
      */
     protected IDataProvider createColumnHeaderDataProvider() {
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday", "street", "housenumber", "postalCode",
-                "city" };
+        String[] propertyNames = {
+                "firstName",
+                "lastName",
+                "gender",
+                "married",
+                "birthday",
+                "street",
+                "housenumber",
+                "postalCode",
+                "city"
+        };
 
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
-        propertyToLabelMap.put(DataModelConstants.FIRSTNAME_PROPERTYNAME,
-                "Firstname");
-        propertyToLabelMap.put(DataModelConstants.LASTNAME_PROPERTYNAME,
-                "Lastname");
-        propertyToLabelMap
-                .put(DataModelConstants.GENDER_PROPERTYNAME, "Gender");
-        propertyToLabelMap.put(DataModelConstants.MARRIED_PROPERTYNAME,
-                "Married");
-        propertyToLabelMap.put(DataModelConstants.BIRTHDAY_PROPERTYNAME,
-                "Birthday");
-        propertyToLabelMap
-                .put(DataModelConstants.STREET_PROPERTYNAME, "Street");
-        propertyToLabelMap.put(DataModelConstants.HOUSENUMBER_PROPERTYNAME,
-                "Housenumber");
-        propertyToLabelMap.put(DataModelConstants.POSTALCODE_PROPERTYNAME,
-                "Postal Code");
+        propertyToLabelMap.put(DataModelConstants.FIRSTNAME_PROPERTYNAME, "Firstname");
+        propertyToLabelMap.put(DataModelConstants.LASTNAME_PROPERTYNAME, "Lastname");
+        propertyToLabelMap.put(DataModelConstants.GENDER_PROPERTYNAME, "Gender");
+        propertyToLabelMap.put(DataModelConstants.MARRIED_PROPERTYNAME, "Married");
+        propertyToLabelMap.put(DataModelConstants.BIRTHDAY_PROPERTYNAME, "Birthday");
+        propertyToLabelMap.put(DataModelConstants.STREET_PROPERTYNAME, "Street");
+        propertyToLabelMap.put(DataModelConstants.HOUSENUMBER_PROPERTYNAME, "Housenumber");
+        propertyToLabelMap.put(DataModelConstants.POSTALCODE_PROPERTYNAME, "Postal Code");
         propertyToLabelMap.put(DataModelConstants.CITY_PROPERTYNAME, "City");
 
-        return new DefaultColumnHeaderDataProvider(propertyNames,
-                propertyToLabelMap);
+        return new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
     }
 
     /**
      * This is an implementation for a custom IColumnPropertyAccessor to access
      * PersonWithAddress objects in a NatTable. It is used for the
      * ListDataProvider in the body aswell as for the column header labels.
-     *
-     * @author Dirk Fauth
-     *
      */
-    class PersonWithAddressColumnPropertyAccessor implements
-            IColumnPropertyAccessor<PersonWithAddress> {
+    class PersonWithAddressColumnPropertyAccessor implements IColumnPropertyAccessor<PersonWithAddress> {
 
         @Override
         public Object getDataValue(PersonWithAddress rowObject, int columnIndex) {
@@ -202,9 +200,7 @@ public class _302_CustomColumnPropertyAccessorExample extends
 
         @Override
         public int getColumnIndex(String propertyName) {
-            return Arrays.asList(
-                    DataModelConstants.PERSONWITHADDRESS_PROPERTY_NAMES)
-                    .indexOf(propertyName);
+            return Arrays.asList(DataModelConstants.PERSONWITHADDRESS_PROPERTY_NAMES).indexOf(propertyName);
         }
 
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.data.person;
+package org.eclipse.nebula.widgets.nattable.dataset.person;
 
 public class DataModelConstants {
 
@@ -40,12 +40,22 @@ public class DataModelConstants {
     public static final String CITY_PROPERTYNAME = "city";
 
     public static final String[] PERSON_PROPERTY_NAMES = {
-            FIRSTNAME_PROPERTYNAME, LASTNAME_PROPERTYNAME, GENDER_PROPERTYNAME,
-            MARRIED_PROPERTYNAME, BIRTHDAY_PROPERTYNAME };
+            FIRSTNAME_PROPERTYNAME,
+            LASTNAME_PROPERTYNAME,
+            GENDER_PROPERTYNAME,
+            MARRIED_PROPERTYNAME,
+            BIRTHDAY_PROPERTYNAME
+    };
 
     public static final String[] PERSONWITHADDRESS_PROPERTY_NAMES = {
-            FIRSTNAME_PROPERTYNAME, LASTNAME_PROPERTYNAME, GENDER_PROPERTYNAME,
-            MARRIED_PROPERTYNAME, BIRTHDAY_PROPERTYNAME, STREET_PROPERTYNAME,
-            HOUSENUMBER_PROPERTYNAME, POSTALCODE_PROPERTYNAME,
-            CITY_PROPERTYNAME };
+            FIRSTNAME_PROPERTYNAME,
+            LASTNAME_PROPERTYNAME,
+            GENDER_PROPERTYNAME,
+            MARRIED_PROPERTYNAME,
+            BIRTHDAY_PROPERTYNAME,
+            STREET_PROPERTYNAME,
+            HOUSENUMBER_PROPERTYNAME,
+            POSTALCODE_PROPERTYNAME,
+            CITY_PROPERTYNAME
+    };
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.examples.examples._103_Events;
 
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +29,11 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.BlinkingRowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
@@ -44,8 +48,6 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.BlinkingRowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -71,50 +73,57 @@ public class BlinkingGridExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         final String[] propertyNames = RowDataListFixture.getPropertyNames();
-        final Map<String, String> propertyToLabelMap = RowDataListFixture
-                .getPropertyToLabelMap();
+        final Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         // Body
         LinkedList<BlinkingRowDataFixture> rowData = new LinkedList<BlinkingRowDataFixture>();
-        EventList<BlinkingRowDataFixture> eventList = GlazedLists
-                .eventList(rowData);
-        ObservableElementList<BlinkingRowDataFixture> observableElementList = new ObservableElementList<BlinkingRowDataFixture>(
-                eventList,
-                GlazedLists.beanConnector(BlinkingRowDataFixture.class));
-        IColumnPropertyAccessor<BlinkingRowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<BlinkingRowDataFixture>(
-                propertyNames);
-        this.bodyDataProvider = new ListDataProvider<BlinkingRowDataFixture>(
-                observableElementList, columnPropertyAccessor);
+        EventList<BlinkingRowDataFixture> eventList = GlazedLists.eventList(rowData);
+        ObservableElementList<BlinkingRowDataFixture> observableElementList =
+                new ObservableElementList<BlinkingRowDataFixture>(
+                        eventList,
+                        GlazedLists.beanConnector(BlinkingRowDataFixture.class));
+        IColumnPropertyAccessor<BlinkingRowDataFixture> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<BlinkingRowDataFixture>(propertyNames);
+        this.bodyDataProvider =
+                new ListDataProvider<BlinkingRowDataFixture>(observableElementList, columnPropertyAccessor);
 
         final DataLayer bodyLayer = new DataLayer(this.bodyDataProvider);
 
-        GlazedListsEventLayer<BlinkingRowDataFixture> glazedListsEventLayer = new GlazedListsEventLayer<BlinkingRowDataFixture>(
-                bodyLayer, observableElementList);
-        BlinkLayer<BlinkingRowDataFixture> blinkingLayer = new BlinkLayer<BlinkingRowDataFixture>(
-                glazedListsEventLayer, this.bodyDataProvider,
-                BlinkingRowDataFixture.rowIdAccessor, columnPropertyAccessor,
-                configRegistry);
+        GlazedListsEventLayer<BlinkingRowDataFixture> glazedListsEventLayer =
+                new GlazedListsEventLayer<BlinkingRowDataFixture>(bodyLayer, observableElementList);
+        BlinkLayer<BlinkingRowDataFixture> blinkingLayer =
+                new BlinkLayer<BlinkingRowDataFixture>(
+                        glazedListsEventLayer,
+                        this.bodyDataProvider,
+                        new IRowIdAccessor<BlinkingRowDataFixture>() {
+                            @Override
+                            public Serializable getRowId(BlinkingRowDataFixture rowObject) {
+                                return rowObject.getSecurity_description();
+                            }
+                        },
+                        columnPropertyAccessor,
+                        configRegistry);
         registerBlinkingConfigCells(configRegistry);
         insertRowData(glazedListsEventLayer, this.bodyDataProvider);
 
         // Column header
-        final DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
+        final DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 
         // Row header
-        final DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                this.bodyDataProvider);
+        final DefaultRowHeaderDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(this.bodyDataProvider);
 
         // Corner
-        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                defaultColumnHeaderDataProvider, rowHeaderDataProvider);
+        final DefaultCornerDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(defaultColumnHeaderDataProvider, rowHeaderDataProvider);
 
         // Grid
-        GridLayer gridLayer = new DefaultGridLayer(blinkingLayer,
-                new DefaultColumnHeaderDataLayer(
-                        defaultColumnHeaderDataProvider),
+        GridLayer gridLayer = new DefaultGridLayer(
+                blinkingLayer,
+                new DefaultColumnHeaderDataLayer(defaultColumnHeaderDataProvider),
                 new DefaultRowHeaderDataLayer(rowHeaderDataProvider),
                 new DataLayer(cornerDataProvider));
 
@@ -139,18 +148,24 @@ public class BlinkingGridExample extends AbstractNatExample {
                 BlinkingGridExample.this.scheduledThreadPool = Executors.newScheduledThreadPool(1);
 
                 // Fire updates to indexes 1,3,5
-                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
-                        BlinkingGridExample.this.bodyDataProvider, 1, 3, 5), 500L, 5000L,
+                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(
+                        new DataPumper(BlinkingGridExample.this.bodyDataProvider, 1, 3, 5),
+                        500L,
+                        5000L,
                         TimeUnit.MILLISECONDS);
 
                 // while they are still blinking update index 1
-                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
-                        BlinkingGridExample.this.bodyDataProvider, 1), 750L, 5000L,
+                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(
+                        new DataPumper(BlinkingGridExample.this.bodyDataProvider, 1),
+                        750L,
+                        5000L,
                         TimeUnit.MILLISECONDS);
 
                 // While the above are still blinking update indexes 2,8
-                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(new DataPumper(
-                        BlinkingGridExample.this.bodyDataProvider, 2, 8), 1000L, 5000L,
+                BlinkingGridExample.this.scheduledThreadPool.scheduleAtFixedRate(
+                        new DataPumper(BlinkingGridExample.this.bodyDataProvider, 2, 8),
+                        1000L,
+                        5000L,
                         TimeUnit.MILLISECONDS);
             }
         });
@@ -163,21 +178,30 @@ public class BlinkingGridExample extends AbstractNatExample {
 
     private void registerBlinkingConfigCells(ConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(
-                BlinkConfigAttributes.BLINK_RESOLVER, getBlinkResolver(),
+                BlinkConfigAttributes.BLINK_RESOLVER,
+                getBlinkResolver(),
                 DisplayMode.NORMAL);
 
         // Bg color styles to be used for blinking cells
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 GUIHelper.COLOR_GREEN);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL, BLINK_UP_CONFIG_LABEL);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.NORMAL,
+                BLINK_UP_CONFIG_LABEL);
 
         cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 GUIHelper.COLOR_RED);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                cellStyle, DisplayMode.NORMAL, BLINK_DOWN_CONFIG_LABEL);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                cellStyle,
+                DisplayMode.NORMAL,
+                BLINK_DOWN_CONFIG_LABEL);
     }
 
     /**
@@ -193,17 +217,16 @@ public class BlinkingGridExample extends AbstractNatExample {
             public String[] resolve(Object oldValue, Object newValue) {
                 double old = ((Double) oldValue).doubleValue();
                 double latest = ((Double) newValue).doubleValue();
-                this.configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL
-                        : BLINK_DOWN_CONFIG_LABEL);
+                this.configLabels[0] = (latest > old ? BLINK_UP_CONFIG_LABEL : BLINK_DOWN_CONFIG_LABEL);
                 return this.configLabels;
             };
         };
     }
 
-    private void insertRowData(PropertyChangeListener changeListener,
+    private void insertRowData(
+            PropertyChangeListener changeListener,
             ListDataProvider<BlinkingRowDataFixture> dataProvider) {
-        List<BlinkingRowDataFixture> listFixture = BlinkingRowDataFixture
-                .getList(changeListener);
+        List<BlinkingRowDataFixture> listFixture = BlinkingRowDataFixture.getList(changeListener);
         for (BlinkingRowDataFixture rowObject : listFixture) {
             dataProvider.getList().add(rowObject);
         }
@@ -218,8 +241,7 @@ public class BlinkingGridExample extends AbstractNatExample {
         ListDataProvider<BlinkingRowDataFixture> dataProvider;
         private final int[] rowIndexes;
 
-        DataPumper(ListDataProvider<BlinkingRowDataFixture> dataProvider,
-                final int... rowIndexes) {
+        DataPumper(ListDataProvider<BlinkingRowDataFixture> dataProvider, final int... rowIndexes) {
             this.dataProvider = dataProvider;
             this.rowIndexes = rowIndexes;
         }
@@ -231,8 +253,8 @@ public class BlinkingGridExample extends AbstractNatExample {
                 public void run() {
                     for (int i = 0; i < DataPumper.this.rowIndexes.length; i++) {
                         double nextPrice = BlinkingGridExample.this.random.nextInt(1000);
-                        BlinkingRowDataFixture rowObject = DataPumper.this.dataProvider
-                                .getRowObject(DataPumper.this.rowIndexes[i]);
+                        BlinkingRowDataFixture rowObject =
+                                DataPumper.this.dataProvider.getRowObject(DataPumper.this.rowIndexes[i]);
                         rowObject.setAsk_price(nextPrice);
                     }
                 }

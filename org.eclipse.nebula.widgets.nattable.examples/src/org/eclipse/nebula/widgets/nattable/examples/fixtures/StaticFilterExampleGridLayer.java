@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,8 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsStaticFilterStrategy;
@@ -35,9 +37,6 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumul
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -55,24 +54,22 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         super(true);
 
         // Underlying data source
-        EventList<RowDataFixture> eventList = GlazedLists
-                .eventList(RowDataListFixture.getList());
-        TransformedList<RowDataFixture, RowDataFixture> rowObjectsGlazedList = GlazedLists
-                .threadSafeList(eventList);
-        SortedList<RowDataFixture> sortedList = new SortedList<RowDataFixture>(
-                rowObjectsGlazedList, null);
-        FilterList<RowDataFixture> filterList = new FilterList<RowDataFixture>(
-                sortedList);
+        EventList<RowDataFixture> eventList =
+                GlazedLists.eventList(RowDataListFixture.getList());
+        TransformedList<RowDataFixture, RowDataFixture> rowObjectsGlazedList =
+                GlazedLists.threadSafeList(eventList);
+        SortedList<RowDataFixture> sortedList =
+                new SortedList<RowDataFixture>(rowObjectsGlazedList, null);
+        FilterList<RowDataFixture> filterList =
+                new FilterList<RowDataFixture>(sortedList);
         String[] propertyNames = RowDataListFixture.getPropertyNames();
-        Map<String, String> propertyToLabelMap = RowDataListFixture
-                .getPropertyToLabelMap();
+        Map<String, String> propertyToLabelMap = RowDataListFixture.getPropertyToLabelMap();
 
         // Body layer
-        IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<RowDataFixture>(
-                propertyNames);
+        IColumnPropertyAccessor<RowDataFixture> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<RowDataFixture>(propertyNames);
 
-        this.bodyDataProvider = new ListDataProvider<RowDataFixture>(filterList,
-                columnPropertyAccessor);
+        this.bodyDataProvider = new ListDataProvider<RowDataFixture>(filterList, columnPropertyAccessor);
         // add a static filter that only shows RowDataFixtures with a rating
         // other than "AAA"
         // bodyDataProvider = new
@@ -85,32 +82,32 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         // };
 
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
-        GlazedListsEventLayer<RowDataFixture> glazedListsEventLayer = new GlazedListsEventLayer<RowDataFixture>(
-                this.bodyDataLayer, eventList);
-        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(
-                glazedListsEventLayer);
-        ColumnOverrideLabelAccumulator bodyLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                this.bodyDataLayer);
+        GlazedListsEventLayer<RowDataFixture> glazedListsEventLayer =
+                new GlazedListsEventLayer<RowDataFixture>(this.bodyDataLayer, eventList);
+        DefaultBodyLayerStack bodyLayer =
+                new DefaultBodyLayerStack(glazedListsEventLayer);
+        ColumnOverrideLabelAccumulator bodyLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(this.bodyDataLayer);
         this.bodyDataLayer.setConfigLabelAccumulator(bodyLabelAccumulator);
 
-        bodyLabelAccumulator
-                .registerColumnOverrides(
-                        RowDataListFixture
-                                .getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME),
-                        "PRICING_TYPE_PROP_NAME");
+        bodyLabelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.PRICING_TYPE_PROP_NAME),
+                "PRICING_TYPE_PROP_NAME");
 
         // Column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
-        SortHeaderLayer<RowDataFixture> sortHeaderLayer = new SortHeaderLayer<RowDataFixture>(
-                columnHeaderLayer, new GlazedListsSortModel<RowDataFixture>(
-                        sortedList, columnPropertyAccessor, configRegistry,
-                        columnHeaderDataLayer), false);
+        SortHeaderLayer<RowDataFixture> sortHeaderLayer =
+                new SortHeaderLayer<RowDataFixture>(
+                        columnHeaderLayer,
+                        new GlazedListsSortModel<RowDataFixture>(
+                                sortedList, columnPropertyAccessor, configRegistry, columnHeaderDataLayer),
+                        false);
         sortHeaderLayer.addConfiguration(new SingleClickSortConfiguration());
 
         // Note: The column header layer is wrapped in a filter row composite.
@@ -120,8 +117,9 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         // new
         // DefaultGlazedListsFilterStrategy<RowDataFixture>(autoFilterMatcherEditor,
         // columnPropertyAccessor, configRegistry);
-        DefaultGlazedListsStaticFilterStrategy<RowDataFixture> filterStrategy = new DefaultGlazedListsStaticFilterStrategy<RowDataFixture>(
-                filterList, columnPropertyAccessor, configRegistry);
+        DefaultGlazedListsStaticFilterStrategy<RowDataFixture> filterStrategy =
+                new DefaultGlazedListsStaticFilterStrategy<RowDataFixture>(
+                        filterList, columnPropertyAccessor, configRegistry);
         filterStrategy.addStaticFilter(new Matcher<RowDataFixture>() {
 
             @Override
@@ -130,33 +128,34 @@ public class StaticFilterExampleGridLayer extends GridLayer {
             }
         });
 
-        FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer = new FilterRowHeaderComposite<RowDataFixture>(
-                filterStrategy, sortHeaderLayer, columnHeaderDataProvider,
-                configRegistry);
+        FilterRowHeaderComposite<RowDataFixture> filterRowHeaderLayer =
+                new FilterRowHeaderComposite<RowDataFixture>(
+                        filterStrategy, sortHeaderLayer, columnHeaderDataProvider, configRegistry);
 
-        ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
-                columnHeaderDataLayer);
+        ColumnOverrideLabelAccumulator labelAccumulator =
+                new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
         columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
         // Register labels
-        labelAccumulator.registerColumnOverrides(RowDataListFixture
-                .getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
+        labelAccumulator.registerColumnOverrides(
+                RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
                 "CUSTOM_COMPARATOR_LABEL");
 
         // Row header layer
-        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                this.bodyDataProvider);
-        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayer, bodyLayer.getSelectionLayer());
+        DefaultRowHeaderDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(this.bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
         // Corner layer
-        DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
-                rowHeaderLayer, filterRowHeaderLayer);
+        DefaultCornerDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        CornerLayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, filterRowHeaderLayer);
 
         // Grid
         setBodyLayer(bodyLayer);
@@ -164,11 +163,6 @@ public class StaticFilterExampleGridLayer extends GridLayer {
         setColumnHeaderLayer(filterRowHeaderLayer);
         setRowHeaderLayer(rowHeaderLayer);
         setCornerLayer(cornerLayer);
-    }
-
-    @Override
-    public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
-        super.setClientAreaProvider(clientAreaProvider);
     }
 
     public ListDataProvider<RowDataFixture> getBodyDataProvider() {

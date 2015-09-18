@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists._603_Filter;
 
@@ -26,12 +26,12 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Address;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Address;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.ComboBoxFilterRowHeaderComposite;
@@ -71,9 +71,6 @@ import ca.odell.glazedlists.TransformedList;
 /**
  * Example showing how to add the filter row to the layer composition of a grid
  * that looks like the Excel filter.
- *
- * @author Dirk Fauth
- *
  */
 public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
 
@@ -113,52 +110,74 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
         propertyToLabelMap.put("address.postalCode", "Postal Code");
         propertyToLabelMap.put("address.city", "City");
 
-        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(
-                propertyNames);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 
-        final BodyLayerStack<PersonWithAddress> bodyLayerStack = new BodyLayerStack<PersonWithAddress>(
-                PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
+        final BodyLayerStack<PersonWithAddress> bodyLayerStack =
+                new BodyLayerStack<PersonWithAddress>(
+                        PersonService.getPersonsWithAddress(50),
+                        columnPropertyAccessor);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(
+                        columnHeaderDataLayer,
+                        bodyLayerStack,
+                        bodyLayerStack.getSelectionLayer());
 
-        ComboBoxFilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer = new ComboBoxFilterRowHeaderComposite<PersonWithAddress>(
-                bodyLayerStack.getFilterList(),
-                bodyLayerStack.getGlazedListsEventLayer(),
-                bodyLayerStack.getSortedList(), columnPropertyAccessor,
-                columnHeaderLayer, columnHeaderDataProvider, configRegistry);
+        ComboBoxFilterRowHeaderComposite<PersonWithAddress> filterRowHeaderLayer =
+                new ComboBoxFilterRowHeaderComposite<PersonWithAddress>(
+                        bodyLayerStack.getFilterList(),
+                        bodyLayerStack.getGlazedListsEventLayer(),
+                        bodyLayerStack.getSortedList(),
+                        columnPropertyAccessor,
+                        columnHeaderLayer,
+                        columnHeaderDataProvider,
+                        configRegistry);
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyLayerStack.getBodyDataProvider());
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                bodyLayerStack, bodyLayerStack.getSelectionLayer());
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(
+                        rowHeaderDataLayer,
+                        bodyLayerStack,
+                        bodyLayerStack.getSelectionLayer());
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                filterRowHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(
+                        columnHeaderDataProvider,
+                        rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(
+                        cornerDataLayer,
+                        rowHeaderLayer,
+                        filterRowHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayerStack,
-                filterRowHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(
+                        bodyLayerStack,
+                        filterRowHeaderLayer,
+                        rowHeaderLayer,
+                        cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
         NatTable natTable = new NatTable(container, gridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration and the ConfigRegistry manually
+        // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+        // manually
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
@@ -183,8 +202,8 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
 
         natTable.configure();
 
-        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                natTable));
+        natTable.registerCommandHandler(
+                new DisplayPersistenceDialogCommandHandler(natTable));
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
@@ -225,35 +244,32 @@ public class _6034_ExcelLikeFilterRowExample extends AbstractNatExample {
 
         private final SelectionLayer selectionLayer;
 
-        public BodyLayerStack(List<T> values,
-                IColumnPropertyAccessor<T> columnPropertyAccessor) {
+        public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
             EventList<T> eventList = GlazedLists.eventList(values);
-            TransformedList<T, T> rowObjectsGlazedList = GlazedLists
-                    .threadSafeList(eventList);
+            TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
-            // because the Comparator
-            // will be set by configuration
+            // because the Comparator will be set by configuration
             this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
             // wrap the SortedList with the FilterList
             this.filterList = new FilterList<T>(this.sortedList);
 
-            this.bodyDataProvider = new ListDataProvider<T>(this.filterList,
-                    columnPropertyAccessor);
+            this.bodyDataProvider =
+                    new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
             this.bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // layer for event handling of GlazedLists and PropertyChanges
-            this.glazedListsEventLayer = new GlazedListsEventLayer<T>(
-                    this.bodyDataLayer, this.filterList);
+            this.glazedListsEventLayer =
+                    new GlazedListsEventLayer<T>(this.bodyDataLayer, this.filterList);
 
             this.selectionLayer = new SelectionLayer(getGlazedListsEventLayer());
             ViewportLayer viewportLayer = new ViewportLayer(getSelectionLayer());
 
             FreezeLayer freezeLayer = new FreezeLayer(this.selectionLayer);
-            CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(
-                    freezeLayer, viewportLayer, this.selectionLayer);
+            CompositeFreezeLayer compositeFreezeLayer =
+                    new CompositeFreezeLayer(freezeLayer, viewportLayer, this.selectionLayer);
 
             setUnderlyingLayer(compositeFreezeLayer);
         }

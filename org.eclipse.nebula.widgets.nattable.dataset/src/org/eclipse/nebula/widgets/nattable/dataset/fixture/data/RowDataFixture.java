@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,15 +8,12 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.data.stock;
+package org.eclipse.nebula.widgets.nattable.dataset.fixture.data;
 
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.getRandomDate;
+import static org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture.PRICING_MANUAL;
 
-import java.io.Serializable;
 import java.util.Date;
-
-import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
+import java.util.Random;
 
 public class RowDataFixture {
 
@@ -59,13 +56,6 @@ public class RowDataFixture {
     public double field38;
     public double field39;
     public double field40;
-
-    public static final IRowIdAccessor<RowDataFixture> rowIdAccessor = new IRowIdAccessor<RowDataFixture>() {
-        @Override
-        public Serializable getRowId(RowDataFixture rowObject) {
-            return rowObject.getSecurity_description();
-        }
-    };
 
     public RowDataFixture(String security_id, String security_description,
             String rating, Date issue_date, PricingTypeBean pricing_type,
@@ -115,15 +105,6 @@ public class RowDataFixture {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((this.issue_date == null) ? 0 : this.issue_date.hashCode());
-        result = prime * result + ((this.security_id == null) ? 0 : this.security_id.hashCode());
-        return result;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -145,14 +126,45 @@ public class RowDataFixture {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.issue_date == null) ? 0 : this.issue_date.hashCode());
+        result = prime * result + ((this.security_id == null) ? 0 : this.security_id.hashCode());
+        return result;
+    }
+
     /**
      * Convenience method to quickly get a new instance
      */
     public static RowDataFixture getInstance(String descrition, String rating) {
-        return new RowDataFixture("US" + ObjectUtils.getRandomNumber(1000),
-                descrition, rating, getRandomDate(),
-                RowDataListFixture.PRICING_MANUAL, 1.000, 10, 1000, true, 1.00,
-                1.01, -.01, 1000, 1000, 1000D);
+        return new RowDataFixture("US" + getRandomNumber(1000),
+                descrition, rating, getRandomDate(), PRICING_MANUAL, 1.000, 10,
+                1000, true, 1.00, 1.01, -.01, 1000, 1000, 1000D);
+    }
+
+    private static final Random RANDOM = new Random();
+
+    /**
+     * @return a random Date
+     */
+    public static Date getRandomDate() {
+        return new Date(RANDOM.nextLong());
+    }
+
+    /**
+     * @return 4 digit random Integer number
+     */
+    public static int getRandomNumber() {
+        return RANDOM.nextInt(10000);
+    }
+
+    /**
+     * @return random Integer number between 0 and parameter max
+     */
+    public static int getRandomNumber(int max) {
+        return RANDOM.nextInt(max);
     }
 
     @Override

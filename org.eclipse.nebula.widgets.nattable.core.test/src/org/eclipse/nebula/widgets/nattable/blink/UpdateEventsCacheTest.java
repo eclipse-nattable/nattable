@@ -13,13 +13,13 @@ package org.eclipse.nebula.widgets.nattable.blink;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.concurrent.Executors;
 
-import org.eclipse.nebula.widgets.nattable.blink.CellKeyStrategyImpl;
-import org.eclipse.nebula.widgets.nattable.blink.UpdateEventsCache;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,14 @@ public class UpdateEventsCacheTest {
     @Before
     public void setup() {
         this.cache = new UpdateEventsCache<RowDataFixture>(
-                RowDataFixture.rowIdAccessor, new CellKeyStrategyImpl(),
+                new IRowIdAccessor<RowDataFixture>() {
+
+                    @Override
+                    public Serializable getRowId(RowDataFixture rowObject) {
+                        return rowObject.getSecurity_description();
+                    }
+                },
+                new CellKeyStrategyImpl(),
                 Executors.newSingleThreadScheduledExecutor());
 
         this.bean1 = RowDataListFixture.getList().get(0);

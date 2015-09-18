@@ -6,13 +6,15 @@ Bundle-Version: 1.4.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.eclipse.core.commands.common,
+ org.eclipse.nebula.widgets.nattable.dataset.fixture.data,
+ org.eclipse.nebula.widgets.nattable.dataset.person,
+ org.hamcrest.core,
+ org.junit,
  org.osgi.framework
-Export-Package: org.eclipse.nebula.widgets.nattable.test.data,
- org.eclipse.nebula.widgets.nattable.test.fixture,
+Export-Package: org.eclipse.nebula.widgets.nattable.test.fixture,
  org.eclipse.nebula.widgets.nattable.test.fixture.command,
  org.eclipse.nebula.widgets.nattable.test.fixture.data,
  org.eclipse.nebula.widgets.nattable.test.fixture.group,
  org.eclipse.nebula.widgets.nattable.test.fixture.layer,
  org.eclipse.nebula.widgets.nattable.test.integration
-Require-Bundle: org.junit4
 Bundle-Vendor: Eclipse Nebula NatTable

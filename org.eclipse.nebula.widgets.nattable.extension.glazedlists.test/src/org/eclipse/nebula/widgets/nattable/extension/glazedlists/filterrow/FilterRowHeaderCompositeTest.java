@@ -14,17 +14,17 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.DataLayerFixture;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.LayerListenerFixture;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearAllFiltersCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ClearFilterCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.command.ToggleFilterRowCommand;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.DefaultFilterRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +57,8 @@ public class FilterRowHeaderCompositeTest {
                         this.filterList,
                         new ReflectiveColumnPropertyAccessor<RowDataFixture>(
                                 RowDataListFixture.getPropertyNames()),
-                        this.configRegistry), this.columnHeaderLayer,
+                        this.configRegistry),
+                this.columnHeaderLayer,
                 this.columnHeaderLayer.getDataProvider(), this.configRegistry);
         this.listener = new LayerListenerFixture();
         this.layerUnderTest.addLayerListener(this.listener);

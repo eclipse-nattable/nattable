@@ -21,12 +21,12 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooserUtils;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.test.fixture.ColumnEntriesFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ColumnHeaderLayerFixture;
 import org.junit.Before;
 import org.junit.Test;

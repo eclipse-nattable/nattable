@@ -20,8 +20,8 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.person.SimplePerson;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.fixtures.Person;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -76,11 +76,11 @@ public class _001_Getting_Started extends AbstractNatExample {
     }
 
     private IDataProvider setupBodyDataProvider() {
-        final List<Person> people = Arrays.asList(new Person(100,
-                "Mickey Mouse", new Date(1000000)), new Person(110, "Batman",
+        final List<SimplePerson> people = Arrays.asList(new SimplePerson(100,
+                "Mickey Mouse", new Date(1000000)), new SimplePerson(110, "Batman",
                 new Date(2000000)),
-                new Person(120, "Bender", new Date(3000000)), new Person(130,
-                        "Cartman", new Date(4000000)), new Person(140,
+                new SimplePerson(120, "Bender", new Date(3000000)), new SimplePerson(130,
+                        "Cartman", new Date(4000000)), new SimplePerson(140,
                         "Dogbert", new Date(5000000)));
 
         this.propertyToLabels = new HashMap<String, String>();
@@ -89,8 +89,8 @@ public class _001_Getting_Started extends AbstractNatExample {
         this.propertyToLabels.put("birthDate", "DOB");
 
         this.propertyNames = new String[] { "id", "name", "birthDate" };
-        return new ListDataProvider<Person>(people,
-                new ReflectiveColumnPropertyAccessor<Person>(this.propertyNames));
+        return new ListDataProvider<SimplePerson>(people,
+                new ReflectiveColumnPropertyAccessor<SimplePerson>(this.propertyNames));
 
     }
 

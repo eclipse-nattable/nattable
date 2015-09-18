@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,16 +21,21 @@ public class PricingDataFileLoader<T> {
 
     public List<T> loadDataFromFile() throws IOException {
         List<T> data = new ArrayList<T>();
-        int i = 0;
-        DelimitedFileReader reader = new DelimitedFileReader(
-                new BufferedReader(new InputStreamReader(
-                        PricingDataFileLoader.class
-                                .getResourceAsStream("pricing_data.txt"))),
-                '\t');
-        if (reader.ready() && reader.markSupported()) {
-            while (reader.read() > 0) {
-                i++;
-                parseTabDelimitedLine(reader.getTabbedLineRead(), data);
+        DelimitedFileReader reader = null;
+        try {
+            reader = new DelimitedFileReader(
+                    new BufferedReader(new InputStreamReader(
+                            PricingDataFileLoader.class
+                                    .getResourceAsStream("pricing_data.txt"))),
+                    '\t');
+            if (reader.ready() && reader.markSupported()) {
+                while (reader.read() > 0) {
+                    parseTabDelimitedLine(reader.getTabbedLineRead(), data);
+                }
+            }
+        } finally {
+            if (reader != null) {
+                reader.close();
             }
         }
         return data;
@@ -62,14 +67,14 @@ public class PricingDataFileLoader<T> {
              * bean.setPriceChange(extractDoubleFromToken(tabs.nextToken()));
              * bean.setYieldChange(extractDoubleFromToken(tabs.nextToken()));
              * bean.setSpreadChange(extractDoubleFromToken(tabs.nextToken()));
-             * 
-             * bean.setBasisPointValue(extractDoubleFromToken(tabs.nextToken()));
-             * bean.setModDuration(extractDoubleFromToken(tabs.nextToken()));
+             *
+             * bean.setBasisPointValue(extractDoubleFromToken(tabs.nextToken()))
+             * ; bean.setModDuration(extractDoubleFromToken(tabs.nextToken()));
              * bean.setConvexity(extractDoubleFromToken(tabs.nextToken()));
              * bean.setComments(extractStringFromToken(tabs.nextToken()));
              * bean.setNativeTradingGroup
              * (extractStringFromToken(tabs.nextToken()));
-             * 
+             *
              * bean.setTgPosition(extractDoubleFromToken(tabs.nextToken()));
              * bean.setTgPL(extractDoubleFromToken(tabs.nextToken()));
              * bean.setTgClosingPL(extractDoubleFromToken(tabs.nextToken()));
@@ -123,6 +128,6 @@ public class PricingDataFileLoader<T> {
         System.out.println("string: " + token);
         return token == null
                 || (token.trim().equals("") || token.trim().equals("\t")) ? null
-                : token;
+                        : token;
     }
 }

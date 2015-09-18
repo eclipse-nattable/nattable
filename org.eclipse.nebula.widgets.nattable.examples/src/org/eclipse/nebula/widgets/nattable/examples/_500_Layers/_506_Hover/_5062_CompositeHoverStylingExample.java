@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._506_Hover;
 
@@ -19,9 +19,9 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
@@ -52,8 +52,7 @@ import org.eclipse.swt.widgets.Control;
 public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400,
-                new _5062_CompositeHoverStylingExample());
+        StandaloneNatExampleRunner.run(600, 400, new _5062_CompositeHoverStylingExample());
     }
 
     @Override
@@ -65,8 +64,12 @@ public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = {
+                "firstName",
+                "lastName",
+                "gender",
+                "married",
+                "birthday" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -81,8 +84,10 @@ public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
         // AbstractIndexLayerTransform and setting the ViewportLayer
         // as underlying layer. But in this case using the ViewportLayer
         // directly as body layer is also working.
-        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
-                PersonService.getPersons(10), propertyNames);
+        IDataProvider bodyDataProvider =
+                new DefaultBodyDataProvider<Person>(
+                        PersonService.getPersons(10),
+                        propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
         SelectionLayer selectionLayer = new SelectionLayer(hoverLayer);
@@ -90,13 +95,19 @@ public class _5062_CompositeHoverStylingExample extends AbstractNatExample {
 
         // build the column header layer
         IDataProvider columnHeaderDataProvider =
-                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+                new DefaultColumnHeaderDataProvider(
+                        propertyNames,
+                        propertyToLabelMap);
         DataLayer columnHeaderDataLayer =
                 new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
         HoverLayer columnHoverLayer =
                 new HoverLayer(columnHeaderDataLayer, false);
         ColumnHeaderLayer columnHeaderLayer =
-                new ColumnHeaderLayer(columnHoverLayer, viewportLayer, selectionLayer, false);
+                new ColumnHeaderLayer(
+                        columnHoverLayer,
+                        viewportLayer,
+                        selectionLayer,
+                        false);
 
         // add ColumnHeaderHoverLayerConfiguration to ensure that hover styling
         // and resizing is working together

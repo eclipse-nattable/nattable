@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._504_Viewport;
 
@@ -23,9 +23,9 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonWithAddress;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -78,18 +78,13 @@ import org.eclipse.swt.widgets.Slider;
 /**
  * Example showing how to implement NatTable that contains two horizontal split
  * viewports in a grid.
- *
- * @author Dirk Fauth
- *
  */
-public class _5044_HorizontalSplitViewportGridExample extends
-        AbstractNatExample {
+public class _5044_HorizontalSplitViewportGridExample extends AbstractNatExample {
 
     public static final int SPLIT_COLUMN_INDEX = 5;
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400,
-                new _5044_HorizontalSplitViewportGridExample());
+        StandaloneNatExampleRunner.run(600, 400, new _5044_HorizontalSplitViewportGridExample());
     }
 
     @Override
@@ -101,9 +96,8 @@ public class _5044_HorizontalSplitViewportGridExample extends
     @Override
     public Control createExampleControl(Composite parent) {
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday", "address.street", "address.housenumber",
-                "address.postalCode", "address.city" };
+        String[] propertyNames = { "firstName", "lastName", "gender", "married", "birthday",
+                "address.street", "address.housenumber", "address.postalCode", "address.city" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -117,8 +111,8 @@ public class _5044_HorizontalSplitViewportGridExample extends
         propertyToLabelMap.put("address.postalCode", "Postal Code");
         propertyToLabelMap.put("address.city", "City");
 
-        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(
-                propertyNames);
+        IColumnPropertyAccessor<PersonWithAddress> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<PersonWithAddress>(propertyNames);
 
         final BodyLayerStack<PersonWithAddress> bodyLayer = new BodyLayerStack<PersonWithAddress>(
                 PersonService.getPersonsWithAddress(50), columnPropertyAccessor);
@@ -132,56 +126,51 @@ public class _5044_HorizontalSplitViewportGridExample extends
                 bodyLayer, bodyLayer.getSelectionLayer());
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        final DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        final AbstractLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        final DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        final AbstractLayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
         // Use this special layer painter that supports rendering of split
-        // viewports although
-        // the ColumnHeaderLayer is not split. Here is some custom calculation
-        // included that
-        // might not work correctly in case there are column groups or other
-        // spanning involved.
+        // viewports although the ColumnHeaderLayer is not split. Here is some
+        // custom calculation included that might not work correctly in case
+        // there are column groups or other spanning involved.
         columnHeaderLayer.setLayerPainter(new CellLayerPainter() {
             @Override
             protected boolean isClipLeft(int position) {
                 // check position-1 because of the row header column count
                 // as the body is a composite layer, the default transformation
                 // for the grid is not working correctly
-                int index = LayerUtil.convertColumnPosition(columnHeaderLayer,
-                        position - 1, columnHeaderDataLayer);
+                int index = LayerUtil.convertColumnPosition(
+                        columnHeaderLayer, position - 1, columnHeaderDataLayer);
                 return (index > SPLIT_COLUMN_INDEX);
             }
 
             @Override
-            protected void paintCell(ILayerCell cell, GC gc,
-                    IConfigRegistry configRegistry) {
+            protected void paintCell(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
                 ILayer layer = cell.getLayer();
                 int columnPosition = cell.getColumnPosition();
                 int rowPosition = cell.getRowPosition();
-                ICellPainter cellPainter = layer.getCellPainter(columnPosition,
-                        rowPosition, cell, configRegistry);
-                Rectangle adjustedCellBounds = layer.getLayerPainter()
-                        .adjustCellBounds(columnPosition, rowPosition,
-                                cell.getBounds());
+                ICellPainter cellPainter = layer.getCellPainter(
+                        columnPosition, rowPosition, cell, configRegistry);
+                Rectangle adjustedCellBounds = layer
+                        .getLayerPainter()
+                            .adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
                 if (cellPainter != null) {
                     Rectangle originalClipping = gc.getClipping();
 
                     int startX = getStartXOfColumnPosition(columnPosition);
                     int startY = getStartYOfRowPosition(rowPosition);
 
-                    int endX = getStartXOfColumnPosition(cell
-                            .getOriginColumnPosition() + cell.getColumnSpan());
-                    int endY = getStartYOfRowPosition(cell
-                            .getOriginRowPosition() + cell.getRowSpan());
+                    int endX = getStartXOfColumnPosition(cell.getOriginColumnPosition() + cell.getColumnSpan());
+                    int endY = getStartYOfRowPosition(cell.getOriginRowPosition() + cell.getRowSpan());
 
                     // correct position of first column in right region
                     // find the last visible column in left region
-                    int viewportBorderX = bodyLayer.getViewportLayerLeft()
-                            .getClientAreaWidth() + rowHeaderLayer.getWidth();
+                    int viewportBorderX = bodyLayer.getViewportLayerLeft().getClientAreaWidth()
+                            + rowHeaderLayer.getWidth();
                     if (isClipLeft(columnPosition) && startX < viewportBorderX) {
                         startX = viewportBorderX;
                     }
@@ -189,20 +178,16 @@ public class _5044_HorizontalSplitViewportGridExample extends
                             && startX > viewportBorderX) {
                         startX = viewportBorderX;
                     }
-                    if (isClipLeft(cell.getOriginColumnPosition()
-                            + cell.getColumnSpan())
+                    if (isClipLeft(cell.getOriginColumnPosition() + cell.getColumnSpan())
                             && endX < viewportBorderX) {
                         endX = viewportBorderX;
                     }
 
-                    Rectangle cellClipBounds = originalClipping
-                            .intersection(new Rectangle(startX, startY, endX
-                                    - startX, endY - startY));
-                    gc.setClipping(cellClipBounds
-                            .intersection(adjustedCellBounds));
+                    Rectangle cellClipBounds = originalClipping.intersection(
+                            new Rectangle(startX, startY, endX - startX, endY - startY));
+                    gc.setClipping(cellClipBounds.intersection(adjustedCellBounds));
 
-                    cellPainter.paintCell(cell, gc, adjustedCellBounds,
-                            configRegistry);
+                    cellPainter.paintCell(cell, gc, adjustedCellBounds, configRegistry);
 
                     gc.setClipping(originalClipping);
                 }
@@ -210,26 +195,27 @@ public class _5044_HorizontalSplitViewportGridExample extends
         });
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        final ILayer cornerLayer = new CornerLayer(cornerDataLayer,
-                rowHeaderLayer, columnHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        final ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(bodyLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // in order to make printing and exporting work correctly you need to
-        // register the following
-        // command handlers
-        gridLayer.registerCommandHandler(new MultiTurnViewportOnCommandHandler(
-                bodyLayer.getViewportLayerLeft(), bodyLayer
-                        .getViewportLayerRight()));
-        gridLayer
-                .registerCommandHandler(new MultiTurnViewportOffCommandHandler(
-                        bodyLayer.getViewportLayerLeft(), bodyLayer
-                                .getViewportLayerRight()));
+        // register the following command handlers
+        gridLayer.registerCommandHandler(
+                new MultiTurnViewportOnCommandHandler(
+                        bodyLayer.getViewportLayerLeft(),
+                        bodyLayer.getViewportLayerRight()));
+        gridLayer.registerCommandHandler(
+                new MultiTurnViewportOffCommandHandler(
+                        bodyLayer.getViewportLayerLeft(),
+                        bodyLayer.getViewportLayerRight()));
 
         // Wrap NatTable in composite so we can slap on the external horizontal
         // sliders
@@ -263,10 +249,9 @@ public class _5044_HorizontalSplitViewportGridExample extends
             public void paintOverlay(GC gc, ILayer layer) {
                 Color beforeColor = gc.getForeground();
                 gc.setForeground(GUIHelper.COLOR_GRAY);
-                int viewportBorderX = bodyLayer.getViewportLayerLeft()
-                        .getWidth() + rowHeaderLayer.getWidth() - 1;
-                gc.drawLine(viewportBorderX, 0, viewportBorderX,
-                        layer.getHeight() - 1);
+                int viewportBorderX = bodyLayer.getViewportLayerLeft().getWidth()
+                        + rowHeaderLayer.getWidth() - 1;
+                gc.drawLine(viewportBorderX, 0, viewportBorderX, layer.getHeight() - 1);
                 gc.setForeground(beforeColor);
             }
         });
@@ -278,9 +263,9 @@ public class _5044_HorizontalSplitViewportGridExample extends
         return composite;
     }
 
-    private void createSplitSliders(Composite natTableParent,
-            final ILayer rowHeaderLayer, final ViewportLayer left,
-            final ViewportLayer right) {
+    private void createSplitSliders(
+            Composite natTableParent, final ILayer rowHeaderLayer,
+            final ViewportLayer left, final ViewportLayer right) {
         Composite sliderComposite = new Composite(natTableParent, SWT.NONE);
         GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.FILL;
@@ -302,8 +287,7 @@ public class _5044_HorizontalSplitViewportGridExample extends
         Composite sliderLeftComposite = new Composite(sliderComposite, SWT.NONE) {
             @Override
             public Point computeSize(int wHint, int hHint, boolean changed) {
-                int width = ((ClientAreaAdapter) left.getClientAreaProvider())
-                        .getWidth();
+                int width = ((ClientAreaAdapter) left.getClientAreaProvider()).getWidth();
                 width += rowHeaderLayer.getWidth();
                 return new Point(width, 17);
             }
@@ -346,46 +330,36 @@ public class _5044_HorizontalSplitViewportGridExample extends
         private final ViewportLayer viewportLayerLeft;
         private final ViewportLayer viewportLayerRight;
 
-        public BodyLayerStack(List<T> values,
-                IColumnPropertyAccessor<T> columnPropertyAccessor) {
-            this.bodyDataProvider = new ListDataProvider<T>(values,
-                    columnPropertyAccessor);
+        public BodyLayerStack(List<T> values, IColumnPropertyAccessor<T> columnPropertyAccessor) {
+            this.bodyDataProvider = new ListDataProvider<T>(values, columnPropertyAccessor);
             DataLayer bodyDataLayer = new DataLayer(getBodyDataProvider());
 
             // use our custom reorder drag mode configuration instead of the
-            // default to
-            // suppress the ability to move a column from one viewport to the
-            // other
-            ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                    bodyDataLayer, false);
-            columnReorderLayer
-                    .addConfiguration(new AbstractUiBindingConfiguration() {
+            // default to suppress the ability to move a column from one
+            // viewport to the other
+            ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer, false);
+            columnReorderLayer.addConfiguration(new AbstractUiBindingConfiguration() {
 
-                        @Override
-                        public void configureUiBindings(
-                                UiBindingRegistry uiBindingRegistry) {
-                            uiBindingRegistry.registerMouseDragMode(
-                                    MouseEventMatcher
-                                            .columnHeaderLeftClick(SWT.NONE),
-                                    new AggregateDragMode(
-                                            new CellDragMode(),
-                                            new SplitViewportColumnReorderDragMode()));
-                        }
-                    });
+                @Override
+                public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                    uiBindingRegistry.registerMouseDragMode(
+                            MouseEventMatcher.columnHeaderLeftClick(SWT.NONE),
+                            new AggregateDragMode(
+                                    new CellDragMode(),
+                                    new SplitViewportColumnReorderDragMode()));
+                }
+            });
 
-            this.columnHideShowLayer = new ColumnHideShowLayer(
-                    columnReorderLayer);
+            this.columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
             this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
 
             // use a cell layer painter that is configured for left clipping
             // this ensures that the rendering works correctly for split
             // viewports
-            this.selectionLayer.setLayerPainter(new SelectionLayerPainter(true,
-                    false));
+            this.selectionLayer.setLayerPainter(new SelectionLayerPainter(true, false));
 
             // create a ViewportLayer for the left part of the table and
-            // configure it to only contain
-            // the first 5 columns
+            // configure it to only contain the first 5 columns
             this.viewportLayerLeft = new ViewportLayer(this.selectionLayer) {
                 @Override
                 public int getMaxColumnPosition() {
@@ -394,8 +368,7 @@ public class _5044_HorizontalSplitViewportGridExample extends
             };
 
             // create a ViewportLayer for the right part of the table and
-            // configure it to only contain
-            // the last 4 columns
+            // configure it to only contain the last 4 columns
             this.viewportLayerRight = new ViewportLayer(this.selectionLayer) {
                 @Override
                 public int getMinColumnPosition() {
@@ -404,16 +377,13 @@ public class _5044_HorizontalSplitViewportGridExample extends
             };
             // as the min column position is calculated dynamically we need to
             // set the minimum origin manually
-            int newMinOriginX = this.selectionLayer
-                    .getStartXOfColumnPosition(getNumberOfLeftColumns());
+            int newMinOriginX = this.selectionLayer.getStartXOfColumnPosition(getNumberOfLeftColumns());
             this.viewportLayerRight.setMinimumOriginX(newMinOriginX);
 
             // create a CompositeLayer that contains both ViewportLayers
             CompositeLayer compositeLayer = new CompositeLayer(2, 1);
-            compositeLayer.setChildLayer("REGION_A", getViewportLayerLeft(), 0,
-                    0);
-            compositeLayer.setChildLayer("REGION_B", getViewportLayerRight(),
-                    1, 0);
+            compositeLayer.setChildLayer("REGION_A", getViewportLayerLeft(), 0, 0);
+            compositeLayer.setChildLayer("REGION_B", getViewportLayerRight(), 1, 0);
 
             // set the width of the left viewport to only showing 2 columns at
             // the same time
@@ -422,17 +392,16 @@ public class _5044_HorizontalSplitViewportGridExample extends
             // as the CompositeLayer is setting a IClientAreaProvider for the
             // composition
             // we need to set a special ClientAreaAdapter after the creation of
-            // the CompositeLayer
-            // to support split viewports
-            ClientAreaAdapter leftClientAreaAdapter = new ClientAreaAdapter(
-                    getViewportLayerLeft().getClientAreaProvider());
+            // the CompositeLayer to support split viewports
+            ClientAreaAdapter leftClientAreaAdapter =
+                    new ClientAreaAdapter(getViewportLayerLeft().getClientAreaProvider());
             leftClientAreaAdapter.setWidth(leftWidth);
             getViewportLayerLeft().setClientAreaProvider(leftClientAreaAdapter);
 
             // register configuration to avoid reordering of columns between the
             // split viewports
-            registerCommandHandler(new SplitViewportColumnReorderCommandHandler(
-                    getViewportLayerLeft()));
+            registerCommandHandler(
+                    new SplitViewportColumnReorderCommandHandler(getViewportLayerLeft()));
 
             setUnderlyingLayer(compositeLayer);
         }
@@ -480,16 +449,13 @@ public class _5044_HorizontalSplitViewportGridExample extends
 
         private ViewportLayer viewportLeft;
 
-        public SplitViewportColumnReorderCommandHandler(
-                ViewportLayer viewportLeft) {
+        public SplitViewportColumnReorderCommandHandler(ViewportLayer viewportLeft) {
             this.viewportLeft = viewportLeft;
         }
 
         @Override
         protected boolean doCommand(ColumnReorderCommand command) {
-            if ((command.getFromColumnPosition() < this.viewportLeft
-                    .getColumnCount()) != (command.getToColumnPosition() < this.viewportLeft
-                    .getColumnCount())) {
+            if ((command.getFromColumnPosition() < this.viewportLeft.getColumnCount()) != (command.getToColumnPosition() < this.viewportLeft.getColumnCount())) {
                 // Bail out if trying to reorder from region A to B or vice
                 // versa
                 return true;
@@ -515,10 +481,8 @@ public class _5044_HorizontalSplitViewportGridExample extends
                 int dragFromGridColumnPosition, int dragToGridColumnPosition) {
 
             if (((NatTable) natLayer).getCursor() == null) {
-                int fromColumnIndex = natLayer
-                        .getColumnIndexByPosition(dragFromGridColumnPosition);
-                int toColumnIndex = natLayer
-                        .getColumnIndexByPosition(dragToGridColumnPosition);
+                int fromColumnIndex = natLayer.getColumnIndexByPosition(dragFromGridColumnPosition);
+                int toColumnIndex = natLayer.getColumnIndexByPosition(dragToGridColumnPosition);
 
                 // ensure that dragging over split viewport borders is not
                 // allowed

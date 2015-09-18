@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._505_Selection;
 
@@ -34,9 +34,9 @@ import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -70,9 +70,6 @@ import org.eclipse.swt.widgets.Text;
 /**
  * Example showing how to use JFace ISelectionProvider with a NatTable grid
  * composition.
- *
- * @author Dirk Fauth
- *
  */
 public class _5054_SelectionProviderExample extends AbstractNatExample {
 
@@ -81,8 +78,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
     private boolean isFirstSelectionProvider = true;
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400,
-                new _5054_SelectionProviderExample());
+        StandaloneNatExampleRunner.run(600, 400, new _5054_SelectionProviderExample());
     }
 
     @Override
@@ -105,8 +101,8 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         propertyToLabelMap.put("lastName", "Lastname");
         propertyToLabelMap.put("firstName", "Firstname");
 
-        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
-                propertyNames);
+        IColumnPropertyAccessor<Person> columnPropertyAccessor =
+                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
 
         IRowIdAccessor<Person> rowIdAccessor = new IRowIdAccessor<Person>() {
             @Override
@@ -117,51 +113,52 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
 
         // create the first table
         // create the body layer stack
-        final IRowDataProvider<Person> firstBodyDataProvider = new ListDataProvider<Person>(
-                getSimpsonsList(), columnPropertyAccessor);
-        final DataLayer firstBodyDataLayer = new DataLayer(
-                firstBodyDataProvider);
-        final SelectionLayer firstSelectionLayer = new SelectionLayer(
-                firstBodyDataLayer);
-        ViewportLayer firstViewportLayer = new ViewportLayer(
-                firstSelectionLayer);
+        final IRowDataProvider<Person> firstBodyDataProvider =
+                new ListDataProvider<Person>(getSimpsonsList(), columnPropertyAccessor);
+        final DataLayer firstBodyDataLayer =
+                new DataLayer(firstBodyDataProvider);
+        final SelectionLayer firstSelectionLayer =
+                new SelectionLayer(firstBodyDataLayer);
+        ViewportLayer firstViewportLayer =
+                new ViewportLayer(firstSelectionLayer);
 
         // use a RowSelectionModel that will perform row selections and is able
         // to identify a row via unique ID
-        firstSelectionLayer.setSelectionModel(new RowSelectionModel<Person>(
-                firstSelectionLayer, firstBodyDataProvider, rowIdAccessor));
+        firstSelectionLayer.setSelectionModel(
+                new RowSelectionModel<Person>(
+                        firstSelectionLayer,
+                        firstBodyDataProvider,
+                        rowIdAccessor));
 
         // create the column header layer stack
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer firstColumnHeaderDataLayer = new DataLayer(
-                columnHeaderDataProvider);
-        ColumnHeaderLayer firstColumnHeaderLayer = new ColumnHeaderLayer(
-                firstColumnHeaderDataLayer, firstViewportLayer,
-                firstSelectionLayer);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer firstColumnHeaderDataLayer =
+                new DataLayer(columnHeaderDataProvider);
+        ColumnHeaderLayer firstColumnHeaderLayer =
+                new ColumnHeaderLayer(
+                        firstColumnHeaderDataLayer,
+                        firstViewportLayer,
+                        firstSelectionLayer);
 
         // register custom label styling to indicate if the table is active
-        firstColumnHeaderDataLayer
-                .setConfigLabelAccumulator(new IConfigLabelAccumulator() {
-                    @Override
-                    public void accumulateConfigLabels(LabelStack configLabels,
-                            int columnPosition, int rowPosition) {
-                        if (_5054_SelectionProviderExample.this.isFirstSelectionProvider) {
-                            configLabels.addLabelOnTop(ACTIVE_LABEL);
-                        }
-                    }
-                });
+        firstColumnHeaderDataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+            @Override
+            public void accumulateConfigLabels(
+                    LabelStack configLabels, int columnPosition, int rowPosition) {
+                if (_5054_SelectionProviderExample.this.isFirstSelectionProvider) {
+                    configLabels.addLabelOnTop(ACTIVE_LABEL);
+                }
+            }
+        });
 
         // set the region labels to make default configurations work, e.g.
         // selection
         CompositeLayer firstCompositeLayer = new CompositeLayer(1, 2);
-        firstCompositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                firstColumnHeaderLayer, 0, 0);
-        firstCompositeLayer.setChildLayer(GridRegion.BODY, firstViewportLayer,
-                0, 1);
+        firstCompositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, firstColumnHeaderLayer, 0, 0);
+        firstCompositeLayer.setChildLayer(GridRegion.BODY, firstViewportLayer, 0, 1);
 
-        final NatTable firstNatTable = new NatTable(panel, firstCompositeLayer,
-                false);
+        final NatTable firstNatTable = new NatTable(panel, firstCompositeLayer, false);
 
         firstNatTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         firstNatTable.addConfiguration(new ActiveTableStyleConfiguration());
@@ -175,52 +172,55 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
 
         // create the second table
         // create the body layer stack
-        final IRowDataProvider<Person> secondBodyDataProvider = new ListDataProvider<Person>(
-                getFlandersList(), columnPropertyAccessor);
-        final DataLayer secondBodyDataLayer = new DataLayer(
-                secondBodyDataProvider);
-        final SelectionLayer secondSelectionLayer = new SelectionLayer(
-                secondBodyDataLayer);
-        ViewportLayer secondViewportLayer = new ViewportLayer(
-                secondSelectionLayer);
+        final IRowDataProvider<Person> secondBodyDataProvider =
+                new ListDataProvider<Person>(getFlandersList(), columnPropertyAccessor);
+        final DataLayer secondBodyDataLayer =
+                new DataLayer(secondBodyDataProvider);
+        final SelectionLayer secondSelectionLayer =
+                new SelectionLayer(secondBodyDataLayer);
+        ViewportLayer secondViewportLayer =
+                new ViewportLayer(secondSelectionLayer);
 
         // use a RowSelectionModel that will perform row selections and is able
         // to identify a row via unique ID
-        secondSelectionLayer.setSelectionModel(new RowSelectionModel<Person>(
-                secondSelectionLayer, secondBodyDataProvider, rowIdAccessor));
+        secondSelectionLayer.setSelectionModel(
+                new RowSelectionModel<Person>(
+                        secondSelectionLayer,
+                        secondBodyDataProvider,
+                        rowIdAccessor));
 
         // create the column header layer stack
-        DataLayer secondColumnHeaderDataLayer = new DataLayer(
-                columnHeaderDataProvider);
-        ILayer secondColumnHeaderLayer = new ColumnHeaderLayer(
-                secondColumnHeaderDataLayer, secondViewportLayer,
-                secondSelectionLayer);
+        DataLayer secondColumnHeaderDataLayer =
+                new DataLayer(columnHeaderDataProvider);
+        ILayer secondColumnHeaderLayer =
+                new ColumnHeaderLayer(
+                        secondColumnHeaderDataLayer,
+                        secondViewportLayer,
+                        secondSelectionLayer);
 
         // register custom label styling to indicate if the table is active
-        secondColumnHeaderDataLayer
-                .setConfigLabelAccumulator(new IConfigLabelAccumulator() {
-                    @Override
-                    public void accumulateConfigLabels(LabelStack configLabels,
-                            int columnPosition, int rowPosition) {
-                        if (!_5054_SelectionProviderExample.this.isFirstSelectionProvider) {
-                            configLabels.addLabelOnTop(ACTIVE_LABEL);
-                        }
-                    }
-                });
+        secondColumnHeaderDataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+            @Override
+            public void accumulateConfigLabels(
+                    LabelStack configLabels, int columnPosition, int rowPosition) {
+                if (!_5054_SelectionProviderExample.this.isFirstSelectionProvider) {
+                    configLabels.addLabelOnTop(ACTIVE_LABEL);
+                }
+            }
+        });
 
         // set the region labels to make default configurations work, e.g.
         // selection
         CompositeLayer secondCompositeLayer = new CompositeLayer(1, 2);
-        secondCompositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                secondColumnHeaderLayer, 0, 0);
-        secondCompositeLayer.setChildLayer(GridRegion.BODY,
-                secondViewportLayer, 0, 1);
+        secondCompositeLayer.setChildLayer(
+                GridRegion.COLUMN_HEADER, secondColumnHeaderLayer, 0, 0);
+        secondCompositeLayer.setChildLayer(
+                GridRegion.BODY, secondViewportLayer, 0, 1);
 
-        final NatTable secondNatTable = new NatTable(panel,
-                secondCompositeLayer, false);
+        final NatTable secondNatTable =
+                new NatTable(panel, secondCompositeLayer, false);
 
-        secondNatTable
-                .addConfiguration(new DefaultNatTableStyleConfiguration());
+        secondNatTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         secondNatTable.addConfiguration(new ActiveTableStyleConfiguration());
         secondNatTable.configure();
 
@@ -231,31 +231,32 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         secondNatTable.addOverlayPainter(new NatTableBorderOverlayPainter());
 
         // set ISelectionProvider
-        final RowSelectionProvider<Person> selectionProvider = new RowSelectionProvider<Person>(
-                firstSelectionLayer, firstBodyDataProvider);
+        final RowSelectionProvider<Person> selectionProvider =
+                new RowSelectionProvider<Person>(
+                        firstSelectionLayer,
+                        firstBodyDataProvider);
 
         // add a listener to the selection provider, in an Eclipse application
-        // you would do this
-        // e.g. getSite().getPage().addSelectionListener()
-        selectionProvider
-                .addSelectionChangedListener(new ISelectionChangedListener() {
+        // you would do this e.g. getSite().getPage().addSelectionListener()
+        selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
 
-                    @Override
-                    public void selectionChanged(SelectionChangedEvent event) {
-                        log("Selection changed:");
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                log("Selection changed:");
 
-                        IStructuredSelection selection = (IStructuredSelection) event
-                                .getSelection();
-                        @SuppressWarnings("rawtypes")
-                        Iterator it = selection.iterator();
-                        while (it.hasNext()) {
-                            Person selected = (Person) it.next();
-                            log("  " + selected.getFirstName() + " "
-                                    + selected.getLastName());
-                        }
-                    }
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                @SuppressWarnings("rawtypes")
+                Iterator it = selection.iterator();
+                while (it.hasNext()) {
+                    Person selected = (Person) it.next();
+                    log("  "
+                            + selected.getFirstName()
+                            + " "
+                            + selected.getLastName());
+                }
+            }
 
-                });
+        });
 
         // layout widgets
         GridDataFactory.fillDefaults().grab(true, true).applyTo(firstNatTable);
@@ -264,8 +265,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         // add a region for buttons
         Composite buttonArea = new Composite(panel, SWT.NONE);
         buttonArea.setLayout(new RowLayout());
-        GridDataFactory.fillDefaults().grab(true, false).span(2, 1)
-                .applyTo(buttonArea);
+        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(buttonArea);
 
         // create a button to enable selection provider change
         Button button = new Button(buttonArea, SWT.PUSH);
@@ -273,18 +273,17 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                _5054_SelectionProviderExample.this.isFirstSelectionProvider = !_5054_SelectionProviderExample.this.isFirstSelectionProvider;
+                _5054_SelectionProviderExample.this.isFirstSelectionProvider =
+                        !_5054_SelectionProviderExample.this.isFirstSelectionProvider;
                 if (_5054_SelectionProviderExample.this.isFirstSelectionProvider) {
-                    selectionProvider.updateSelectionProvider(
-                            firstSelectionLayer, firstBodyDataProvider);
+                    selectionProvider.updateSelectionProvider(firstSelectionLayer, firstBodyDataProvider);
                 } else {
-                    selectionProvider.updateSelectionProvider(
-                            secondSelectionLayer, secondBodyDataProvider);
+                    selectionProvider.updateSelectionProvider(secondSelectionLayer, secondBodyDataProvider);
                 }
 
                 // refresh both tables to update the active rendering in the
-                // column header
-                // this is not necessary for updating the selection provider
+                // column header/ this is not necessary for updating the
+                // selection provider
                 firstNatTable.doCommand(new VisualRefreshCommand());
                 secondNatTable.doCommand(new VisualRefreshCommand());
             }
@@ -292,8 +291,7 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
 
         // add a log area to the example to show the log entries
         Text output = setupTextArea(panel);
-        GridDataFactory.fillDefaults().grab(true, true).span(2, 1)
-                .applyTo(output);
+        GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(output);
 
         return panel;
     }
@@ -301,16 +299,11 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
     private List<Person> getSimpsonsList() {
         List<Person> result = new ArrayList<Person>();
 
-        result.add(new Person(1, "Homer", "Simpson", Gender.MALE, true,
-                new Date()));
-        result.add(new Person(2, "Marge", "Simpson", Gender.FEMALE, true,
-                new Date()));
-        result.add(new Person(3, "Bart", "Simpson", Gender.MALE, false,
-                new Date()));
-        result.add(new Person(4, "Lisa", "Simpson", Gender.FEMALE, false,
-                new Date()));
-        result.add(new Person(5, "Maggie", "Simpson", Gender.FEMALE, false,
-                new Date()));
+        result.add(new Person(1, "Homer", "Simpson", Gender.MALE, true, new Date()));
+        result.add(new Person(2, "Marge", "Simpson", Gender.FEMALE, true, new Date()));
+        result.add(new Person(3, "Bart", "Simpson", Gender.MALE, false, new Date()));
+        result.add(new Person(4, "Lisa", "Simpson", Gender.FEMALE, false, new Date()));
+        result.add(new Person(5, "Maggie", "Simpson", Gender.FEMALE, false, new Date()));
 
         return result;
     }
@@ -318,14 +311,10 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
     private List<Person> getFlandersList() {
         List<Person> result = new ArrayList<Person>();
 
-        result.add(new Person(6, "Ned", "Flanders", Gender.MALE, true,
-                new Date()));
-        result.add(new Person(7, "Maude", "Flanders", Gender.FEMALE, true,
-                new Date()));
-        result.add(new Person(8, "Rod", "Flanders", Gender.MALE, false,
-                new Date()));
-        result.add(new Person(9, "Todd", "Flanders", Gender.MALE, false,
-                new Date()));
+        result.add(new Person(6, "Ned", "Flanders", Gender.MALE, true, new Date()));
+        result.add(new Person(7, "Maude", "Flanders", Gender.FEMALE, true, new Date()));
+        result.add(new Person(8, "Rod", "Flanders", Gender.MALE, false, new Date()));
+        result.add(new Person(9, "Todd", "Flanders", Gender.MALE, false, new Date()));
 
         return result;
     }
@@ -335,17 +324,23 @@ public class _5054_SelectionProviderExample extends AbstractNatExample {
         @Override
         public void configureRegistry(IConfigRegistry configRegistry) {
             IStyle style = new Style();
-            style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+            style.setAttributeValue(
+                    CellStyleAttributes.BACKGROUND_COLOR,
                     GUIHelper.COLOR_BLUE);
-            style.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+            style.setAttributeValue(
+                    CellStyleAttributes.FOREGROUND_COLOR,
                     GUIHelper.COLOR_WHITE);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.NORMAL,
                     ACTIVE_LABEL);
 
             configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, style, DisplayMode.SELECT,
+                    CellConfigAttributes.CELL_STYLE,
+                    style,
+                    DisplayMode.SELECT,
                     ACTIVE_LABEL);
         }
     }

@@ -8,16 +8,11 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.test.fixture.data;
+package org.eclipse.nebula.widgets.nattable.dataset.fixture.data;
 
-import static org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture.PRICING_MANUAL;
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.getRandomDate;
+import static org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture.PRICING_MANUAL;
 
-import java.io.Serializable;
 import java.util.Date;
-
-import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 /**
  * Duplicated from the {@link RowDataListFixture} as the overriden hashcode and
@@ -68,13 +63,6 @@ public class RowGroupDataFixture {
     public double field38;
     public double field39;
     public double field40;
-
-    public static final IRowIdAccessor<RowGroupDataFixture> rowIdAccessor = new IRowIdAccessor<RowGroupDataFixture>() {
-        @Override
-        public Serializable getRowId(RowGroupDataFixture rowObject) {
-            return rowObject.getSecurity_description();
-        }
-    };
 
     public RowGroupDataFixture(String security_id, String security_description,
             String rating, Date issue_date, PricingTypeBean pricing_type,
@@ -150,8 +138,8 @@ public class RowGroupDataFixture {
     public static RowGroupDataFixture getInstance(String descrition,
             String rating) {
         return new RowGroupDataFixture(
-                "US" + ObjectUtils.getRandomNumber(1000), descrition, rating,
-                getRandomDate(), PRICING_MANUAL, 1.000, 10, 1000, true, 1.00,
+                "US" + RowDataFixture.getRandomNumber(1000), descrition, rating,
+                RowDataFixture.getRandomDate(), PRICING_MANUAL, 1.000, 10, 1000, true, 1.00,
                 1.01, -.01, 1000, 1000, 1000D);
     }
 

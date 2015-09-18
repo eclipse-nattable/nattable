@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,9 +19,9 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -53,8 +53,7 @@ import org.eclipse.swt.widgets.Control;
 public class _5113_RowGroupingExample extends AbstractNatExample {
 
     public static void main(String[] args) {
-        StandaloneNatExampleRunner
-                .run(800, 400, new _5113_RowGroupingExample());
+        StandaloneNatExampleRunner.run(800, 400, new _5113_RowGroupingExample());
     }
 
     @Override
@@ -82,57 +81,57 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
-        // directly as body layer is also working.
-        IRowDataProvider<Person> bodyDataProvider = new DefaultBodyDataProvider<Person>(
-                getStaticPersonList(), propertyNames);
-        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        // AbstractIndexLayerTransform and setting the ViewportLayer as
+        // underlying layer. But in this case using the ViewportLayer directly
+        // as body layer is also working.
+        IRowDataProvider<Person> bodyDataProvider =
+                new DefaultBodyDataProvider<Person>(getStaticPersonList(), propertyNames);
+        DataLayer bodyDataLayer =
+                new DataLayer(bodyDataProvider);
 
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                bodyDataLayer);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                columnReorderLayer);
+        ColumnReorderLayer columnReorderLayer =
+                new ColumnReorderLayer(bodyDataLayer);
+        ColumnHideShowLayer columnHideShowLayer =
+                new ColumnHideShowLayer(columnReorderLayer);
 
-        RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(
-                columnHideShowLayer);
+        RowHideShowLayer rowHideShowLayer =
+                new RowHideShowLayer(columnHideShowLayer);
         RowGroupModel<Person> rowGroupModel = new RowGroupModel<Person>();
         rowGroupModel.setDataProvider(bodyDataProvider);
-        RowGroupExpandCollapseLayer<Person> rowExpandCollapseLayer = new RowGroupExpandCollapseLayer<Person>(
-                rowHideShowLayer, rowGroupModel);
+        RowGroupExpandCollapseLayer<Person> rowExpandCollapseLayer =
+                new RowGroupExpandCollapseLayer<Person>(rowHideShowLayer, rowGroupModel);
 
-        SelectionLayer selectionLayer = new SelectionLayer(
-                rowExpandCollapseLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        SelectionLayer selectionLayer =
+                new SelectionLayer(rowExpandCollapseLayer);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
         // Column header
 
-        DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DefaultColumnHeaderDataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                defaultColumnHeaderDataProvider);
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, viewportLayer, selectionLayer);
+        DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DefaultColumnHeaderDataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(defaultColumnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
         // Row header
 
-        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
+        DefaultRowHeaderDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
 
-        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer, false);
+        RowHeaderLayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer, false);
         rowHeaderLayer.addConfiguration(new RowHeaderConfiguration());
 
-        RowGroupHeaderLayer<Person> rowGroupHeaderLayer = new RowGroupHeaderLayer<Person>(
-                rowHeaderLayer, selectionLayer, rowGroupModel);
+        RowGroupHeaderLayer<Person> rowGroupHeaderLayer =
+                new RowGroupHeaderLayer<Person>(rowHeaderLayer, selectionLayer, rowGroupModel);
         rowGroupHeaderLayer.setColumnWidth(20);
 
         // Create a group of rows for the model.
-        RowGroup<Person> rowGroup = new RowGroup<Person>(rowGroupModel,
-                "Simpson", false);
+        RowGroup<Person> rowGroup = new RowGroup<Person>(rowGroupModel, "Simpson", false);
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(0));
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(1));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(2));
@@ -154,15 +153,16 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
         rowGroupModel.addRowGroup(rowGroup);
 
         // Corner
-        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                defaultColumnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer,
-                rowGroupHeaderLayer, columnHeaderLayer);
+        final DefaultCornerDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(defaultColumnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowGroupHeaderLayer, columnHeaderLayer);
 
         // Grid
-        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
-                rowGroupHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(viewportLayer, columnHeaderLayer, rowGroupHeaderLayer, cornerLayer);
 
         NatTable natTable = new NatTable(parent, gridLayer, false);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
@@ -179,38 +179,25 @@ public class _5113_RowGroupingExample extends AbstractNatExample {
         List<Person> result = new ArrayList<Person>();
 
         // create some persons
-        result.add(new Person(1, "Homer", "Simpson", Gender.MALE, true,
-                new Date()));
-        result.add(new Person(2, "Marge", "Simpson", Gender.FEMALE, true,
-                new Date()));
-        result.add(new Person(3, "Bart", "Simpson", Gender.MALE, false,
-                new Date()));
-        result.add(new Person(4, "Lisa", "Simpson", Gender.FEMALE, false,
-                new Date()));
-        result.add(new Person(5, "Maggie", "Simpson", Gender.FEMALE, false,
-                new Date()));
+        result.add(new Person(1, "Homer", "Simpson", Gender.MALE, true, new Date()));
+        result.add(new Person(2, "Marge", "Simpson", Gender.FEMALE, true, new Date()));
+        result.add(new Person(3, "Bart", "Simpson", Gender.MALE, false, new Date()));
+        result.add(new Person(4, "Lisa", "Simpson", Gender.FEMALE, false, new Date()));
+        result.add(new Person(5, "Maggie", "Simpson", Gender.FEMALE, false, new Date()));
 
-        result.add(new Person(6, "Ned", "Flanders", Gender.MALE, true,
-                new Date()));
-        result.add(new Person(7, "Maude", "Flanders", Gender.FEMALE, true,
-                new Date()));
-        result.add(new Person(8, "Rod", "Flanders", Gender.MALE, false,
-                new Date()));
-        result.add(new Person(9, "Todd", "Flanders", Gender.MALE, false,
-                new Date()));
+        result.add(new Person(6, "Ned", "Flanders", Gender.MALE, true, new Date()));
+        result.add(new Person(7, "Maude", "Flanders", Gender.FEMALE, true, new Date()));
+        result.add(new Person(8, "Rod", "Flanders", Gender.MALE, false, new Date()));
+        result.add(new Person(9, "Todd", "Flanders", Gender.MALE, false, new Date()));
 
-        result.add(new Person(10, "Timothy", "Lovejoy", Gender.MALE, true,
-                new Date()));
-        result.add(new Person(11, "Helen", "Lovejoy", Gender.FEMALE, true,
-                new Date()));
-        result.add(new Person(12, "Jessica", "Lovejoy", Gender.FEMALE, false,
-                new Date()));
+        result.add(new Person(10, "Timothy", "Lovejoy", Gender.MALE, true, new Date()));
+        result.add(new Person(11, "Helen", "Lovejoy", Gender.FEMALE, true, new Date()));
+        result.add(new Person(12, "Jessica", "Lovejoy", Gender.FEMALE, false, new Date()));
 
         return result;
     }
 
-    private class RowHeaderConfiguration extends
-            DefaultRowHeaderLayerConfiguration {
+    private class RowHeaderConfiguration extends DefaultRowHeaderLayerConfiguration {
         @Override
         protected void addRowHeaderUIBindings() {
             // We're suppressing the row resize bindings.

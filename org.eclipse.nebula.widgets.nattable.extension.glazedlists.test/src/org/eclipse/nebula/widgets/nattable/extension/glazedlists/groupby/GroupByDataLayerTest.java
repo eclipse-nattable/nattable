@@ -23,6 +23,8 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByComparator;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByConfigAttributes;
@@ -41,8 +43,6 @@ import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.test.data.Person;
-import org.eclipse.nebula.widgets.nattable.test.data.PersonService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -277,8 +277,7 @@ public class GroupByDataLayerTest {
                     assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(0));
                     assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(1));
                     assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(2));
-                }
-                else {
+                } else {
                     assertFalse("groupBy object label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));
                     assertFalse("groupBy column label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column));
                 }
@@ -317,8 +316,7 @@ public class GroupByDataLayerTest {
                         assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(2));
                         assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(3));
                         assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(4));
-                    }
-                    else {
+                    } else {
                         assertFalse("groupBy summary label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY));
                         assertFalse("groupBy summary column label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column));
 
@@ -327,8 +325,7 @@ public class GroupByDataLayerTest {
                         assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(1));
                         assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(2));
                     }
-                }
-                else {
+                } else {
                     assertFalse("groupBy object label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));
                     assertFalse("groupBy column label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column));
                     assertFalse("groupBy summary label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY));
@@ -373,8 +370,7 @@ public class GroupByDataLayerTest {
                             assertEquals(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column, stack.getLabels().get(3));
                             assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(4));
                             assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(5));
-                        }
-                        else {
+                        } else {
                             // respect the label order
                             assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column, stack.getLabels().get(0));
                             assertEquals(GroupByDataLayer.GROUP_BY_SUMMARY, stack.getLabels().get(1));
@@ -382,8 +378,7 @@ public class GroupByDataLayerTest {
                             assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(3));
                             assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(4));
                         }
-                    }
-                    else {
+                    } else {
                         assertFalse("groupBy summary label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY));
                         assertFalse("groupBy summary column label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + column));
 
@@ -392,8 +387,7 @@ public class GroupByDataLayerTest {
                         assertEquals(GroupByDataLayer.GROUP_BY_OBJECT, stack.getLabels().get(1));
                         assertEquals(ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + column, stack.getLabels().get(2));
                     }
-                }
-                else {
+                } else {
                     assertFalse("groupBy object label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT));
                     assertFalse("groupBy column label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + column));
                     assertFalse("groupBy summary label found", stack.hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY));

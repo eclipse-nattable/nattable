@@ -5,9 +5,9 @@ Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.test.performance
 Bundle-Version: 1.1.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: ca.odell.glazedlists,
- org.eclipse.nebula.widgets.nattable.test.fixture.data,
  org.eclipse.nebula.widgets.nattable,
  org.eclipse.nebula.widgets.nattable.data,
+ org.eclipse.nebula.widgets.nattable.dataset.fixture.data,
  org.eclipse.nebula.widgets.nattable.extension.glazedlists,
  org.eclipse.nebula.widgets.nattable.grid,
  org.eclipse.nebula.widgets.nattable.grid.data,

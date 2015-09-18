@@ -26,10 +26,10 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConv
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;

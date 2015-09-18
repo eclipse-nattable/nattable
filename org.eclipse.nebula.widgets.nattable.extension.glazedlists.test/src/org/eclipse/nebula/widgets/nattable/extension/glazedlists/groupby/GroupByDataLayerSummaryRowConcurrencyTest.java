@@ -22,10 +22,14 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByDataLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy.GroupByModel;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
@@ -33,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.summaryrow.FixedSummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummationSummaryProvider;
-import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +47,7 @@ import ca.odell.glazedlists.TransformedList;
 public class GroupByDataLayerSummaryRowConcurrencyTest {
 
     private FixedSummaryRowLayer summaryRowLayer;
+    private int calcCount = 0;
 
     class Value {
         int value;
@@ -127,6 +131,17 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
 
     @Test
     public void shouldCorrectlyCalculateSummaryValues() {
+
+        this.summaryRowLayer.addLayerListener(new ILayerListener() {
+
+            @Override
+            public synchronized void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof CellVisualChangeEvent) {
+                    GroupByDataLayerSummaryRowConcurrencyTest.this.calcCount++;
+                }
+            }
+        });
+
         assertNull(this.summaryRowLayer.getDataValueByPosition(0, 0));
         assertNull(this.summaryRowLayer.getDataValueByPosition(1, 0));
         assertNull(this.summaryRowLayer.getDataValueByPosition(2, 0));
@@ -139,11 +154,14 @@ public class GroupByDataLayerSummaryRowConcurrencyTest {
         assertNull(this.summaryRowLayer.getDataValueByPosition(9, 0));
         assertNull(this.summaryRowLayer.getDataValueByPosition(10, 0));
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (this.calcCount < 11) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
         assertEquals(55.0, this.summaryRowLayer.getDataValueByPosition(0, 0));
         assertEquals(55.0, this.summaryRowLayer.getDataValueByPosition(1, 0));
         assertEquals(55.0, this.summaryRowLayer.getDataValueByPosition(2, 0));

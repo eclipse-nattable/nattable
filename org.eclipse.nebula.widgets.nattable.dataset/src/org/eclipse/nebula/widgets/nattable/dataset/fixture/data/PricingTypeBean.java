@@ -8,10 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.data.stock;
-
-import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
-import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+package org.eclipse.nebula.widgets.nattable.dataset.fixture.data;
 
 /**
  * Bean representing the pricing type. Used as the canonical data source for the
@@ -27,29 +24,6 @@ public class PricingTypeBean implements Comparable<PricingTypeBean> {
     @Override
     public String toString() {
         return this.type;
-    }
-
-    /**
-     * Format: Items displayed in the Combo &lt;-&gt; Canonical value
-     */
-    public static IDisplayConverter getDisplayConverter() {
-        return new DisplayConverter() {
-            @Override
-            public Object canonicalToDisplayValue(Object canonicalValue) {
-                if (canonicalValue == null) {
-                    return null;
-                } else {
-                    return canonicalValue.toString().equals("MN") ? "Manual"
-                            : "Automatic";
-                }
-            }
-
-            @Override
-            public Object displayToCanonicalValue(Object displayValue) {
-                return displayValue.toString().equals("Manual") ? new PricingTypeBean(
-                        "MN") : new PricingTypeBean("AT");
-            }
-        };
     }
 
     @Override

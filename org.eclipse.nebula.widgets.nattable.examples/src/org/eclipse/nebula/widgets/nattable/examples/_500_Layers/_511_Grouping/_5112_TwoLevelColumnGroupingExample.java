@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._511_Grouping;
 
@@ -18,9 +18,9 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -49,15 +49,11 @@ import org.eclipse.swt.widgets.Control;
  * Simple example showing how to add the {@link ColumnGroupHeaderLayer} and the
  * {@link ColumnGroupGroupHeaderLayer} to the layer composition of a grid and
  * how to add the corresponding actions to the column header menu.
- *
- * @author Dirk Fauth
- *
  */
 public class _5112_TwoLevelColumnGroupingExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner
-                .run(new _5112_TwoLevelColumnGroupingExample());
+        StandaloneNatExampleRunner.run(new _5112_TwoLevelColumnGroupingExample());
     }
 
     @Override
@@ -93,43 +89,45 @@ public class _5112_TwoLevelColumnGroupingExample extends AbstractNatExample {
         propertyToLabelMap.put("favouriteFood", "Food");
         propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
-        IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(
-                propertyNames);
+        IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
 
         ColumnGroupModel columnGroupModel = new ColumnGroupModel();
         ColumnGroupModel sndColumnGroupModel = new ColumnGroupModel();
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
-        // directly as body layer is also working.
-        IDataProvider bodyDataProvider = new ListDataProvider<ExtendedPersonWithAddress>(
-                PersonService.getExtendedPersonsWithAddress(10),
-                columnPropertyAccessor);
-        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                bodyDataLayer);
-        ColumnGroupReorderLayer columnGroupReorderLayer = new ColumnGroupReorderLayer(
-                columnReorderLayer, columnGroupModel);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                columnGroupReorderLayer);
-        ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(
-                columnHideShowLayer, sndColumnGroupModel, columnGroupModel);
-        SelectionLayer selectionLayer = new SelectionLayer(
-                columnGroupExpandCollapseLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        // AbstractIndexLayerTransform and setting the ViewportLayer as
+        // underlying layer. But in this case using the ViewportLayer directly
+        // as body layer is also working.
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<ExtendedPersonWithAddress>(
+                        PersonService.getExtendedPersonsWithAddress(10),
+                        columnPropertyAccessor);
+        DataLayer bodyDataLayer =
+                new DataLayer(bodyDataProvider);
+        ColumnReorderLayer columnReorderLayer =
+                new ColumnReorderLayer(bodyDataLayer);
+        ColumnGroupReorderLayer columnGroupReorderLayer =
+                new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
+        ColumnHideShowLayer columnHideShowLayer =
+                new ColumnHideShowLayer(columnGroupReorderLayer);
+        ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
+                new ColumnGroupExpandCollapseLayer(columnHideShowLayer, sndColumnGroupModel, columnGroupModel);
+        SelectionLayer selectionLayer =
+                new SelectionLayer(columnGroupExpandCollapseLayer);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                viewportLayer, selectionLayer);
-        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
-                columnHeaderLayer, selectionLayer, columnGroupModel);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
+        ColumnGroupHeaderLayer columnGroupHeaderLayer =
+                new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer, columnGroupModel);
 
         // configure the column groups
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Person", 0, 1, 2, 3);
@@ -137,38 +135,36 @@ public class _5112_TwoLevelColumnGroupingExample extends AbstractNatExample {
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Facts", 8, 9, 10);
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Personal", 11, 12, 13);
         columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Person", 0, 1);
-        columnGroupHeaderLayer
-                .setStaticColumnIndexesByGroup("Address", 4, 5, 6);
+        columnGroupHeaderLayer.setStaticColumnIndexesByGroup("Address", 4, 5, 6);
         columnGroupHeaderLayer.setGroupUnbreakable(1);
 
-        ColumnGroupGroupHeaderLayer sndGroup = new ColumnGroupGroupHeaderLayer(
-                columnGroupHeaderLayer, selectionLayer, sndColumnGroupModel);
+        ColumnGroupGroupHeaderLayer sndGroup =
+                new ColumnGroupGroupHeaderLayer(columnGroupHeaderLayer, selectionLayer, sndColumnGroupModel);
 
-        sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4,
-                5, 6, 7);
-        sndGroup.addColumnsIndexesToGroup("Additional Information", 8, 9, 10,
-                11, 12, 13);
+        sndGroup.addColumnsIndexesToGroup("PersonWithAddress", 0, 1, 2, 3, 4, 5, 6, 7);
+        sndGroup.addColumnsIndexesToGroup("Additional Information", 8, 9, 10, 11, 12, 13);
 
         sndGroup.setStaticColumnIndexesByGroup("PersonWithAddress", 0, 1);
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                sndGroup);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, sndGroup);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(viewportLayer, sndGroup,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(viewportLayer, sndGroup, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *    Roman Flueckiger <roman.flueckiger@mac.com> - added example implementation for Bug 451486
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._511_Grouping;
@@ -22,9 +22,9 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.ExtendedPersonWithAddress;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -101,7 +101,8 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
         propertyToLabelMap.put("favouriteFood", "Food");
         propertyToLabelMap.put("favouriteDrinks", "Drinks");
 
-        IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
+        IColumnPropertyAccessor<ExtendedPersonWithAddress> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames);
 
         ColumnGroupModel columnGroupModel = new ColumnGroupModel();
 
@@ -110,20 +111,34 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
         // AbstractIndexLayerTransform and setting the ViewportLayer as
         // underlying layer. But in this case using the ViewportLayer
         // directly as body layer is also working.
-        IDataProvider bodyDataProvider = new ListDataProvider<ExtendedPersonWithAddress>(PersonService.getExtendedPersonsWithAddress(10), columnPropertyAccessor);
-        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
-        ColumnGroupReorderLayer columnGroupReorderLayer = new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnGroupReorderLayer);
-        ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer = new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
-        final SelectionLayer selectionLayer = new SelectionLayer(columnGroupExpandCollapseLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<ExtendedPersonWithAddress>(
+                        PersonService.getExtendedPersonsWithAddress(10),
+                        columnPropertyAccessor);
+        DataLayer bodyDataLayer =
+                new DataLayer(bodyDataProvider);
+        ColumnReorderLayer columnReorderLayer =
+                new ColumnReorderLayer(bodyDataLayer);
+        ColumnGroupReorderLayer columnGroupReorderLayer =
+                new ColumnGroupReorderLayer(columnReorderLayer, columnGroupModel);
+        ColumnHideShowLayer columnHideShowLayer =
+                new ColumnHideShowLayer(columnGroupReorderLayer);
+        ColumnGroupExpandCollapseLayer columnGroupExpandCollapseLayer =
+                new ColumnGroupExpandCollapseLayer(columnHideShowLayer, columnGroupModel);
+        final SelectionLayer selectionLayer =
+                new SelectionLayer(columnGroupExpandCollapseLayer);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
-        ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer, columnGroupModel);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
+        ColumnGroupHeaderLayer columnGroupHeaderLayer =
+                new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer, columnGroupModel);
 
         // configure the column groups
         columnGroupHeaderLayer.addColumnsIndexesToGroup("Person", 0, 1, 2, 3);
@@ -135,17 +150,24 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
         columnGroupHeaderLayer.setGroupUnbreakable(1);
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnGroupHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnGroupHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(viewportLayer, columnGroupHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(viewportLayer, columnGroupHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
@@ -159,7 +181,9 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 PopupMenuBuilder builder = super.createColumnHeaderMenu(natTable).withColumnChooserMenuItem();
-                builder.withEnabledState(PopupMenuBuilder.HIDE_COLUMN_MENU_ITEM_ID, new VisibleColumnsRemaining(selectionLayer));
+                builder.withEnabledState(
+                        PopupMenuBuilder.HIDE_COLUMN_MENU_ITEM_ID,
+                        new VisibleColumnsRemaining(selectionLayer));
                 return builder;
             }
         });
@@ -173,7 +197,12 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
         natTable.addConfiguration(new AbstractUiBindingConfiguration() {
             @Override
             public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-                uiBindingRegistry.registerFirstMouseDownBinding(new MouseEventMatcher(SWT.NONE, GridRegion.COLUMN_GROUP_HEADER, MouseEventMatcher.RIGHT_BUTTON), new PopupMenuAction(columnGroupHeaderMenu));
+                uiBindingRegistry.registerFirstMouseDownBinding(
+                        new MouseEventMatcher(
+                                SWT.NONE,
+                                GridRegion.COLUMN_GROUP_HEADER,
+                                MouseEventMatcher.RIGHT_BUTTON),
+                        new PopupMenuAction(columnGroupHeaderMenu));
             }
         });
 
@@ -192,8 +221,16 @@ public class _5111_ColumnGroupingExample extends AbstractNatExample {
         // });
 
         // Register column chooser
-        DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-                selectionLayer, columnHideShowLayer, columnHeaderLayer, columnHeaderDataLayer, columnGroupHeaderLayer, columnGroupModel, false, true);
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler =
+                new DisplayColumnChooserCommandHandler(
+                        selectionLayer,
+                        columnHideShowLayer,
+                        columnHeaderLayer,
+                        columnHeaderDataLayer,
+                        columnGroupHeaderLayer,
+                        columnGroupModel,
+                        false,
+                        true);
 
         viewportLayer.registerCommandHandler(columnChooserCommandHandler);
 

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -47,11 +47,11 @@ public class NatTableDataGenerator {
     public NatTableDataGenerator() {}
 
     private void initColumnDataTypes() {
-        columnDataTypes = new ArrayList<ColumnDataType>();
-        for (int i = 0; i < numCols; i++) {
+        this.columnDataTypes = new ArrayList<ColumnDataType>();
+        for (int i = 0; i < this.numCols; i++) {
             ColumnDataType dataType = ColumnDataType.values()[(int) (Math
                     .random() * ColumnDataType.values().length)];
-            columnDataTypes.add(dataType);
+            this.columnDataTypes.add(dataType);
         }
     }
 
@@ -59,19 +59,19 @@ public class NatTableDataGenerator {
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
             // first write the data types
-            for (int i = 0; i < columnDataTypes.size(); i++) {
-                ColumnDataType dataType = columnDataTypes.get(i);
+            for (int i = 0; i < this.columnDataTypes.size(); i++) {
+                ColumnDataType dataType = this.columnDataTypes.get(i);
                 out.write(dataType.toString());
-                out.write(i == columnDataTypes.size() - 1 ? "" : ",");
+                out.write(i == this.columnDataTypes.size() - 1 ? "" : ",");
             }
 
             out.newLine();
             String text = "Writing to " + fileName;
             int charsWritten = text.length();
             System.out.print(text);
-            for (int i = 0; i < numRows; i++) {
-                for (int j = 0; j < numCols; j++) {
-                    ColumnDataType dataType = columnDataTypes.get(j);
+            for (int i = 0; i < this.numRows; i++) {
+                for (int j = 0; j < this.numCols; j++) {
+                    ColumnDataType dataType = this.columnDataTypes.get(j);
                     ColumnValueBean<?> value = null;
                     switch (dataType) {
                         case STRING_DATA:
@@ -87,9 +87,9 @@ public class NatTableDataGenerator {
                             : value.getValue().toString();
                     stringValue = "".equals(stringValue) ? " " : stringValue;
                     out.write(stringValue);
-                    out.write(j == numCols - 1 ? "" : ",");
+                    out.write(j == this.numCols - 1 ? "" : ",");
                 }
-                if (i % numCols == 0) {
+                if (i % this.numCols == 0) {
                     System.out.print(".");
                     charsWritten++;
                 }
@@ -120,7 +120,7 @@ public class NatTableDataGenerator {
             String stringFromFile = bro.readLine();
             while (stringFromFile != null) // end of the file
             {
-                numRows++;
+                this.numRows++;
                 stringFromFile = bro.readLine(); // read next line
             }
             bro.close();
@@ -131,7 +131,7 @@ public class NatTableDataGenerator {
             ioexception.printStackTrace();
             System.exit(-1);
         }
-        numRows--; // first row contains the data types of the columns
+        this.numRows--; // first row contains the data types of the columns
     }
 
     public TableDataProvider loadData(final String fileName) {
@@ -140,9 +140,11 @@ public class NatTableDataGenerator {
         getNumRows(fileName);
 
         Object[][] tableData = null;
+        FileReader fro = null;
+        BufferedReader bro = null;
         try {
-            FileReader fro = new FileReader(fileName);
-            BufferedReader bro = new BufferedReader(fro);
+            fro = new FileReader(fileName);
+            bro = new BufferedReader(fro);
 
             // declare String variable and prime the read
             String stringFromFile = bro.readLine();
@@ -155,8 +157,8 @@ public class NatTableDataGenerator {
                 if (!columnDataTypesRead) {
                     columnDataTypesRead = true;
                     dataTypes = parseDataTypes(stringFromFile);
-                    numCols = dataTypes.size();
-                    tableData = new Object[numCols][numRows];
+                    this.numCols = dataTypes.size();
+                    tableData = new Object[this.numCols][this.numRows];
                 } else {
                     if (dataTypes == null || dataTypes.size() == 0)
                         throw new IllegalStateException(
@@ -169,18 +171,24 @@ public class NatTableDataGenerator {
                     System.out.print(".");
             }
             System.out.println("done");
-            bro.close();
         } catch (FileNotFoundException filenotfoundexxption) {
             System.out.println(fileName + ", does not exist");
             System.exit(-1);
-        }
-
-        catch (IOException ioexception) {
+        } catch (IOException ioexception) {
             ioexception.printStackTrace();
             System.exit(-1);
+        } finally {
+            if (bro != null) {
+                try {
+                    bro.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.exit(-1);
+                }
+            }
         }
 
-        return new TableDataProvider(tableData, numCols, numRows);
+        return new TableDataProvider(tableData, this.numCols, this.numRows);
     }
 
     private void addRow(Object[][] tableData, int curRow,
@@ -218,7 +226,7 @@ public class NatTableDataGenerator {
         private T value;
 
         public T getValue() {
-            return value;
+            return this.value;
         }
 
         public void setValue(T value) {
@@ -232,7 +240,7 @@ public class NatTableDataGenerator {
 
         @Override
         public Double getValue() {
-            return value;
+            return this.value;
         }
 
         @Override
@@ -247,7 +255,7 @@ public class NatTableDataGenerator {
 
         @Override
         public String getValue() {
-            return value;
+            return this.value;
         }
 
         @Override

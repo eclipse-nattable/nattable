@@ -16,13 +16,13 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Properties;
 
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortStatePersistor;
 import org.eclipse.nebula.widgets.nattable.sort.SortStatePersistor.SortState;
 import org.eclipse.nebula.widgets.nattable.test.fixture.SortModelFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.junit.Before;
 import org.junit.Test;

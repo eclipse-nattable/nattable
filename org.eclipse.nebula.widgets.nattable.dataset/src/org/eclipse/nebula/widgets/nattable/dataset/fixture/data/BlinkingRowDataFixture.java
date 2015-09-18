@@ -8,15 +8,12 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.test.fixture.data;
+package org.eclipse.nebula.widgets.nattable.dataset.fixture.data;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 
 /**
  * Bean wired with a property change listener for Glazed lists. See Glazed Lists
@@ -27,13 +24,6 @@ public class BlinkingRowDataFixture extends RowDataFixture {
 
     private PropertyChangeSupport support = new PropertyChangeSupport(this);
     private final PropertyChangeListener changeListener;
-
-    public static final IRowIdAccessor<BlinkingRowDataFixture> rowIdAccessor = new IRowIdAccessor<BlinkingRowDataFixture>() {
-        @Override
-        public Serializable getRowId(BlinkingRowDataFixture rowObject) {
-            return rowObject.getSecurity_description();
-        }
-    };
 
     public BlinkingRowDataFixture(PropertyChangeListener changeListener, RowDataFixture rowDataFixture) {
         super(rowDataFixture.getSecurity_id(),

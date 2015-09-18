@@ -14,6 +14,9 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.PricingTypeBean;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -24,8 +27,6 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.PricingTypeBean;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -153,7 +154,8 @@ public class BoxingStyleTest {
                                 cell.getDisplayMode(),
                                 cell.getConfigLabels().getLabels())
                         .getAttributeValue(
-                                CellStyleAttributes.VERTICAL_ALIGNMENT).name());
+                                CellStyleAttributes.VERTICAL_ALIGNMENT)
+                        .name());
     }
 
     @Test
@@ -162,12 +164,29 @@ public class BoxingStyleTest {
         IConfigRegistry configRegistry = new ConfigRegistry();
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
-                PricingTypeBean.getDisplayConverter());
+                new DisplayConverter() {
+
+                    @Override
+                    public Object canonicalToDisplayValue(Object canonicalValue) {
+                        if (canonicalValue == null) {
+                            return null;
+                        } else {
+                            return canonicalValue.toString().equals("MN") ? "Manual" : "Automatic";
+                        }
+                    }
+
+                    @Override
+                    public Object displayToCanonicalValue(Object displayValue) {
+                        return displayValue.toString().equals("Manual") ? new PricingTypeBean("MN") : new PricingTypeBean("AT");
+                    }
+
+                });
 
         NatTableFixture natTableFixture = new NatTableFixture(
                 new DefaultGridLayer(RowDataListFixture.getList(),
                         RowDataListFixture.getPropertyNames(),
-                        RowDataListFixture.getPropertyToLabelMap()), false);
+                        RowDataListFixture.getPropertyToLabelMap()),
+                false);
         natTableFixture.setConfigRegistry(configRegistry);
         natTableFixture.configure();
 

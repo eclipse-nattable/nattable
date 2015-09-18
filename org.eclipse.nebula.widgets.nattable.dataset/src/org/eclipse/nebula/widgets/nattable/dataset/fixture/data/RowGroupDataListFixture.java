@@ -8,10 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.test.fixture.data;
-
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.getRandomDate;
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.getRandomNumber;
+package org.eclipse.nebula.widgets.nattable.dataset.fixture.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,8 +68,7 @@ public class RowGroupDataListFixture {
     public static final String FIELD_39_PROP_NAME = "field39";
     public static final String FIELD_40_PROP_NAME = "field40";
 
-    public static final PricingTypeBean PRICING_MANUAL = new PricingTypeBean(
-            "MN");
+    public static final PricingTypeBean PRICING_MANUAL = new PricingTypeBean("MN");
     public static final PricingTypeBean PRICING_AUTO = new PricingTypeBean("AT");
 
     /**
@@ -81,54 +77,60 @@ public class RowGroupDataListFixture {
      */
     public static List<RowGroupDataFixture> getList() {
         List<RowGroupDataFixture> listFixture = new ArrayList<RowGroupDataFixture>();
-        listFixture.addAll(Arrays.asList(new RowGroupDataFixture("US"
-                + getRandomNumber(), "B Ford Motor", "a", new Date(),
-                PRICING_MANUAL, 4.7912, 20, 1500000, true, 6.75, 1.01, -7.03,
-                114000000, 2000000000, 5000000000D), new RowGroupDataFixture(
-                "ABC" + getRandomNumber(), "A Alphabet Co.", "AAA",
-                getRandomDate(), PRICING_AUTO, 1.23456, 10, 10000, true, 5.124,
-                .506, 1.233, 2000000, 50000000, 4500000),
-                new RowGroupDataFixture("US" + getRandomNumber(),
-                        "C General Electric Co", "B", getRandomDate(),
+        listFixture.addAll(Arrays.asList(
+                new RowGroupDataFixture("US"
+                        + RowDataFixture.getRandomNumber(), "B Ford Motor", "a", new Date(),
+                        PRICING_MANUAL, 4.7912, 20, 1500000, true, 6.75, 1.01, -7.03,
+                        114000000, 2000000000, 5000000000D),
+                new RowGroupDataFixture(
+                        "ABC" + RowDataFixture.getRandomNumber(), "A Alphabet Co.", "AAA",
+                        RowDataFixture.getRandomDate(), PRICING_AUTO, 1.23456, 10, 10000, true, 5.124,
+                        .506, 1.233, 2000000, 50000000, 4500000),
+                new RowGroupDataFixture("US" + RowDataFixture.getRandomNumber(),
+                        "C General Electric Co", "B", RowDataFixture.getRandomDate(),
                         PRICING_MANUAL, 10.1244, 30, 1500000, false, 30.74,
                         5.73, 1.62, 93350000, 142000000, 70000000),
-                new RowGroupDataFixture("US" + getRandomNumber(),
-                        "E Nissan Motor Co., Ltd.", "AA", getRandomDate(),
+                new RowGroupDataFixture("US" + RowDataFixture.getRandomNumber(),
+                        "E Nissan Motor Co., Ltd.", "AA", RowDataFixture.getRandomDate(),
                         PRICING_MANUAL, 7.7891, 50, 80000, true, 17.97, 5.59,
                         0.50, 489000, 250000000, 250000),
-                new RowGroupDataFixture("US" + getRandomNumber(),
-                        "D Toyota Motor Corp.", "aaa", getRandomDate(),
+                new RowGroupDataFixture("US" + RowDataFixture.getRandomNumber(),
+                        "D Toyota Motor Corp.", "aaa", RowDataFixture.getRandomDate(),
                         PRICING_MANUAL, 62.5789, 40, 450000, true, 104.40,
                         55.41, -2.85, 849000, 1242000000, 2000000),
-                new RowGroupDataFixture("US" + getRandomNumber(),
-                        "F Honda Motor Co., Ltd.", "aa", getRandomDate(),
+                new RowGroupDataFixture("US" + RowDataFixture.getRandomNumber(),
+                        "F Honda Motor Co., Ltd.", "aa", RowDataFixture.getRandomDate(),
                         PRICING_MANUAL, 23.7125, 60, 6500000, false, 36.29,
                         17.35, -21.83, 1050000, 53000000, 70000),
-                new RowGroupDataFixture("US" + getRandomNumber(),
-                        "G General Motors Corporation", "B-", getRandomDate(),
+                new RowGroupDataFixture("US" + RowDataFixture.getRandomNumber(),
+                        "G General Motors Corporation", "B-", RowDataFixture.getRandomDate(),
                         PRICING_MANUAL, 2.9811, 70, 2585000, true, 18.18, .27,
                         .110, 58714700, 25900000, 2800000),
-                new RowGroupDataFixture("US" + getRandomNumber(),
+                new RowGroupDataFixture("US" + RowDataFixture.getRandomNumber(),
                         "H Yahoo! Inc", "C", new Date(), PRICING_AUTO, 12.9811,
                         80, 99000, true, 26.86, 8.94, 0.00, 22000000,
-                        22740000000D, 14000000000D), new RowGroupDataFixture(
-                        "US" + getRandomNumber(), "I Microsoft", "BB",
-                        getRandomDate(), PRICING_AUTO, 22.5506, 90, 6250000,
+                        22740000000D, 14000000000D),
+                new RowGroupDataFixture(
+                        "US" + RowDataFixture.getRandomNumber(), "I Microsoft", "BB",
+                        RowDataFixture.getRandomDate(), PRICING_AUTO, 22.5506, 90, 6250000,
                         false, 29.57, 14.87, 1.74, 57000000, 196000000000D,
-                        80000000000D), new RowGroupDataFixture("US"
-                        + getRandomNumber(), "J Google Inc.", "AAA",
-                        getRandomDate(), PRICING_AUTO, 330.9315, 100, 8550000,
+                        80000000000D),
+                new RowGroupDataFixture("US"
+                        + RowDataFixture.getRandomNumber(), "J Google Inc.", "AAA",
+                        RowDataFixture.getRandomDate(), PRICING_AUTO, 330.9315, 100, 8550000,
                         true, 579.10, 247.30, 13.67, 3000000, 136000000000D,
-                        70000000000D), new RowGroupDataFixture("US"
-                        + getRandomNumber(), "K Research In Motion Limited",
-                        "AA", getRandomDate(), PRICING_MANUAL, 43.0311, 110,
+                        70000000000D),
+                new RowGroupDataFixture("US"
+                        + RowDataFixture.getRandomNumber(), "K Research In Motion Limited",
+                        "AA", RowDataFixture.getRandomDate(), PRICING_MANUAL, 43.0311, 110,
                         55000, true, 150.30, 44.23, 3.67, 587295, 51000000000D,
-                        0), new RowGroupDataFixture("US" + getRandomNumber(),
-                        "L Apple Inc.", "AAA", getRandomDate(), PRICING_AUTO,
+                        0),
+                new RowGroupDataFixture("US" + RowDataFixture.getRandomNumber(),
+                        "L Apple Inc.", "AAA", RowDataFixture.getRandomDate(), PRICING_AUTO,
                         102.4817, 120, 115000, false, 186.78, 78.20, 1.67,
                         17000000, 125000000000D, 14000000000D),
-                new RowGroupDataFixture("US" + getRandomNumber(),
-                        "M Nokia Corp.", "A-", getRandomDate(), PRICING_AUTO,
+                new RowGroupDataFixture("US" + RowDataFixture.getRandomNumber(),
+                        "M Nokia Corp.", "A-", RowDataFixture.getRandomDate(), PRICING_AUTO,
                         12.0500, 130, 315000, true, 28.34, 8.47, 1.08,
                         17390000, 58400000000D, 10000000000D)));
 

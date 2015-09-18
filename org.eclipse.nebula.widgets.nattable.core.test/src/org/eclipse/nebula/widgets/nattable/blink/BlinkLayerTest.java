@@ -14,20 +14,22 @@ import static org.junit.Assert.assertEquals;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.BlinkingRowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.BlinkingRowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
@@ -59,9 +61,18 @@ public class BlinkLayerTest {
         this.propertyChangeListener = getPropertyChangeListener();
 
         this.dataLayer = new DataLayer(this.listDataProvider);
-        this.layerUnderTest = new BlinkLayer<BlinkingRowDataFixture>(this.dataLayer,
-                this.listDataProvider, BlinkingRowDataFixture.rowIdAccessor,
-                columnPropertyAccessor, this.configRegistry);
+        this.layerUnderTest = new BlinkLayer<BlinkingRowDataFixture>(
+                this.dataLayer,
+                this.listDataProvider,
+                new IRowIdAccessor<BlinkingRowDataFixture>() {
+
+                    @Override
+                    public Serializable getRowId(BlinkingRowDataFixture rowObject) {
+                        return rowObject.getSecurity_id();
+                    }
+                },
+                columnPropertyAccessor,
+                this.configRegistry);
 
         this.layerUnderTest.blinkingEnabled = true;
 

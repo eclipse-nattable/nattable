@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._800_Integration;
 
@@ -32,14 +32,14 @@ import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person.Gender;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
 import org.eclipse.nebula.widgets.nattable.export.config.DefaultExportBindings;
@@ -79,16 +79,11 @@ import ca.odell.glazedlists.TransformedList;
 /**
  * Example showing a NatTable that contains a column header and a body layer. It
  * adds sorting, filtering, editing, copy, print and export features.
- *
- * @author Dirk Fauth
- *
  */
-public class _801_VerticalCompositionWithFeaturesExample extends
-        AbstractNatExample {
+public class _801_VerticalCompositionWithFeaturesExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400,
-                new _801_VerticalCompositionWithFeaturesExample());
+        StandaloneNatExampleRunner.run(600, 400, new _801_VerticalCompositionWithFeaturesExample());
     }
 
     @Override
@@ -120,8 +115,13 @@ public class _801_VerticalCompositionWithFeaturesExample extends
         GridDataFactory.fillDefaults().grab(false, false).applyTo(buttonPanel);
 
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = {
+                "firstName",
+                "lastName",
+                "gender",
+                "married",
+                "birthday"
+        };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -131,55 +131,64 @@ public class _801_VerticalCompositionWithFeaturesExample extends
         propertyToLabelMap.put("married", "Married");
         propertyToLabelMap.put("birthday", "Birthday");
 
-        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Person>(
-                propertyNames);
+        IColumnPropertyAccessor<Person> columnPropertyAccessor =
+                new ExtendedReflectiveColumnPropertyAccessor<Person>(propertyNames);
 
         List<Person> values = PersonService.getPersons(10);
         final EventList<Person> eventList = GlazedLists.eventList(values);
-        TransformedList<Person, Person> rowObjectsGlazedList = GlazedLists
-                .threadSafeList(eventList);
+        TransformedList<Person, Person> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
         // use the SortedList constructor with 'null' for the Comparator because
-        // the Comparator
-        // will be set by configuration
-        SortedList<Person> sortedList = new SortedList<Person>(
-                rowObjectsGlazedList, null);
+        // the Comparator will be set by configuration
+        SortedList<Person> sortedList = new SortedList<Person>(rowObjectsGlazedList, null);
         // wrap the SortedList with the FilterList
         FilterList<Person> filterList = new FilterList<Person>(sortedList);
 
-        IRowDataProvider<Person> bodyDataProvider = new ListDataProvider<Person>(
-                filterList, columnPropertyAccessor);
+        IRowDataProvider<Person> bodyDataProvider =
+                new ListDataProvider<Person>(filterList, columnPropertyAccessor);
         final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-        GlazedListsEventLayer<Person> eventLayer = new GlazedListsEventLayer<Person>(
-                bodyDataLayer, filterList);
-        final SelectionLayer selectionLayer = new SelectionLayer(eventLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        GlazedListsEventLayer<Person> eventLayer =
+                new GlazedListsEventLayer<Person>(bodyDataLayer, filterList);
+        final SelectionLayer selectionLayer =
+                new SelectionLayer(eventLayer);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
+
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
         // add sorting
-        SortHeaderLayer<Person> sortHeaderLayer = new SortHeaderLayer<Person>(
-                columnHeaderLayer, new GlazedListsSortModel<Person>(sortedList,
-                        columnPropertyAccessor, configRegistry,
-                        columnHeaderDataLayer), false);
+        SortHeaderLayer<Person> sortHeaderLayer =
+                new SortHeaderLayer<Person>(
+                        columnHeaderLayer,
+                        new GlazedListsSortModel<Person>(
+                                sortedList,
+                                columnPropertyAccessor,
+                                configRegistry,
+                                columnHeaderDataLayer),
+                        false);
 
         // add the filter row functionality
-        final FilterRowHeaderComposite<Person> filterRowHeaderLayer = new FilterRowHeaderComposite<Person>(
-                new DefaultGlazedListsFilterStrategy<Person>(filterList,
-                        columnPropertyAccessor, configRegistry),
-                sortHeaderLayer, columnHeaderDataProvider, configRegistry);
+        final FilterRowHeaderComposite<Person> filterRowHeaderLayer =
+                new FilterRowHeaderComposite<Person>(
+                        new DefaultGlazedListsFilterStrategy<Person>(
+                                filterList,
+                                columnPropertyAccessor,
+                                configRegistry),
+                        sortHeaderLayer,
+                        columnHeaderDataProvider,
+                        configRegistry);
 
         // set the region labels to make default configurations work, e.g.
         // editing, selection
         CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-                filterRowHeaderLayer, 0, 0);
+        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, filterRowHeaderLayer, 0, 0);
         compositeLayer.setChildLayer(GridRegion.BODY, viewportLayer, 0, 1);
 
         // add edit configurations
@@ -187,13 +196,13 @@ public class _801_VerticalCompositionWithFeaturesExample extends
         compositeLayer.addConfiguration(new DefaultEditBindings());
 
         // add print support
-        compositeLayer.registerCommandHandler(new PrintCommandHandler(
-                compositeLayer));
+        compositeLayer.registerCommandHandler(
+                new PrintCommandHandler(compositeLayer));
         compositeLayer.addConfiguration(new DefaultPrintBindings());
 
         // add excel export support
-        compositeLayer.registerCommandHandler(new ExportCommandHandler(
-                compositeLayer));
+        compositeLayer.registerCommandHandler(
+                new ExportCommandHandler(compositeLayer));
         compositeLayer.addConfiguration(new DefaultExportBindings());
 
         final NatTable natTable = new NatTable(gridPanel, compositeLayer, false);
@@ -217,23 +226,25 @@ public class _801_VerticalCompositionWithFeaturesExample extends
                 // birthday is never editable
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.CELL_EDITABLE_RULE,
-                        IEditableRule.NEVER_EDITABLE, DisplayMode.NORMAL,
+                        IEditableRule.NEVER_EDITABLE,
+                        DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
 
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.CELL_EDITOR,
-                        new ComboBoxCellEditor(Arrays.asList(Gender.FEMALE,
-                                Gender.MALE)), DisplayMode.NORMAL,
+                        new ComboBoxCellEditor(Arrays.asList(Gender.FEMALE, Gender.MALE)),
+                        DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
-                        getGenderBooleanConverter(), DisplayMode.NORMAL,
+                        getGenderBooleanConverter(),
+                        DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
 
                 configRegistry.registerConfigAttribute(
                         EditConfigAttributes.CELL_EDITOR,
-                        new ComboBoxCellEditor(Arrays.asList(Boolean.TRUE,
-                                Boolean.FALSE)), DisplayMode.NORMAL,
+                        new ComboBoxCellEditor(Arrays.asList(Boolean.TRUE, Boolean.FALSE)),
+                        DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
                 configRegistry.registerConfigAttribute(
                         CellConfigAttributes.DISPLAY_CONVERTER,
@@ -246,8 +257,8 @@ public class _801_VerticalCompositionWithFeaturesExample extends
 
         natTable.configure();
 
-        final RowSelectionProvider<Person> selectionProvider = new RowSelectionProvider<Person>(
-                selectionLayer, bodyDataProvider, false);
+        final RowSelectionProvider<Person> selectionProvider =
+                new RowSelectionProvider<Person>(selectionLayer, bodyDataProvider, false);
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
@@ -261,8 +272,7 @@ public class _801_VerticalCompositionWithFeaturesExample extends
                 if (natTable.getActiveCellEditor() != null) {
                     natTable.commitAndCloseActiveCellEditor();
                 }
-                Person item = (Person) ((IStructuredSelection) selectionProvider
-                        .getSelection()).getFirstElement();
+                Person item = (Person) ((IStructuredSelection) selectionProvider.getSelection()).getFirstElement();
                 eventList.remove(item);
             }
         });
@@ -289,8 +299,7 @@ public class _801_VerticalCompositionWithFeaturesExample extends
 
             @Override
             public Object displayToCanonicalValue(Object displayValue) {
-                Boolean displayBoolean = Boolean.valueOf(displayValue
-                        .toString());
+                Boolean displayBoolean = Boolean.valueOf(displayValue.toString());
                 return displayBoolean ? Gender.MALE : Gender.FEMALE;
             }
 

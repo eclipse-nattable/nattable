@@ -22,8 +22,8 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.person.SimplePerson;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.fixtures.Person;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.data.DummyColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
@@ -67,16 +67,16 @@ public class _001_Custom_styling_of_specific_cells extends AbstractNatExample {
 
     @Override
     public Control createExampleControl(Composite parent) {
-        List<Person> myList = new ArrayList<Person>();
+        List<SimplePerson> myList = new ArrayList<SimplePerson>();
         for (int i = 1; i <= 100; i++) {
-            myList.add(new Person(i, "Joe" + i, new Date()));
+            myList.add(new SimplePerson(i, "Joe" + i, new Date()));
         }
 
         String[] propertyNames = { "id", "name", "birthDate" };
 
-        IColumnPropertyAccessor<Person> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<Person>(
+        IColumnPropertyAccessor<SimplePerson> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<SimplePerson>(
                 propertyNames);
-        ListDataProvider<Person> listDataProvider = new ListDataProvider<Person>(
+        ListDataProvider<SimplePerson> listDataProvider = new ListDataProvider<SimplePerson>(
                 myList, columnPropertyAccessor);
         DefaultGridLayer gridLayer = new DefaultGridLayer(listDataProvider,
                 new DummyColumnHeaderDataProvider(listDataProvider));

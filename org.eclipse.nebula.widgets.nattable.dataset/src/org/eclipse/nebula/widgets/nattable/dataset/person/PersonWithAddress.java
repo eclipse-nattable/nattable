@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.data.person;
+package org.eclipse.nebula.widgets.nattable.dataset.person;
 
 import java.util.Date;
 
@@ -16,15 +16,25 @@ public class PersonWithAddress extends Person {
 
     private Address address;
 
-    public PersonWithAddress(int id, String firstName, String lastName,
-            Gender gender, boolean married, Date birthday, Address address) {
+    public PersonWithAddress(
+            int id,
+            String firstName,
+            String lastName,
+            Gender gender,
+            boolean married,
+            Date birthday,
+            Address address) {
         super(id, firstName, lastName, gender, married, birthday);
         this.address = address;
     }
 
     public PersonWithAddress(Person person, Address address) {
-        super(person.getId(), person.getFirstName(), person.getLastName(),
-                person.getGender(), person.isMarried(), person.getBirthday());
+        super(person.getId(),
+                person.getFirstName(),
+                person.getLastName(),
+                person.getGender(),
+                person.isMarried(),
+                person.getBirthday());
         this.address = address;
     }
 

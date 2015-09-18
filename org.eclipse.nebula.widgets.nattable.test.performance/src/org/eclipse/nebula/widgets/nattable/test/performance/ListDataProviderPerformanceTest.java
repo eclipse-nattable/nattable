@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -15,16 +15,17 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ca.odell.glazedlists.GlazedLists;
 
+@SuppressWarnings("deprecation")
 public class ListDataProviderPerformanceTest extends
         AbstractLayerPerformanceTest {
 
@@ -34,7 +35,7 @@ public class ListDataProviderPerformanceTest extends
         List<RowDataFixture> largeList = RowDataListFixture.getList(26000);
         Assert.assertTrue(largeList.size() > 25000);
 
-        layer = new DefaultGridLayer(largeList,
+        this.layer = new DefaultGridLayer(largeList,
                 RowDataListFixture.getPropertyNames(),
                 RowDataListFixture.getPropertyToLabelMap());
     }
@@ -57,7 +58,7 @@ public class ListDataProviderPerformanceTest extends
         IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
                 propertyNames, propertyToLabelMap);
 
-        layer = new DefaultGridLayer(glazedListsDataProvider,
+        this.layer = new DefaultGridLayer(glazedListsDataProvider,
                 columnHeaderDataProvider);
     }
 }

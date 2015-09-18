@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,23 +8,17 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.data.person;
+package org.eclipse.nebula.widgets.nattable.dataset.person;
 
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author Dirk Fauth
- *
- */
 public class ExtendedPersonWithAddress extends PersonWithAddress {
 
     private String password;
-    private String description;
     private List<String> favouriteFood;
     private List<String> favouriteDrinks;
     private int age;
-    private double money;
     private String filename;
 
     @SuppressWarnings("deprecation")
@@ -102,21 +96,6 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
     }
 
     /**
-     * @return the description
-     */
-    public String getDescription() {
-        return this.description;
-    }
-
-    /**
-     * @param description
-     *            the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
      * @return the age
      */
     public int getAge() {
@@ -129,21 +108,6 @@ public class ExtendedPersonWithAddress extends PersonWithAddress {
      */
     public void setAge(int age) {
         this.age = age;
-    }
-
-    /**
-     * @return the money
-     */
-    public double getMoney() {
-        return this.money;
-    }
-
-    /**
-     * @param money
-     *            the money to set
-     */
-    public void setMoney(double money) {
-        this.money = money;
     }
 
     /**

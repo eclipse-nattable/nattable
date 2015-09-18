@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._600_GlazedLists;
 
@@ -24,9 +24,9 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
@@ -62,9 +62,6 @@ import ca.odell.glazedlists.SortedList;
 /**
  * Example showing how to add the {@link SortHeaderLayer} to the layer
  * composition of a grid that is using GlazedList for sorting operations.
- *
- * @author Dirk Fauth
- *
  */
 public class _602_GlazedListsSortingExample extends AbstractNatExample {
 
@@ -104,74 +101,96 @@ public class _602_GlazedListsSortingExample extends AbstractNatExample {
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
+        // AbstractIndexLayerTransform and setting the ViewportLayer as
+        // underlying layer. But in this case using the ViewportLayer
         // directly as body layer is also working.
 
-        EventList<Person> persons = GlazedLists.eventList(PersonService
-                .getPersons(10));
-        SortedList<Person> sortedList = new SortedList<Person>(persons, null);
+        EventList<Person> persons =
+                GlazedLists.eventList(PersonService.getPersons(10));
+        SortedList<Person> sortedList =
+                new SortedList<Person>(persons, null);
 
-        IColumnPropertyAccessor<Person> accessor = new ReflectiveColumnPropertyAccessor<Person>(
-                propertyNames);
-        IDataProvider bodyDataProvider = new ListDataProvider<Person>(
-                sortedList, accessor);
-        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
+        IColumnPropertyAccessor<Person> accessor =
+                new ReflectiveColumnPropertyAccessor<Person>(propertyNames);
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<Person>(sortedList, accessor);
+        DataLayer bodyDataLayer =
+                new DataLayer(bodyDataProvider);
 
-        GlazedListsEventLayer<Person> eventLayer = new GlazedListsEventLayer<Person>(
-                bodyDataLayer, sortedList);
+        GlazedListsEventLayer<Person> eventLayer =
+                new GlazedListsEventLayer<Person>(bodyDataLayer, sortedList);
 
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                eventLayer);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                columnReorderLayer);
-        SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        ColumnReorderLayer columnReorderLayer =
+                new ColumnReorderLayer(eventLayer);
+        ColumnHideShowLayer columnHideShowLayer =
+                new ColumnHideShowLayer(columnReorderLayer);
+        SelectionLayer selectionLayer =
+                new SelectionLayer(columnHideShowLayer);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(
+                        columnHeaderDataLayer,
+                        viewportLayer,
+                        selectionLayer);
 
         // add default column labels to the label stack
         // need to be done on the column header data layer, otherwise the label
-        // stack does not
-        // contain the necessary labels at the time the comparator is searched
-        columnHeaderDataLayer
-                .setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        // stack does not contain the necessary labels at the time the
+        // comparator is searched
+        columnHeaderDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
         ConfigRegistry configRegistry = new ConfigRegistry();
 
         // add the SortHeaderLayer to the column header layer stack
         // as we use GlazedLists, we use the GlazedListsSortModel which
-        // delegates
-        // the sorting to the SortedList
-        final SortHeaderLayer<Person> sortHeaderLayer = new SortHeaderLayer<Person>(
-                columnHeaderLayer, new GlazedListsSortModel<Person>(sortedList,
-                        accessor, configRegistry, columnHeaderDataLayer));
+        // delegates the sorting to the SortedList
+        final SortHeaderLayer<Person> sortHeaderLayer =
+                new SortHeaderLayer<Person>(
+                        columnHeaderLayer,
+                        new GlazedListsSortModel<Person>(
+                                sortedList,
+                                accessor,
+                                configRegistry,
+                                columnHeaderDataLayer));
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(
+                        rowHeaderDataLayer,
+                        viewportLayer,
+                        selectionLayer);
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                sortHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(
+                        columnHeaderDataProvider,
+                        rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(
+                        cornerDataLayer,
+                        rowHeaderLayer,
+                        sortHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer,
-                rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(
+                        viewportLayer,
+                        sortHeaderLayer,
+                        rowHeaderLayer,
+                        cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
@@ -180,8 +199,7 @@ public class _602_GlazedListsSortingExample extends AbstractNatExample {
         natTable.setConfigRegistry(configRegistry);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration manually
+        // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         // override the default sort configuration and change the mouse bindings
         // to sort on a single click
@@ -198,29 +216,31 @@ public class _602_GlazedListsSortingExample extends AbstractNatExample {
                 configRegistry.registerConfigAttribute(
                         SortConfigAttributes.SORT_COMPARATOR,
                         new Comparator<String>() {
-                            @Override
-                            public int compare(String o1, String o2) {
+                    @Override
+                    public int compare(String o1, String o2) {
 
-                                // check the sort order
-                                boolean sortDesc = sortHeaderLayer
-                                        .getSortModel().getSortDirection(1)
-                                        .equals(SortDirectionEnum.DESC);
-                                if ("Simpson".equals(o1)
-                                        && !"Simpson".equals(o2)) {
-                                    return sortDesc ? 1 : -1;
-                                } else if (!"Simpson".equals(o1)
-                                        && "Simpson".equals(o2)) {
-                                    return sortDesc ? -1 : 1;
-                                }
-                                return o1.compareToIgnoreCase(o2);
-                            }
-                        }, DisplayMode.NORMAL,
+                        // check the sort order
+                        boolean sortDesc = sortHeaderLayer
+                                .getSortModel().getSortDirection(1)
+                                .equals(SortDirectionEnum.DESC);
+                        if ("Simpson".equals(o1)
+                                && !"Simpson".equals(o2)) {
+                            return sortDesc ? 1 : -1;
+                        } else if (!"Simpson".equals(o1)
+                                && "Simpson".equals(o2)) {
+                            return sortDesc ? -1 : 1;
+                        }
+                        return o1.compareToIgnoreCase(o2);
+                    }
+                },
+                        DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
 
                 // Register null comparator to disable sorting for gender column
                 configRegistry.registerConfigAttribute(
                         SortConfigAttributes.SORT_COMPARATOR,
-                        new NullComparator(), DisplayMode.NORMAL,
+                        new NullComparator(),
+                        DisplayMode.NORMAL,
                         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
             }
         });

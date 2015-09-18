@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers;
 
@@ -18,9 +18,9 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.columnChooser.command.DisplayColumnChooserCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
@@ -55,9 +55,6 @@ import org.eclipse.swt.widgets.Control;
  *
  * Also adds the functionality to manage NatTable states to proof that the
  * visibility states are stored and loaded correctly.
- *
- * @author Dirk Fauth
- *
  */
 public class _513_FreezeExample extends AbstractNatExample {
 
@@ -79,8 +76,12 @@ public class _513_FreezeExample extends AbstractNatExample {
         Composite panel = new Composite(parent, SWT.NONE);
 
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = {
+                "firstName",
+                "lastName",
+                "gender",
+                "married",
+                "birthday" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -92,59 +93,63 @@ public class _513_FreezeExample extends AbstractNatExample {
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
-        // directly as body layer is also working.
-        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
-                PersonService.getPersons(10), propertyNames);
-        DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                bodyDataLayer);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                columnReorderLayer);
-        final SelectionLayer selectionLayer = new SelectionLayer(
-                columnHideShowLayer);
-        final ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        // AbstractIndexLayerTransform and setting the ViewportLayer as
+        // underlying layer. But in this case using the ViewportLayer directly
+        // as body layer is also working.
+        IDataProvider bodyDataProvider =
+                new DefaultBodyDataProvider<Person>(
+                        PersonService.getPersons(10),
+                        propertyNames);
+        DataLayer bodyDataLayer =
+                new DataLayer(bodyDataProvider);
+        ColumnReorderLayer columnReorderLayer =
+                new ColumnReorderLayer(bodyDataLayer);
+        ColumnHideShowLayer columnHideShowLayer =
+                new ColumnHideShowLayer(columnReorderLayer);
+        final SelectionLayer selectionLayer =
+                new SelectionLayer(columnHideShowLayer);
+        final ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
-        final FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
-        final CompositeFreezeLayer compositeFreezeLayer = new CompositeFreezeLayer(
-                freezeLayer, viewportLayer, selectionLayer);
+        final FreezeLayer freezeLayer =
+                new FreezeLayer(selectionLayer);
+        final CompositeFreezeLayer compositeFreezeLayer =
+                new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, compositeFreezeLayer, selectionLayer);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, compositeFreezeLayer, selectionLayer);
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                compositeFreezeLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, compositeFreezeLayer, selectionLayer);
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // build the grid layer
-        GridLayer gridLayer = new GridLayer(compositeFreezeLayer,
-                columnHeaderLayer, rowHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(compositeFreezeLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
         // turn the auto configuration off as we want to add our header menu
         // configuration
         final NatTable natTable = new NatTable(panel, gridLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration manually
+        // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new DefaultFreezeGridBindings());
 
@@ -154,15 +159,16 @@ public class _513_FreezeExample extends AbstractNatExample {
             @Override
             protected PopupMenuBuilder createColumnHeaderMenu(NatTable natTable) {
                 return super.createColumnHeaderMenu(natTable)
-                        .withHideColumnMenuItem().withShowAllColumnsMenuItem()
-                        .withColumnChooserMenuItem();
+                        .withHideColumnMenuItem()
+                            .withShowAllColumnsMenuItem()
+                            .withColumnChooserMenuItem();
             }
 
             @Override
             protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
                 return super.createCornerMenu(natTable)
                         .withShowAllColumnsMenuItem()
-                        .withStateManagerMenuItemProvider();
+                            .withStateManagerMenuItemProvider();
             }
         });
         natTable.configure();
@@ -171,13 +177,17 @@ public class _513_FreezeExample extends AbstractNatExample {
         GridDataFactory.fillDefaults().grab(true, true).applyTo(panel);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
-        gridLayer
-                .registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                        natTable));
+        gridLayer.registerCommandHandler(
+                new DisplayPersistenceDialogCommandHandler(natTable));
 
-        DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-                selectionLayer, columnHideShowLayer, columnHeaderLayer,
-                columnHeaderDataLayer, null, null);
+        DisplayColumnChooserCommandHandler columnChooserCommandHandler =
+                new DisplayColumnChooserCommandHandler(
+                        selectionLayer,
+                        columnHideShowLayer,
+                        columnHeaderLayer,
+                        columnHeaderDataLayer,
+                        null,
+                        null);
         gridLayer.registerCommandHandler(columnChooserCommandHandler);
 
         return panel;

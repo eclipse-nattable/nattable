@@ -5,24 +5,19 @@ Bundle-SymbolicName: org.eclipse.nebula.widgets.nattable.extension.glazedlists.t
 Bundle-Version: 1.4.0.qualifier
 Fragment-Host: org.eclipse.nebula.widgets.nattable.extension.glazedlists
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit4
 Import-Package: org.eclipse.jface.viewers,
- org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow,
- org.eclipse.nebula.widgets.nattable.filterrow.command,
- org.eclipse.nebula.widgets.nattable.filterrow.event,
- org.eclipse.nebula.widgets.nattable.group,
- org.eclipse.nebula.widgets.nattable.hideshow,
- org.eclipse.nebula.widgets.nattable.hideshow.command,
- org.eclipse.nebula.widgets.nattable.hideshow.event,
- org.eclipse.nebula.widgets.nattable.reorder,
- org.eclipse.nebula.widgets.nattable.selection,
- org.eclipse.nebula.widgets.nattable.selection.command,
- org.eclipse.nebula.widgets.nattable.selection.config,
- org.eclipse.nebula.widgets.nattable.selection.event,
- org.eclipse.nebula.widgets.nattable.test.data,
- org.eclipse.nebula.widgets.nattable.test.fixture,
- org.eclipse.nebula.widgets.nattable.test.fixture.data,
+ org.eclipse.nebula.widgets.nattable.dataset.fixture.data;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.dataset.person;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.filterrow.event;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.group;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.reorder;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.selection;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.selection.command;version="1.4.0",
+ org.eclipse.nebula.widgets.nattable.selection.event;version="1.4.0",
  org.eclipse.nebula.widgets.nattable.test.fixture.layer,
  org.eclipse.nebula.widgets.nattable.test.integration,
- org.eclipse.nebula.widgets.nattable.viewport
+ org.eclipse.nebula.widgets.nattable.viewport;version="1.4.0",
+ org.hamcrest.core,
+ org.junit
 Bundle-Vendor: Eclipse Nebula NatTable
+Require-Bundle: ca.odell.glazedlists;bundle-version="1.9.0"

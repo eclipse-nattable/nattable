@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,8 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowGroupDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowGroupDataListFixture;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
@@ -37,8 +39,6 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultRowHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowGroupDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowGroupDataListFixture;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
@@ -62,69 +62,68 @@ public class _100_Row_groups extends AbstractNatExample {
         // Body
 
         String[] propertyNames = RowGroupDataListFixture.getPropertyNames();
-        Map<String, String> propertyToLabelMap = RowGroupDataListFixture
-                .getPropertyToLabelMap();
+        Map<String, String> propertyToLabelMap = RowGroupDataListFixture.getPropertyToLabelMap();
 
-        DefaultBodyDataProvider<RowGroupDataFixture> bodyDataProvider = new DefaultBodyDataProvider<RowGroupDataFixture>(
-                RowGroupDataListFixture.getList(2000), propertyNames);
+        DefaultBodyDataProvider<RowGroupDataFixture> bodyDataProvider =
+                new DefaultBodyDataProvider<RowGroupDataFixture>(RowGroupDataListFixture.getList(2000), propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
-        ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(
-                bodyDataLayer);
-        ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(
-                columnReorderLayer);
+        ColumnReorderLayer columnReorderLayer =
+                new ColumnReorderLayer(bodyDataLayer);
+        ColumnHideShowLayer columnHideShowLayer =
+                new ColumnHideShowLayer(columnReorderLayer);
 
-        RowHideShowLayer rowHideShowLayer = new RowHideShowLayer(
-                columnHideShowLayer);
-        RowGroupModel<RowGroupDataFixture> rowGroupModel = new RowGroupModel<RowGroupDataFixture>();
+        RowHideShowLayer rowHideShowLayer =
+                new RowHideShowLayer(columnHideShowLayer);
+        RowGroupModel<RowGroupDataFixture> rowGroupModel =
+                new RowGroupModel<RowGroupDataFixture>();
         rowGroupModel.setDataProvider(bodyDataProvider);
-        RowGroupExpandCollapseLayer<RowGroupDataFixture> rowExpandCollapseLayer = new RowGroupExpandCollapseLayer<RowGroupDataFixture>(
-                rowHideShowLayer, rowGroupModel);
+        RowGroupExpandCollapseLayer<RowGroupDataFixture> rowExpandCollapseLayer =
+                new RowGroupExpandCollapseLayer<RowGroupDataFixture>(rowHideShowLayer, rowGroupModel);
 
-        SelectionLayer selectionLayer = new SelectionLayer(
-                rowExpandCollapseLayer);
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        SelectionLayer selectionLayer =
+                new SelectionLayer(rowExpandCollapseLayer);
+        ViewportLayer viewportLayer =
+                new ViewportLayer(selectionLayer);
 
         // Column header
 
-        DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DefaultColumnHeaderDataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                defaultColumnHeaderDataProvider);
-        ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
-                columnHeaderDataLayer, viewportLayer, selectionLayer);
+        DefaultColumnHeaderDataProvider defaultColumnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DefaultColumnHeaderDataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(defaultColumnHeaderDataProvider);
+        ColumnHeaderLayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
         // Row header
 
-        DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
+        DefaultRowHeaderDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DefaultRowHeaderDataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
 
-        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer, false);
+        RowHeaderLayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer, false);
         rowHeaderLayer.addConfiguration(new RowHeaderConfiguration());
 
-        RowGroupHeaderLayer<RowGroupDataFixture> rowGroupHeaderLayer = new RowGroupHeaderLayer<RowGroupDataFixture>(
-                rowHeaderLayer, selectionLayer, rowGroupModel);
+        RowGroupHeaderLayer<RowGroupDataFixture> rowGroupHeaderLayer =
+                new RowGroupHeaderLayer<RowGroupDataFixture>(rowHeaderLayer, selectionLayer, rowGroupModel);
         rowGroupHeaderLayer.setColumnWidth(20);
 
         // Create a group of rows for the model.
-        RowGroup<RowGroupDataFixture> rowGroup = new RowGroup<RowGroupDataFixture>(
-                rowGroupModel, "Group 1", true);
+        RowGroup<RowGroupDataFixture> rowGroup =
+                new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 1", true);
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(1));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(2));
         rowGroupModel.addRowGroup(rowGroup);
 
-        rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 2",
-                true);
+        rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 2", true);
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(11));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(12));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(13));
         rowGroupModel.addRowGroup(rowGroup);
 
-        rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 3",
-                false);
+        rowGroup = new RowGroup<RowGroupDataFixture>(rowGroupModel, "Group 3", false);
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(18));
         rowGroup.addMemberRow(bodyDataProvider.getRowObject(19));
         rowGroup.addStaticMemberRow(bodyDataProvider.getRowObject(20));
@@ -132,15 +131,16 @@ public class _100_Row_groups extends AbstractNatExample {
 
         // Corner
 
-        final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                defaultColumnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer,
-                rowGroupHeaderLayer, columnHeaderLayer);
+        final DefaultCornerDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(defaultColumnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowGroupHeaderLayer, columnHeaderLayer);
 
         // Grid
-        GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayer,
-                rowGroupHeaderLayer, cornerLayer);
+        GridLayer gridLayer =
+                new GridLayer(viewportLayer, columnHeaderLayer, rowGroupHeaderLayer, cornerLayer);
 
         NatTable natTable = new NatTable(parent, gridLayer, false);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
@@ -150,8 +150,7 @@ public class _100_Row_groups extends AbstractNatExample {
         return natTable;
     }
 
-    private class RowHeaderConfiguration extends
-            DefaultRowHeaderLayerConfiguration {
+    private class RowHeaderConfiguration extends DefaultRowHeaderLayerConfiguration {
         @Override
         protected void addRowHeaderUIBindings() {
             // We're suppressing the row resize bindings.

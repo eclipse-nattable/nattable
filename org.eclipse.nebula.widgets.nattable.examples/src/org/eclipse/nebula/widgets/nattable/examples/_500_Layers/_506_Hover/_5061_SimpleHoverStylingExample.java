@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._500_Layers._506_Hover;
 
@@ -16,9 +16,9 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.Person;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
@@ -37,15 +37,11 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Simple example showing how to add the {@link HoverLayer} to a simple layer
  * composition.
- *
- * @author Dirk Fauth
- *
  */
 public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(600, 400,
-                new _5061_SimpleHoverStylingExample());
+        StandaloneNatExampleRunner.run(600, 400, new _5061_SimpleHoverStylingExample());
     }
 
     @Override
@@ -56,17 +52,22 @@ public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
     @Override
     public Control createExampleControl(Composite parent) {
         // property names of the Person class
-        String[] propertyNames = { "firstName", "lastName", "gender",
-                "married", "birthday" };
+        String[] propertyNames = {
+                "firstName",
+                "lastName",
+                "gender",
+                "married",
+                "birthday" };
 
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
-        // directly as body layer is also working.
-        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<Person>(
-                PersonService.getPersons(10), propertyNames);
+        // AbstractIndexLayerTransform and setting the ViewportLayer as
+        // underlying layer. But in this case using the ViewportLayer directly
+        // as body layer is also working.
+        IDataProvider bodyDataProvider =
+                new DefaultBodyDataProvider<Person>(
+                        PersonService.getPersons(10),
+                        propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
         HoverLayer hoverLayer = new HoverLayer(bodyDataLayer, false);
@@ -84,8 +85,7 @@ public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
         NatTable natTable = new NatTable(parent, viewportLayer, false);
 
         // as the autoconfiguration of the NatTable is turned off, we have to
-        // add the
-        // DefaultNatTableStyleConfiguration manually
+        // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
         // add the style configuration for hover
@@ -95,20 +95,24 @@ public class _5061_SimpleHoverStylingExample extends AbstractNatExample {
             public void configureRegistry(IConfigRegistry configRegistry) {
                 // style that is applied when cells are hovered
                 Style style = new Style();
-                style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                style.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
                         GUIHelper.COLOR_YELLOW);
 
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, style,
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
                         DisplayMode.HOVER);
 
                 // style that is applied when selected cells are hovered
                 style = new Style();
-                style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+                style.setAttributeValue(
+                        CellStyleAttributes.BACKGROUND_COLOR,
                         GUIHelper.COLOR_GREEN);
 
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, style,
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
                         DisplayMode.SELECT_HOVER);
             }
         });

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._700_AdditionalFunctions;
 
@@ -23,9 +23,9 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.dataset.NumberValues;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
-import org.eclipse.nebula.widgets.nattable.examples.data.NumberValues;
-import org.eclipse.nebula.widgets.nattable.examples.data.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.export.IExportFormatter;
@@ -63,11 +63,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
-/**
- *
- * @author Dirk Fauth
- *
- */
 public class _774_MultiExportExample extends AbstractNatExample {
 
     public static String COLUMN_ONE_LABEL = "ColumnOneLabel";
@@ -113,16 +108,14 @@ public class _774_MultiExportExample extends AbstractNatExample {
         propertyToLabelMap.put("married", "Married");
         propertyToLabelMap.put("birthday", "Birthday");
 
-        GridLayer grid = createGrid(propertyNames, propertyToLabelMap,
-                PersonService.getPersons(5));
+        GridLayer grid = createGrid(propertyNames, propertyToLabelMap, PersonService.getPersons(5));
         final NatTable natTable = new NatTable(gridPanel, grid, false);
 
         // add labels to show that alignment configurations are also exported
         // correctly
-        final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-                grid.getBodyLayer());
-        ((AbstractLayer) grid.getBodyLayer())
-                .setConfigLabelAccumulator(columnLabelAccumulator);
+        final ColumnOverrideLabelAccumulator columnLabelAccumulator =
+                new ColumnOverrideLabelAccumulator(grid.getBodyLayer());
+        ((AbstractLayer) grid.getBodyLayer()).setConfigLabelAccumulator(columnLabelAccumulator);
         columnLabelAccumulator.registerColumnOverrides(0, COLUMN_ONE_LABEL);
         columnLabelAccumulator.registerColumnOverrides(1, COLUMN_TWO_LABEL);
 
@@ -134,21 +127,27 @@ public class _774_MultiExportExample extends AbstractNatExample {
                 style.setAttributeValue(
                         CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                         HorizontalAlignmentEnum.LEFT);
-                style.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+                style.setAttributeValue(
+                        CellStyleAttributes.VERTICAL_ALIGNMENT,
                         VerticalAlignmentEnum.TOP);
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, style,
-                        DisplayMode.NORMAL, COLUMN_ONE_LABEL);
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
+                        DisplayMode.NORMAL,
+                        COLUMN_ONE_LABEL);
 
                 style = new Style();
                 style.setAttributeValue(
                         CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                         HorizontalAlignmentEnum.RIGHT);
-                style.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+                style.setAttributeValue(
+                        CellStyleAttributes.VERTICAL_ALIGNMENT,
                         VerticalAlignmentEnum.BOTTOM);
                 configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.CELL_STYLE, style,
-                        DisplayMode.NORMAL, COLUMN_TWO_LABEL);
+                        CellConfigAttributes.CELL_STYLE,
+                        style,
+                        DisplayMode.NORMAL,
+                        COLUMN_TWO_LABEL);
             }
         });
 
@@ -162,29 +161,33 @@ public class _774_MultiExportExample extends AbstractNatExample {
                         new HSSFExcelExporter());
 
                 configRegistry.registerConfigAttribute(
-                        ExportConfigAttributes.DATE_FORMAT, "dd.MM.yyyy");
+                        ExportConfigAttributes.DATE_FORMAT,
+                        "dd.MM.yyyy");
 
                 // register a custom formatter to the body of the grid
                 // you could also implement different formatter for different
                 // columns by using the label mechanism
                 configRegistry.registerConfigAttribute(
                         ExportConfigAttributes.EXPORT_FORMATTER,
-                        new ExampleExportFormatter(), DisplayMode.NORMAL,
+                        new ExampleExportFormatter(),
+                        DisplayMode.NORMAL,
                         GridRegion.BODY);
 
                 configRegistry.registerConfigAttribute(
                         ExportConfigAttributes.EXPORT_FORMATTER,
                         new IExportFormatter() {
+
                             @Override
-                            public Object formatForExport(ILayerCell cell,
-                                    IConfigRegistry configRegistry) {
+                            public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
                                 // simply return the data value which is an
                                 // integer for the row header
                                 // doing this avoids the default conversion to
                                 // string for export
                                 return cell.getDataValue();
                             }
-                        }, DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+                        },
+                        DisplayMode.NORMAL,
+                        GridRegion.ROW_HEADER);
             }
         });
 
@@ -211,13 +214,14 @@ public class _774_MultiExportExample extends AbstractNatExample {
         valuesToShow.add(createNumberValues());
         valuesToShow.add(createNumberValues());
 
-        final NatTable numberNatTable = new NatTable(gridPanel, createGrid(
-                numberPropertyNames, numberPropertyToLabelMap, valuesToShow),
-                false);
+        final NatTable numberNatTable =
+                new NatTable(
+                        gridPanel,
+                        createGrid(numberPropertyNames, numberPropertyToLabelMap, valuesToShow),
+                        false);
 
         // adding this configuration adds the styles and the painters to use
-        numberNatTable
-                .addConfiguration(new DefaultNatTableStyleConfiguration());
+        numberNatTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         numberNatTable.addConfiguration(new AbstractRegistryConfiguration() {
             @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
@@ -229,29 +233,30 @@ public class _774_MultiExportExample extends AbstractNatExample {
                         ExportConfigAttributes.EXPORT_FORMATTER,
                         new IExportFormatter() {
                             @Override
-                            public Object formatForExport(ILayerCell cell,
-                                    IConfigRegistry configRegistry) {
+                            public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
                                 // simply return the data value which is an
-                                // integer for the row header
-                                // doing this avoids the default conversion to
-                                // string for export
+                                // integer for the row header doing this avoids the
+                                // default conversion to string for export
                                 return cell.getDataValue();
                             }
-                        }, DisplayMode.NORMAL, GridRegion.BODY);
+                        },
+                        DisplayMode.NORMAL,
+                        GridRegion.BODY);
 
                 configRegistry.registerConfigAttribute(
                         ExportConfigAttributes.EXPORT_FORMATTER,
                         new IExportFormatter() {
-                            @Override
-                            public Object formatForExport(ILayerCell cell,
-                                    IConfigRegistry configRegistry) {
-                                // simply return the data value which is an
-                                // integer for the row header
-                                // doing this avoids the default conversion to
-                                // string for export
-                                return cell.getDataValue();
-                            }
-                        }, DisplayMode.NORMAL, GridRegion.ROW_HEADER);
+                    @Override
+                    public Object formatForExport(ILayerCell cell,
+                            IConfigRegistry configRegistry) {
+                        // simply return the data value which is an
+                        // integer for the row header doing this avoids the
+                        // default conversion to string for export
+                        return cell.getDataValue();
+                    }
+                },
+                        DisplayMode.NORMAL,
+                        GridRegion.ROW_HEADER);
             }
         });
 
@@ -267,8 +272,7 @@ public class _774_MultiExportExample extends AbstractNatExample {
                 export.put("Persons", natTable);
                 export.put("Numbers", numberNatTable);
                 new NatExporter(Display.getCurrent().getActiveShell())
-                        .exportMultipleNatTables(new HSSFExcelExporter(),
-                                export);
+                        .exportMultipleNatTables(new HSSFExcelExporter(), export);
             }
         });
 
@@ -279,42 +283,41 @@ public class _774_MultiExportExample extends AbstractNatExample {
             Map<String, String> propertyToLabelMap, List<T> values) {
         // build the body layer stack
         // Usually you would create a new layer stack by extending
-        // AbstractIndexLayerTransform and
-        // setting the ViewportLayer as underlying layer. But in this case using
-        // the ViewportLayer
-        // directly as body layer is also working.
-        IDataProvider bodyDataProvider = new DefaultBodyDataProvider<T>(values,
-                propertyNames);
+        // AbstractIndexLayerTransform and setting the ViewportLayer as
+        // underlying layer. But in this case using the ViewportLayer directly
+        // as body layer is also working.
+        IDataProvider bodyDataProvider =
+                new DefaultBodyDataProvider<T>(values, propertyNames);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
         SelectionLayer selectionLayer = new SelectionLayer(bodyDataLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         // build the column header layer
-        IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
-                propertyNames, propertyToLabelMap);
-        DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
-                columnHeaderDataProvider);
-        ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider columnHeaderDataProvider =
+                new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
+        DataLayer columnHeaderDataLayer =
+                new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+        ILayer columnHeaderLayer =
+                new ColumnHeaderLayer(columnHeaderDataLayer, viewportLayer, selectionLayer);
 
         // build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(
-                rowHeaderDataProvider);
-        ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer,
-                viewportLayer, selectionLayer);
+        IDataProvider rowHeaderDataProvider =
+                new DefaultRowHeaderDataProvider(bodyDataProvider);
+        DataLayer rowHeaderDataLayer =
+                new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        ILayer rowHeaderLayer =
+                new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, selectionLayer);
 
         // build the corner layer
-        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(
-                columnHeaderDataProvider, rowHeaderDataProvider);
-        DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-        ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer,
-                columnHeaderLayer);
+        IDataProvider cornerDataProvider =
+                new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        DataLayer cornerDataLayer =
+                new DataLayer(cornerDataProvider);
+        ILayer cornerLayer =
+                new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // build the grid layer
-        return new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer,
-                cornerLayer);
+        return new GridLayer(viewportLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
     }
 
     private NumberValues createNumberValues() {
@@ -329,8 +332,7 @@ public class _774_MultiExportExample extends AbstractNatExample {
 
     class ExampleExportFormatter implements IExportFormatter {
         @Override
-        public Object formatForExport(ILayerCell cell,
-                IConfigRegistry configRegistry) {
+        public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
             Object data = cell.getDataValue();
             if (data != null) {
                 try {

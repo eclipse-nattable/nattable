@@ -32,6 +32,8 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.validate.DataValidator;
 import org.eclipse.nebula.widgets.nattable.data.validate.DefaultNumericDataValidator;
 import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.PricingTypeBean;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.action.ToggleCheckBoxColumnAction;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
@@ -39,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
+import org.eclipse.nebula.widgets.nattable.examples.fixtures.PricingTypeBeanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
@@ -56,8 +59,6 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.PricingTypeBean;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.CellPainterMouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
@@ -307,7 +308,7 @@ public class EditableGridExample extends AbstractNatExample {
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
-                PricingTypeBean.getDisplayConverter(), DisplayMode.NORMAL,
+                new PricingTypeBeanDisplayConverter(), DisplayMode.NORMAL,
                 FORMAT_PRICING_TYPE_CONFIG_LABEL);
     }
 
@@ -518,7 +519,8 @@ public class EditableGridExample extends AbstractNatExample {
                             .getColumnIndexOfProperty(RowDataListFixture.BID_PRICE_PROP_NAME);
                     double bidPrice = ((Double) dataProvider.getDataValue(
                             indexOfBidPrice, rowIndex)).doubleValue();
-                    double askPrice = Double.valueOf(newValue.toString())
+                    double askPrice = Double
+                            .valueOf(newValue.toString())
                             .doubleValue();
                     return askPrice > bidPrice;
                 } catch (Exception ex) {

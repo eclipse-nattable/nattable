@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.SelectionExampleGridLayer;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
@@ -24,7 +25,6 @@ import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionLaye
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -34,8 +34,7 @@ public class Applying_style_to_a_cell extends AbstractNatExample {
     private static final String CELL_LABEL = "Cell_LABEL";
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner
-                .run(600, 400, new Applying_style_to_a_cell());
+        StandaloneNatExampleRunner.run(600, 400, new Applying_style_to_a_cell());
     }
 
     @Override
@@ -59,8 +58,8 @@ public class Applying_style_to_a_cell extends AbstractNatExample {
 
         // Label accumulator - adds labels to all cells with the given data
         // value
-        CellOverrideLabelAccumulator<RowDataFixture> cellLabelAccumulator = new CellOverrideLabelAccumulator<RowDataFixture>(
-                gridLayer.getBodyDataProvider());
+        CellOverrideLabelAccumulator<RowDataFixture> cellLabelAccumulator =
+                new CellOverrideLabelAccumulator<RowDataFixture>(gridLayer.getBodyDataProvider());
         cellLabelAccumulator.registerOverride("AAA", 2, CELL_LABEL);
 
         // Register your cell style, against the label applied to the cell
@@ -71,8 +70,7 @@ public class Applying_style_to_a_cell extends AbstractNatExample {
 
         // Register label accumulator
         bodyDataLayer.setConfigLabelAccumulator(cellLabelAccumulator);
-        gridLayer.getSelectionLayer().addConfiguration(
-                new DefaultSelectionLayerConfiguration());
+        gridLayer.getSelectionLayer().addConfiguration(new DefaultSelectionLayerConfiguration());
 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.setConfigRegistry(configRegistry);
@@ -83,21 +81,28 @@ public class Applying_style_to_a_cell extends AbstractNatExample {
 
     private void addColumnHighlight(IConfigRegistry configRegistry) {
         Style style = new Style();
-        style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        style.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 GUIHelper.COLOR_RED);
 
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, // attribute
-                                                                                // to
-                                                                                // apply
-                style, // value of the attribute
-                DisplayMode.NORMAL, // apply during normal rendering i.e not
-                                    // during selection or edit
-                CELL_LABEL); // apply the above for all cells with this label
+        configRegistry.registerConfigAttribute(
+                // attribute to apply
+                CellConfigAttributes.CELL_STYLE,
+                // value of the attribute
+                style,
+                // apply during normal rendering i.e not
+                // during selection or edit
+                DisplayMode.NORMAL,
+                // apply the above for all cells with this label
+                CELL_LABEL);
 
         // Override the selection style on the highlighted cells.
         // Note: This is achieved by specifying the display mode.
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                style, DisplayMode.SELECT, CELL_LABEL);
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                style,
+                DisplayMode.SELECT,
+                CELL_LABEL);
     }
 
 }

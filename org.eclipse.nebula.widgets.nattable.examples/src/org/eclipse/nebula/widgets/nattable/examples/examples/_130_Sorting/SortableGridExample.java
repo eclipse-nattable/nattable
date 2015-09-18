@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,8 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.NullComparator;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataFixture;
+import org.eclipse.nebula.widgets.nattable.dataset.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.PersistentNatExampleWrapper;
 import org.eclipse.nebula.widgets.nattable.examples.fixtures.GlazedListsGridLayer;
@@ -31,8 +33,6 @@ import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataFixture;
-import org.eclipse.nebula.widgets.nattable.test.fixture.data.RowDataListFixture;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.swt.widgets.Composite;
@@ -84,14 +84,16 @@ public class SortableGridExample extends AbstractNatExample {
      */
     @Override
     public Control createExampleControl(Composite parent) {
-        EventList<RowDataFixture> eventList = GlazedLists
-                .eventList(RowDataListFixture.getList());
+        EventList<RowDataFixture> eventList = GlazedLists.eventList(RowDataListFixture.getList());
         this.rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
         ConfigRegistry configRegistry = new ConfigRegistry();
-        GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer = new GlazedListsGridLayer<RowDataFixture>(
-                this.rowObjectsGlazedList, RowDataListFixture.getPropertyNames(),
-                RowDataListFixture.getPropertyToLabelMap(), configRegistry);
+        GlazedListsGridLayer<RowDataFixture> glazedListsGridLayer =
+                new GlazedListsGridLayer<RowDataFixture>(
+                        this.rowObjectsGlazedList,
+                        RowDataListFixture.getPropertyNames(),
+                        RowDataListFixture.getPropertyToLabelMap(),
+                        configRegistry);
 
         this.nattable = new NatTable(parent, glazedListsGridLayer, false);
 
@@ -99,11 +101,12 @@ public class SortableGridExample extends AbstractNatExample {
         this.nattable.addConfiguration(new DefaultNatTableStyleConfiguration());
 
         // Change the default sort key bindings. Note that 'auto configure' was
-        // turned off
-        // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
+        // turned off for the SortHeaderLayer (setup in the
+        // GlazedListsGridLayer)
         this.nattable.addConfiguration(new SingleClickSortConfiguration());
-        this.nattable.addConfiguration(getCustomComparatorConfiguration(glazedListsGridLayer
-                .getColumnHeaderLayerStack().getDataLayer()));
+        this.nattable.addConfiguration(
+                getCustomComparatorConfiguration(
+                        glazedListsGridLayer.getColumnHeaderLayerStack().getDataLayer()));
         this.nattable.addConfiguration(new DefaultSelectionStyleConfiguration());
 
         this.nattable.addConfiguration(new HeaderMenuConfiguration(this.nattable) {
@@ -117,12 +120,10 @@ public class SortableGridExample extends AbstractNatExample {
         this.nattable.configure();
 
         // add the DisplayPersistenceDialogCommandHandler with the created
-        // NatTable instance after configure()
-        // so all configuration and states are correctly applied before storing
-        // the default state
-        glazedListsGridLayer
-                .registerCommandHandler(new DisplayPersistenceDialogCommandHandler(
-                        this.nattable));
+        // NatTable instance after configure() so all configuration and states
+        // are correctly applied before storing the default state
+        glazedListsGridLayer.registerCommandHandler(
+                new DisplayPersistenceDialogCommandHandler(this.nattable));
         return this.nattable;
     }
 
@@ -131,44 +132,39 @@ public class SortableGridExample extends AbstractNatExample {
      * columnHeaderDataLayer - since, the SortHeaderLayer will resolve cell
      * labels with respect to its underlying layer i.e columnHeaderDataLayer
      */
-    private IConfiguration getCustomComparatorConfiguration(
-            final AbstractLayer columnHeaderDataLayer) {
+    private IConfiguration getCustomComparatorConfiguration(final AbstractLayer columnHeaderDataLayer) {
 
         return new AbstractRegistryConfiguration() {
 
             @Override
             public void configureRegistry(IConfigRegistry configRegistry) {
                 // Add label accumulator
-                ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(
-                        columnHeaderDataLayer);
-                columnHeaderDataLayer
-                        .setConfigLabelAccumulator(labelAccumulator);
+                ColumnOverrideLabelAccumulator labelAccumulator =
+                        new ColumnOverrideLabelAccumulator(columnHeaderDataLayer);
+                columnHeaderDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
                 // Register labels
-                labelAccumulator
-                        .registerColumnOverrides(
-                                RowDataListFixture
-                                        .getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
-                                CUSTOM_COMPARATOR_LABEL);
+                labelAccumulator.registerColumnOverrides(
+                        RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.RATING_PROP_NAME),
+                        CUSTOM_COMPARATOR_LABEL);
 
-                labelAccumulator
-                        .registerColumnOverrides(
-                                RowDataListFixture
-                                        .getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME),
-                                NO_SORT_LABEL);
+                labelAccumulator.registerColumnOverrides(
+                        RowDataListFixture.getColumnIndexOfProperty(RowDataListFixture.ASK_PRICE_PROP_NAME),
+                        NO_SORT_LABEL);
 
                 // Register custom comparator
                 configRegistry.registerConfigAttribute(
                         SortConfigAttributes.SORT_COMPARATOR,
-                        getCustomComparator(), DisplayMode.NORMAL,
+                        getCustomComparator(),
+                        DisplayMode.NORMAL,
                         CUSTOM_COMPARATOR_LABEL);
 
                 // Register null comparator to disable sort
-                configRegistry
-                        .registerConfigAttribute(
-                                SortConfigAttributes.SORT_COMPARATOR,
-                                new NullComparator(), DisplayMode.NORMAL,
-                                NO_SORT_LABEL);
+                configRegistry.registerConfigAttribute(
+                        SortConfigAttributes.SORT_COMPARATOR,
+                        new NullComparator(),
+                        DisplayMode.NORMAL,
+                        NO_SORT_LABEL);
             }
         };
     }

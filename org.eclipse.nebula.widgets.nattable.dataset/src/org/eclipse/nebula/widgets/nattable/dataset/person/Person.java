@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package org.eclipse.nebula.widgets.nattable.examples.data.person;
+package org.eclipse.nebula.widgets.nattable.dataset.person;
 
 import java.util.Date;
 
@@ -23,19 +23,43 @@ public class Person {
     private Gender gender;
     private boolean married;
     private Date birthday;
+    protected Double money;
+    protected String description;
 
     public Person(int id) {
         this.id = id;
     }
 
-    public Person(int id, String firstName, String lastName, Gender gender,
-            boolean married, Date birthday) {
+    public Person(
+            int id,
+            String firstName,
+            String lastName,
+            Gender gender,
+            boolean married,
+            Date birthday) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.married = married;
         this.birthday = birthday;
+    }
+
+    public Person(
+            int id,
+            String firstName,
+            String lastName,
+            Gender gender,
+            boolean married,
+            Date birthday,
+            Double money) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.married = married;
+        this.birthday = birthday;
+        this.money = money;
     }
 
     /**
@@ -118,5 +142,35 @@ public class Person {
      */
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    /**
+     * @return the money
+     */
+    public Double getMoney() {
+        return this.money;
+    }
+
+    /**
+     * @param money
+     *            the money to set
+     */
+    public void setMoney(Double money) {
+        this.money = money;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * @param description
+     *            the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
