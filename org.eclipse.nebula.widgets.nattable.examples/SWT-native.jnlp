@@ -2,8 +2,7 @@
 <!-- JNLP File for NatTable -->
 
 <jnlp spec="1.5+"
-      codebase="http://download.eclipse.org/nattable/webstart"
-      href="SWT-native.jnlp">
+      codebase="http://download.eclipse.org/nattable/webstart">
   <information> 
     <title>SWT-native</title> 
     <vendor>Eclipse</vendor>

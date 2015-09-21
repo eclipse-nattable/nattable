@@ -21,6 +21,5 @@
       <extension name="SWT-native" href="SWT-native.jnlp"/>
       <jar href="../releases/1.4.0/NatTableExamples.jar" main="true"/>
    </resources>
-   <update check="always" policy="always"/>
    <application-desc main-class="org.eclipse.nebula.widgets.nattable.examples.NatTableExamples"/>
 </jnlp> 
