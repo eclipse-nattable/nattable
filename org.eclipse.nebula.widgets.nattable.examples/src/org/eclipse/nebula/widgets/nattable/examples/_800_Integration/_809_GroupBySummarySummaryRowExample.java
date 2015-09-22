@@ -62,10 +62,13 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AbstractOverrider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
@@ -138,13 +141,13 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
     private int currentTheme = 1;
 
     public static void main(String[] args) throws Exception {
-        StandaloneNatExampleRunner.run(800, 600,
-                new _809_GroupBySummarySummaryRowExample());
+        StandaloneNatExampleRunner.run(800, 600, new _809_GroupBySummarySummaryRowExample());
     }
 
     @Override
     public String getDescription() {
-        return "This example shows the usage of the group by feature in conjunction with summary values of the groupings.";
+        return "This example shows the usage of the group by feature in "
+                + "conjunction with summary values of the groupings.";
     }
 
     @Override
@@ -157,8 +160,14 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         final ConfigRegistry configRegistry = new ConfigRegistry();
 
         // property names of the ExtendedPersonWithAddress class
-        String[] propertyNames = { "firstName", "lastName", "age", "money",
-                "married", "gender", "birthday" };
+        String[] propertyNames = {
+                "firstName",
+                "lastName",
+                "age",
+                "money",
+                "married",
+                "gender",
+                "birthday" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -522,6 +531,27 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
             }
         });
 
+        Button change = new Button(buttonPanel, SWT.PUSH);
+        change.setText("Change Content");
+        change.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                bodyLayerStack.getSortedList().getReadWriteLock().writeLock().lock();
+                try {
+                    // deactivate
+                    bodyLayerStack.getGlazedListsEventLayer().deactivate();
+                    // clear
+                    bodyLayerStack.getSortedList().clear();
+                    // addall
+                    bodyLayerStack.getSortedList().addAll(PersonService.getExtendedPersonsWithAddress(1000));
+                } finally {
+                    bodyLayerStack.getSortedList().getReadWriteLock().writeLock().unlock();
+                    // activate
+                    bodyLayerStack.getGlazedListsEventLayer().activate();
+                }
+            }
+        });
+
         return container;
     }
 
@@ -538,6 +568,8 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
         private final IDataProvider bodyDataProvider;
 
         private final GroupByDataLayer<T> bodyDataLayer;
+
+        private final GlazedListsEventLayer<T> glazedListsEventLayer;
 
         private final SelectionLayer selectionLayer;
 
@@ -566,11 +598,28 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
                     this.bodyDataLayer.getDataProvider();
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer =
+            this.glazedListsEventLayer =
                     new GlazedListsEventLayer<T>(this.bodyDataLayer, this.sortedList);
 
+            // NOTE:
+            // we need to tell the GroupByDataLayer to clear its cache if
+            // a IVisualChangeEvent occurs. This is necessary because the
+            // GlazedListsEventLayer transforms GlazedLists change events to
+            // NatTable change events and fires the event the layer stack
+            // upwards. But as it sits on top of the GroupByDataLayer, the
+            // GroupByDataLayer never gets informed about the change.
+            this.glazedListsEventLayer.addLayerListener(new ILayerListener() {
+
+                @Override
+                public void handleLayerEvent(ILayerEvent event) {
+                    if (event instanceof IVisualChangeEvent) {
+                        BodyLayerStack.this.bodyDataLayer.clearCache();
+                    }
+                }
+            });
+
             SummaryRowLayer summaryRowLayer =
-                    new SummaryRowLayer(glazedListsEventLayer, configRegistry, false);
+                    new SummaryRowLayer(this.glazedListsEventLayer, configRegistry, false);
 
             ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
             ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
@@ -606,6 +655,10 @@ public class _809_GroupBySummarySummaryRowExample extends AbstractNatExample {
 
         public GroupByDataLayer<T> getBodyDataLayer() {
             return this.bodyDataLayer;
+        }
+
+        public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+            return this.glazedListsEventLayer;
         }
 
         public GroupByModel getGroupByModel() {

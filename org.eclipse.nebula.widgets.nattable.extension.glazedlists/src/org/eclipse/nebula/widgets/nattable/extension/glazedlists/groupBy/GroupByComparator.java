@@ -164,30 +164,26 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
                                     result = comparator.compare(g1.getValue(), g2.getValue());
                                 }
 
-                                if ((isTreeColumn(sortColumnIndex) || summaryColumn)
+                                if ((isTreeColumn(sortColumnIndex) || (summaryColumn != null && summaryColumn))
                                         && this.sortModel.getSortDirection(sortColumnIndex).equals(SortDirectionEnum.DESC)) {
 
                                     result = result * -1;
                                 }
                             }
 
-                        }
-                        else {
+                        } else {
                             result = comparator.compare(g1.getValue(), g2.getValue());
                         }
 
                         return result;
                     }
-                }
-                else if (o1 instanceof GroupByObject
+                } else if (o1 instanceof GroupByObject
                         && !(o2 instanceof GroupByObject)) {
                     result = 1;
-                }
-                else if (!(o1 instanceof GroupByObject)
+                } else if (!(o1 instanceof GroupByObject)
                         && o2 instanceof GroupByObject) {
                     result = -1;
-                }
-                else {
+                } else {
                     // both values are not a GroupByObject so we need to sort by
                     // value to ensure the correct ordering for the tree
                     // structure
@@ -364,8 +360,7 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
 
                         if (last != null && last.getKey() == columnIndex) {
                             columnCache = groupBy.getValue();
-                        }
-                        else {
+                        } else {
                             columnCache = this.dataLayer.getDataValueByPosition(columnIndex, rowIndex, labelStack, false);
                         }
 
@@ -373,8 +368,7 @@ public class GroupByComparator<T> implements IGroupByComparator<T> {
                     }
                 }
             }
-        }
-        else {
+        } else {
             this.summaryColumnCache.put(columnIndex, false);
         }
 
