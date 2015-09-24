@@ -27,6 +27,8 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
     private final MouseModeEventHandler parentModeEventHandler;
     private final MouseEvent mouseDownEvent;
 
+    private boolean realDrag = false;
+
     public DragModeEventHandler(
             ModeSupport modeSupport,
             NatTable natTable,
@@ -44,6 +46,11 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
     @Override
     public void mouseMove(MouseEvent event) {
         this.dragMode.mouseMove(this.natTable, event);
+
+        if (!this.realDrag
+                && !MouseEventHelper.treatAsClick(this.mouseDownEvent, event)) {
+            this.realDrag = true;
+        }
     }
 
     @Override
@@ -54,7 +61,8 @@ public class DragModeEventHandler extends AbstractModeEventHandler {
         // Bug 379884
         // check if the drag operation started and ended within the same cell
         // in that case the registered click operation is executed also
-        if (MouseEventHelper.eventOnSameCell(this.natTable, this.mouseDownEvent, event)) {
+        if (!this.realDrag
+                && MouseEventHelper.eventOnSameCell(this.natTable, this.mouseDownEvent, event)) {
             this.parentModeEventHandler.mouseUp(event);
         }
     }
