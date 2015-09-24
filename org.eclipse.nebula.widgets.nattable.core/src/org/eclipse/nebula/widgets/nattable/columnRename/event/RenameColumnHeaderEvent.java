@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,15 +14,21 @@ import java.util.Arrays;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 
 public class RenameColumnHeaderEvent extends ColumnVisualChangeEvent {
 
-    public RenameColumnHeaderEvent(ColumnHeaderLayer columnHeaderLayer,
-            int columnPosition) {
-        super(columnHeaderLayer, PositionUtil.getRanges(Arrays.asList(Integer
-                .valueOf(columnPosition))));
+    /**
+     * @since 1.4
+     */
+    public RenameColumnHeaderEvent(ILayer layer, int columnPosition) {
+        super(layer, PositionUtil.getRanges(Arrays.asList(columnPosition)));
+    }
+
+    public RenameColumnHeaderEvent(ColumnHeaderLayer layer, int columnPosition) {
+        super(layer, PositionUtil.getRanges(Arrays.asList(columnPosition)));
     }
 
     // Copy constructor

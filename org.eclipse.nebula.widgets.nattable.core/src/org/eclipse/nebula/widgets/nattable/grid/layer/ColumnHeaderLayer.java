@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,16 +44,21 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
      * @param selectionLayer
      *            The selection layer required to respond to selection events
      */
-    public ColumnHeaderLayer(IUniqueIndexLayer baseLayer,
-            ILayer horizontalLayerDependency, SelectionLayer selectionLayer) {
+    public ColumnHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency,
+            SelectionLayer selectionLayer) {
+
         this(baseLayer, horizontalLayerDependency, selectionLayer, true);
     }
 
-    public ColumnHeaderLayer(IUniqueIndexLayer baseLayer,
-            ILayer horizontalLayerDependency, SelectionLayer selectionLayer,
+    public ColumnHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency,
+            SelectionLayer selectionLayer,
             boolean useDefaultConfiguration) {
-        this(baseLayer, horizontalLayerDependency, selectionLayer,
-                useDefaultConfiguration, null);
+
+        this(baseLayer, horizontalLayerDependency, selectionLayer, useDefaultConfiguration, null);
     }
 
     /**
@@ -70,10 +75,15 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
      *            The painter for this layer or <code>null</code> to use the
      *            painter of the base layer
      */
-    public ColumnHeaderLayer(IUniqueIndexLayer baseLayer,
-            ILayer horizontalLayerDependency, SelectionLayer selectionLayer,
-            boolean useDefaultConfiguration, ILayerPainter layerPainter) {
+    public ColumnHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency,
+            SelectionLayer selectionLayer,
+            boolean useDefaultConfiguration,
+            ILayerPainter layerPainter) {
+
         super(baseLayer, horizontalLayerDependency, baseLayer);
+
         if (selectionLayer == null) {
             throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
         }
@@ -84,8 +94,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
         this.renameColumnHelper = new RenameColumnHelper(this);
         registerPersistable(this.renameColumnHelper);
 
-        selectionLayer
-                .addLayerListener(new ColumnHeaderSelectionListener(this));
+        selectionLayer.addLayerListener(new ColumnHeaderSelectionListener(this));
         registerCommandHandlers();
 
         if (useDefaultConfiguration) {
@@ -95,12 +104,9 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 
     @Override
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-        int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(
-                this, columnPosition, this.selectionLayer);
-        String displayMode = super.getDisplayModeByPosition(columnPosition,
-                rowPosition);
-        if (this.selectionLayer
-                .isColumnPositionSelected(selectionLayerColumnPosition)) {
+        int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, this.selectionLayer);
+        String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
+        if (this.selectionLayer.isColumnPositionSelected(selectionLayerColumnPosition)) {
             if (DisplayMode.HOVER.equals(displayMode)) {
                 return DisplayMode.SELECT_HOVER;
             }
@@ -110,17 +116,12 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
-        LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition,
-                rowPosition);
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 
-        final int selectionLayerColumnPosition = LayerUtil
-                .convertColumnPosition(this, columnPosition, this.selectionLayer);
-        if (this.selectionLayer
-                .isColumnPositionFullySelected(selectionLayerColumnPosition)) {
-            labelStack
-                    .addLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
+        final int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, this.selectionLayer);
+        if (this.selectionLayer.isColumnPositionFullySelected(selectionLayerColumnPosition)) {
+            labelStack.addLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
         }
 
         return labelStack;
@@ -182,10 +183,8 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
         return this.renameColumnHelper.isColumnRenamed(columnIndex);
     }
 
-    public boolean renameColumnPosition(int columnPosition,
-            String customColumnName) {
-        boolean renamed = this.renameColumnHelper.renameColumnPosition(
-                columnPosition, customColumnName);
+    public boolean renameColumnPosition(int columnPosition, String customColumnName) {
+        boolean renamed = this.renameColumnHelper.renameColumnPosition(columnPosition, customColumnName);
         if (renamed) {
             fireLayerEvent(new RenameColumnHeaderEvent(this, columnPosition));
         }
@@ -193,10 +192,16 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     public boolean renameColumnIndex(int columnIndex, String customColumnName) {
-        boolean renamed = this.renameColumnHelper.renameColumnIndex(columnIndex,
-                customColumnName);
+        boolean renamed = this.renameColumnHelper.renameColumnIndex(columnIndex, customColumnName);
         if (renamed) {
-            fireLayerEvent(new RenameColumnHeaderEvent(this, columnIndex));
+            // search for the bottom layer in the horizontal dependency to
+            // create the event for index and correct layer
+            ILayer baseLayer = getHorizontalLayerDependency();
+            while (baseLayer.getUnderlyingLayerByPosition(0, 0) != null) {
+                baseLayer = baseLayer.getUnderlyingLayerByPosition(0, 0);
+            }
+
+            baseLayer.fireLayerEvent(new RenameColumnHeaderEvent(baseLayer, columnIndex));
         }
         return renamed;
     }
