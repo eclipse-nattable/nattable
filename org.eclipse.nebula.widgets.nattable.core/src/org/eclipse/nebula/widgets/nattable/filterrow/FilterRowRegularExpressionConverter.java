@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow;
 
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 
@@ -26,6 +27,19 @@ import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
  * for those wildcards, implement a custom converter that supports to mask the
  * icons or stick with the default regular expression syntax.
  * </p>
+ *
+ * <b><u>Note:</u></b><br>
+ * The {@link FilterRowRegularExpressionConverter} needs to be registered as
+ * {@link CellConfigAttributes#DISPLAY_CONVERTER}!
+ * 
+ * <pre>
+ * configRegistry.registerConfigAttribute(
+ *         CellConfigAttributes.DISPLAY_CONVERTER,
+ *         new FilterRowRegularExpressionConverter(),
+ *         DisplayMode.NORMAL,
+ *         FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+ *                 + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
+ * </pre>
  *
  * @since 1.4
  */

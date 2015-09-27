@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -38,6 +39,7 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEven
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowRegularExpressionConverter;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.filterrow.TextMatchingMode;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
@@ -257,6 +259,20 @@ public class _6031_GlazedListsFilterExample extends AbstractNatExample {
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR,
                     new FilterRowTextCellEditor(),
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    FilterRowConfigAttributes.TEXT_MATCHING_MODE,
+                    TextMatchingMode.REGULAR_EXPRESSION,
+                    DisplayMode.NORMAL,
+                    FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
+                            + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new FilterRowRegularExpressionConverter(),
                     DisplayMode.NORMAL,
                     FilterRowDataLayer.FILTER_ROW_COLUMN_LABEL_PREFIX
                             + DataModelConstants.FIRSTNAME_COLUMN_POSITION);
