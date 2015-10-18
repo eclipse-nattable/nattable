@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
@@ -461,8 +462,7 @@ public class NatCombo extends Composite {
                     } else {
                         showDropdownControl();
                     }
-                }
-                else {
+                } else {
                     showDropdownControl();
                 }
             }
@@ -1017,7 +1017,8 @@ public class NatCombo extends Composite {
             java.util.List<String> selectionList = Arrays.asList(selection);
             java.util.List<TableItem> selectedItems = new ArrayList<TableItem>();
             for (TableItem item : this.dropdownTable.getItems()) {
-                if (selectionList.contains(item.getText())) {
+                if (selectionList.contains(EditConstants.SELECT_ALL_ITEMS_VALUE)
+                        || selectionList.contains(item.getText())) {
                     selectedItems.add(item);
                     if (this.useCheckbox) {
                         item.setChecked(true);

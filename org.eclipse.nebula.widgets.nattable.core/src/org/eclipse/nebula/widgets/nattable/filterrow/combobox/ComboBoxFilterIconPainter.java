@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -30,9 +31,6 @@ import org.eclipse.swt.graphics.Image;
  * <li>comboImage - Image that is rendered if no filter is applied for that cell
  * </li>
  * </ul>
- *
- * @author Dirk Fauth
- *
  */
 public class ComboBoxFilterIconPainter extends ImagePainter {
 
@@ -79,12 +77,15 @@ public class ComboBoxFilterIconPainter extends ImagePainter {
      */
     public ComboBoxFilterIconPainter(
             IComboBoxDataProvider comboBoxDataProvider,
-            Image removeFilterImage, Image comboImage) {
+            Image removeFilterImage,
+            Image comboImage) {
         this.comboBoxDataProvider = comboBoxDataProvider;
-        this.removeFilterImage = removeFilterImage != null ? removeFilterImage
+        this.removeFilterImage = removeFilterImage != null
+                ? removeFilterImage
                 : GUIHelper.getImage("remove_filter"); //$NON-NLS-1$
-        this.comboImage = comboImage != null ? comboImage : GUIHelper
-                .getImage("down_2"); //$NON-NLS-1$
+        this.comboImage = comboImage != null
+                ? comboImage
+                : GUIHelper.getImage("down_2"); //$NON-NLS-1$
     }
 
     @SuppressWarnings("rawtypes")
@@ -94,9 +95,9 @@ public class ComboBoxFilterIconPainter extends ImagePainter {
         Object cellData = cell.getDataValue();
 
         Image result = null;
-        if (cellData instanceof Collection
-                && ((Collection) cellData).size() ==
-                this.comboBoxDataProvider.getValues(cell.getColumnIndex(), 0).size()) {
+        if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(cellData)
+                || (cellData instanceof Collection
+                        && ((Collection) cellData).size() == this.comboBoxDataProvider.getValues(cell.getColumnIndex(), 0).size())) {
             result = this.comboImage;
         } else {
             result = this.removeFilterImage;
