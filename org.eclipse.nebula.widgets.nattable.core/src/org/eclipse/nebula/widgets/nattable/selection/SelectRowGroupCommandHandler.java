@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *     Jonas Hugo <Jonas.Hugo@jeppesen.com>,
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - Use getters and setters for
  *         the markers of SelectionLayer instead of the fields.
+ *     Vincent Lorenzo <vincent.lorenzo@cea.fr> - Bug 478622
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -85,7 +86,7 @@ public class SelectRowGroupCommandHandler<T> extends
             }
         }
         this.selectionLayer.fireLayerEvent(new RowSelectionEvent(this.selectionLayer,
-                changedRows, rowPositionToMoveIntoViewport));
+                changedRows, rowPositionToMoveIntoViewport, withShiftMask, withControlMask));
     }
 
     private Set<Range> internalSelectRow(int columnPosition, int rowPosition,

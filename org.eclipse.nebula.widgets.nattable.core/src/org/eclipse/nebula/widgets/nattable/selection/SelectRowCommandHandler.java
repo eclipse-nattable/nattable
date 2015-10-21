@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *       Markus Wahl <Markus.Wahl@jeppesen.com> - Use getters and setters for
  *         the markers of SelectionLayer instead of the fields.
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 447259, 447261
+ *     Vincent Lorenzo <vincent.lorenzo@cea.fr> - Bug 478622
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
@@ -90,7 +91,7 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
         }
         this.selectionLayer.fireLayerEvent(
                 new RowSelectionEvent(
-                        this.selectionLayer, changedRows, rowPositionToMoveIntoViewport));
+                        this.selectionLayer, changedRows, rowPositionToMoveIntoViewport, withShiftMask, withControlMask));
     }
 
     /**
@@ -120,14 +121,11 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
             this.selectionLayer.selectRegion(0, rowPosition, Integer.MAX_VALUE, 1);
             this.selectionLayer.moveSelectionAnchor(columnPosition, rowPosition);
             changedRowRanges.add(new Range(rowPosition, rowPosition + 1));
-        }
-        else if (bothShiftAndControl(withShiftMask, withControlMask)) {
+        } else if (bothShiftAndControl(withShiftMask, withControlMask)) {
             changedRowRanges.add(selectRowWithShiftKey(columnPosition, rowPosition));
-        }
-        else if (isShiftOnly(withShiftMask, withControlMask)) {
+        } else if (isShiftOnly(withShiftMask, withControlMask)) {
             changedRowRanges.add(selectRowWithShiftKey(columnPosition, rowPosition));
-        }
-        else if (isControlOnly(withShiftMask, withControlMask)) {
+        } else if (isControlOnly(withShiftMask, withControlMask)) {
             changedRowRanges.add(selectRowWithCtrlKey(columnPosition, rowPosition));
         }
 
@@ -165,15 +163,13 @@ public class SelectRowCommandHandler implements ILayerCommandHandler<SelectRowsC
                 for (int i = 0; i < selectedRows.length; i++) {
                     if (selectedRows[i] < rowPosition) {
                         toPos = selectedRows[i];
-                    }
-                    else {
+                    } else {
                         break;
                     }
                 }
                 this.selectionLayer.moveSelectionAnchor(columnPosition, toPos);
             }
-        }
-        else {
+        } else {
             // Preserve last selected region
             if (this.selectionLayer.getLastSelectedRegion() != null) {
                 this.selectionLayer.selectRegion(
