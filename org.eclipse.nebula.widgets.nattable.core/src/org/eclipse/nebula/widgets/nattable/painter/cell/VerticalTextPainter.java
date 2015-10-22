@@ -194,11 +194,15 @@ public class VerticalTextPainter extends AbstractTextPainter {
             }
 
             if (text != null && text.length() > 0) {
+                Transform originalTransform = new Transform(gc.getDevice());
+                gc.getTransform(originalTransform);
+
+                Transform transform = new Transform(gc.getDevice());
+                gc.getTransform(transform);
 
                 if (numberOfNewLines == 1) {
                     int contentWidth = Math.min(getLengthFromCache(gc, text), rectangle.height);
 
-                    Transform transform = new Transform(gc.getDevice());
                     if (!isRotateClockwise()) {
                         transform.rotate(-90f);
 
@@ -262,8 +266,6 @@ public class VerticalTextPainter extends AbstractTextPainter {
                     for (String line : lines) {
                         int lineContentWidth = Math.min(getLengthFromCache(gc, line), rectangle.height);
 
-                        Transform transform = new Transform(gc.getDevice());
-
                         if (!isRotateClockwise()) {
                             transform.rotate(-90f);
 
@@ -322,7 +324,14 @@ public class VerticalTextPainter extends AbstractTextPainter {
                     }
                 }
 
-                gc.setTransform(null);
+                gc.setTransform(originalTransform);
+
+                if (originalTransform != null) {
+                    originalTransform.dispose();
+                }
+                if (transform != null) {
+                    transform.dispose();
+                }
             }
 
             gc.setClipping(originalClipping);
