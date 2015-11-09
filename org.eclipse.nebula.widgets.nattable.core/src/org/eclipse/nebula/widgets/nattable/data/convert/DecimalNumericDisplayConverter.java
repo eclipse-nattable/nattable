@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Dirk Fauth and others.
+ * Copyright (c) 2014, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,31 +10,36 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
-
 import java.text.NumberFormat;
 
 /**
- * @author Dirk Fauth
- *
+ * Abstract base class for decimal converters.
  */
-public abstract class DecimalNumericDisplayConverter extends
-        NumericDisplayConverter {
+public abstract class DecimalNumericDisplayConverter extends NumericDisplayConverter {
 
+    /**
+     * Creates a converter that uses {@link NumberFormat}.
+     */
     public DecimalNumericDisplayConverter() {
-        this.nf.setMinimumFractionDigits(1);
-        this.nf.setMaximumFractionDigits(2);
+        this(true);
     }
 
-    @Override
-    public Object canonicalToDisplayValue(Object canonicalValue) {
-        try {
-            if (isNotNull(canonicalValue)) {
-                return this.nf.format(canonicalValue);
-            }
-            return null;
-        } catch (Exception e) {
-            return canonicalValue;
+    /**
+     * Creates a converter and allows to specify whether {@link NumberFormat}
+     * should be used or not.
+     *
+     * @param useNumberFormat
+     *            <code>true</code> if a {@link NumberFormat} should be used,
+     *            <code>false</code> if not.
+     * 
+     * @since 1.4
+     */
+    public DecimalNumericDisplayConverter(boolean useNumberFormat) {
+        if (useNumberFormat) {
+            this.nf.setMinimumFractionDigits(1);
+            this.nf.setMaximumFractionDigits(2);
+        } else {
+            this.nf = null;
         }
     }
 
@@ -49,7 +54,9 @@ public abstract class DecimalNumericDisplayConverter extends
      * @see NumberFormat#setMinimumFractionDigits(int)
      */
     public void setMinimumFractionDigits(int newValue) {
-        this.nf.setMinimumFractionDigits(newValue);
+        if (this.nf != null) {
+            this.nf.setMinimumFractionDigits(newValue);
+        }
     }
 
     /**
@@ -63,6 +70,8 @@ public abstract class DecimalNumericDisplayConverter extends
      * @see NumberFormat#setMaximumFractionDigits(int)
      */
     public void setMaximumFractionDigits(int newValue) {
-        this.nf.setMaximumFractionDigits(newValue);
+        if (this.nf != null) {
+            this.nf.setMaximumFractionDigits(newValue);
+        }
     }
 }

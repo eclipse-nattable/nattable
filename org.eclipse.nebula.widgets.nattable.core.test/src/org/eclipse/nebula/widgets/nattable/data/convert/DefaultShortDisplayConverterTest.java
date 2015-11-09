@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import org.junit.Test;
 
 public class DefaultShortDisplayConverterTest {
@@ -19,24 +23,22 @@ public class DefaultShortDisplayConverterTest {
 
     @Test
     public void testNonNullDataToDisplay() {
-        Assert.assertEquals("123",
-                this.shortConverter.canonicalToDisplayValue(Short.valueOf("123")));
+        assertEquals("123", this.shortConverter.canonicalToDisplayValue(Short.valueOf("123")));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertEquals(null, this.shortConverter.canonicalToDisplayValue(null));
+        assertEquals(null, this.shortConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
-        Assert.assertEquals(Short.valueOf("123"),
-                this.shortConverter.displayToCanonicalValue("123"));
+        assertEquals(Short.valueOf("123"), this.shortConverter.displayToCanonicalValue("123"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertEquals(null, this.shortConverter.displayToCanonicalValue(""));
+        assertEquals(null, this.shortConverter.displayToCanonicalValue(""));
     }
 
     @Test(expected = ConversionFailedException.class)
@@ -46,7 +48,25 @@ public class DefaultShortDisplayConverterTest {
 
     @Test(expected = ConversionFailedException.class)
     public void testConversionExceptionTooBig() {
-        short test = (Short) this.shortConverter.displayToCanonicalValue("32768");
-        System.out.println(test);
+        this.shortConverter.displayToCanonicalValue("32768");
+    }
+
+    @Test
+    public void testConvertLocalized() {
+        this.shortConverter.setNumberFormat(NumberFormat.getInstance(Locale.ENGLISH));
+        assertEquals(Short.valueOf("1234"), this.shortConverter.displayToCanonicalValue("1,234"));
+        assertEquals("1,234", this.shortConverter.canonicalToDisplayValue(Short.valueOf("1234")));
+    }
+
+    @Test
+    public void testConvertNonLocalized() {
+        this.shortConverter.setNumberFormat(null);
+        assertEquals("1234", this.shortConverter.canonicalToDisplayValue(Short.valueOf("1234")));
+    }
+
+    @Test
+    public void testFormatted() {
+        assertEquals(Short.valueOf("12345"), this.shortConverter.displayToCanonicalValue("12,345"));
+        assertEquals(Short.valueOf("12345"), this.shortConverter.displayToCanonicalValue("12.345"));
     }
 }

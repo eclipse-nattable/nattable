@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 public class DefaultByteDisplayConverterTest {
@@ -19,24 +20,22 @@ public class DefaultByteDisplayConverterTest {
 
     @Test
     public void testNonNullDataToDisplay() {
-        Assert.assertEquals("123",
-                this.byteConverter.canonicalToDisplayValue(Byte.valueOf("123")));
+        assertEquals("123", this.byteConverter.canonicalToDisplayValue(Byte.valueOf("123")));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertEquals(null, this.byteConverter.canonicalToDisplayValue(null));
+        assertEquals(null, this.byteConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
-        Assert.assertEquals(Byte.valueOf("123"),
-                this.byteConverter.displayToCanonicalValue("123"));
+        assertEquals(Byte.valueOf("123"), this.byteConverter.displayToCanonicalValue("123"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertEquals(null, this.byteConverter.displayToCanonicalValue(""));
+        assertEquals(null, this.byteConverter.displayToCanonicalValue(""));
     }
 
     @Test(expected = ConversionFailedException.class)

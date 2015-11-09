@@ -157,7 +157,7 @@ class TableEditConfiguration extends AbstractRegistryConfiguration {
                 new DefaultIntegerDisplayConverter(), DisplayMode.NORMAL);
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
-                new DefaultIntegerDisplayConverter(), DisplayMode.EDIT);
+                new DefaultIntegerDisplayConverter(false), DisplayMode.EDIT);
 
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.DATA_VALIDATOR, getExampleValidator(),

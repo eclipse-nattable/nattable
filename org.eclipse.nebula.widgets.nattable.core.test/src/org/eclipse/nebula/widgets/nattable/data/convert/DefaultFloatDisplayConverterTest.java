@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -37,28 +40,24 @@ public class DefaultFloatDisplayConverterTest {
 
     @Test
     public void testNonNullDataToDisplay() {
-        Assert.assertEquals("123.0",
-                this.floatConverter.canonicalToDisplayValue(Float.valueOf("123")));
-        Assert.assertEquals("23.5",
-                this.floatConverter.canonicalToDisplayValue(Float.valueOf("23.5")));
+        assertEquals("123.0", this.floatConverter.canonicalToDisplayValue(Float.valueOf("123")));
+        assertEquals("23.5", this.floatConverter.canonicalToDisplayValue(Float.valueOf("23.5")));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertNull(this.floatConverter.canonicalToDisplayValue(null));
+        assertNull(this.floatConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
-        Assert.assertEquals(Float.valueOf("123"),
-                this.floatConverter.displayToCanonicalValue("123"));
-        Assert.assertEquals(Float.valueOf("23.5"),
-                this.floatConverter.displayToCanonicalValue("23.5"));
+        assertEquals(Float.valueOf("123"), this.floatConverter.displayToCanonicalValue("123"));
+        assertEquals(Float.valueOf("23.5"), this.floatConverter.displayToCanonicalValue("23.5"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertNull(this.floatConverter.displayToCanonicalValue(""));
+        assertNull(this.floatConverter.displayToCanonicalValue(""));
     }
 
     @Test(expected = ConversionFailedException.class)
@@ -74,8 +73,7 @@ public class DefaultFloatDisplayConverterTest {
         localized.setMaximumFractionDigits(2);
 
         this.floatConverter.setNumberFormat(localized);
-        Assert.assertEquals("123,0",
-                this.floatConverter.canonicalToDisplayValue(Float.valueOf("123")));
+        assertEquals("123,0", this.floatConverter.canonicalToDisplayValue(Float.valueOf("123")));
 
         this.floatConverter.setNumberFormat(original);
     }
@@ -89,9 +87,28 @@ public class DefaultFloatDisplayConverterTest {
 
         this.floatConverter.setNumberFormat(localized);
         Object result = this.floatConverter.displayToCanonicalValue("123,5");
-        Assert.assertTrue(result instanceof Float);
-        Assert.assertEquals(123.5f, result);
+        assertTrue(result instanceof Float);
+        assertEquals(123.5f, result);
 
         this.floatConverter.setNumberFormat(original);
+    }
+
+    @Test
+    public void testConvertLocalized() {
+        this.floatConverter.setNumberFormat(NumberFormat.getInstance(Locale.ENGLISH));
+        assertEquals(Float.valueOf("1234.50"), this.floatConverter.displayToCanonicalValue("1,234.50"));
+        assertEquals("1,234.5", this.floatConverter.canonicalToDisplayValue(Float.valueOf("1234.50")));
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testFailConvertLocalized() {
+        this.floatConverter.setNumberFormat(null);
+        assertEquals(Float.valueOf("1234.50"), this.floatConverter.displayToCanonicalValue("1,234.50"));
+    }
+
+    @Test
+    public void testConvertNonLocalized() {
+        this.floatConverter.setNumberFormat(null);
+        assertEquals("1234.5", this.floatConverter.canonicalToDisplayValue(Float.valueOf("1234.50")));
     }
 }
