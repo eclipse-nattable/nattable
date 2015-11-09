@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
+import org.eclipse.nebula.widgets.nattable.resize.AutoResizeHelper;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
@@ -50,6 +51,11 @@ public class LayerPrinter {
     private final String footerDate;
 
     /**
+     * @since 1.4
+     */
+    protected boolean preRender = true;
+
+    /**
      *
      * @param layer
      *            The layer to print. Usually the top most layer in the layer
@@ -74,13 +80,13 @@ public class LayerPrinter {
      * @return The amount to scale the screen resolution by, to match the
      *         printer the resolution.
      */
-    private Point computeScaleFactor(Printer printer) {
+    private float[] computeScaleFactor(Printer printer) {
         Point screenDPI = Display.getDefault().getDPI();
         Point printerDPI = printer.getDPI();
 
-        int scaleFactorX = printerDPI.x / screenDPI.x;
-        int scaleFactorY = printerDPI.y / screenDPI.y;
-        return new Point(scaleFactorX, scaleFactorY);
+        float sfX = Float.valueOf(printerDPI.x) / Float.valueOf(screenDPI.x);
+        float sfY = Float.valueOf(printerDPI.y) / Float.valueOf(screenDPI.y);
+        return new float[] { sfX, sfY };
     }
 
     /**
@@ -102,10 +108,10 @@ public class LayerPrinter {
     private Point getPageCount(Printer printer) {
         Rectangle layerArea = getTotalArea();
         Rectangle printArea = computePrintArea(printer);
-        Point scaleFactor = computeScaleFactor(printer);
+        float[] scaleFactor = computeScaleFactor(printer);
 
-        int numOfHorizontalPages = layerArea.width / (printArea.width / scaleFactor.x);
-        int numOfVerticalPages = layerArea.height / (printArea.height / scaleFactor.y);
+        int numOfHorizontalPages = Float.valueOf(layerArea.width / (printArea.width / scaleFactor[0])).intValue();
+        int numOfVerticalPages = Float.valueOf(layerArea.height / (printArea.height / scaleFactor[1])).intValue();
 
         // Adjusting for 0 index
         return new Point(numOfHorizontalPages + 1, numOfVerticalPages + 1);
@@ -230,6 +236,27 @@ public class LayerPrinter {
     }
 
     /**
+     * Enable in-memory pre-rendering. This is necessary in case content
+     * painters are used that are configured for content based auto-resizing.
+     * 
+     * @since 1.4
+     */
+    public void enablePreRendering() {
+        this.preRender = true;
+    }
+
+    /**
+     * Disable in-memory pre-rendering. You should consider to disable
+     * pre-rendering if no content painters are used that are configured for
+     * content based auto-resizing.
+     * 
+     * @since 1.4
+     */
+    public void disablePreRendering() {
+        this.preRender = false;
+    }
+
+    /**
      * The job for printing the layer.
      */
     private class PrintJob implements Runnable {
@@ -248,6 +275,17 @@ public class LayerPrinter {
 
         @Override
         public void run() {
+            final float[] scaleFactor = computeScaleFactor(this.printer);
+
+            // if pre-rendering is enabled, render in-memory to trigger content
+            // based auto-resizing
+            if (LayerPrinter.this.preRender) {
+                Transform tempTransform = new Transform(this.printer);
+                tempTransform.scale(scaleFactor[0], scaleFactor[1]);
+                AutoResizeHelper.autoResize(LayerPrinter.this.layer, LayerPrinter.this.configRegistry);
+                tempTransform.dispose();
+            }
+
             if (this.printer.startJob("NatTable")) { //$NON-NLS-1$
                 try {
                     // if a SummaryRowLayer is in the layer stack, we need to
@@ -266,7 +304,6 @@ public class LayerPrinter {
                     setLayerSize(this.printer.getPrinterData());
 
                     final Rectangle printerClientArea = computePrintArea(this.printer);
-                    final Point scaleFactor = computeScaleFactor(this.printer);
                     final Point pageCount = getPageCount(this.printer);
                     GC gc = new GC(this.printer);
 
@@ -278,10 +315,10 @@ public class LayerPrinter {
 
                             // Calculate bounds for the next page
                             Rectangle printBounds = new Rectangle(
-                                    (printerClientArea.width / scaleFactor.x) * horizontalPageNumber,
-                                    ((printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor.y) * verticalPageNumber,
-                                    printerClientArea.width / scaleFactor.x,
-                                    (printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor.y);
+                                    Float.valueOf((printerClientArea.width / scaleFactor[0]) * horizontalPageNumber).intValue(),
+                                    Float.valueOf(((printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor[1]) * verticalPageNumber).intValue(),
+                                    Float.valueOf(printerClientArea.width / scaleFactor[0]).intValue(),
+                                    Float.valueOf((printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor[1]).intValue());
 
                             if (shouldPrint(this.printer.getPrinterData(), currentPage)) {
                                 this.printer.startPage();
@@ -290,12 +327,12 @@ public class LayerPrinter {
 
                                 // Adjust for DPI difference between display and
                                 // printer
-                                printerTransform.scale(scaleFactor.x, scaleFactor.y);
+                                printerTransform.scale(scaleFactor[0], scaleFactor[1]);
 
                                 // Adjust for margins
                                 printerTransform.translate(
-                                        printerClientArea.x / scaleFactor.x,
-                                        printerClientArea.y / scaleFactor.y);
+                                        printerClientArea.x / scaleFactor[0],
+                                        printerClientArea.y / scaleFactor[1]);
 
                                 // Grid will not automatically print the pages
                                 // at the left margin.
@@ -338,10 +375,9 @@ public class LayerPrinter {
          *            PrintDialog.
          */
         private void setLayerSize(PrinterData printerData) {
-            if (printerData.scope == PrinterData.SELECTION) {
+            if (printerData != null && printerData.scope == PrinterData.SELECTION) {
                 LayerPrinter.this.layer.setClientAreaProvider(LayerPrinter.this.originalClientAreaProvider);
-            }
-            else {
+            } else {
                 final Rectangle fullLayerSize = getTotalArea();
 
                 LayerPrinter.this.layer.setClientAreaProvider(new IClientAreaProvider() {
