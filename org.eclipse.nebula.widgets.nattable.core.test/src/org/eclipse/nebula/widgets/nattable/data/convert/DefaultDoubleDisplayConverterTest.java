@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -37,28 +40,24 @@ public class DefaultDoubleDisplayConverterTest {
 
     @Test
     public void testNonNullDataToDisplay() {
-        Assert.assertEquals("123.0",
-                this.doubleConverter.canonicalToDisplayValue(Double.valueOf("123")));
-        Assert.assertEquals("23.5",
-                this.doubleConverter.canonicalToDisplayValue(Double.valueOf("23.5")));
+        assertEquals("123.0", this.doubleConverter.canonicalToDisplayValue(Double.valueOf("123")));
+        assertEquals("23.5", this.doubleConverter.canonicalToDisplayValue(Double.valueOf("23.5")));
     }
 
     @Test
     public void testNullDataToDisplay() {
-        Assert.assertNull(this.doubleConverter.canonicalToDisplayValue(null));
+        assertNull(this.doubleConverter.canonicalToDisplayValue(null));
     }
 
     @Test
     public void testNonNullDisplayToData() {
-        Assert.assertEquals(Double.valueOf("123"),
-                this.doubleConverter.displayToCanonicalValue("123"));
-        Assert.assertEquals(Double.valueOf("23.5"),
-                this.doubleConverter.displayToCanonicalValue("23.5"));
+        assertEquals(Double.valueOf("123"), this.doubleConverter.displayToCanonicalValue("123"));
+        assertEquals(Double.valueOf("23.5"), this.doubleConverter.displayToCanonicalValue("23.5"));
     }
 
     @Test
     public void testNullDisplayToData() {
-        Assert.assertNull(this.doubleConverter.displayToCanonicalValue(""));
+        assertNull(this.doubleConverter.displayToCanonicalValue(""));
     }
 
     @Test(expected = ConversionFailedException.class)
@@ -74,8 +73,7 @@ public class DefaultDoubleDisplayConverterTest {
         localized.setMaximumFractionDigits(2);
 
         this.doubleConverter.setNumberFormat(localized);
-        Assert.assertEquals("123,0",
-                this.doubleConverter.canonicalToDisplayValue(Double.valueOf("123")));
+        assertEquals("123,0", this.doubleConverter.canonicalToDisplayValue(Double.valueOf("123")));
 
         this.doubleConverter.setNumberFormat(original);
     }
@@ -89,9 +87,28 @@ public class DefaultDoubleDisplayConverterTest {
 
         this.doubleConverter.setNumberFormat(localized);
         Object result = this.doubleConverter.displayToCanonicalValue("123,5");
-        Assert.assertTrue(result instanceof Double);
-        Assert.assertEquals(123.5, result);
+        assertTrue(result instanceof Double);
+        assertEquals(123.5, result);
 
         this.doubleConverter.setNumberFormat(original);
+    }
+
+    @Test
+    public void testConvertLocalized() {
+        this.doubleConverter.setNumberFormat(NumberFormat.getInstance(Locale.ENGLISH));
+        assertEquals(Double.valueOf("1234.50"), this.doubleConverter.displayToCanonicalValue("1,234.50"));
+        assertEquals("1,234.5", this.doubleConverter.canonicalToDisplayValue(Double.valueOf("1234.50")));
+    }
+
+    @Test(expected = ConversionFailedException.class)
+    public void testFailConvertLocalized() {
+        this.doubleConverter.setNumberFormat(null);
+        assertEquals(Double.valueOf("1234.50"), this.doubleConverter.displayToCanonicalValue("1,234.50"));
+    }
+
+    @Test
+    public void testConvertNonLocalized() {
+        this.doubleConverter.setNumberFormat(null);
+        assertEquals("1234.5", this.doubleConverter.canonicalToDisplayValue(Double.valueOf("1234.50")));
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,38 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
+import java.text.NumberFormat;
+
 /**
  * Converts the display value to a short and vice versa.
  */
 public class DefaultShortDisplayConverter extends NumericDisplayConverter {
 
+    /**
+     * Creates a converter that uses {@link NumberFormat}.
+     */
+    public DefaultShortDisplayConverter() {
+        this(true);
+    }
+
+    /**
+     * Creates a converter and allows to specify whether {@link NumberFormat}
+     * should be used or not.
+     *
+     * @param useNumberFormat
+     *            <code>true</code> if a {@link NumberFormat} should be used,
+     *            <code>false</code> if not.
+     * @since 1.4
+     */
+    public DefaultShortDisplayConverter(boolean useNumberFormat) {
+        if (!useNumberFormat) {
+            this.nf = null;
+        }
+    }
+
     @Override
     protected Object convertToNumericValue(String value) {
+        value = value.replaceAll("\\.|,", ""); //$NON-NLS-1$ //$NON-NLS-2$
         return Short.valueOf(value);
     }
 

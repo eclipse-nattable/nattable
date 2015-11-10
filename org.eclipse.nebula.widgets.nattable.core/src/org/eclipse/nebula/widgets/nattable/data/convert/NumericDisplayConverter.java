@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,10 @@ public abstract class NumericDisplayConverter extends DisplayConverter {
     public Object canonicalToDisplayValue(Object canonicalValue) {
         try {
             if (isNotNull(canonicalValue)) {
-                return this.nf.format(canonicalValue);
+                if (this.nf != null) {
+                    return this.nf.format(canonicalValue);
+                }
+                return canonicalValue.toString();
             }
             return null;
         } catch (Exception e) {

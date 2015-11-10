@@ -369,6 +369,11 @@ public class _447_EditorExample extends AbstractNatExample {
                     new DefaultDoubleDisplayConverter(),
                     DisplayMode.NORMAL,
                     _447_EditorExample.COLUMN_SIX_LABEL);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultDoubleDisplayConverter(false),
+                    DisplayMode.EDIT,
+                    _447_EditorExample.COLUMN_SIX_LABEL);
         }
 
         /**
