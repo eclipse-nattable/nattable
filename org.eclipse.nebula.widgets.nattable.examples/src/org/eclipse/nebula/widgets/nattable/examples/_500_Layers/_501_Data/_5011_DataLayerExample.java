@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.examples._500_Layers._501_Data;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
@@ -125,7 +124,7 @@ public class _5011_DataLayerExample extends AbstractNatExample {
                 // triggering a refresh automatically
                 // this is because setting the default usually should be done
                 // prior rendering
-                natTable.doCommand(new VisualRefreshCommand());
+                natTable.refresh(false);
             }
         });
 

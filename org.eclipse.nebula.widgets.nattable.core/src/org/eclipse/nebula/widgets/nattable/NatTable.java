@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -557,10 +557,30 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     }
 
     /**
-     * Refreshes the entire NatTable as every layer will be refreshed.
+     * Refreshes the entire NatTable as every layer will be refreshed. Used to
+     * update on structural changes.
      */
     public void refresh() {
         doCommand(new StructuralRefreshCommand());
+    }
+
+    /**
+     * Refreshes the entire NatTable as every layer will be refreshed.
+     *
+     * @param structuralChange
+     *            <code>true</code> if a structural refresh should be performed
+     *            (same as calling {@link #refresh()}), <code>false</code> if
+     *            only a visual refresh should be performed, e.g. if
+     *            configuration values have changed.
+     *
+     * @since 1.4
+     */
+    public void refresh(boolean structuralChange) {
+        if (structuralChange) {
+            refresh();
+        } else {
+            doCommand(new VisualRefreshCommand());
+        }
     }
 
     @Override
