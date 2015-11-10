@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow;
 
@@ -41,15 +41,11 @@ import ca.odell.glazedlists.event.ListEventListener;
  * <p>
  * This implementation solves this issue by listening to the wrapped source
  * EventList of the FilterList instead of the NatTable IStructuralChangeEvent.
- *
- * @author Dirk Fauth
- *
  */
 public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         FilterRowComboBoxDataProvider<T> implements ListEventListener<T> {
 
-    private static final Log log = LogFactory
-            .getLog(GlazedListsFilterRowComboBoxDataProvider.class);
+    private static final Log log = LogFactory.getLog(GlazedListsFilterRowComboBoxDataProvider.class);
 
     /**
      * @param bodyLayer
@@ -65,9 +61,39 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
      *            The IColumnAccessor to be able to read the values out of the
      *            base collection objects.
      */
-    public GlazedListsFilterRowComboBoxDataProvider(ILayer bodyLayer,
-            Collection<T> baseCollection, IColumnAccessor<T> columnAccessor) {
-        super(bodyLayer, baseCollection, columnAccessor);
+    public GlazedListsFilterRowComboBoxDataProvider(
+            ILayer bodyLayer,
+            Collection<T> baseCollection,
+            IColumnAccessor<T> columnAccessor) {
+        this(bodyLayer, baseCollection, columnAccessor, true);
+    }
+
+    /**
+     * @param bodyLayer
+     *            A layer in the body region. Usually the DataLayer or a layer
+     *            that is responsible for list event handling. Needed to
+     *            register ourself as listener for data changes.
+     * @param baseCollection
+     *            The base collection used to collect the unique values from.
+     *            This need to be a collection that is not filtered, otherwise
+     *            after modifications the content of the filter row combo boxes
+     *            will only contain the current visible (not filtered) elements.
+     * @param columnAccessor
+     *            The IColumnAccessor to be able to read the values out of the
+     *            base collection objects.
+     * @param lazy
+     *            <code>true</code> to configure this
+     *            {@link FilterRowComboBoxDataProvider} should load the combobox
+     *            values lazily, <code>false</code> to pre-build the value
+     *            cache.
+     * @since 1.4
+     */
+    public GlazedListsFilterRowComboBoxDataProvider(
+            ILayer bodyLayer,
+            Collection<T> baseCollection,
+            IColumnAccessor<T> columnAccessor,
+            boolean lazy) {
+        super(bodyLayer, baseCollection, columnAccessor, lazy);
 
         if (baseCollection instanceof EventList) {
             ((EventList<T>) baseCollection).addListEventListener(this);
@@ -76,29 +102,25 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * ca.odell.glazedlists.event.ListEventListener#listChanged(ca.odell.glazedlists
-     * .event.ListEvent)
-     */
     @Override
     public void listChanged(ListEvent<T> listChanges) {
         // a new row was added or a row was deleted
 
         // remember the cache before updating
-        Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(
-                getValueCache());
+        Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(getValueCache());
 
         // perform a refresh of the whole cache
         getValueCache().clear();
-        buildValueCache();
+        if (!this.lazyLoading) {
+            buildValueCache();
+        }
 
         // fire events for every column
         for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-            fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(),
-                    entry.getValue(), getValueCache().get(entry.getKey())));
+            fireCacheUpdateEvent(buildUpdateEvent(
+                    entry.getKey(),
+                    entry.getValue(),
+                    getValueCache().get(entry.getKey())));
         }
     }
 
@@ -114,7 +136,9 @@ public class GlazedListsFilterRowComboBoxDataProvider<T> extends
             getValueCache().put(column, collectValues(column));
 
             // get the diff and fire the event
-            fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore,
+            fireCacheUpdateEvent(buildUpdateEvent(
+                    column,
+                    cacheBefore,
                     getValueCache().get(column)));
         }
     }

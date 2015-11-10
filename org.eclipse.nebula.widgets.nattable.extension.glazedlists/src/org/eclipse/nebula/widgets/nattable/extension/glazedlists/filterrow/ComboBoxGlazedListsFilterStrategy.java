@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Dirk Fauth and others.
+ * Copyright (c) 2013, 2014, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,13 +17,16 @@ import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.NORMAL;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.filterrow.combobox.FilterRowComboBoxDataProvider;
 
 import ca.odell.glazedlists.FilterList;
@@ -130,20 +133,28 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
         Map<Integer, Object> newIndexToObjectMap = new HashMap<Integer, Object>();
         newIndexToObjectMap.putAll(filterIndexToObjectMap);
 
-        for (Integer index : this.comboBoxDataProvider.getCachedColumnIndexes()) {
-            List<?> dataProviderList = this.comboBoxDataProvider.getValues(index, 0);
-            Object filterObject = newIndexToObjectMap.get(index);
-            Collection filterCollection =
-                    (filterObject != null && filterObject instanceof Collection) ? (Collection) filterObject : null;
-                    if (filterCollection == null || filterCollection.isEmpty()) {
-                        // for one column there are no items selected in the combo,
-                        // therefore nothing matches
-                        this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
-                        return;
-                    } else if (filterCollectionsEqual(filterCollection,
-                            dataProviderList)) {
-                        newIndexToObjectMap.remove(index);
-                    }
+        // remove all complete selected
+        for (Iterator<Map.Entry<Integer, Object>> it = newIndexToObjectMap.entrySet().iterator(); it.hasNext();) {
+            Entry<Integer, Object> entry = it.next();
+            Object filterObject = entry.getValue();
+            if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(filterObject)) {
+                it.remove();
+            } else {
+                List<?> dataProviderList = this.comboBoxDataProvider.getValues(entry.getKey(), 0);
+
+                // selecting all is transported as String to support lazy
+                // loading of combo box values
+                Collection filterCollection = (filterObject != null && filterObject instanceof Collection) ? (Collection) filterObject : null;
+                if (filterCollection == null || filterCollection.isEmpty()) {
+                    // for one column there are no items selected in the combo,
+                    // therefore nothing matches
+                    this.getMatcherEditor().getMatcherEditors().add(this.matchNone);
+                    return;
+                } else if (filterCollectionsEqual(filterCollection, dataProviderList)) {
+                    it.remove();
+                }
+            }
+
         }
 
         super.applyFilter(newIndexToObjectMap);
@@ -175,15 +186,20 @@ public class ComboBoxGlazedListsFilterStrategy<T> extends DefaultGlazedListsStat
                     // for an empty String add the regular expression for empty
                     // String
                     result += "^$"; //$NON-NLS-1$
-                }
-                else {
+                } else {
                     result += Pattern.quote(convertedValue);
                 }
             }
             return "(" + result + ")"; //$NON-NLS-1$//$NON-NLS-2$
         }
 
-        return displayConverter.canonicalToDisplayValue(object).toString();
+        if (displayConverter != null) {
+            Object result = displayConverter.canonicalToDisplayValue(object);
+            if (result != null) {
+                return result.toString();
+            }
+        }
+        return ""; //$NON-NLS-1$
     }
 
     @SuppressWarnings("rawtypes")

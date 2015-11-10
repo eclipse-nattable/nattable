@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -71,6 +71,12 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      * List of listeners that get informed if the value cache gets updated.
      */
     private List<IFilterRowComboUpdateListener> cacheUpdateListener = new ArrayList<IFilterRowComboUpdateListener>();
+    /**
+     * Flag to indicate whether the combo box content should be loaded lazily.
+     *
+     * @since 1.4
+     */
+    protected final boolean lazyLoading;
 
     /**
      * @param bodyLayer
@@ -88,18 +94,55 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      */
     public FilterRowComboBoxDataProvider(
             ILayer bodyLayer, Collection<T> baseCollection, IColumnAccessor<T> columnAccessor) {
+        this(bodyLayer, baseCollection, columnAccessor, true);
+    }
+
+    /**
+     * @param bodyLayer
+     *            A layer in the body region. Usually the DataLayer or a layer
+     *            that is responsible for list event handling. Needed to
+     *            register ourself as listener for data changes.
+     * @param baseCollection
+     *            The base collection used to collect the unique values from.
+     *            This need to be a collection that is not filtered, otherwise
+     *            after modifications the content of the filter row combo boxes
+     *            will only contain the current visible (not filtered) elements.
+     * @param columnAccessor
+     *            The IColumnAccessor to be able to read the values out of the
+     *            base collection objects.
+     * @param lazy
+     *            <code>true</code> to configure this
+     *            {@link FilterRowComboBoxDataProvider} should load the combobox
+     *            values lazily, <code>false</code> to pre-build the value
+     *            cache.
+     * @since 1.4
+     */
+    public FilterRowComboBoxDataProvider(
+            ILayer bodyLayer,
+            Collection<T> baseCollection,
+            IColumnAccessor<T> columnAccessor,
+            boolean lazy) {
         this.baseCollection = baseCollection;
         this.columnAccessor = columnAccessor;
+        this.lazyLoading = lazy;
 
-        // build the cache
-        buildValueCache();
+        if (!this.lazyLoading) {
+            // build the cache
+            buildValueCache();
+        }
 
         bodyLayer.addLayerListener(this);
     }
 
     @Override
     public List<?> getValues(int columnIndex, int rowIndex) {
-        return this.valueCache.get(columnIndex);
+        List<?> result = this.valueCache.get(columnIndex);
+        if (result == null) {
+            result = collectValues(columnIndex);
+            this.valueCache.put(columnIndex, result);
+            fireCacheUpdateEvent(buildUpdateEvent(columnIndex, null, result));
+        }
+        return result;
     }
 
     /**
@@ -140,8 +183,7 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
             Object dataValue = this.columnAccessor.getDataValue(rowObject, columnIndex);
             if (dataValue != null) {
                 uniqueValues.add(dataValue);
-            }
-            else {
+            } else {
                 nullFound = true;
             }
         }
@@ -180,7 +222,9 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 
             // perform a refresh of the whole cache
             this.valueCache.clear();
-            buildValueCache();
+            if (!this.lazyLoading) {
+                buildValueCache();
+            }
 
             // fire events for every column
             for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
@@ -210,17 +254,23 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
         Set<Object> removedValues = new HashSet<Object>();
 
         // find the added values
-        for (Object after : cacheAfter) {
-            if (!cacheBefore.contains(after)) {
-                addedValues.add(after);
+        if (cacheAfter != null && cacheBefore != null) {
+            for (Object after : cacheAfter) {
+                if (!cacheBefore.contains(after)) {
+                    addedValues.add(after);
+                }
             }
-        }
 
-        // find the removed values
-        for (Object before : cacheBefore) {
-            if (!cacheAfter.contains(before)) {
-                removedValues.add(before);
+            // find the removed values
+            for (Object before : cacheBefore) {
+                if (!cacheAfter.contains(before)) {
+                    removedValues.add(before);
+                }
             }
+        } else if ((cacheBefore == null || cacheBefore.isEmpty()) && cacheAfter != null) {
+            addedValues.addAll(cacheAfter);
+        } else if (cacheBefore != null && (cacheAfter == null || cacheAfter.isEmpty())) {
+            removedValues.addAll(cacheBefore);
         }
 
         // only create a new update event if there has something changed

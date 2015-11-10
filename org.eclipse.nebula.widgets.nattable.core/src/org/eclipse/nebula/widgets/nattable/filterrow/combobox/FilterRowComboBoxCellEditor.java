@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
@@ -31,14 +31,10 @@ import org.eclipse.swt.widgets.Display;
  * uses the FilterNatCombo as underlying control.
  *
  * @see FilterRowComboBoxDataProvider
- *
- * @author Dirk Fauth
- *
  */
 public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
 
-    private static final Log log = LogFactory
-            .getLog(FilterRowComboBoxCellEditor.class);
+    private static final Log log = LogFactory.getLog(FilterRowComboBoxCellEditor.class);
 
     /**
      * This object remembers the current value in the editor. This is necessary
@@ -75,8 +71,7 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
      *            The maximum number of items the drop down will show before
      *            introducing a scroll bar.
      */
-    public FilterRowComboBoxCellEditor(IComboBoxDataProvider dataProvider,
-            int maxVisibleItems) {
+    public FilterRowComboBoxCellEditor(IComboBoxDataProvider dataProvider, int maxVisibleItems) {
         super(dataProvider, maxVisibleItems);
         this.multiselect = true;
         this.useCheckbox = true;
@@ -85,28 +80,26 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
     @Override
     public NatCombo createEditorControl(Composite parent) {
         int style = SWT.READ_ONLY | SWT.MULTI | SWT.CHECK;
-        final FilterNatCombo combo = this.iconImage == null ? new FilterNatCombo(
-                parent, this.cellStyle, this.maxVisibleItems, style)
-                : new FilterNatCombo(parent, this.cellStyle,
-                        this.maxVisibleItems, style, this.iconImage);
+        final FilterNatCombo combo = this.iconImage == null
+                ? new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style)
+                : new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage);
 
         combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
 
         combo.setMultiselectValueSeparator(this.multiselectValueSeparator);
-        combo.setMultiselectTextBracket(this.multiselectTextPrefix,
-                this.multiselectTextSuffix);
+        combo.setMultiselectTextBracket(this.multiselectTextPrefix, this.multiselectTextSuffix);
 
         addNatComboListener(combo);
 
         // additionally add the ICheckStateListener so on changing the value of
-        // the select all
-        // item the change is also committed
+        // the select all item the change is also committed
         combo.addCheckStateListener(new ICheckStateListener() {
 
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 commit(MoveDirectionEnum.NONE,
-                        (!FilterRowComboBoxCellEditor.this.multiselect && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
+                        (!FilterRowComboBoxCellEditor.this.multiselect
+                                && FilterRowComboBoxCellEditor.this.editMode == EditModeEnum.INLINE));
             }
         });
 
@@ -122,16 +115,12 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
     @Override
     public boolean commit(MoveDirectionEnum direction, boolean closeAfterCommit) {
         // If the editor should be closed after commit, we first need to ensure
-        // if the value
-        // has changed since the last commit
+        // if the value has changed since the last commit.
         // This needs to be done because in this filter combo box, every
-        // selection immediately
-        // causes a commit, which results in applying a filter. If the combo box
-        // is now closed
-        // because of losing the focus, the value gets committed again, which
-        // again results
-        // in filtering, which will lead to exceptions because the states are
-        // not synchronous
+        // selection immediately causes a commit, which results in applying a
+        // filter. If the combo box is now closed because of losing the focus,
+        // the value gets committed again, which again results in filtering,
+        // which will lead to exceptions because the states are not synchronous
         // anymore.
         if (!isClosed()) {
             try {
@@ -140,8 +129,8 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
                 if ((canonicalValue != null && this.currentCanonicalValue == null)
                         || (canonicalValue == null && this.currentCanonicalValue != null)
                         || (canonicalValue != null
-                                && this.currentCanonicalValue != null && !canonicalValue
-                                    .equals(this.currentCanonicalValue))) {
+                                && this.currentCanonicalValue != null
+                                && !canonicalValue.equals(this.currentCanonicalValue))) {
                     if (super.commit(direction, closeAfterCommit)) {
                         this.currentCanonicalValue = canonicalValue;
                         return true;
@@ -156,16 +145,13 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
                 }
             } catch (ConversionFailedException e) {
                 // do nothing as exceptions caused by conversion are handled
-                // already
-                // we just need this catch block for stopping the process if
-                // conversion
-                // failed with an exception
+                // already. we just need this catch block for stopping the
+                // process if conversion failed with an exception
             } catch (Exception e) {
                 // if another exception occured that wasn't thrown by us, it
-                // should at least
-                // be logged without killing the whole application
-                log.error(
-                        "Error on updating cell value: " + e.getLocalizedMessage(), e); //$NON-NLS-1$
+                // should at least be logged without killing the whole
+                // application
+                log.error("Error on updating cell value: " + e.getLocalizedMessage(), e); //$NON-NLS-1$
             }
         }
         return false;

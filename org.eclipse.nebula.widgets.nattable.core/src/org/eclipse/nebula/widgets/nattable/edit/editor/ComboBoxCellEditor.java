@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,11 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.edit.EditConstants;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.nebula.widgets.nattable.widget.NatCombo;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.FocusAdapter;
@@ -203,9 +205,16 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
     protected Control activateCell(Composite parent, final Object originalCanonicalValue) {
         this.combo = createEditorControl(parent);
 
-        fillCombo();
+        // filling and populating a multiselect combo could take some time for
+        // huge data sets
+        BusyIndicator.showWhile(parent.getDisplay(), new Runnable() {
+            @Override
+            public void run() {
+                fillCombo();
 
-        setCanonicalValue(originalCanonicalValue);
+                setCanonicalValue(originalCanonicalValue);
+            }
+        });
 
         // open the dropdown immediately after the Text control of the NatCombo
         // is positioned
@@ -314,8 +323,17 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 }
                 editorValues = result;
             } else {
-                editorValues = new String[] { (String) this.displayConverter.canonicalToDisplayValue(
-                        this.layerCell, this.configRegistry, canonicalValue) };
+                // in case the SELECT_ALL value is set for selecting all values
+                // in the combo we don't need a conversion and use the value
+                if (EditConstants.SELECT_ALL_ITEMS_VALUE.equals(canonicalValue)) {
+                    editorValues = new String[] { canonicalValue.toString() };
+                } else {
+                    editorValues = new String[] {
+                            (String) this.displayConverter.canonicalToDisplayValue(
+                                    this.layerCell,
+                                    this.configRegistry,
+                                    canonicalValue) };
+                }
             }
             setEditorValue(editorValues);
         }
@@ -410,8 +428,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor {
                 } else if (event.keyCode == SWT.ESC) {
                     if (ComboBoxCellEditor.this.editMode == EditModeEnum.INLINE) {
                         close();
-                    }
-                    else {
+                    } else {
                         combo.hideDropdownControl();
                     }
                 }
