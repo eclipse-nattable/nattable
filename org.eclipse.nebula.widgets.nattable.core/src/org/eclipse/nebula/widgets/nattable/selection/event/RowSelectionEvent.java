@@ -18,8 +18,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
-public class RowSelectionEvent extends RowVisualChangeEvent implements
-        ISelectionEvent {
+public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectionEvent {
 
     private final SelectionLayer selectionLayer;
     private int rowPositionToMoveIntoViewport;
@@ -67,8 +66,7 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements
      *            Boolean to determinate if the shift mask is used.
      * @param withControlMask
      *            Boolean to determinate if the control mask is used.
-     *
-     * @since 1.4.0
+     * @since 1.4
      */
     public RowSelectionEvent(SelectionLayer selectionLayer,
             Collection<Integer> rowPositions, int rowPositionToMoveIntoViewport,
@@ -103,6 +101,8 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements
      *
      * @return <code>true</code> if the shift mask is used, <code>false</code>
      *         otherwise.
+     *
+     * @since 1.4
      */
     public boolean isWithShiftMask() {
         return this.withShiftMask;
@@ -113,6 +113,8 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements
      *
      * @return <code>true</code> if the control mask is used, <code>false</code>
      *         otherwise.
+     *
+     * @since 1.4
      */
     public boolean isWithControlMask() {
         return this.withControlMask;
@@ -120,9 +122,8 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        this.rowPositionToMoveIntoViewport = localLayer
-                .underlyingToLocalRowPosition(getLayer(),
-                        this.rowPositionToMoveIntoViewport);
+        this.rowPositionToMoveIntoViewport = localLayer.underlyingToLocalRowPosition(
+                getLayer(), this.rowPositionToMoveIntoViewport);
 
         return super.convertToLocal(localLayer);
     }

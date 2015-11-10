@@ -15,8 +15,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
-public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements
-        ISelectionEvent {
+public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISelectionEvent {
 
     private final SelectionLayer selectionLayer;
 
@@ -41,8 +40,7 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements
      *             {@link #ColumnSelectionEvent(SelectionLayer, int, boolean, boolean)}
      */
     @Deprecated
-    public ColumnSelectionEvent(SelectionLayer selectionLayer,
-            int columnPosition) {
+    public ColumnSelectionEvent(SelectionLayer selectionLayer, int columnPosition) {
         super(selectionLayer, new Range(columnPosition, columnPosition + 1));
         this.selectionLayer = selectionLayer;
     }
@@ -58,11 +56,10 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements
      *            Boolean to determinate if the shift mask is used.
      * @param withControlMask
      *            Boolean to determinate if the control mask is used.
-     *
-     * @since 1.4.0
+     * @since 1.4
      */
-    public ColumnSelectionEvent(SelectionLayer selectionLayer,
-            int columnPosition, boolean withShiftMask, boolean withControlMask) {
+    public ColumnSelectionEvent(SelectionLayer selectionLayer, int columnPosition,
+            boolean withShiftMask, boolean withControlMask) {
         super(selectionLayer, new Range(columnPosition, columnPosition + 1));
         this.selectionLayer = selectionLayer;
         this.withShiftMask = withShiftMask;
@@ -86,6 +83,7 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements
      *
      * @return <code>true</code> if the shift mask is used, <code>false</code>
      *         otherwise.
+     * @since 1.4
      */
     public boolean isWithShiftMask() {
         return this.withShiftMask;
@@ -96,6 +94,7 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements
      *
      * @return <code>true</code> if the control mask is used, <code>false</code>
      *         otherwise.
+     * @since 1.4
      */
     public boolean isWithControlMask() {
         return this.withControlMask;
