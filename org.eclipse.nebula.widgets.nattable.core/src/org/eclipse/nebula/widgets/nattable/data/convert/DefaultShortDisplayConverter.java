@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.data.convert;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
 
 /**
  * Converts the display value to a short and vice versa.
@@ -41,7 +42,13 @@ public class DefaultShortDisplayConverter extends NumericDisplayConverter {
 
     @Override
     protected Object convertToNumericValue(String value) {
-        value = value.replaceAll("\\.|,", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        if (this.nf != null) {
+            try {
+                return this.nf.parse(value).shortValue();
+            } catch (ParseException e) {
+                throw new NumberFormatException(e.getLocalizedMessage());
+            }
+        }
         return Short.valueOf(value);
     }
 

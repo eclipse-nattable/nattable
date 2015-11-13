@@ -30,7 +30,7 @@ public class DefaultBigDecimalDisplayConverter extends
         try {
             return this.nf.parse(value);
         } catch (ParseException e) {
-            throw new NumberFormatException(e.getMessage());
+            throw new NumberFormatException(e.getLocalizedMessage());
         }
     }
 }

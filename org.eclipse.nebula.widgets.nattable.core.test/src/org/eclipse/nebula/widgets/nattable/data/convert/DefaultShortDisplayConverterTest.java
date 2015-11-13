@@ -48,6 +48,7 @@ public class DefaultShortDisplayConverterTest {
 
     @Test(expected = ConversionFailedException.class)
     public void testConversionExceptionTooBig() {
+        this.shortConverter.setNumberFormat(null);
         this.shortConverter.displayToCanonicalValue("32768");
     }
 
@@ -58,15 +59,15 @@ public class DefaultShortDisplayConverterTest {
         assertEquals("1,234", this.shortConverter.canonicalToDisplayValue(Short.valueOf("1234")));
     }
 
+    @Test(expected = ConversionFailedException.class)
+    public void testFailConvertLocalized() {
+        this.shortConverter.setNumberFormat(null);
+        assertEquals(Short.valueOf("1234"), this.shortConverter.displayToCanonicalValue("1,234"));
+    }
+
     @Test
     public void testConvertNonLocalized() {
         this.shortConverter.setNumberFormat(null);
         assertEquals("1234", this.shortConverter.canonicalToDisplayValue(Short.valueOf("1234")));
-    }
-
-    @Test
-    public void testFormatted() {
-        assertEquals(Short.valueOf("12345"), this.shortConverter.displayToCanonicalValue("12,345"));
-        assertEquals(Short.valueOf("12345"), this.shortConverter.displayToCanonicalValue("12.345"));
     }
 }

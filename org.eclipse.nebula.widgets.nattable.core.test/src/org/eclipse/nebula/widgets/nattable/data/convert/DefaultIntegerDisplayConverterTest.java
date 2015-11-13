@@ -46,6 +46,12 @@ public class DefaultIntegerDisplayConverterTest {
         this.intConverter.displayToCanonicalValue("abc");
     }
 
+    @Test(expected = ConversionFailedException.class)
+    public void testConversionExceptionTooBig() {
+        this.intConverter.setNumberFormat(null);
+        this.intConverter.displayToCanonicalValue(Long.valueOf(Integer.MAX_VALUE) + 1);
+    }
+
     @Test
     public void testConvertLocalized() {
         this.intConverter.setNumberFormat(NumberFormat.getInstance(Locale.ENGLISH));

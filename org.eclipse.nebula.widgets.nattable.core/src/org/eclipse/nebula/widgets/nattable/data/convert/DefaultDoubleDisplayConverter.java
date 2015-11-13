@@ -45,7 +45,7 @@ public class DefaultDoubleDisplayConverter extends DecimalNumericDisplayConverte
             try {
                 return this.nf.parse(value).doubleValue();
             } catch (ParseException e) {
-                throw new NumberFormatException(e.getMessage());
+                throw new NumberFormatException(e.getLocalizedMessage());
             }
         }
         return Double.valueOf(value);
