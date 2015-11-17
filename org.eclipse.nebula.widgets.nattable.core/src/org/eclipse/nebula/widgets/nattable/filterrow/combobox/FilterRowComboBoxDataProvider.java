@@ -79,6 +79,13 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
     protected final boolean lazyLoading;
 
     /**
+     * Flag for enabling/disabling caching of filter combo box values.
+     *
+     * @since 1.4
+     */
+    protected boolean cachingEnabled = true;
+
+    /**
      * @param bodyLayer
      *            A layer in the body region. Usually the DataLayer or a layer
      *            that is responsible for list event handling. Needed to
@@ -136,13 +143,17 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 
     @Override
     public List<?> getValues(int columnIndex, int rowIndex) {
-        List<?> result = this.valueCache.get(columnIndex);
-        if (result == null) {
-            result = collectValues(columnIndex);
-            this.valueCache.put(columnIndex, result);
-            fireCacheUpdateEvent(buildUpdateEvent(columnIndex, null, result));
+        if (this.cachingEnabled) {
+            List<?> result = this.valueCache.get(columnIndex);
+            if (result == null) {
+                result = collectValues(columnIndex);
+                this.valueCache.put(columnIndex, result);
+                fireCacheUpdateEvent(buildUpdateEvent(columnIndex, null, result));
+            }
+            return result;
+        } else {
+            return collectValues(columnIndex);
         }
-        return result;
     }
 
     /**
@@ -202,33 +213,36 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
 
     @Override
     public void handleLayerEvent(ILayerEvent event) {
-        if (event instanceof CellVisualChangeEvent) {
-            // usually this is fired for data updates
-            // so we need to update the value cache for the updated column
-            int column = ((CellVisualChangeEvent) event).getColumnPosition();
+        // we only need to perform event handling if caching is enabled
+        if (this.cachingEnabled) {
+            if (event instanceof CellVisualChangeEvent) {
+                // usually this is fired for data updates
+                // so we need to update the value cache for the updated column
+                int column = ((CellVisualChangeEvent) event).getColumnPosition();
 
-            List<?> cacheBefore = this.valueCache.get(column);
+                List<?> cacheBefore = this.valueCache.get(column);
 
-            this.valueCache.put(column, collectValues(column));
+                this.valueCache.put(column, collectValues(column));
 
-            // get the diff and fire the event
-            fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, this.valueCache.get(column)));
-        } else if (event instanceof IStructuralChangeEvent
-                && ((IStructuralChangeEvent) event).isVerticalStructureChanged()) {
-            // a new row was added or a row was deleted
+                // get the diff and fire the event
+                fireCacheUpdateEvent(buildUpdateEvent(column, cacheBefore, this.valueCache.get(column)));
+            } else if (event instanceof IStructuralChangeEvent
+                    && ((IStructuralChangeEvent) event).isVerticalStructureChanged()) {
+                // a new row was added or a row was deleted
 
-            // remember the cache before updating
-            Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(this.valueCache);
+                // remember the cache before updating
+                Map<Integer, List<?>> cacheBefore = new HashMap<Integer, List<?>>(this.valueCache);
 
-            // perform a refresh of the whole cache
-            this.valueCache.clear();
-            if (!this.lazyLoading) {
-                buildValueCache();
-            }
+                // perform a refresh of the whole cache
+                this.valueCache.clear();
+                if (!this.lazyLoading) {
+                    buildValueCache();
+                }
 
-            // fire events for every column
-            for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
-                fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(), entry.getValue(), this.valueCache.get(entry.getKey())));
+                // fire events for every column
+                for (Map.Entry<Integer, List<?>> entry : cacheBefore.entrySet()) {
+                    fireCacheUpdateEvent(buildUpdateEvent(entry.getKey(), entry.getValue(), this.valueCache.get(entry.getKey())));
+                }
             }
         }
     }
@@ -327,6 +341,37 @@ public class FilterRowComboBoxDataProvider<T> implements IComboBoxDataProvider, 
      */
     protected Map<Integer, List<?>> getValueCache() {
         return this.valueCache;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if caching of filterrow combobox values is
+     *         enabled, <code>false</code> if the combobox values should be
+     *         calculated on request.
+     * @since 1.4
+     */
+    public boolean isCachingEnabled() {
+        return this.cachingEnabled;
+    }
+
+    /**
+     * Enable/disable the caching of filterrow combobox values. By default the
+     * caching is enabled.
+     * <p>
+     * You should disable caching if the base collection that is used to
+     * determine the filterrow combobox values changes its contents dynamically,
+     * e.g. if the base collection is a GlazedLists FilterList that returns only
+     * the current non-filtered items.
+     * </p>
+     *
+     * @param cachingEnabled
+     *            <code>true</code> to enable caching of filter row combobox
+     *            values, <code>false</code> if the combobox values should be
+     *            calculated on request.
+     * @since 1.4
+     */
+    public void setCachingEnabled(boolean cachingEnabled) {
+        this.cachingEnabled = cachingEnabled;
     }
 
 }

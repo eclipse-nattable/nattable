@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
@@ -54,9 +54,6 @@ import org.eclipse.swt.widgets.Text;
  * Usually this combo will be created with the SWT.CHECK style bit. This way the
  * selected items are visualized by showing checked checkboxes. Also adds a
  * <i>Select All</i> item for convenience that de-/selects all items on click.
- *
- * @author Dirk Fauth
- *
  */
 public class FilterNatCombo extends NatCombo {
 
@@ -83,8 +80,11 @@ public class FilterNatCombo extends NatCombo {
      *            adding internal styles via ConfigRegistry.
      */
     public FilterNatCombo(Composite parent, IStyle cellStyle, int style) {
-        this(parent, cellStyle, DEFAULT_NUM_OF_VISIBLE_ITEMS, style, GUIHelper
-                .getImage("down_2")); //$NON-NLS-1$
+        this(parent,
+                cellStyle,
+                DEFAULT_NUM_OF_VISIBLE_ITEMS,
+                style,
+                GUIHelper.getImage("down_2")); //$NON-NLS-1$
     }
 
     /**
@@ -103,10 +103,12 @@ public class FilterNatCombo extends NatCombo {
      *            The style for the Text Control to construct. Uses this style
      *            adding internal styles via ConfigRegistry.
      */
-    public FilterNatCombo(Composite parent, IStyle cellStyle,
-            int maxVisibleItems, int style) {
-        this(parent, cellStyle, maxVisibleItems, style, GUIHelper
-                .getImage("down_2")); //$NON-NLS-1$
+    public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style) {
+        this(parent,
+                cellStyle,
+                maxVisibleItems,
+                style,
+                GUIHelper.getImage("down_2")); //$NON-NLS-1$
     }
 
     /**
@@ -129,8 +131,7 @@ public class FilterNatCombo extends NatCombo {
      *            dropdown is visible. Using this image will indicate that the
      *            control is an open combo to the user.
      */
-    public FilterNatCombo(Composite parent, IStyle cellStyle,
-            int maxVisibleItems, int style, Image iconImage) {
+    public FilterNatCombo(Composite parent, IStyle cellStyle, int maxVisibleItems, int style, Image iconImage) {
         super(parent, cellStyle, maxVisibleItems, style, iconImage);
     }
 
@@ -142,21 +143,14 @@ public class FilterNatCombo extends NatCombo {
             int gridLineAdjustment = this.dropdownTable.getGridLineWidth() * 2;
 
             // calculate the height by multiplying the number of visible items
-            // with
-            // the item height of items in the list and adding 2*grid line width
-            // to work around a
-            // calculation error regarding the descent of the font metrics for
-            // the
-            // last shown item
-            // Note: if there are no items to show in the combo, calculate with
-            // the item count of
-            // 3 so an empty combo will open
-            int listHeight = (getVisibleItemCount() > 0 ? getVisibleItemCount()
-                    : 3) * this.dropdownTable.getItemHeight() + gridLineAdjustment;
+            // with the item height of items in the list and adding 2*grid line
+            // width to work around a calculation error regarding the descent of
+            // the font metrics for the last shown item
+            int listHeight = getVisibleItemCount() * this.dropdownTable.getItemHeight() + gridLineAdjustment;
 
             // since introduced the TableColumn for real full row selection, we
-            // call pack() to
-            // perform autoresize to ensure the width shows the whole content
+            // call pack() to perform autoresize to ensure the width shows the
+            // whole content
             this.dropdownTable.getColumn(0).pack();
             this.selectAllItemViewer.getTable().getColumn(0).pack();
 
@@ -166,8 +160,8 @@ public class FilterNatCombo extends NatCombo {
 
             int viewerHeight = this.selectAllItemViewer.getTable().getItemHeight();
             listWidth = Math.max(
-                    this.selectAllItemViewer.getTable().computeSize(SWT.DEFAULT,
-                            viewerHeight, true).x, listWidth);
+                    this.selectAllItemViewer.getTable().computeSize(SWT.DEFAULT, viewerHeight, true).x,
+                    listWidth);
 
             this.dropdownTable.setSize(listWidth, listHeight);
             this.selectAllItemViewer.getTable().setSize(listWidth, viewerHeight);
@@ -220,8 +214,8 @@ public class FilterNatCombo extends NatCombo {
         int dropdownListStyle = style | SWT.V_SCROLL
                 | HorizontalAlignmentEnum.getSWTStyle(this.cellStyle)
                 | SWT.FULL_SELECTION;
-        this.selectAllItemViewer = CheckboxTableViewer.newCheckList(
-                this.dropdownShell, dropdownListStyle);
+        this.selectAllItemViewer =
+                CheckboxTableViewer.newCheckList(this.dropdownShell, dropdownListStyle);
 
         // add a column to be able to resize the item width in the dropdown
         new TableColumn(this.selectAllItemViewer.getTable(), SWT.NONE);
@@ -242,28 +236,34 @@ public class FilterNatCombo extends NatCombo {
         data = new FormData();
         // need to set the top attachment like this because attaching it to the
         // viewer does some wrong calculations
-        data.top = new FormAttachment(this.dropdownShell, this.selectAllItemViewer
-                .getTable().getItemHeight(), SWT.TOP);
-        data.left = new FormAttachment(this.dropdownShell, 0, SWT.LEFT);
-        data.right = new FormAttachment(this.dropdownShell, 0, SWT.RIGHT);
+        data.top = new FormAttachment(
+                this.dropdownShell,
+                this.selectAllItemViewer.getTable().getItemHeight(),
+                SWT.TOP);
+        data.left = new FormAttachment(
+                this.dropdownShell,
+                0,
+                SWT.LEFT);
+        data.right = new FormAttachment(
+                this.dropdownShell,
+                0,
+                SWT.RIGHT);
         this.dropdownTable.setLayoutData(data);
 
-        this.selectAllItemViewer
-                .setContentProvider(new IStructuredContentProvider() {
+        this.selectAllItemViewer.setContentProvider(new IStructuredContentProvider() {
 
-                    @Override
-                    public void inputChanged(Viewer viewer, Object oldInput,
-                            Object newInput) {}
+            @Override
+            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
 
-                    @Override
-                    public void dispose() {}
+            @Override
+            public void dispose() {}
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public Object[] getElements(Object inputElement) {
-                        return ((Collection<String>) inputElement).toArray();
-                    }
-                });
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object[] getElements(Object inputElement) {
+                return ((Collection<String>) inputElement).toArray();
+            }
+        });
 
         this.selectAllItemViewer.setLabelProvider(new ILabelProvider() {
 
@@ -292,22 +292,15 @@ public class FilterNatCombo extends NatCombo {
             }
         });
 
-        final String selectAllLabel = Messages
-                .getString("FilterNatCombo.selectAll"); //$NON-NLS-1$
+        final String selectAllLabel = Messages.getString("FilterNatCombo.selectAll"); //$NON-NLS-1$
         List<String> input = new ArrayList<String>();
         input.add(selectAllLabel);
         this.selectAllItemViewer.setInput(input);
 
-        this.selectAllItemViewer
-                .getTable()
-                .setBackground(
-                        this.cellStyle
-                                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
-        this.selectAllItemViewer
-                .getTable()
-                .setForeground(
-                        this.cellStyle
-                                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
+        this.selectAllItemViewer.getTable().setBackground(
+                this.cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
+        this.selectAllItemViewer.getTable().setForeground(
+                this.cellStyle.getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR));
         this.selectAllItemViewer.getTable().setFont(
                 this.cellStyle.getAttributeValue(CellStyleAttributes.FONT));
 
@@ -319,58 +312,54 @@ public class FilterNatCombo extends NatCombo {
                     }
                 });
 
-        this.selectAllItemViewer
-                .addCheckStateListener(new ICheckStateListener() {
+        this.selectAllItemViewer.addCheckStateListener(new ICheckStateListener() {
 
-                    @Override
-                    public void checkStateChanged(CheckStateChangedEvent event) {
-                        // if the select all item is clicked directly, the
-                        // grayed state needs to be set to false
-                        FilterNatCombo.this.selectAllItemViewer.setGrayed(selectAllLabel, false);
+            @Override
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                // if the select all item is clicked directly, the
+                // grayed state needs to be set to false
+                FilterNatCombo.this.selectAllItemViewer.setGrayed(selectAllLabel, false);
 
-                        if (event.getChecked()) {
-                            // select all
-                            FilterNatCombo.this.dropdownTable.selectAll();
-                        } else {
-                            // deselect all
-                            FilterNatCombo.this.dropdownTable.deselectAll();
-                        }
+                if (event.getChecked()) {
+                    // select all
+                    FilterNatCombo.this.dropdownTable.selectAll();
+                } else {
+                    // deselect all
+                    FilterNatCombo.this.dropdownTable.deselectAll();
+                }
 
-                        // after selection is performed we need to ensure that
-                        // selection and checkboxes are in sync
-                        for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
-                            tableItem.setChecked(FilterNatCombo.this.dropdownTable
-                                    .isSelected(FilterNatCombo.this.itemList.indexOf(tableItem
-                                            .getText())));
-                        }
+                // after selection is performed we need to ensure that
+                // selection and checkboxes are in sync
+                for (TableItem tableItem : FilterNatCombo.this.dropdownTable.getItems()) {
+                    tableItem.setChecked(
+                            FilterNatCombo.this.dropdownTable.isSelected(
+                                    FilterNatCombo.this.itemList.indexOf(tableItem.getText())));
+                }
 
-                        updateTextControl(!FilterNatCombo.this.multiselect);
-                    }
-                });
+                updateTextControl(!FilterNatCombo.this.multiselect);
+            }
+        });
 
         // set an ICheckStateProvider that sets the checkbox state of the select
-        // all checkbox regarding
-        // the selection of the items in the dropdown
-        this.selectAllItemViewer
-                .setCheckStateProvider(new ICheckStateProvider() {
+        // all checkbox regarding the selection of the items in the dropdown
+        this.selectAllItemViewer.setCheckStateProvider(new ICheckStateProvider() {
 
-                    @Override
-                    public boolean isGrayed(Object element) {
-                        if (FilterNatCombo.this.dropdownTable.getSelectionCount() == FilterNatCombo.this.dropdownTable
-                                .getItemCount()) {
-                            return false;
-                        }
-                        return true;
-                    }
+            @Override
+            public boolean isGrayed(Object element) {
+                if (FilterNatCombo.this.dropdownTable.getSelectionCount() == FilterNatCombo.this.dropdownTable.getItemCount()) {
+                    return false;
+                }
+                return true;
+            }
 
-                    @Override
-                    public boolean isChecked(Object element) {
-                        if (FilterNatCombo.this.dropdownTable.getSelectionCount() == 0) {
-                            return false;
-                        }
-                        return true;
-                    }
-                });
+            @Override
+            public boolean isChecked(Object element) {
+                if (FilterNatCombo.this.dropdownTable.getSelectionCount() == 0) {
+                    return false;
+                }
+                return true;
+            }
+        });
 
         // add a selection listener to the items that simply refreshes the
         // select all checkbox
@@ -486,11 +475,9 @@ public class FilterNatCombo extends NatCombo {
             }
             // if at least one value was selected, add the prefix and suffix
             // we check the values array instead of the result length because
-            // there can be also
-            // an empty String be selected
+            // there can be also an empty String be selected
             if (values.length > 0) {
-                result = this.multiselectTextPrefix + result
-                        + this.multiselectTextSuffix;
+                result = this.multiselectTextPrefix + result + this.multiselectTextSuffix;
             }
         } else if (values.length > 0) {
             result = values[0];
@@ -504,8 +491,7 @@ public class FilterNatCombo extends NatCombo {
             String transform = this.filterText;
             int prefixLength = this.multiselectTextPrefix.length();
             int suffixLength = this.multiselectTextSuffix.length();
-            transform = transform.substring(prefixLength, transform.length()
-                    - suffixLength);
+            transform = transform.substring(prefixLength, transform.length() - suffixLength);
             return transform.split(this.multiselectValueSeparator);
         }
         return new String[] {};
