@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.editor;
 
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalListener;
+import org.eclipse.jface.fieldassist.IContentProposalListener2;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.RenderErrorHandling;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -23,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -119,6 +127,38 @@ public class TextCellEditor extends AbstractCellEditor {
     protected boolean commitOnEnter = true;
 
     /**
+     * Flag that indicates whether a content proposal popup is currently opened.
+     *
+     * @since 1.4
+     */
+    protected boolean contentProposalOpen = false;
+
+    /**
+     * @see ContentProposalAdapter#ContentProposalAdapter(Control,
+     *      IControlContentAdapter, IContentProposalProvider, KeyStroke, char[])
+     * @since 1.4
+     */
+    protected IControlContentAdapter controlContentAdapter;
+    /**
+     * @see ContentProposalAdapter#ContentProposalAdapter(Control,
+     *      IControlContentAdapter, IContentProposalProvider, KeyStroke, char[])
+     * @since 1.4
+     */
+    protected IContentProposalProvider proposalProvider;
+    /**
+     * @see ContentProposalAdapter#ContentProposalAdapter(Control,
+     *      IControlContentAdapter, IContentProposalProvider, KeyStroke, char[])
+     * @since 1.4
+     */
+    protected KeyStroke keyStroke;
+    /**
+     * @see ContentProposalAdapter#ContentProposalAdapter(Control,
+     *      IControlContentAdapter, IContentProposalProvider, KeyStroke, char[])
+     * @since 1.4
+     */
+    protected char[] autoActivationCharacters;
+
+    /**
      * Creates the default TextCellEditor that does not commit on pressing the
      * up/down arrow keys and will not move the selection on committing a value
      * by pressing enter.
@@ -176,6 +216,18 @@ public class TextCellEditor extends AbstractCellEditor {
         this.commitOnUpDown = commitOnUpDown;
         this.moveSelectionOnEnter = moveSelectionOnEnter;
         this.commitOnLeftRight = commitOnLeftRight;
+
+        // use an extended InlineFocusListener that is not triggered in case a
+        // content proposal popup is currently showed.
+        this.focusListener = new InlineFocusListener() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (!TextCellEditor.this.contentProposalOpen) {
+                    super.focusLost(e);
+                }
+            }
+        };
+
     }
 
     @Override
@@ -224,6 +276,18 @@ public class TextCellEditor extends AbstractCellEditor {
                     this.labelStack.getLabels());
 
             ((RenderErrorHandling) this.inputValidationErrorHandler).setErrorStyle(validationErrorStyle);
+        }
+
+        // if a IControlContentAdapter is registered, create and register a
+        // ContentProposalAdapter
+        if (this.controlContentAdapter != null) {
+            configureContentProposalAdapter(
+                    new ContentProposalAdapter(
+                            this.text,
+                            this.controlContentAdapter,
+                            this.proposalProvider,
+                            this.keyStroke,
+                            this.autoActivationCharacters));
         }
 
         this.text.forceFocus();
@@ -557,5 +621,86 @@ public class TextCellEditor extends AbstractCellEditor {
      */
     public void setInputValidationErrorHandler(IEditErrorHandler inputValidationErrorHandler) {
         this.inputValidationErrorHandler = inputValidationErrorHandler;
+    }
+
+    /**
+     * Configure the parameters necessary to create the content proposal adapter
+     * on opening an editor.
+     *
+     * @param controlContentAdapter
+     *            the <code>IControlContentAdapter</code> used to obtain and
+     *            update the control's contents as proposals are accepted. May
+     *            not be <code>null</code>.
+     * @param proposalProvider
+     *            the <code>IContentProposalProvider</code> used to obtain
+     *            content proposals for this control, or <code>null</code> if no
+     *            content proposal is available.
+     * @param keyStroke
+     *            the keystroke that will invoke the content proposal popup. If
+     *            this value is <code>null</code>, then proposals will be
+     *            activated automatically when any of the auto activation
+     *            characters are typed.
+     * @param autoActivationCharacters
+     *            An array of characters that trigger auto-activation of content
+     *            proposal. If specified, these characters will trigger
+     *            auto-activation of the proposal popup, regardless of whether
+     *            an explicit invocation keyStroke was specified. If this
+     *            parameter is <code>null</code>, then only a specified
+     *            keyStroke will invoke content proposal. If this parameter is
+     *            <code>null</code> and the keyStroke parameter is
+     *            <code>null</code>, then all alphanumeric characters will
+     *            auto-activate content proposal.
+     *
+     * @see ContentProposalAdapter
+     * @since 1.4
+     */
+    public void enableContentProposal(
+            IControlContentAdapter controlContentAdapter,
+            IContentProposalProvider proposalProvider,
+            KeyStroke keyStroke,
+            char[] autoActivationCharacters) {
+
+        this.controlContentAdapter = controlContentAdapter;
+        this.proposalProvider = proposalProvider;
+        this.keyStroke = keyStroke;
+        this.autoActivationCharacters = autoActivationCharacters;
+    }
+
+    /**
+     * Adds the listeners necessary for interaction between the control of this
+     * TextCellEditor and the ContentProposalAdapter.
+     *
+     * @param contentProposalAdapter
+     *            The {@link ContentProposalAdapter} that should be used to add
+     *            content proposal abilities to this {@link TextCellEditor}.
+     * @since 1.4
+     */
+    protected void configureContentProposalAdapter(final ContentProposalAdapter contentProposalAdapter) {
+        // add the necessary listeners to support the interaction between the
+        // content proposal and this text editor
+        contentProposalAdapter.addContentProposalListener(new IContentProposalListener() {
+
+            @Override
+            public void proposalAccepted(IContentProposal proposal) {
+                commit(MoveDirectionEnum.NONE);
+            }
+        });
+
+        contentProposalAdapter.addContentProposalListener(new IContentProposalListener2() {
+
+            @Override
+            public void proposalPopupClosed(ContentProposalAdapter adapter) {
+                TextCellEditor.this.contentProposalOpen = false;
+            }
+
+            @Override
+            public void proposalPopupOpened(ContentProposalAdapter adapter) {
+                TextCellEditor.this.contentProposalOpen = true;
+                // set the focus to the popup so on enabling via keystroke the
+                // selection via keyboard is immediately possible
+                contentProposalAdapter.setProposalPopupFocus();
+            }
+        });
+
     }
 }

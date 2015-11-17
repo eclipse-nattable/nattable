@@ -486,7 +486,13 @@ public abstract class AbstractCellEditor implements ICellEditor {
         this.dataValidator = validator;
     }
 
-    private class InlineFocusListener extends FocusAdapter {
+    /**
+     * {@link FocusListener} that tries to commit if the focus is lost.
+     * Otherwise it tries to keep the foucs in the editor.
+     * 
+     * @since 1.4
+     */
+    protected class InlineFocusListener extends FocusAdapter {
         @Override
         public void focusLost(FocusEvent e) {
             if (!commit(MoveDirectionEnum.NONE, true)) {
@@ -505,8 +511,10 @@ public abstract class AbstractCellEditor implements ICellEditor {
      * with the current value, prior to proceed the traversal. If the commit
      * fails and the editor can not be closed, the traversal will not be
      * processed.
+     *
+     * @since 1.4
      */
-    private class InlineTraverseListener implements TraverseListener {
+    protected class InlineTraverseListener implements TraverseListener {
         @Override
         public void keyTraversed(TraverseEvent event) {
             boolean committed = false;
