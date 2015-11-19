@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.formula.command.DisableFormulaCachingCommand;
 import org.eclipse.nebula.widgets.nattable.formula.command.EnableFormulaCachingCommand;
@@ -22,6 +23,7 @@ import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
 import org.eclipse.nebula.widgets.nattable.resize.AutoResizeHelper;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.command.CalculateSummaryRowValuesCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
@@ -238,7 +240,7 @@ public class LayerPrinter {
     /**
      * Enable in-memory pre-rendering. This is necessary in case content
      * painters are used that are configured for content based auto-resizing.
-     * 
+     *
      * @since 1.4
      */
     public void enablePreRendering() {
@@ -249,7 +251,7 @@ public class LayerPrinter {
      * Disable in-memory pre-rendering. You should consider to disable
      * pre-rendering if no content painters are used that are configured for
      * content based auto-resizing.
-     * 
+     *
      * @since 1.4
      */
     public void disablePreRendering() {
@@ -276,6 +278,17 @@ public class LayerPrinter {
         @Override
         public void run() {
             final float[] scaleFactor = computeScaleFactor(this.printer);
+
+            // check if a grid line width is configured
+            Integer width = LayerPrinter.this.configRegistry.getConfigAttribute(
+                    CellConfigAttributes.GRID_LINE_WIDTH,
+                    DisplayMode.NORMAL);
+            // if no explicit width is set, we temporary specify a grid line
+            // width of 2 for optimized grid line printing
+            if (width == null) {
+                LayerPrinter.this.configRegistry.registerConfigAttribute(
+                        CellConfigAttributes.GRID_LINE_WIDTH, 2);
+            }
 
             // if pre-rendering is enabled, render in-memory to trigger content
             // based auto-resizing
@@ -362,6 +375,14 @@ public class LayerPrinter {
                     restoreLayerState();
                 }
             }
+
+            // there was no explicit width configured, so we configured a
+            // temporary one for grid line printing. this configuration needs to
+            // be removed again
+            if (width == null) {
+                LayerPrinter.this.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
+            }
+
         }
 
         /**

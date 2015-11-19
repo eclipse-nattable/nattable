@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,12 @@ import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.swt.graphics.Color;
 
+/**
+ * Interface that specifies configuration attributes for cell rendering.
+ *
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
+ */
 public interface CellConfigAttributes {
 
     /**
@@ -47,4 +53,12 @@ public interface CellConfigAttributes {
      * Will be interpreted by the GridLineCellLayerPainter.
      */
     ConfigAttribute<Boolean> RENDER_GRID_LINES = new ConfigAttribute<Boolean>();
+
+    /**
+     * Attribute for configuring the width of the grid lines. Is for example
+     * used on printing to ensure the grid lines are always printed.
+     *
+     * @since 1.4
+     */
+    ConfigAttribute<Integer> GRID_LINE_WIDTH = new ConfigAttribute<Integer>();
 }

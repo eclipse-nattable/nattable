@@ -1,18 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 2012 Dirk Fauth and others.
+ * Copyright (c) 2012, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
@@ -21,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -35,9 +37,6 @@ import org.eclipse.swt.graphics.Rectangle;
  * cell, with this implementation you are free to choose for which side a border
  * should be painted or not.
  * </p>
- *
- * @author Dirk Fauth
- *
  */
 public class CustomLineBorderDecorator extends CellPainterWrapper {
 
@@ -86,18 +85,15 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
      *            The BorderStyle to use as default if there is no BorderStyle
      *            configured via cell styles. Can be <code>null</code>.
      */
-    public CustomLineBorderDecorator(ICellPainter interiorPainter,
-            BorderStyle defaultBorderStyle) {
+    public CustomLineBorderDecorator(ICellPainter interiorPainter, BorderStyle defaultBorderStyle) {
         super(interiorPainter);
         this.defaultBorderStyle = defaultBorderStyle;
     }
 
     @Override
-    public int getPreferredWidth(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-        int borderThickness = borderStyle != null ? borderStyle.getThickness()
-                : 0;
+        int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 
         int borderLineCount = 0;
         // check how many border lines are configured for that cell
@@ -107,16 +103,13 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
         if (labels.contains(LEFT_LINE_BORDER_LABEL))
             borderLineCount++;
 
-        return super.getPreferredWidth(cell, gc, configRegistry)
-                + (borderThickness * borderLineCount);
+        return super.getPreferredWidth(cell, gc, configRegistry) + (borderThickness * borderLineCount);
     }
 
     @Override
-    public int getPreferredHeight(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-        int borderThickness = borderStyle != null ? borderStyle.getThickness()
-                : 0;
+        int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 
         int borderLineCount = 0;
         // check how many border lines are configured for that cell
@@ -126,15 +119,12 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
         if (labels.contains(BOTTOM_LINE_BORDER_LABEL))
             borderLineCount++;
 
-        return super.getPreferredHeight(cell, gc, configRegistry)
-                + (borderThickness * borderLineCount);
+        return super.getPreferredHeight(cell, gc, configRegistry) + (borderThickness * borderLineCount);
     }
 
-    private BorderStyle getBorderStyle(ILayerCell cell,
-            IConfigRegistry configRegistry) {
+    private BorderStyle getBorderStyle(ILayerCell cell, IConfigRegistry configRegistry) {
         IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
-        BorderStyle borderStyle = cellStyle
-                .getAttributeValue(CellStyleAttributes.BORDER_STYLE);
+        BorderStyle borderStyle = cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE);
         if (borderStyle == null) {
             borderStyle = this.defaultBorderStyle;
         }
@@ -142,11 +132,9 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
-            IConfigRegistry configRegistry) {
+    public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
         BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-        int borderThickness = borderStyle != null ? borderStyle.getThickness()
-                : 0;
+        int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 
         // check how many border lines are configured for that cell
         List<String> labels = cell.getConfigLabels().getLabels();
@@ -165,8 +153,9 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
         if (labels.contains(BOTTOM_LINE_BORDER_LABEL))
             bottomBorderThickness = borderThickness;
 
-        Rectangle interiorBounds = new Rectangle(rectangle.x
-                + leftBorderThickness, rectangle.y + topBorderThickness,
+        Rectangle interiorBounds = new Rectangle(
+                rectangle.x + leftBorderThickness,
+                rectangle.y + topBorderThickness,
                 (rectangle.width - leftBorderThickness - rightBorderThickness),
                 (rectangle.height - topBorderThickness - bottomBorderThickness));
         super.paintCell(cell, gc, interiorBounds, configRegistry);
@@ -183,10 +172,20 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
         int originalLineWidth = gc.getLineWidth();
         int originalLineStyle = gc.getLineStyle();
 
+        Integer gridLineWidth = configRegistry.getConfigAttribute(
+                CellConfigAttributes.GRID_LINE_WIDTH,
+                DisplayMode.NORMAL,
+                cell.getConfigLabels().getLabels());
+        int adjustment = (gridLineWidth == null || gridLineWidth == 1)
+                ? 0 : Math.round(gridLineWidth.floatValue() / 2);
+
         gc.setLineWidth(borderThickness);
 
-        Rectangle borderArea = new Rectangle(rectangle.x, rectangle.y,
-                rectangle.width, rectangle.height);
+        Rectangle borderArea = new Rectangle(
+                rectangle.x,
+                rectangle.y,
+                rectangle.width,
+                rectangle.height);
         if (borderThickness >= 1) {
             int shift = 0;
             int correction = 0;
@@ -199,8 +198,8 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
             }
 
             if (leftBorderThickness >= 1) {
-                borderArea.x += shift;
-                borderArea.width -= shift;
+                borderArea.x += (shift + adjustment);
+                borderArea.width -= (shift + adjustment);
             }
 
             if (rightBorderThickness >= 1) {
@@ -208,8 +207,8 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
             }
 
             if (topBorderThickness >= 1) {
-                borderArea.y += shift;
-                borderArea.height -= shift;
+                borderArea.y += (shift + adjustment);
+                borderArea.height -= (shift + adjustment);
             }
 
             if (bottomBorderThickness >= 1) {
@@ -228,28 +227,23 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
         // else draw a line for every set border
         else {
             Point topLeftPos = new Point(borderArea.x, borderArea.y);
-            Point topRightPos = new Point(borderArea.x + borderArea.width,
-                    borderArea.y);
-            Point bottomLeftPos = new Point(borderArea.x, borderArea.y
-                    + borderArea.height);
-            Point bottomRightPos = new Point(borderArea.x + borderArea.width,
+            Point topRightPos = new Point(borderArea.x + borderArea.width, borderArea.y);
+            Point bottomLeftPos = new Point(borderArea.x, borderArea.y + borderArea.height);
+            Point bottomRightPos = new Point(
+                    borderArea.x + borderArea.width,
                     borderArea.y + borderArea.height);
 
             if (leftBorderThickness > 0) {
-                gc.drawLine(topLeftPos.x, topLeftPos.y, bottomLeftPos.x,
-                        bottomLeftPos.y);
+                gc.drawLine(topLeftPos.x, topLeftPos.y, bottomLeftPos.x, bottomLeftPos.y);
             }
             if (rightBorderThickness > 0) {
-                gc.drawLine(topRightPos.x, topRightPos.y, bottomRightPos.x,
-                        bottomRightPos.y);
+                gc.drawLine(topRightPos.x, topRightPos.y, bottomRightPos.x, bottomRightPos.y);
             }
             if (topBorderThickness > 0) {
-                gc.drawLine(topLeftPos.x, topLeftPos.y, topRightPos.x,
-                        topRightPos.y);
+                gc.drawLine(topLeftPos.x, topLeftPos.y, topRightPos.x, topRightPos.y);
             }
             if (bottomBorderThickness > 0) {
-                gc.drawLine(bottomLeftPos.x, bottomLeftPos.y, bottomRightPos.x,
-                        bottomRightPos.y);
+                gc.drawLine(bottomLeftPos.x, bottomLeftPos.y, bottomRightPos.x, bottomRightPos.y);
             }
         }
 

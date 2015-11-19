@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -65,8 +65,7 @@ public class CellLayerPainter implements ILayerPainter {
         }
 
         this.natLayer = natLayer;
-        Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(
-                natLayer, pixelRectangle);
+        Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
 
         calculateDimensionInfo(positionRectangle);
 
@@ -79,8 +78,7 @@ public class CellLayerPainter implements ILayerPainter {
                 if (columnPosition == -1 || rowPosition == -1) {
                     continue;
                 }
-                ILayerCell cell = natLayer.getCellByPosition(columnPosition,
-                        rowPosition);
+                ILayerCell cell = natLayer.getCellByPosition(columnPosition, rowPosition);
                 if (cell != null) {
                     if (cell.isSpannedCell()) {
                         spannedCells.add(cell);
@@ -134,80 +132,71 @@ public class CellLayerPainter implements ILayerPainter {
             this.horizontalPositionToPixelMap = new HashMap<Integer, Integer>();
             final int startPosition = positionRectangle.x;
             final int endPosition = startPosition + positionRectangle.width;
-            int previousEndX = (startPosition > 0) ? this.natLayer
-                    .getStartXOfColumnPosition(startPosition - 1)
-                    + this.natLayer.getColumnWidthByPosition(startPosition - 1)
+            int previousEndX = (startPosition > 0)
+                    ? this.natLayer.getStartXOfColumnPosition(startPosition - 1)
+                            + this.natLayer.getColumnWidthByPosition(startPosition - 1)
                     : Integer.MIN_VALUE;
             for (int position = startPosition; position < endPosition; position++) {
                 int startX = this.natLayer.getStartXOfColumnPosition(position);
                 this.horizontalPositionToPixelMap.put(
                         position,
-                        isClipLeft(position) ? startX : Math.max(startX,
-                                previousEndX));
-                previousEndX = startX
-                        + this.natLayer.getColumnWidthByPosition(position);
+                        isClipLeft(position) ? startX : Math.max(startX, previousEndX));
+                previousEndX = startX + this.natLayer.getColumnWidthByPosition(position);
             }
             if (endPosition < this.natLayer.getColumnCount()) {
                 int startX = this.natLayer.getStartXOfColumnPosition(endPosition);
-                this.horizontalPositionToPixelMap.put(endPosition,
-                        Math.max(startX, previousEndX));
+                this.horizontalPositionToPixelMap.put(endPosition, Math.max(startX, previousEndX));
             }
         }
         {
             this.verticalPositionToPixelMap = new HashMap<Integer, Integer>();
             final int startPosition = positionRectangle.y;
             final int endPosition = startPosition + positionRectangle.height;
-            int previousEndY = (startPosition > 0) ? this.natLayer
-                    .getStartYOfRowPosition(startPosition - 1)
-                    + this.natLayer.getRowHeightByPosition(startPosition - 1)
+            int previousEndY = (startPosition > 0)
+                    ? this.natLayer.getStartYOfRowPosition(startPosition - 1)
+                            + this.natLayer.getRowHeightByPosition(startPosition - 1)
                     : Integer.MIN_VALUE;
             for (int position = startPosition; position < endPosition; position++) {
                 int startY = this.natLayer.getStartYOfRowPosition(position);
                 this.verticalPositionToPixelMap.put(
                         position,
-                        isClipTop(position) ? startY : Math.max(startY,
-                                previousEndY));
-                previousEndY = startY
-                        + this.natLayer.getRowHeightByPosition(position);
+                        isClipTop(position) ? startY : Math.max(startY, previousEndY));
+                previousEndY = startY + this.natLayer.getRowHeightByPosition(position);
             }
             if (endPosition < this.natLayer.getRowCount()) {
                 int startY = this.natLayer.getStartYOfRowPosition(endPosition);
-                this.verticalPositionToPixelMap.put(endPosition,
-                        Math.max(startY, previousEndY));
+                this.verticalPositionToPixelMap.put(endPosition, Math.max(startY, previousEndY));
             }
         }
     }
 
     @Override
-    public Rectangle adjustCellBounds(int columnPosition, int rowPosition,
-            Rectangle cellBounds) {
+    public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
         return cellBounds;
     }
 
-    protected Rectangle getPositionRectangleFromPixelRectangle(ILayer natLayer,
-            Rectangle pixelRectangle) {
-        int columnPositionOffset = natLayer
-                .getColumnPositionByX(pixelRectangle.x);
+    protected Rectangle getPositionRectangleFromPixelRectangle(ILayer natLayer, Rectangle pixelRectangle) {
+        int columnPositionOffset = natLayer.getColumnPositionByX(pixelRectangle.x);
         int rowPositionOffset = natLayer.getRowPositionByY(pixelRectangle.y);
-        int numColumns = natLayer
-                .getColumnPositionByX(Math.min(natLayer.getWidth(),
-                        pixelRectangle.x + pixelRectangle.width) - 1)
+        int numColumns = natLayer.getColumnPositionByX(
+                Math.min(natLayer.getWidth(), pixelRectangle.x + pixelRectangle.width) - 1)
                 - columnPositionOffset + 1;
-        int numRows = natLayer.getRowPositionByY(Math.min(natLayer.getHeight(),
-                pixelRectangle.y + pixelRectangle.height) - 1)
+        int numRows = natLayer.getRowPositionByY(
+                Math.min(natLayer.getHeight(), pixelRectangle.y + pixelRectangle.height) - 1)
                 - rowPositionOffset + 1;
 
-        return new Rectangle(columnPositionOffset, rowPositionOffset,
-                numColumns, numRows);
+        return new Rectangle(
+                columnPositionOffset,
+                rowPositionOffset,
+                numColumns,
+                numRows);
     }
 
-    protected void paintCell(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    protected void paintCell(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         ILayer layer = cell.getLayer();
         int columnPosition = cell.getColumnPosition();
         int rowPosition = cell.getRowPosition();
-        ICellPainter cellPainter = layer.getCellPainter(columnPosition,
-                rowPosition, cell, configRegistry);
+        ICellPainter cellPainter = layer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
         Rectangle adjustedCellBounds = layer
                 .getLayerPainter()
                 .adjustCellBounds(columnPosition, rowPosition, cell.getBounds());
@@ -217,14 +206,11 @@ public class CellLayerPainter implements ILayerPainter {
             int startX = getStartXOfColumnPosition(columnPosition);
             int startY = getStartYOfRowPosition(rowPosition);
 
-            int endX = getStartXOfColumnPosition(cell.getOriginColumnPosition()
-                    + cell.getColumnSpan());
-            int endY = getStartYOfRowPosition(cell.getOriginRowPosition()
-                    + cell.getRowSpan());
+            int endX = getStartXOfColumnPosition(cell.getOriginColumnPosition() + cell.getColumnSpan());
+            int endY = getStartYOfRowPosition(cell.getOriginRowPosition() + cell.getRowSpan());
 
-            Rectangle cellClipBounds = originalClipping
-                    .intersection(new Rectangle(startX, startY, endX - startX,
-                            endY - startY));
+            Rectangle cellClipBounds = originalClipping.intersection(
+                    new Rectangle(startX, startY, endX - startX, endY - startY));
             gc.setClipping(cellClipBounds.intersection(adjustedCellBounds));
 
             cellPainter.paintCell(cell, gc, adjustedCellBounds, configRegistry);
@@ -237,15 +223,12 @@ public class CellLayerPainter implements ILayerPainter {
         if (columnPosition < this.natLayer.getColumnCount()) {
             Integer start = this.horizontalPositionToPixelMap.get(columnPosition);
             if (start == null) {
-                start = Integer.valueOf(this.natLayer
-                        .getStartXOfColumnPosition(columnPosition));
+                start = this.natLayer.getStartXOfColumnPosition(columnPosition);
                 if (columnPosition > 0) {
-                    int start2 = this.natLayer
-                            .getStartXOfColumnPosition(columnPosition - 1)
-                            + this.natLayer
-                                    .getColumnWidthByPosition(columnPosition - 1);
+                    int start2 = this.natLayer.getStartXOfColumnPosition(columnPosition - 1)
+                            + this.natLayer.getColumnWidthByPosition(columnPosition - 1);
                     if (start2 > start.intValue()) {
-                        start = Integer.valueOf(start2);
+                        start = start2;
                     }
                 }
                 this.horizontalPositionToPixelMap.put(columnPosition, start);
@@ -260,14 +243,12 @@ public class CellLayerPainter implements ILayerPainter {
         if (rowPosition < this.natLayer.getRowCount()) {
             Integer start = this.verticalPositionToPixelMap.get(rowPosition);
             if (start == null) {
-                start = Integer.valueOf(this.natLayer
-                        .getStartYOfRowPosition(rowPosition));
+                start = this.natLayer.getStartYOfRowPosition(rowPosition);
                 if (rowPosition > 0) {
-                    int start2 = this.natLayer
-                            .getStartYOfRowPosition(rowPosition - 1)
+                    int start2 = this.natLayer.getStartYOfRowPosition(rowPosition - 1)
                             + this.natLayer.getRowHeightByPosition(rowPosition - 1);
                     if (start2 > start.intValue()) {
-                        start = Integer.valueOf(start2);
+                        start = start2;
                     }
                 }
                 this.verticalPositionToPixelMap.put(rowPosition, start);
