@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -113,7 +113,7 @@ public class LayerPrinter {
         float[] scaleFactor = computeScaleFactor(printer);
 
         int numOfHorizontalPages = Float.valueOf(layerArea.width / (printArea.width / scaleFactor[0])).intValue();
-        int numOfVerticalPages = Float.valueOf(layerArea.height / (printArea.height / scaleFactor[1])).intValue();
+        int numOfVerticalPages = Float.valueOf(layerArea.height / ((printArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor[1])).intValue();
 
         // Adjusting for 0 index
         return new Point(numOfHorizontalPages + 1, numOfVerticalPages + 1);
