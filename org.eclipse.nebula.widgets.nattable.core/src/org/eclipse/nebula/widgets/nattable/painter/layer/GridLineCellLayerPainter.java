@@ -130,7 +130,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 
             int oldLineWidth = gc.getLineWidth();
             gc.setLineWidth(this.gridLineWidth);
-            drawGridLines(natLayer, gc, rectangle, configRegistry);
+            drawGridLines(natLayer, gc, rectangle, configRegistry, labels);
             gc.setLineWidth(oldLineWidth);
         }
 
@@ -151,10 +151,24 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
                 Math.max(bounds.height - sizeAdjustment, 0));
     }
 
+    /**
+     * @deprecated Use
+     *             {@link #drawGridLines(ILayer, GC, Rectangle, IConfigRegistry, List)}
+     *             with specifying the label stack
+     */
+    @Deprecated
     protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
+        drawGridLines(natLayer, gc, rectangle, configRegistry, new ArrayList<String>());
+    }
+
+    /**
+     * @since 1.4
+     */
+    protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle, IConfigRegistry configRegistry, List<String> labels) {
         Color gColor = configRegistry.getConfigAttribute(
                 CellConfigAttributes.GRID_LINE_COLOR,
-                DisplayMode.NORMAL);
+                DisplayMode.NORMAL,
+                labels);
         gc.setForeground(gColor != null ? gColor : this.gridColor);
 
         int adjustment = (this.gridLineWidth == 1) ? 1 : Math.round(this.gridLineWidth.floatValue() / 2);
