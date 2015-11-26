@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * IOverlayPainter that renders the left and the top border of a NatTable.
@@ -30,11 +31,8 @@ import org.eclipse.swt.graphics.GC;
  * For completeness this painter is also able to render the right and the bottom
  * border to ensure that the border has the same color around the NatTable
  * without changing the grid line color.
- *
- * @author Dirk Fauth
- *
  */
-public class NatTableBorderOverlayPainter implements IOverlayPainter {
+public class NatTableBorderOverlayPainter implements IOverlayPainter2 {
 
     /**
      * The color that should be used to render the border around the NatTable.
@@ -169,18 +167,39 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter {
 
     @Override
     public void paintOverlay(GC gc, ILayer layer) {
+        paintOverlay(layer, gc, 0, 0, new Rectangle(0, 0, layer.getWidth(), layer.getHeight()));
+    }
+
+    /**
+     * @since 1.4
+     */
+    @Override
+    public void paintOverlay(ILayer layer, GC gc, int xOffset, int yOffset, Rectangle rectangle) {
         Color beforeColor = gc.getForeground();
 
         gc.setForeground(getBorderColor());
 
-        gc.drawLine(0, 0, 0, layer.getHeight() - 1);
-        gc.drawLine(0, 0, layer.getWidth() - 1, 0);
+        int x = rectangle.x;
+        int y = rectangle.y;
+        int width = rectangle.x + Math.min(rectangle.width, layer.getWidth() - rectangle.x);
+        int height = rectangle.y + Math.min(rectangle.height, layer.getHeight() - rectangle.y);
+
+        if (rectangle.x == 0) {
+            gc.drawLine(x, y, x, height - 1);
+        }
+
+        if (rectangle.y == 0) {
+            gc.drawLine(x, y, width - 1, y);
+        }
 
         if (this.renderAllBorderLines) {
-            gc.drawLine(layer.getWidth() - 1, 0, layer.getWidth() - 1,
-                    layer.getHeight() - 1);
-            gc.drawLine(0, layer.getHeight() - 1, layer.getWidth() - 1,
-                    layer.getHeight() - 1);
+            if (width >= layer.getWidth()) {
+                gc.drawLine(width - 1, y, width - 1, height - 1);
+            }
+
+            if (height >= layer.getHeight()) {
+                gc.drawLine(x, height - 1, width - 1, height - 1);
+            }
         }
 
         gc.setForeground(beforeColor);
