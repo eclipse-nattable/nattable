@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -201,8 +201,7 @@ public class GUIHelper {
                             convertVerticalPixelToDpi(imageData.height));
                     JFaceResources.getImageRegistry().put(key, new Image(Display.getDefault(), imageData));
                 }
-            }
-            else {
+            } else {
                 JFaceResources.getImageRegistry().put(key, ImageDescriptor.createFromURL(url));
             }
             image = JFaceResources.getImage(key);
@@ -241,8 +240,7 @@ public class GUIHelper {
                             convertHorizontalPixelToDpi(imageData.width),
                             convertVerticalPixelToDpi(imageData.height));
                     JFaceResources.getImageRegistry().put(imageName, new Image(Display.getDefault(), imageData));
-                }
-                else {
+                } else {
                     JFaceResources.getImageRegistry().put(imageName, imageDescriptor.createImage());
                 }
 
@@ -437,7 +435,7 @@ public class GUIHelper {
      * @return The converted pixels.
      */
     public static int convertHorizontalPixelToDpi(int pixel) {
-        return Float.valueOf(pixel * getDpiFactor(getDpiX())).intValue();
+        return Double.valueOf(pixel * (double) getDpiFactor(getDpiX())).intValue();
     }
 
     /**
@@ -449,7 +447,7 @@ public class GUIHelper {
      * @return The pixel value related to the given DPI
      */
     public static int convertHorizontalDpiToPixel(int dpi) {
-        return Float.valueOf(dpi / getDpiFactor(getDpiY())).intValue();
+        return Double.valueOf(dpi / (double) getDpiFactor(getDpiY())).intValue();
     }
 
     /**
@@ -461,7 +459,7 @@ public class GUIHelper {
      * @return The converted pixels.
      */
     public static int convertVerticalPixelToDpi(int pixel) {
-        return Float.valueOf(pixel * getDpiFactor(getDpiX())).intValue();
+        return Double.valueOf(pixel * (double) getDpiFactor(getDpiX())).intValue();
     }
 
     /**
@@ -473,7 +471,7 @@ public class GUIHelper {
      * @return The pixel value related to the given DPI
      */
     public static int convertVerticalDpiToPixel(int dpi) {
-        return Float.valueOf(dpi / getDpiFactor(getDpiY())).intValue();
+        return Double.valueOf(dpi / (double) getDpiFactor(getDpiY())).intValue();
     }
 
 }
