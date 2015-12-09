@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -895,7 +895,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         int maxWidth = getMaxWidth();
         if (underlyingLayer.getColumnIndexByPosition(scrollableColumnPosition) >= 0
                 && (maxWidth < 0 || (maxWidth >= 0
-                && underlyingLayer.getStartXOfColumnPosition(scrollableColumnPosition) < maxWidth))) {
+                        && underlyingLayer.getStartXOfColumnPosition(scrollableColumnPosition) < maxWidth))) {
             if (scrollableColumnPosition >= getMinimumOriginColumnPosition()) {
                 int originColumnPosition = getOriginColumnPosition();
 
@@ -933,7 +933,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         int maxHeight = getMaxHeight();
         if (underlyingLayer.getRowIndexByPosition(scrollableRowPosition) >= 0
                 && (maxHeight < 0 || (maxHeight >= 0
-                && underlyingLayer.getStartYOfRowPosition(scrollableRowPosition) < maxHeight))) {
+                        && underlyingLayer.getStartYOfRowPosition(scrollableRowPosition) < maxHeight))) {
             if (scrollableRowPosition >= getMinimumOriginRowPosition()) {
                 int originRowPosition = getOriginRowPosition();
 
@@ -1047,13 +1047,20 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
             possibleArea.height = possibleArea.height - heightDiff;
             clientAreaResizeCommand.setCalcArea(possibleArea);
 
-            this.processingClientAreaResizeCommand = false;
             // we don't return true here because the ClientAreaResizeCommand
-            // needs to be handled
-            // by the DataLayer in case percentage sizing is enabled
-            // if we would return true, the DataLayer wouldn't be able to
-            // calculate the column/row
-            // sizes regarding the client area
+            // needs to be handled by the DataLayer in case percentage sizing is
+            // enabled. if we would return true, the DataLayer wouldn't be able
+            // to calculate the column/row sizes regarding the client area
+            boolean result = super.doCommand(command);
+
+            // we need to first give underlying layers the chance to process the
+            // command and afterwards set the processing flag to false
+            // this way we avoid processing the resize multiple times because of
+            // re-calculation in conjunction with scrollbar visibility state
+            // changes
+            this.processingClientAreaResizeCommand = false;
+
+            return result;
         } else if (command instanceof TurnViewportOffCommand) {
             this.savedOrigin = this.origin;
             this.viewportOff = true;
