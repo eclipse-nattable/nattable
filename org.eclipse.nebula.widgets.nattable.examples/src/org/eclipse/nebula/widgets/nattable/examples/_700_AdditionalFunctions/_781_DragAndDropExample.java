@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *    Janos Binder <janos.binder@openchrom.net> - position is stored
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._700_AdditionalFunctions;
 
@@ -49,6 +50,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -235,7 +237,6 @@ public class _781_DragAndDropExample extends AbstractNatExample {
         public void drop(DropTargetEvent event) {
             String[] data = (event.data != null ? event.data.toString().split(
                     "\\" + DATA_SEPARATOR) : new String[] {});
-
             if (data.length > 0) {
                 Person p = new Person(Integer.valueOf(data[0]));
                 p.setFirstName(data[1]);
@@ -246,7 +247,12 @@ public class _781_DragAndDropExample extends AbstractNatExample {
                     p.setBirthday(this.sdf.parse(data[5]));
                 } catch (ParseException e) {}
 
-                this.data.add(p);
+                int rowPosition = getRowPosition(event);
+                if (rowPosition > 0) {
+                    this.data.add(rowPosition - 1, p);
+                } else {
+                    this.data.add(p);
+                }
                 this.natTable.refresh();
             }
         }
@@ -254,5 +260,10 @@ public class _781_DragAndDropExample extends AbstractNatExample {
         @Override
         public void dropAccept(DropTargetEvent event) {}
 
+        private int getRowPosition(DropTargetEvent event) {
+            Point pt = event.display.map(null, this.natTable, event.x, event.y);
+            int position = this.natTable.getRowPositionByY(pt.y);
+            return position;
+        }
     }
 }
