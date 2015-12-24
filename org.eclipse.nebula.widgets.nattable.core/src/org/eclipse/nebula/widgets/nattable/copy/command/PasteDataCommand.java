@@ -10,7 +10,7 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.formula.command;
+package org.eclipse.nebula.widgets.nattable.copy.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -20,17 +20,13 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
  *
  * @since 1.4
  *
- * @see FormulaPasteDataCommandHandler
+ * @see InternalPasteDataCommandHandler
  */
-public class FormulaPasteDataCommand extends AbstractContextFreeCommand {
+public class PasteDataCommand extends AbstractContextFreeCommand {
 
-    private final IConfigRegistry configRegistry;
+    public final IConfigRegistry configRegistry;
 
-    public FormulaPasteDataCommand(IConfigRegistry configRegistry) {
+    public PasteDataCommand(IConfigRegistry configRegistry) {
         this.configRegistry = configRegistry;
-    }
-
-    public IConfigRegistry getConfigRegistry() {
-        return this.configRegistry;
     }
 }

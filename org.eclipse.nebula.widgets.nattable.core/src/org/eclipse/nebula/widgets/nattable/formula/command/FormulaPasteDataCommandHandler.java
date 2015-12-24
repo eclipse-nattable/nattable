@@ -12,92 +12,72 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.formula.command;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
-import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
-import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommand;
+import org.eclipse.nebula.widgets.nattable.copy.command.InternalPasteDataCommandHandler;
+import org.eclipse.nebula.widgets.nattable.copy.command.PasteDataCommand;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaDataProvider;
 import org.eclipse.nebula.widgets.nattable.formula.function.FunctionException;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
 /**
- * {@link ILayerCommandHandler} for handling {@link FormulaPasteDataCommand}s.
- * Uses the {@link InternalCellClipboard} and transforms formulas to match the
- * new position.
+ * {@link ILayerCommandHandler} for handling {@link PasteDataCommand}s. Uses the
+ * {@link InternalCellClipboard} and transforms formulas to match the new
+ * position.
  *
  * @since 1.4
  */
-public class FormulaPasteDataCommandHandler extends AbstractLayerCommandHandler<FormulaPasteDataCommand> {
+public class FormulaPasteDataCommandHandler extends InternalPasteDataCommandHandler {
 
-    protected SelectionLayer selectionLayer;
     protected FormulaDataProvider dataProvider;
-    protected InternalCellClipboard clipboard;
 
+    /**
+     *
+     * @param selectionLayer
+     *            {@link SelectionLayer} that is needed to determine the
+     *            position to paste the values to.
+     * @param dataProvider
+     *            the {@link FormulaDataProvider} that is needed to perform
+     *            formula related functions on pasting data.
+     * @param clipboard
+     *            The {@link InternalCellClipboard} that contains the values
+     *            that should be pasted.
+     */
     public FormulaPasteDataCommandHandler(
             SelectionLayer selectionLayer,
-            FormulaDataProvider dataProvider,
-            InternalCellClipboard clipboard) {
+            InternalCellClipboard clipboard,
+            FormulaDataProvider dataProvider) {
 
-        this.selectionLayer = selectionLayer;
+        super(selectionLayer, clipboard);
         this.dataProvider = dataProvider;
-        this.clipboard = clipboard;
     }
 
     @Override
-    protected boolean doCommand(FormulaPasteDataCommand command) {
-        if (this.clipboard.getCopiedCells() != null) {
-            // in case there are no cached data information held in the copied
-            // cells, ensure that formulas are not evaluated on paste
-            this.selectionLayer.doCommand(new DisableFormulaEvaluationCommand());
-
-            PositionCoordinate coord = this.selectionLayer.getSelectionAnchor();
-            int pasteColumn = coord.getColumnPosition();
-            int pasteRow = coord.getRowPosition();
-
-            for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
-                for (ILayerCell cell : cells) {
-                    Object cellValue = cell.getDataValue();
-                    if (cellValue != null && this.dataProvider.getFormulaParser().isFunction(cellValue.toString())) {
-                        try {
-                            cellValue = this.dataProvider.getFormulaParser().updateReferences(
-                                    cellValue.toString(), cell.getColumnPosition(), cell.getRowPosition(), pasteColumn, pasteRow);
-                        } catch (FunctionException e) {
-                            if (this.dataProvider.getErrorReporter() != null) {
-                                this.dataProvider.getErrorReporter().addFormulaError(pasteColumn, pasteRow, e.getLocalizedMessage());
-                            }
-                            cellValue = e.getErrorMarkup();
-                        }
-                    }
-
-                    if (EditUtils.isCellEditable(
-                            this.selectionLayer,
-                            command.getConfigRegistry(),
-                            new PositionCoordinate(this.selectionLayer, pasteColumn, pasteRow))) {
-
-                        this.selectionLayer.doCommand(new UpdateDataCommand(this.selectionLayer, pasteColumn, pasteRow, cellValue));
-                    }
-
-                    pasteColumn++;
-
-                    if (pasteColumn >= this.selectionLayer.getColumnCount()) {
-                        break;
-                    }
+    protected Object getPasteValue(ILayerCell cell, int pasteColumn, int pasteRow) {
+        Object cellValue = cell.getDataValue();
+        if (cellValue != null && this.dataProvider.getFormulaParser().isFunction(cellValue.toString())) {
+            try {
+                cellValue = this.dataProvider.getFormulaParser().updateReferences(
+                        cellValue.toString(), cell.getColumnPosition(), cell.getRowPosition(), pasteColumn, pasteRow);
+            } catch (FunctionException e) {
+                if (this.dataProvider.getErrorReporter() != null) {
+                    this.dataProvider.getErrorReporter().addFormulaError(pasteColumn, pasteRow, e.getLocalizedMessage());
                 }
-                pasteRow++;
-                pasteColumn = coord.getColumnPosition();
+                cellValue = e.getErrorMarkup();
             }
-
-            this.selectionLayer.doCommand(new EnableFormulaEvaluationCommand());
         }
-        return true;
+        return cellValue;
     }
 
     @Override
-    public Class<FormulaPasteDataCommand> getCommandClass() {
-        return FormulaPasteDataCommand.class;
+    protected void preInternalPaste() {
+        this.selectionLayer.doCommand(new DisableFormulaEvaluationCommand());
+    }
+
+    @Override
+    protected void postInternalPaste() {
+        this.selectionLayer.doCommand(new EnableFormulaEvaluationCommand());
     }
 
 }

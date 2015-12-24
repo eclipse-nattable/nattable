@@ -19,19 +19,23 @@ import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.copy.InternalClipboardStructuralChangeListener;
 import org.eclipse.nebula.widgets.nattable.copy.action.ClearClipboardAction;
+import org.eclipse.nebula.widgets.nattable.copy.action.PasteDataAction;
+import org.eclipse.nebula.widgets.nattable.copy.action.PasteOrMoveSelectionAction;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.action.DeleteSelectionAction;
 import org.eclipse.nebula.widgets.nattable.edit.command.DeleteSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
+import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleLayerPainter;
+import org.eclipse.nebula.widgets.nattable.fillhandle.event.FillHandleEventMatcher;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaDataProvider;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaEditDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaResultDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.formula.action.FormulaPasteDataAction;
-import org.eclipse.nebula.widgets.nattable.formula.action.PasteOrMoveSelectionAction;
+import org.eclipse.nebula.widgets.nattable.formula.action.FormulaFillHandleDragMode;
 import org.eclipse.nebula.widgets.nattable.formula.command.DisableFormulaEvaluationCommandHandler;
 import org.eclipse.nebula.widgets.nattable.formula.command.EnableFormulaEvaluationCommandHandler;
 import org.eclipse.nebula.widgets.nattable.formula.command.FormulaCopyDataCommandHandler;
+import org.eclipse.nebula.widgets.nattable.formula.command.FormulaFillHandlePasteCommandHandler;
 import org.eclipse.nebula.widgets.nattable.formula.command.FormulaPasteDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -41,6 +45,7 @@ import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
@@ -98,7 +103,7 @@ public class DefaultFormulaConfiguration implements IConfiguration {
                 CellConfigAttributes.CELL_STYLE,
                 copyBorderStyle,
                 DisplayMode.NORMAL,
-                FormulaStyleLabels.COPY_BORDER_STYLE);
+                SelectionStyleLabels.COPY_BORDER_STYLE);
     }
 
     @Override
@@ -111,7 +116,7 @@ public class DefaultFormulaConfiguration implements IConfiguration {
         // ui binding to perform a paste action on pressing CTRL+V
         uiBindingRegistry.registerFirstKeyBinding(
                 new KeyEventMatcher(SWT.MOD1, 'v'),
-                new FormulaPasteDataAction());
+                new PasteDataAction());
 
         // ui binding to perform paste or selection movement on ENTER
         uiBindingRegistry.registerFirstKeyBinding(
@@ -122,6 +127,14 @@ public class DefaultFormulaConfiguration implements IConfiguration {
         uiBindingRegistry.registerFirstKeyBinding(
                 new KeyEventMatcher(SWT.NONE, SWT.ESC),
                 new ClearClipboardAction(this.clipboard));
+
+        // Mouse drag
+        // trigger the handle drag operations
+        // Note: we ensure a FillHandleLayerPainter is set in configureLayer
+        uiBindingRegistry.registerFirstMouseDragMode(
+                new FillHandleEventMatcher((FillHandleLayerPainter) this.selectionLayer.getLayerPainter()),
+                new FormulaFillHandleDragMode(this.selectionLayer, this.clipboard, this.dataProvider));
+
     }
 
     @Override
@@ -145,8 +158,20 @@ public class DefaultFormulaConfiguration implements IConfiguration {
         // changes
         this.selectionLayer.addLayerListener(new InternalClipboardStructuralChangeListener(this.clipboard));
 
+        // add the layer painter that renders a border around copied cells
+        if (!(this.selectionLayer.getLayerPainter() instanceof FillHandleLayerPainter)) {
+            this.selectionLayer.setLayerPainter(new FillHandleLayerPainter(this.clipboard));
+        } else {
+            // ensure the clipboard is set
+            ((FillHandleLayerPainter) this.selectionLayer.getLayerPainter()).setClipboard(this.clipboard);
+        }
+
         // register special copy+paste command handlers
-        layer.registerCommandHandler(new FormulaCopyDataCommandHandler(this.selectionLayer, this.clipboard));
-        layer.registerCommandHandler(new FormulaPasteDataCommandHandler(this.selectionLayer, this.dataProvider, this.clipboard));
+        layer.registerCommandHandler(
+                new FormulaCopyDataCommandHandler(this.selectionLayer, this.clipboard));
+        layer.registerCommandHandler(
+                new FormulaPasteDataCommandHandler(this.selectionLayer, this.clipboard, this.dataProvider));
+        layer.registerCommandHandler(
+                new FormulaFillHandlePasteCommandHandler(this.selectionLayer, this.clipboard, this.dataProvider));
     }
 }

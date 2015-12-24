@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.conflation.EventConflaterChain;
 import org.eclipse.nebula.widgets.nattable.conflation.IEventConflater;
 import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.edit.CellEditorCreatedEvent;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
@@ -166,6 +167,12 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
      * {@link ThemeConfiguration}s at runtime.
      */
     private ThemeManager themeManager;
+
+    /**
+     * The {@link InternalCellClipboard} that is used for internal copy &amp;
+     * paste functionality.
+     */
+    private InternalCellClipboard clipboard = new InternalCellClipboard();
 
     /**
      * The active cell editor or {@code null} if there is no one.
@@ -1120,6 +1127,16 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
     public void setTheme(ThemeConfiguration themeConfiguration) {
         this.themeManager.applyTheme(themeConfiguration);
         doCommand(new VisualRefreshCommand());
+    }
+
+    /**
+     *
+     * @return The {@link InternalCellClipboard} that is used for internal copy
+     *         &amp; paste functionality.
+     * @since 1.4
+     */
+    public InternalCellClipboard getInternalCellClipboard() {
+        return this.clipboard;
     }
 
     // Editor

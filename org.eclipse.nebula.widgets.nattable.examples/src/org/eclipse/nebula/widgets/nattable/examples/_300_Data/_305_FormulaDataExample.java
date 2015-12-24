@@ -18,15 +18,14 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.examples.AbstractNatExample;
 import org.eclipse.nebula.widgets.nattable.examples.runner.StandaloneNatExampleRunner;
 import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.extension.poi.HSSFExcelExporter;
 import org.eclipse.nebula.widgets.nattable.extension.poi.PoiExcelExporter;
+import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaDataProvider;
-import org.eclipse.nebula.widgets.nattable.formula.FormulaLayerPainter;
 import org.eclipse.nebula.widgets.nattable.formula.FormulaTooltipErrorReporter;
 import org.eclipse.nebula.widgets.nattable.formula.command.DisableFormulaEvaluationCommand;
 import org.eclipse.nebula.widgets.nattable.formula.command.EnableFormulaEvaluationCommand;
@@ -100,14 +99,15 @@ public class _305_FormulaDataExample extends AbstractNatExample {
 
         final FormulaBodyLayerStack bodyLayer = gridLayer.getBodyLayer();
 
+        natTable.addConfiguration(new FillHandleConfiguration(bodyLayer.getSelectionLayer()));
+
         // This is the formula specific configuration
-        InternalCellClipboard clipboard = new InternalCellClipboard();
-
         natTable.addConfiguration(
-                new DefaultFormulaConfiguration(bodyLayer.getFormulaDataProvider(), bodyLayer.getSelectionLayer(), clipboard));
+                new DefaultFormulaConfiguration(
+                        bodyLayer.getFormulaDataProvider(),
+                        bodyLayer.getSelectionLayer(),
+                        natTable.getInternalCellClipboard()));
         bodyLayer.getFormulaDataProvider().setErrorReporter(new FormulaTooltipErrorReporter(natTable, bodyLayer.getDataLayer()));
-
-        bodyLayer.getSelectionLayer().setLayerPainter(new FormulaLayerPainter(clipboard));
 
         natTable.addConfiguration(new AbstractRegistryConfiguration() {
 
@@ -134,8 +134,7 @@ public class _305_FormulaDataExample extends AbstractNatExample {
                 if (_305_FormulaDataExample.this.evaluationEnabled) {
                     natTable.doCommand(new EnableFormulaEvaluationCommand());
                     toggleFormulaButton.setText("Disable Formula Evaluation");
-                }
-                else {
+                } else {
                     natTable.doCommand(new DisableFormulaEvaluationCommand());
                     toggleFormulaButton.setText("Enable Formula Evaluation");
                 }
@@ -226,9 +225,10 @@ public class _305_FormulaDataExample extends AbstractNatExample {
                     bodyLayer, selectionLayer);
 
             // Corner
-            ILayer cornerLayer = new CornerLayer(new DataLayer(
-                    new DefaultCornerDataProvider(columnHeaderDataProvider,
-                            rowHeaderDataProvider)), rowHeaderLayer,
+            ILayer cornerLayer = new CornerLayer(
+                    new DataLayer(
+                            new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider)),
+                    rowHeaderLayer,
                     columnHeaderLayer);
 
             setBodyLayer(bodyLayer);

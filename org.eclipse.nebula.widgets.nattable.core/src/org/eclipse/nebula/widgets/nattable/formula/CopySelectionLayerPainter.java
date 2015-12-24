@@ -16,7 +16,6 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
-import org.eclipse.nebula.widgets.nattable.formula.config.FormulaStyleLabels;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -26,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -42,25 +42,39 @@ import org.eclipse.swt.graphics.Rectangle;
  *
  * @since 1.4
  */
-public class FormulaLayerPainter extends SelectionLayerPainter {
+public class CopySelectionLayerPainter extends SelectionLayerPainter {
 
     protected InternalCellClipboard clipboard;
 
     /**
-     * Create a FormulaLayerPainter that renders gray grid lines and uses the
-     * default clipping behavior.
+     * Create a {@link CopySelectionLayerPainter} that renders gray grid lines
+     * and uses the default clipping behavior.
      *
      * @param clipboard
      *            The {@link InternalCellClipboard} that stores the cells that
      *            are currently copied.
      */
-    public FormulaLayerPainter(InternalCellClipboard clipboard) {
+    public CopySelectionLayerPainter(InternalCellClipboard clipboard) {
         this.clipboard = clipboard;
     }
 
     /**
-     * Create a FormulaLayerPainter that renders grid lines in the specified
-     * color and uses the specified clipping behavior.
+     * Create a {@link CopySelectionLayerPainter} that renders gray grid lines
+     * and uses the default clipping behavior.
+     *
+     * @param clipboard
+     *            The {@link InternalCellClipboard} that stores the cells that
+     *            are currently copied.
+     * @param gridColor
+     *            The color that should be used to render the grid lines.
+     */
+    public CopySelectionLayerPainter(InternalCellClipboard clipboard, final Color gridColor) {
+        this.clipboard = clipboard;
+    }
+
+    /**
+     * Create a {@link CopySelectionLayerPainter} that renders grid lines in the
+     * specified color and uses the specified clipping behavior.
      *
      * @param clipboard
      *            The {@link InternalCellClipboard} that stores the cells that
@@ -78,14 +92,14 @@ public class FormulaLayerPainter extends SelectionLayerPainter {
      *            <code>false</code> the bottom cell will be clipped. The
      *            default value is <code>false</code>.
      */
-    public FormulaLayerPainter(InternalCellClipboard clipboard, final Color gridColor, boolean clipLeft, boolean clipTop) {
+    public CopySelectionLayerPainter(InternalCellClipboard clipboard, final Color gridColor, boolean clipLeft, boolean clipTop) {
         super(gridColor, clipLeft, clipTop);
         this.clipboard = clipboard;
     }
 
     /**
-     * Create a FormulaLayerPainter that renders gray grid lines and uses the
-     * specified clipping behavior.
+     * Create a {@link CopySelectionLayerPainter} that renders gray grid lines
+     * and uses the specified clipping behavior.
      *
      * @param clipboard
      *            The {@link InternalCellClipboard} that stores the cells that
@@ -101,7 +115,7 @@ public class FormulaLayerPainter extends SelectionLayerPainter {
      *            <code>false</code> the bottom cell will be clipped. The
      *            default value is <code>false</code>.
      */
-    public FormulaLayerPainter(InternalCellClipboard clipboard, boolean clipLeft, boolean clipTop) {
+    public CopySelectionLayerPainter(InternalCellClipboard clipboard, boolean clipLeft, boolean clipTop) {
         this(clipboard, GUIHelper.COLOR_GRAY, clipLeft, clipTop);
     }
 
@@ -135,8 +149,7 @@ public class FormulaLayerPainter extends SelectionLayerPainter {
                         y0 = cell.getBounds().y;
                         y1 = cell.getBounds().y + cell.getBounds().height;
                         isFirst = false;
-                    }
-                    else {
+                    } else {
                         x0 = Math.min(x0, cell.getBounds().x);
                         x1 = Math.max(x1, cell.getBounds().x + cell.getBounds().width);
                         y0 = Math.min(y0, cell.getBounds().y);
@@ -165,7 +178,7 @@ public class FormulaLayerPainter extends SelectionLayerPainter {
      * Apply the border style that should be used to render the border for cells
      * that are currently copied to the {@link InternalCellClipboard}. Checks
      * the {@link ConfigRegistry} for a registered {@link IStyle} for the
-     * {@link FormulaStyleLabels#COPY_BORDER_STYLE} label. If none is
+     * {@link SelectionStyleLabels#COPY_BORDER_STYLE} label. If none is
      * registered, a default line style will be used to render the border.
      *
      * @param gc
@@ -178,7 +191,7 @@ public class FormulaLayerPainter extends SelectionLayerPainter {
         IStyle cellStyle = configRegistry.getConfigAttribute(
                 CellConfigAttributes.CELL_STYLE,
                 DisplayMode.NORMAL,
-                FormulaStyleLabels.COPY_BORDER_STYLE);
+                SelectionStyleLabels.COPY_BORDER_STYLE);
         BorderStyle borderStyle = cellStyle != null ? cellStyle.getAttributeValue(CellStyleAttributes.BORDER_STYLE) : null;
 
         // if there is no border style configured, use the default

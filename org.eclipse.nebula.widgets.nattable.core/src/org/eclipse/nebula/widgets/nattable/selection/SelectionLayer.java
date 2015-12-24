@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,8 @@ import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditSelectionCommandHandler;
+import org.eclipse.nebula.widgets.nattable.fillhandle.FillHandleLayerPainter;
+import org.eclipse.nebula.widgets.nattable.fillhandle.action.FillHandleDragMode;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeColumnsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeRowsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
@@ -74,6 +76,23 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
     protected final PositionCoordinate lastSelectedCell;
     protected final PositionCoordinate selectionAnchor;
     protected Rectangle lastSelectedRegion;
+
+    /**
+     * The region <i>selected</i> via fill handle to extend the current
+     * selection for triggering a fill action. Can be <code>null</code>.
+     *
+     * @since 1.4
+     */
+    protected Rectangle fillHandleRegion;
+
+    /**
+     * The bottom right cell in a contiguous selection or <code>null</code> if
+     * there is no selection or the selection is not contiguous. Needed to
+     * identify the cell on which the fill handle should be rendered.
+     *
+     * @since 1.4
+     */
+    protected PositionCoordinate bottomRightInSelection;
 
     protected SelectRowCommandHandler selectRowCommandHandler;
     protected SelectCellCommandHandler selectCellCommandHandler;
@@ -302,8 +321,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             // null, simply set the reference
             if (region == null || this.lastSelectedRegion == null) {
                 this.lastSelectedRegion = region;
-            }
-            else {
+            } else {
                 // we are modifying the values of the current lastSelectedRegion
                 // instead of setting a new reference because of reference
                 // issues in other places
@@ -496,8 +514,19 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
             if (cellRectangle.contains(getSelectionAnchor().columnPosition, getSelectionAnchor().rowPosition)) {
                 labelStack.addLabel(SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
             }
+
+            if (this.bottomRightInSelection != null
+                    && cellRectangle.contains(
+                            this.bottomRightInSelection.columnPosition,
+                            this.bottomRightInSelection.rowPosition)) {
+                labelStack.addLabel(SelectionStyleLabels.FILL_HANDLE_CELL);
+            }
         }
 
+        if (this.fillHandleRegion != null
+                && this.fillHandleRegion.contains(cell.getColumnIndex(), cell.getRowIndex())) {
+            labelStack.addLabel(SelectionStyleLabels.FILL_HANDLE_REGION);
+        }
         return labelStack;
     }
 
@@ -570,7 +599,8 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
      * least one fully selected column position, the {@link ColumnHideCommand}
      * will be consumed and a {@link MultiColumnHideCommand} will be created and
      * executed further down the layer stack, that contains all fully selected
-     * column positions. Otherwise the given command will be executed further.<br>
+     * column positions. Otherwise the given command will be executed further.
+     * <br>
      *
      * This is necessary because neither the ColumnHideShowLayer nor the action
      * that caused the execution of the {@link ColumnHideCommand} is aware of
@@ -723,6 +753,54 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                             command.getNewHeight()));
         } else {
             return super.doCommand(command);
+        }
+    }
+
+    /**
+     * Set the region that is currently <i>selected</i> via fill handle to
+     * extend the current active selection for triggering a fill action.
+     *
+     * @param region
+     *            The region <i>selected</i> via fill handle.
+     *
+     * @see FillHandleDragMode
+     * @see FillHandleLayerPainter
+     *
+     * @since 1.4
+     */
+    public void setFillHandleRegion(Rectangle region) {
+        this.fillHandleRegion = region;
+    }
+
+    /**
+     * Returns the region that is currently <i>selected</i> via fill handle to
+     * extend the current active selection. Used to perform actions on drag
+     * &amp; drop of the fill handle.
+     *
+     * @return The region <i>selected</i> via fill handle or <code>null</code>.
+     *
+     * @since 1.4
+     */
+    public Rectangle getFillHandleRegion() {
+        return this.fillHandleRegion;
+    }
+
+    /**
+     * Marks the bottom right cell in a contiguous selection within the
+     * {@link SelectionLayer}. Also removes the markup in case there is no
+     * selection or the selection is not contiguous.
+     *
+     * @since 1.4
+     */
+    public void markFillHandleCell() {
+        ILayerCell bottomRight = SelectionUtils.getBottomRightCellInSelection(this);
+        if (bottomRight != null) {
+            this.bottomRightInSelection = new PositionCoordinate(
+                    this,
+                    bottomRight.getColumnPosition(),
+                    bottomRight.getRowPosition());
+        } else {
+            this.bottomRightInSelection = null;
         }
     }
 }

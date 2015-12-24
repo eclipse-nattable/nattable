@@ -10,23 +10,23 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.formula.action;
+package org.eclipse.nebula.widgets.nattable.copy.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.formula.command.FormulaPasteDataCommand;
+import org.eclipse.nebula.widgets.nattable.copy.command.PasteDataCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
 /**
- * {@link IKeyAction} that triggers the {@link FormulaPasteDataCommand}.
+ * {@link IKeyAction} that triggers the {@link PasteDataCommand}.
  *
  * @since 1.4
  */
-public class FormulaPasteDataAction implements IKeyAction {
+public class PasteDataAction implements IKeyAction {
 
     @Override
     public void run(NatTable natTable, KeyEvent event) {
-        natTable.doCommand(new FormulaPasteDataCommand(natTable.getConfigRegistry()));
+        natTable.doCommand(new PasteDataCommand(natTable.getConfigRegistry()));
     }
 
 }

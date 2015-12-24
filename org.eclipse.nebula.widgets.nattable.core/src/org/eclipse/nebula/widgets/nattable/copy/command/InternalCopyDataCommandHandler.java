@@ -10,12 +10,11 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.formula.command;
+package org.eclipse.nebula.widgets.nattable.copy.command;
 
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
-import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
-import org.eclipse.nebula.widgets.nattable.copy.command.InternalCopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionUtils;
 
 /**
  * Specialized {@link CopyDataCommandHandler} that stores the copied cells in
@@ -23,7 +22,9 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
  *
  * @since 1.4
  */
-public class FormulaCopyDataCommandHandler extends InternalCopyDataCommandHandler {
+public class InternalCopyDataCommandHandler extends CopyDataCommandHandler {
+
+    protected InternalCellClipboard clipboard;
 
     /**
      * Creates an instance that only checks the {@link SelectionLayer} for the
@@ -37,17 +38,38 @@ public class FormulaCopyDataCommandHandler extends InternalCopyDataCommandHandle
      *            The {@link InternalCellClipboard} that should be used for
      *            copy/paste operations within a NatTable instance.
      */
-    public FormulaCopyDataCommandHandler(SelectionLayer selectionLayer, InternalCellClipboard clipboard) {
-        super(selectionLayer, clipboard);
+    public InternalCopyDataCommandHandler(SelectionLayer selectionLayer, InternalCellClipboard clipboard) {
+        super(selectionLayer);
+        this.clipboard = clipboard;
     }
 
     @Override
-    protected void preInternalCopy() {
-        this.selectionLayer.doCommand(new DisableFormulaEvaluationCommand());
+    public boolean doCommand(CopyDataToClipboardCommand command) {
+        // copy to clipboard
+        super.doCommand(command);
+
+        // only copy if contiguous cells
+        if (SelectionUtils.hasConsecutiveSelection(this.selectionLayer)) {
+            preInternalCopy();
+
+            // remember cells to copy to support paste
+            this.clipboard.setCopiedCells(assembleCopiedDataStructure());
+
+            postInternalCopy();
+        }
+
+        return true;
     }
 
-    @Override
-    protected void postInternalCopy() {
-        this.selectionLayer.doCommand(new EnableFormulaEvaluationCommand());
-    }
+    /**
+     * Perform actions prior copying values to the internal clipboard. E.g.
+     * disabling formula evaluation.
+     */
+    protected void preInternalCopy() {}
+
+    /**
+     * Perform actions after copying values to the internal clipboard. E.g.
+     * enabling formula evaluation.
+     */
+    protected void postInternalCopy() {}
 }

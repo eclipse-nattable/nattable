@@ -10,19 +10,19 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.formula.action;
+package org.eclipse.nebula.widgets.nattable.copy.action;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.copy.InternalCellClipboard;
-import org.eclipse.nebula.widgets.nattable.formula.command.FormulaPasteDataCommand;
+import org.eclipse.nebula.widgets.nattable.copy.command.PasteDataCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.nebula.widgets.nattable.selection.action.MoveSelectionAction;
 import org.eclipse.swt.events.KeyEvent;
 
 /**
- * Action implementation that performs a {@link FormulaPasteDataCommand} if
- * there are values in the {@link InternalCellClipboard}, otherwise it performs
- * a selection movement.
+ * Action implementation that performs a {@link PasteDataCommand} if there are
+ * values in the {@link InternalCellClipboard}, otherwise it performs a
+ * selection movement.
  *
  * @since 1.4
  */
@@ -59,11 +59,10 @@ public class PasteOrMoveSelectionAction extends MoveSelectionAction {
     public void run(NatTable natTable, KeyEvent event) {
         if (this.clipboard.getCopiedCells() != null) {
 
-            natTable.doCommand(new FormulaPasteDataCommand(natTable.getConfigRegistry()));
+            natTable.doCommand(new PasteDataCommand(natTable.getConfigRegistry()));
 
             this.clipboard.clear();
-        }
-        else {
+        } else {
             super.run(natTable, event);
         }
     }
