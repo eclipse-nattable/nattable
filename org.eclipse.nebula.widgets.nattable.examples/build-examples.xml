@@ -16,7 +16,6 @@
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.glazedlists/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.nebula/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.poi/target/classes"/>
-            <fileset dir="../org.eclipse.nebula.widgets.nattable.extension.builder/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.dataset/target/classes"/>
             <fileset dir="../org.eclipse.nebula.widgets.nattable.examples/target/classes"/>
         	<zipfileset 
