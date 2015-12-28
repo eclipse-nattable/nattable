@@ -83,7 +83,7 @@ public class ColumnGroupConfiguration extends DefaultColumnGroupHeaderLayerConfi
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
-                    new ColumnGroupHeaderTextPainter(this.columnGroupModel, cellPainter),
+                    new ColumnGroupHeaderTextPainter(cellPainter),
                     DisplayMode.NORMAL,
                     GridRegion.COLUMN_GROUP_HEADER);
         } else {

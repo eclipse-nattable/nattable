@@ -36,6 +36,7 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 /**
  * Helper class for retrieving information regarding editing of selected cells.
  */
+@SuppressWarnings("deprecation")
 public class EditUtils {
 
     /**
@@ -385,8 +386,7 @@ public class EditUtils {
 
             if (selectionLayer.getSelectionModel().getSelectedRowCount() == 1) {
                 selectedCells.add(getLastSelectedCell(selectionLayer));
-            }
-            else {
+            } else {
                 ILayerCell anchor = getLastSelectedCell(selectionLayer);
                 for (ILayerCell cell : selectionLayer.getSelectedCells()) {
                     if (cell.getColumnPosition() == anchor.getColumnPosition()) {
@@ -394,8 +394,7 @@ public class EditUtils {
                     }
                 }
             }
-        }
-        else {
+        } else {
             selectedCells = selectionLayer.getSelectedCells();
         }
         return selectedCells;

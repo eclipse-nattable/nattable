@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,7 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
-@SuppressWarnings("unchecked")
-public class AnyCommandHandlerFixture implements ILayerCommandHandler {
+public class AnyCommandHandlerFixture implements ILayerCommandHandler<ILayerCommand> {
 
     private ILayerCommand commadHandled;
     private int numberOfCommandsHandled;
@@ -28,7 +27,7 @@ public class AnyCommandHandlerFixture implements ILayerCommandHandler {
     }
 
     @Override
-    public Class getCommandClass() {
+    public Class<ILayerCommand> getCommandClass() {
         return ILayerCommand.class;
     }
 

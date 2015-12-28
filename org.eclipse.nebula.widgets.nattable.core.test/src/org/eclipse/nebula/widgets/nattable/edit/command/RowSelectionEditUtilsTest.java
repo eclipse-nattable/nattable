@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;

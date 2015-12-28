@@ -13,17 +13,15 @@ package org.eclipse.nebula.widgets.nattable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-
 import org.eclipse.nebula.widgets.nattable.command.DisposeResourcesCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.LayerEventFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.command.AnyCommandHandlerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.DataLayerFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.junit.Before;
+import org.junit.Test;
 
 public class NatTableTest {
 

@@ -10,10 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.edit.gui;
 
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.validate.DataValidator;
 import org.eclipse.nebula.widgets.nattable.data.validate.IDataValidator;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -66,25 +69,32 @@ public class MultiCellEditDialogRunner {
         Shell shell = new Shell(Display.getDefault(), SWT.H_SCROLL
                 | SWT.V_SCROLL | SWT.RESIZE);
 
-        // FIXME correct test cases
-        // final MultiCellEditDialog dialog = new MultiCellEditDialog(shell,
-        // cellEditor, dataTypeConverter, new Style(), dataValidator,
-        // cell.getDataValue(), newValue, true);
-        //
-        // if (!interactive) {
-        // Display.getDefault().asyncExec(new Runnable() {
-        // public void run() {
-        // try {
-        // Thread.sleep(100);
-        // } catch (InterruptedException e) {
-        // e.printStackTrace();
-        // } finally {
-        // dialog.close();
-        // }
-        // }
-        // });
-        // }
-        // dialog.open();
+        ConfigRegistry configRegistry = new ConfigRegistry();
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.DISPLAY_CONVERTER,
+                dataTypeConverter);
+        configRegistry.registerConfigAttribute(
+                EditConfigAttributes.DATA_VALIDATOR,
+                dataValidator);
+
+        final CellEditDialog dialog = new CellEditDialog(shell,
+                newValue, cell, cellEditor, configRegistry);
+
+        if (!this.interactive) {
+            Display.getDefault().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } finally {
+                        dialog.close();
+                    }
+                }
+            });
+        }
+        dialog.open();
     }
 
     public static void main(String[] args) {
