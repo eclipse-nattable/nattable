@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,17 +19,29 @@ import java.util.StringTokenizer;
 
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
+/**
+ * The model that is used to internally store the groupby state. It is used to
+ * define the tree structure.
+ */
 public class GroupByModel extends Observable implements IPersistable {
 
     public static final String PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES = ".groupByColumnIndexes"; //$NON-NLS-1$
 
     private List<Integer> groupByColumnIndexes = new ArrayList<Integer>();
 
+    /**
+     * Add the given column index to the list of column indexes that are
+     * currently grouped.
+     *
+     * @param columnIndex
+     *            The column index to add to the grouping.
+     * @return <code>true</code> if the list did not already contain the given
+     *         column index, <code>false</code> if the list is unchanged.
+     */
     public boolean addGroupByColumnIndex(int columnIndex) {
         if (!this.groupByColumnIndexes.contains(columnIndex)) {
             this.groupByColumnIndexes.add(columnIndex);
-            setChanged();
-            notifyObservers();
+            update();
             return true;
         } else {
             // unchanged
@@ -37,11 +49,19 @@ public class GroupByModel extends Observable implements IPersistable {
         }
     }
 
+    /**
+     * Remove the given column index from the list of column indexes that are
+     * currently grouped.
+     *
+     * @param columnIndex
+     *            The column index to remove from the grouping.
+     * @return <code>true</code> if the list contained the element and was
+     *         therefore changed, <code>false</code> if the list is unchanged.
+     */
     public boolean removeGroupByColumnIndex(int columnIndex) {
         if (this.groupByColumnIndexes.contains(columnIndex)) {
             this.groupByColumnIndexes.remove(Integer.valueOf(columnIndex));
-            setChanged();
-            notifyObservers();
+            update();
             return true;
         } else {
             // unchanged;
@@ -49,12 +69,19 @@ public class GroupByModel extends Observable implements IPersistable {
         }
     }
 
+    /**
+     * Clear the local list of indexes of columns that are currently grouped.
+     * This means to perform a complete ungrouping.
+     */
     public void clearGroupByColumnIndexes() {
         this.groupByColumnIndexes.clear();
-        setChanged();
-        notifyObservers();
+        update();
     }
 
+    /**
+     *
+     * @return The indexes of the columns that are currently grouped.
+     */
     public List<Integer> getGroupByColumnIndexes() {
         return this.groupByColumnIndexes;
     }
@@ -66,7 +93,8 @@ public class GroupByModel extends Observable implements IPersistable {
             strBuilder.append(index);
             strBuilder.append(IPersistable.VALUE_SEPARATOR);
         }
-        properties.setProperty(prefix + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES,
+        properties.setProperty(
+                prefix + PERSISTENCE_KEY_GROUP_BY_COLUMN_INDEXES,
                 strBuilder.toString());
     }
 
@@ -82,8 +110,17 @@ public class GroupByModel extends Observable implements IPersistable {
             }
         }
 
+        update();
+    }
+
+    /**
+     * Notifies the observers about a change.
+     *
+     * @see #setChanged()
+     * @see #notifyObservers()
+     */
+    public void update() {
         setChanged();
         notifyObservers();
     }
-
 }
