@@ -215,10 +215,12 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
     @Override
     public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
         ILayerCell cell = this.selectionLayer.getCellByPosition(columnPosition, rowPosition);
-        int cellOriginRowPosition = cell.getOriginRowPosition();
-        for (int testRowPosition = cellOriginRowPosition; testRowPosition < cellOriginRowPosition + cell.getRowSpan(); testRowPosition++) {
-            if (isRowPositionSelected(testRowPosition)) {
-                return true;
+        if (cell != null) {
+            int cellOriginRowPosition = cell.getOriginRowPosition();
+            for (int testRowPosition = cellOriginRowPosition; testRowPosition < cellOriginRowPosition + cell.getRowSpan(); testRowPosition++) {
+                if (isRowPositionSelected(testRowPosition)) {
+                    return true;
+                }
             }
         }
         return false;
