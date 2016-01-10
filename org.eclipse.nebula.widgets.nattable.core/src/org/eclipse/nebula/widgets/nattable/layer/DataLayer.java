@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,9 +30,11 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ResizeStructuralRefreshEv
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommandHandler;
+import org.eclipse.nebula.widgets.nattable.resize.command.ColumnSizeConfigurationCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommandHandler;
+import org.eclipse.nebula.widgets.nattable.resize.command.RowSizeConfigurationCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
 
@@ -59,8 +61,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         this(dataProvider, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
     }
 
-    public DataLayer(IDataProvider dataProvider,
-            int defaultColumnWidth, int defaultRowHeight) {
+    public DataLayer(IDataProvider dataProvider, int defaultColumnWidth, int defaultRowHeight) {
 
         this(defaultColumnWidth, defaultRowHeight);
 
@@ -83,18 +84,22 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     @Override
     public void saveState(String prefix, Properties properties) {
         super.saveState(prefix, properties);
-        this.columnWidthConfig.saveState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
+        this.columnWidthConfig.saveState(
+                prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
                 properties);
-        this.rowHeightConfig.saveState(prefix + PERSISTENCE_KEY_ROW_HEIGHT,
+        this.rowHeightConfig.saveState(
+                prefix + PERSISTENCE_KEY_ROW_HEIGHT,
                 properties);
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
         super.loadState(prefix, properties);
-        this.columnWidthConfig.loadState(prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
+        this.columnWidthConfig.loadState(
+                prefix + PERSISTENCE_KEY_COLUMN_WIDTH,
                 properties);
-        this.rowHeightConfig.loadState(prefix + PERSISTENCE_KEY_ROW_HEIGHT,
+        this.rowHeightConfig.loadState(
+                prefix + PERSISTENCE_KEY_ROW_HEIGHT,
                 properties);
 
         if (!properties.containsKey(NatTable.INITIAL_PAINT_COMPLETE_FLAG))
@@ -107,8 +112,10 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     protected void registerCommandHandlers() {
         registerCommandHandler(new ColumnResizeCommandHandler(this));
         registerCommandHandler(new MultiColumnResizeCommandHandler(this));
+        registerCommandHandler(new ColumnSizeConfigurationCommandHandler(this));
         registerCommandHandler(new RowResizeCommandHandler(this));
         registerCommandHandler(new MultiRowResizeCommandHandler(this));
+        registerCommandHandler(new RowSizeConfigurationCommandHandler(this));
         registerCommandHandler(new UpdateDataCommandHandler(this));
         registerCommandHandler(new StructuralRefreshCommandHandler());
         registerCommandHandler(new VisualRefreshCommandHandler());
@@ -202,7 +209,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     @Override
-    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
+    public int underlyingToLocalColumnPosition(
+            ILayer sourceUnderlyingLayer,
             int underlyingColumnPosition) {
         return underlyingColumnPosition;
     }
@@ -243,8 +251,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         setColumnWidthByPosition(columnPosition, width, true);
     }
 
-    public void setColumnWidthByPosition(int columnPosition, int width,
-            boolean fireEvent) {
+    public void setColumnWidthByPosition(int columnPosition, int width, boolean fireEvent) {
         this.columnWidthConfig.setSize(columnPosition, width);
         if (fireEvent)
             fireLayerEvent(new ColumnResizeEvent(this, columnPosition));
@@ -281,8 +288,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     // Underlying
 
     @Override
-    public Collection<ILayer> getUnderlyingLayersByColumnPosition(
-            int columnPosition) {
+    public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
         return null;
     }
 
@@ -332,7 +338,8 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     @Override
-    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
+    public int underlyingToLocalRowPosition(
+            ILayer sourceUnderlyingLayer,
             int underlyingRowPosition) {
         return underlyingRowPosition;
     }
@@ -373,8 +380,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         setRowHeightByPosition(rowPosition, height, true);
     }
 
-    public void setRowHeightByPosition(int rowPosition, int height,
-            boolean fireEvent) {
+    public void setRowHeightByPosition(int rowPosition, int height, boolean fireEvent) {
         this.rowHeightConfig.setSize(rowPosition, height);
         if (fireEvent)
             fireLayerEvent(new RowResizeEvent(this, rowPosition));
@@ -424,8 +430,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
         return getDataValue(columnIndex, rowIndex);
     }
 
-    public void setDataValueByPosition(int columnPosition, int rowPosition,
-            Object newValue) {
+    public void setDataValueByPosition(int columnPosition, int rowPosition, Object newValue) {
         int columnIndex = getColumnIndexByPosition(columnPosition);
         int rowIndex = getRowIndexByPosition(rowPosition);
         setDataValue(columnIndex, rowIndex, newValue);
@@ -452,8 +457,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     }
 
     @Override
-    public ILayer getUnderlyingLayerByPosition(int columnPosition,
-            int rowPosition) {
+    public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
         return null;
     }
 
@@ -482,8 +486,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
             }
 
             return refresh;
-        }
-        else if (command instanceof StructuralRefreshCommand) {
+        } else if (command instanceof StructuralRefreshCommand) {
             // if we receive a StructuralRefreshCommand we need to ensure
             // that the percentage values are re-calculated
             if (isColumnPercentageSizing()) {

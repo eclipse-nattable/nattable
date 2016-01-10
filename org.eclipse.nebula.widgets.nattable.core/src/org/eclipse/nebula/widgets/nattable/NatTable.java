@@ -12,6 +12,7 @@ package org.eclipse.nebula.widgets.nattable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractDpiConverter;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -1166,4 +1168,19 @@ public class NatTable extends Canvas implements ILayer, PaintListener, IClientAr
         return true;
     }
 
+    /**
+     * Returns the labels that are used within this NatTable for conditional
+     * styling.
+     *
+     * @return The labels that are used within this NatTable for conditional
+     *         styling.
+     * 
+     * @since 1.4
+     */
+    public Collection<String> getProvidedLabels() {
+        if (this.underlyingLayer instanceof AbstractLayer) {
+            return ((AbstractLayer) this.underlyingLayer).getProvidedLabels();
+        }
+        return Collections.emptySet();
+    }
 }

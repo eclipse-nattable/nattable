@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.TranslatedLayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -669,7 +670,7 @@ public class CompositeLayer extends AbstractLayer {
             aggregateAccumulator = new AggregateConfigLabelAccumulator();
             if (existingConfigLabelAccumulator != null) {
                 aggregateAccumulator.add(existingConfigLabelAccumulator);
-            }            
+            }
             this.regionNameToConfigLabelAccumulatorMap.put(regionName, aggregateAccumulator);
         }
         aggregateAccumulator.add(configLabelAccumulator);
@@ -782,7 +783,10 @@ public class CompositeLayer extends AbstractLayer {
     @Override
     public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
         Point layoutCoordinate = getLayoutXYByPosition(columnPosition, rowPosition);
-        return this.childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
+        if (layoutCoordinate != null) {
+            return this.childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
+        }
+        return null;
     }
 
     // Layout coordinate accessors
@@ -989,6 +993,29 @@ public class CompositeLayer extends AbstractLayer {
             }
         }
         return false;
+    }
+
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = super.getProvidedLabels();
+
+        for (int layoutX = 0; layoutX < this.layoutXCount; layoutX++) {
+            for (int layoutY = 0; layoutY < this.layoutYCount; layoutY++) {
+                ILayer childLayer = this.childLayerLayout[layoutX][layoutY];
+                String regionName = this.childLayerToRegionNameMap.get(childLayer);
+                labels.add(regionName);
+
+                IConfigLabelAccumulator accumulator = this.regionNameToConfigLabelAccumulatorMap.get(regionName);
+                if (accumulator != null && accumulator instanceof IConfigLabelProvider) {
+                    labels.addAll(((IConfigLabelProvider) accumulator).getProvidedLabels());
+                }
+
+                if (childLayer instanceof AbstractLayer) {
+                    labels.addAll(((AbstractLayer) childLayer).getProvidedLabels());
+                }
+            }
+        }
+        return labels;
     }
 
     protected class CompositeLayerPainter implements ILayerPainter {

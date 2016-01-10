@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
@@ -43,8 +43,6 @@ import org.eclipse.swt.graphics.Rectangle;
  * This painter is intended for an editable NatTable in combination with the
  * TableCellEditor.
  *
- * @author Dirk Fauth
- *
  * @see TableCellEditor
  */
 public class TableCellPainter extends BackgroundPainter {
@@ -75,6 +73,11 @@ public class TableCellPainter extends BackgroundPainter {
      * not. Default is <code>true</code>.
      */
     private boolean calculateParentCellHeight = true;
+    /**
+     * Flag to configure whether this painter should render the background or
+     * not.
+     */
+    private boolean paintBg = true;
 
     /**
      * Creates a TableCellPainter that uses the following default settings:
@@ -113,8 +116,7 @@ public class TableCellPainter extends BackgroundPainter {
      *            sub cells.
      */
     public TableCellPainter(ICellPainter internalPainter) {
-        this(internalPainter, GUIHelper.COLOR_GRAY, GUIHelper.COLOR_WHITE, 20,
-                true);
+        this(internalPainter, GUIHelper.COLOR_GRAY, GUIHelper.COLOR_WHITE, 20, true);
     }
 
     /**
@@ -138,8 +140,11 @@ public class TableCellPainter extends BackgroundPainter {
      *            Whether this painter shall resize the row height of the parent
      *            cell to show all available data in the internal table or not.
      */
-    public TableCellPainter(ICellPainter internalPainter, Color gridColor,
-            Color selectedGridColor, int fixedSubCellHeight,
+    public TableCellPainter(
+            ICellPainter internalPainter,
+            Color gridColor,
+            Color selectedGridColor,
+            int fixedSubCellHeight,
             boolean calculateParentCellHeight) {
         this.internalPainter = internalPainter;
         this.setGridColor(gridColor);
@@ -149,9 +154,11 @@ public class TableCellPainter extends BackgroundPainter {
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds,
-            IConfigRegistry configRegistry) {
-        super.paintCell(cell, gc, bounds, configRegistry);
+    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+
+        if (this.paintBg) {
+            super.paintCell(cell, gc, bounds, configRegistry);
+        }
 
         Object[] cellDataArray = getDataAsArray(cell);
         if (cellDataArray != null) {
@@ -164,25 +171,23 @@ public class TableCellPainter extends BackgroundPainter {
                 Color originalColor = gc.getForeground();
 
                 for (int i = 0; i < cellDataArray.length; i++) {
-                    ILayerCell subCell = createSubLayerCell(cell,
-                            cellDataArray[i]);
+                    ILayerCell subCell = createSubLayerCell(cell, cellDataArray[i]);
 
-                    int subCellHeight = getSubCellHeight(subCell, gc,
-                            configRegistry);
-                    Rectangle subCellBounds = new Rectangle(bounds.x, subGridY,
-                            bounds.width, subCellHeight);
+                    int subCellHeight = getSubCellHeight(subCell, gc, configRegistry);
+                    Rectangle subCellBounds = new Rectangle(
+                            bounds.x,
+                            subGridY,
+                            bounds.width,
+                            subCellHeight);
 
-                    this.getInternalPainter().paintCell(subCell, gc,
-                            subCellBounds, configRegistry);
+                    this.getInternalPainter().paintCell(subCell, gc, subCellBounds, configRegistry);
 
                     // render sub grid line
                     // update subGridY for calculated height
                     subGridY += subCellHeight + 1;
-                    gc.setForeground(cell.getDisplayMode().equals(
-                            DisplayMode.SELECT) ? getSelectedGridColor()
-                            : getGridColor());
-                    gc.drawLine(bounds.x, subGridY, bounds.x + bounds.width,
-                            subGridY);
+                    gc.setForeground(cell.getDisplayMode().equals(DisplayMode.SELECT)
+                            ? getSelectedGridColor() : getGridColor());
+                    gc.drawLine(bounds.x, subGridY, bounds.x + bounds.width, subGridY);
                     gc.setForeground(originalColor);
                     // increase subGridY by 1 so the next sub cell renders below
                     subGridY += 1;
@@ -193,50 +198,44 @@ public class TableCellPainter extends BackgroundPainter {
                 if (isCalculateParentCellHeight()
                         && (neededHeight > bounds.height)) {
                     ILayer layer = cell.getLayer();
-                    layer.doCommand(new RowResizeCommand(layer, cell
-                            .getRowPosition(), neededHeight));
+                    layer.doCommand(new RowResizeCommand(layer, cell.getRowPosition(), neededHeight));
                 }
             }
         } else {
-            this.getInternalPainter().paintCell(cell, gc, bounds,
-                    configRegistry);
+            this.getInternalPainter().paintCell(cell, gc, bounds, configRegistry);
         }
     }
 
     @Override
-    public int getPreferredWidth(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         Object[] cellDataArray = getDataAsArray(cell);
         if (cellDataArray != null) {
             int width = 0;
             for (Object data : cellDataArray) {
                 ILayerCell subCell = createSubLayerCell(cell, data);
-                width = Math.max(width, this.getInternalPainter()
-                        .getPreferredWidth(subCell, gc, configRegistry));
+                width = Math.max(
+                        width,
+                        this.getInternalPainter().getPreferredWidth(subCell, gc, configRegistry));
             }
             return width;
         }
-        return this.getInternalPainter().getPreferredWidth(cell, gc,
-                configRegistry);
+        return this.getInternalPainter().getPreferredWidth(cell, gc, configRegistry);
     }
 
     @Override
-    public int getPreferredHeight(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         Object[] cellDataArray = getDataAsArray(cell);
         if (cellDataArray != null) {
             int height = 0;
             for (Object data : cellDataArray) {
                 ILayerCell subCell = createSubLayerCell(cell, data);
-                height += this.getInternalPainter().getPreferredHeight(subCell,
-                        gc, configRegistry);
+                height += this.getInternalPainter().getPreferredHeight(subCell, gc, configRegistry);
             }
             // add number of items-1 to calculate the pixels for grid lines
             height += cellDataArray.length;
             return height;
         }
-        return this.getInternalPainter().getPreferredHeight(cell, gc,
-                configRegistry);
+        return this.getInternalPainter().getPreferredHeight(cell, gc, configRegistry);
     }
 
     /**
@@ -275,18 +274,16 @@ public class TableCellPainter extends BackgroundPainter {
      * @return A temporary sub cell of the given parent cell used to paint and
      *         calculate inner cells.
      */
-    protected ILayerCell createSubLayerCell(final ILayerCell cell,
-            final Object dataValue) {
+    protected ILayerCell createSubLayerCell(final ILayerCell cell, final Object dataValue) {
         LayerCell subCell = new LayerCell(cell.getLayer(),
                 cell.getOriginColumnPosition(), cell.getOriginRowPosition(),
-                cell.getColumnPosition(), cell.getRowPosition(), 0, 0) { // no
-                                                                         // spanning
+                // no spanning
+                cell.getColumnPosition(), cell.getRowPosition(), 0, 0) {
 
             @Override
             public Object getDataValue() {
                 // the new sub cell should only return the sub data instead of
-                // asking
-                // the layers for it
+                // asking the layers for it
                 return dataValue;
             }
         };
@@ -308,11 +305,9 @@ public class TableCellPainter extends BackgroundPainter {
      * @return The height for the sub cell dependent on the fixedSubCellHeight
      *         configuration
      */
-    protected int getSubCellHeight(ILayerCell subCell, GC gc,
-            IConfigRegistry configRegistry) {
-        return (this.fixedSubCellHeight >= 0) ? this.fixedSubCellHeight : this
-                .getInternalPainter().getPreferredHeight(subCell, gc,
-                        configRegistry);
+    protected int getSubCellHeight(ILayerCell subCell, GC gc, IConfigRegistry configRegistry) {
+        return (this.fixedSubCellHeight >= 0)
+                ? this.fixedSubCellHeight : this.getInternalPainter().getPreferredHeight(subCell, gc, configRegistry);
     }
 
     /**
@@ -403,5 +398,15 @@ public class TableCellPainter extends BackgroundPainter {
      */
     public void setCalculateParentCellHeight(boolean calculateParentCellHeight) {
         this.calculateParentCellHeight = calculateParentCellHeight;
+    }
+
+    /**
+     * @param paintBg
+     *            <code>true</code> to paint the background, <code>false</code>
+     *            if not. <code>true</code> is default
+     * @since 1.4
+     */
+    public void setPaintBg(boolean paintBg) {
+        this.paintBg = paintBg;
     }
 }

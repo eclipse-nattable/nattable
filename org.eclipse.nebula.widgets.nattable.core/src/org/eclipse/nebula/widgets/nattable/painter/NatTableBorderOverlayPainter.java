@@ -213,8 +213,10 @@ public class NatTableBorderOverlayPainter implements IOverlayPainter2 {
      * IConfigRegistry, the Color set as member will be used.
      *
      * @return The Color that will be used to render the grid lines.
+     *
+     * @since 1.4
      */
-    protected Color getBorderColor() {
+    public Color getBorderColor() {
         if (this.configRegistry != null) {
             Color bColor = this.configRegistry.getConfigAttribute(
                     CellConfigAttributes.GRID_LINE_COLOR, DisplayMode.NORMAL);

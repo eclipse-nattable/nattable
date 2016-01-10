@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.sort;
+
+import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -27,8 +29,7 @@ import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
  * @see DefaultSortConfiguration
  * @see SortStatePersistor
  */
-public class SortHeaderLayer<T> extends AbstractLayerTransform implements
-        IPersistable {
+public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersistable {
 
     /** Handles the actual sorting of underlying data */
     private final ISortModel sortModel;
@@ -37,8 +38,7 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements
         this(underlyingLayer, sortModel, true);
     }
 
-    public SortHeaderLayer(ILayer underlyingLayer, ISortModel sortModel,
-            boolean useDefaultConfiguration) {
+    public SortHeaderLayer(ILayer underlyingLayer, ISortModel sortModel, boolean useDefaultConfiguration) {
         super(underlyingLayer);
         this.sortModel = sortModel;
 
@@ -61,10 +61,8 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements
      *         render the sort arrows
      */
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
-        LabelStack configLabels = super.getConfigLabelsByPosition(
-                columnPosition, rowPosition);
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 
         if (this.sortModel != null) {
             int columnIndex = getColumnIndexByPosition(columnPosition);
@@ -74,17 +72,14 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements
                         + this.sortModel.getSortOrder(columnIndex);
                 configLabels.addLabelOnTop(sortConfig);
 
-                SortDirectionEnum sortDirection = this.sortModel
-                        .getSortDirection(columnIndex);
+                SortDirectionEnum sortDirection = this.sortModel.getSortDirection(columnIndex);
 
                 switch (sortDirection) {
                     case ASC:
-                        configLabels
-                                .addLabelOnTop(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+                        configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
                         break;
                     case DESC:
-                        configLabels
-                                .addLabelOnTop(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+                        configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
                         break;
                 }
             }
@@ -99,4 +94,21 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements
     public ISortModel getSortModel() {
         return this.sortModel;
     }
+
+    /**
+     * @since 1.4
+     */
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = super.getProvidedLabels();
+
+        labels.add(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
+        labels.add(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
+        labels.add(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + "0"); //$NON-NLS-1$
+        labels.add(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + "1"); //$NON-NLS-1$
+        labels.add(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + "2"); //$NON-NLS-1$
+
+        return labels;
+    }
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2013, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,11 +47,14 @@ public class FilterRowDataLayer<T> extends DataLayer {
      */
     private ILayer columnHeaderLayer;
 
-    public FilterRowDataLayer(IFilterStrategy<T> filterStrategy,
-            ILayer columnHeaderLayer, IDataProvider columnHeaderDataProvider,
+    public FilterRowDataLayer(
+            IFilterStrategy<T> filterStrategy,
+            ILayer columnHeaderLayer,
+            IDataProvider columnHeaderDataProvider,
             IConfigRegistry configRegistry) {
-        super(new FilterRowDataProvider<T>(filterStrategy, columnHeaderLayer,
-                columnHeaderDataProvider, configRegistry));
+
+        super(new FilterRowDataProvider<T>(
+                filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry));
 
         this.columnHeaderLayer = columnHeaderLayer;
 
@@ -68,8 +71,7 @@ public class FilterRowDataLayer<T> extends DataLayer {
         boolean handled = false;
         if (command instanceof ClearFilterCommand
                 && command.convertToTargetLayer(this)) {
-            int columnPosition = ((ClearFilterCommand) command)
-                    .getColumnPosition();
+            int columnPosition = ((ClearFilterCommand) command).getColumnPosition();
             setDataValueByPosition(columnPosition, 0, null);
             handled = true;
         } else if (command instanceof ClearAllFiltersCommand) {
@@ -86,24 +88,20 @@ public class FilterRowDataLayer<T> extends DataLayer {
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         // At the data layer level position == index
-        final LabelStack labels = super.getConfigLabelsByPosition(
-                columnPosition, rowPosition);
+        final LabelStack labels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
         // the label needs to be index based as the position changes on
         // scrolling
-        labels.addLabel(FILTER_ROW_COLUMN_LABEL_PREFIX
-                + getColumnIndexByPosition(columnPosition));
+        labels.addLabel(FILTER_ROW_COLUMN_LABEL_PREFIX + getColumnIndexByPosition(columnPosition));
         labels.addLabel(GridRegion.FILTER_ROW);
         return labels;
     }
 
     // There is no multiple inheritance in Java, but the FilterRowDataLayer
-    // needs to be a
-    // DimensionallyDependentLayer aswell. Wrapping it in a
-    // DimensionallyDependentLayer together
-    // with the ColumnHeaderLayer causes several position-transformation-issues.
+    // needs to be a DimensionallyDependentLayer aswell. Wrapping it in a
+    // DimensionallyDependentLayer together with the ColumnHeaderLayer causes
+    // several position-transformation-issues.
 
     // Columns
 
@@ -124,13 +122,14 @@ public class FilterRowDataLayer<T> extends DataLayer {
 
     @Override
     public int localToUnderlyingColumnPosition(int localColumnPosition) {
-        return this.columnHeaderLayer
-                .localToUnderlyingColumnPosition(localColumnPosition);
+        return this.columnHeaderLayer.localToUnderlyingColumnPosition(localColumnPosition);
     }
 
     @Override
-    public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer,
+    public int underlyingToLocalColumnPosition(
+            ILayer sourceUnderlyingLayer,
             int underlyingColumnPosition) {
+
         if (sourceUnderlyingLayer == this.columnHeaderLayer) {
             return underlyingColumnPosition;
         }
@@ -142,6 +141,7 @@ public class FilterRowDataLayer<T> extends DataLayer {
     public Collection<Range> underlyingToLocalColumnPositions(
             ILayer sourceUnderlyingLayer,
             Collection<Range> underlyingColumnPositionRanges) {
+
         if (sourceUnderlyingLayer == this.columnHeaderLayer) {
             return underlyingColumnPositionRanges;
         }
@@ -185,4 +185,18 @@ public class FilterRowDataLayer<T> extends DataLayer {
         return this.columnHeaderLayer.getStartXOfColumnPosition(columnPosition);
     }
 
+    /**
+     * @since 1.4
+     */
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = super.getProvidedLabels();
+
+        labels.add(GridRegion.FILTER_ROW);
+        for (int i = 0; i < getColumnCount(); i++) {
+            labels.add(FILTER_ROW_COLUMN_LABEL_PREFIX + i);
+        }
+
+        return labels;
+    }
 }

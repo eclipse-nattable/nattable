@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2015 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,7 +49,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
     public static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 
-    protected final boolean wrapText;
+    protected boolean wrapText;
     protected final boolean paintBg;
     protected boolean paintFg = true;
     protected int spacing = 5;
@@ -60,6 +60,10 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
     private boolean strikethrough;
 
     private boolean trimText = true;
+
+    private Color originalBackground;
+    private Color originalForeground;
+    private Font originalFont;
 
     private static Map<String, Integer> temporaryMap = new WeakHashMap<String, Integer>();
     private static Map<org.eclipse.swt.graphics.Font, FontData[]> fontDataCache = new WeakHashMap<org.eclipse.swt.graphics.Font, FontData[]>();
@@ -187,11 +191,29 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         Color bg = cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
         Font font = cellStyle.getAttributeValue(CellStyleAttributes.FONT);
 
+        // remember previous settings
+        this.originalFont = gc.getFont();
+        this.originalForeground = gc.getForeground();
+        this.originalBackground = gc.getBackground();
+
         gc.setAntialias(GUIHelper.DEFAULT_ANTIALIAS);
         gc.setTextAntialias(GUIHelper.DEFAULT_TEXT_ANTIALIAS);
         gc.setFont(font);
         gc.setForeground(fg != null ? fg : GUIHelper.COLOR_LIST_FOREGROUND);
         gc.setBackground(bg != null ? bg : GUIHelper.COLOR_LIST_BACKGROUND);
+    }
+
+    /**
+     * Reset the GC to the original values.
+     *
+     * @param gc
+     *
+     * @since 1.4
+     */
+    public void resetGC(GC gc) {
+        gc.setFont(this.originalFont);
+        gc.setForeground(this.originalForeground);
+        gc.setBackground(this.originalBackground);
     }
 
     /**
@@ -396,8 +418,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         // if one is empty or one ends with newline just add two
         if (one == null || one.length() == 0 || one.endsWith(LINE_SEPARATOR)) {
             result += modifyTextToDisplay(two, gc, availableSpace);
-        }
-        else {
+        } else {
             // if one contains a newline
             if (one.indexOf(LINE_SEPARATOR) != -1) {
                 // get the end of the last part after the last newline
@@ -625,6 +646,29 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
      */
     public void setTrimText(boolean trimText) {
         this.trimText = trimText;
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the text will be wrapped, <code>false</code>
+     *         if not.
+     *
+     * @since 1.4
+     */
+    public boolean isWrapText() {
+        return this.wrapText;
+    }
+
+    /**
+     *
+     * @param wrapText
+     *            <code>true</code> if the text should be wrapped,
+     *            <code>false</code> if not.
+     *
+     * @since 1.4
+     */
+    public void setWrapText(boolean wrapText) {
+        this.wrapText = wrapText;
     }
 
 }

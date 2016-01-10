@@ -16,6 +16,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.glazedlists.groupBy;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -254,12 +255,11 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     /**
      * Method to update the tree list after filter or TreeList.Format changed.
      * Need this workaround to update the tree list for presentation because of
-     * <a
-     * href="http://java.net/jira/browse/GLAZEDLISTS-521">http://java.net/jira
-     * /browse/GLAZEDLISTS-521</a>
+     * <a href="http://java.net/jira/browse/GLAZEDLISTS-521">http://java.net/
+     * jira /browse/GLAZEDLISTS-521</a>
      * <p>
-     * For more information you can also have a look at this discussion: <a
-     * href=
+     * For more information you can also have a look at this discussion:
+     * <a href=
      * "http://glazedlists.1045722.n5.nabble.com/sorting-a-treelist-td4704550.html"
      * > http://glazedlists.1045722.n5.nabble.com/sorting-a-treelist-td4704550.
      * html</a>
@@ -361,6 +361,20 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
             return configLabels;
         }
         return super.getConfigLabelsByPosition(columnPosition, rowPosition);
+    }
+
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = super.getProvidedLabels();
+
+        labels.add(GROUP_BY_OBJECT);
+        labels.add(GROUP_BY_SUMMARY);
+        for (int i = 0; i < getColumnCount(); i++) {
+            labels.add(GROUP_BY_COLUMN_PREFIX + i);
+            labels.add(GROUP_BY_SUMMARY_COLUMN_PREFIX + i);
+        }
+
+        return labels;
     }
 
     @Override
@@ -573,7 +587,8 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
     }
 
     /**
-     * Get the list of elements for a group, create it if it doesn't exists.<br/>
+     * Get the list of elements for a group, create it if it doesn't exists.
+     * <br/>
      * We could also use treeData.getChildren(groupDescriptor, true) but it's
      * less efficient.
      *

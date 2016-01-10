@@ -233,6 +233,10 @@ public class FillHandleDragMode implements IDragMode {
      *         if not.
      */
     protected boolean showMenu(final NatTable natTable) {
+        if (this.clipboard == null || this.clipboard.getCopiedCells() == null) {
+            return false;
+        }
+
         Class<?> type = null;
         for (ILayerCell[] cells : this.clipboard.getCopiedCells()) {
             for (ILayerCell cell : cells) {

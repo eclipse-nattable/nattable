@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -384,4 +385,29 @@ public abstract class AbstractLayer implements ILayer {
         return false;
     }
 
+    /**
+     * @since 1.4
+     */
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = null;
+
+        if (getUnderlyingLayerByPosition(0, 0) instanceof AbstractLayer) {
+            labels = ((AbstractLayer) getUnderlyingLayerByPosition(0, 0)).getProvidedLabels();
+        } else {
+            labels = new LinkedHashSet<String>();
+        }
+
+        // add the region
+        if (this.regionName != null) {
+            labels.add(this.regionName);
+        }
+
+        // add the labels configured via IConfigLabelAccumulator
+        if (this.configLabelAccumulator != null
+                && this.configLabelAccumulator instanceof IConfigLabelProvider) {
+            labels.addAll(((IConfigLabelProvider) this.configLabelAccumulator).getProvidedLabels());
+        }
+
+        return labels;
+    }
 }

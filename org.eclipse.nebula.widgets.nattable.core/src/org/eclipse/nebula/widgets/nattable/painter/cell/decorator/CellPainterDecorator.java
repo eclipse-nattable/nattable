@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,8 +49,8 @@ public class CellPainterDecorator implements ICellPainter {
      * calculation. Setting this flag to <code>true</code> the bounds of the
      * base painter will be modified regarding the bounds of the decoration
      * painter. This means that the starting coordinates for the base painter
-     * are moving e.g. if the base painter renders centred the text will move to
-     * the left because the decoration consumes space. If this flag is set to
+     * are moving e.g. if the base painter renders centered the text will move
+     * to the left because the decoration consumes space. If this flag is set to
      * <code>false</code> you can think of the decoration painter painting on
      * top of the base painter, possibly painting over the base painter.
      */
@@ -67,6 +67,16 @@ public class CellPainterDecorator implements ICellPainter {
     private boolean paintBg;
 
     /**
+     * Creates a {@link CellPainterDecorator} without any configuration to
+     * support initialization afterwards.
+     *
+     * @since 1.4
+     */
+    public CellPainterDecorator() {
+        this(null, null, 0, null, true, true);
+    }
+
+    /**
      * Will create a {@link CellPainterDecorator} with the default spacing of 2
      * between base and decoration painter, where the base painter is rendered
      * dependent to the decoration.
@@ -79,8 +89,10 @@ public class CellPainterDecorator implements ICellPainter {
      *            The {@link ICellPainter} that should be used to render the
      *            decoration.
      */
-    public CellPainterDecorator(ICellPainter baseCellPainter,
-            CellEdgeEnum cellEdge, ICellPainter decoratorCellPainter) {
+    public CellPainterDecorator(
+            ICellPainter baseCellPainter,
+            CellEdgeEnum cellEdge,
+            ICellPainter decoratorCellPainter) {
         this(baseCellPainter, cellEdge, 2, decoratorCellPainter);
     }
 
@@ -100,11 +112,12 @@ public class CellPainterDecorator implements ICellPainter {
      *            Flag to specify whether the base painter should render
      *            dependent to the decoration painter or not.
      */
-    public CellPainterDecorator(ICellPainter baseCellPainter,
-            CellEdgeEnum cellEdge, ICellPainter decoratorCellPainter,
+    public CellPainterDecorator(
+            ICellPainter baseCellPainter,
+            CellEdgeEnum cellEdge,
+            ICellPainter decoratorCellPainter,
             boolean paintDecorationDependent) {
-        this(baseCellPainter, cellEdge, 2, decoratorCellPainter,
-                paintDecorationDependent);
+        this(baseCellPainter, cellEdge, 2, decoratorCellPainter, paintDecorationDependent);
     }
 
     /**
@@ -123,8 +136,10 @@ public class CellPainterDecorator implements ICellPainter {
      *            The {@link ICellPainter} that should be used to render the
      *            decoration.
      */
-    public CellPainterDecorator(ICellPainter baseCellPainter,
-            CellEdgeEnum cellEdge, int spacing,
+    public CellPainterDecorator(
+            ICellPainter baseCellPainter,
+            CellEdgeEnum cellEdge,
+            int spacing,
             ICellPainter decoratorCellPainter) {
         this(baseCellPainter, cellEdge, spacing, decoratorCellPainter, true);
     }
@@ -146,11 +161,13 @@ public class CellPainterDecorator implements ICellPainter {
      *            Flag to specify whether the base painter should render
      *            dependent to the decoration painter or not.
      */
-    public CellPainterDecorator(ICellPainter baseCellPainter,
-            CellEdgeEnum cellEdge, int spacing,
-            ICellPainter decoratorCellPainter, boolean paintDecorationDependent) {
-        this(baseCellPainter, cellEdge, spacing, decoratorCellPainter,
-                paintDecorationDependent, true);
+    public CellPainterDecorator(
+            ICellPainter baseCellPainter,
+            CellEdgeEnum cellEdge,
+            int spacing,
+            ICellPainter decoratorCellPainter,
+            boolean paintDecorationDependent) {
+        this(baseCellPainter, cellEdge, spacing, decoratorCellPainter, paintDecorationDependent, true);
     }
 
     /**
@@ -173,10 +190,13 @@ public class CellPainterDecorator implements ICellPainter {
      *            <code>true</code> if the PaddingDecorator should paint the
      *            background, <code>false</code> if not.
      */
-    public CellPainterDecorator(ICellPainter baseCellPainter,
-            CellEdgeEnum cellEdge, int spacing,
+    public CellPainterDecorator(
+            ICellPainter baseCellPainter,
+            CellEdgeEnum cellEdge,
+            int spacing,
             ICellPainter decoratorCellPainter,
-            boolean paintDecorationDependent, boolean paintBg) {
+            boolean paintDecorationDependent,
+            boolean paintBg) {
         this.baseCellPainter = baseCellPainter;
         this.cellEdge = cellEdge;
         this.spacing = spacing;
@@ -217,14 +237,18 @@ public class CellPainterDecorator implements ICellPainter {
      *             semantic is different
      */
     @Deprecated
-    public void setBaseCellPainterSpansWholeCell(
-            boolean interiorPainterToSpanFullWidth) {
+    public void setBaseCellPainterSpansWholeCell(boolean interiorPainterToSpanFullWidth) {
         this.paintDecorationDependent = !interiorPainterToSpanFullWidth;
     }
 
     @Override
-    public int getPreferredWidth(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+
+        int baseWidth = (this.baseCellPainter != null
+                ? this.baseCellPainter.getPreferredWidth(cell, gc, configRegistry) : 0);
+        int decorationWidth = (this.decoratorCellPainter != null
+                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry) : 0);
+
         switch (this.cellEdge) {
             case TOP_LEFT:
             case TOP_RIGHT:
@@ -232,23 +256,22 @@ public class CellPainterDecorator implements ICellPainter {
             case BOTTOM_RIGHT:
             case BOTTOM:
             case TOP:
-                return this.spacing
-                        + Math.max(this.baseCellPainter.getPreferredWidth(cell, gc,
-                                configRegistry), this.decoratorCellPainter
-                                .getPreferredWidth(cell, gc, configRegistry));
+                return this.spacing + Math.max(baseWidth, decorationWidth);
             default:
                 break;
         }
 
-        return this.baseCellPainter.getPreferredWidth(cell, gc, configRegistry)
-                + this.spacing
-                + this.decoratorCellPainter.getPreferredWidth(cell, gc,
-                        configRegistry);
+        return baseWidth + this.spacing + decorationWidth;
     }
 
     @Override
-    public int getPreferredHeight(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+
+        int baseHeight = (this.baseCellPainter != null
+                ? this.baseCellPainter.getPreferredHeight(cell, gc, configRegistry) : 0);
+        int decorationHeight = (this.decoratorCellPainter != null
+                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry) : 0);
+
         switch (this.cellEdge) {
             case TOP_LEFT:
             case TOP_RIGHT:
@@ -256,105 +279,114 @@ public class CellPainterDecorator implements ICellPainter {
             case BOTTOM_RIGHT:
             case LEFT:
             case RIGHT:
-                return this.spacing
-                        + Math.max(this.baseCellPainter.getPreferredHeight(cell, gc,
-                                configRegistry), this.decoratorCellPainter
-                                .getPreferredHeight(cell, gc, configRegistry));
+                return this.spacing + Math.max(baseHeight, decorationHeight);
             default:
                 break;
         }
 
-        return this.baseCellPainter.getPreferredHeight(cell, gc, configRegistry)
-                + this.spacing
-                + this.decoratorCellPainter.getPreferredHeight(cell, gc,
-                        configRegistry);
+        return baseHeight + this.spacing + decorationHeight;
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds,
-            IConfigRegistry configRegistry) {
-        Rectangle baseCellPainterBounds = this.paintDecorationDependent ? getBaseCellPainterBounds(
-                cell, gc, adjustedCellBounds, configRegistry)
-                : adjustedCellBounds;
-        Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(
-                cell, gc, adjustedCellBounds, configRegistry);
+    public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+        Rectangle baseCellPainterBounds = this.paintDecorationDependent
+                ? getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry) : adjustedCellBounds;
+        Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
 
         if (this.paintBg) {
             Color originalBg = gc.getBackground();
-            gc.setBackground(CellStyleUtil.getCellStyle(cell, configRegistry)
+            gc.setBackground(CellStyleUtil
+                    .getCellStyle(cell, configRegistry)
                     .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
             gc.fillRectangle(adjustedCellBounds);
             gc.setBackground(originalBg);
         }
 
-        this.baseCellPainter.paintCell(cell, gc, baseCellPainterBounds,
-                configRegistry);
-        this.decoratorCellPainter.paintCell(cell, gc, decoratorCellPainterBounds,
-                configRegistry);
+        if (this.baseCellPainter != null) {
+            this.baseCellPainter.paintCell(cell, gc, baseCellPainterBounds, configRegistry);
+        }
+
+        if (this.decoratorCellPainter != null) {
+            this.decoratorCellPainter.paintCell(cell, gc, decoratorCellPainterBounds, configRegistry);
+        }
     }
 
     /**
      *
      * @return The Rectangle which can be used by the base cell painter.
      */
-    public Rectangle getBaseCellPainterBounds(ILayerCell cell, GC gc,
-            Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-        int preferredDecoratorWidth = this.decoratorCellPainter.getPreferredWidth(
-                cell, gc, configRegistry);
-        int preferredDecoratorHeight = this.decoratorCellPainter.getPreferredHeight(
-                cell, gc, configRegistry);
+    public Rectangle getBaseCellPainterBounds(
+            ILayerCell cell,
+            GC gc,
+            Rectangle adjustedCellBounds,
+            IConfigRegistry configRegistry) {
+
+        int preferredDecoratorWidth = (this.decoratorCellPainter != null
+                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry) : 0);
+        int preferredDecoratorHeight = (this.decoratorCellPainter != null
+                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry) : 0);
 
         // grab any extra space:
-        int grabbedPreferredWidth = adjustedCellBounds.width
-                - preferredDecoratorWidth - this.spacing;
-        int grabbedPreferredHeight = adjustedCellBounds.height
-                - preferredDecoratorHeight - this.spacing;
+        int grabbedPreferredWidth = adjustedCellBounds.width - preferredDecoratorWidth - this.spacing;
+        int grabbedPreferredHeight = adjustedCellBounds.height - preferredDecoratorHeight - this.spacing;
 
         switch (this.cellEdge) {
             case LEFT:
-                return new Rectangle(adjustedCellBounds.x
-                        + preferredDecoratorWidth + this.spacing,
-                        adjustedCellBounds.y, grabbedPreferredWidth,
+                return new Rectangle(
+                        adjustedCellBounds.x + preferredDecoratorWidth + this.spacing,
+                        adjustedCellBounds.y,
+                        grabbedPreferredWidth,
                         adjustedCellBounds.height)
-                        .intersection(adjustedCellBounds);
+                                .intersection(adjustedCellBounds);
             case RIGHT:
-                return new Rectangle(adjustedCellBounds.x,
-                        adjustedCellBounds.y, grabbedPreferredWidth,
+                return new Rectangle(
+                        adjustedCellBounds.x,
+                        adjustedCellBounds.y,
+                        grabbedPreferredWidth,
                         adjustedCellBounds.height)
-                        .intersection(adjustedCellBounds);
+                                .intersection(adjustedCellBounds);
             case TOP:
-                return new Rectangle(adjustedCellBounds.x, adjustedCellBounds.y
-                        + preferredDecoratorHeight + this.spacing,
-                        adjustedCellBounds.width, grabbedPreferredHeight)
-                        .intersection(adjustedCellBounds);
+                return new Rectangle(
+                        adjustedCellBounds.x,
+                        adjustedCellBounds.y + preferredDecoratorHeight + this.spacing,
+                        adjustedCellBounds.width,
+                        grabbedPreferredHeight)
+                                .intersection(adjustedCellBounds);
             case BOTTOM:
-                return new Rectangle(adjustedCellBounds.x,
-                        adjustedCellBounds.y, adjustedCellBounds.width,
+                return new Rectangle(
+                        adjustedCellBounds.x,
+                        adjustedCellBounds.y,
+                        adjustedCellBounds.width,
                         grabbedPreferredHeight)
-                        .intersection(adjustedCellBounds);
+                                .intersection(adjustedCellBounds);
             case TOP_LEFT:
-                return new Rectangle(adjustedCellBounds.x
-                        + preferredDecoratorWidth + this.spacing,
-                        adjustedCellBounds.y + preferredDecoratorHeight
-                                + this.spacing, grabbedPreferredWidth,
+                return new Rectangle(
+                        adjustedCellBounds.x + preferredDecoratorWidth + this.spacing,
+                        adjustedCellBounds.y + preferredDecoratorHeight + this.spacing,
+                        grabbedPreferredWidth,
                         grabbedPreferredHeight)
-                        .intersection(adjustedCellBounds);
+                                .intersection(adjustedCellBounds);
             case TOP_RIGHT:
-                return new Rectangle(adjustedCellBounds.x, adjustedCellBounds.y
-                        + preferredDecoratorHeight + this.spacing,
-                        grabbedPreferredWidth, grabbedPreferredHeight)
-                        .intersection(adjustedCellBounds);
+                return new Rectangle(
+                        adjustedCellBounds.x,
+                        adjustedCellBounds.y + preferredDecoratorHeight + this.spacing,
+                        grabbedPreferredWidth,
+                        grabbedPreferredHeight)
+                                .intersection(adjustedCellBounds);
             case BOTTOM_LEFT:
-                return new Rectangle(adjustedCellBounds.x
-                        + preferredDecoratorWidth + this.spacing,
-                        adjustedCellBounds.y, grabbedPreferredWidth,
+                return new Rectangle(
+                        adjustedCellBounds.x + preferredDecoratorWidth + this.spacing,
+                        adjustedCellBounds.y,
+                        grabbedPreferredWidth,
                         grabbedPreferredHeight)
-                        .intersection(adjustedCellBounds);
+                                .intersection(adjustedCellBounds);
             case BOTTOM_RIGHT:
-                return new Rectangle(adjustedCellBounds.x,
-                        adjustedCellBounds.y, grabbedPreferredWidth,
+                return new Rectangle(
+                        adjustedCellBounds.x,
+                        adjustedCellBounds.y,
+                        grabbedPreferredWidth,
                         grabbedPreferredHeight)
-                        .intersection(adjustedCellBounds);
+                                .intersection(adjustedCellBounds);
             case NONE:
                 break;
         }
@@ -365,59 +397,66 @@ public class CellPainterDecorator implements ICellPainter {
     /**
      * @return The Rectangle to paint the decoration.
      */
-    public Rectangle getDecoratorCellPainterBounds(ILayerCell cell, GC gc,
-            Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-        int preferredDecoratorWidth = this.decoratorCellPainter.getPreferredWidth(
-                cell, gc, configRegistry);
-        int preferredDecoratorHeight = this.decoratorCellPainter.getPreferredHeight(
-                cell, gc, configRegistry);
+    public Rectangle getDecoratorCellPainterBounds(
+            ILayerCell cell,
+            GC gc,
+            Rectangle adjustedCellBounds,
+            IConfigRegistry configRegistry) {
+
+        int preferredDecoratorWidth = (this.decoratorCellPainter != null
+                ? this.decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry) : 0);
+        int preferredDecoratorHeight = (this.decoratorCellPainter != null
+                ? this.decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry) : 0);
 
         switch (this.cellEdge) {
             case LEFT:
                 return new Rectangle(
                         adjustedCellBounds.x,
-                        adjustedCellBounds.y
-                                + ((adjustedCellBounds.height - preferredDecoratorHeight) / 2),
-                        preferredDecoratorWidth, preferredDecoratorHeight);
+                        adjustedCellBounds.y + ((adjustedCellBounds.height - preferredDecoratorHeight) / 2),
+                        preferredDecoratorWidth,
+                        preferredDecoratorHeight);
             case RIGHT:
                 return new Rectangle(
-                        adjustedCellBounds.x + adjustedCellBounds.width
-                                - preferredDecoratorWidth,
-                        adjustedCellBounds.y
-                                + ((adjustedCellBounds.height - preferredDecoratorHeight) / 2),
-                        preferredDecoratorWidth, preferredDecoratorHeight);
+                        adjustedCellBounds.x + adjustedCellBounds.width - preferredDecoratorWidth,
+                        adjustedCellBounds.y + ((adjustedCellBounds.height - preferredDecoratorHeight) / 2),
+                        preferredDecoratorWidth,
+                        preferredDecoratorHeight);
             case TOP:
                 return new Rectangle(
-                        adjustedCellBounds.x
-                                + ((adjustedCellBounds.width - preferredDecoratorWidth) / 2),
-                        adjustedCellBounds.y, preferredDecoratorWidth,
+                        adjustedCellBounds.x + ((adjustedCellBounds.width - preferredDecoratorWidth) / 2),
+                        adjustedCellBounds.y,
+                        preferredDecoratorWidth,
                         preferredDecoratorHeight);
             case BOTTOM:
                 return new Rectangle(
-                        adjustedCellBounds.x
-                                + ((adjustedCellBounds.width - preferredDecoratorWidth) / 2),
-                        adjustedCellBounds.y + adjustedCellBounds.height
-                                - preferredDecoratorHeight,
-                        preferredDecoratorWidth, preferredDecoratorHeight);
+                        adjustedCellBounds.x + ((adjustedCellBounds.width - preferredDecoratorWidth) / 2),
+                        adjustedCellBounds.y + adjustedCellBounds.height - preferredDecoratorHeight,
+                        preferredDecoratorWidth,
+                        preferredDecoratorHeight);
             case TOP_LEFT:
-                return new Rectangle(adjustedCellBounds.x,
-                        adjustedCellBounds.y, preferredDecoratorWidth,
+                return new Rectangle(
+                        adjustedCellBounds.x,
+                        adjustedCellBounds.y,
+                        preferredDecoratorWidth,
                         preferredDecoratorHeight);
             case TOP_RIGHT:
-                return new Rectangle(adjustedCellBounds.x
-                        + adjustedCellBounds.width - preferredDecoratorWidth,
-                        adjustedCellBounds.y, preferredDecoratorWidth,
+                return new Rectangle(
+                        adjustedCellBounds.x + adjustedCellBounds.width - preferredDecoratorWidth,
+                        adjustedCellBounds.y,
+                        preferredDecoratorWidth,
                         preferredDecoratorHeight);
             case BOTTOM_LEFT:
-                return new Rectangle(adjustedCellBounds.x, adjustedCellBounds.y
-                        + adjustedCellBounds.height - preferredDecoratorHeight,
-                        preferredDecoratorWidth, preferredDecoratorHeight);
+                return new Rectangle(
+                        adjustedCellBounds.x,
+                        adjustedCellBounds.y + adjustedCellBounds.height - preferredDecoratorHeight,
+                        preferredDecoratorWidth,
+                        preferredDecoratorHeight);
             case BOTTOM_RIGHT:
-                return new Rectangle(adjustedCellBounds.x
-                        + adjustedCellBounds.width - preferredDecoratorWidth,
-                        adjustedCellBounds.y + adjustedCellBounds.height
-                                - preferredDecoratorHeight,
-                        preferredDecoratorWidth, preferredDecoratorHeight);
+                return new Rectangle(
+                        adjustedCellBounds.x + adjustedCellBounds.width - preferredDecoratorWidth,
+                        adjustedCellBounds.y + adjustedCellBounds.height - preferredDecoratorHeight,
+                        preferredDecoratorWidth,
+                        preferredDecoratorHeight);
             case NONE:
                 break;
         }
@@ -426,20 +465,24 @@ public class CellPainterDecorator implements ICellPainter {
     }
 
     @Override
-    public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc,
-            Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-        Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(
-                cell, gc, adjustedCellBounds, configRegistry);
-        if (decoratorCellPainterBounds.contains(x, y)) {
-            return this.decoratorCellPainter.getCellPainterAt(x, y, cell, gc,
-                    decoratorCellPainterBounds, configRegistry);
+    public ICellPainter getCellPainterAt(
+            int x,
+            int y,
+            ILayerCell cell,
+            GC gc,
+            Rectangle adjustedCellBounds,
+            IConfigRegistry configRegistry) {
+
+        Rectangle decoratorCellPainterBounds =
+                getDecoratorCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
+        if (this.decoratorCellPainter != null && decoratorCellPainterBounds.contains(x, y)) {
+            return this.decoratorCellPainter.getCellPainterAt(x, y, cell, gc, decoratorCellPainterBounds, configRegistry);
         } else {
-            Rectangle baseCellPainterBounds = this.paintDecorationDependent ? getBaseCellPainterBounds(
-                    cell, gc, adjustedCellBounds, configRegistry)
+            Rectangle baseCellPainterBounds = this.paintDecorationDependent
+                    ? getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry)
                     : adjustedCellBounds;
-            if (baseCellPainterBounds.contains(x, y)) {
-                return this.baseCellPainter.getCellPainterAt(x, y, cell, gc,
-                        baseCellPainterBounds, configRegistry);
+            if (this.baseCellPainter != null && baseCellPainterBounds.contains(x, y)) {
+                return this.baseCellPainter.getCellPainterAt(x, y, cell, gc, baseCellPainterBounds, configRegistry);
             }
         }
         return this;

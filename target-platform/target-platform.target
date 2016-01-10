@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="18">
+<?pde version="3.8"?><target name="NatTable Target" sequenceNumber="23">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.4.2.M20150204-1700"/>
-<repository location="http://download.eclipse.org/releases/luna"/>
+<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
 <unit id="org.apache.poi" version="3.9.0.v201303080712"/>
@@ -13,8 +13,8 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.richtext.feature.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+<unit id="org.eclipse.sdk.ide" version="4.6.0.I20160105-1000"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.6-I-builds"/>
 </location>
 </locations>
 </target>

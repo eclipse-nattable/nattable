@@ -44,6 +44,13 @@ public class ImagePainter extends BackgroundPainter {
         this(image, true);
     }
 
+    /**
+     * @since 1.4
+     */
+    public ImagePainter(boolean paintBg) {
+        this.paintBg = paintBg;
+    }
+
     public ImagePainter(Image image, boolean paintBg) {
         this.image = image;
         this.paintBg = paintBg;

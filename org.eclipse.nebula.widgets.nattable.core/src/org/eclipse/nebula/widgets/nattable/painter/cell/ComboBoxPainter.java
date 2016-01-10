@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,20 @@ public class ComboBoxPainter extends CellPainterWrapper {
      * Create a new {@link ComboBoxPainter} with the default image.
      */
     public ComboBoxPainter() {
-        this(GUIHelper.getImage("down_2")); //$NON-NLS-1$
+        this(false);
+    }
+
+    /**
+     * Create a new {@link ComboBoxPainter} with the default image.
+     * 
+     * @param invertIcons
+     *            Specify whether the default icons should be used (black
+     *            triangles) or if inverted icons should be used (white
+     *            triangles).
+     * @since 1.4
+     */
+    public ComboBoxPainter(boolean invertIcons) {
+        this(GUIHelper.getImage("down_2" + (invertIcons ? "_inv" : ""))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -32,7 +45,10 @@ public class ComboBoxPainter extends CellPainterWrapper {
      *            The image marking the cell as a combo control
      */
     public ComboBoxPainter(Image comboImage) {
-        setWrappedPainter(new CellPainterDecorator(new TextPainter(),
-                CellEdgeEnum.RIGHT, new ImagePainter(comboImage)));
+        setWrappedPainter(
+                new CellPainterDecorator(
+                        new TextPainter(),
+                        CellEdgeEnum.RIGHT,
+                        new ImagePainter(comboImage)));
     }
 }

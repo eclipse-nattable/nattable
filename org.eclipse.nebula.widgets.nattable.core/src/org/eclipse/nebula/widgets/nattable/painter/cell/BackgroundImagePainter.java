@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,16 @@ import org.eclipse.swt.widgets.Display;
 public class BackgroundImagePainter extends CellPainterWrapper {
 
     public final Color separatorColor;
-    private final Image bgImage;
+    private Image bgImage;
+
+    /**
+     * @param bgImage
+     *            to be used for painting the background
+     * @since 1.4
+     */
+    public BackgroundImagePainter(Image bgImage) {
+        this(null, bgImage, null);
+    }
 
     /**
      * @param interiorPainter
@@ -41,6 +50,18 @@ public class BackgroundImagePainter extends CellPainterWrapper {
     }
 
     /**
+     * @param bgImage
+     *            to be used for painting the background
+     * @param separatorColor
+     *            to be used for drawing left and right borders for the cell.
+     *            Set to null if the borders are not required.
+     * @since 1.4
+     */
+    public BackgroundImagePainter(Image bgImage, Color separatorColor) {
+        this(null, bgImage, separatorColor);
+    }
+
+    /**
      * @param interiorPainter
      *            used for painting the cell contents
      * @param bgImage
@@ -49,57 +70,82 @@ public class BackgroundImagePainter extends CellPainterWrapper {
      *            to be used for drawing left and right borders for the cell.
      *            Set to null if the borders are not required.
      */
-    public BackgroundImagePainter(ICellPainter interiorPainter, Image bgImage,
-            Color separatorColor) {
+    public BackgroundImagePainter(ICellPainter interiorPainter, Image bgImage, Color separatorColor) {
         super(interiorPainter);
         this.bgImage = bgImage;
         this.separatorColor = separatorColor;
     }
 
     @Override
-    public int getPreferredWidth(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         return super.getPreferredWidth(cell, gc, configRegistry) + 4;
     }
 
     @Override
-    public int getPreferredHeight(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         return super.getPreferredHeight(cell, gc, configRegistry) + 4;
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle,
-            IConfigRegistry configRegistry) {
-        // Save GC settings
-        Color originalBackground = gc.getBackground();
-        Color originalForeground = gc.getForeground();
+    public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
+        if (this.bgImage != null) {
+            // Save GC settings
+            Color originalBackground = gc.getBackground();
+            Color originalForeground = gc.getForeground();
 
-        Pattern pattern = new Pattern(Display.getCurrent(), this.bgImage);
-        gc.setBackgroundPattern(pattern);
+            Pattern pattern = new Pattern(Display.getCurrent(), this.bgImage);
+            gc.setBackgroundPattern(pattern);
 
-        gc.fillRectangle(rectangle);
+            gc.fillRectangle(rectangle);
 
-        gc.setBackgroundPattern(null);
-        pattern.dispose();
+            gc.setBackgroundPattern(null);
+            pattern.dispose();
 
-        if (isNotNull(this.separatorColor)) {
-            gc.setForeground(this.separatorColor);
-            gc.drawLine(rectangle.x - 1, rectangle.y, rectangle.x - 1,
-                    rectangle.y + rectangle.height);
-            gc.drawLine(rectangle.x - 1 + rectangle.width, rectangle.y,
-                    rectangle.x - 1 + rectangle.width, rectangle.y
-                            + rectangle.height);
+            if (isNotNull(this.separatorColor)) {
+                gc.setForeground(this.separatorColor);
+                gc.drawLine(
+                        rectangle.x - 1,
+                        rectangle.y,
+                        rectangle.x - 1,
+                        rectangle.y + rectangle.height);
+                gc.drawLine(
+                        rectangle.x - 1 + rectangle.width,
+                        rectangle.y,
+                        rectangle.x - 1 + rectangle.width,
+                        rectangle.y + rectangle.height);
+            }
+
+            // Restore original GC settings
+            gc.setBackground(originalBackground);
+            gc.setForeground(originalForeground);
         }
 
-        // Restore original GC settings
-        gc.setBackground(originalBackground);
-        gc.setForeground(originalForeground);
-
         // Draw interior
-        Rectangle interiorBounds = new Rectangle(rectangle.x + 2,
-                rectangle.y + 2, rectangle.width - 4, rectangle.height - 4);
+        Rectangle interiorBounds = new Rectangle(
+                rectangle.x + 2,
+                rectangle.y + 2,
+                rectangle.width - 4,
+                rectangle.height - 4);
         super.paintCell(cell, gc, interiorBounds, configRegistry);
     }
 
+    /**
+     *
+     * @return The {@link Image} that is used to render the background.
+     * @since 1.4
+     */
+    public Image getBackgroundImage() {
+        return this.bgImage;
+    }
+
+    /**
+     *
+     * @param bgImage
+     *            The {@link Image} that should be used to render the
+     *            background.
+     * @since 1.4
+     */
+    public void setBackgroundImage(Image bgImage) {
+        this.bgImage = bgImage;
+    }
 }

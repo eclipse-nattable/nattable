@@ -1,0 +1,150 @@
+/*****************************************************************************
+ * Copyright (c) 2015 CEA LIST.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *		Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
+ *
+ *****************************************************************************/
+package org.eclipse.nebula.widgets.nattable.examples.e4;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.eclipse.e4.ui.css.swt.CSSSWTConstants;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.EditableRule;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.validate.DataValidator;
+import org.eclipse.nebula.widgets.nattable.dataset.person.ExtendedPersonWithAddress;
+import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
+import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
+import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CustomLineBorderDecorator;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+
+@SuppressWarnings("restriction")
+public class CSSExample {
+
+    @PostConstruct
+    public void postConstruct(Composite parent) {
+        parent.setLayout(new GridLayout());
+
+        // property names of the Person class
+        // property names of the Person class
+        String[] propertyNames = {
+                "firstName",
+                "lastName",
+                "password",
+                "description",
+                "age",
+                "money",
+                "married",
+                "gender",
+                "address.street",
+                "address.city",
+                "favouriteFood",
+                "favouriteDrinks" };
+
+        // mapping from property to label, needed for column header labels
+        Map<String, String> propertyToLabelMap = new HashMap<String, String>();
+        propertyToLabelMap.put("firstName", "Firstname");
+        propertyToLabelMap.put("lastName", "Lastname");
+        propertyToLabelMap.put("password", "Password");
+        propertyToLabelMap.put("description", "Description");
+        propertyToLabelMap.put("age", "Age");
+        propertyToLabelMap.put("money", "Money");
+        propertyToLabelMap.put("married", "Married");
+        propertyToLabelMap.put("gender", "Gender");
+        propertyToLabelMap.put("address.street", "Street");
+        propertyToLabelMap.put("address.city", "City");
+        propertyToLabelMap.put("favouriteFood", "Food");
+        propertyToLabelMap.put("favouriteDrinks", "Drinks");
+
+        IDataProvider bodyDataProvider =
+                new ListDataProvider<ExtendedPersonWithAddress>(
+                        PersonService.getExtendedPersonsWithAddress(10),
+                        new ExtendedReflectiveColumnPropertyAccessor<ExtendedPersonWithAddress>(propertyNames));
+
+        DefaultGridLayer gridLayer =
+                new DefaultGridLayer(bodyDataProvider,
+                        new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap));
+
+        final DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
+
+        AggregateConfigLabelAccumulator accumulator = new AggregateConfigLabelAccumulator();
+        // create the ColumnLabelAccumulator with IDataProvider to be able to
+        // tell the CSS engine about the added labels
+        accumulator.add(new ColumnLabelAccumulator(bodyDataProvider));
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
+        columnLabelAccumulator.registerColumnOverrides(5, CustomLineBorderDecorator.RIGHT_LINE_BORDER_LABEL);
+
+        accumulator.add(columnLabelAccumulator);
+        bodyDataLayer.setConfigLabelAccumulator(accumulator);
+
+        NatTable natTable = new NatTable(parent, gridLayer, false);
+        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new FillHandleConfiguration(gridLayer.getBodyLayer().getSelectionLayer()));
+        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
+
+        gridLayer.addConfiguration(new DefaultEditConfiguration());
+        gridLayer.addConfiguration(new DefaultEditBindings());
+
+        natTable.addConfiguration(new AbstractRegistryConfiguration() {
+
+            @Override
+            public void configureRegistry(IConfigRegistry configRegistry) {
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.CELL_EDITABLE_RULE,
+                        EditableRule.ALWAYS_EDITABLE,
+                        DisplayMode.NORMAL,
+                        "COLUMN_4");
+
+                configRegistry.registerConfigAttribute(
+                        EditConfigAttributes.DATA_VALIDATOR,
+                        new DataValidator() {
+
+                    @Override
+                    public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+                        if (newValue instanceof Integer && ((Integer) newValue).intValue() > 100) {
+                            return false;
+                        }
+                        return true;
+                    }
+                },
+                        DisplayMode.NORMAL,
+                        "COLUMN_4");
+            }
+        });
+
+        natTable.setData(CSSSWTConstants.CSS_CLASS_NAME_KEY, "basic");
+
+        natTable.configure();
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+    }
+
+}

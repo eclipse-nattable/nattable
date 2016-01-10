@@ -512,7 +512,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
                     cell.getRowSpan());
 
             if (cellRectangle.contains(getSelectionAnchor().columnPosition, getSelectionAnchor().rowPosition)) {
-                labelStack.addLabel(SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
+                labelStack.addLabelOnTop(SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
             }
 
             if (this.bottomRightInSelection != null
@@ -802,5 +802,23 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
         } else {
             this.bottomRightInSelection = null;
         }
+    }
+
+    /**
+     * @since 1.4
+     */
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = super.getProvidedLabels();
+
+        labels.add(SelectionStyleLabels.SELECTION_ANCHOR_STYLE);
+        labels.add(SelectionStyleLabels.SELECTION_ANCHOR_GRID_LINE_STYLE);
+        labels.add(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
+        labels.add(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
+        labels.add(SelectionStyleLabels.FILL_HANDLE_REGION);
+        labels.add(SelectionStyleLabels.FILL_HANDLE_CELL);
+        labels.add(SelectionStyleLabels.COPY_BORDER_STYLE);
+
+        return labels;
     }
 }

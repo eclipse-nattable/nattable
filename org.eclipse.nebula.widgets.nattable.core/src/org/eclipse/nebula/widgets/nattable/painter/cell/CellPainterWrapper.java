@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,46 +33,38 @@ public abstract class CellPainterWrapper extends AbstractCellPainter {
         return this.wrappedPainter;
     }
 
-    public Rectangle getWrappedPainterBounds(ILayerCell cell, GC gc,
-            Rectangle bounds, IConfigRegistry configRegistry) {
+    public Rectangle getWrappedPainterBounds(
+            ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+
         return bounds;
     }
 
     @Override
-    public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc,
-            Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-        Rectangle wrappedPainterBounds = getWrappedPainterBounds(cell, gc,
-                adjustedCellBounds, configRegistry);
+    public ICellPainter getCellPainterAt(
+            int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+
+        Rectangle wrappedPainterBounds = getWrappedPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
         if (this.wrappedPainter != null && wrappedPainterBounds.contains(x, y)) {
-            return getWrappedPainter().getCellPainterAt(x, y, cell, gc,
-                    wrappedPainterBounds, configRegistry);
+            return getWrappedPainter().getCellPainterAt(x, y, cell, gc, wrappedPainterBounds, configRegistry);
         } else {
-            return super.getCellPainterAt(x, y, cell, gc, adjustedCellBounds,
-                    configRegistry);
+            return super.getCellPainterAt(x, y, cell, gc, adjustedCellBounds, configRegistry);
         }
     }
 
     @Override
-    public int getPreferredWidth(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
-        return this.wrappedPainter != null ? this.wrappedPainter.getPreferredWidth(cell,
-                gc, configRegistry) : 0;
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+        return this.wrappedPainter != null ? this.wrappedPainter.getPreferredWidth(cell, gc, configRegistry) : 0;
     }
 
     @Override
-    public int getPreferredHeight(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
-        return this.wrappedPainter != null ? this.wrappedPainter.getPreferredHeight(cell,
-                gc, configRegistry) : 0;
+    public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+        return this.wrappedPainter != null ? this.wrappedPainter.getPreferredHeight(cell, gc, configRegistry) : 0;
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds,
-            IConfigRegistry configRegistry) {
+    public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
         if (this.wrappedPainter != null) {
-            this.wrappedPainter.paintCell(cell, gc, adjustedCellBounds,
-                    configRegistry);
+            this.wrappedPainter.paintCell(cell, gc, adjustedCellBounds, configRegistry);
         }
     }
-
 }

@@ -1,0 +1,405 @@
+.basic {
+	cell-background-color: white;
+	text-align: left;
+	table-border-color: auto;
+	fill-handle-color: blue;
+	fill-handle-border: 1px black solid;
+	fill-region-border: 2px blue solid;
+	/* column-width: percentage; */
+	grid-line-color: black;
+	grid-line-width: 1px;
+}
+
+.basic:select {
+    painter-resolution: true;
+	cell-background-color: gradient linear green black false;
+	color: white;
+	text-align: right;
+	grid-line-color: white;
+}
+
+.basic > .selectionAnchor:select {
+    painter-resolution: false;
+	cell-background-color: gradient linear red black false;
+	color: yellow;
+}
+
+.basic > .COLUMN_HEADER {
+	painter: beveled-border background padding text;
+	padding: 2;
+	render-grid-lines: false;
+	text-direction: vertical;
+	row-height: auto;
+}
+
+.basic > .COLUMN_HEADER:select {
+	painter-resolution: false;
+	cell-background-color: gray;
+	text-align: center;
+}
+
+.basic > .ROW_HEADER {
+	render-grid-lines: true;
+}
+
+.basic > .ROW_HEADER:select {
+	cell-background-color: gradient linear blue white false;
+	text-align: center;
+}
+
+.basic > .COLUMN_0 {
+    padding: 0 5;
+    font: italic 12 bold "Times New Roman";
+    text-decoration: underline line-through;
+}
+
+.basic > .COLUMN_1 {
+    border: 2px dashdot blue;
+}
+
+.basic > .COLUMN_1:select {
+    border: 2px dotted white;
+}
+
+.basic > .COLUMN_2 {
+	painter: gradient-background password;
+	cell-background-color: gradient linear red white false;
+}
+
+.basic > .COLUMN_2:select {
+    painter-resolution: false;
+	password-echo-char: '@';
+}
+
+.basic > .COLUMN_3 {
+	cell-background-color: gradient linear white rgb(136, 212, 215) true;
+	text-align: left;
+	font-weight: bold;
+	row-height: auto;
+}
+
+.basic > .COLUMN_4 {
+	text-align: right;
+	converter: int;
+    conversion-error-font-weight: bold;
+    conversion-error-font-size: 12;
+    conversion-error-color: yellow;
+    conversion-error-background-color: red;
+    validation-error-font-style: italic;
+    validation-error-font-weight: bold;
+    validation-error-color: red;
+    validation-error-background-color: yellow;
+}
+	
+.basic > .COLUMN_5 {
+	painter: background custom-line-border padding text;
+	text-align: right;
+	converter: double 2 4;
+	border: 2 green solid;
+}
+
+.basic > .COLUMN_6 {
+	painter: background checkbox;
+	converter: boolean;
+}
+
+.basic > .COLUMN_7 {
+	decoration: left url('./nebula_logo_16.png') 5 true;	
+    column-width: 80;
+}
+
+.basic > .COLUMN_9 {
+	painter: background combobox;
+}
+
+.basic > .COLUMN_10 {
+	painter: background table;
+}
+
+.basic > .COLUMN_10:select {
+	painter: gradient-background table;
+}
+
+/* PERCENTAGE CONFIGURATION */
+
+.percentage {
+	color: white;
+	percentage-decorator-colors: red green blue;
+	painter: percentage;
+}
+
+.percentage > .BODY {
+	painter-resolution: false;
+	converter: percentage;
+}
+
+.percentage > .COLUMN_HEADER {
+	cell-background-image: url('./column_header_bg.png');
+	render-grid-lines: true;
+}
+
+.percentage > .COLUMN_HEADER:select {
+	cell-background-image: url('./selected_column_header_bg.png');
+	text-align: center;
+}
+
+/* TREE CONFIGURATION */
+
+.tree {
+	tree-structure-painter: background padding tree;
+	table-border-color: auto;
+	cell-background-color: white;
+	text-align: left;
+	padding: 0 5;
+}
+
+.tree:select {
+	/* avoid additional registration of a cell painter which would lead to breaking the NatTable inheritance */
+	painter-resolution: false;
+	color: white;
+	cell-background-color: #87CEFA;
+	font-family: "Segoe UI";
+	font-size: 9;
+	font-style: normal;
+	invert-icons: true;
+}
+
+.tree > .selectionAnchor:select {
+	color: white;
+	cell-background-color: #87CEFA;
+}
+
+.tree > .CORNER {
+	render-grid-lines: true;
+	cell-background-color: #F5F5F5;
+}
+
+.tree > .COLUMN_HEADER {
+	render-grid-lines: true;
+	cell-background-color: #F5F5F5;
+	color: black;
+	font: "Segoe UI" 9 normal;
+	text-align: left;
+	padding: 0 5;
+}
+
+.tree > .COLUMN_HEADER:select {
+	cell-background-color: #c0c0c0;
+	color: white; 
+}
+
+.tree > .ROW_HEADER {
+	render-grid-lines: true;
+	cell-background-color: #F5F5F5;
+	color: black;
+	font: "Segoe UI" 9 normal;
+	text-align: center;}
+
+.tree > .ROW_HEADER:select {
+	cell-background-color: #c0c0c0;
+	color: white; 
+}
+
+.tree > .genderLabel {
+	painter: background padding combobox;
+}
+
+.tree > .genderLabel:select {
+	invert-icons: true;
+}
+
+.tree > .marriedLabel {
+	painter: background padding checkbox;
+	text-align: center;
+}
+
+.tree > .marriedLabel:select {
+	text-align: center;
+}
+
+.tree > .dateLabel {
+	converter: date "yyyy-MM-dd";
+}
+
+/* DARK CONFIGURATION */
+
+.dark {
+	tree-structure-painter: background padding tree;
+	table-border-color: auto;
+	cell-background-color: black;
+	color: #F8F8F8;
+	text-align: left;
+	padding: 0 5;
+	invert-icons: true;
+}
+
+.dark:select {
+	/* avoid additional registration of a cell painter which would lead to breaking the NatTable inheritance */
+	painter-resolution: false;
+	color: #F8F8F8;
+	cell-background-color: gray;
+	font-family: "Segoe UI";
+	font-size: 9;
+	font-style: normal;
+	font-weight: normal;
+}
+
+.dark > .selectionAnchor:select {
+	painter-resolution: false;
+	color: #F8F8F8;
+	cell-background-color: #696969;
+}
+
+.dark > .CORNER {
+	render-grid-lines: true;
+	cell-background-color: gradient linear #696969 black true;
+}
+
+.dark > .COLUMN_HEADER {
+	render-grid-lines: true;
+	color: #F8F8F8;
+	cell-background-color: gradient linear #696969 black true;
+	padding: 0 5;
+	font: "Segoe UI" 9 normal;
+	text-align: left;
+}
+
+.dark > .COLUMN_HEADER:select {
+	render-grid-lines: true;
+	color: #F8F8F8;
+	cell-background-color: gradient linear black #696969 true;
+	padding: 0 5;
+	font: "Segoe UI" 9 normal;
+	text-align: left;
+}
+
+.dark > .COLUMN_GROUP_HEADER {
+	painter: gradient-background column-group text;
+}
+
+.dark > .SORT_DOWN {
+	painter: gradient-background padding sort-header text;
+	cell-background-color: gradient linear #696969 black true;
+}
+
+.dark > .SORT_UP {
+	painter: gradient-background padding sort-header text;
+	cell-background-color: gradient linear #696969 black true;
+}
+
+.dark > .SORT_DOWN:select {
+	painter: gradient-background padding sort-header text;
+	cell-background-color: gradient linear black #696969 true;
+}
+
+.dark > .SORT_UP:select {
+	painter: gradient-background padding sort-header text;
+	cell-background-color: gradient linear black #696969 true;
+}
+
+.dark > .ROW_HEADER {
+	render-grid-lines: true;
+	color: #F8F8F8;
+	cell-background-color: gradient linear #696969 black false;
+	padding: 0 5;
+	font: "Segoe UI" 9 normal;
+	text-align: center;
+}
+
+.dark > .ROW_HEADER:select {
+	render-grid-lines: true;
+	color: #F8F8F8;
+	cell-background-color: gradient linear black #696969 false;
+	padding: 0 5;
+	font: "Segoe UI" 9 normal;
+	text-align: center;
+}
+
+.dark > .ODD_BODY {
+	cell-background-color: black;
+}
+
+.dark > .EVEN_BODY {
+	cell-background-color: black;
+}
+
+.dark > .COLUMN_2 {
+	text-align: right;	
+}
+
+.dark > .COLUMN_2:select {
+	text-align: right;	
+}
+
+.dark > .COLUMN_3 {
+	converter: double 2 2;
+	text-align: right;	
+}
+
+.dark > .COLUMN_3:select {
+	text-align: right;	
+}
+
+.dark > .COLUMN_4 {
+	painter: background padding checkbox;
+	converter: boolean;	
+	text-align: center;
+}
+
+.dark > .COLUMN_4:select {
+	text-align: center;
+}
+
+.dark > .COLUMN_6 {
+	converter: date yyyy-MM-dd
+}
+
+.dark > .rowHeaderSummaryRowLabel {
+	cell-background-color: gradient linear #696969 black false;
+	text-align: center;
+}
+
+.dark > .rowHeaderSummaryRowLabel:select {
+	cell-background-color: gradient linear black #696969 false;
+	text-align: center;
+}
+
+.dark > .FILTER_ROW {
+	cell-background-color: black;
+}
+
+.dark > .SummaryRow {
+	cell-background-color: gray;
+	font-weight: bold;
+}
+
+.dark > .SummaryRow:select {
+	cell-background-color: gray;
+}
+
+.dark > .SummaryColumn_2 {
+	text-align: right;
+}
+
+.dark > .SummaryColumn_2:select {
+	text-align: right;
+}
+
+.dark > .SummaryColumn_3 {
+	text-align: right;
+}
+
+.dark > .SummaryColumn_3:select {
+	text-align: right;
+}
+
+.dark > .GROUP_BY_REGION {
+	/* Important to disable automatic painter resolution to avoid overpainting */
+	painter-resolution: false;
+	cell-background-color: #696969;
+	color: #F8F8F8;
+}
+
+.dark > .GROUP_BY_OBJECT {
+	font-weight: bold;
+}

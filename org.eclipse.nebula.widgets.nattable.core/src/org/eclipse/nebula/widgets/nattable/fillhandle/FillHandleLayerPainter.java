@@ -507,7 +507,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      *         <code>false</code> if not.
      */
     protected boolean isFillHandleRegion(ILayerCell cell) {
-        return cell.getConfigLabels().hasLabel(SelectionStyleLabels.FILL_HANDLE_REGION);
+        return (cell != null) ? cell.getConfigLabels().hasLabel(SelectionStyleLabels.FILL_HANDLE_REGION) : false;
     }
 
     /**
@@ -518,7 +518,7 @@ public class FillHandleLayerPainter extends SelectionLayerPainter {
      *         region, <code>false</code> if not.
      */
     protected boolean isFillHandleCell(ILayerCell cell) {
-        return cell.getConfigLabels().hasLabel(SelectionStyleLabels.FILL_HANDLE_CELL);
+        return (cell != null) ? cell.getConfigLabels().hasLabel(SelectionStyleLabels.FILL_HANDLE_CELL) : false;
     }
 
     /**

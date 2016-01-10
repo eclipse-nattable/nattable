@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples._400_Configuration;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -19,6 +22,8 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person;
 import org.eclipse.nebula.widgets.nattable.dataset.person.Person.Gender;
 import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
@@ -39,9 +44,12 @@ import org.eclipse.nebula.widgets.nattable.hover.config.ColumnHeaderHoverLayerCo
 import org.eclipse.nebula.widgets.nattable.hover.config.RowHeaderHoverLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundImagePainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -119,7 +127,9 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         // add labels to provider conditional styling
-        bodyDataLayer.setConfigLabelAccumulator(new IConfigLabelAccumulator() {
+        AggregateConfigLabelAccumulator labelAccumulator = new AggregateConfigLabelAccumulator();
+        labelAccumulator.add(new ColumnLabelAccumulator());
+        labelAccumulator.add(new IConfigLabelAccumulator() {
             @Override
             public void accumulateConfigLabels(
                     LabelStack configLabels, int columnPosition, int rowPosition) {
@@ -129,6 +139,8 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
                 }
             }
         });
+
+        bodyDataLayer.setConfigLabelAccumulator(labelAccumulator);
 
         // build the column header layer
         IDataProvider columnHeaderDataProvider =
@@ -378,6 +390,29 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
                     CellConfigAttributes.CELL_STYLE,
                     femaleStyle,
                     DisplayMode.NORMAL, FEMALE_LABEL);
+
+            // add custom painter
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER,
+                    new CheckBoxPainter(),
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + "3");
+
+            // add custom converter
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultBooleanDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + "3");
+
+            DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+            String pattern = ((SimpleDateFormat) formatter).toPattern();
+
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultDateDisplayConverter(pattern),
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + "4");
         }
 
         @Override
@@ -387,6 +422,21 @@ public class _423_ThemeStylingExample extends AbstractNatExample {
                     CellConfigAttributes.CELL_STYLE,
                     DisplayMode.NORMAL,
                     FEMALE_LABEL);
+
+            configRegistry.unregisterConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER,
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + "3");
+
+            configRegistry.unregisterConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + "3");
+
+            configRegistry.unregisterConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    DisplayMode.NORMAL,
+                    ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + "4");
         }
 
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -104,8 +104,7 @@ public class PaddingDecorator extends CellPainterWrapper {
      *            <code>true</code> if the PaddingDecorator should paint the
      *            background, <code>false</code> if not.
      */
-    public PaddingDecorator(ICellPainter interiorPainter, int padding,
-            boolean paintBg) {
+    public PaddingDecorator(ICellPainter interiorPainter, int padding, boolean paintBg) {
         this(interiorPainter, padding, padding, padding, padding, paintBg);
     }
 
@@ -130,10 +129,9 @@ public class PaddingDecorator extends CellPainterWrapper {
      *            The number of pixels that should be used as padding to the
      *            left.
      */
-    public PaddingDecorator(ICellPainter interiorPainter, int topPadding,
-            int rightPadding, int bottomPadding, int leftPadding) {
-        this(interiorPainter, topPadding, rightPadding, bottomPadding,
-                leftPadding, true);
+    public PaddingDecorator(ICellPainter interiorPainter,
+            int topPadding, int rightPadding, int bottomPadding, int leftPadding) {
+        this(interiorPainter, topPadding, rightPadding, bottomPadding, leftPadding, true);
     }
 
     /**
@@ -162,9 +160,8 @@ public class PaddingDecorator extends CellPainterWrapper {
      *            <code>true</code> if the PaddingDecorator should paint the
      *            background, <code>false</code> if not.
      */
-    public PaddingDecorator(ICellPainter interiorPainter, int topPadding,
-            int rightPadding, int bottomPadding, int leftPadding,
-            boolean paintBg) {
+    public PaddingDecorator(ICellPainter interiorPainter,
+            int topPadding, int rightPadding, int bottomPadding, int leftPadding, boolean paintBg) {
         super(interiorPainter);
         this.topPadding = topPadding;
         this.rightPadding = rightPadding;
@@ -174,29 +171,23 @@ public class PaddingDecorator extends CellPainterWrapper {
     }
 
     @Override
-    public int getPreferredWidth(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
-        return this.leftPadding + super.getPreferredWidth(cell, gc, configRegistry)
-                + this.rightPadding;
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+        return this.leftPadding + super.getPreferredWidth(cell, gc, configRegistry) + this.rightPadding;
     }
 
     @Override
-    public int getPreferredHeight(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
-        return this.topPadding + super.getPreferredHeight(cell, gc, configRegistry)
-                + this.bottomPadding;
+    public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+        return this.topPadding + super.getPreferredHeight(cell, gc, configRegistry) + this.bottomPadding;
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds,
-            IConfigRegistry configRegistry) {
+    public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
         Rectangle interiorBounds = getInteriorBounds(adjustedCellBounds);
 
         if (this.paintBg) {
             Color originalBg = gc.getBackground();
             Color cellStyleBackground = getBackgroundColor(cell, configRegistry);
-            gc.setBackground(cellStyleBackground != null ? cellStyleBackground
-                    : originalBg);
+            gc.setBackground(cellStyleBackground != null ? cellStyleBackground : originalBg);
             gc.fillRectangle(adjustedCellBounds);
             gc.setBackground(originalBg);
         }
@@ -216,10 +207,11 @@ public class PaddingDecorator extends CellPainterWrapper {
      * @return The cell bounds that are available for the interior painter.
      */
     public Rectangle getInteriorBounds(Rectangle adjustedCellBounds) {
-        return new Rectangle(adjustedCellBounds.x + this.leftPadding,
-                adjustedCellBounds.y + this.topPadding, adjustedCellBounds.width
-                        - this.leftPadding - this.rightPadding, adjustedCellBounds.height
-                        - this.topPadding - this.bottomPadding);
+        return new Rectangle(
+                adjustedCellBounds.x + this.leftPadding,
+                adjustedCellBounds.y + this.topPadding,
+                adjustedCellBounds.width - this.leftPadding - this.rightPadding,
+                adjustedCellBounds.height - this.topPadding - this.bottomPadding);
     }
 
     /**
@@ -232,20 +224,22 @@ public class PaddingDecorator extends CellPainterWrapper {
      * @return The background color that should be used to render the background
      *         of the given cell.
      */
-    protected Color getBackgroundColor(ILayerCell cell,
-            IConfigRegistry configRegistry) {
+    protected Color getBackgroundColor(ILayerCell cell, IConfigRegistry configRegistry) {
         return CellStyleUtil.getCellStyle(cell, configRegistry)
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
     }
 
     @Override
-    public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc,
+    public ICellPainter getCellPainterAt(
+            int x, int y,
+            ILayerCell cell, GC gc,
             Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+
         // need to take the alignment into account
         IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
 
-        HorizontalAlignmentEnum horizontalAlignment = cellStyle
-                .getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
+        HorizontalAlignmentEnum horizontalAlignment =
+                cellStyle.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
         int horizontalAlignmentPadding = 0;
         switch (horizontalAlignment) {
             case LEFT:
@@ -256,8 +250,8 @@ public class PaddingDecorator extends CellPainterWrapper {
                 break;
         }
 
-        VerticalAlignmentEnum verticalAlignment = cellStyle
-                .getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
+        VerticalAlignmentEnum verticalAlignment =
+                cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
         int verticalAlignmentPadding = 0;
         switch (verticalAlignment) {
             case TOP:
@@ -268,8 +262,52 @@ public class PaddingDecorator extends CellPainterWrapper {
                 break;
         }
 
-        return super.getCellPainterAt(x - horizontalAlignmentPadding, y
-                - verticalAlignmentPadding, cell, gc, adjustedCellBounds,
+        return super.getCellPainterAt(
+                x - horizontalAlignmentPadding,
+                y - verticalAlignmentPadding,
+                cell,
+                gc,
+                adjustedCellBounds,
                 configRegistry);
+    }
+
+    /**
+     *
+     * @return The top padding added by this {@link PaddingDecorator}.
+     *
+     * @since 1.4
+     */
+    public int getTopPadding() {
+        return this.topPadding;
+    }
+
+    /**
+     *
+     * @return The right padding added by this {@link PaddingDecorator}.
+     * 
+     * @since 1.4
+     */
+    public int getRightPadding() {
+        return this.rightPadding;
+    }
+
+    /**
+     *
+     * @return The bottom padding added by this {@link PaddingDecorator}.
+     * 
+     * @since 1.4
+     */
+    public int getBottomPadding() {
+        return this.bottomPadding;
+    }
+
+    /**
+     *
+     * @return The left padding added by this {@link PaddingDecorator}.
+     * 
+     * @since 1.4
+     */
+    public int getLeftPadding() {
+        return this.leftPadding;
     }
 }

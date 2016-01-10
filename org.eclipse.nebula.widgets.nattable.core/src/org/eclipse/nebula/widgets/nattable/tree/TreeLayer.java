@@ -553,4 +553,26 @@ public class TreeLayer extends AbstractRowHideShowLayer {
     public void setUseTreeColumnIndex(boolean useTreeColumnIndex) {
         this.useTreeColumnIndex = useTreeColumnIndex;
     }
+
+    /**
+     * @since 1.4
+     */
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> result = super.getProvidedLabels();
+
+        result.add(TreeLayer.TREE_COLUMN_CELL);
+        result.add(DefaultTreeLayerConfiguration.TREE_LEAF_CONFIG_TYPE);
+        result.add(DefaultTreeLayerConfiguration.TREE_COLLAPSED_CONFIG_TYPE);
+        result.add(DefaultTreeLayerConfiguration.TREE_EXPANDED_CONFIG_TYPE);
+        // configure 5 levels to be configurable via CSS
+        // if you need more you need to override this method
+        result.add(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + "0"); //$NON-NLS-1$
+        result.add(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + "1"); //$NON-NLS-1$
+        result.add(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + "2"); //$NON-NLS-1$
+        result.add(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + "3"); //$NON-NLS-1$
+        result.add(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE + "4"); //$NON-NLS-1$
+
+        return result;
+    }
 }

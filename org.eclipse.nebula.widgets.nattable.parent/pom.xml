@@ -22,6 +22,10 @@
 		<module>../org.eclipse.nebula.widgets.nattable.core.feature</module>
 		<module>../org.eclipse.nebula.widgets.nattable.core.source.feature</module>
 
+		<module>../org.eclipse.nebula.widgets.nattable.extension.e4</module>
+		<module>../org.eclipse.nebula.widgets.nattable.extension.e4.feature</module>
+		<module>../org.eclipse.nebula.widgets.nattable.extension.e4.source.feature</module>
+
 		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists</module>
 		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.test</module>
 		<module>../org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature</module>

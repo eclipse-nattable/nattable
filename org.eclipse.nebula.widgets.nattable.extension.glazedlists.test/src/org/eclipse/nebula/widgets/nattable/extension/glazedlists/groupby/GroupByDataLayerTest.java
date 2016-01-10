@@ -15,6 +15,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -853,5 +854,26 @@ public class GroupByDataLayerTest {
         // if we get here, there is no class cast exception as reported in
         // Bug 459422
 
+    }
+
+    @Test
+    public void testProvidedLabels() {
+        Collection<String> labels = this.dataLayer.getProvidedLabels();
+        assertEquals(14, labels.size());
+
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_OBJECT));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 0));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 1));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 2));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 3));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 4));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_COLUMN_PREFIX + 5));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 0));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 1));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 2));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 3));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 4));
+        assertTrue(labels.contains(GroupByDataLayer.GROUP_BY_SUMMARY_COLUMN_PREFIX + 5));
     }
 }

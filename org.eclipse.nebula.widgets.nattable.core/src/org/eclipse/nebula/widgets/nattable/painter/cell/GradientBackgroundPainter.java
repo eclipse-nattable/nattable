@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Dirk Fauth
+ *     Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
@@ -33,8 +33,6 @@ import org.eclipse.swt.graphics.Rectangle;
  * painting is skipped.
  * <p>
  * Can be used as a cell painter or a decorator.
- *
- * @author Dirk Fauth
  *
  */
 public class GradientBackgroundPainter extends CellPainterWrapper {
@@ -95,8 +93,7 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds,
-            IConfigRegistry configRegistry) {
+    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
         Color foregroundColor = getForeGroundColour(cell, configRegistry);
         Color backgroundColor = getBackgroundColour(cell, configRegistry);
         if (backgroundColor != null && foregroundColor != null) {
@@ -105,8 +102,12 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
 
             gc.setForeground(foregroundColor);
             gc.setBackground(backgroundColor);
-            gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width,
-                    bounds.height, this.vertical);
+            gc.fillGradientRectangle(
+                    bounds.x,
+                    bounds.y,
+                    bounds.width,
+                    bounds.height,
+                    this.vertical);
 
             gc.setForeground(originalForeground);
             gc.setBackground(originalBackground);
@@ -139,14 +140,13 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
      * @return The {@link Color} to use as foreground color of the gradient
      *         sweeping or <code>null</code> if none was configured.
      */
-    protected Color getForeGroundColour(ILayerCell cell,
-            IConfigRegistry configRegistry) {
-        Color fgColor = CellStyleUtil.getCellStyle(cell, configRegistry)
-                .getAttributeValue(
-                        CellStyleAttributes.GRADIENT_FOREGROUND_COLOR);
-        return fgColor != null ? fgColor : CellStyleUtil.getCellStyle(cell,
-                configRegistry).getAttributeValue(
-                CellStyleAttributes.FOREGROUND_COLOR);
+    protected Color getForeGroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
+        Color fgColor = CellStyleUtil
+                .getCellStyle(cell, configRegistry)
+                .getAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR);
+        return fgColor != null ? fgColor : CellStyleUtil
+                .getCellStyle(cell, configRegistry)
+                .getAttributeValue(CellStyleAttributes.FOREGROUND_COLOR);
     }
 
     /**
@@ -173,14 +173,34 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
      * @return The {@link Color} to use as background color of the gradient
      *         sweeping or <code>null</code> if none was configured.
      */
-    protected Color getBackgroundColour(ILayerCell cell,
-            IConfigRegistry configRegistry) {
-        Color bgColor = CellStyleUtil.getCellStyle(cell, configRegistry)
-                .getAttributeValue(
-                        CellStyleAttributes.GRADIENT_BACKGROUND_COLOR);
-        return bgColor != null ? bgColor : CellStyleUtil.getCellStyle(cell,
-                configRegistry).getAttributeValue(
-                CellStyleAttributes.BACKGROUND_COLOR);
+    protected Color getBackgroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
+        Color bgColor = CellStyleUtil
+                .getCellStyle(cell, configRegistry)
+                .getAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR);
+        return bgColor != null ? bgColor : CellStyleUtil
+                .getCellStyle(cell, configRegistry)
+                .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
     }
 
+    /**
+     *
+     * @return <code>true</code> if sweeps from top to bottom, else sweeps from
+     *         left to right. Default is <code>false</code>
+     * @since 1.4
+     */
+    public boolean isVertical() {
+        return this.vertical;
+    }
+
+    /**
+     *
+     * @param vertical
+     *            <code>true</code> if should sweep from top to bottom,
+     *            <code>false</code> if it should sweep from left to right.
+     *            Default is <code>false</code>
+     * @since 1.4
+     */
+    public void setVertical(boolean vertical) {
+        this.vertical = vertical;
+    }
 }

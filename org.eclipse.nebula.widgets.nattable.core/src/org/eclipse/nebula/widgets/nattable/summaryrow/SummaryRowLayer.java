@@ -549,4 +549,18 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
         return this.standalone ? null : super.getUnderlyingLayerByPosition(columnPosition, rowPosition);
     }
 
+    /**
+     * @since 1.4
+     */
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = super.getProvidedLabels();
+
+        labels.add(DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+        for (int i = 0; i < getColumnCount(); i++) {
+            labels.add(DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + i);
+        }
+
+        return labels;
+    }
 }

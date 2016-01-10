@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,8 +38,7 @@ public class BackgroundPainter extends CellPainterWrapper {
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds,
-            IConfigRegistry configRegistry) {
+    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
         Color backgroundColor = getBackgroundColour(cell, configRegistry);
         if (backgroundColor != null) {
             Color originalBackground = gc.getBackground();
@@ -53,10 +52,9 @@ public class BackgroundPainter extends CellPainterWrapper {
         super.paintCell(cell, gc, bounds, configRegistry);
     }
 
-    protected Color getBackgroundColour(ILayerCell cell,
-            IConfigRegistry configRegistry) {
-        return CellStyleUtil.getCellStyle(cell, configRegistry)
+    protected Color getBackgroundColour(ILayerCell cell, IConfigRegistry configRegistry) {
+        return CellStyleUtil
+                .getCellStyle(cell, configRegistry)
                 .getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
     }
-
 }

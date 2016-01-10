@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
 package org.eclipse.nebula.widgets.nattable.group;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -51,14 +52,20 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
     private final SelectionLayer selectionLayer;
     private final ILayer rowHeaderLayer;
 
-    public RowGroupHeaderLayer(ILayer rowHeaderLayer,
-            SelectionLayer selectionLayer, IRowGroupModel<T> rowGroupModel) {
+    public RowGroupHeaderLayer(
+            ILayer rowHeaderLayer,
+            SelectionLayer selectionLayer,
+            IRowGroupModel<T> rowGroupModel) {
+
         this(rowHeaderLayer, selectionLayer, rowGroupModel, true);
     }
 
-    public RowGroupHeaderLayer(ILayer rowHeaderLayer,
-            SelectionLayer selectionLayer, IRowGroupModel<T> rowGroupModel,
+    public RowGroupHeaderLayer(
+            ILayer rowHeaderLayer,
+            SelectionLayer selectionLayer,
+            IRowGroupModel<T> rowGroupModel,
             boolean useDefaultConfiguration) {
+
         super(rowHeaderLayer);
         this.rowHeaderLayer = rowHeaderLayer;
         this.selectionLayer = selectionLayer;
@@ -94,8 +101,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
     @Override
     protected void registerCommandHandlers() {
-        registerCommandHandler(new SelectRowGroupCommandHandler<T>(
-                this.model, this.selectionLayer, this));
+        registerCommandHandler(new SelectRowGroupCommandHandler<T>(this.model, this.selectionLayer, this));
         registerCommandHandler(new ConfigureScalingCommandHandler(this.columnWidthConfig, null));
     }
 
@@ -186,8 +192,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
             return this.columnWidthConfig.getAggregateSize(columnPosition);
         } else {
             return getColumnWidthByPosition(0)
-                    + this.rowHeaderLayer
-                            .getStartXOfColumnPosition(columnPosition - 1);
+                    + this.rowHeaderLayer.getStartXOfColumnPosition(columnPosition - 1);
         }
     }
 
@@ -207,9 +212,14 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
         // Row group header cell
         if (RowGroupUtils.isPartOfAGroup(this.model, bodyRowIndex)) {
             if (columnPosition == 0) {
-                return new LayerCell(this, columnPosition,
-                        getStartPositionOfGroup(rowPosition), columnPosition,
-                        rowPosition, 1, getRowSpan(rowPosition));
+                return new LayerCell(
+                        this,
+                        columnPosition,
+                        getStartPositionOfGroup(rowPosition),
+                        columnPosition,
+                        rowPosition,
+                        1,
+                        getRowSpan(rowPosition));
             } else {
                 return new LayerCell(this, columnPosition, rowPosition);
             }
@@ -217,8 +227,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
             // render row header w/ columnspan = 2
             // as in this case we ask the row header layer for the cell position
             // and the row header layer asks his data provider for the column
-            // count
-            // which should always return 1, we ask for row position 0
+            // count which should always return 1, we ask for row position 0
             ILayerCell cell = this.rowHeaderLayer.getCellByPosition(0, rowPosition);
             if (cell != null) {
                 cell = new TransformedLayerCell(cell) {
@@ -248,8 +257,8 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
         int rowIndex = getRowIndexByPosition(rowPosition);
 
         // Get the row and the group from our cache and model.
-        final IRowGroup<T> rowGroup = RowGroupUtils.getRowGroupForRowIndex(
-                this.model, rowIndex);
+        final IRowGroup<T> rowGroup =
+                RowGroupUtils.getRowGroupForRowIndex(this.model, rowIndex);
 
         int sizeOfGroup = RowGroupUtils.sizeOfGroup(this.model, rowIndex);
 
@@ -264,8 +273,8 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
         int startPositionOfGroup = getStartPositionOfGroup(rowPosition);
         int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
-        List<Integer> rowIndexesInGroup = RowGroupUtils.getRowIndexesInGroup(
-                this.model, rowIndex);
+        List<Integer> rowIndexesInGroup =
+                RowGroupUtils.getRowIndexesInGroup(this.model, rowIndex);
 
         for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
             int index = getRowIndexByPosition(i);
@@ -286,12 +295,14 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
      */
     private int getStartPositionOfGroup(int rowPosition) {
         int bodyRowIndex = getRowIndexByPosition(rowPosition);
-        int leastPossibleStartPositionOfGroup = Math.max(0,
-                (rowPosition - RowGroupUtils.sizeOfGroup(this.model, bodyRowIndex)));
+        int leastPossibleStartPositionOfGroup =
+                Math.max(0, (rowPosition - RowGroupUtils.sizeOfGroup(this.model, bodyRowIndex)));
         int i = 0;
         for (i = leastPossibleStartPositionOfGroup; i < rowPosition; i++) {
-            if (RowGroupUtils.isInTheSameGroup(getRowIndexByPosition(i),
-                    bodyRowIndex, this.model)) {
+            if (RowGroupUtils.isInTheSameGroup(
+                    getRowIndexByPosition(i),
+                    bodyRowIndex,
+                    this.model)) {
                 break;
             }
         }
@@ -305,45 +316,40 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
                 && RowGroupUtils.isPartOfAGroup(this.model, rowIndex)) {
             return DisplayMode.NORMAL;
         } else {
-            return this.rowHeaderLayer.getDisplayModeByPosition(columnPosition - 1,
-                    rowPosition);
+            return this.rowHeaderLayer.getDisplayModeByPosition(columnPosition - 1, rowPosition);
         }
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         int rowIndex = getRowIndexByPosition(rowPosition);
         if (columnPosition == 0
                 && RowGroupUtils.isPartOfAGroup(this.model, rowIndex)) {
             LabelStack stack = new LabelStack(GridRegion.ROW_GROUP_HEADER);
 
-            IRowGroup<T> group = RowGroupUtils.getRowGroupForRowIndex(this.model,
-                    rowIndex);
+            IRowGroup<T> group = RowGroupUtils.getRowGroupForRowIndex(this.model, rowIndex);
             if (RowGroupUtils.isCollapsed(this.model, group)) {
                 stack.addLabelOnTop(DefaultRowGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
             } else {
                 stack.addLabelOnTop(DefaultRowGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
             }
 
-            List<Integer> selectedRowIndexes = convertToRowIndexes(this.selectionLayer
-                    .getFullySelectedRowPositions());
+            List<Integer> selectedRowIndexes =
+                    convertToRowIndexes(this.selectionLayer.getFullySelectedRowPositions());
             if (selectedRowIndexes.contains(rowIndex)) {
                 stack.addLabelOnTop(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
             }
 
             return stack;
         } else {
-            return this.rowHeaderLayer.getConfigLabelsByPosition(columnPosition - 1,
-                    rowPosition);
+            return this.rowHeaderLayer.getConfigLabelsByPosition(columnPosition - 1, rowPosition);
         }
     }
 
     private List<Integer> convertToRowIndexes(final int[] rowPositions) {
         final List<Integer> rowIndexes = new ArrayList<Integer>();
         for (final Integer rowPosition : rowPositions) {
-            rowIndexes.add(this.selectionLayer
-                    .getRowIndexByPosition(rowPosition));
+            rowIndexes.add(this.selectionLayer.getRowIndexByPosition(rowPosition));
         }
         return rowIndexes;
     }
@@ -355,8 +361,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
                 && RowGroupUtils.isPartOfAGroup(this.model, rowIndex)) {
             return RowGroupUtils.getRowGroupNameForIndex(this.model, rowIndex);
         } else {
-            return this.rowHeaderLayer.getDataValueByPosition(columnPosition - 1,
-                    rowPosition);
+            return this.rowHeaderLayer.getDataValueByPosition(columnPosition - 1, rowPosition);
         }
     }
 
@@ -367,8 +372,7 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
                 && x < getColumnWidthByPosition(0)) {
             return new LabelStack(GridRegion.ROW_GROUP_HEADER);
         } else {
-            return this.rowHeaderLayer.getRegionLabelsByXY(x
-                    - getColumnWidthByPosition(0), y);
+            return this.rowHeaderLayer.getRegionLabelsByXY(x - getColumnWidthByPosition(0), y);
         }
     }
 
@@ -378,5 +382,16 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
     public void clearAllGroups() {
         this.model.clear();
+    }
+
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = super.getProvidedLabels();
+
+        labels.add(GridRegion.ROW_GROUP_HEADER);
+        labels.add(DefaultRowGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
+        labels.add(DefaultRowGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
+
+        return labels;
     }
 }

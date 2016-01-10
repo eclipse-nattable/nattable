@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -63,14 +64,20 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
      */
     private IColumnGroupModelListener modelChangeListener;
 
-    public ColumnGroupHeaderLayer(ILayer columnHeaderLayer,
-            SelectionLayer selectionLayer, ColumnGroupModel columnGroupModel) {
+    public ColumnGroupHeaderLayer(
+            ILayer columnHeaderLayer,
+            SelectionLayer selectionLayer,
+            ColumnGroupModel columnGroupModel) {
+
         this(columnHeaderLayer, selectionLayer, columnGroupModel, true);
     }
 
-    public ColumnGroupHeaderLayer(final ILayer columnHeaderLayer,
-            SelectionLayer selectionLayer, ColumnGroupModel columnGroupModel,
+    public ColumnGroupHeaderLayer(
+            final ILayer columnHeaderLayer,
+            SelectionLayer selectionLayer,
+            ColumnGroupModel columnGroupModel,
             boolean useDefaultConfiguration) {
+
         super(columnHeaderLayer);
 
         this.columnHeaderLayer = columnHeaderLayer;
@@ -115,8 +122,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     @Override
     public int getRowCount() {
         if (!this.calculateHeight
-                || (this.model.getAllIndexesInGroups() != null && this.model
-                        .getAllIndexesInGroups().size() > 0)) {
+                || (this.model.getAllIndexesInGroups() != null
+                        && this.model.getAllIndexesInGroups().size() > 0)) {
             return this.columnHeaderLayer.getRowCount() + 1;
         }
         return this.columnHeaderLayer.getRowCount();
@@ -149,8 +156,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
     @Override
     public int getHeight() {
         if (!this.calculateHeight
-                || (this.model.getAllIndexesInGroups() != null && this.model
-                        .getAllIndexesInGroups().size() > 0)) {
+                || (this.model.getAllIndexesInGroups() != null
+                        && this.model.getAllIndexesInGroups().size() > 0)) {
             return this.rowHeightConfig.getAggregateSize(1)
                     + this.columnHeaderLayer.getHeight();
         }
@@ -225,26 +232,26 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         // Column group header cell
         if (this.model.isPartOfAGroup(bodyColumnIndex)) {
             if (rowPosition == 0) {
-                return new LayerCell(this,
-                        getStartPositionOfGroup(columnPosition), rowPosition,
-                        columnPosition, rowPosition,
-                        getColumnSpan(columnPosition), 1);
+                return new LayerCell(
+                        this,
+                        getStartPositionOfGroup(columnPosition),
+                        rowPosition,
+                        columnPosition,
+                        rowPosition,
+                        getColumnSpan(columnPosition),
+                        1);
             } else {
                 return new LayerCell(this, columnPosition, rowPosition);
             }
         } else {
             // render column header w/ rowspan = 2
             // as in this case we ask the column header layer for the cell
-            // position
-            // and the column header layer asks his data provider for the row
-            // count
-            // which should always return 1, we ask for row position 0 instead
-            // of
-            // using getGroupHeaderRowPosition(), if we would use
-            // getGroupHeaderRowPosition()
-            // the ColumnGroupGroupHeaderLayer wouldn't work anymore
-            ILayerCell cell = this.columnHeaderLayer.getCellByPosition(
-                    columnPosition, 0);
+            // position and the column header layer asks his data provider for
+            // the row count which should always return 1, we ask for row
+            // position 0 instead of using getGroupHeaderRowPosition(), if we
+            // would use getGroupHeaderRowPosition() the
+            // ColumnGroupGroupHeaderLayer wouldn't work anymore
+            ILayerCell cell = this.columnHeaderLayer.getCellByPosition(columnPosition, 0);
             if (cell != null) {
                 final int rowSpan;
 
@@ -284,8 +291,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         int sizeOfGroup = columnGroup.getSize();
 
         if (columnGroup.isCollapsed()) {
-            int sizeOfStaticColumns = columnGroup.getStaticColumnIndexes()
-                    .size();
+            int sizeOfStaticColumns = columnGroup.getStaticColumnIndexes().size();
             if (sizeOfStaticColumns == 0) {
                 return 1;
             } else {
@@ -317,12 +323,13 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         int bodyColumnIndex = getColumnIndexByPosition(columnPosition);
         ColumnGroup columnGroup = this.model.getColumnGroupByIndex(bodyColumnIndex);
 
-        int leastPossibleStartPositionOfGroup = columnPosition
-                - (columnGroup.getSize() - 1);
+        int leastPossibleStartPositionOfGroup = columnPosition - (columnGroup.getSize() - 1);
         int i = 0;
         for (i = leastPossibleStartPositionOfGroup; i < columnPosition; i++) {
-            if (ColumnGroupUtils.isInTheSameGroup(getColumnIndexByPosition(i),
-                    bodyColumnIndex, this.model)) {
+            if (ColumnGroupUtils.isInTheSameGroup(
+                    getColumnIndexByPosition(i),
+                    bodyColumnIndex,
+                    this.model)) {
                 break;
             }
         }
@@ -335,14 +342,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         if (rowPosition == 0 && this.model.isPartOfAGroup(columnIndex)) {
             return DisplayMode.NORMAL;
         } else {
-            return this.columnHeaderLayer.getDisplayModeByPosition(columnPosition,
-                    rowPosition);
+            return this.columnHeaderLayer.getDisplayModeByPosition(columnPosition, rowPosition);
         }
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         int columnIndex = getColumnIndexByPosition(columnPosition);
         if (rowPosition == 0 && this.model.isPartOfAGroup(columnIndex)) {
             LabelStack stack = new LabelStack(GridRegion.COLUMN_GROUP_HEADER);
@@ -358,8 +363,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
             return stack;
         } else {
-            return this.columnHeaderLayer.getConfigLabelsByPosition(columnPosition,
-                    rowPosition);
+            return this.columnHeaderLayer.getConfigLabelsByPosition(columnPosition, rowPosition);
         }
     }
 
@@ -379,8 +383,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         if (this.model.isPartOfAGroup(columnIndex) && y < getRowHeightByPosition(0)) {
             return new LabelStack(GridRegion.COLUMN_GROUP_HEADER);
         } else {
-            return this.columnHeaderLayer.getRegionLabelsByXY(x, y
-                    - getRowHeightByPosition(0));
+            return this.columnHeaderLayer.getRegionLabelsByXY(x, y - getRowHeightByPosition(0));
         }
     }
 
@@ -394,8 +397,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         this.model.clear();
     }
 
-    public void setStaticColumnIndexesByGroup(String colGroupName,
-            int... staticColumnIndexes) {
+    public void setStaticColumnIndexesByGroup(String colGroupName, int... staticColumnIndexes) {
         this.model.setStaticColumnIndexesByGroup(colGroupName, staticColumnIndexes);
     }
 
@@ -430,4 +432,17 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
         }
     }
 
+    /**
+     * @since 1.4
+     */
+    @Override
+    public Collection<String> getProvidedLabels() {
+        Collection<String> labels = super.getProvidedLabels();
+
+        labels.add(GridRegion.COLUMN_GROUP_HEADER);
+        labels.add(DefaultColumnGroupHeaderLayerConfiguration.GROUP_COLLAPSED_CONFIG_TYPE);
+        labels.add(DefaultColumnGroupHeaderLayerConfiguration.GROUP_EXPANDED_CONFIG_TYPE);
+
+        return labels;
+    }
 }

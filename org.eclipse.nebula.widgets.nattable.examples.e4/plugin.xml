@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="org.eclipse.nebula.widgets.nattable.examples.e4"
+            application="org.eclipse.e4.ui.workbench.swt.E4Application">
+         <property
+               name="applicationCSS"
+               value="platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/css/default.css">
+         </property>
+         <property
+               name="appName"
+               value="org.eclipse.nebula.widgets.nattable.examples.e4">
+         </property>
+         <property
+               name="windowImages"
+               value="icons/nebula_logo_16.png,icons/nebula_logo_32.png,icons/nebula_logo_64.png">
+         </property>
+         <property
+               name="applicationCSSResources"
+               value="platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/">
+         </property>
+      </product>
+   </extension>
+
+</plugin>
