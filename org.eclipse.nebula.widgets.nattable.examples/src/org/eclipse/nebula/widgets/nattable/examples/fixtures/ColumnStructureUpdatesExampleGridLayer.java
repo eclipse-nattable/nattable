@@ -47,7 +47,8 @@ import ca.odell.glazedlists.SortedList;
  * Factory for assembling GridLayer and the child layers - with support for
  * GlazedLists
  *
- * @see {@linkplain http://publicobject.com/glazedlists/}
+ * @see <a href="http://publicobject.com/glazedlists/"> http://publicobject.com/
+ *      glazedlists/</a>
  */
 public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
 
@@ -93,7 +94,8 @@ public class ColumnStructureUpdatesExampleGridLayer<T> extends GridLayer {
         SortHeaderLayer<T> columnHeaderSortableLayer = new SortHeaderLayer<T>(
                 columnHeaderLayer, new GlazedListsSortModel<T>(sortedList,
                         columnPropertyAccessor, configRegistry,
-                        this.columnHeaderDataLayer), false);
+                        this.columnHeaderDataLayer),
+                false);
 
         // Row header
         DefaultRowHeaderDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(

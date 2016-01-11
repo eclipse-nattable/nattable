@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -379,6 +379,8 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     /**
+     * @return <code>true</code> if the layer has a dynamic size (e.g. viewport)
+     *         or a fixed size.
      * @since 1.4
      */
     public boolean isDynamicSizeLayer() {
@@ -386,6 +388,7 @@ public abstract class AbstractLayer implements ILayer {
     }
 
     /**
+     * @return The collection of labels that are provided by this layer.
      * @since 1.4
      */
     public Collection<String> getProvidedLabels() {

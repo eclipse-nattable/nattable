@@ -230,7 +230,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
      * @return The ICellPainter that is used to paint the images in the tree by
      *         the IndentedTreeImagePainter. Usually it is some type of
      *         TreeImagePainter that paints expand/collapse/leaf icons regarding
-     *         the node state.<br/>
+     *         the node state.<br>
      *         Can be <code>null</code> if set explicitly to the
      *         IndentedTreeImagePainter!
      *

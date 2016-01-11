@@ -58,38 +58,24 @@ import ca.odell.glazedlists.GlazedLists;
 
 /**
  * Example that demonstrates how to implement cross validation in a NatTable.
- *
- * @author Dirk Fauth
- *
  */
 public class CrossValidationGridExample extends AbstractNatExample {
 
     public static String DATE_LABEL = "DateLabel";
     public static String INVALID_LABEL = "InvalidLabel";
 
-    private EventList<EventData> valuesToShow = GlazedLists
-            .eventList(new ArrayList<EventData>());
+    private EventList<EventData> valuesToShow = GlazedLists.eventList(new ArrayList<EventData>());
 
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.ENGLISH);
         StandaloneNatExampleRunner.run(new CrossValidationGridExample());
     }
 
-    /**
-     * @Override
-     */
     @Override
     public String getDescription() {
         return "Demonstrates how to implement an editable grid with cross validation.";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.nebula.widgets.nattable.examples.INatExample#createExampleControl
-     * (org.eclipse.swt.widgets.Composite)
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Control createExampleControl(Composite parent) {
@@ -106,8 +92,7 @@ public class CrossValidationGridExample extends AbstractNatExample {
         GridDataFactory.fillDefaults().grab(true, true).applyTo(buttonPanel);
 
         // property names of the EventData class
-        String[] propertyNames = { "title", "description", "where", "fromDate",
-                "toDate" };
+        String[] propertyNames = { "title", "description", "where", "fromDate", "toDate" };
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<String, String>();
@@ -120,21 +105,19 @@ public class CrossValidationGridExample extends AbstractNatExample {
         this.valuesToShow.addAll(createEventData());
 
         ConfigRegistry configRegistry = new ConfigRegistry();
-        DefaultGridLayer gridLayer = new DefaultGridLayer(this.valuesToShow,
-                propertyNames, propertyToLabelMap);
+        DefaultGridLayer gridLayer =
+                new DefaultGridLayer(this.valuesToShow, propertyNames, propertyToLabelMap);
         DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 
-        IRowDataProvider<EventData> bodyDataProvider = (IRowDataProvider<EventData>) bodyDataLayer
-                .getDataProvider();
-        bodyDataLayer
-                .setConfigLabelAccumulator(new CrossValidationLabelAccumulator(
-                        bodyDataProvider));
+        IRowDataProvider<EventData> bodyDataProvider =
+                (IRowDataProvider<EventData>) bodyDataLayer.getDataProvider();
+        bodyDataLayer.setConfigLabelAccumulator(
+                new CrossValidationLabelAccumulator(bodyDataProvider));
 
         final NatTable natTable = new NatTable(gridPanel, gridLayer, false);
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.addConfiguration(new CrossValidationEditConfiguration(
-                bodyDataProvider));
+        natTable.addConfiguration(new CrossValidationEditConfiguration(bodyDataProvider));
         natTable.configure();
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
@@ -185,8 +168,7 @@ class CrossValidationLabelAccumulator extends AbstractOverrider {
     }
 
     @Override
-    public void accumulateConfigLabels(LabelStack configLabels,
-            int columnPosition, int rowPosition) {
+    public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
         // get the row object out of the dataprovider
         EventData rowObject = this.bodyDataProvider.getRowObject(rowPosition);
 
@@ -207,8 +189,7 @@ class CrossValidationLabelAccumulator extends AbstractOverrider {
 class CrossValidationEditConfiguration extends AbstractRegistryConfiguration {
     private IRowDataProvider<EventData> bodyDataProvider;
 
-    CrossValidationEditConfiguration(
-            IRowDataProvider<EventData> bodyDataProvider) {
+    CrossValidationEditConfiguration(IRowDataProvider<EventData> bodyDataProvider) {
         this.bodyDataProvider = bodyDataProvider;
     }
 
@@ -220,32 +201,40 @@ class CrossValidationEditConfiguration extends AbstractRegistryConfiguration {
 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
-                new DefaultDateDisplayConverter(), DisplayMode.NORMAL,
+                new DefaultDateDisplayConverter(),
+                DisplayMode.NORMAL,
                 CrossValidationGridExample.DATE_LABEL);
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
-                new DefaultDateDisplayConverter(), DisplayMode.EDIT,
+                new DefaultDateDisplayConverter(),
+                DisplayMode.EDIT,
                 CrossValidationGridExample.DATE_LABEL);
 
         // configure the validation error style
         IStyle validationErrorStyle = new Style();
         validationErrorStyle.setAttributeValue(
-                CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_RED);
+                CellStyleAttributes.BACKGROUND_COLOR,
+                GUIHelper.COLOR_RED);
         validationErrorStyle.setAttributeValue(
-                CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_WHITE);
+                CellStyleAttributes.FOREGROUND_COLOR,
+                GUIHelper.COLOR_WHITE);
 
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-                validationErrorStyle, DisplayMode.NORMAL,
+        configRegistry.registerConfigAttribute(
+                CellConfigAttributes.CELL_STYLE,
+                validationErrorStyle,
+                DisplayMode.NORMAL,
                 CrossValidationGridExample.INVALID_LABEL);
 
         configRegistry.registerConfigAttribute(
-                EditConfigAttributes.DATA_VALIDATOR, new EventDataValidator(
-                        this.bodyDataProvider), DisplayMode.EDIT,
+                EditConfigAttributes.DATA_VALIDATOR,
+                new EventDataValidator(this.bodyDataProvider),
+                DisplayMode.EDIT,
                 CrossValidationGridExample.DATE_LABEL);
 
         configRegistry.registerConfigAttribute(
                 EditConfigAttributes.VALIDATION_ERROR_HANDLER,
-                new DialogErrorHandling(true), DisplayMode.EDIT,
+                new DialogErrorHandling(true),
+                DisplayMode.EDIT,
                 CrossValidationGridExample.DATE_LABEL);
     }
 }
@@ -287,11 +276,17 @@ class CrossValidationDialogErrorHandling extends DialogErrorHandling {
             // conversion/validation failed - so open dialog with error message
 
             if (dialogMessage != null) {
-                MessageDialog warningDialog = new MessageDialog(Display
-                        .getCurrent().getActiveShell(), dialogTitle, null,
-                        dialogMessage, MessageDialog.WARNING, new String[] {
+                MessageDialog warningDialog = new MessageDialog(
+                        Display.getCurrent().getActiveShell(),
+                        dialogTitle,
+                        null,
+                        dialogMessage,
+                        MessageDialog.WARNING,
+                        new String[] {
                                 getChangeButtonLabel(),
-                                getDiscardButtonLabel(), "Commit" }, 0);
+                                getDiscardButtonLabel(),
+                                "Commit" },
+                        0);
 
                 // if discard was selected close the editor
                 int returnCode = warningDialog.open();

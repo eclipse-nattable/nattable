@@ -588,9 +588,10 @@ public class GroupByDataLayer<T> extends DataLayer implements Observer {
 
     /**
      * Get the list of elements for a group, create it if it doesn't exists.
-     * <br/>
-     * We could also use treeData.getChildren(groupDescriptor, true) but it's
-     * less efficient.
+     * <br>
+     * We could also use
+     * <code>treeData.getChildren(groupDescriptor, true)</code> but it's less
+     * efficient.
      *
      * @param group
      *            The {@link GroupByObject} for which the children should be

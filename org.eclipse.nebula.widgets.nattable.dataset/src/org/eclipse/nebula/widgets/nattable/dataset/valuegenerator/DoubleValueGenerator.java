@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
@@ -21,15 +21,15 @@ public class DoubleValueGenerator implements IValueGenerator {
     private int range;
 
     /**
-     * Generates random double values such that: (floor) <= value < (floor +
-     * range)
-     * 
+     * Generates random double values such that: (floor) &lt;= value &lt; (floor
+     * + range)
+     *
      * @param floor
      *            Minimum value to be returned by this value generator. May be
      *            positive or negative.
      * @param range
      *            Indicates size of the range of values to be returned by this
-     *            generator. Must be > 0.
+     *            generator. Must be &gt; 0.
      */
     public DoubleValueGenerator(int floor, int range) {
         if (range <= 0) {
@@ -40,8 +40,9 @@ public class DoubleValueGenerator implements IValueGenerator {
         this.range = range;
     }
 
+    @Override
     public Object newValue(Random random) {
-        return new Double(floor + random.nextInt(range - 1)
+        return new Double(this.floor + random.nextInt(this.range - 1)
                 + random.nextDouble());
     }
 

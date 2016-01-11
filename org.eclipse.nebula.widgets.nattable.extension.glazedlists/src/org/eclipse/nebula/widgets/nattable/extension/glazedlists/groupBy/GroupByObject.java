@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class GroupByObject {
 
-    /** The columnIndex->value */
+    /** The columnIndex -&gt; value */
     private final Map<Integer, Object> descriptor;
 
     /**
@@ -33,7 +33,7 @@ public class GroupByObject {
      * @param value
      *            The value that is used for grouping.
      * @param descriptor
-     *            The description of the grouping (Index->Value).<br/>
+     *            The description of the grouping (index -&gt; value).<br>
      *            <b>Note:</b> The map needs to be an ordered map to work
      *            correctly, e.g. {@link LinkedHashMap}
      */

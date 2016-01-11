@@ -40,11 +40,11 @@ public class FormulaFillHandlePasteCommandHandler extends FillHandlePasteCommand
      *            The {@link SelectionLayer} needed to determine the fill handle
      *            region and perform the update command.
      * @param clipboard
-     *            The internal clipboard that carries the cells for the copy &
-     *            paste operation triggered by using the fill handle.
+     *            The internal clipboard that carries the cells for the copy
+     *            &amp; paste operation triggered by using the fill handle.
      * @param dataProvider
-     *            The {@link FormulaDataProvider} that is needed to copy & paste
-     *            formulas.
+     *            The {@link FormulaDataProvider} that is needed to copy &amp;
+     *            paste formulas.
      */
     public FormulaFillHandlePasteCommandHandler(
             SelectionLayer selectionLayer,

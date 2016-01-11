@@ -39,9 +39,11 @@ public final class ViewportLayerDisposalTest {
     /**
      * Tests that an {@link IStructuralChangeEvent} will be safely handled by a
      * table's {@link ViewportLayer} after the table has been disposed (see: bug
-     * {@linkplain "https://bugs.eclipse.org/bugs/show_bug.cgi?id=447942"}).
+     * <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=447942">Bug
+     * 447942</a>).
      *
      * @throws InterruptedException
+     *             on multi-threading issues
      */
     @Test
     public void testPostEventToDisposedLayer() throws InterruptedException {

@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.ViewportLayerFixture;
-import org.eclipse.nebula.widgets.nattable.viewport.HorizontalScrollBarHandler;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.junit.Before;
@@ -99,7 +98,7 @@ public class HorizontalScrollBarHandlerTest {
         assertEquals(0, this.viewport.getColumnIndexByPosition(0));
     }
 
-    /**
+    /*
      * Test for issue reported in http://nattable.org/jira/browse/NTBL-99.
      * Resizing the last column to be larger than the width of a table and
      * scrolling to the right results in a all white background and no columns

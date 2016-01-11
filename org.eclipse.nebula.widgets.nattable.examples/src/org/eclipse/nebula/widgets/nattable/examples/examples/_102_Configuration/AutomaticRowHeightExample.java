@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014 Dirk Fauth and others.
+ * Copyright (c) 2012, 2015 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -65,9 +65,6 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
         StandaloneNatExampleRunner.run(new AutomaticRowHeightExample());
     }
 
-    /**
-     * @Override
-     */
     @Override
     public String getDescription() {
         return "Demonstrates how to implement a log viewer using NatTable with the percentage "
@@ -91,9 +88,10 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
 
         loadMessages();
 
-        ListDataProvider<LogRecord> dataProvider = new ListDataProvider<LogRecord>(
-                this.logMessages, new ReflectiveColumnPropertyAccessor<LogRecord>(
-                        new String[] { "message" })); //$NON-NLS-1$
+        ListDataProvider<LogRecord> dataProvider =
+                new ListDataProvider<LogRecord>(
+                        this.logMessages,
+                        new ReflectiveColumnPropertyAccessor<LogRecord>(new String[] { "message" })); //$NON-NLS-1$
         DataLayer dataLayer = new DataLayer(dataProvider);
         dataLayer.setColumnPercentageSizing(true);
         dataLayer.setColumnWidthPercentageByPosition(0, 100);
@@ -135,8 +133,7 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
 
     public class ValidatorMessageLabelAccumulator implements IConfigLabelAccumulator {
         @Override
-        public void accumulateConfigLabels(
-                LabelStack configLabels, int columnPosition, int rowPosition) {
+        public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
             LogRecord vm = AutomaticRowHeightExample.this.logMessages.get(rowPosition);
             configLabels.addLabel(vm.getLevel().toString());
         }
@@ -164,7 +161,8 @@ public class AutomaticRowHeightExample extends AbstractNatExample {
                     new PaddingDecorator(
                             new CellPainterDecorator(
                                     new AutomaticRowHeightTextPainter(2),
-                                    CellEdgeEnum.LEFT, new ImagePainter()), 0, 2, 0, 2));
+                                    CellEdgeEnum.LEFT, new ImagePainter()),
+                            0, 2, 0, 2));
         }
 
         @Override

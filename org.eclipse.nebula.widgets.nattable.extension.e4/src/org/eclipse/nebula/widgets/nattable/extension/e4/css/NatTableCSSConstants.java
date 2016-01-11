@@ -61,8 +61,8 @@ public interface NatTableCSSConstants {
      * mostly doesn't make sense to not configure a content painter.
      * </p>
      * <p>
-     * The possible values are listed as constants in
-     * {@link CellPainterFactory}.
+     * The possible values are listed as constants in {@link CellPainterFactory}
+     * .
      * </p>
      */
     String PAINTER = "painter";
@@ -208,9 +208,7 @@ public interface NatTableCSSConstants {
      */
     String TEXT_DIRECTION = "text-direction";
     /**
-     * CSS property to configure the column width.
-     * <p>
-     * Available values are:
+     * CSS property to configure the column width. Available values are:
      * <ul>
      * <li>auto - configure automatic width calculation for content painters
      * </li>
@@ -219,13 +217,10 @@ public interface NatTableCSSConstants {
      * </li>
      * <li>number value (e.g. 100px)- configure column width</li>
      * </ul>
-     * </p>
      */
     String COLUMN_WIDTH = "column-width";
     /**
-     * CSS property to configure the row height.
-     * <p>
-     * Available values are:
+     * CSS property to configure the row height. Available values are:
      * <ul>
      * <li>auto - configure automatic height calculation for content painters
      * </li>
@@ -234,7 +229,6 @@ public interface NatTableCSSConstants {
      * </li>
      * <li>number value (e.g. 100px)- configure row height</li>
      * </ul>
-     * </p>
      */
     String ROW_HEIGHT = "row-height";
     /**

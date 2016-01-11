@@ -34,12 +34,20 @@ public interface IConfiguration {
      * Configure NatTable's {@link IConfigRegistry} upon receiving this call
      * back. A mechanism to plug-in custom {@link ICellPainter},
      * {@link IDataValidator} etc.
+     *
+     * @param configRegistry
+     *            The {@link IConfigRegistry} instance to register configuration
+     *            values to.
      */
     public void configureRegistry(IConfigRegistry configRegistry);
 
     /**
      * Configure NatTable's {@link IConfigRegistry} upon receiving this call
      * back A mechanism to customize key/mouse bindings.
+     *
+     * @param uiBindingRegistry
+     *            The {@link UiBindingRegistry} instance to register ui bindings
+     *            to.
      */
     public void configureUiBindings(UiBindingRegistry uiBindingRegistry);
 

@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
  * Since 1.2.0 it can be created in several ways, to be able to customize the
  * determination of the steps to move. The following lists the different ways
  * and their effects:
+ * </p>
  * <ol>
  * <li><b>no steps, no strategy</b> <br>
  * the {@link ITraversalStrategy} configured with the
@@ -35,7 +36,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectio
  * count. The {@link ITraversalStrategy} configured with the
  * {@link MoveSelectionCommandHandler} will be ignored.</li>
  * </ol>
- * </p>
  */
 public class MoveSelectionCommand extends AbstractSelectionCommand {
 

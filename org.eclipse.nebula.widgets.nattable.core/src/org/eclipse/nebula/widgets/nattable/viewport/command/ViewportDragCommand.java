@@ -86,6 +86,10 @@ public class ViewportDragCommand implements ILayerCommand {
     }
 
     /**
+     * @return The horizontal movement for the scroll operation
+     *         <code>MoveDirectionEnum.LEFT</code>,
+     *         <code>MoveDirectionEnum.RIGHT</code>,
+     *         <code>MoveDirectionEnum.NONE</code>
      * @since 1.3
      */
     public MoveDirectionEnum getHorizontal() {
@@ -93,6 +97,10 @@ public class ViewportDragCommand implements ILayerCommand {
     }
 
     /**
+     * @return The vertical movement for the scroll operation
+     *         <code>MoveDirectionEnum.UP</code>,
+     *         <code>MoveDirectionEnum.DOWN</code>,
+     *         <code>MoveDirectionEnum.NONE</code>
      * @since 1.3
      */
     public MoveDirectionEnum getVertical() {
@@ -100,6 +108,8 @@ public class ViewportDragCommand implements ILayerCommand {
     }
 
     /**
+     * @return whether the command was created for MoveDirectionEnum values or
+     *         with screen coordinates
      * @since 1.3
      */
     public boolean isConfiguredForMoveDirection() {
