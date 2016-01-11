@@ -159,6 +159,11 @@
 								<placement>a</placement>
 								<head>noinstantiate:</head>
 							</tag>
+							<tag>
+								<name>noimplement</name>
+								<placement>a</placement>
+								<head>noimplement:</head>
+							</tag>
 						</tags>
 					</configuration>
 				</plugin>
