@@ -38,7 +38,7 @@ public class PaddingDecorator extends CellPainterWrapper {
 
     /**
      * Create a PaddingDecorator around the given interior painter, adding a
-     * padding of 2 pixels on every side.<br/>
+     * padding of 2 pixels on every side.<br>
      * If will paint the background color to fill the resulting gaps, in case
      * the PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped
      * by a BackgroundPainter.
@@ -52,7 +52,7 @@ public class PaddingDecorator extends CellPainterWrapper {
 
     /**
      * Create a PaddingDecorator around the given interior painter, adding a
-     * padding of 2 pixels on every side.<br/>
+     * padding of 2 pixels on every side.<br>
      * This constructor allows to configure whether the PaddingDecorator should
      * itself paint the background to avoid gaps or not. In case the
      * PaddingDecorator is wrapped in another background painter, e.g.
@@ -71,7 +71,7 @@ public class PaddingDecorator extends CellPainterWrapper {
 
     /**
      * Create a PaddingDecorator around the given interior painter, adding a
-     * padding of the given number of pixels on every side.<br/>
+     * padding of the given number of pixels on every side.<br>
      * If will paint the background color to fill the resulting gaps, in case
      * the PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped
      * by a BackgroundPainter.
@@ -88,7 +88,7 @@ public class PaddingDecorator extends CellPainterWrapper {
 
     /**
      * Create a PaddingDecorator around the given interior painter, adding a
-     * padding of the given number of pixels on every side.<br/>
+     * padding of the given number of pixels on every side.<br>
      * This constructor allows to configure whether the PaddingDecorator should
      * itself paint the background to avoid gaps or not. In case the
      * PaddingDecorator is wrapped in another background painter, e.g.
@@ -110,7 +110,7 @@ public class PaddingDecorator extends CellPainterWrapper {
 
     /**
      * Create a PaddingDecorator around the given interior painter, adding the
-     * padding specified for each side.<br/>
+     * padding specified for each side.<br>
      * If will paint the background color to fill the resulting gaps, in case
      * the PaddingDecorator wraps e.g. a TextPainter but is itself not wrapped
      * by a BackgroundPainter.
@@ -136,7 +136,7 @@ public class PaddingDecorator extends CellPainterWrapper {
 
     /**
      * Create a PaddingDecorator around the given interior painter, adding the
-     * padding specified for each side.<br/>
+     * padding specified for each side.<br>
      * This constructor allows to configure whether the PaddingDecorator should
      * itself paint the background to avoid gaps or not. In case the
      * PaddingDecorator is wrapped in another background painter, e.g.
@@ -284,7 +284,7 @@ public class PaddingDecorator extends CellPainterWrapper {
     /**
      *
      * @return The right padding added by this {@link PaddingDecorator}.
-     * 
+     *
      * @since 1.4
      */
     public int getRightPadding() {
@@ -294,7 +294,7 @@ public class PaddingDecorator extends CellPainterWrapper {
     /**
      *
      * @return The bottom padding added by this {@link PaddingDecorator}.
-     * 
+     *
      * @since 1.4
      */
     public int getBottomPadding() {
@@ -304,7 +304,7 @@ public class PaddingDecorator extends CellPainterWrapper {
     /**
      *
      * @return The left padding added by this {@link PaddingDecorator}.
-     * 
+     *
      * @since 1.4
      */
     public int getLeftPadding() {

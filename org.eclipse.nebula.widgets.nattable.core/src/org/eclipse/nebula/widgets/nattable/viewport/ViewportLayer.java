@@ -247,6 +247,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Set the minimum origin X pixel position.
      *
      * @param newMinimumOriginX
+     *            The new minimum origin x.
      */
     public void setMinimumOriginX(int newMinimumOriginX) {
         if (newMinimumOriginX >= 0) {
@@ -276,6 +277,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Set the minimum origin Y pixel position.
      *
      * @param newMinimumOriginY
+     *            The new minimum origin y.
      */
     public void setMinimumOriginY(int newMinimumOriginY) {
         if (newMinimumOriginY >= 0) {
@@ -305,7 +307,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Set the minimum origin pixel position to the given values.
      *
      * @param newMinimumOriginX
+     *            The new minimum origin x.
      * @param newMinimumOriginY
+     *            The new minimum origin y.
      */
     public void setMinimumOrigin(int newMinimumOriginX, int newMinimumOriginY) {
         setMinimumOriginX(newMinimumOriginX);
@@ -339,6 +343,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Range checking for origin X pixel position.
      *
      * @param x
+     *            The x value to check.
      * @return A valid x value within bounds: minimum origin x < x < max x (=
      *         column 0 x + width)
      */
@@ -359,6 +364,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Range checking for origin Y pixel position.
      *
      * @param y
+     *            The y value to check.
      * @return A valid y value within bounds: minimum origin y < y < max y (=
      *         row 0 y + height)
      */
@@ -379,6 +385,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Set the origin X pixel position.
      *
      * @param newOriginX
+     *            The new origin x value.
      */
     public void setOriginX(int newOriginX) {
         newOriginX = boundsCheckOriginX(newOriginX);
@@ -395,6 +402,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Set the origin Y pixel position.
      *
      * @param newOriginY
+     *            The new origin y value.
      */
     public void setOriginY(int newOriginY) {
         newOriginY = boundsCheckOriginY(newOriginY);
@@ -411,7 +419,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Reset the origin pixel position to the given values.
      *
      * @param newOriginX
+     *            The new origin x value.
      * @param newOriginY
+     *            The new origin y value.
      */
     public void resetOrigin(int newOriginX, int newOriginY) {
         PixelCoordinate previousOrigin = this.origin;
@@ -468,8 +478,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     public void setMinColumnPosition(int minColumnPosition) {
         this.minColumnPosition = minColumnPosition;
         // set the minimum origin x dependent to the min column position
-        int newMinOriginX = this.scrollableLayer
-                .getStartXOfColumnPosition(this.minColumnPosition);
+        int newMinOriginX = this.scrollableLayer.getStartXOfColumnPosition(this.minColumnPosition);
         setMinimumOriginX(newMinOriginX);
     }
 
@@ -509,8 +518,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     public void setMinRowPosition(int minRowPosition) {
         this.minRowPosition = minRowPosition;
         // set the minimum origin y dependent to the min row position
-        int newMinOriginY = this.scrollableLayer
-                .getStartYOfRowPosition(this.minRowPosition);
+        int newMinOriginY = this.scrollableLayer.getStartYOfRowPosition(this.minRowPosition);
         setMinimumOriginY(newMinOriginY);
     }
 
@@ -689,8 +697,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
 
     @Override
     public int getRowPositionByIndex(int rowIndex) {
-        return this.scrollableLayer.getRowPositionByIndex(rowIndex)
-                - getOriginRowPosition();
+        return this.scrollableLayer.getRowPositionByIndex(rowIndex) - getOriginRowPosition();
     }
 
     @Override
@@ -706,8 +713,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     @Override
-    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer,
-            int underlyingRowPosition) {
+    public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
         if (sourceUnderlyingLayer != getUnderlyingLayer()) {
             return -1;
         }
@@ -721,8 +727,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     public int getHeight() {
         if (this.viewportOff) {
             int height = this.scrollableLayer.getHeight()
-                    - this.scrollableLayer
-                            .getStartYOfRowPosition(getMinimumOriginRowPosition());
+                    - this.scrollableLayer.getStartYOfRowPosition(getMinimumOriginRowPosition());
             if (getMaxRowPosition() >= 0) {
                 int maxHeight = getMaxHeight();
                 if (maxHeight < height) {
@@ -871,14 +876,15 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     /**
-     * Srcolls the table so that the specified cell is visible i.e. in the
+     * Scrolls the table so that the specified cell is visible i.e. in the
      * Viewport
      *
      * @param scrollableColumnPosition
+     *            The column position to scroll to.
      * @param scrollableRowPosition
+     *            The row position to scroll to.
      */
-    public void moveCellPositionIntoViewport(int scrollableColumnPosition,
-            int scrollableRowPosition) {
+    public void moveCellPositionIntoViewport(int scrollableColumnPosition, int scrollableRowPosition) {
         moveColumnPositionIntoViewport(scrollableColumnPosition);
         moveRowPositionIntoViewport(scrollableRowPosition);
     }
@@ -926,6 +932,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     /**
+     * @param scrollableRowPosition
+     *            The row position to scroll to.
      * @see #moveColumnPositionIntoViewport(int)
      */
     public void moveRowPositionIntoViewport(int scrollableRowPosition) {
@@ -1129,6 +1137,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     /**
      * If the client area size is greater than the content size, move origin to
      * fill as much content as possible.
+     *
+     * @param originX
+     *            The origin x value to adjust if necessary.
      */
     protected int adjustOriginX(int originX) {
         if (getColumnCount() == 0) {
@@ -1181,6 +1192,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     /**
      * If the client area size is greater than the content size, move origin to
      * fill as much content as possible.
+     *
+     * @param originY
+     *            The origin y value to adjust if necessary.
      */
     protected int adjustOriginY(int originY) {
         if (getRowCount() == 0) {
@@ -1236,6 +1250,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * update of the viewport.
      *
      * @param scrollSelectionCommand
+     *            The {@link ScrollSelectionCommand} that is transfered to a
+     *            {@link MoveSelectionCommand}
      */
     public void scrollVerticallyByAPage(ScrollSelectionCommand scrollSelectionCommand) {
         getUnderlyingLayer().doCommand(scrollVerticallyByAPageCommand(scrollSelectionCommand));
@@ -1248,7 +1264,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     /**
-     * @return true if last column is completely displayed, false otherwise
+     * @return <code>true</code> if last column is completely displayed,
+     *         <code>false</code> otherwise
      */
     protected boolean isLastColumnCompletelyDisplayed() {
         int lastDisplayableColumnIndex = getUnderlyingLayer()
@@ -1261,7 +1278,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     /**
-     * @return true if last row is completely displayed, false otherwise
+     * @return <code>true</code> if last row is completely displayed,
+     *         <code>false</code> otherwise
      */
     protected boolean isLastRowCompletelyDisplayed() {
         int lastDisplayableRowIndex = getUnderlyingLayer()
@@ -1370,6 +1388,7 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * the resizing and then turn the viewport on again. Turning the viewport
      * off and on again causes reapplying the origin, which has impact on split
      * viewport minimum/maximum origins.
+     * </p>
      */
     private void correctSavedOriginY() {
         int newOriginY = this.savedOrigin.getY();
@@ -1416,9 +1435,11 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Handle {@link CellSelectionEvent}
      *
      * @param selectionEvent
+     *            The event to handle
      */
     private void processSelection(CellSelectionEvent selectionEvent) {
-        moveCellPositionIntoViewport(selectionEvent.getColumnPosition(),
+        moveCellPositionIntoViewport(
+                selectionEvent.getColumnPosition(),
                 selectionEvent.getRowPosition());
         adjustHorizontalScrollBar();
         adjustVerticalScrollBar();
@@ -1428,10 +1449,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Handle {@link ColumnSelectionEvent}
      *
      * @param selectionEvent
+     *            The event to handle
      */
     private void processColumnSelection(ColumnSelectionEvent selectionEvent) {
-        for (Range columnPositionRange : selectionEvent
-                .getColumnPositionRanges()) {
+        for (Range columnPositionRange : selectionEvent.getColumnPositionRanges()) {
             moveColumnPositionIntoViewport(columnPositionRange.end - 1);
             adjustHorizontalScrollBar();
         }
@@ -1441,10 +1462,10 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * Handle {@link RowSelectionEvent}
      *
      * @param selectionEvent
+     *            The event to handle
      */
     private void processRowSelection(RowSelectionEvent selectionEvent) {
-        int rowPositionToMoveIntoViewport = selectionEvent
-                .getRowPositionToMoveIntoViewport();
+        int rowPositionToMoveIntoViewport = selectionEvent.getRowPositionToMoveIntoViewport();
         if (rowPositionToMoveIntoViewport >= 0) {
             moveRowPositionIntoViewport(rowPositionToMoveIntoViewport);
             adjustVerticalScrollBar();
@@ -1516,7 +1537,9 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
      * ViewportDragCommandHandler.
      *
      * @param x
+     *            The x coordinate
      * @param y
+     *            The y coordinate
      */
     public void drag(int x, int y) {
         if (x < 0 && y < 0) {
@@ -1667,6 +1690,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
     }
 
     /**
+     * @return <code>true</code> because the {@link ViewportLayer} is intended
+     *         to be a dynamic size layer.
      * @since 1.4
      */
     @Override

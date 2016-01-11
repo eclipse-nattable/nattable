@@ -39,19 +39,16 @@ import org.eclipse.swt.graphics.Image;
  * could break the feature.
  * </p>
  * <p>
- * Note: Simply changing the font doesn't result in automatically resizing the
- * GroupBy header height. This is the same as for all other layers too, as for
- * calculation of the row height, the GC is necessary. To support also bigger
- * fonts in the GroupBy header region, you are able to resize the GroupBy header
- * manually like this:<br/>
+ * <b>Note:</b> Simply changing the font doesn't result in automatically
+ * resizing the GroupBy header height. This is the same as for all other layers
+ * too, as for calculation of the row height, the GC is necessary. To support
+ * also bigger fonts in the GroupBy header region, you are able to resize the
+ * GroupBy header manually like this:
+ * </p>
  *
  * <pre>
  * natTable.doCommand(new RowResizeCommand(groupByHeaderLayer, 0, 50));
  * </pre>
- *
- * </p>
- *
- * @author Dirk Fauth
  *
  */
 public class DefaultGroupByThemeExtension implements IThemeExtension {

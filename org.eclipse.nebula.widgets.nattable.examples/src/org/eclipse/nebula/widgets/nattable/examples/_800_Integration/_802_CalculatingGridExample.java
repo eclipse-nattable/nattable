@@ -88,9 +88,6 @@ public class _802_CalculatingGridExample extends AbstractNatExample {
         StandaloneNatExampleRunner.run(new _802_CalculatingGridExample());
     }
 
-    /**
-     * @Override
-     */
     @Override
     public String getDescription() {
         return "This example demonstrates how to create a NatTable that contains calculated values.\n"

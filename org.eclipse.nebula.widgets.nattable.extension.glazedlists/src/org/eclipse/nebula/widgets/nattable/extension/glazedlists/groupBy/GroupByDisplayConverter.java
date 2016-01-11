@@ -33,7 +33,7 @@ import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
  * {@link IDisplayConverter} that is used for conversion of
  * {@link GroupByObject}s.
  * <p>
- * Should be registered for the label {@link GroupByDataLayer.GROUP_BY_OBJECT}.
+ * Should be registered for the label {@link GroupByDataLayer#GROUP_BY_OBJECT}.
  * </p>
  * <p>
  * It only returns a converted value in case of the tree column or a groupBy
@@ -105,14 +105,12 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
             }
 
             return displayValue;
-        }
-        else if (cell.getConfigLabels().hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY)) {
+        } else if (cell.getConfigLabels().hasLabel(GroupByDataLayer.GROUP_BY_SUMMARY)) {
             if (canonicalValue == null) {
                 return this.defaultSummaryValue;
             }
             return getDisplayValue(cell, configRegistry, canonicalValue);
-        }
-        else {
+        } else {
             return ""; //$NON-NLS-1$
         }
     }
@@ -145,8 +143,7 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
 
         if (this.wrappedConverters.containsKey(cell.getColumnIndex())) {
             converter = this.wrappedConverters.get(cell.getColumnIndex());
-        }
-        else if (canonicalValue instanceof GroupByObject) {
+        } else if (canonicalValue instanceof GroupByObject) {
             GroupByObject groupByObject = (GroupByObject) canonicalValue;
             int lastGroupingIndex = -1;
             for (Map.Entry<Integer, Object> groupEntry : groupByObject.getDescriptor().entrySet()) {
@@ -160,8 +157,7 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
                 // cache
                 if (this.converterCache.containsKey(lastGroupingIndex)) {
                     converter = this.converterCache.get(lastGroupingIndex);
-                }
-                else {
+                } else {
                     int rowPosition = cell.getRowPosition() + 1;
                     LabelStack stackBelow = this.groupByDataLayer.getConfigLabelsByPosition(lastGroupingIndex, rowPosition);
                     while (stackBelow.hasLabel(GroupByDataLayer.GROUP_BY_OBJECT)) {
@@ -186,8 +182,7 @@ public class GroupByDisplayConverter<T> extends ContextualDisplayConverter {
                     }
                 }
             }
-        }
-        else {
+        } else {
             // create a copy of the label stack to avoid finding this
             // converter again
             // Note: this displayConverter needs to be registered for the

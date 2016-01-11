@@ -87,10 +87,10 @@ public class AbstractModeEventHandler implements IModeEventHandler {
      * @param upEvent
      *            The MouseEvent for mouse up.
      * @return <code>true</code> if the mouse up event was triggered on the same
-     *         cell as the intial mouse down event.
+     *         cell as the initial mouse down event.
      *
      * @deprecated Use
-     *             {@link MouseEventHelper#eventOnSameCell(NatTable, MouseEvent, MouseEvent)}
+     *             {@link MouseEventHelper#eventOnSameCell(org.eclipse.nebula.widgets.nattable.layer.ILayer, MouseEvent, MouseEvent)}
      *             instead
      */
     @Deprecated

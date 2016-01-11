@@ -18,8 +18,8 @@ import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.swt.events.KeyEvent;
 
 /**
- * This action toggles the state of a tree node (expanded <-> collapsed) located
- * at the current selection anchor position. It has the same effect as
+ * This action toggles the state of a tree node (expanded &lt;-&gt; collapsed)
+ * located at the current selection anchor position. It has the same effect as
  * {@link TreeExpandCollapseAction}.
  */
 public class TreeExpandCollapseKeyAction implements IKeyAction {

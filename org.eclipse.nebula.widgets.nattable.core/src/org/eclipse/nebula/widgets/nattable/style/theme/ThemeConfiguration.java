@@ -59,9 +59,6 @@ import org.eclipse.swt.graphics.Color;
  * {@link NatTable#setTheme(ThemeConfiguration)}. This will internally use a
  * {@link ThemeManager} which supports switching themes at runtime.</li>
  * </ol>
- *
- * @author Dirk Fauth
- *
  */
 public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
 
@@ -1465,8 +1462,10 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * region to apply labels for alternating rows. It applies the following
      * labels for which this method registers styles:
      * <ul>
-     * <li>{@link AlternatingRowConfigLabelAccumulator#EVEN_ROW_CONFIG_TYPE}</li>
-     * <li>{@link AlternatingRowConfigLabelAccumulator#EVEN_ROW_CONFIG_TYPE}</li>
+     * <li>{@link AlternatingRowConfigLabelAccumulator#EVEN_ROW_CONFIG_TYPE}
+     * </li>
+     * <li>{@link AlternatingRowConfigLabelAccumulator#EVEN_ROW_CONFIG_TYPE}
+     * </li>
      * </ul>
      * If the {@link AlternatingRowConfigLabelAccumulator} is not configured,
      * this style configuration will have no effect.
@@ -2144,7 +2143,7 @@ public abstract class ThemeConfiguration extends AbstractRegistryConfiguration {
      * It will only be applied in case a SummaryRowLayer is involved, which adds
      * the configuration label
      * {@link SummaryRowLayer#DEFAULT_SUMMARY_ROW_CONFIG_LABEL} to the summary
-     * row.<br/>
+     * row.
      *
      * @param configRegistry
      *            The IConfigRegistry that is used by the NatTable instance to

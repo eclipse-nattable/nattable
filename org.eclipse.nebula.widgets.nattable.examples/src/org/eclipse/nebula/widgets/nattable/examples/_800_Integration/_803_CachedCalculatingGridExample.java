@@ -96,9 +96,6 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
         StandaloneNatExampleRunner.run(new _803_CachedCalculatingGridExample());
     }
 
-    /**
-     * @Override
-     */
     @Override
     public String getDescription() {
         return "This example demonstrates how to create a NatTable that contains calculated values.\n"
@@ -497,12 +494,11 @@ public class _803_CachedCalculatingGridExample extends AbstractNatExample {
                     DisplayMode.NORMAL,
                     SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
 
-            configRegistry
-                    .registerConfigAttribute(
-                            CellConfigAttributes.DISPLAY_CONVERTER,
-                            new SummaryDisplayConverter(new PercentageDisplayConverter()),
-                            DisplayMode.NORMAL,
-                            SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new SummaryDisplayConverter(new PercentageDisplayConverter()),
+                    DisplayMode.NORMAL,
+                    SummaryRowLayer.DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + 4);
         }
     }
 

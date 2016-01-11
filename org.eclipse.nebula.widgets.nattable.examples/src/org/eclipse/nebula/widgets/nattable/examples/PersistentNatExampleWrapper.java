@@ -18,15 +18,17 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.examples.examples._105_Persistence.PersistentColumnGroupGridExample;
+import org.eclipse.nebula.widgets.nattable.examples.examples._105_Persistence.PersistentDefaultGridExample;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Adds hooks to the onStart() and onStop() methods to save the settings to a
- * properties file.
+ * Adds hooks to the <code>onStart()</code> and <code>onStop()</code> methods to
+ * save the settings to a properties file.
  * <p>
- * The following state is persisted out of the box</br>
+ * The following state is persisted out of the box
  * <ol>
  * <li>Column widths</li>
  * <li>Column order</li>
@@ -38,7 +40,8 @@ import org.eclipse.swt.widgets.Control;
  * Any additional state can be persisted by registering a IPersistable on an
  * {@link ILayer}.
  *
- * @see PersistentStyleGridExample
+ * @see PersistentDefaultGridExample
+ * @see PersistentColumnGroupGridExample
  */
 public class PersistentNatExampleWrapper extends AbstractNatExample {
 

@@ -77,9 +77,6 @@ import org.eclipse.swt.widgets.Text;
  * </ul>
  *
  * @see TableCellPainter
- *
- * @author Dirk Fauth
- *
  */
 public class TableCellEditor extends AbstractCellEditor {
 
@@ -164,8 +161,8 @@ public class TableCellEditor extends AbstractCellEditor {
      * Creates a TableCellEditor with the given configurations.
      *
      * @param fixedSubCellHeight
-     *            The height of the sub cells to use. Setting a value >= 0 will
-     *            result in using the specified fixed sub cell heights, a
+     *            The height of the sub cells to use. Setting a value &gt;= 0
+     *            will result in using the specified fixed sub cell heights, a
      *            negative value will result in using the OS default height
      *            based on the font. Note that because of limitations in the
      *            native table control for some OS, it is not possible to
@@ -299,7 +296,7 @@ public class TableCellEditor extends AbstractCellEditor {
         tableControl.addListener(SWT.MeasureItem, new Listener() {
             @Override
             public void handleEvent(Event event) {
-            	// +1 because of the grid lines
+                // +1 because of the grid lines
                 event.height = TableCellEditor.this.fixedSubCellHeight + 1;
             }
         });
@@ -418,16 +415,16 @@ public class TableCellEditor extends AbstractCellEditor {
      * Note that because of limitations to native tables of the OS, it is not
      * possible to specify different row heights.
      *
-     * @return The height of the sub cells to use. A value >= 0 results in using
-     *         the specified fixed sub cell heights, a negative value results in
-     *         using the OS default height based on the font.
+     * @return The height of the sub cells to use. A value &gt;= 0 results in
+     *         using the specified fixed sub cell heights, a negative value
+     *         results in using the OS default height based on the font.
      */
     public int getFixedSubCellHeight() {
         return this.fixedSubCellHeight;
     }
 
     /**
-     * Setting a value >= 0 will result in using a fixed height of the sub
+     * Setting a value &gt;= 0 will result in using a fixed height of the sub
      * cells. Setting the value to a negative number will result in using the OS
      * default height based on the font.
      * <p>

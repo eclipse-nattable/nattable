@@ -41,8 +41,8 @@ public class FormulaFillHandleDragMode extends FillHandleDragMode {
      *            The {@link SelectionLayer} needed to determine the fill handle
      *            region and perform the update command.
      * @param clipboard
-     *            The internal clipboard that carries the cells for the copy &
-     *            paste operation triggered by using the fill handle.
+     *            The internal clipboard that carries the cells for the copy
+     *            &amp; paste operation triggered by using the fill handle.
      * @param dataProvider
      *            The {@link FormulaDataProvider} that is needed to determine
      *            whether a value is a number value.

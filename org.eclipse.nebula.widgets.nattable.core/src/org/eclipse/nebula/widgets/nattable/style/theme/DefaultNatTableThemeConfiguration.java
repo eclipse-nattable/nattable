@@ -39,20 +39,24 @@ import org.eclipse.swt.graphics.Image;
  * <p>
  * There are several ways to create a new theme using this configuration as
  * basis:
+ * </p>
  * <ol>
  * <li>Set different values for the style attributes via instance init block.
- * For example:<br/>
- * <code><pre>new DefaultNatTableThemeConfiguration {
+ * For example:<br>
+ *
+ * <pre>
+ * new DefaultNatTableThemeConfiguration {
  * 	{
  * 		this.defaultFgColor = GUIHelper.COLOR_BLUE;
  * 		...
  * 	}
  * }
- * </pre></code></li>
+ * </pre>
+ *
+ * </li>
  * <li>Override the getters directly</li>
  * <li>Override the configureXxx() methods directly</li>
  * </ol>
- * </p>
  * <p>
  * While this ThemeConfiguration only contains the basic styling, you are also
  * able to extend this and add additional stylings, e.g. conditional stylings
@@ -76,9 +80,6 @@ import org.eclipse.swt.graphics.Image;
  * from core to the extensions. Have a look at the DefaultGroupByThemeExtension
  * or the ModernGroupByThemeExtension for example.
  * </p>
- *
- * @author Dirk Fauth
- *
  */
 public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 
@@ -100,8 +101,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character defaultPWEchoChar = null;
     public TextDecorationEnum defaultTextDecoration = null;
 
-    public ICellPainter defaultCellPainter = new LineBorderDecorator(
-            new TextPainter());
+    public ICellPainter defaultCellPainter = new LineBorderDecorator(new TextPainter());
 
     // column header styling
 
@@ -117,8 +117,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character cHeaderPWEchoChar = null;
     public TextDecorationEnum cHeaderTextDecoration = null;
 
-    public ICellPainter cHeaderCellPainter = new BeveledBorderDecorator(
-            new TextPainter());
+    public ICellPainter cHeaderCellPainter = new BeveledBorderDecorator(new TextPainter());
 
     // row header styling
 
@@ -150,8 +149,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character cornerPWEchoChar = null;
     public TextDecorationEnum cornerTextDecoration = null;
 
-    public ICellPainter cornerCellPainter = new BeveledBorderDecorator(
-            new TextPainter());
+    public ICellPainter cornerCellPainter = new BeveledBorderDecorator(new TextPainter());
 
     // hover styling
 
@@ -375,8 +373,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public VerticalAlignmentEnum selectionAnchorVAlign = null;
     public Font selectionAnchorFont = null;
     public Image selectionAnchorImage = null;
-    public BorderStyle selectionAnchorBorderStyle = new BorderStyle(1,
-            GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
+    public BorderStyle selectionAnchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
     public Character selectionAnchorPWEchoChar = null;
     public TextDecorationEnum selectionAnchorTextDecoration = null;
 
@@ -398,8 +395,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
 
     // selection anchor grid line style
 
-    public BorderStyle selectionAnchorGridBorderStyle = new BorderStyle(1,
-            GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
+    public BorderStyle selectionAnchorGridBorderStyle = new BorderStyle(1, GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
 
     // alternating row style
 
@@ -445,8 +441,9 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character cGroupHeaderPWEchoChar = null;
     public TextDecorationEnum cGroupHeaderTextDecoration = null;
 
-    public ICellPainter cGroupHeaderCellPainter = new BeveledBorderDecorator(
-            new ColumnGroupHeaderTextPainter());
+    public ICellPainter cGroupHeaderCellPainter =
+            new BeveledBorderDecorator(
+                    new ColumnGroupHeaderTextPainter());
 
     public Color rGroupHeaderBgColor = null;
     public Color rGroupHeaderFgColor = null;
@@ -460,8 +457,9 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character rGroupHeaderPWEchoChar = null;
     public TextDecorationEnum rGroupHeaderTextDecoration = null;
 
-    public ICellPainter rGroupHeaderCellPainter = new BeveledBorderDecorator(
-            new RowGroupHeaderTextPainter());
+    public ICellPainter rGroupHeaderCellPainter =
+            new BeveledBorderDecorator(
+                    new RowGroupHeaderTextPainter());
 
     // sort header style
 
@@ -477,8 +475,9 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public Character sortHeaderPWEchoChar = null;
     public TextDecorationEnum sortHeaderTextDecoration = null;
 
-    public ICellPainter sortHeaderCellPainter = new BeveledBorderDecorator(
-            new SortableHeaderTextPainter());
+    public ICellPainter sortHeaderCellPainter =
+            new BeveledBorderDecorator(
+                    new SortableHeaderTextPainter());
 
     public Color selectedSortHeaderBgColor = null;
     public Color selectedSortHeaderFgColor = null;
@@ -553,8 +552,7 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     public VerticalAlignmentEnum summaryRowVAlign = null;
     public Font summaryRowFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.BOLD)); //$NON-NLS-1$
     public Image summaryRowImage = null;
-    public BorderStyle summaryRowBorderStyle = new BorderStyle(0,
-            GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
+    public BorderStyle summaryRowBorderStyle = new BorderStyle(0, GUIHelper.COLOR_BLACK, LineStyleEnum.DOTTED);
     public Character summaryRowPWEchoChar = null;
     public TextDecorationEnum summaryRowTextDecoration = null;
 
@@ -599,9 +597,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getDefaultCellStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.defaultBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.defaultFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -609,17 +609,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.defaultGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.defaultHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.defaultVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.defaultFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.defaultImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.defaultFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.defaultImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.defaultBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.defaultPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.defaultTextDecoration);
         return cellStyle;
     }
@@ -632,9 +641,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getColumnHeaderStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.cHeaderBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.cHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -642,17 +653,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.cHeaderGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.cHeaderHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.cHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.cHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.cHeaderImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.cHeaderFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.cHeaderImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.cHeaderBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.cHeaderPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.cHeaderTextDecoration);
         return cellStyle;
     }
@@ -665,9 +685,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getRowHeaderStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.rHeaderBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.rHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -675,17 +697,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.rHeaderGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.rHeaderHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.rHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.rHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.rHeaderImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.rHeaderFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.rHeaderImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.rHeaderBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.rHeaderPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.rHeaderTextDecoration);
         return cellStyle;
     }
@@ -698,9 +729,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getCornerStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.cornerBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.cornerFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -708,17 +741,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.cornerGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.cornerHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.cornerVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.cornerFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.cornerImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.cornerFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.cornerImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.cornerBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.cornerPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.cornerTextDecoration);
         return cellStyle;
     }
@@ -731,9 +773,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getDefaultHoverStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.defaultHoverBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.defaultHoverFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -741,18 +785,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.defaultHoverGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.defaultHoverHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.defaultHoverVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.defaultHoverFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.defaultHoverFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.defaultHoverImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.defaultHoverBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.defaultHoverPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.defaultHoverTextDecoration);
         return cellStyle;
     }
@@ -765,9 +817,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getBodyHoverStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.bodyHoverBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.bodyHoverFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -775,17 +829,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.bodyHoverGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.bodyHoverHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.bodyHoverVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.bodyHoverFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.bodyHoverImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.bodyHoverFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.bodyHoverImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.bodyHoverBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.bodyHoverPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.bodyHoverTextDecoration);
         return cellStyle;
     }
@@ -798,9 +861,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getColumnHeaderHoverStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.cHeaderHoverBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.cHeaderHoverFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -808,18 +873,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.cHeaderHoverGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.cHeaderHoverHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.cHeaderHoverVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.cHeaderHoverFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.cHeaderHoverFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.cHeaderHoverImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.cHeaderHoverBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.cHeaderHoverPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.cHeaderHoverTextDecoration);
         return cellStyle;
     }
@@ -832,9 +905,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getRowHeaderHoverStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.rHeaderHoverBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.rHeaderHoverFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -842,18 +917,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.rHeaderHoverGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.rHeaderHoverHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.rHeaderHoverVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.rHeaderHoverFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.rHeaderHoverFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.rHeaderHoverImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.rHeaderHoverBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.rHeaderHoverPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.rHeaderHoverTextDecoration);
         return cellStyle;
     }
@@ -866,9 +949,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getDefaultHoverSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.defaultHoverSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.defaultHoverSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -876,19 +961,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.defaultHoverSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.defaultHoverSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.defaultHoverSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.defaultHoverSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.defaultHoverSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.defaultHoverSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.defaultHoverSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.defaultHoverSelectionTextDecoration);
         return cellStyle;
     }
@@ -901,9 +993,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getBodyHoverSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.bodyHoverSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.bodyHoverSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -911,19 +1005,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.bodyHoverSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.bodyHoverSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.bodyHoverSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.bodyHoverSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.bodyHoverSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.bodyHoverSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.bodyHoverSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.bodyHoverSelectionTextDecoration);
         return cellStyle;
     }
@@ -936,9 +1037,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getColumnHeaderHoverSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.cHeaderHoverSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.cHeaderHoverSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -946,19 +1049,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.cHeaderHoverSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.cHeaderHoverSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.cHeaderHoverSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.cHeaderHoverSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.cHeaderHoverSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.cHeaderHoverSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.cHeaderHoverSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.cHeaderHoverSelectionTextDecoration);
         return cellStyle;
     }
@@ -971,9 +1081,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getRowHeaderHoverSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.rHeaderHoverSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.rHeaderHoverSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -981,19 +1093,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.rHeaderHoverSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.rHeaderHoverSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.rHeaderHoverSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.rHeaderHoverSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.rHeaderHoverSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.rHeaderHoverSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.rHeaderHoverSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.rHeaderHoverSelectionTextDecoration);
         return cellStyle;
     }
@@ -1006,9 +1125,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getDefaultSelectionCellStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.defaultSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.defaultSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1016,19 +1137,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.defaultSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.defaultSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.defaultSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.defaultSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.defaultSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.defaultSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.defaultSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.defaultSelectionTextDecoration);
         return cellStyle;
     }
@@ -1041,9 +1169,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getColumnHeaderSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.cHeaderSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.cHeaderSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1051,19 +1181,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.cHeaderSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.cHeaderSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.cHeaderSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.cHeaderSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.cHeaderSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.cHeaderSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.cHeaderSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.cHeaderSelectionTextDecoration);
         return cellStyle;
     }
@@ -1076,9 +1213,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getColumnHeaderFullSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.cHeaderFullSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.cHeaderFullSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1086,19 +1225,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.cHeaderFullSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.cHeaderFullSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.cHeaderFullSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.cHeaderFullSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.cHeaderFullSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.cHeaderFullSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.cHeaderFullSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.cHeaderFullSelectionTextDecoration);
         return cellStyle;
     }
@@ -1111,9 +1257,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getRowHeaderSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.rHeaderSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.rHeaderSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1121,19 +1269,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.rHeaderSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.rHeaderSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.rHeaderSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.rHeaderSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.rHeaderSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.rHeaderSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.rHeaderSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.rHeaderSelectionTextDecoration);
         return cellStyle;
     }
@@ -1146,9 +1301,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getRowHeaderFullSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.rHeaderFullSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.rHeaderFullSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1156,19 +1313,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.rHeaderFullSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.rHeaderFullSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.rHeaderFullSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.rHeaderFullSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.rHeaderFullSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.rHeaderFullSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.rHeaderFullSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.rHeaderFullSelectionTextDecoration);
         return cellStyle;
     }
@@ -1181,9 +1345,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getCornerSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.cornerSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.cornerSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1191,19 +1357,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.cornerSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.cornerSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.cornerSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.cornerSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.cornerSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.cornerSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.cornerSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.cornerSelectionTextDecoration);
         return cellStyle;
     }
@@ -1216,9 +1389,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getSelectionAnchorStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.selectionAnchorBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.selectionAnchorFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1226,19 +1401,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.selectionAnchorGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.selectionAnchorHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.selectionAnchorVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.selectionAnchorFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.selectionAnchorImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.selectionAnchorBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.selectionAnchorPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.selectionAnchorTextDecoration);
         return cellStyle;
     }
@@ -1251,9 +1433,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getSelectionAnchorSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.selectionAnchorSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.selectionAnchorSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1261,24 +1445,33 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.selectionAnchorSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.selectionAnchorSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.selectionAnchorSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.selectionAnchorSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.selectionAnchorSelectionImage);
 
         // if there is not explicitly another border style configured use the
         // same as in getSelectionAnchorStyle()
-        BorderStyle border = this.selectionAnchorSelectionBorderStyle != null ? this.selectionAnchorSelectionBorderStyle
+        BorderStyle border = this.selectionAnchorSelectionBorderStyle != null
+                ? this.selectionAnchorSelectionBorderStyle
                 : this.selectionAnchorBorderStyle;
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, border);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
+                border);
 
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.selectionAnchorSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.selectionAnchorSelectionTextDecoration);
         return cellStyle;
     }
@@ -1291,7 +1484,8 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getSelectionAnchorGridLineStyle() {
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.selectionAnchorGridBorderStyle);
         return cellStyle;
     }
@@ -1299,9 +1493,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getEvenRowStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.evenRowBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.evenRowFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1309,17 +1505,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.evenRowGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.evenRowHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.evenRowVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.evenRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.evenRowImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.evenRowFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.evenRowImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.evenRowBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.evenRowPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.evenRowTextDecoration);
         return cellStyle;
     }
@@ -1332,9 +1537,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getOddRowStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.oddRowBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.oddRowFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1342,17 +1549,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.oddRowGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.oddRowHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.oddRowVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.oddRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.oddRowImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.oddRowFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.oddRowImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.oddRowBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.oddRowPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.oddRowTextDecoration);
         return cellStyle;
     }
@@ -1365,9 +1581,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getColumnGroupHeaderStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.cGroupHeaderBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.cGroupHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1375,18 +1593,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.cGroupHeaderGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.cGroupHeaderHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.cGroupHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.cGroupHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.cGroupHeaderFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.cGroupHeaderImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.cGroupHeaderBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.cGroupHeaderPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.cGroupHeaderTextDecoration);
         return cellStyle;
     }
@@ -1399,9 +1625,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getRowGroupHeaderStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.rGroupHeaderBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.rGroupHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1409,18 +1637,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.rGroupHeaderGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.rGroupHeaderHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.rGroupHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.rGroupHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.rGroupHeaderFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.rGroupHeaderImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.rGroupHeaderBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.rGroupHeaderPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.rGroupHeaderTextDecoration);
         return cellStyle;
     }
@@ -1433,9 +1669,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getSortHeaderStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.sortHeaderBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.sortHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1443,17 +1681,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.sortHeaderGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.sortHeaderHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.sortHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.sortHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.sortHeaderImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.sortHeaderFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.sortHeaderImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.sortHeaderBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.sortHeaderPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.sortHeaderTextDecoration);
         return cellStyle;
     }
@@ -1466,9 +1713,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getSelectedSortHeaderStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.selectedSortHeaderBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.selectedSortHeaderFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1476,19 +1725,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.selectedSortHeaderGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.selectedSortHeaderHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.selectedSortHeaderVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.selectedSortHeaderFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.selectedSortHeaderImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.selectedSortHeaderBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.selectedSortHeaderPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.selectedSortHeaderTextDecoration);
         return cellStyle;
     }
@@ -1501,9 +1757,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getFilterRowStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.filterRowBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.filterRowFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1511,17 +1769,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.filterRowGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.filterRowHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.filterRowVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.filterRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.filterRowImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.filterRowFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.filterRowImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.filterRowBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.filterRowPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.filterRowTextDecoration);
         return cellStyle;
     }
@@ -1534,9 +1801,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getTreeStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.treeBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.treeFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1544,17 +1813,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.treeGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.treeHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.treeVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.treeFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.treeImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.treeFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.treeImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.treeBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.treePWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.treeTextDecoration);
         return cellStyle;
     }
@@ -1567,9 +1845,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getTreeSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.treeSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.treeSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1577,19 +1857,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.treeSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.treeSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.treeSelectionVAlign);
-        cellStyle
-                .setAttributeValue(CellStyleAttributes.FONT, this.treeSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.treeSelectionFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.treeSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.treeSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.treeSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.treeSelectionTextDecoration);
         return cellStyle;
     }
@@ -1612,9 +1899,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getSummaryRowStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.summaryRowBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.summaryRowFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1622,17 +1911,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.summaryRowGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.summaryRowHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.summaryRowVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.summaryRowFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE, this.summaryRowImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
+                this.summaryRowFont);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
+                this.summaryRowImage);
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.summaryRowBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.summaryRowPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.summaryRowTextDecoration);
         return cellStyle;
     }
@@ -1645,9 +1943,11 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getSummaryRowSelectionStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.summaryRowSelectionBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.summaryRowSelectionFgColor);
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_BACKGROUND_COLOR,
@@ -1655,19 +1955,26 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
         cellStyle.setAttributeValue(
                 CellStyleAttributes.GRADIENT_FOREGROUND_COLOR,
                 this.summaryRowSelectionGradientFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.HORIZONTAL_ALIGNMENT,
                 this.summaryRowSelectionHAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.VERTICAL_ALIGNMENT,
                 this.summaryRowSelectionVAlign);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.summaryRowSelectionFont);
-        cellStyle.setAttributeValue(CellStyleAttributes.IMAGE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.IMAGE,
                 this.summaryRowSelectionImage);
-        cellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BORDER_STYLE,
                 this.summaryRowSelectionBorderStyle);
-        cellStyle.setAttributeValue(CellStyleAttributes.PASSWORD_ECHO_CHAR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.PASSWORD_ECHO_CHAR,
                 this.summaryRowSelectionPWEchoChar);
-        cellStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.TEXT_DECORATION,
                 this.summaryRowSelectionTextDecoration);
         return cellStyle;
     }
@@ -1715,11 +2022,14 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getConversionErrorStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.conversionErrorBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.conversionErrorFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.conversionErrorFont);
         return cellStyle;
     }
@@ -1727,11 +2037,14 @@ public class DefaultNatTableThemeConfiguration extends ThemeConfiguration {
     @Override
     protected IStyle getValidationErrorStyle() {
         IStyle cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.BACKGROUND_COLOR,
                 this.validationErrorBgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FOREGROUND_COLOR,
                 this.validationErrorFgColor);
-        cellStyle.setAttributeValue(CellStyleAttributes.FONT,
+        cellStyle.setAttributeValue(
+                CellStyleAttributes.FONT,
                 this.validationErrorFont);
         return cellStyle;
     }

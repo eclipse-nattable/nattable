@@ -54,7 +54,10 @@ public class SearchAction implements IKeyAction {
      * Constructs an action with a non-modal (i.e., sharable) Find dialog.
      *
      * @param natTable
-     * @param settings
+     *            The NatTable instance to perform the search action on.
+     * @param dialogSettings
+     *            The dialog settings that should be used to create the search
+     *            dialog.
      */
     public SearchAction(NatTable natTable, IDialogSettings dialogSettings) {
         this(natTable, dialogSettings, false);

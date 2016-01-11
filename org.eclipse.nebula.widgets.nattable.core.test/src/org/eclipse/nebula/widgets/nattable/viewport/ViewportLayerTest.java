@@ -71,7 +71,7 @@ public class ViewportLayerTest {
         assertEquals(2, this.viewportLayer.getColumnIndexByPosition(2));
     }
 
-    /**
+    /*
      * 0 1 2 3 4 5 6 7 8 9 |----|----|----|----|----|----|----|----|----|----|
      */
     @Test
@@ -113,7 +113,7 @@ public class ViewportLayerTest {
         assertEquals(6, this.viewportLayer.getColumnIndexByPosition(0));
     }
 
-    /**
+    /*
      * Rows 0 1 2 3 4 |----|----|----|----|----|
      */
     @Test
@@ -166,7 +166,7 @@ public class ViewportLayerTest {
         assertEquals(4, this.viewportLayer.getColumnIndexByPosition(4));
     }
 
-    /**
+    /*
      * 0 1 2 3 4 5 6 7 8 9 |----|----|----|----|----|----|----|----|----|----|
      */
     @Test
@@ -217,7 +217,7 @@ public class ViewportLayerTest {
         assertEquals(2, this.viewportLayer.getColumnCount());
     }
 
-    /**
+    /*
      * Width is calculated by adding of widths of all visible columns
      */
     @Test
@@ -232,7 +232,7 @@ public class ViewportLayerTest {
         assertEquals(200, this.viewportLayer.getWidth());
     }
 
-    /**
+    /*
      * Height is calculated by adding of heights of all visible columns
      */
     @Test
@@ -247,7 +247,7 @@ public class ViewportLayerTest {
         assertEquals(100, this.viewportLayer.getHeight());
     }
 
-    /**
+    /*
      * Scrolling Events fired when origin changes
      */
     @Test

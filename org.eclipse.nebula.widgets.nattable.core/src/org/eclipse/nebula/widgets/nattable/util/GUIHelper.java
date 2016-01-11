@@ -146,6 +146,7 @@ public class GUIHelper {
      * For example if you request <i>checkbox.png</i> this method will search
      * for a scaled version relative to the requested image. The following will
      * give an example on the scaled files:
+     * </p>
      * <ul>
      * <li>checkbox.png</li>
      * <li>checkbox_120_120.png</li>
@@ -154,7 +155,6 @@ public class GUIHelper {
      * <li>checkbox_192_192.png</li>
      * <li>checkbox_288_288.png</li>
      * </ul>
-     * </p>
      * <p>
      * If the matching scaled version is not found, it will automatically
      * upscale the base image.
@@ -307,8 +307,8 @@ public class GUIHelper {
     }
 
     /**
-     * <b>WARNING: DO NOT USE THIS METHOD AS IT IS MIGHT CAUSE RESOURCE HANDLING
-     * ISSUES!!!<b/>
+     * <b>WARNING:</b> Do not use this method as it might cause resource
+     * handling issues!
      *
      * @deprecated This method does not work correctly since it uses
      *             {@link ImageData#toString()}

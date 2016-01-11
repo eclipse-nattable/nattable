@@ -132,8 +132,8 @@ public class TableCellPainter extends BackgroundPainter {
      *            The color that should be used to render the grid lines in the
      *            sub table in {@link DisplayMode#SELECT}
      * @param fixedSubCellHeight
-     *            The height of the sub cells to use. Setting a value >= 0 will
-     *            result in using the specified fixed sub cell heights, a
+     *            The height of the sub cells to use. Setting a value &gt;= 0
+     *            will result in using the specified fixed sub cell heights, a
      *            negative value will result in dynamically calculated sub cell
      *            heights dependent on the content.
      * @param calculateParentCellHeight
@@ -362,16 +362,17 @@ public class TableCellPainter extends BackgroundPainter {
     }
 
     /**
-     * @return The height of the sub cells to use. A value >= 0 results in using
-     *         the specified fixed sub cell heights, a negative value results in
-     *         dynamically calculated sub cell heights dependent on the content.
+     * @return The height of the sub cells to use. A value &gt;= 0 results in
+     *         using the specified fixed sub cell heights, a negative value
+     *         results in dynamically calculated sub cell heights dependent on
+     *         the content.
      */
     public int getFixedSubCellHeight() {
         return this.fixedSubCellHeight;
     }
 
     /**
-     * Setting a value >= 0 will result in using a fixed height of the sub
+     * Setting a value &gt;= 0 will result in using a fixed height of the sub
      * cells. Setting the value to a negative number will ask the internal
      * painter for the sub cells to calculate the height regarding the content.
      *
