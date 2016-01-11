@@ -152,12 +152,12 @@
 							<tag>
 								<name>noextend</name>
 								<placement>a</placement>
-								<head><b>noextend</b>:</head>
+								<head>noextend:</head>
 							</tag>
 							<tag>
 								<name>noinstantiate</name>
 								<placement>a</placement>
-								<head><b>noinstantiate</b>:</head>
+								<head>noinstantiate:</head>
 							</tag>
 						</tags>
 					</configuration>
