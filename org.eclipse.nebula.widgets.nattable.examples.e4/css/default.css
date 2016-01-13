@@ -277,22 +277,12 @@
 	painter: gradient-background column-group text;
 }
 
-.dark > .SORT_DOWN {
+.dark > .SORT {
 	painter: gradient-background padding sort-header text;
 	cell-background-color: gradient linear #696969 black true;
 }
 
-.dark > .SORT_UP {
-	painter: gradient-background padding sort-header text;
-	cell-background-color: gradient linear #696969 black true;
-}
-
-.dark > .SORT_DOWN:select {
-	painter: gradient-background padding sort-header text;
-	cell-background-color: gradient linear black #696969 true;
-}
-
-.dark > .SORT_UP:select {
+.dark > .SORT:select {
 	painter: gradient-background padding sort-header text;
 	cell-background-color: gradient linear black #696969 true;
 }

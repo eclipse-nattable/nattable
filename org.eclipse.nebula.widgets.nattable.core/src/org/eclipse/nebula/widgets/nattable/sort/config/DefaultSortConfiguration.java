@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,10 +28,23 @@ import org.eclipse.swt.SWT;
 
 public class DefaultSortConfiguration implements IConfiguration {
 
+    /**
+     * Config label that is added if a column is sorted.
+     *
+     * @since 1.4
+     */
+    public static final String SORT_CONFIG_TYPE = "SORT"; //$NON-NLS-1$
+    /**
+     * Config label that is added if a column is sorted descending.
+     */
     public static final String SORT_DOWN_CONFIG_TYPE = "SORT_DOWN"; //$NON-NLS-1$
+    /**
+     * Config label that is added if a column is sorted ascending.
+     */
     public static final String SORT_UP_CONFIG_TYPE = "SORT_UP"; //$NON-NLS-1$
-
-    /** The sort sequence can be appended to this base */
+    /**
+     * The sort sequence can be appended to this base
+     */
     public static final String SORT_SEQ_CONFIG_TYPE = "SORT_SEQ_"; //$NON-NLS-1$
 
     private ICellPainter cellPainter;

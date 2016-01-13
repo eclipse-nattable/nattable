@@ -68,8 +68,7 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersi
             int columnIndex = getColumnIndexByPosition(columnPosition);
             if (this.sortModel.isColumnIndexSorted(columnIndex)) {
 
-                String sortConfig = DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE
-                        + this.sortModel.getSortOrder(columnIndex);
+                String sortConfig = DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + this.sortModel.getSortOrder(columnIndex);
                 configLabels.addLabelOnTop(sortConfig);
 
                 SortDirectionEnum sortDirection = this.sortModel.getSortDirection(columnIndex);
@@ -82,6 +81,8 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersi
                         configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
                         break;
                 }
+
+                configLabels.addLabelOnTop(DefaultSortConfiguration.SORT_CONFIG_TYPE);
             }
         }
         return configLabels;
@@ -102,6 +103,7 @@ public class SortHeaderLayer<T> extends AbstractLayerTransform implements IPersi
     public Collection<String> getProvidedLabels() {
         Collection<String> labels = super.getProvidedLabels();
 
+        labels.add(DefaultSortConfiguration.SORT_CONFIG_TYPE);
         labels.add(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE);
         labels.add(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE);
         labels.add(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + "0"); //$NON-NLS-1$

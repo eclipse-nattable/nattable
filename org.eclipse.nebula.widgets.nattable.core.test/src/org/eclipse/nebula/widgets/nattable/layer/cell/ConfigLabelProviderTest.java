@@ -220,7 +220,7 @@ public class ConfigLabelProviderTest {
                 this.cornerDataLayer);
 
         Collection<String> labels = grid.getProvidedLabels();
-        assertEquals(18, labels.size());
+        assertEquals(19, labels.size());
 
         assertTrue(labels.contains(GridRegion.CORNER));
         assertTrue(labels.contains(GridRegion.COLUMN_HEADER));
@@ -235,6 +235,7 @@ public class ConfigLabelProviderTest {
         assertTrue(labels.contains(SelectionStyleLabels.FILL_HANDLE_CELL));
         assertTrue(labels.contains(SelectionStyleLabels.FILL_HANDLE_REGION));
         assertTrue(labels.contains(SelectionStyleLabels.COPY_BORDER_STYLE));
+        assertTrue(labels.contains(DefaultSortConfiguration.SORT_CONFIG_TYPE));
         assertTrue(labels.contains(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE));
         assertTrue(labels.contains(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE));
         assertTrue(labels.contains(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + "0"));
@@ -262,7 +263,7 @@ public class ConfigLabelProviderTest {
                 this.cornerDataLayer);
 
         Collection<String> labels = grid.getProvidedLabels();
-        assertEquals(25, labels.size());
+        assertEquals(26, labels.size());
 
         assertTrue(labels.contains(GridRegion.CORNER));
         assertTrue(labels.contains(GridRegion.COLUMN_HEADER));
@@ -277,6 +278,7 @@ public class ConfigLabelProviderTest {
         assertTrue(labels.contains(SelectionStyleLabels.FILL_HANDLE_CELL));
         assertTrue(labels.contains(SelectionStyleLabels.FILL_HANDLE_REGION));
         assertTrue(labels.contains(SelectionStyleLabels.COPY_BORDER_STYLE));
+        assertTrue(labels.contains(DefaultSortConfiguration.SORT_CONFIG_TYPE));
         assertTrue(labels.contains(DefaultSortConfiguration.SORT_UP_CONFIG_TYPE));
         assertTrue(labels.contains(DefaultSortConfiguration.SORT_DOWN_CONFIG_TYPE));
         assertTrue(labels.contains(DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + "0"));
