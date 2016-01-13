@@ -342,11 +342,13 @@
 
 .dark > .COLUMN_4 {
 	painter: background padding checkbox;
-	converter: boolean;	
 	text-align: center;
 }
 
 .dark > .COLUMN_4:select {
+	/* ensure there is no painter registered for displaymode select */
+	painter-resolution: false;
+	painter: none;
 	text-align: center;
 }
 
@@ -401,5 +403,9 @@
 }
 
 .dark > .GROUP_BY_OBJECT {
+	font-weight: bold;
+}
+
+.dark > .GROUP_BY_OBJECT:select {
 	font-weight: bold;
 }
