@@ -24,6 +24,7 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardCommand;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
@@ -92,6 +93,10 @@ public class CSSExample {
         DefaultGridLayer gridLayer =
                 new DefaultGridLayer(bodyDataProvider,
                         new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap));
+        // unregister the default registered commandhandler to make the fill
+        // handle work here for the age column
+        gridLayer.unregisterCommandHandler(CopyDataToClipboardCommand.class);
+        gridLayer.getBodyLayer().unregisterCommandHandler(CopyDataToClipboardCommand.class);
 
         final DataLayer bodyDataLayer = (DataLayer) gridLayer.getBodyDataLayer();
 

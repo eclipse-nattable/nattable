@@ -245,8 +245,8 @@ public class FillHandleDragMode implements IDragMode {
                 } else {
                     if (type == null) {
                         type = cell.getDataValue().getClass();
-                        if (!type.isAssignableFrom(Number.class)
-                                && !type.isAssignableFrom(Date.class)) {
+                        if (!Number.class.isAssignableFrom(type)
+                                && !Date.class.isAssignableFrom(type)) {
                             return false;
                         }
                     } else if (type != cell.getDataValue().getClass()) {

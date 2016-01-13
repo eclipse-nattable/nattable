@@ -66,9 +66,9 @@ public class FormulaFillHandleDragMode extends FillHandleDragMode {
                     } else {
                         if (type == null) {
                             type = cell.getDataValue().getClass();
-                            if (!type.isAssignableFrom(Number.class)
-                                    && !type.isAssignableFrom(Date.class)
-                                    && (type.isAssignableFrom(String.class)
+                            if (!Number.class.isAssignableFrom(type)
+                                    && !Date.class.isAssignableFrom(type)
+                                    && (String.class.isAssignableFrom(type)
                                             && !this.dataProvider.getFormulaParser().isNumber((String) cell.getDataValue()))) {
                                 return false;
                             }

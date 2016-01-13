@@ -195,7 +195,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
             return getCastValue(rowDiff, type);
         } else if (type != null) {
             int columnArrayIndex = cell.getColumnIndex() - this.clipboard.getCopiedCells()[0][0].getColumnIndex();
-            if (type.isAssignableFrom(Byte.class)) {
+            if (type == Byte.class) {
                 Byte diff = calculateByteDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
                     return null;
@@ -209,7 +209,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                 }
                 byte result = (byte) (diff * rowDiff);
                 return result;
-            } else if (type.isAssignableFrom(Short.class)) {
+            } else if (type == Short.class) {
                 Short diff = calculateShortDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
                     return null;
@@ -223,7 +223,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                 }
                 short result = (short) (diff * rowDiff);
                 return result;
-            } else if (type.isAssignableFrom(Integer.class)) {
+            } else if (type == Integer.class) {
                 Integer diff = calculateIntDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
                     return null;
@@ -236,7 +236,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return diff * rowDiff;
-            } else if (type.isAssignableFrom(Long.class)) {
+            } else if (type == Long.class) {
                 Long diff = calculateLongDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
                     return null;
@@ -249,7 +249,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return diff * rowDiff;
-            } else if (type.isAssignableFrom(Float.class)) {
+            } else if (type == Float.class) {
                 Float diff = calculateFloatDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
                     return null;
@@ -262,7 +262,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return BigDecimal.valueOf(diff).multiply(BigDecimal.valueOf(rowDiff)).floatValue();
-            } else if (type.isAssignableFrom(Double.class)) {
+            } else if (type == Double.class) {
                 Double diff = calculateDoubleDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
                     return null;
@@ -275,7 +275,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return BigDecimal.valueOf(diff).multiply(BigDecimal.valueOf(rowDiff)).doubleValue();
-            } else if (type.isAssignableFrom(BigInteger.class)) {
+            } else if (type == BigInteger.class) {
                 BigInteger diff = calculateBigIntegerDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
                     return null;
@@ -288,7 +288,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return diff.multiply(BigInteger.valueOf(rowDiff));
-            } else if (type.isAssignableFrom(BigDecimal.class)) {
+            } else if (type == BigDecimal.class) {
                 BigDecimal diff = calculateBigDecimalDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex]);
                 if (diff == null) {
                     return null;
@@ -301,7 +301,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return diff.multiply(BigDecimal.valueOf(rowDiff));
-            } else if (type.isAssignableFrom(Date.class)) {
+            } else if (type == Date.class) {
                 Integer diff = calculateDateDiff(cells[1][columnArrayIndex], cells[0][columnArrayIndex], configRegistry);
                 if (diff == null) {
                     return null;
@@ -328,7 +328,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
         if (cells[rowArrayIndex].length == 1) {
             return getCastValue(columnDiff, type);
         } else if (type != null) {
-            if (type.isAssignableFrom(Byte.class)) {
+            if (type == Byte.class) {
                 Byte diff = calculateByteDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
                     return null;
@@ -342,7 +342,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                 }
                 byte result = (byte) (diff * columnDiff);
                 return result;
-            } else if (type.isAssignableFrom(Short.class)) {
+            } else if (type == Short.class) {
                 Short diff = calculateShortDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
                     return null;
@@ -356,7 +356,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                 }
                 short result = (short) (diff * columnDiff);
                 return result;
-            } else if (type.isAssignableFrom(Integer.class)) {
+            } else if (type == Integer.class) {
                 Integer diff = calculateIntDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
                     return null;
@@ -369,7 +369,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return diff * columnDiff;
-            } else if (type.isAssignableFrom(Long.class)) {
+            } else if (type == Long.class) {
                 Long diff = calculateLongDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
                     return null;
@@ -382,7 +382,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return diff * columnDiff;
-            } else if (type.isAssignableFrom(Float.class)) {
+            } else if (type == Float.class) {
                 Float diff = calculateFloatDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
                     return null;
@@ -395,7 +395,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return BigDecimal.valueOf(diff).multiply(BigDecimal.valueOf(columnDiff)).floatValue();
-            } else if (type.isAssignableFrom(Double.class)) {
+            } else if (type == Double.class) {
                 Double diff = calculateDoubleDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
                     return null;
@@ -408,7 +408,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return BigDecimal.valueOf(diff).multiply(BigDecimal.valueOf(columnDiff)).doubleValue();
-            } else if (type.isAssignableFrom(BigInteger.class)) {
+            } else if (type == BigInteger.class) {
                 BigInteger diff = calculateBigIntegerDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
                     return null;
@@ -421,7 +421,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return diff.multiply(BigInteger.valueOf(columnDiff));
-            } else if (type.isAssignableFrom(BigDecimal.class)) {
+            } else if (type == BigDecimal.class) {
                 BigDecimal diff = calculateBigDecimalDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0]);
                 if (diff == null) {
                     return null;
@@ -434,7 +434,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
                     }
                 }
                 return diff.multiply(BigDecimal.valueOf(columnDiff));
-            } else if (type.isAssignableFrom(Date.class)) {
+            } else if (type == Date.class) {
                 Integer diff = calculateDateDiff(cells[rowArrayIndex][1], cells[rowArrayIndex][0], configRegistry);
                 if (diff == null) {
                     return null;
@@ -454,19 +454,19 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
 
     protected Number getCastValue(int diff, Class<?> type) {
         if (type != null) {
-            if (type.isAssignableFrom(Byte.class)) {
+            if (type == Byte.class) {
                 return (byte) diff;
-            } else if (type.isAssignableFrom(Short.class)) {
+            } else if (type == Short.class) {
                 return (short) diff;
-            } else if (type.isAssignableFrom(Long.class)) {
+            } else if (type == Long.class) {
                 return (long) diff;
-            } else if (type.isAssignableFrom(Float.class)) {
+            } else if (type == Float.class) {
                 return (float) diff;
-            } else if (type.isAssignableFrom(Double.class)) {
+            } else if (type == Double.class) {
                 return (double) diff;
-            } else if (type.isAssignableFrom(BigInteger.class)) {
+            } else if (type == BigInteger.class) {
                 return BigInteger.valueOf(diff);
-            } else if (type.isAssignableFrom(BigDecimal.class)) {
+            } else if (type == BigDecimal.class) {
                 return BigDecimal.valueOf(diff);
             }
         }
