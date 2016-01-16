@@ -170,9 +170,6 @@ public class VerticalTextPainter extends AbstractTextPainter {
             IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
             setupGCFromConfig(gc, cellStyle);
 
-            boolean underline = renderUnderlined(cellStyle);
-            boolean strikethrough = renderStrikethrough(cellStyle);
-
             int fontHeight = gc.getFontMetrics().getHeight();
             String text = convertDataType(cell, configRegistry);
 
@@ -236,91 +233,60 @@ public class VerticalTextPainter extends AbstractTextPainter {
 
                     gc.drawText(text, rectangle.x, rectangle.y, SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
 
-                    if (underline || strikethrough) {
-                        int length = gc.textExtent(text).x;
-                        if (length > 0) {
-                            // check and draw underline and strikethrough
-                            // separately so it is possible to combine both
-                            if (underline) {
-                                // y = start y of text + font height
-                                // - half of the font descent so the underline
-                                // is between the baseline and the bottom
-                                int underlineY = rectangle.y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
-                                gc.drawLine(rectangle.x, underlineY, rectangle.x + length, underlineY);
-                            }
-
-                            if (strikethrough) {
-                                // y = start y of text + half of font height +
-                                // ascent so lower case characters are also
-                                // strikethrough
-                                int strikeY = rectangle.y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
-                                gc.drawLine(rectangle.x, strikeY, rectangle.x + length, strikeY);
-                            }
-                        }
-                    }
+                    int length = gc.textExtent(text).x;
+                    paintDecoration(cellStyle, gc, rectangle.x, rectangle.y, length, fontHeight);
                 } else {
                     // draw every line by itself because of the alignment,
                     // otherwise the whole text is always aligned right
-                    int lineAdjustment = 0;
                     String[] lines = text.split("\n"); //$NON-NLS-1$
+
+                    boolean firstline = true;
                     for (String line : lines) {
                         int lineContentWidth = Math.min(getLengthFromCache(gc, line), rectangle.height);
 
                         if (!isRotateClockwise()) {
-                            transform.rotate(-90f);
+                            if (firstline) {
+                                transform.rotate(-90f);
 
-                            int xOffset = -rectangle.x + (-lineContentWidth - rectangle.y)
-                                    - CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth);
-                            int yOffset = rectangle.x + -rectangle.y + lineAdjustment
-                                    + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentHeight)
-                                    + this.spacing;
+                                int xOffset = -rectangle.x + (-lineContentWidth - rectangle.y)
+                                        - CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth);
+                                int yOffset = rectangle.x + -rectangle.y
+                                        + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentHeight)
+                                        + this.spacing;
 
-                            transform.translate(xOffset, yOffset);
-                        } else {
-                            transform.rotate(90f);
+                                transform.translate(xOffset, yOffset);
 
-                            int horizontalPadding = CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentHeight);
-                            if (horizontalPadding != 0) {
-                                horizontalPadding += gc.getFontMetrics().getLeading();
+                                firstline = false;
+                            } else {
+                                transform.translate(0, fontHeight);
                             }
+                        } else {
+                            if (firstline) {
+                                transform.rotate(90f);
 
-                            int xOffset = rectangle.y - rectangle.x + CellStyleUtil.getVerticalAlignmentPadding(
-                                    cellStyle, rectangle, lineContentWidth);
-                            int yOffset = -contentHeight - rectangle.y - rectangle.x + lineAdjustment - horizontalPadding + this.spacing;
+                                int horizontalPadding = CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentHeight);
+                                if (horizontalPadding != 0) {
+                                    horizontalPadding += gc.getFontMetrics().getLeading();
+                                }
 
-                            transform.translate(xOffset, yOffset);
+                                int xOffset = rectangle.y - rectangle.x
+                                        + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, lineContentWidth);
+                                int yOffset = -contentHeight - rectangle.y - rectangle.x + fontHeight - horizontalPadding + this.spacing;
+
+                                transform.translate(xOffset, yOffset);
+
+                                firstline = false;
+                            } else {
+                                transform.translate(0, -fontHeight);
+                            }
                         }
 
                         gc.setTransform(transform);
 
                         gc.drawText(line, rectangle.x, rectangle.y, SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
 
-                        if (underline || strikethrough) {
-                            int length = gc.textExtent(line).x;
-                            if (length > 0) {
-                                // check and draw underline and strikethrough
-                                // separately so it is possible to combine both
-                                if (underline) {
-                                    // y = start y of text + font height - half
-                                    // of the font descent so the underline is
-                                    // between the baseline and the bottom
-                                    int underlineY = rectangle.y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
-                                    gc.drawLine(rectangle.x, underlineY, rectangle.x + length, underlineY);
-                                }
-
-                                if (strikethrough) {
-                                    // y = start y of text + half of font height
-                                    // + ascent so lower case characters are
-                                    // also strikethrough
-                                    int strikeY = rectangle.y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
-                                    gc.drawLine(rectangle.x, strikeY, rectangle.x + length, strikeY);
-                                }
-                            }
-                        }
-
-                        // after every line calculate the lineAdjustment for
-                        // offset calculation
-                        lineAdjustment += fontHeight;
+                        int length = gc.textExtent(line).x;
+                        paintDecoration(cellStyle, gc, rectangle.x, rectangle.y, length, fontHeight);
                     }
                 }
 

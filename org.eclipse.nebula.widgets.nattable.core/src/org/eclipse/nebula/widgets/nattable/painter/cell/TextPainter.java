@@ -152,9 +152,6 @@ public class TextPainter extends AbstractTextPainter {
             IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
             setupGCFromConfig(gc, cellStyle);
 
-            boolean underline = renderUnderlined(cellStyle);
-            boolean strikethrough = renderStrikethrough(cellStyle);
-
             int fontHeight = gc.getFontMetrics().getHeight();
             String text = convertDataType(cell, configRegistry);
 
@@ -183,38 +180,16 @@ public class TextPainter extends AbstractTextPainter {
                         rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + this.spacing,
                         SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
 
-                if (underline || strikethrough) {
-                    int length = gc.textExtent(text).x;
-                    if (length > 0) {
-                        // start x of line = start x of text
-                        int x = rectangle.x
-                                + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth)
-                                + this.spacing;
-                        // y = start y of text
-                        int y = rectangle.y
-                                + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight)
-                                + this.spacing;
-
-                        // check and draw underline and strikethrough separately
-                        // so it is possible to combine both
-                        if (underline) {
-                            // y = start y of text + font height
-                            // - half of the font descent so the underline is
-                            // between the baseline and the bottom
-                            int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
-                            gc.drawLine(x, underlineY, x + length, underlineY);
-                        }
-
-                        if (strikethrough) {
-                            // y = start y of text + half of font height +
-                            // ascent
-                            // this way lower case characters are also
-                            // strikethrough
-                            int strikeY = y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
-                            gc.drawLine(x, strikeY, x + length, strikeY);
-                        }
-                    }
-                }
+                // start x of line = start x of text
+                int x = rectangle.x
+                        + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth)
+                        + this.spacing;
+                // y = start y of text
+                int y = rectangle.y
+                        + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight)
+                        + this.spacing;
+                int length = gc.textExtent(text).x;
+                paintDecoration(cellStyle, gc, x, y, length, fontHeight);
             } else {
                 // draw every line by itself because of the alignment, otherwise
                 // the whole text is always aligned right
@@ -229,35 +204,14 @@ public class TextPainter extends AbstractTextPainter {
                             yStartPos + this.spacing,
                             SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
 
-                    if (underline || strikethrough) {
-                        int length = gc.textExtent(line).x;
-                        if (length > 0) {
-                            // start x of line = start x of text
-                            int x = rectangle.x
-                                    + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth)
-                                    + this.spacing;
-                            // y = start y of text
-                            int y = yStartPos + this.spacing;
-
-                            // check and draw underline and strikethrough
-                            // separately so it is possible to combine both
-                            if (underline) {
-                                // y = start y of text + font height
-                                // - half of the font descent so the underline
-                                // is between the baseline and the bottom
-                                int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
-                                gc.drawLine(x, underlineY, x + length, underlineY);
-                            }
-
-                            if (strikethrough) {
-                                // y = start y of text + half of font height +
-                                // ascent so lower case characters are
-                                // also strikethrough
-                                int strikeY = y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
-                                gc.drawLine(x, strikeY, x + length, strikeY);
-                            }
-                        }
-                    }
+                    // start x of line = start x of text
+                    int x = rectangle.x
+                            + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth)
+                            + this.spacing;
+                    // y = start y of text
+                    int y = yStartPos + this.spacing;
+                    int length = gc.textExtent(line).x;
+                    paintDecoration(cellStyle, gc, x, y, length, fontHeight);
 
                     // after every line calculate the y start pos new
                     yStartPos += fontHeight;

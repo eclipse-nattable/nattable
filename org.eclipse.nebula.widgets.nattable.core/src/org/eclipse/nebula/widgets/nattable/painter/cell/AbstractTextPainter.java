@@ -671,4 +671,49 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
         this.wrapText = wrapText;
     }
 
+    /**
+     * Render a decoration to the text, e.g. underline and/or strikethrough
+     * lines.
+     *
+     * @param cellStyle
+     *            The {@link IStyle} that contains the styling information for
+     *            rendering.
+     * @param gc
+     *            the {@link GC} used to paint
+     * @param x
+     *            start x of the text
+     * @param y
+     *            start y of the text
+     * @param length
+     *            length of the text
+     * @param fontHeight
+     *            The height of the current font
+     *
+     * @since 1.4
+     */
+    protected void paintDecoration(IStyle cellStyle, GC gc, int x, int y, int length, int fontHeight) {
+        boolean underline = renderUnderlined(cellStyle);
+        boolean strikethrough = renderStrikethrough(cellStyle);
+
+        if (underline || strikethrough) {
+            if (length > 0) {
+                // check and draw underline and strikethrough separately
+                // so it is possible to combine both
+                if (underline) {
+                    // y = start y of text + font height - half of the font
+                    // descent so the underline is between baseline and bottom
+                    int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
+                    gc.drawLine(x, underlineY, x + length, underlineY);
+                }
+
+                if (strikethrough) {
+                    // y = start y of text + half of font height + ascent
+                    // this way lower case characters are also strikethrough
+                    int strikeY = y + (fontHeight / 2) + (gc.getFontMetrics().getLeading() / 2);
+                    gc.drawLine(x, strikeY, x + length, strikeY);
+                }
+            }
+        }
+    }
+
 }
