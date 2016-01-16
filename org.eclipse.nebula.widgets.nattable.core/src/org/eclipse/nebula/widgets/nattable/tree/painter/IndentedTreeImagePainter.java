@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -65,8 +65,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * @deprecated Use constructor without ITreeRowModel parameter
      */
     @Deprecated
-    public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel,
-            int treeIndent) {
+    public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel, int treeIndent) {
         this(treeIndent, new TreeImagePainter());
     }
 
@@ -90,8 +89,10 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      * @deprecated Use constructor without ITreeRowModel parameter
      */
     @Deprecated
-    public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel,
-            int treeIndent, TreeImagePainter treeImagePainter) {
+    public IndentedTreeImagePainter(
+            ITreeRowModel<?> treeRowModel,
+            int treeIndent,
+            TreeImagePainter treeImagePainter) {
         this(treeIndent, treeImagePainter);
     }
 
@@ -129,16 +130,35 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      *            because the ui bindings for expand/collapse are registered
      *            against that type.
      */
-    public IndentedTreeImagePainter(int treeIndent,
-            TreeImagePainter treeImagePainter) {
+    public IndentedTreeImagePainter(int treeIndent, TreeImagePainter treeImagePainter) {
         this(treeIndent, CellEdgeEnum.LEFT, treeImagePainter);
     }
 
-    public IndentedTreeImagePainter(int treeIndent, CellEdgeEnum cellEdge,
+    /**
+     * Creates an IndentedTreeImagePainter using the given indentation per depth
+     * and ICellPainter for painting the icons in the tree to the specified cell
+     * edge.
+     *
+     * @param treeIndent
+     *            The number of pixels to indent per depth.
+     * @param cellEdge
+     *            the edge of the cell on which the tree state indicator
+     *            decoration should be applied
+     * @param treeImagePainter
+     *            The ICellPainter that should be used to paint the images in
+     *            the tree. It needs to be of type of TreeImagePainter that
+     *            paints expand/collapse/leaf icons regarding the node state,
+     *            because the ui bindings for expand/collapse are registered
+     *            against that type.
+     */
+    public IndentedTreeImagePainter(
+            int treeIndent,
+            CellEdgeEnum cellEdge,
             TreeImagePainter treeImagePainter) {
+
         this.treeIndent = treeIndent;
-        this.internalPainter = new CellPainterDecorator(null, cellEdge,
-                treeImagePainter);
+        this.internalPainter =
+                new CellPainterDecorator(null, cellEdge, treeImagePainter);
 
         setWrappedPainter(this.internalPainter);
     }
@@ -177,14 +197,25 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      *            <code>true</code> will cause the bounds of the cell to shrink
      *            for the base painter.
      */
-    public IndentedTreeImagePainter(int treeIndent,
-            ICellPainter interiorPainter, CellEdgeEnum cellEdge,
-            boolean paintBg, int spacing, boolean paintDecorationDependent) {
+    public IndentedTreeImagePainter(
+            int treeIndent,
+            ICellPainter interiorPainter,
+            CellEdgeEnum cellEdge,
+            boolean paintBg,
+            int spacing,
+            boolean paintDecorationDependent) {
+
         this.treeIndent = treeIndent;
 
         ICellPainter painter = new TreeImagePainter(paintBg);
-        this.internalPainter = new CellPainterDecorator(interiorPainter,
-                cellEdge, spacing, painter, paintDecorationDependent, paintBg);
+        this.internalPainter =
+                new CellPainterDecorator(
+                        interiorPainter,
+                        cellEdge,
+                        spacing,
+                        painter,
+                        paintDecorationDependent,
+                        paintBg);
         setWrappedPainter(this.internalPainter);
     }
 
@@ -221,15 +252,25 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      *            <code>true</code> will cause the bounds of the cell to shrink
      *            for the base painter.
      */
-    public IndentedTreeImagePainter(int treeIndent,
-            ICellPainter interiorPainter, CellEdgeEnum cellEdge,
-            ICellPainter decoratorPainter, boolean paintBg, int spacing,
+    public IndentedTreeImagePainter(
+            int treeIndent,
+            ICellPainter interiorPainter,
+            CellEdgeEnum cellEdge,
+            ICellPainter decoratorPainter,
+            boolean paintBg,
+            int spacing,
             boolean paintDecorationDependent) {
+
         this.treeIndent = treeIndent;
 
-        this.internalPainter = new CellPainterDecorator(interiorPainter,
-                cellEdge, spacing, decoratorPainter, paintDecorationDependent,
-                paintBg);
+        this.internalPainter =
+                new CellPainterDecorator(
+                        interiorPainter,
+                        cellEdge,
+                        spacing,
+                        decoratorPainter,
+                        paintDecorationDependent,
+                        paintBg);
         setWrappedPainter(this.internalPainter);
     }
 
@@ -252,15 +293,23 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      *            flag to configure how the bounds of the base painter should be
      *            calculated
      */
-    public IndentedTreeImagePainter(int treeIndent,
-            ICellPainter interiorPainter, boolean paintBg,
+    public IndentedTreeImagePainter(
+            int treeIndent,
+            ICellPainter interiorPainter,
+            boolean paintBg,
             boolean interiorPainterToSpanFullWidth) {
+
         this.treeIndent = treeIndent;
 
         ICellPainter painter = new TreeImagePainter(paintBg);
-        this.internalPainter = new CellPainterDecorator(interiorPainter,
-                CellEdgeEnum.RIGHT, 0, painter,
-                !interiorPainterToSpanFullWidth, paintBg);
+        this.internalPainter =
+                new CellPainterDecorator(
+                        interiorPainter,
+                        CellEdgeEnum.RIGHT,
+                        0,
+                        painter,
+                        !interiorPainterToSpanFullWidth,
+                        paintBg);
         setWrappedPainter(this.internalPainter);
     }
 
@@ -275,39 +324,48 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 
     /**
      * @param cellPainter
-     *            The ICellPainter that should be used to paint the images in
-     *            the tree. Usually it is some type of TreeImagePainter that
-     *            paints expand/collapse/leaf icons regarding the node state.
+     *            The {@link ICellPainter} that should be used to paint the
+     *            images in the tree. Usually it is some type of
+     *            {@link TreeImagePainter} that paints expand/collapse/leaf
+     *            icons regarding the node state.
      */
     public void setTreeImagePainter(ICellPainter cellPainter) {
         this.internalPainter.setDecoratorCellPainter(cellPainter);
     }
 
+    /**
+     * @param cellPainter
+     *            The base {@link ICellPainter} that should be used to render
+     *            the cell content.
+     */
     public void setBaseCellPainter(ICellPainter cellPainter) {
         this.internalPainter.setBaseCellPainter(cellPainter);
     }
 
     @Override
-    public Rectangle getWrappedPainterBounds(ILayerCell cell, GC gc,
-            Rectangle bounds, IConfigRegistry configRegistry) {
+    public Rectangle getWrappedPainterBounds(
+            ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
         int depth = getDepth(cell);
         int indent = getIndent(depth);
 
-        return new Rectangle(bounds.x + indent, bounds.y,
-                bounds.width - indent, bounds.height);
+        return new Rectangle(
+                bounds.x + indent,
+                bounds.y,
+                bounds.width - indent,
+                bounds.height);
     }
 
     @Override
-    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds,
-            IConfigRegistry configRegistry) {
-        super.paintCell(cell, gc,
+    public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+        super.paintCell(
+                cell,
+                gc,
                 getWrappedPainterBounds(cell, gc, bounds, configRegistry),
                 configRegistry);
     }
 
     @Override
-    public int getPreferredWidth(ILayerCell cell, GC gc,
-            IConfigRegistry configRegistry) {
+    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
         int depth = getDepth(cell);
         int indent = getIndent(depth);
         return indent + super.getPreferredWidth(cell, gc, configRegistry);
@@ -328,13 +386,14 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
      *            The cell for which the depth/level in the tree structure is
      *            requested.
      * @return The depth/level in the tree structure the given cell is located.
+     *
+     * @since 1.4
      */
-    private int getDepth(ILayerCell cell) {
+    protected int getDepth(ILayerCell cell) {
         int depth = 0;
 
         for (String configLabel : cell.getConfigLabels().getLabels()) {
-            if (configLabel
-                    .startsWith(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE)) {
+            if (configLabel.startsWith(DefaultTreeLayerConfiguration.TREE_DEPTH_CONFIG_TYPE)) {
                 String[] tokens = configLabel.split("_"); //$NON-NLS-1$
                 depth = Integer.valueOf(tokens[tokens.length - 1]).intValue();
             }
