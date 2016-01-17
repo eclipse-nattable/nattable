@@ -16,11 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.eclipse.e4.ui.css.swt.CSSSWTConstants;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.EditableRule;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -35,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultGridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -43,12 +47,21 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CustomLineBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 
 @SuppressWarnings("restriction")
 public class CSSExample {
+
+    @Inject
+    EMenuService menuService;
 
     @PostConstruct
     public void postConstruct(Composite parent) {
@@ -113,7 +126,6 @@ public class CSSExample {
         NatTable natTable = new NatTable(parent, gridLayer, false);
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new FillHandleConfiguration(gridLayer.getBodyLayer().getSelectionLayer()));
-        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
         gridLayer.addConfiguration(new DefaultEditConfiguration());
         gridLayer.addConfiguration(new DefaultEditBindings());
@@ -146,6 +158,38 @@ public class CSSExample {
         });
 
         natTable.setData(CSSSWTConstants.CSS_CLASS_NAME_KEY, "basic");
+
+        // application model menu configuration
+        menuService.registerContextMenu(
+                natTable,
+                "org.eclipse.nebula.widgets.nattable.examples.e4.popupmenu.0");
+
+        // get the menu registered by EMenuService
+        final Menu e4Menu = natTable.getMenu();
+
+        // remove the menu reference from NatTable instance
+        natTable.setMenu(null);
+
+        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+
+            @Override
+            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+                // add NatTable menu items
+                // and register the DisposeListener
+                new PopupMenuBuilder(natTable, e4Menu)
+                        .withInspectLabelsMenuItem()
+                        .build();
+
+                // register the UI binding
+                uiBindingRegistry.registerMouseDownBinding(
+                        new MouseEventMatcher(
+                                SWT.NONE,
+                                GridRegion.BODY,
+                                MouseEventMatcher.RIGHT_BUTTON),
+                        new PopupMenuAction(e4Menu));
+            }
+        });
+        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
         natTable.configure();
 

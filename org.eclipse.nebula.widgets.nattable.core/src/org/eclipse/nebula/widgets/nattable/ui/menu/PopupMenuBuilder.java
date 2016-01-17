@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2014, 2015 Original authors and others.
+ * Copyright (c) 2012, 2015 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -159,8 +159,9 @@ public class PopupMenuBuilder {
 
         // if the menu is build up using a MenuManager, remember that for
         // further use
-        if (menu.getData() != null && menu.getData() instanceof MenuManager) {
-            this.menuManager = (MenuManager) menu.getData();
+        Object mgr = menu.getData("org.eclipse.jface.action.MenuManager.managerKey"); //$NON-NLS-1$
+        if (mgr != null && mgr instanceof MenuManager) {
+            this.menuManager = (MenuManager) mgr;
         }
     }
 
@@ -180,8 +181,7 @@ public class PopupMenuBuilder {
     public PopupMenuBuilder withMenuItemProvider(IMenuItemProvider menuItemProvider) {
         if (this.menuManager == null) {
             menuItemProvider.addMenuItem(this.natTable, this.popupMenu);
-        }
-        else {
+        } else {
             this.menuManager.add(new PopupContributionItem(menuItemProvider));
         }
         return this;
@@ -207,8 +207,7 @@ public class PopupMenuBuilder {
     public PopupMenuBuilder withMenuItemProvider(String id, IMenuItemProvider menuItemProvider) {
         if (this.menuManager == null) {
             menuItemProvider.addMenuItem(this.natTable, this.popupMenu);
-        }
-        else {
+        } else {
             this.menuManager.add(new PopupContributionItem(id, menuItemProvider));
         }
         return this;
@@ -237,8 +236,7 @@ public class PopupMenuBuilder {
         if (this.menuManager == null) {
             throw new IllegalStateException("This PopupMenuBuilder is not created using a MenuManager, " //$NON-NLS-1$
                     + "therefore ContributionItems can not be added"); //$NON-NLS-1$
-        }
-        else {
+        } else {
             this.menuManager.add(contributionItem);
         }
         return this;
