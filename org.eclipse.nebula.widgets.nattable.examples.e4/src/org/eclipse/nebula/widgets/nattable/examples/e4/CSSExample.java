@@ -37,6 +37,7 @@ import org.eclipse.nebula.widgets.nattable.dataset.person.PersonService;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
+import org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory.CellPainterFactory;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfiguration;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -45,14 +46,18 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CustomLineBorderDecorator;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
-import org.eclipse.nebula.widgets.nattable.ui.menu.DebugMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
@@ -189,11 +194,34 @@ public class CSSExample {
                         new PopupMenuAction(e4Menu));
             }
         });
-        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
 
         natTable.configure();
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+        // add a custom painter for key errortext
+        int[] yErrorOffsets = { 0, 1, 2, 1 };
+        CellPainterFactory.registerContentPainter("errortext", (properties, underlying) -> {
+            return new TextPainter(true, true, false) {
+                @Override
+                protected void paintDecoration(
+                        IStyle cellStyle, GC gc, int x, int y, int length, int fontHeight) {
+                    int underlineY = y + fontHeight - (gc.getFontMetrics().getDescent() / 2);
+
+                    Color previousColor = gc.getForeground();
+                    gc.setForeground(GUIHelper.COLOR_RED);
+                    int startX = x;
+                    underlineY--;
+                    int index = 0;
+                    while (startX <= (x + length)) {
+                        gc.drawPoint(startX, underlineY + yErrorOffsets[(index % 4)]);
+                        index++;
+                        startX++;
+                    }
+                    gc.setForeground(previousColor);
+                }
+            };
+        });
     }
 
 }

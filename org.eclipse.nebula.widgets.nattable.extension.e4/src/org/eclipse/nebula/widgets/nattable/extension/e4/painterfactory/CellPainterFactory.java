@@ -10,12 +10,14 @@
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
  *
  *****************************************************************************/
-package org.eclipse.nebula.widgets.nattable.extension.e4.css;
+package org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.nebula.widgets.nattable.extension.e4.css.NatTableCSSConstants;
 import org.eclipse.nebula.widgets.nattable.group.painter.ColumnGroupExpandCollapseImagePainter;
 import org.eclipse.nebula.widgets.nattable.group.painter.ColumnGroupHeaderTextPainter;
 import org.eclipse.nebula.widgets.nattable.group.painter.RowGroupExpandCollapseImagePainter;
@@ -62,15 +64,13 @@ public class CellPainterFactory {
     // painter decorator keys
 
     public static final String DECORATOR_KEY = "decorator";
-    public static final String BEVELED_BORDER_DECORATOR_KEY = "beveled-border";
     public static final String LINE_BORDER_DECORATOR_KEY = "line-border";
     public static final String CUSTOM_LINE_BORDER_DECORATOR_KEY = "custom-line-border";
+    public static final String BEVELED_BORDER_DECORATOR_KEY = "beveled-border";
     public static final String PADDING_DECORATOR_KEY = "padding";
-
-    public static final String COLUMN_GROUP_HEADER_KEY = "column-group";
     public static final String SORTABLE_HEADER_KEY = "sort-header";
+    public static final String COLUMN_GROUP_HEADER_KEY = "column-group";
     public static final String ROW_GROUP_HEADER_KEY = "row-group";
-
     public static final String TREE_STRUCTURE_KEY = "tree";
 
     // content painter keys
@@ -82,7 +82,207 @@ public class CellPainterFactory {
     public static final String PERCENTAGEBAR_PAINTER_KEY = "percentage";
     public static final String TABLE_PAINTER_KEY = "table";
     public static final String TEXT_PAINTER_KEY = "text";
+
     public static final String NONE = "none";
+
+    public static final Map<String, CellPainterWrapperCreator> backgroundPainter = new HashMap<>();
+    public static final Map<String, CellPainterWrapperCreator> decoratorPainter = new HashMap<>();
+    public static final Map<String, CellPainterCreator> contentPainter = new HashMap<>();
+    static {
+        // default background painter initializations
+        backgroundPainter.put(
+                BACKGROUND_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    return new BackgroundPainter(underlying);
+                });
+        backgroundPainter.put(
+                BACKGROUND_IMAGE_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    Image image = (Image) painterProperties.get(NatTableCSSConstants.CELL_BACKGROUND_IMAGE);
+                    return new BackgroundImagePainter(underlying, image);
+                });
+        backgroundPainter.put(
+                GRADIENT_BACKGROUND_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    Boolean vertical = (Boolean) painterProperties.get(NatTableCSSConstants.GRADIENT_BACKGROUND_VERTICAL);
+                    if (vertical == null) {
+                        vertical = false;
+                    }
+                    return new GradientBackgroundPainter(underlying, vertical);
+                });
+
+        // default decorator painter initializations
+        decoratorPainter.put(
+                LINE_BORDER_DECORATOR_KEY,
+                (painterProperties, underlying) -> {
+                    return new LineBorderDecorator(underlying);
+                });
+        decoratorPainter.put(
+                CUSTOM_LINE_BORDER_DECORATOR_KEY,
+                (painterProperties, underlying) -> {
+                    return new CustomLineBorderDecorator(underlying);
+                });
+        decoratorPainter.put(
+                BEVELED_BORDER_DECORATOR_KEY,
+                (painterProperties, underlying) -> {
+                    return new BeveledBorderDecorator(underlying);
+                });
+
+        decoratorPainter.put(
+                PADDING_DECORATOR_KEY,
+                (painterProperties, underlying) -> {
+                    Integer topPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_TOP);
+                    if (topPadding == null) {
+                        topPadding = 0;
+                    }
+                    Integer bottomPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_BOTTOM);
+                    if (bottomPadding == null) {
+                        bottomPadding = 0;
+                    }
+                    Integer leftPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_LEFT);
+                    if (leftPadding == null) {
+                        leftPadding = 0;
+                    }
+                    Integer rightPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_RIGHT);
+                    if (rightPadding == null) {
+                        rightPadding = 0;
+                    }
+                    return new PaddingDecorator(underlying, topPadding, rightPadding, bottomPadding, leftPadding, false);
+                });
+        decoratorPainter.put(
+                SORTABLE_HEADER_KEY,
+                (painterProperties, underlying) -> {
+                    boolean invert = false;
+                    if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
+                        invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
+                    }
+
+                    return new SortableHeaderTextPainter(
+                            underlying,
+                            CellEdgeEnum.RIGHT,
+                            new SortIconPainter(false, invert),
+                            false,
+                            0,
+                            false);
+                });
+        decoratorPainter.put(
+                COLUMN_GROUP_HEADER_KEY,
+                (painterProperties, underlying) -> {
+                    boolean invert = false;
+                    if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
+                        invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
+                    }
+
+                    return new ColumnGroupHeaderTextPainter(
+                            underlying,
+                            CellEdgeEnum.RIGHT,
+                            new ColumnGroupExpandCollapseImagePainter(false, invert),
+                            false,
+                            0,
+                            false);
+                });
+        decoratorPainter.put(
+                ROW_GROUP_HEADER_KEY,
+                (painterProperties, underlying) -> {
+                    boolean invert = false;
+                    if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
+                        invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
+                    }
+
+                    return new RowGroupHeaderTextPainter(
+                            underlying,
+                            CellEdgeEnum.BOTTOM,
+                            new RowGroupExpandCollapseImagePainter(false, invert),
+                            false,
+                            0,
+                            true);
+                });
+        decoratorPainter.put(
+                TREE_STRUCTURE_KEY,
+                (painterProperties, underlying) -> {
+                    boolean invert = false;
+                    if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
+                        invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
+                    }
+
+                    String postFix = ""; //$NON-NLS-1$
+                    if (invert)
+                        postFix = "_inv"; //$NON-NLS-1$
+
+                    TreeImagePainter imagePainter =
+                            new TreeImagePainter(
+                                    false,
+                                    GUIHelper.getImage("right" + postFix),
+                                    GUIHelper.getImage("right_down" + postFix),
+                                    null);
+
+                    return new IndentedTreeImagePainter(10, null, CellEdgeEnum.LEFT, imagePainter, false, 2, true);
+                });
+
+        // default content painter initializations
+        contentPainter.put(
+                TEXT_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    AbstractTextPainter result = null;
+                    String textDirection = (String) painterProperties.get(NatTableCSSConstants.TEXT_DIRECTION);
+                    if (!"vertical".equalsIgnoreCase(textDirection)) {
+                        result = new TextPainter(false, false);
+                    } else {
+                        result = new VerticalTextPainter(false, false);
+                    }
+                    initTextPainter(result, painterProperties);
+                    return result;
+                });
+        contentPainter.put(
+                IMAGE_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    ImagePainter result = new ImagePainter(false);
+
+                    // init
+                    if (painterProperties.containsKey(NatTableCSSConstants.CALCULATE_CELL_HEIGHT)) {
+                        result.setCalculateByHeight(
+                                (Boolean) painterProperties.get(NatTableCSSConstants.CALCULATE_CELL_HEIGHT));
+                    }
+
+                    if (painterProperties.containsKey(NatTableCSSConstants.CALCULATE_CELL_WIDTH)) {
+                        result.setCalculateByWidth(
+                                (Boolean) painterProperties.get(NatTableCSSConstants.CALCULATE_CELL_WIDTH));
+                    }
+                    return result;
+                });
+        contentPainter.put(
+                CHECKBOX_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    return new CheckBoxPainter(false);
+                });
+        contentPainter.put(
+                COMBOBOX_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    boolean invert = false;
+                    if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
+                        invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
+                    }
+                    return new ComboBoxPainter(invert);
+                });
+        contentPainter.put(
+                PASSWORD_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    return new PasswordTextPainter(false, false);
+                });
+        contentPainter.put(
+                PERCENTAGEBAR_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    return new PercentageBarCellPainter();
+                });
+        contentPainter.put(
+                TABLE_PAINTER_KEY,
+                (painterProperties, underlying) -> {
+                    TableCellPainter result = new TableCellPainter(new TextPainter(false, false));
+                    result.setPaintBg(false);
+                    return result;
+                });
+
+    }
 
     /**
      *
@@ -198,24 +398,17 @@ public class CellPainterFactory {
      * @param painterProperties
      *            The painter properties for painter initialization.
      * @param underlying
-     *            the {@link ICellPainter} that should be applied as wrapped
+     *            The {@link ICellPainter} that should be applied as wrapped
      *            painter to the created decorator.
      * @return The background painter to use
      */
     public static CellPainterWrapper getBackgroundPainter(String key, Map<String, Object> painterProperties, ICellPainter underlying) {
         CellPainterWrapper result = null;
 
-        if (BACKGROUND_PAINTER_KEY.equalsIgnoreCase(key)) {
-            result = new BackgroundPainter(underlying);
-        } else if (BACKGROUND_IMAGE_PAINTER_KEY.equalsIgnoreCase(key)) {
-            Image image = (Image) painterProperties.get(NatTableCSSConstants.CELL_BACKGROUND_IMAGE);
-            result = new BackgroundImagePainter(underlying, image);
-        } else if (GRADIENT_BACKGROUND_PAINTER_KEY.equalsIgnoreCase(key)) {
-            Boolean vertical = (Boolean) painterProperties.get(NatTableCSSConstants.GRADIENT_BACKGROUND_VERTICAL);
-            if (vertical == null) {
-                vertical = false;
-            }
-            result = new GradientBackgroundPainter(underlying, vertical);
+        String lowerKey = key.toLowerCase();
+        CellPainterWrapperCreator creator = backgroundPainter.get(lowerKey);
+        if (creator != null) {
+            result = creator.createCellPainterWrapper(painterProperties, underlying);
         }
 
         return result;
@@ -236,87 +429,10 @@ public class CellPainterFactory {
     public static CellPainterWrapper getDecoratorPainter(String key, Map<String, Object> painterProperties, ICellPainter underlying) {
         CellPainterWrapper result = null;
 
-        if (LINE_BORDER_DECORATOR_KEY.equalsIgnoreCase(key)) {
-            result = new LineBorderDecorator(underlying);
-        } else if (CUSTOM_LINE_BORDER_DECORATOR_KEY.equalsIgnoreCase(key)) {
-            result = new CustomLineBorderDecorator(underlying);
-        } else if (BEVELED_BORDER_DECORATOR_KEY.equalsIgnoreCase(key)) {
-            result = new BeveledBorderDecorator(underlying);
-        } else if (PADDING_DECORATOR_KEY.equalsIgnoreCase(key)) {
-            Integer topPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_TOP);
-            if (topPadding == null) {
-                topPadding = 0;
-            }
-            Integer bottomPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_BOTTOM);
-            if (bottomPadding == null) {
-                bottomPadding = 0;
-            }
-            Integer leftPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_LEFT);
-            if (leftPadding == null) {
-                leftPadding = 0;
-            }
-            Integer rightPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_RIGHT);
-            if (rightPadding == null) {
-                rightPadding = 0;
-            }
-            result = new PaddingDecorator(underlying, topPadding, rightPadding, bottomPadding, leftPadding, false);
-        } else if (SORTABLE_HEADER_KEY.equalsIgnoreCase(key)) {
-            boolean invert = false;
-            if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
-                invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
-            }
-
-            result = new SortableHeaderTextPainter(
-                    underlying,
-                    CellEdgeEnum.RIGHT,
-                    new SortIconPainter(false, invert),
-                    false,
-                    0,
-                    false);
-        } else if (COLUMN_GROUP_HEADER_KEY.equalsIgnoreCase(key)) {
-            boolean invert = false;
-            if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
-                invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
-            }
-
-            result = new ColumnGroupHeaderTextPainter(
-                    underlying,
-                    CellEdgeEnum.RIGHT,
-                    new ColumnGroupExpandCollapseImagePainter(false, invert),
-                    false,
-                    0,
-                    false);
-        } else if (ROW_GROUP_HEADER_KEY.equalsIgnoreCase(key)) {
-            boolean invert = false;
-            if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
-                invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
-            }
-
-            result = new RowGroupHeaderTextPainter(
-                    underlying,
-                    CellEdgeEnum.BOTTOM,
-                    new RowGroupExpandCollapseImagePainter(false, invert),
-                    false,
-                    0,
-                    true);
-        } else if (TREE_STRUCTURE_KEY.equalsIgnoreCase(key)) {
-            boolean invert = false;
-            if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
-                invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
-            }
-
-            String postFix = ""; //$NON-NLS-1$
-            if (invert)
-                postFix = "_inv"; //$NON-NLS-1$
-
-            TreeImagePainter imagePainter =
-                    new TreeImagePainter(
-                            false,
-                            GUIHelper.getImage("right" + postFix),
-                            GUIHelper.getImage("right_down" + postFix),
-                            null);
-
-            result = new IndentedTreeImagePainter(10, null, CellEdgeEnum.LEFT, imagePainter, false, 2, true);
+        String lowerKey = key.toLowerCase();
+        CellPainterWrapperCreator creator = decoratorPainter.get(lowerKey);
+        if (creator != null) {
+            result = creator.createCellPainterWrapper(painterProperties, underlying);
         }
 
         if (result == null) {
@@ -339,43 +455,10 @@ public class CellPainterFactory {
     public static ICellPainter getContentPainter(String key, Map<String, Object> painterProperties) {
         ICellPainter result = null;
 
-        if (TEXT_PAINTER_KEY.equalsIgnoreCase(key)) {
-            String textDirection = (String) painterProperties.get(NatTableCSSConstants.TEXT_DIRECTION);
-            if (!"vertical".equalsIgnoreCase(textDirection)) {
-                result = new TextPainter(false, false);
-            } else {
-                result = new VerticalTextPainter(false, false);
-            }
-            initTextPainter((AbstractTextPainter) result, painterProperties);
-        } else if (IMAGE_PAINTER_KEY.equalsIgnoreCase(key)) {
-            result = new ImagePainter(false);
-
-            // init
-            if (painterProperties.containsKey(NatTableCSSConstants.CALCULATE_CELL_HEIGHT)) {
-                ((ImagePainter) result).setCalculateByHeight(
-                        (Boolean) painterProperties.get(NatTableCSSConstants.CALCULATE_CELL_HEIGHT));
-            }
-
-            if (painterProperties.containsKey(NatTableCSSConstants.CALCULATE_CELL_WIDTH)) {
-                ((ImagePainter) result).setCalculateByWidth(
-                        (Boolean) painterProperties.get(NatTableCSSConstants.CALCULATE_CELL_WIDTH));
-            }
-        } else if (CHECKBOX_PAINTER_KEY.equalsIgnoreCase(key)) {
-            result = new CheckBoxPainter(false);
-        } else if (COMBOBOX_PAINTER_KEY.equalsIgnoreCase(key)) {
-            boolean invert = false;
-            if (painterProperties.containsKey(NatTableCSSConstants.INVERT_ICONS)) {
-                invert = (Boolean) painterProperties.get(NatTableCSSConstants.INVERT_ICONS);
-            }
-            result = new ComboBoxPainter(invert);
-        } else if (PASSWORD_PAINTER_KEY.equalsIgnoreCase(key)) {
-            result = new PasswordTextPainter(false, false);
-            initTextPainter((AbstractTextPainter) result, painterProperties);
-        } else if (PERCENTAGEBAR_PAINTER_KEY.equalsIgnoreCase(key)) {
-            result = new PercentageBarCellPainter();
-        } else if (TABLE_PAINTER_KEY.equalsIgnoreCase(key)) {
-            result = new TableCellPainter(new TextPainter(false, false));
-            ((TableCellPainter) result).setPaintBg(false);
+        String lowerKey = key.toLowerCase();
+        CellPainterCreator creator = contentPainter.get(lowerKey);
+        if (creator != null) {
+            result = creator.createCellPainter(painterProperties, null);
         }
 
         return result;
@@ -390,7 +473,7 @@ public class CellPainterFactory {
      * @param painterProperties
      *            The painter properties to apply.
      */
-    private static void initTextPainter(AbstractTextPainter painter, Map<String, Object> painterProperties) {
+    public static void initTextPainter(AbstractTextPainter painter, Map<String, Object> painterProperties) {
         boolean wrapText = false;
         if (painterProperties.containsKey(NatTableCSSConstants.TEXT_WRAP)) {
             wrapText = (Boolean) painterProperties.get(NatTableCSSConstants.TEXT_WRAP);
@@ -437,9 +520,19 @@ public class CellPainterFactory {
      *         painter, <code>false</code> if not.
      */
     public static boolean isBackgroundPainterKey(String key) {
-        return BACKGROUND_PAINTER_KEY.equalsIgnoreCase(key)
-                || BACKGROUND_IMAGE_PAINTER_KEY.equalsIgnoreCase(key)
-                || GRADIENT_BACKGROUND_PAINTER_KEY.equalsIgnoreCase(key);
+        return key != null && backgroundPainter.containsKey(key.toLowerCase());
+    }
+
+    /**
+     * Check the given key if it represents a decorator painter.
+     *
+     * @param key
+     *            The key to check.
+     * @return <code>true</code> if the given key represents a decorator
+     *         painter, <code>false</code> if not.
+     */
+    public static boolean isDecoratorPainterKey(String key) {
+        return key != null && decoratorPainter.containsKey(key.toLowerCase());
     }
 
     /**
@@ -451,12 +544,51 @@ public class CellPainterFactory {
      *         <code>false</code> if not.
      */
     public static boolean isContentPainterKey(String key) {
-        return TEXT_PAINTER_KEY.equalsIgnoreCase(key)
-                || IMAGE_PAINTER_KEY.equalsIgnoreCase(key)
-                || CHECKBOX_PAINTER_KEY.equalsIgnoreCase(key)
-                || COMBOBOX_PAINTER_KEY.equalsIgnoreCase(key)
-                || PASSWORD_PAINTER_KEY.equalsIgnoreCase(key)
-                || PERCENTAGEBAR_PAINTER_KEY.equalsIgnoreCase(key)
-                || TABLE_PAINTER_KEY.equalsIgnoreCase(key);
+        return key != null && contentPainter.containsKey(key.toLowerCase());
+    }
+
+    /**
+     * Register a {@link CellPainterWrapperCreator} to create a background
+     * painter for a given key. This way custom painters can be registered with
+     * the NatTable CSS mechanism.
+     *
+     * @param key
+     *            The key for which the background painter should be created.
+     * @param creator
+     *            The {@link CellPainterWrapperCreator} that should be
+     *            registered for the given key.
+     */
+    public static void registerBackgroundPainter(String key, CellPainterWrapperCreator creator) {
+        backgroundPainter.put(key, creator);
+    }
+
+    /**
+     * Registers a {@link CellPainterWrapperCreator} to create a decorator
+     * painter for a given key. This way custom painters can be registered with
+     * the NatTable CSS mechanism.
+     *
+     * @param key
+     *            The key for which the decorator painter should be created.
+     * @param creator
+     *            The {@link CellPainterWrapperCreator} that should be
+     *            registered for the given key.
+     */
+    public static void registerDecoratorPainter(String key, CellPainterWrapperCreator creator) {
+        decoratorPainter.put(key, creator);
+    }
+
+    /**
+     * Registers a {@link CellPainterCreator} to create a content painter for a
+     * given key. This way custom painters can be registered with the NatTable
+     * CSS mechanism.
+     *
+     * @param key
+     *            The key for which the content painter should be created.
+     * @param creator
+     *            The {@link CellPainterCreator} that should be registered for
+     *            the given key.
+     */
+    public static void registerContentPainter(String key, CellPainterCreator creator) {
+        contentPainter.put(key, creator);
     }
 }

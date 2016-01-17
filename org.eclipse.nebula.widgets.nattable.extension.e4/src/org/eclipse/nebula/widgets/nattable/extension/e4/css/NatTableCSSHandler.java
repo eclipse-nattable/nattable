@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory.CellPainterFactory;
 import org.eclipse.nebula.widgets.nattable.fillhandle.config.FillHandleConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.freeze.IFreezeConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;

@@ -108,6 +108,10 @@
     column-width: 80;
 }
 
+.basic > .COLUMN_8 {
+	painter: background errortext;
+}
+
 .basic > .COLUMN_9 {
 	painter: background combobox;
 }

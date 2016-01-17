@@ -13,6 +13,7 @@
 package org.eclipse.nebula.widgets.nattable.extension.e4.css;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory.CellPainterFactory;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 
 /**

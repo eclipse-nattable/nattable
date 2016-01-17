@@ -28,4 +28,5 @@ Import-Package: org.apache.commons.logging,
  org.eclipse.nebula.widgets.nattable.ui.util;version="1.4.0",
  org.eclipse.nebula.widgets.nattable.util;version="1.4.0"
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.nebula.widgets.nattable.extension.e4.css;version="1.4.0"
+Export-Package: org.eclipse.nebula.widgets.nattable.extension.e4.css;version="1.0.0",
+ org.eclipse.nebula.widgets.nattable.extension.e4.painterfactory;version="1.0.0"
