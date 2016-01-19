@@ -196,6 +196,23 @@ public class PersonService {
     }
 
     /**
+     * Creates a list of {@link Address}.
+     *
+     * @param number
+     *            The number of {@link Address} that should be generated.
+     * @return
+     */
+    public static List<Address> getAddress(int number) {
+        List<Address> result = new ArrayList<Address>();
+
+        for (int i = 0; i < number; i++) {
+            result.add(createAddress());
+        }
+
+        return result;
+    }
+
+    /**
      * Creates a list of {@link PersonWithAddress}.
      *
      * @param numberOfPersons

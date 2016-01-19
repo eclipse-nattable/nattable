@@ -123,11 +123,23 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
                 this.columnWidthConfig, this.rowHeightConfig));
     }
 
+    /**
+     *
+     * @return The {@link IDataProvider} that is used by this {@link DataLayer}.
+     */
     public IDataProvider getDataProvider() {
         return this.dataProvider;
     }
 
-    protected void setDataProvider(IDataProvider dataProvider) {
+    /**
+     * Set the {@link IDataProvider} to use.
+     *
+     * @param dataProvider
+     *            The {@link IDataProvider} that should be used by this
+     *            {@link DataLayer}.
+     * @since 1.4
+     */
+    public void setDataProvider(IDataProvider dataProvider) {
         if (this.dataProvider instanceof IPersistable) {
             unregisterPersistable((IPersistable) this.dataProvider);
         }
