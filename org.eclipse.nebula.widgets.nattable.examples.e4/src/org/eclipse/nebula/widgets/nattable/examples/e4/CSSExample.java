@@ -201,7 +201,7 @@ public class CSSExample {
 
         // add a custom painter for key errortext
         int[] yErrorOffsets = { 0, 1, 2, 1 };
-        CellPainterFactory.registerContentPainter("errortext", (properties, underlying) -> {
+        CellPainterFactory.getInstance().registerContentPainter("errortext", (properties, underlying) -> {
             return new TextPainter(true, true, false) {
                 @Override
                 protected void paintDecoration(

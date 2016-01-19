@@ -85,23 +85,42 @@ public class CellPainterFactory {
 
     public static final String NONE = "none";
 
-    public static final Map<String, CellPainterWrapperCreator> backgroundPainter = new HashMap<>();
-    public static final Map<String, CellPainterWrapperCreator> decoratorPainter = new HashMap<>();
-    public static final Map<String, CellPainterCreator> contentPainter = new HashMap<>();
-    static {
+    private final Map<String, CellPainterWrapperCreator> backgroundPainter = new HashMap<>();
+    private final Map<String, CellPainterWrapperCreator> decoratorPainter = new HashMap<>();
+    private final Map<String, CellPainterCreator> contentPainter = new HashMap<>();
+
+    /**
+     * Singleton instance
+     */
+    private static CellPainterFactory INSTANCE;
+
+    /**
+     * @return The singleton instance of {@link CellPainterFactory}
+     */
+    public static CellPainterFactory getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new CellPainterFactory();
+        }
+        return INSTANCE;
+    }
+
+    /**
+     * Private constructor for the singleton pattern
+     */
+    private CellPainterFactory() {
         // default background painter initializations
-        backgroundPainter.put(
+        this.backgroundPainter.put(
                 BACKGROUND_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     return new BackgroundPainter(underlying);
                 });
-        backgroundPainter.put(
+        this.backgroundPainter.put(
                 BACKGROUND_IMAGE_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     Image image = (Image) painterProperties.get(NatTableCSSConstants.CELL_BACKGROUND_IMAGE);
                     return new BackgroundImagePainter(underlying, image);
                 });
-        backgroundPainter.put(
+        this.backgroundPainter.put(
                 GRADIENT_BACKGROUND_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     Boolean vertical = (Boolean) painterProperties.get(NatTableCSSConstants.GRADIENT_BACKGROUND_VERTICAL);
@@ -112,23 +131,23 @@ public class CellPainterFactory {
                 });
 
         // default decorator painter initializations
-        decoratorPainter.put(
+        this.decoratorPainter.put(
                 LINE_BORDER_DECORATOR_KEY,
                 (painterProperties, underlying) -> {
                     return new LineBorderDecorator(underlying);
                 });
-        decoratorPainter.put(
+        this.decoratorPainter.put(
                 CUSTOM_LINE_BORDER_DECORATOR_KEY,
                 (painterProperties, underlying) -> {
                     return new CustomLineBorderDecorator(underlying);
                 });
-        decoratorPainter.put(
+        this.decoratorPainter.put(
                 BEVELED_BORDER_DECORATOR_KEY,
                 (painterProperties, underlying) -> {
                     return new BeveledBorderDecorator(underlying);
                 });
 
-        decoratorPainter.put(
+        this.decoratorPainter.put(
                 PADDING_DECORATOR_KEY,
                 (painterProperties, underlying) -> {
                     Integer topPadding = (Integer) painterProperties.get(NatTableCSSConstants.PADDING_TOP);
@@ -149,7 +168,7 @@ public class CellPainterFactory {
                     }
                     return new PaddingDecorator(underlying, topPadding, rightPadding, bottomPadding, leftPadding, false);
                 });
-        decoratorPainter.put(
+        this.decoratorPainter.put(
                 SORTABLE_HEADER_KEY,
                 (painterProperties, underlying) -> {
                     boolean invert = false;
@@ -165,7 +184,7 @@ public class CellPainterFactory {
                             0,
                             false);
                 });
-        decoratorPainter.put(
+        this.decoratorPainter.put(
                 COLUMN_GROUP_HEADER_KEY,
                 (painterProperties, underlying) -> {
                     boolean invert = false;
@@ -181,7 +200,7 @@ public class CellPainterFactory {
                             0,
                             false);
                 });
-        decoratorPainter.put(
+        this.decoratorPainter.put(
                 ROW_GROUP_HEADER_KEY,
                 (painterProperties, underlying) -> {
                     boolean invert = false;
@@ -197,7 +216,7 @@ public class CellPainterFactory {
                             0,
                             true);
                 });
-        decoratorPainter.put(
+        this.decoratorPainter.put(
                 TREE_STRUCTURE_KEY,
                 (painterProperties, underlying) -> {
                     boolean invert = false;
@@ -220,7 +239,7 @@ public class CellPainterFactory {
                 });
 
         // default content painter initializations
-        contentPainter.put(
+        this.contentPainter.put(
                 TEXT_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     AbstractTextPainter result = null;
@@ -233,7 +252,7 @@ public class CellPainterFactory {
                     initTextPainter(result, painterProperties);
                     return result;
                 });
-        contentPainter.put(
+        this.contentPainter.put(
                 IMAGE_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     ImagePainter result = new ImagePainter(false);
@@ -250,12 +269,12 @@ public class CellPainterFactory {
                     }
                     return result;
                 });
-        contentPainter.put(
+        this.contentPainter.put(
                 CHECKBOX_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     return new CheckBoxPainter(false);
                 });
-        contentPainter.put(
+        this.contentPainter.put(
                 COMBOBOX_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     boolean invert = false;
@@ -264,17 +283,17 @@ public class CellPainterFactory {
                     }
                     return new ComboBoxPainter(invert);
                 });
-        contentPainter.put(
+        this.contentPainter.put(
                 PASSWORD_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     return new PasswordTextPainter(false, false);
                 });
-        contentPainter.put(
+        this.contentPainter.put(
                 PERCENTAGEBAR_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     return new PercentageBarCellPainter();
                 });
-        contentPainter.put(
+        this.contentPainter.put(
                 TABLE_PAINTER_KEY,
                 (painterProperties, underlying) -> {
                     TableCellPainter result = new TableCellPainter(new TextPainter(false, false));
@@ -294,17 +313,17 @@ public class CellPainterFactory {
      * @return The {@link ICellPainter} construct that should be used for
      *         rendering
      */
-    public static ICellPainter getCellPainter(List<String> painterValues, Map<String, Object> painterProperties) {
+    public ICellPainter getCellPainter(List<String> painterValues, Map<String, Object> painterProperties) {
         String backgroundKey = null;
         List<String> decoratorKeys = new ArrayList<String>();
         String contentKey = null;
 
-        if (CellPainterFactory.isBackgroundPainterKey(painterValues.get(0))) {
+        if (isBackgroundPainterKey(painterValues.get(0))) {
             backgroundKey = painterValues.get(0);
         }
 
         String last = painterValues.get(painterValues.size() - 1);
-        if (CellPainterFactory.isContentPainterKey(last)
+        if (isContentPainterKey(last)
                 || CellPainterFactory.NONE.equals(last)) {
             contentKey = last;
         }
@@ -333,7 +352,7 @@ public class CellPainterFactory {
      * @return The {@link ICellPainter} construct that should be used for
      *         rendering
      */
-    public static ICellPainter getCellPainter(
+    public ICellPainter getCellPainter(
             String backgroundKey, List<String> decoratorKeys, String contentKey, Map<String, Object> painterProperties) {
 
         ICellPainter painter = null;
@@ -402,11 +421,11 @@ public class CellPainterFactory {
      *            painter to the created decorator.
      * @return The background painter to use
      */
-    public static CellPainterWrapper getBackgroundPainter(String key, Map<String, Object> painterProperties, ICellPainter underlying) {
+    public CellPainterWrapper getBackgroundPainter(String key, Map<String, Object> painterProperties, ICellPainter underlying) {
         CellPainterWrapper result = null;
 
         String lowerKey = key.toLowerCase();
-        CellPainterWrapperCreator creator = backgroundPainter.get(lowerKey);
+        CellPainterWrapperCreator creator = this.backgroundPainter.get(lowerKey);
         if (creator != null) {
             result = creator.createCellPainterWrapper(painterProperties, underlying);
         }
@@ -426,11 +445,11 @@ public class CellPainterFactory {
      *            painter to the created decorator.
      * @return The decorator painter to use
      */
-    public static CellPainterWrapper getDecoratorPainter(String key, Map<String, Object> painterProperties, ICellPainter underlying) {
+    public CellPainterWrapper getDecoratorPainter(String key, Map<String, Object> painterProperties, ICellPainter underlying) {
         CellPainterWrapper result = null;
 
         String lowerKey = key.toLowerCase();
-        CellPainterWrapperCreator creator = decoratorPainter.get(lowerKey);
+        CellPainterWrapperCreator creator = this.decoratorPainter.get(lowerKey);
         if (creator != null) {
             result = creator.createCellPainterWrapper(painterProperties, underlying);
         }
@@ -452,11 +471,11 @@ public class CellPainterFactory {
      *            The painter properties for painter initialization.
      * @return The content painter to use
      */
-    public static ICellPainter getContentPainter(String key, Map<String, Object> painterProperties) {
+    public ICellPainter getContentPainter(String key, Map<String, Object> painterProperties) {
         ICellPainter result = null;
 
         String lowerKey = key.toLowerCase();
-        CellPainterCreator creator = contentPainter.get(lowerKey);
+        CellPainterCreator creator = this.contentPainter.get(lowerKey);
         if (creator != null) {
             result = creator.createCellPainter(painterProperties, null);
         }
@@ -473,7 +492,7 @@ public class CellPainterFactory {
      * @param painterProperties
      *            The painter properties to apply.
      */
-    public static void initTextPainter(AbstractTextPainter painter, Map<String, Object> painterProperties) {
+    public void initTextPainter(AbstractTextPainter painter, Map<String, Object> painterProperties) {
         boolean wrapText = false;
         if (painterProperties.containsKey(NatTableCSSConstants.TEXT_WRAP)) {
             wrapText = (Boolean) painterProperties.get(NatTableCSSConstants.TEXT_WRAP);
@@ -519,8 +538,8 @@ public class CellPainterFactory {
      * @return <code>true</code> if the given key represents a background
      *         painter, <code>false</code> if not.
      */
-    public static boolean isBackgroundPainterKey(String key) {
-        return key != null && backgroundPainter.containsKey(key.toLowerCase());
+    public boolean isBackgroundPainterKey(String key) {
+        return key != null && this.backgroundPainter.containsKey(key.toLowerCase());
     }
 
     /**
@@ -531,8 +550,8 @@ public class CellPainterFactory {
      * @return <code>true</code> if the given key represents a decorator
      *         painter, <code>false</code> if not.
      */
-    public static boolean isDecoratorPainterKey(String key) {
-        return key != null && decoratorPainter.containsKey(key.toLowerCase());
+    public boolean isDecoratorPainterKey(String key) {
+        return key != null && this.decoratorPainter.containsKey(key.toLowerCase());
     }
 
     /**
@@ -543,8 +562,8 @@ public class CellPainterFactory {
      * @return <code>true</code> if the given key represents a content painter,
      *         <code>false</code> if not.
      */
-    public static boolean isContentPainterKey(String key) {
-        return key != null && contentPainter.containsKey(key.toLowerCase());
+    public boolean isContentPainterKey(String key) {
+        return key != null && this.contentPainter.containsKey(key.toLowerCase());
     }
 
     /**
@@ -558,8 +577,8 @@ public class CellPainterFactory {
      *            The {@link CellPainterWrapperCreator} that should be
      *            registered for the given key.
      */
-    public static void registerBackgroundPainter(String key, CellPainterWrapperCreator creator) {
-        backgroundPainter.put(key, creator);
+    public void registerBackgroundPainter(String key, CellPainterWrapperCreator creator) {
+        this.backgroundPainter.put(key, creator);
     }
 
     /**
@@ -573,8 +592,8 @@ public class CellPainterFactory {
      *            The {@link CellPainterWrapperCreator} that should be
      *            registered for the given key.
      */
-    public static void registerDecoratorPainter(String key, CellPainterWrapperCreator creator) {
-        decoratorPainter.put(key, creator);
+    public void registerDecoratorPainter(String key, CellPainterWrapperCreator creator) {
+        this.decoratorPainter.put(key, creator);
     }
 
     /**
@@ -588,7 +607,7 @@ public class CellPainterFactory {
      *            The {@link CellPainterCreator} that should be registered for
      *            the given key.
      */
-    public static void registerContentPainter(String key, CellPainterCreator creator) {
-        contentPainter.put(key, creator);
+    public void registerContentPainter(String key, CellPainterCreator creator) {
+        this.contentPainter.put(key, creator);
     }
 }

@@ -847,7 +847,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
 
                 // ensure that the last value in the element is not a content
                 // painter
-                if (CellPainterFactory.isContentPainterKey(painterValues.get(painterValues.size() - 1))) {
+                if (CellPainterFactory.getInstance().isContentPainterKey(painterValues.get(painterValues.size() - 1))) {
                     painterValues.remove(painterValues.size() - 1);
                 }
 
@@ -855,7 +855,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 // resolved dynamically by the TreeLayer
                 painterValues.add(CellPainterFactory.NONE);
 
-                ICellPainter painter = CellPainterFactory.getCellPainter(painterValues, painterProperties);
+                ICellPainter painter = CellPainterFactory.getInstance().getCellPainter(painterValues, painterProperties);
 
                 if (painter != null) {
                     natTable.getConfigRegistry().registerConfigAttribute(
@@ -1524,7 +1524,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                 Map<String, Object> painterProperties =
                         NatTableCSSHelper.getPainterPropertiesInherited(context, natTableContext, displayMode);
 
-                ICellPainter painter = CellPainterFactory.getCellPainter(painterValues, painterProperties);
+                ICellPainter painter = CellPainterFactory.getInstance().getCellPainter(painterValues, painterProperties);
 
                 if (painter != null) {
                     natTable.getConfigRegistry().registerConfigAttribute(
@@ -1559,7 +1559,7 @@ public class NatTableCSSHandler implements ICSSPropertyHandler, ICSSPropertyHand
                     decoratorKeys.add(0, CellPainterFactory.LINE_BORDER_DECORATOR_KEY);
                 }
 
-                ICellPainter painter = CellPainterFactory.getCellPainter(
+                ICellPainter painter = CellPainterFactory.getInstance().getCellPainter(
                         backgroundKey,
                         decoratorKeys,
                         contentKey,
