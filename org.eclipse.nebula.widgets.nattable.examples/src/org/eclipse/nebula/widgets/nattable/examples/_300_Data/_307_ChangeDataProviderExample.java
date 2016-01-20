@@ -94,6 +94,10 @@ public class _307_ChangeDataProviderExample extends AbstractNatExample {
 
     @Override
     public Control createExampleControl(Composite parent) {
+        // set the GridLayout because the FillLayout seems to introduce a
+        // scrollbar rendering issue on changing the content
+        parent.setLayout(new GridLayout());
+
         // property names of the Person class
         String[] personPropertyNames = {
                 "firstName",
@@ -226,6 +230,9 @@ public class _307_ChangeDataProviderExample extends AbstractNatExample {
                 bodyDataLayer.setConfigLabelAccumulator(_307_ChangeDataProviderExample.this.personAccumulator);
 
                 natTable.refresh();
+
+                natTable.getHorizontalBar().setVisible(false);
+                natTable.getVerticalBar().setVisible(false);
             }
         });
 
