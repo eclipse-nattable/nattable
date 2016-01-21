@@ -32,11 +32,14 @@ import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportDragCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
@@ -279,7 +282,6 @@ public class FillHandleDragMode implements IDragMode {
                                     FillHandleOperation.COPY,
                                     FillHandleDragMode.this.direction,
                                     natTable.getConfigRegistry()));
-                    reset(natTable);
                 }
             });
             MenuItem seriesItem = new MenuItem(this.menu, SWT.PUSH);
@@ -292,7 +294,23 @@ public class FillHandleDragMode implements IDragMode {
                                     FillHandleOperation.SERIES,
                                     FillHandleDragMode.this.direction,
                                     natTable.getConfigRegistry()));
-                    reset(natTable);
+                }
+            });
+
+            // add a menu listener to reset the fill state when the menu is
+            // closed
+            this.menu.addMenuListener(new MenuAdapter() {
+                @Override
+                public void menuHidden(MenuEvent e) {
+                    // perform the reset operation asynchronously because on
+                    // several OS the hide event is processed BEFORE the
+                    // selection event
+                    Display.getDefault().asyncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            reset(natTable);
+                        }
+                    });
                 }
             });
 
