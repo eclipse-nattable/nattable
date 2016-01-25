@@ -135,18 +135,21 @@ public class FillHandleDragMode implements IDragMode {
                 int xStart = this.startIndex.x;
                 int yStart = this.startIndex.y;
 
-                // only increase range in one direction
-                int xDiff = selectedColumnIndex - this.startIndex.x;
-                if (xDiff < 0) {
-                    xDiff *= -1;
-                }
-                xDiff++;
+                Rectangle region = this.selectionLayer.getLastSelectedRegion();
 
-                int yDiff = selectedRowIndex - this.startIndex.y;
-                if (yDiff < 0) {
-                    yDiff *= -1;
+                // only increase range in one direction
+                int xDiff = calculateIncreasedPositiveDiff(
+                        event.x,
+                        (event.x < this.startEvent.x) ? this.selectionCell.getBounds().x : this.startEvent.x);
+                int yDiff = calculateIncreasedPositiveDiff(
+                        event.y,
+                        (event.y < this.startEvent.y) ? this.selectionCell.getBounds().y : this.startEvent.y);
+                if (selectedColumnIndex >= region.x && selectedColumnIndex < (region.x + region.width)) {
+                    xDiff = 0;
                 }
-                yDiff++;
+                if (selectedRowIndex >= region.y && selectedRowIndex < (region.y + region.height)) {
+                    yDiff = 0;
+                }
 
                 int width = -1;
                 int height = -1;
@@ -163,21 +166,23 @@ public class FillHandleDragMode implements IDragMode {
 
                 if (direction == FillDirection.VERTICAL
                         || (direction == FillDirection.BOTH && yDiff >= xDiff)) {
-                    height = Math.max(yDiff, this.selectionLayer.getSelectedRowCount());
+                    int diff = calculateIncreasedPositiveDiff(selectedRowIndex, this.startIndex.y);
+                    height = Math.max(diff, this.selectionLayer.getSelectedRowCount());
                     width = this.selectionLayer.getSelectedColumnPositions().length;
                     this.direction = MoveDirectionEnum.DOWN;
                     if ((selectedRowIndex - this.startIndex.y) < 0) {
                         yStart = selectedRowIndex;
-                        height = yDiff + this.selectionLayer.getSelectedRowCount() - 1;
+                        height = diff + this.selectionLayer.getSelectedRowCount() - 1;
                         this.direction = MoveDirectionEnum.UP;
                     }
                 } else {
+                    int diff = calculateIncreasedPositiveDiff(selectedColumnIndex, this.startIndex.x);
                     height = this.selectionLayer.getSelectedRowCount();
-                    width = Math.max(xDiff, this.selectionLayer.getSelectedColumnPositions().length);
+                    width = Math.max(diff, this.selectionLayer.getSelectedColumnPositions().length);
                     this.direction = MoveDirectionEnum.RIGHT;
                     if ((selectedColumnIndex - this.startIndex.x) < 0) {
                         xStart = selectedColumnIndex;
-                        width = xDiff + this.selectionLayer.getSelectedColumnPositions().length - 1;
+                        width = diff + this.selectionLayer.getSelectedColumnPositions().length - 1;
                         this.direction = MoveDirectionEnum.LEFT;
                     }
                 }
@@ -192,6 +197,25 @@ public class FillHandleDragMode implements IDragMode {
                 natTable.redraw();
             }
         }
+    }
+
+    /**
+     * Calculates the difference between the two given values and increases the
+     * value by one.
+     *
+     * @param selectedIndex
+     *            The first value
+     * @param relativeIndex
+     *            The second value
+     * @return The difference between the two given values increased by one.
+     */
+    protected int calculateIncreasedPositiveDiff(int selectedIndex, int relativeIndex) {
+        int diff = selectedIndex - relativeIndex;
+        if (diff < 0) {
+            diff *= -1;
+        }
+        diff++;
+        return diff;
     }
 
     @Override
