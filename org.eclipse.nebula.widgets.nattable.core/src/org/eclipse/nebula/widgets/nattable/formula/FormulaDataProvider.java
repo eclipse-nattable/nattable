@@ -57,8 +57,22 @@ public class FormulaDataProvider implements IDataProvider {
      *            The {@link IDataProvider} that should be wrapped.
      */
     public FormulaDataProvider(IDataProvider underlyingDataProvider) {
+        this(underlyingDataProvider, new FormulaParser(underlyingDataProvider));
+    }
+
+    /**
+     * This constructor supports the specification of a {@link FormulaParser} to
+     * customize parsing.
+     * 
+     * @param underlyingDataProvider
+     *            The {@link IDataProvider} that should be wrapped.
+     * @param parser
+     *            The {@link FormulaParser} that should be used for formula
+     *            parsing.
+     */
+    public FormulaDataProvider(IDataProvider underlyingDataProvider, FormulaParser parser) {
         this.underlyingDataProvider = underlyingDataProvider;
-        this.formulaParser = new FormulaParser(underlyingDataProvider);
+        this.formulaParser = parser;
     }
 
     @Override
@@ -73,8 +87,7 @@ public class FormulaDataProvider implements IDataProvider {
                         return processFormula(underlying.toString(), columnIndex, rowIndex);
                     }
                 });
-            }
-            else {
+            } else {
                 return processFormula(underlying.toString(), columnIndex, rowIndex);
             }
         }
@@ -143,8 +156,7 @@ public class FormulaDataProvider implements IDataProvider {
             this.cacheLayer.registerCommandHandler(new DisposeCalculatedValueCacheCommandHandler(this.valueCache));
             this.cacheLayer.registerCommandHandler(new DisableFormulaCachingCommandHandler(this));
             this.cacheLayer.registerCommandHandler(new EnableFormulaCachingCommandHandler(this));
-        }
-        else {
+        } else {
             this.valueCache = null;
             this.cacheEnabled = false;
         }
@@ -217,7 +229,7 @@ public class FormulaDataProvider implements IDataProvider {
      *            <code>true</code> to enable formula result caching and
      *            background processing of parsing and calculation,
      *            <code>false</code> to disable it.
-     * 
+     *
      * @see FormulaDataProvider#configureCaching(ILayer)
      */
     public void setFormulaCachingEnabled(boolean enabled) {
