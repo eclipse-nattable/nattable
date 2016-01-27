@@ -8,7 +8,7 @@
  *
  * Contributors:
  *      Dirk Fauth <dirk.fauth@googlemail.com> - Initial API and implementation
- *
+ *      Vincent Lorenzo <vincent.lorenzo@cea.fr> - Bug 486624
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.fillhandle.command;
 
@@ -190,7 +190,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
         Class<?> type = cell.getDataValue() != null ? cell.getDataValue().getClass() : null;
 
         ILayerCell[][] cells = this.clipboard.getCopiedCells();
-        int rowDiff = toRow - cell.getRowIndex();
+        int rowDiff = getRowDiff(cell, toRow);
         if (cells.length == 1) {
             return getCastValue(rowDiff, type);
         } else if (type != null) {
@@ -323,7 +323,7 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
         Class<?> type = cell.getDataValue() != null ? cell.getDataValue().getClass() : null;
 
         ILayerCell[][] cells = this.clipboard.getCopiedCells();
-        int columnDiff = toColumn - cell.getColumnIndex();
+        int columnDiff = getColumnDiff(cell, toColumn);
         int rowArrayIndex = cell.getRowIndex() - this.clipboard.getCopiedCells()[0][0].getRowIndex();
         if (cells[rowArrayIndex].length == 1) {
             return getCastValue(columnDiff, type);
@@ -450,6 +450,34 @@ public class FillHandlePasteCommandHandler implements ILayerCommandHandler<FillH
             }
         }
         return null;
+    }
+
+    /**
+     * Calculate the row difference between the cell row index and the row index
+     * of the cell to copy to.
+     *
+     * @param currentCell
+     *            The current cell to manage.
+     * @param toRow
+     *            The row index of the cell to copy to.
+     * @return The difference as integer.
+     */
+    protected int getRowDiff(final ILayerCell currentCell, final int toRow) {
+        return toRow - currentCell.getRowIndex();
+    }
+
+    /**
+     * Calculate the column difference between the cell column index and the
+     * column index of the cell to copy to.
+     *
+     * @param currentCell
+     *            The current cell to manage.
+     * @param toColumn
+     *            The column index of the cell to copy to.
+     * @return The difference as integer.
+     */
+    protected int getColumnDiff(final ILayerCell currentCell, final int toColumn) {
+        return toColumn - currentCell.getColumnIndex();
     }
 
     protected Number getCastValue(int diff, Class<?> type) {
