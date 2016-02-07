@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,7 +29,7 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
  */
 public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 
-    private final SelectionLayer selectionLayer;
+    private final SelectionLayer[] selectionLayer;
 
     protected RenameColumnHelper renameColumnHelper;
 
@@ -37,12 +37,12 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
      * Creates a column header layer using the default configuration and painter
      *
      * @param baseLayer
-     *            The data provider for this layer
+     *            The base layer for this layer, typically a DataLayer.
      * @param horizontalLayerDependency
      *            The layer to link the horizontal dimension to, typically the
-     *            body layer
+     *            body layer.
      * @param selectionLayer
-     *            The selection layer required to respond to selection events
+     *            The SelectionLayer needed to respond to selection events.
      */
     public ColumnHeaderLayer(
             IUniqueIndexLayer baseLayer,
@@ -52,6 +52,41 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
         this(baseLayer, horizontalLayerDependency, selectionLayer, true);
     }
 
+    /**
+     * Creates a column header layer using the default configuration and painter
+     *
+     * @param baseLayer
+     *            The base layer for this layer, typically a DataLayer.
+     * @param horizontalLayerDependency
+     *            The layer to link the horizontal dimension to, typically the
+     *            body layer.
+     * @param selectionLayer
+     *            0 to multiple SelectionLayer needed to respond to selection
+     *            events.
+     * @since 1.4
+     */
+    public ColumnHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency,
+            SelectionLayer... selectionLayer) {
+
+        this(baseLayer, horizontalLayerDependency, selectionLayer, true);
+    }
+
+    /**
+     * Creates a row header layer using the default painter.
+     *
+     * @param baseLayer
+     *            The base layer for this layer, typically a DataLayer.
+     * @param horizontalLayerDependency
+     *            The layer to link the horizontal dimension to, typically the
+     *            body layer.
+     * @param selectionLayer
+     *            The SelectionLayer needed to respond to selection events.
+     * @param useDefaultConfiguration
+     *            Flag to configure whether to use the default configuration or
+     *            not.
+     */
     public ColumnHeaderLayer(
             IUniqueIndexLayer baseLayer,
             ILayer horizontalLayerDependency,
@@ -62,18 +97,44 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     /**
+     * Creates a row header layer using the default painter.
+     *
      * @param baseLayer
-     *            The data provider for this layer
+     *            The base layer for this layer, typically a DataLayer.
      * @param horizontalLayerDependency
      *            The layer to link the horizontal dimension to, typically the
-     *            body layer
+     *            body layer.
      * @param selectionLayer
-     *            The selection layer required to respond to selection events
+     *            0 to multiple SelectionLayer needed to respond to selection
+     *            events.
      * @param useDefaultConfiguration
-     *            If default configuration should be applied to this layer
+     *            Flag to configure whether to use the default configuration or
+     *            not.
+     * @since 1.4
+     */
+    public ColumnHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency,
+            SelectionLayer[] selectionLayer,
+            boolean useDefaultConfiguration) {
+
+        this(baseLayer, horizontalLayerDependency, selectionLayer, useDefaultConfiguration, null);
+    }
+
+    /**
+     * @param baseLayer
+     *            The base layer for this layer, typically a DataLayer.
+     * @param horizontalLayerDependency
+     *            The layer to link the horizontal dimension to, typically the
+     *            body layer.
+     * @param selectionLayer
+     *            The SelectionLayer needed to respond to selection events.
+     * @param useDefaultConfiguration
+     *            Flag to configure whether to use the default configuration or
+     *            not.
      * @param layerPainter
      *            The painter for this layer or <code>null</code> to use the
-     *            painter of the base layer
+     *            painter of the base layer.
      */
     public ColumnHeaderLayer(
             IUniqueIndexLayer baseLayer,
@@ -82,19 +143,52 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
             boolean useDefaultConfiguration,
             ILayerPainter layerPainter) {
 
+        this(baseLayer, horizontalLayerDependency,
+                selectionLayer != null ? new SelectionLayer[] { selectionLayer } : new SelectionLayer[] {},
+                useDefaultConfiguration, layerPainter);
+    }
+
+    /**
+     *
+     * @param baseLayer
+     *            The base layer for this layer, typically a DataLayer.
+     * @param horizontalLayerDependency
+     *            The layer to link the horizontal dimension to, typically the
+     *            body layer.
+     * @param selectionLayer
+     *            0 to multiple SelectionLayer needed to respond to selection
+     *            events.
+     * @param useDefaultConfiguration
+     *            Flag to configure whether to use the default configuration or
+     *            not.
+     * @param layerPainter
+     *            The painter for this layer or <code>null</code> to use the
+     *            painter of the base layer.
+     * @since 1.4
+     */
+    public ColumnHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer horizontalLayerDependency,
+            SelectionLayer[] selectionLayer,
+            boolean useDefaultConfiguration,
+            ILayerPainter layerPainter) {
+
         super(baseLayer, horizontalLayerDependency, baseLayer);
 
         if (selectionLayer == null) {
-            throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
+            this.selectionLayer = new SelectionLayer[] {};
+        } else {
+            this.selectionLayer = selectionLayer;
         }
 
-        this.selectionLayer = selectionLayer;
         this.layerPainter = layerPainter;
 
         this.renameColumnHelper = new RenameColumnHelper(this);
         registerPersistable(this.renameColumnHelper);
 
-        selectionLayer.addLayerListener(new ColumnHeaderSelectionListener(this));
+        for (SelectionLayer sl : this.selectionLayer) {
+            sl.addLayerListener(new ColumnHeaderSelectionListener(this));
+        }
         registerCommandHandlers();
 
         if (useDefaultConfiguration) {
@@ -104,13 +198,17 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 
     @Override
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-        int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, this.selectionLayer);
         String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
-        if (this.selectionLayer.isColumnPositionSelected(selectionLayerColumnPosition)) {
-            if (DisplayMode.HOVER.equals(displayMode)) {
-                return DisplayMode.SELECT_HOVER;
+        if (this.selectionLayer.length > 0) {
+            int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, this.selectionLayer[0]);
+            for (SelectionLayer sl : this.selectionLayer) {
+                if (sl.isColumnPositionSelected(selectionLayerColumnPosition)) {
+                    if (DisplayMode.HOVER.equals(displayMode)) {
+                        return DisplayMode.SELECT_HOVER;
+                    }
+                    return DisplayMode.SELECT;
+                }
             }
-            return DisplayMode.SELECT;
         }
         return displayMode;
     }
@@ -119,16 +217,27 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
         LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 
-        final int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, this.selectionLayer);
-        if (this.selectionLayer.isColumnPositionFullySelected(selectionLayerColumnPosition)) {
-            labelStack.addLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
+        if (this.selectionLayer.length > 0) {
+            final int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, this.selectionLayer[0]);
+            boolean fullySelected = true;
+            for (SelectionLayer sl : this.selectionLayer) {
+                if (!sl.isColumnPositionFullySelected(selectionLayerColumnPosition)) {
+                    fullySelected = false;
+                    break;
+                }
+            }
+
+            if (fullySelected) {
+                labelStack.addLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
+            }
         }
 
         return labelStack;
     }
 
+    @Deprecated
     public SelectionLayer getSelectionLayer() {
-        return this.selectionLayer;
+        return this.selectionLayer[0];
     }
 
     @Override
