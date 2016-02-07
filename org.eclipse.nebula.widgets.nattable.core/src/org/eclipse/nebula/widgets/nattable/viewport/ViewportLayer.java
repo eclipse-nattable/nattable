@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1093,7 +1093,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         if (this.hBarListener != null) {
             this.hBarListener.recalculateScrollBarSize();
 
-            if (!this.hBarListener.scroller.getEnabled()) {
+            if (!this.hBarListener.scroller.isDisposed() 
+            		&& !this.hBarListener.scroller.getEnabled()) {
                 setOriginX(this.minimumOrigin.getX());
             } else {
                 setOriginX(this.origin.getX());
@@ -1108,7 +1109,8 @@ public class ViewportLayer extends AbstractLayerTransform implements IUniqueInde
         if (this.vBarListener != null) {
             this.vBarListener.recalculateScrollBarSize();
 
-            if (!this.vBarListener.scroller.getEnabled()) {
+            if (!this.vBarListener.scroller.isDisposed() 
+            		&& !this.vBarListener.scroller.getEnabled()) {
                 setOriginY(this.minimumOrigin.getY());
             } else {
                 setOriginY(this.origin.getY());
