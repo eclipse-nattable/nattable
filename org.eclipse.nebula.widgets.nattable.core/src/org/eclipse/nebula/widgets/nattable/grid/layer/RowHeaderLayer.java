@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,58 +21,155 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 
 /**
- * Layer for the row headers of the grid layer
+ * Layer for the row header of the grid layer.
  */
 public class RowHeaderLayer extends DimensionallyDependentLayer {
 
-    private final SelectionLayer selectionLayer;
+    private final SelectionLayer[] selectionLayer;
 
     /**
-     * Creates a row header layer using the default configuration and painter
+     * Creates a row header layer using the default configuration and painter.
      *
      * @param baseLayer
-     *            The data provider for this layer
+     *            The base layer for this layer, typically a DataLayer.
      * @param verticalLayerDependency
      *            The layer to link the vertical dimension to, typically the
-     *            body layer
+     *            body layer.
      * @param selectionLayer
-     *            The selection layer required to respond to selection events
+     *            The SelectionLayer needed to respond to selection events.
      */
-    public RowHeaderLayer(IUniqueIndexLayer baseLayer,
-            ILayer verticalLayerDependency, SelectionLayer selectionLayer) {
+    public RowHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency,
+            SelectionLayer selectionLayer) {
         this(baseLayer, verticalLayerDependency, selectionLayer, true);
     }
 
-    public RowHeaderLayer(IUniqueIndexLayer baseLayer,
-            ILayer verticalLayerDependency, SelectionLayer selectionLayer,
+    /**
+     * Creates a row header layer using the default configuration and painter.
+     *
+     * @param baseLayer
+     *            The base layer for this layer, typically a DataLayer.
+     * @param verticalLayerDependency
+     *            The layer to link the vertical dimension to, typically the
+     *            body layer.
+     * @param selectionLayer
+     *            0 to multiple SelectionLayer needed to respond to selection
+     *            events.
+     * @since 1.4
+     */
+    public RowHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency,
+            SelectionLayer... selectionLayer) {
+        this(baseLayer, verticalLayerDependency, selectionLayer, true);
+    }
+
+    /**
+     * Creates a row header layer using the default painter.
+     *
+     * @param baseLayer
+     *            The base layer for this layer, typically a DataLayer.
+     * @param verticalLayerDependency
+     *            The layer to link the vertical dimension to, typically the
+     *            body layer.
+     * @param selectionLayer
+     *            The SelectionLayer needed to respond to selection events.
+     * @param useDefaultConfiguration
+     *            Flag to configure whether to use the default configuration or
+     *            not.
+     */
+    public RowHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency,
+            SelectionLayer selectionLayer,
             boolean useDefaultConfiguration) {
-        this(baseLayer, verticalLayerDependency, selectionLayer,
-                useDefaultConfiguration, null);
+        this(baseLayer, verticalLayerDependency, selectionLayer, useDefaultConfiguration, null);
+    }
+
+    /**
+     * Creates a row header layer using the default painter.
+     *
+     * @param baseLayer
+     *            The base layer for this layer, typically a DataLayer.
+     * @param verticalLayerDependency
+     *            The layer to link the vertical dimension to, typically the
+     *            body layer.
+     * @param selectionLayer
+     *            0 to multiple SelectionLayer needed to respond to selection
+     *            events.
+     * @param useDefaultConfiguration
+     *            Flag to configure whether to use the default configuration or
+     *            not.
+     * @since 1.4
+     */
+    public RowHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency,
+            SelectionLayer[] selectionLayer,
+            boolean useDefaultConfiguration) {
+        this(baseLayer, verticalLayerDependency, selectionLayer, useDefaultConfiguration, null);
     }
 
     /**
      * @param baseLayer
-     *            The data provider for this layer
+     *            The base layer for this layer, typically a DataLayer.
      * @param verticalLayerDependency
      *            The layer to link the vertical dimension to, typically the
-     *            body layer
+     *            body layer.
      * @param selectionLayer
-     *            The selection layer required to respond to selection events
+     *            The SelectionLayer needed to respond to selection events.
      * @param useDefaultConfiguration
-     *            If default configuration should be applied to this layer
+     *            Flag to configure whether to use the default configuration or
+     *            not.
      * @param layerPainter
      *            The painter for this layer or <code>null</code> to use the
      *            painter of the base layer
      */
-    public RowHeaderLayer(IUniqueIndexLayer baseLayer,
-            ILayer verticalLayerDependency, SelectionLayer selectionLayer,
-            boolean useDefaultConfiguration, ILayerPainter layerPainter) {
+    public RowHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency,
+            SelectionLayer selectionLayer,
+            boolean useDefaultConfiguration,
+            ILayerPainter layerPainter) {
+
+        this(baseLayer, verticalLayerDependency,
+                selectionLayer != null ? new SelectionLayer[] { selectionLayer } : new SelectionLayer[] {},
+                useDefaultConfiguration, layerPainter);
+    }
+
+    /**
+     * @param baseLayer
+     *            The base layer for this layer, typically a DataLayer.
+     * @param verticalLayerDependency
+     *            The layer to link the vertical dimension to, typically the
+     *            body layer.
+     * @param selectionLayer
+     *            0 to multiple SelectionLayer needed to respond to selection
+     *            events.
+     * @param useDefaultConfiguration
+     *            Flag to configure whether to use the default configuration or
+     *            not.
+     * @param layerPainter
+     *            The painter for this layer or <code>null</code> to use the
+     *            painter of the base layer
+     * @since 1.4
+     */
+    public RowHeaderLayer(
+            IUniqueIndexLayer baseLayer,
+            ILayer verticalLayerDependency,
+            SelectionLayer[] selectionLayer,
+            boolean useDefaultConfiguration,
+            ILayerPainter layerPainter) {
+
         super(baseLayer, baseLayer, verticalLayerDependency);
+
         if (selectionLayer == null) {
-            throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
+            this.selectionLayer = new SelectionLayer[] {};
+        } else {
+            this.selectionLayer = selectionLayer;
         }
 
-        this.selectionLayer = selectionLayer;
         this.layerPainter = layerPainter;
 
         if (useDefaultConfiguration) {
@@ -82,30 +179,38 @@ public class RowHeaderLayer extends DimensionallyDependentLayer {
 
     @Override
     public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-        int selectionLayerRowPosition = LayerUtil.convertRowPosition(this,
-                rowPosition, this.selectionLayer);
-        String displayMode = super.getDisplayModeByPosition(columnPosition,
-                rowPosition);
-        if (this.selectionLayer.isRowPositionSelected(selectionLayerRowPosition)) {
-            if (DisplayMode.HOVER.equals(displayMode)) {
-                return DisplayMode.SELECT_HOVER;
+        String displayMode = super.getDisplayModeByPosition(columnPosition, rowPosition);
+        if (this.selectionLayer.length > 0) {
+            int selectionLayerRowPosition = LayerUtil.convertRowPosition(this, rowPosition, this.selectionLayer[0]);
+            for (SelectionLayer sl : this.selectionLayer) {
+                if (sl.isRowPositionSelected(selectionLayerRowPosition)) {
+                    if (DisplayMode.HOVER.equals(displayMode)) {
+                        return DisplayMode.SELECT_HOVER;
+                    }
+                    return DisplayMode.SELECT;
+                }
             }
-            return DisplayMode.SELECT;
         }
         return displayMode;
     }
 
     @Override
-    public LabelStack getConfigLabelsByPosition(int columnPosition,
-            int rowPosition) {
-        LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition,
-                rowPosition);
+    public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+        LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 
-        final int selectionLayerRowPosition = LayerUtil.convertRowPosition(
-                this, rowPosition, this.selectionLayer);
-        if (this.selectionLayer
-                .isRowPositionFullySelected(selectionLayerRowPosition)) {
-            labelStack.addLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
+        if (this.selectionLayer.length > 0) {
+            final int selectionLayerRowPosition = LayerUtil.convertRowPosition(this, rowPosition, this.selectionLayer[0]);
+            boolean fullySelected = true;
+            for (SelectionLayer sl : this.selectionLayer) {
+                if (!sl.isRowPositionFullySelected(selectionLayerRowPosition)) {
+                    fullySelected = false;
+                    break;
+                }
+            }
+
+            if (fullySelected) {
+                labelStack.addLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
+            }
         }
 
         return labelStack;
