@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,12 +41,8 @@ import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
  * implemented that checks every columns and row by building the spanning cell
  * for the matching rectangle. As this would be quite time consuming
  * calculations, this is not supported out of the box by NatTable.
- *
- * @author Dirk Fauth
- *
  */
-public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
-        IPersistable {
+public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPersistable {
 
     public static final String PERSISTENCE_KEY_AUTO_COLUMN_SPAN = ".autoColumnSpan"; //$NON-NLS-1$
     public static final String PERSISTENCE_KEY_AUTO_ROW_SPAN = ".autoRowSpan"; //$NON-NLS-1$
@@ -94,7 +90,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      *            Flag to configure this AutomaticSpanningDataProvider to
      *            perform automatic row spanning
      */
-    public AutomaticSpanningDataProvider(IDataProvider underlyingDataProvider,
+    public AutomaticSpanningDataProvider(
+            IDataProvider underlyingDataProvider,
             boolean autoColumnSpan, boolean autoRowSpan) {
         this.underlyingDataProvider = underlyingDataProvider;
         this.autoColumnSpan = autoColumnSpan;
@@ -108,8 +105,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     @Override
     public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-        this.underlyingDataProvider.setDataValue(columnIndex, rowIndex,
-                newValue);
+        this.underlyingDataProvider.setDataValue(columnIndex, rowIndex, newValue);
     }
 
     @Override
@@ -124,20 +120,17 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     @Override
     public DataCell getCellByPosition(int columnPosition, int rowPosition) {
-        int cellColumnPosition = isAutoSpanEnabledForColumn(columnPosition,
-                rowPosition) ? getStartColumnPosition(columnPosition,
-                rowPosition) : columnPosition;
-        int cellRowPosition = isAutoSpanEnabledForRow(columnPosition,
-                rowPosition) ? getStartRowPosition(columnPosition, rowPosition)
-                : rowPosition;
+        int cellColumnPosition = isAutoSpanEnabledForColumn(columnPosition, rowPosition)
+                ? getStartColumnPosition(columnPosition, rowPosition) : columnPosition;
+        int cellRowPosition = isAutoSpanEnabledForRow(columnPosition, rowPosition)
+                ? getStartRowPosition(columnPosition, rowPosition) : rowPosition;
 
-        int columnSpan = isAutoSpanEnabledForColumn(columnPosition, rowPosition) ? getColumnSpan(
-                cellColumnPosition, cellRowPosition) : 1;
-        int rowSpan = isAutoSpanEnabledForRow(columnPosition, rowPosition) ? getRowSpan(
-                cellColumnPosition, cellRowPosition) : 1;
+        int columnSpan = isAutoSpanEnabledForColumn(columnPosition, rowPosition)
+                ? getColumnSpan(cellColumnPosition, cellRowPosition) : 1;
+        int rowSpan = isAutoSpanEnabledForRow(columnPosition, rowPosition)
+                ? getRowSpan(cellColumnPosition, cellRowPosition) : 1;
 
-        return new DataCell(cellColumnPosition, cellRowPosition, columnSpan,
-                rowSpan);
+        return new DataCell(cellColumnPosition, cellRowPosition, columnSpan, rowSpan);
     }
 
     /**
@@ -151,8 +144,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * @return <code>true</code> if for that column position auto spanning is
      *         enabled
      */
-    protected boolean isAutoSpanEnabledForColumn(int columnPosition,
-            int rowPosition) {
+    protected boolean isAutoSpanEnabledForColumn(int columnPosition, int rowPosition) {
         return (this.autoColumnSpan && isAutoSpanRow(rowPosition));
     }
 
@@ -167,8 +159,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * @return <code>true</code> if for that row position auto spanning is
      *         enabled
      */
-    protected boolean isAutoSpanEnabledForRow(int columnPosition,
-            int rowPosition) {
+    protected boolean isAutoSpanEnabledForRow(int columnPosition, int rowPosition) {
         return (this.autoRowSpan && isAutoSpanColumn(columnPosition));
     }
 
@@ -181,8 +172,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      *         auto span column.
      */
     private boolean isAutoSpanColumn(int columnPosition) {
-        return (this.autoSpanColumns.isEmpty() || this.autoSpanColumns
-                .contains(columnPosition));
+        return (this.autoSpanColumns.isEmpty() || this.autoSpanColumns.contains(columnPosition));
     }
 
     /**
@@ -194,8 +184,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      *         auto span row.
      */
     private boolean isAutoSpanRow(int rowPosition) {
-        return (this.autoSpanRows.isEmpty() || this.autoSpanRows
-                .contains(rowPosition));
+        return (this.autoSpanRows.isEmpty() || this.autoSpanRows.contains(rowPosition));
     }
 
     /**
@@ -349,7 +338,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
         while (columnPosition < getColumnCount() - 1
                 && isAutoSpanColumn(columnPosition)
                 && isAutoSpanColumn(columnPosition + 1)
-                && !valuesNotEqual(getDataValue(columnPosition, rowPosition),
+                && !valuesNotEqual(
+                        getDataValue(columnPosition, rowPosition),
                         getDataValue(columnPosition + 1, rowPosition))) {
             span++;
             columnPosition++;
@@ -373,7 +363,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
         while (rowPosition < getRowCount() - 1
                 && isAutoSpanRow(rowPosition)
                 && isAutoSpanRow(rowPosition + 1)
-                && !valuesNotEqual(getDataValue(columnPosition, rowPosition),
+                && !valuesNotEqual(
+                        getDataValue(columnPosition, rowPosition),
                         getDataValue(columnPosition, rowPosition + 1))) {
             span++;
             rowPosition++;
@@ -392,8 +383,12 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
      * @return <code>true</code> if the given values are not equal.
      */
     protected boolean valuesNotEqual(Object value1, Object value2) {
+        if (value1 == value2) {
+            return false;
+        }
         return ((value1 == null && value2 != null)
-                || (value1 != null && value2 == null) || !value1.equals(value2));
+                || (value1 != null && value2 == null)
+                || !value1.equals(value2));
     }
 
     /**
@@ -430,10 +425,12 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
 
     @Override
     public void saveState(String prefix, Properties properties) {
-        properties.setProperty(prefix + PERSISTENCE_KEY_AUTO_COLUMN_SPAN,
+        properties.setProperty(
+                prefix + PERSISTENCE_KEY_AUTO_COLUMN_SPAN,
                 Boolean.valueOf(this.autoColumnSpan).toString());
-        properties.setProperty(prefix + PERSISTENCE_KEY_AUTO_ROW_SPAN, Boolean
-                .valueOf(this.autoRowSpan).toString());
+        properties.setProperty(
+                prefix + PERSISTENCE_KEY_AUTO_ROW_SPAN,
+                Boolean.valueOf(this.autoRowSpan).toString());
 
         if (this.autoSpanColumns.size() > 0) {
             StringBuilder strBuilder = new StringBuilder();
@@ -441,7 +438,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
-            properties.setProperty(prefix + PERSISTENCE_KEY_AUTO_SPAN_COLUMNS,
+            properties.setProperty(
+                    prefix + PERSISTENCE_KEY_AUTO_SPAN_COLUMNS,
                     strBuilder.toString());
         }
 
@@ -451,32 +449,29 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
                 strBuilder.append(index);
                 strBuilder.append(IPersistable.VALUE_SEPARATOR);
             }
-            properties.setProperty(prefix + PERSISTENCE_KEY_AUTO_SPAN_ROWS,
+            properties.setProperty(
+                    prefix + PERSISTENCE_KEY_AUTO_SPAN_ROWS,
                     strBuilder.toString());
         }
     }
 
     @Override
     public void loadState(String prefix, Properties properties) {
-        String property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_AUTO_COLUMN_SPAN);
+        String property = properties.getProperty(prefix + PERSISTENCE_KEY_AUTO_COLUMN_SPAN);
         if (property != null) {
             this.autoColumnSpan = Boolean.valueOf(property);
         }
 
-        property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_AUTO_ROW_SPAN);
+        property = properties.getProperty(prefix + PERSISTENCE_KEY_AUTO_ROW_SPAN);
         if (property != null) {
             this.autoRowSpan = Boolean.valueOf(property);
         }
 
         this.autoSpanColumns.clear();
-        property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_AUTO_SPAN_COLUMNS);
+        property = properties.getProperty(prefix + PERSISTENCE_KEY_AUTO_SPAN_COLUMNS);
         if (property != null) {
             List<Integer> newAutoSpanColumns = new ArrayList<Integer>();
-            StringTokenizer tok = new StringTokenizer(property,
-                    IPersistable.VALUE_SEPARATOR);
+            StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
                 newAutoSpanColumns.add(Integer.valueOf(index));
@@ -486,12 +481,10 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider,
         }
 
         this.autoSpanRows.clear();
-        property = properties.getProperty(prefix
-                + PERSISTENCE_KEY_AUTO_SPAN_ROWS);
+        property = properties.getProperty(prefix + PERSISTENCE_KEY_AUTO_SPAN_ROWS);
         if (property != null) {
             List<Integer> newAutoSpanRows = new ArrayList<Integer>();
-            StringTokenizer tok = new StringTokenizer(property,
-                    IPersistable.VALUE_SEPARATOR);
+            StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
             while (tok.hasMoreTokens()) {
                 String index = tok.nextToken();
                 newAutoSpanRows.add(Integer.valueOf(index));
