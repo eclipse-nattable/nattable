@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
+ *    Ryan McHale <rpmc22@gmail.com> - Bug 484716
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.filterrow.combobox;
 
@@ -82,8 +83,8 @@ public class FilterRowComboBoxCellEditor extends ComboBoxCellEditor {
     public NatCombo createEditorControl(Composite parent) {
         int style = SWT.READ_ONLY | SWT.MULTI | SWT.CHECK;
         final FilterNatCombo combo = this.iconImage == null
-                ? new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style)
-                : new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage);
+                ? new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.showDropdownFilter)
+                : new FilterNatCombo(parent, this.cellStyle, this.maxVisibleItems, style, this.iconImage, this.showDropdownFilter);
 
         combo.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM));
 
