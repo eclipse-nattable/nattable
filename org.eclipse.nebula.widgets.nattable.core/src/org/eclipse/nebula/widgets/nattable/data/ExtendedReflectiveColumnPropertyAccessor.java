@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Simon Scholz <simon.scholz@vogella.com> - Bug 487913
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data;
 
@@ -23,7 +24,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
      * @param propertyNames
      *            of the members of the row bean
      */
-    public ExtendedReflectiveColumnPropertyAccessor(String[] propertyNames) {
+    public ExtendedReflectiveColumnPropertyAccessor(String... propertyNames) {
         super(propertyNames);
     }
 
