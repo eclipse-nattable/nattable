@@ -7,11 +7,12 @@
  *
  * Contributors:
  *     Original authors and others - initial API and implementation
- *     Simon Scholz <simon.scholz@vogella.com> - Bug 487913
+ *     Simon Scholz <simon.scholz@vogella.com> - Bug 487913, 488067
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +26,14 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
      *            of the members of the row bean
      */
     public ExtendedReflectiveColumnPropertyAccessor(String... propertyNames) {
+        super(propertyNames);
+    }
+
+    /**
+     * @param propertyNames
+     *            of the members of the row bean
+     */
+    public ExtendedReflectiveColumnPropertyAccessor(List<String> propertyNames) {
         super(propertyNames);
     }
 

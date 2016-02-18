@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  *     Dirk Fauth <dirk.fauth@googlemail.com> - Bug 450927
- *     Simon Scholz <simon.scholz@vogella.com> - Bug 487913
+ *     Simon Scholz <simon.scholz@vogella.com> - Bug 487913, 488067
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.data;
 
@@ -46,6 +46,14 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
      */
     public ReflectiveColumnPropertyAccessor(String... propertyNames) {
         this.propertyNames = Arrays.asList(propertyNames);
+    }
+
+    /**
+     * @param propertyNames
+     *            of the members of the row bean
+     */
+    public ReflectiveColumnPropertyAccessor(List<String> propertyNames) {
+        this.propertyNames = propertyNames;
     }
 
     @Override
