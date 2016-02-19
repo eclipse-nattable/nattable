@@ -32,6 +32,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
     /**
      * @param propertyNames
      *            of the members of the row bean
+     * @since 1.4
      */
     public ExtendedReflectiveColumnPropertyAccessor(List<String> propertyNames) {
         super(propertyNames);

@@ -51,6 +51,7 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
     /**
      * @param propertyNames
      *            of the members of the row bean
+     * @since 1.4
      */
     public ReflectiveColumnPropertyAccessor(List<String> propertyNames) {
         this.propertyNames = propertyNames;
