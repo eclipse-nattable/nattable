@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,11 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.nebula.widgets.nattable.columnRename.RenameColumnHeaderCommand;
 import org.eclipse.nebula.widgets.nattable.columnRename.event.RenameColumnHeaderEvent;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.grid.data.DummyModifiableBodyDataProvider;
+import org.eclipse.nebula.widgets.nattable.layer.event.ColumnDeleteEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.ColumnInsertEvent;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DummyGridLayerStack;
+import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderCommand;
 import org.eclipse.nebula.widgets.nattable.test.fixture.NatTableFixture;
 import org.eclipse.nebula.widgets.nattable.test.fixture.layer.LayerListenerFixture;
@@ -26,7 +30,8 @@ public class RenameColumnIntegrationTest {
 
     private static final String TEST_COLUMN_NAME = "Test column name";
 
-    DummyGridLayerStack grid = new DummyGridLayerStack();
+    DummyModifiableBodyDataProvider provider = new DummyModifiableBodyDataProvider(20, 20);
+    DummyGridLayerStack grid = new DummyGridLayerStack(this.provider);
     NatTableFixture natTableFixture;
     LayerListenerFixture listener;
 
@@ -95,5 +100,137 @@ public class RenameColumnIntegrationTest {
         assertEquals(2, this.listener.getEventsCount());
         RenameColumnHeaderEvent event = (RenameColumnHeaderEvent) this.listener.getReceivedEvent(RenameColumnHeaderEvent.class);
         assertEquals(new Range(2, 3), event.getColumnPositionRanges().iterator().next());
+    }
+
+    @Test
+    public void shouldUpdateRenamedColumnOnDeleteOneColumn() {
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        this.natTableFixture.doCommand(
+                new RenameColumnHeaderCommand(
+                        this.natTableFixture,
+                        5,
+                        TEST_COLUMN_NAME));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        // simulate deletion of a column
+        this.provider.setColumnCount(this.provider.getColumnCount() - 1);
+        this.grid.getColumnHeaderDataLayer().fireLayerEvent(new ColumnDeleteEvent(this.grid.getBodyDataLayer(), 0));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(4, 0).toString());
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+    }
+
+    @Test
+    public void shouldUpdateRenamedColumnOnDeleteMultipleColumn() {
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        this.natTableFixture.doCommand(
+                new RenameColumnHeaderCommand(
+                        this.natTableFixture,
+                        5,
+                        TEST_COLUMN_NAME));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        // simulate deletion of a column
+        this.provider.setColumnCount(this.provider.getColumnCount() - 3);
+        this.grid.getColumnHeaderDataLayer().fireLayerEvent(new ColumnDeleteEvent(this.grid.getBodyDataLayer(), new Range(1, 4)));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(2, 0).toString());
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+    }
+
+    @Test
+    public void shouldUpdateRenamedColumnOnDeleteMultipleColumnRanges() {
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        this.natTableFixture.doCommand(
+                new RenameColumnHeaderCommand(
+                        this.natTableFixture,
+                        5,
+                        TEST_COLUMN_NAME));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        // simulate deletion of a column
+        this.provider.setColumnCount(this.provider.getColumnCount() - 3);
+        this.grid.getColumnHeaderDataLayer().fireLayerEvent(
+                new ColumnDeleteEvent(this.grid.getBodyDataLayer(), new Range(1, 3), new Range(6, 7)));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(3, 0).toString());
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+    }
+
+    @Test
+    public void shouldUpdateRenamedColumnOnAddingOneColumn() {
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        this.natTableFixture.doCommand(
+                new RenameColumnHeaderCommand(
+                        this.natTableFixture,
+                        5,
+                        TEST_COLUMN_NAME));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        // simulate deletion of a column
+        this.provider.setColumnCount(this.provider.getColumnCount() + 1);
+        this.grid.getColumnHeaderDataLayer().fireLayerEvent(new ColumnInsertEvent(this.grid.getBodyDataLayer(), 0));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(6, 0).toString());
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+    }
+
+    @Test
+    public void shouldUpdateRenamedColumnOnAddingMultipleColumn() {
+        this.natTableFixture.doCommand(new TurnViewportOffCommand());
+
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        this.natTableFixture.doCommand(
+                new RenameColumnHeaderCommand(
+                        this.natTableFixture,
+                        5,
+                        TEST_COLUMN_NAME));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        // simulate deletion of a column
+        this.provider.setColumnCount(this.provider.getColumnCount() + 3);
+        this.grid.getColumnHeaderDataLayer().fireLayerEvent(new ColumnInsertEvent(this.grid.getBodyDataLayer(), new Range(1, 4)));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(8, 0).toString());
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+    }
+
+    @Test
+    public void shouldUpdateRenamedColumnOnAddingMultipleColumnRanges() {
+        this.natTableFixture.doCommand(new TurnViewportOffCommand());
+
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        this.natTableFixture.doCommand(
+                new RenameColumnHeaderCommand(
+                        this.natTableFixture,
+                        5,
+                        TEST_COLUMN_NAME));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
+        // simulate deletion of a column
+        this.provider.setColumnCount(this.provider.getColumnCount() + 3);
+        this.grid.getColumnHeaderDataLayer().fireLayerEvent(
+                new ColumnInsertEvent(this.grid.getBodyDataLayer(), new Range(1, 3), new Range(7, 8)));
+
+        assertEquals(TEST_COLUMN_NAME, this.natTableFixture.getDataValueByPosition(7, 0).toString());
+        assertEquals("Column 5", this.natTableFixture.getDataValueByPosition(5, 0).toString());
+
     }
 }

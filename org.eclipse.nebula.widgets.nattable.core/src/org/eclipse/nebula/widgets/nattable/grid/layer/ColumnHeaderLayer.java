@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.layer;
 
+import java.util.Collection;
+
 import org.eclipse.nebula.widgets.nattable.columnRename.DisplayColumnRenameDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.columnRename.RenameColumnHeaderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.columnRename.RenameColumnHelper;
@@ -19,6 +21,10 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -258,6 +264,22 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
     }
 
     // Column header renaming
+
+    @Override
+    public void handleLayerEvent(ILayerEvent event) {
+        if (event instanceof IStructuralChangeEvent) {
+            IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
+            if (structuralChangeEvent.isHorizontalStructureChanged()) {
+                Collection<StructuralDiff> columnDiffs = structuralChangeEvent.getColumnDiffs();
+
+                if (columnDiffs != null && !columnDiffs.isEmpty()
+                        && !StructuralChangeEventHelper.isReorder(columnDiffs)) {
+                    this.renameColumnHelper.handleStructuralChanges(columnDiffs);
+                }
+            }
+        }
+        super.handleLayerEvent(event);
+    }
 
     /**
      * @return column header as defined by the data source
