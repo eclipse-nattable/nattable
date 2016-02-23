@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Original authors and others.
+ * Copyright (c) 2012, 2016 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,7 +80,6 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
 
     @Override
     public boolean convertToLocal(ILayer localLayer) {
-        super.convertToLocal(localLayer);
         return true;
     }
 
@@ -99,7 +98,9 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
         Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 
         for (Range range : getRowPositionRanges()) {
-            rowDiffs.add(new StructuralDiff(DiffTypeEnum.DELETE, range,
+            rowDiffs.add(new StructuralDiff(
+                    DiffTypeEnum.DELETE,
+                    range,
                     new Range(range.start, range.start)));
         }
 
