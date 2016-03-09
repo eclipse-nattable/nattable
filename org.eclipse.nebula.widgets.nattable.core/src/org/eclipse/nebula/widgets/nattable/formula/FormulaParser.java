@@ -222,21 +222,16 @@ public class FormulaParser {
             if (part.matches(operatorRegex)) {
                 if ("-".equals(part)) { //$NON-NLS-1$
                     values.add(new NegateFunction());
-                }
-                else if ("+".equals(part)) { //$NON-NLS-1$
+                } else if ("+".equals(part)) { //$NON-NLS-1$
                     values.add(new SumFunction());
-                }
-                else if ("*".equals(part)) { //$NON-NLS-1$
+                } else if ("*".equals(part)) { //$NON-NLS-1$
                     values.add(new ProductFunction());
-                }
-                else if ("/".equals(part)) { //$NON-NLS-1$
+                } else if ("/".equals(part)) { //$NON-NLS-1$
                     values.add(new QuotientFunction());
-                }
-                else if ("^".equals(part)) { //$NON-NLS-1$
+                } else if ("^".equals(part)) { //$NON-NLS-1$
                     values.add(new PowerFunction());
                 }
-            }
-            else if (part.matches(rangeRegex)) {
+            } else if (part.matches(rangeRegex)) {
                 MultipleValueFunctionValue multi = new MultipleValueFunctionValue();
                 String[] parts = part.split(":"); //$NON-NLS-1$
                 if (part.matches(referenceRangeRegex)) {
@@ -253,8 +248,7 @@ public class FormulaParser {
                             addDataProviderValue(column, row, multi.getValue(), parsedReferences, referer);
                         }
                     }
-                }
-                else if (part.matches(rowRangeRegex)) {
+                } else if (part.matches(rowRangeRegex)) {
                     int from = Integer.valueOf(parts[0]) - 1;
                     int to = Integer.valueOf(parts[1]) - 1;
 
@@ -265,12 +259,11 @@ public class FormulaParser {
                     }
 
                     for (int row = from; row <= to; row++) {
-                        for (int column = 0; column < this.dataProvider.getColumnCount(); column++) {
+                        for (int column = 0; column < getUnderlyingColumnCount(); column++) {
                             addDataProviderValue(column, row, multi.getValue(), parsedReferences, referer);
                         }
                     }
-                }
-                else if (part.matches(columnRangeRegex)) {
+                } else if (part.matches(columnRangeRegex)) {
                     int from = getColumnIndex(parts[0]);
                     int to = getColumnIndex(parts[1]);
 
@@ -281,34 +274,30 @@ public class FormulaParser {
                     }
 
                     for (int column = from; column <= to; column++) {
-                        for (int row = 0; row < this.dataProvider.getRowCount(); row++) {
+                        for (int row = 0; row < getUnderlyingRowCount(); row++) {
                             addDataProviderValue(column, row, multi.getValue(), parsedReferences, referer);
                         }
                     }
                 }
                 values.add(multi);
-            }
-            else if (part.matches(referenceRegex)) {
+            } else if (part.matches(referenceRegex)) {
                 int[] coords = evaluateReference(part);
                 addDataProviderValue(coords[0], coords[1], values, parsedReferences, referer);
-            }
-            else if (part.matches(placeholderRegex)) {
+            } else if (part.matches(placeholderRegex)) {
                 String number = part.substring(1, part.length() - 1);
                 try {
                     values.add(replacements.get(Integer.valueOf(number)));
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException(Messages.getString("FormulaParser.error.replacement"), e); //$NON-NLS-1$
                 }
-            }
-            else if (part.matches(this.localizedDigitRegex)) {
+            } else if (part.matches(this.localizedDigitRegex)) {
                 // check if last is big decimal and throw exception in that case
                 if (values.size() > 0 && values.get(values.size() - 1) instanceof BigDecimalFunctionValue) {
                     throw new IllegalArgumentException(Messages.getString("FormulaParser.error.missingOperator")); //$NON-NLS-1$
                 }
 
                 values.add(new BigDecimalFunctionValue(convertToBigDecimal(part.trim())));
-            }
-            else {
+            } else {
                 String s = part.trim();
                 if (s.length() > 0) {
                     values.add(new StringFunctionValue(s));
@@ -368,8 +357,7 @@ public class FormulaParser {
                         functionName = function.substring(functionMatcher.start(), i);
                         startIndex = i;
                     }
-                }
-                else if (c == ')') {
+                } else if (c == ')') {
                     openParanthesisCount--;
                     if (openParanthesisCount < 0) {
                         throw new IllegalArgumentException(Messages.getString("FormulaParser.error.functionParameterNotOpened")); //$NON-NLS-1$
@@ -459,8 +447,7 @@ public class FormulaParser {
                     result.append(function.substring(startIndex, i));
                     startIndex = i;
                 }
-            }
-            else if (c == ')') {
+            } else if (c == ')') {
                 openParanthesisCount--;
                 if (openParanthesisCount < 0) {
                     throw new IllegalArgumentException(Messages.getString("FormulaParser.error.parenthesisNotOpened")); //$NON-NLS-1$
@@ -522,8 +509,7 @@ public class FormulaParser {
 
                 operatorFound = true;
                 result.add(v);
-            }
-            else {
+            } else {
                 result.add(v);
             }
         }
@@ -544,8 +530,7 @@ public class FormulaParser {
 
         if (values.size() == 1) {
             result = values.get(0);
-        }
-        else {
+        } else {
             for (int i = 0; i < values.size(); i++) {
                 FunctionValue v = values.get(i);
                 if (v instanceof AbstractSingleValueFunction
@@ -557,16 +542,13 @@ public class FormulaParser {
                         sum.addFunctionValue(result);
                         sum.addFunctionValue(v);
                         result = sum;
-                    }
-                    else {
+                    } else {
                         result = v;
                     }
-                }
-                else if (v instanceof OperatorFunctionValue) {
+                } else if (v instanceof OperatorFunctionValue) {
                     if (i > 0 && result == null) {
                         ((OperatorFunctionValue) v).addFunctionValue(values.get(i - 1));
-                    }
-                    else if (result != null) {
+                    } else if (result != null) {
                         ((OperatorFunctionValue) v).addFunctionValue(result);
                     }
 
@@ -577,8 +559,7 @@ public class FormulaParser {
                         }
                     }
                     result = v;
-                }
-                else {
+                } else {
                     result = v;
                 }
             }
@@ -601,8 +582,7 @@ public class FormulaParser {
             char c = reference.charAt(i);
             if (Character.isLetter(c)) {
                 columnString += c;
-            }
-            else if (Character.isDigit(c)) {
+            } else if (Character.isDigit(c)) {
                 rowString += c;
             }
         }
@@ -677,7 +657,7 @@ public class FormulaParser {
     protected void addDataProviderValue(int column, int row, List<FunctionValue> values,
             Map<IndexCoordinate, Set<IndexCoordinate>> parsedReferences, IndexCoordinate referer) {
 
-        Object value = this.dataProvider.getDataValue(column, row);
+        Object value = getUnderlyingDataValue(column, row);
         if (value != null) {
             String toParse = value.toString();
             if (value instanceof Number) {
@@ -794,6 +774,36 @@ public class FormulaParser {
     }
 
     /**
+     * @return The column count of the underlying data model. The base
+     *         implementation uses the underlying {@link IDataProvider}.
+     */
+    protected int getUnderlyingColumnCount() {
+        return this.dataProvider.getColumnCount();
+    }
+
+    /**
+     * @return The row count of the underlying data model. The base
+     *         implementation uses the underlying {@link IDataProvider}.
+     */
+    protected int getUnderlyingRowCount() {
+        return this.dataProvider.getRowCount();
+    }
+
+    /**
+     *
+     * @param column
+     *            The column index of the cell whose value is requested.
+     * @param row
+     *            The row index of the cell whose value is requested.
+     * @return The data value for the given column and row index out of the
+     *         underlying data model. The base implementation uses the
+     *         underlying {@link IDataProvider}.
+     */
+    protected Object getUnderlyingDataValue(int column, int row) {
+        return this.dataProvider.getDataValue(column, row);
+    }
+
+    /**
      * Updates the references in a function string. Needed for copy operations.
      *
      * @param function
@@ -854,8 +864,7 @@ public class FormulaParser {
         if (currNode != null) {
             if (path.contains(currNode.referer)) {
                 return true;
-            }
-            else {
+            } else {
                 if (!currNode.references.isEmpty()) {
                     path.add(currNode.referer);
                     for (IndexCoordinate node : currNode.references) {
