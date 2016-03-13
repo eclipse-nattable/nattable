@@ -12,6 +12,8 @@
  *****************************************************************************/
 package org.eclipse.nebula.widgets.nattable.examples.e4;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,9 +60,11 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 
 @SuppressWarnings("restriction")
 public class CSSExample {
@@ -69,7 +73,18 @@ public class CSSExample {
     EMenuService menuService;
 
     @PostConstruct
-    public void postConstruct(Composite parent) {
+    public void postConstruct(Composite parent, Shell shell) {
+
+        try {
+            // load the images for the shell
+            Image img16 = GUIHelper.getImageByURL(new URL("platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_16.png"));
+            Image img32 = GUIHelper.getImageByURL(new URL("platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_32.png"));
+            Image img64 = GUIHelper.getImageByURL(new URL("platform:/plugin/org.eclipse.nebula.widgets.nattable.examples.e4/icons/nebula_logo_64.png"));
+            shell.setImages(new Image[] { img16, img32, img64 });
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
         parent.setLayout(new GridLayout());
 
         // property names of the Person class
@@ -149,14 +164,14 @@ public class CSSExample {
                         EditConfigAttributes.DATA_VALIDATOR,
                         new DataValidator() {
 
-                    @Override
-                    public boolean validate(int columnIndex, int rowIndex, Object newValue) {
-                        if (newValue instanceof Integer && ((Integer) newValue).intValue() > 100) {
-                            return false;
-                        }
-                        return true;
-                    }
-                },
+                            @Override
+                            public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+                                if (newValue instanceof Integer && ((Integer) newValue).intValue() > 100) {
+                                    return false;
+                                }
+                                return true;
+                            }
+                        },
                         DisplayMode.NORMAL,
                         "COLUMN_4");
             }
