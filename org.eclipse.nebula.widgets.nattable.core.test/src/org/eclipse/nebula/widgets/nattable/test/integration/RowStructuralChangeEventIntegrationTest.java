@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.test.integration;
 
@@ -28,10 +28,12 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiRowHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.RowHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -40,10 +42,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * @author Dirk Fauth
- *
- */
 public class RowStructuralChangeEventIntegrationTest {
 
     List<String> contents;
@@ -57,8 +55,7 @@ public class RowStructuralChangeEventIntegrationTest {
 
     @Before
     public void setUp() {
-        this.contents = new ArrayList<String>(Arrays.asList("one", "two", "three",
-                "four", "five"));
+        this.contents = new ArrayList<String>(Arrays.asList("one", "two", "three", "four", "five"));
         IDataProvider bodyDataProvider = new ListDataProvider<String>(this.contents,
                 new IColumnAccessor<String>() {
 
@@ -85,24 +82,21 @@ public class RowStructuralChangeEventIntegrationTest {
         this.selectionLayer = new SelectionLayer(this.rowHideShowLayer);
         this.viewportLayer = new ViewportLayer(this.selectionLayer);
 
-        IDataProvider colDataProvider = new DummyColumnHeaderDataProvider(
-                bodyDataProvider);
-        ColumnHeaderLayer colHeader = new ColumnHeaderLayer(new DataLayer(
-                colDataProvider), this.viewportLayer, this.selectionLayer);
+        IDataProvider colDataProvider = new DummyColumnHeaderDataProvider(bodyDataProvider);
+        ColumnHeaderLayer colHeader = new ColumnHeaderLayer(
+                new DataLayer(colDataProvider), this.viewportLayer, this.selectionLayer);
 
-        IDataProvider rowDataProvider = new DefaultRowHeaderDataProvider(
-                bodyDataProvider);
-        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(new DataLayer(
-                rowDataProvider), this.viewportLayer, this.selectionLayer);
+        IDataProvider rowDataProvider = new DefaultRowHeaderDataProvider(bodyDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(
+                new DataLayer(rowDataProvider), this.viewportLayer, this.selectionLayer);
 
         CornerLayer cornerLayer = new CornerLayer(
-                new DataLayer(new DefaultCornerDataProvider(colDataProvider,
-                        rowDataProvider)), rowHeaderLayer, colHeader);
+                new DataLayer(new DefaultCornerDataProvider(colDataProvider, rowDataProvider)),
+                rowHeaderLayer, colHeader);
 
-        GridLayer grid = new GridLayer(this.viewportLayer, colHeader,
-                rowHeaderLayer, cornerLayer);
+        GridLayer grid = new GridLayer(this.viewportLayer, colHeader, rowHeaderLayer, cornerLayer);
         this.natTable = new NatTable(new Shell(), grid);
-        this.natTable.setSize(600, 400);
+        this.natTable.setSize(600, 600);
     }
 
     @Test
@@ -225,9 +219,33 @@ public class RowStructuralChangeEventIntegrationTest {
         // delete last row
         int index = this.contents.size() - 1;
         this.contents.remove(index);
-        this.underlyingLayer.fireLayerEvent(new RowDeleteEvent(this.underlyingLayer,
-                index));
+        this.underlyingLayer.fireLayerEvent(new RowDeleteEvent(this.underlyingLayer, index));
 
         assertEquals(4, this.viewportLayer.getRowCount());
+    }
+
+    @Test
+    public void shouldUpdateOnInsertAndDelete() {
+        this.contents.add("six");
+        this.underlyingLayer.fireLayerEvent(new RowInsertEvent(this.underlyingLayer, 5));
+
+        this.viewportLayer.doCommand(new RowReorderCommand(this.viewportLayer, 3, 6));
+        this.viewportLayer.doCommand(new RowReorderCommand(this.viewportLayer, 3, 5));
+        this.viewportLayer.doCommand(new MultiRowHideCommand(this.viewportLayer, new int[] { 2, 3, 5 }));
+
+        assertEquals("[0, 1, 2, 5, 4, 3]", this.rowReorderLayer.getRowIndexOrder().toString());
+        assertEquals("[2, 3, 5]", this.rowHideShowLayer.getHiddenRowIndexes().toString());
+
+        this.contents.add(3, "test");
+        this.underlyingLayer.fireLayerEvent(new RowInsertEvent(this.underlyingLayer, 3));
+
+        assertEquals("[0, 1, 2, 3, 6, 5, 4]", this.rowReorderLayer.getRowIndexOrder().toString());
+        assertEquals("[2, 4, 6]", this.rowHideShowLayer.getHiddenRowIndexes().toString());
+
+        this.contents.remove(3);
+        this.underlyingLayer.fireLayerEvent(new RowDeleteEvent(this.underlyingLayer, 3));
+
+        assertEquals("[0, 1, 2, 5, 4, 3]", this.rowReorderLayer.getRowIndexOrder().toString());
+        assertEquals("[2, 3, 5]", this.rowHideShowLayer.getHiddenRowIndexes().toString());
     }
 }

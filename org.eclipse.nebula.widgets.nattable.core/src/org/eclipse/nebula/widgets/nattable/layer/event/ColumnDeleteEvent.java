@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2013 Dirk Fauth and others.
+ * Copyright (c) 2013, 2016 Dirk Fauth and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Dirk Fauth <dirk.fauth@gmail.com> - initial API and implementation
+ *    Dirk Fauth <dirk.fauth@googlemail.com> - initial API and implementation
  *******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.event;
 
@@ -19,9 +19,6 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 /**
  * Event indicating that one ore more columns were deleted from the layer.
- *
- * @author Dirk Fauth
- *
  */
 public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
 
@@ -57,8 +54,7 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
      * @param columnPositionRanges
      *            The column position ranges for the columns that were deleted.
      */
-    public ColumnDeleteEvent(ILayer layer,
-            Collection<Range> columnPositionRanges) {
+    public ColumnDeleteEvent(ILayer layer, Collection<Range> columnPositionRanges) {
         super(layer, columnPositionRanges);
     }
 
@@ -79,7 +75,9 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
         Collection<StructuralDiff> columnDiffs = new ArrayList<StructuralDiff>();
 
         for (Range range : getColumnPositionRanges()) {
-            columnDiffs.add(new StructuralDiff(DiffTypeEnum.DELETE, range,
+            columnDiffs.add(new StructuralDiff(
+                    DiffTypeEnum.DELETE,
+                    range,
                     new Range(range.start, range.start)));
         }
 
@@ -89,6 +87,13 @@ public class ColumnDeleteEvent extends ColumnStructuralChangeEvent {
     @Override
     public ILayerEvent cloneEvent() {
         return new ColumnDeleteEvent(this);
+    }
+
+    @Override
+    public boolean convertToLocal(ILayer localLayer) {
+        // Bug 478699 - don't modify the ranges on delete because the
+        // transformation could result in wrong results
+        return true;
     }
 
 }
