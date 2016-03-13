@@ -310,7 +310,7 @@ public class NatCombo extends Composite {
      *            The style for the Text Control to construct. Uses this style
      *            adding internal styles via ConfigRegistry.
      *
-     * @param filterDowndown
+     * @param showDropdownFilter
      *            Flag indicating whether the dropdown filter is displayed
      *
      * @since 1.4
