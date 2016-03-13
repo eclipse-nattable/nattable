@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.formula.command.DisableFormulaCachingCommand;
 import org.eclipse.nebula.widgets.nattable.formula.command.EnableFormulaCachingCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
 import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
@@ -164,26 +165,83 @@ public class LayerPrinter {
      *         print the layer.
      */
     private Point getPageCount(Printer printer) {
-        Rectangle layerArea = getTotalArea();
         Rectangle printArea = computePrintArea(printer);
         float[] scaleFactor = computeScaleFactor(printer, false);
 
-        Float horizontal = Float.valueOf(layerArea.width / (printArea.width / scaleFactor[0]));
-        int numOfHorizontalPages = horizontal.intValue();
-        if ((horizontal % 1) != 0) {
-            // the int conversion simply cuts of the decimals
-            // so in case there are decimals we need to round up
+        Integer[] gridLineWidth = getGridLineWidth();
+
+        // calculate pages based on non cut off columns/rows
+        int numOfHorizontalPages = 0;
+        int pageWidth = Float.valueOf(printArea.width / scaleFactor[0]).intValue();
+        int endX = 0;
+        while (endX < this.layer.getWidth()) {
+            endX += pageWidth;
+            int colPos = this.layer.getColumnPositionByX(endX);
+            if (colPos >= 0) {
+                ILayerCell cell = findColumnCellForBounds(colPos);
+                if (cell != null) {
+                    Rectangle cellBounds = cell.getBounds();
+                    if (cellBounds.x < endX) {
+                        endX -= (endX - cellBounds.x);
+                        endX -= gridLineWidth[1];
+                    }
+                }
+            } else {
+                endX = this.layer.getWidth();
+            }
+
             numOfHorizontalPages++;
         }
-        Float vertical = Float.valueOf(layerArea.height / ((printArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]));
-        int numOfVerticalPages = vertical.intValue();
-        if ((vertical % 1) != 0) {
-            // the int conversion simply cuts of the decimals
-            // so in case there are decimals we need to round up
+
+        int numOfVerticalPages = 0;
+        int pageHeight = Float.valueOf((printArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]).intValue();
+        int endY = 0;
+        while (endY < this.layer.getHeight()) {
+            endY += pageHeight;
+            int rowPos = this.layer.getRowPositionByY(endY);
+            if (rowPos >= 0) {
+                ILayerCell cell = findRowCellForBounds(rowPos);
+                if (cell != null) {
+                    Rectangle cellBounds = cell.getBounds();
+                    if (cellBounds.y < endY) {
+                        endY -= (endY - cellBounds.y);
+                        endY -= gridLineWidth[1];
+                    }
+                }
+            } else {
+                endY = this.layer.getHeight();
+            }
+
             numOfVerticalPages++;
         }
 
+        if (gridLineWidth[0] == null) {
+            LayerPrinter.this.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
+        }
+
         return new Point(numOfHorizontalPages, numOfVerticalPages);
+    }
+
+    private ILayerCell findColumnCellForBounds(int colPos) {
+        int rowPos = 0;
+        ILayerCell cell = this.layer.getCellByPosition(colPos, rowPos);
+        while (cell != null && cell.isSpannedCell()) {
+            // if the cell is spanned, check the cell at the next row
+            rowPos++;
+            cell = this.layer.getCellByPosition(colPos, rowPos);
+        }
+        return cell;
+    }
+
+    private ILayerCell findRowCellForBounds(int rowPos) {
+        int colPos = 0;
+        ILayerCell cell = this.layer.getCellByPosition(colPos, rowPos);
+        while (cell != null && cell.isSpannedCell()) {
+            // if the cell is spanned, check the cell at the next column
+            colPos++;
+            cell = this.layer.getCellByPosition(colPos, rowPos);
+        }
+        return cell;
     }
 
     /**
@@ -193,6 +251,27 @@ public class LayerPrinter {
      */
     protected int getFooterHeightInPrinterDPI() {
         return this.footerHeight;
+    }
+
+    /**
+     * @return Integer array that contains the original configured width at
+     *         index 0 and the grid line width to use at index 1.
+     * @since 1.4
+     */
+    protected Integer[] getGridLineWidth() {
+        // check if a grid line width is configured
+        Integer width = LayerPrinter.this.configRegistry.getConfigAttribute(
+                CellConfigAttributes.GRID_LINE_WIDTH,
+                DisplayMode.NORMAL);
+        Integer gridLineWidth = width;
+        // if no explicit width is set, we temporary specify a grid line
+        // width of 2 for optimized grid line printing
+        if (width == null) {
+            LayerPrinter.this.configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.GRID_LINE_WIDTH, 2);
+            gridLineWidth = 2;
+        }
+        return new Integer[] { width, gridLineWidth };
     }
 
     /**
@@ -363,16 +442,7 @@ public class LayerPrinter {
                 LayerPrinter.this.layer.doCommand(new TurnViewportOnCommand());
             }
 
-            // check if a grid line width is configured
-            Integer width = LayerPrinter.this.configRegistry.getConfigAttribute(
-                    CellConfigAttributes.GRID_LINE_WIDTH,
-                    DisplayMode.NORMAL);
-            // if no explicit width is set, we temporary specify a grid line
-            // width of 2 for optimized grid line printing
-            if (width == null) {
-                LayerPrinter.this.configRegistry.registerConfigAttribute(
-                        CellConfigAttributes.GRID_LINE_WIDTH, 2);
-            }
+            Integer[] gridLineWidth = getGridLineWidth();
 
             // if pre-rendering is enabled, render in-memory to trigger content
             // based auto-resizing
@@ -401,21 +471,51 @@ public class LayerPrinter {
                     setLayerSize(this.printer.getPrinterData());
 
                     final Rectangle printerClientArea = computePrintArea(this.printer);
+                    final int printBoundsWidth = Float.valueOf(printerClientArea.width / scaleFactor[0]).intValue();
+                    int printBoundsHeight = Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]).intValue();
+
                     final Point pageCount = getPageCount(this.printer);
                     GC gc = new GC(this.printer);
 
                     // Print pages Left to Right and then Top to Down
                     int currentPage = 1;
+
+                    int startY = 0;
                     for (int verticalPageNumber = 0; verticalPageNumber < pageCount.y; verticalPageNumber++) {
 
+                        int endY = startY + printBoundsHeight;
+                        int rowPos = LayerPrinter.this.layer.getRowPositionByY(endY);
+                        if (rowPos >= 0) {
+                            ILayerCell cell = findRowCellForBounds(rowPos);
+                            if (cell != null) {
+                                Rectangle cellBounds = cell.getBounds();
+                                if (cellBounds.y < endY) {
+                                    printBoundsHeight -= (endY - cellBounds.y);
+                                }
+                            }
+                        }
+
+                        int startX = 0;
                         for (int horizontalPageNumber = 0; horizontalPageNumber < pageCount.x; horizontalPageNumber++) {
 
                             // Calculate bounds for the next page
                             Rectangle printBounds = new Rectangle(
-                                    Float.valueOf((printerClientArea.width / scaleFactor[0]) * horizontalPageNumber).intValue(),
-                                    Float.valueOf(((printerClientArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]) * verticalPageNumber).intValue(),
-                                    Float.valueOf(printerClientArea.width / scaleFactor[0]).intValue(),
-                                    Float.valueOf((printerClientArea.height - getFooterHeightInPrinterDPI()) / scaleFactor[1]).intValue());
+                                    startX,
+                                    startY,
+                                    printBoundsWidth,
+                                    printBoundsHeight);
+
+                            int endX = startX + printBounds.width;
+                            int colPos = LayerPrinter.this.layer.getColumnPositionByX(endX);
+                            if (colPos >= 0) {
+                                ILayerCell cell = findColumnCellForBounds(colPos);
+                                if (cell != null) {
+                                    Rectangle cellBounds = cell.getBounds();
+                                    if (cellBounds.x < endX) {
+                                        printBounds.width -= (endX - cellBounds.x);
+                                    }
+                                }
+                            }
 
                             Rectangle footerBounds = new Rectangle(
                                     Float.valueOf((printerClientArea.width / dpiFactor[0]) * horizontalPageNumber).intValue(),
@@ -443,7 +543,10 @@ public class LayerPrinter {
                                 footerTransform.dispose();
                             }
                             currentPage++;
+
+                            startX += printBounds.width - gridLineWidth[1];
                         }
+                        startY += printBoundsHeight - gridLineWidth[1];
                     }
 
                     this.printer.endJob();
@@ -458,7 +561,7 @@ public class LayerPrinter {
             // there was no explicit width configured, so we configured a
             // temporary one for grid line printing. this configuration needs to
             // be removed again
-            if (width == null) {
+            if (gridLineWidth[0] == null) {
                 LayerPrinter.this.configRegistry.unregisterConfigAttribute(CellConfigAttributes.GRID_LINE_WIDTH);
             }
 
